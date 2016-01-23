@@ -73,29 +73,19 @@ Begin VB.Form dialog_OutlineSettings
       dontResetAutomatically=   -1  'True
    End
    Begin PhotoDemon.buttonStrip btsStyle 
-      Height          =   615
+      Height          =   1095
       Left            =   120
       TabIndex        =   0
-      Top             =   3600
+      Top             =   3120
       Width           =   12375
       _ExtentX        =   21828
-      _ExtentY        =   1085
-      FontSize        =   12
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   315
-      Index           =   0
-      Left            =   120
-      Top             =   3240
-      Width           =   9375
-      _ExtentX        =   16536
-      _ExtentY        =   556
+      _ExtentY        =   1931
       Caption         =   "outline style"
       FontSize        =   12
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
-      Index           =   1
+      Index           =   0
       Left            =   120
       Top             =   120
       Width           =   9375
@@ -137,7 +127,7 @@ Begin VB.Form dialog_OutlineSettings
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
-      Index           =   2
+      Index           =   1
       Left            =   6480
       Top             =   5400
       Width           =   5655
@@ -148,7 +138,7 @@ Begin VB.Form dialog_OutlineSettings
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
-      Index           =   3
+      Index           =   2
       Left            =   6480
       Top             =   4440
       Width           =   5655

@@ -92,7 +92,7 @@ Option Explicit
 'This implementation binding will allow us to refer to all themeable controls _
  under a single type, making form control iteration much simpler _
  (we won't need to maintain long lists of UserControl names)
-Implements iControlThemable
+Implements IControlThemable
 
 
 'This object provides a single raised event:
@@ -252,7 +252,7 @@ Attribute Caption.VB_UserMemId = -518
 End Property
 
 Public Property Let Caption(ByRef newCaption As String)
-    If m_Caption.SetCaption(newCaption) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
+    If m_Caption.SetCaption(newCaption) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then UpdateControlLayout
     PropertyChanged "Caption"
 End Property
 
@@ -280,7 +280,7 @@ Public Property Get FontSizeCaption() As Single
 End Property
 
 Public Property Let FontSizeCaption(ByVal newSize As Single)
-    If m_Caption.SetFontSize(newSize) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
+    If m_Caption.SetFontSize(newSize) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then UpdateControlLayout
     PropertyChanged "FontSizeCaption"
 End Property
 
@@ -689,7 +689,7 @@ Private Sub cBackgroundPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop A
     
 End Sub
 
-Private Sub IControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_ApplyTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 
@@ -839,7 +839,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not m_InternalResizeActive Then updateControlLayout
+    If Not m_InternalResizeActive Then UpdateControlLayout
 End Sub
 
 Private Sub UserControl_Show()
@@ -853,7 +853,7 @@ Private Sub UserControl_Show()
     'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
     If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Or (curSliderStyle = HueSpectrum360) Then redrawInternalGradientDIB
     
-    updateControlLayout
+    UpdateControlLayout
     redrawSlider
         
 End Sub
@@ -883,7 +883,7 @@ End Sub
 'When the control is resized, the caption is changed, or font sizes for either the caption or text up/down are modified,
 ' this function should be called.  It controls the physical positioning of various control sub-elements
 ' (specifically, the caption area, the slider area, and the text up/down area).
-Private Sub updateControlLayout()
+Private Sub UpdateControlLayout()
     
     If m_InternalResizeActive Then Exit Sub
     
@@ -1491,7 +1491,7 @@ Public Sub UpdateAgainstCurrentTheme()
     End If
     
     'Update the control's layout to account for new translations and/or theme changes
-    updateControlLayout
+    UpdateControlLayout
     
     'Redraw the control to match any updated settings
     redrawSlider

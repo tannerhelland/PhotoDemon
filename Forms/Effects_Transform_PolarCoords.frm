@@ -25,13 +25,14 @@ Begin VB.Form FormPolar
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.buttonStrip btsRender 
-      Height          =   615
-      Left            =   6120
+      Height          =   1095
+      Left            =   6000
       TabIndex        =   6
-      Top             =   4560
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   1085
+      Top             =   4200
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1931
+      Caption         =   "render emphasis"
    End
    Begin PhotoDemon.smartCheckBox chkSwapXY 
       Height          =   330
@@ -106,18 +107,6 @@ Begin VB.Form FormPolar
       _ExtentX        =   10292
       _ExtentY        =   556
       Caption         =   "if pixels lie outside the image..."
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   315
-      Index           =   2
-      Left            =   6000
-      Top             =   4170
-      Width           =   5835
-      _ExtentX        =   10292
-      _ExtentY        =   556
-      Caption         =   "render emphasis"
       FontSize        =   12
       ForeColor       =   4210752
    End

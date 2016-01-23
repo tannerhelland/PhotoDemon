@@ -705,7 +705,7 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
     
 End Sub
 
-Private Sub IControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_ApplyTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 

@@ -23,10 +23,19 @@ Begin VB.Form FormMonochrome
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   810
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdComboBox cboDither 
+      Height          =   375
+      Left            =   6120
+      TabIndex        =   6
+      Top             =   2880
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   661
+   End
    Begin PhotoDemon.sliderTextCombo sltThreshold 
       Height          =   705
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   960
       Width           =   5925
       _ExtentX        =   10451
@@ -41,7 +50,7 @@ Begin VB.Form FormMonochrome
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
       Height          =   330
       Left            =   6120
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   1860
       Width           =   5790
       _ExtentX        =   10213
@@ -49,29 +58,10 @@ Begin VB.Form FormMonochrome
       Caption         =   "automatically calculate threshold"
       Value           =   0
    End
-   Begin VB.ComboBox cboDither 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   330
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   1
-      Top             =   2880
-      Width           =   4935
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -81,7 +71,7 @@ Begin VB.Form FormMonochrome
       Height          =   615
       Index           =   0
       Left            =   6120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   3840
       Width           =   2775
       _ExtentX        =   9763
@@ -92,7 +82,7 @@ Begin VB.Form FormMonochrome
       Height          =   615
       Index           =   1
       Left            =   9000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   3840
       Width           =   2775
       _ExtentX        =   4895

@@ -24,25 +24,15 @@ Begin VB.Form FormRechannel
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   793
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   255
-      Index           =   0
+   Begin PhotoDemon.buttonStrip btsColorSpace 
+      Height          =   1095
       Left            =   5880
-      Top             =   1560
+      TabIndex        =   2
+      Top             =   1440
       Width           =   5775
       _ExtentX        =   10186
-      _ExtentY        =   450
+      _ExtentY        =   1931
       Caption         =   "color space"
-      FontSize        =   12
-   End
-   Begin PhotoDemon.buttonStrip btsColorSpace 
-      Height          =   615
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   1920
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   1085
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -395,6 +385,6 @@ Private Function GetNameFromColorSpaceAndChannel(ByVal srcColorSpace As Long, By
 End Function
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = buildParamList("ColorSpace", btsColorSpace.ListIndex, "Channel", btsChannel(btsColorSpace.ListIndex).ListIndex)
+    GetLocalParamString = BuildParamList("ColorSpace", btsColorSpace.ListIndex, "Channel", btsChannel(btsColorSpace.ListIndex).ListIndex)
 End Function
 

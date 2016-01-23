@@ -67,7 +67,7 @@ Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
 'This control uses two layout rects: one for the clickable primary color region, and another for the rect where the user
-' can copy over the color from the main screen.  These rects are calculated by the updateControlLayout function.
+' can copy over the color from the main screen.  These rects are calculated by the UpdateControlLayout function.
 Private m_PrimaryColorRect As RECT, m_SecondaryColorRect As RECT
 
 'The control's current color
@@ -174,7 +174,7 @@ Public Sub DisplayColorSelection()
     
 End Sub
 
-Private Sub IControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_ApplyTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 
@@ -456,7 +456,7 @@ Private Sub MakeNewTooltip()
         
         'Construct hex and RGB string representations of the target color
         hexString = "#" & UCase(Colors.GetHexStringFromRGB(targetColor))
-        rgbString = Colors.ExtractR(targetColor) & ", " & Colors.ExtractG(targetColor) & ", " & Colors.ExtractB(targetColor)
+        rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", Colors.ExtractR(targetColor), Colors.ExtractG(targetColor), Colors.ExtractB(targetColor))
         toolString = hexString & vbCrLf & rgbString
         
         'Append a description string to the color data

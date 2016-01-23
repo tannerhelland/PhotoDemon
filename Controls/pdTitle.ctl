@@ -70,7 +70,7 @@ Public Event Click(ByVal newState As Boolean)
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
-'Rect where the caption is rendered.  This is calculated by updateControlLayout, and it needs to be revisited if the
+'Rect where the caption is rendered.  This is calculated by UpdateControlLayout, and it needs to be revisited if the
 ' caption changes, or the control size changes.
 Private m_CaptionRect As RECT
 
@@ -167,7 +167,7 @@ Public Property Let Value(ByVal newState As Boolean)
     End If
 End Property
 
-Private Sub IControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_ApplyTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 

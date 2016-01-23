@@ -84,24 +84,14 @@ Begin VB.Form FormUnsharpMask
       Value           =   5
    End
    Begin PhotoDemon.buttonStrip btsQuality 
-      Height          =   600
+      Height          =   1080
       Left            =   6000
       TabIndex        =   5
-      Top             =   4260
+      Top             =   3840
       Width           =   5910
       _ExtentX        =   10425
-      _ExtentY        =   1058
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Left            =   6000
-      Top             =   3840
-      Width           =   5865
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentY        =   1905
       Caption         =   "quality"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormUnsharpMask"

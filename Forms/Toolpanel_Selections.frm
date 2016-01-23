@@ -30,407 +30,6 @@ Begin VB.Form toolpanel_Selections
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   1470
-      Index           =   1
-      Left            =   5340
-      ScaleHeight     =   98
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   665
-      TabIndex        =   34
-      Top             =   0
-      Width           =   9975
-      Begin PhotoDemon.pdComboBox cboSelArea 
-         Height          =   375
-         Index           =   1
-         Left            =   120
-         TabIndex        =   35
-         Top             =   390
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   635
-      End
-      Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
-         CausesValidation=   0   'False
-         Height          =   405
-         Index           =   1
-         Left            =   0
-         TabIndex        =   36
-         Top             =   840
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   1
-         Max             =   10000
-         Value           =   1
-      End
-      Begin PhotoDemon.textUpDown tudSel 
-         Height          =   345
-         Index           =   4
-         Left            =   2820
-         TabIndex        =   37
-         Top             =   375
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-      End
-      Begin PhotoDemon.textUpDown tudSel 
-         Height          =   345
-         Index           =   5
-         Left            =   2820
-         TabIndex        =   38
-         Top             =   885
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-      End
-      Begin PhotoDemon.textUpDown tudSel 
-         Height          =   345
-         Index           =   6
-         Left            =   4380
-         TabIndex        =   39
-         Top             =   375
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-      End
-      Begin PhotoDemon.textUpDown tudSel 
-         Height          =   345
-         Index           =   7
-         Left            =   4380
-         TabIndex        =   0
-         Top             =   885
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   7
-         Left            =   120
-         Top             =   60
-         Width           =   2415
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "area"
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   3
-         Left            =   4380
-         Top             =   60
-         Width           =   3435
-         _ExtentX        =   6059
-         _ExtentY        =   503
-         Caption         =   "size (w, h)"
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   0
-         Left            =   2820
-         Top             =   60
-         Width           =   1395
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "position (x, y)"
-      End
-   End
-   Begin VB.PictureBox picSelectionSubcontainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   1470
-      Index           =   2
-      Left            =   5340
-      ScaleHeight     =   98
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   665
-      TabIndex        =   26
-      Top             =   0
-      Width           =   9975
-      Begin PhotoDemon.pdComboBox cboSelArea 
-         Height          =   375
-         Index           =   2
-         Left            =   120
-         TabIndex        =   27
-         Top             =   390
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   635
-      End
-      Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
-         CausesValidation=   0   'False
-         Height          =   405
-         Index           =   2
-         Left            =   0
-         TabIndex        =   28
-         Top             =   840
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   1
-         Max             =   10000
-         Value           =   1
-      End
-      Begin PhotoDemon.textUpDown tudSel 
-         Height          =   345
-         Index           =   8
-         Left            =   2820
-         TabIndex        =   29
-         Top             =   375
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-      End
-      Begin PhotoDemon.textUpDown tudSel 
-         Height          =   345
-         Index           =   9
-         Left            =   2820
-         TabIndex        =   30
-         Top             =   885
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-      End
-      Begin PhotoDemon.textUpDown tudSel 
-         Height          =   345
-         Index           =   10
-         Left            =   4380
-         TabIndex        =   31
-         Top             =   375
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-      End
-      Begin PhotoDemon.textUpDown tudSel 
-         Height          =   345
-         Index           =   11
-         Left            =   4380
-         TabIndex        =   32
-         Top             =   885
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-      End
-      Begin PhotoDemon.sliderTextCombo sltSelectionLineWidth 
-         CausesValidation=   0   'False
-         Height          =   405
-         Left            =   5880
-         TabIndex        =   33
-         Top             =   360
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   1
-         Max             =   10000
-         Value           =   1
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   18
-         Left            =   6000
-         Top             =   60
-         Width           =   2505
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "line width"
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   11
-         Left            =   120
-         Top             =   60
-         Width           =   2415
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "area"
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   10
-         Left            =   4380
-         Top             =   60
-         Width           =   1425
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "2nd point (x, y)"
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   9
-         Left            =   2820
-         Top             =   60
-         Width           =   1485
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "1st point (x, y)"
-      End
-   End
-   Begin VB.PictureBox picSelectionSubcontainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   1470
-      Index           =   3
-      Left            =   5340
-      ScaleHeight     =   98
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   665
-      TabIndex        =   22
-      Top             =   0
-      Width           =   9975
-      Begin PhotoDemon.pdComboBox cboSelArea 
-         Height          =   375
-         Index           =   3
-         Left            =   120
-         TabIndex        =   23
-         Top             =   390
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   635
-      End
-      Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
-         CausesValidation=   0   'False
-         Height          =   405
-         Index           =   3
-         Left            =   0
-         TabIndex        =   24
-         Top             =   840
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   1
-         Max             =   10000
-         Value           =   1
-      End
-      Begin PhotoDemon.sliderTextCombo sltPolygonCurvature 
-         CausesValidation=   0   'False
-         Height          =   405
-         Left            =   2760
-         TabIndex        =   25
-         Top             =   360
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Max             =   1
-         SigDigits       =   2
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   17
-         Left            =   2910
-         Top             =   60
-         Width           =   2490
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "curvature"
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   15
-         Left            =   120
-         Top             =   60
-         Width           =   2415
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "area"
-      End
-   End
-   Begin VB.PictureBox picSelectionSubcontainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   1470
-      Index           =   4
-      Left            =   5340
-      ScaleHeight     =   98
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   665
-      TabIndex        =   18
-      Top             =   0
-      Width           =   9975
-      Begin PhotoDemon.pdComboBox cboSelArea 
-         Height          =   375
-         Index           =   4
-         Left            =   120
-         TabIndex        =   19
-         Top             =   390
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   635
-      End
-      Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
-         CausesValidation=   0   'False
-         Height          =   405
-         Index           =   4
-         Left            =   0
-         TabIndex        =   20
-         Top             =   840
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   1
-         Max             =   10000
-         Value           =   1
-      End
-      Begin PhotoDemon.sliderTextCombo sltSmoothStroke 
-         CausesValidation=   0   'False
-         Height          =   405
-         Left            =   2760
-         TabIndex        =   21
-         Top             =   360
-         Visible         =   0   'False
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Max             =   1
-         SigDigits       =   2
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   19
-         Left            =   2910
-         Top             =   60
-         Visible         =   0   'False
-         Width           =   2550
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "stroke smoothing"
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   12
-         Left            =   120
-         Top             =   60
-         Width           =   2415
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "area"
-      End
-   End
-   Begin VB.PictureBox picSelectionSubcontainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   1470
       Index           =   5
       Left            =   5340
       ScaleHeight     =   98
@@ -449,64 +48,40 @@ Begin VB.Form toolpanel_Selections
          _ExtentY        =   635
       End
       Begin PhotoDemon.buttonStrip btsWandArea 
-         Height          =   825
+         Height          =   1185
          Left            =   120
          TabIndex        =   15
-         Top             =   405
+         Top             =   45
          Width           =   2895
-         _ExtentX        =   4366
-         _ExtentY        =   1455
+         _ExtentX        =   5106
+         _ExtentY        =   2090
+         Caption         =   "area"
+         FontSizeCaption =   10
       End
       Begin PhotoDemon.sliderTextCombo sltWandTolerance 
          CausesValidation=   0   'False
-         Height          =   405
-         Left            =   3120
+         Height          =   675
+         Left            =   3240
          TabIndex        =   16
-         Top             =   360
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
+         Top             =   60
+         Width           =   2550
+         _ExtentX        =   4498
+         _ExtentY        =   1191
+         Caption         =   "tolerance"
+         FontSizeCaption =   10
          Max             =   255
          SigDigits       =   1
       End
       Begin PhotoDemon.buttonStrip btsWandMerge 
-         Height          =   825
+         Height          =   1185
          Left            =   6120
          TabIndex        =   17
-         Top             =   405
+         Top             =   45
          Width           =   2895
          _ExtentX        =   5106
-         _ExtentY        =   1455
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   16
-         Left            =   6120
-         Top             =   60
-         Width           =   2895
-         _ExtentX        =   0
-         _ExtentY        =   503
+         _ExtentY        =   2090
          Caption         =   "sampling area"
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   6
-         Left            =   3240
-         Top             =   60
-         Width           =   2595
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "tolerance"
-      End
-      Begin PhotoDemon.pdLabel lblSelection 
-         Height          =   240
-         Index           =   14
-         Left            =   120
-         Top             =   60
-         Width           =   2895
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Caption         =   "area"
+         FontSizeCaption =   10
       End
    End
    Begin VB.PictureBox picSelectionSubcontainer 
@@ -688,7 +263,7 @@ Begin VB.Form toolpanel_Selections
    End
    Begin PhotoDemon.pdLabel lblSelection 
       Height          =   240
-      Index           =   13
+      Index           =   12
       Left            =   2760
       Top             =   60
       Width           =   2445
@@ -698,13 +273,414 @@ Begin VB.Form toolpanel_Selections
    End
    Begin PhotoDemon.pdLabel lblSelection 
       Height          =   240
-      Index           =   8
+      Index           =   7
       Left            =   120
       Top             =   60
       Width           =   2445
       _ExtentX        =   0
       _ExtentY        =   503
       Caption         =   "appearance"
+   End
+   Begin VB.PictureBox picSelectionSubcontainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00FFFFFF&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   1470
+      Index           =   1
+      Left            =   5340
+      ScaleHeight     =   98
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   665
+      TabIndex        =   34
+      Top             =   0
+      Width           =   9975
+      Begin PhotoDemon.pdComboBox cboSelArea 
+         Height          =   375
+         Index           =   1
+         Left            =   120
+         TabIndex        =   35
+         Top             =   390
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   635
+      End
+      Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
+         CausesValidation=   0   'False
+         Height          =   405
+         Index           =   1
+         Left            =   0
+         TabIndex        =   36
+         Top             =   840
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   1
+         Max             =   10000
+         Value           =   1
+      End
+      Begin PhotoDemon.textUpDown tudSel 
+         Height          =   345
+         Index           =   4
+         Left            =   2820
+         TabIndex        =   37
+         Top             =   375
+         Width           =   1320
+         _ExtentX        =   2328
+         _ExtentY        =   714
+         Min             =   -30000
+         Max             =   30000
+      End
+      Begin PhotoDemon.textUpDown tudSel 
+         Height          =   345
+         Index           =   5
+         Left            =   2820
+         TabIndex        =   38
+         Top             =   885
+         Width           =   1320
+         _ExtentX        =   2328
+         _ExtentY        =   714
+         Min             =   -30000
+         Max             =   30000
+      End
+      Begin PhotoDemon.textUpDown tudSel 
+         Height          =   345
+         Index           =   6
+         Left            =   4380
+         TabIndex        =   39
+         Top             =   375
+         Width           =   1320
+         _ExtentX        =   2328
+         _ExtentY        =   714
+         Min             =   -30000
+         Max             =   30000
+      End
+      Begin PhotoDemon.textUpDown tudSel 
+         Height          =   345
+         Index           =   7
+         Left            =   4380
+         TabIndex        =   0
+         Top             =   885
+         Width           =   1320
+         _ExtentX        =   2328
+         _ExtentY        =   714
+         Min             =   -30000
+         Max             =   30000
+      End
+      Begin PhotoDemon.pdLabel lblSelection 
+         Height          =   240
+         Index           =   6
+         Left            =   120
+         Top             =   60
+         Width           =   2415
+         _ExtentX        =   0
+         _ExtentY        =   503
+         Caption         =   "area"
+      End
+      Begin PhotoDemon.pdLabel lblSelection 
+         Height          =   240
+         Index           =   3
+         Left            =   4380
+         Top             =   60
+         Width           =   3435
+         _ExtentX        =   6059
+         _ExtentY        =   503
+         Caption         =   "size (w, h)"
+      End
+      Begin PhotoDemon.pdLabel lblSelection 
+         Height          =   240
+         Index           =   0
+         Left            =   2820
+         Top             =   60
+         Width           =   1395
+         _ExtentX        =   0
+         _ExtentY        =   503
+         Caption         =   "position (x, y)"
+      End
+   End
+   Begin VB.PictureBox picSelectionSubcontainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00FFFFFF&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   1470
+      Index           =   2
+      Left            =   5340
+      ScaleHeight     =   98
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   665
+      TabIndex        =   26
+      Top             =   0
+      Width           =   9975
+      Begin PhotoDemon.pdComboBox cboSelArea 
+         Height          =   375
+         Index           =   2
+         Left            =   120
+         TabIndex        =   27
+         Top             =   390
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   635
+      End
+      Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
+         CausesValidation=   0   'False
+         Height          =   405
+         Index           =   2
+         Left            =   0
+         TabIndex        =   28
+         Top             =   840
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   1
+         Max             =   10000
+         Value           =   1
+      End
+      Begin PhotoDemon.textUpDown tudSel 
+         Height          =   345
+         Index           =   8
+         Left            =   2820
+         TabIndex        =   29
+         Top             =   375
+         Width           =   1320
+         _ExtentX        =   2328
+         _ExtentY        =   714
+         Min             =   -30000
+         Max             =   30000
+      End
+      Begin PhotoDemon.textUpDown tudSel 
+         Height          =   345
+         Index           =   9
+         Left            =   2820
+         TabIndex        =   30
+         Top             =   885
+         Width           =   1320
+         _ExtentX        =   2328
+         _ExtentY        =   714
+         Min             =   -30000
+         Max             =   30000
+      End
+      Begin PhotoDemon.textUpDown tudSel 
+         Height          =   345
+         Index           =   10
+         Left            =   4380
+         TabIndex        =   31
+         Top             =   375
+         Width           =   1320
+         _ExtentX        =   2328
+         _ExtentY        =   714
+         Min             =   -30000
+         Max             =   30000
+      End
+      Begin PhotoDemon.textUpDown tudSel 
+         Height          =   345
+         Index           =   11
+         Left            =   4380
+         TabIndex        =   32
+         Top             =   885
+         Width           =   1320
+         _ExtentX        =   2328
+         _ExtentY        =   714
+         Min             =   -30000
+         Max             =   30000
+      End
+      Begin PhotoDemon.sliderTextCombo sltSelectionLineWidth 
+         CausesValidation=   0   'False
+         Height          =   405
+         Left            =   5880
+         TabIndex        =   33
+         Top             =   360
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   1
+         Max             =   10000
+         Value           =   1
+      End
+      Begin PhotoDemon.pdLabel lblSelection 
+         Height          =   240
+         Index           =   15
+         Left            =   6000
+         Top             =   60
+         Width           =   2505
+         _ExtentX        =   0
+         _ExtentY        =   503
+         Caption         =   "line width"
+      End
+      Begin PhotoDemon.pdLabel lblSelection 
+         Height          =   240
+         Index           =   10
+         Left            =   120
+         Top             =   60
+         Width           =   2415
+         _ExtentX        =   0
+         _ExtentY        =   503
+         Caption         =   "area"
+      End
+      Begin PhotoDemon.pdLabel lblSelection 
+         Height          =   240
+         Index           =   9
+         Left            =   4380
+         Top             =   60
+         Width           =   1425
+         _ExtentX        =   0
+         _ExtentY        =   503
+         Caption         =   "2nd point (x, y)"
+      End
+      Begin PhotoDemon.pdLabel lblSelection 
+         Height          =   240
+         Index           =   8
+         Left            =   2820
+         Top             =   60
+         Width           =   1485
+         _ExtentX        =   0
+         _ExtentY        =   503
+         Caption         =   "1st point (x, y)"
+      End
+   End
+   Begin VB.PictureBox picSelectionSubcontainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00FFFFFF&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   1470
+      Index           =   3
+      Left            =   5340
+      ScaleHeight     =   98
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   665
+      TabIndex        =   22
+      Top             =   0
+      Width           =   9975
+      Begin PhotoDemon.pdComboBox cboSelArea 
+         Height          =   375
+         Index           =   3
+         Left            =   120
+         TabIndex        =   23
+         Top             =   390
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   635
+      End
+      Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
+         CausesValidation=   0   'False
+         Height          =   405
+         Index           =   3
+         Left            =   0
+         TabIndex        =   24
+         Top             =   840
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   1
+         Max             =   10000
+         Value           =   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltPolygonCurvature 
+         CausesValidation=   0   'False
+         Height          =   405
+         Left            =   2760
+         TabIndex        =   25
+         Top             =   360
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Max             =   1
+         SigDigits       =   2
+      End
+      Begin PhotoDemon.pdLabel lblSelection 
+         Height          =   240
+         Index           =   14
+         Left            =   2910
+         Top             =   60
+         Width           =   2490
+         _ExtentX        =   0
+         _ExtentY        =   503
+         Caption         =   "curvature"
+      End
+      Begin PhotoDemon.pdLabel lblSelection 
+         Height          =   240
+         Index           =   13
+         Left            =   120
+         Top             =   60
+         Width           =   2415
+         _ExtentX        =   0
+         _ExtentY        =   503
+         Caption         =   "area"
+      End
+   End
+   Begin VB.PictureBox picSelectionSubcontainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00FFFFFF&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   1470
+      Index           =   4
+      Left            =   5340
+      ScaleHeight     =   98
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   665
+      TabIndex        =   18
+      Top             =   0
+      Width           =   9975
+      Begin PhotoDemon.pdComboBox cboSelArea 
+         Height          =   375
+         Index           =   4
+         Left            =   120
+         TabIndex        =   19
+         Top             =   390
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   635
+      End
+      Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
+         CausesValidation=   0   'False
+         Height          =   405
+         Index           =   4
+         Left            =   0
+         TabIndex        =   20
+         Top             =   840
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   1
+         Max             =   10000
+         Value           =   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltSmoothStroke 
+         CausesValidation=   0   'False
+         Height          =   405
+         Left            =   2760
+         TabIndex        =   21
+         Top             =   360
+         Visible         =   0   'False
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Max             =   1
+         SigDigits       =   2
+      End
+      Begin PhotoDemon.pdLabel lblSelection 
+         Height          =   240
+         Index           =   16
+         Left            =   2910
+         Top             =   60
+         Visible         =   0   'False
+         Width           =   2550
+         _ExtentX        =   0
+         _ExtentY        =   503
+         Caption         =   "stroke smoothing"
+      End
+      Begin PhotoDemon.pdLabel lblSelection 
+         Height          =   240
+         Index           =   11
+         Left            =   120
+         Top             =   60
+         Width           =   2415
+         _ExtentX        =   0
+         _ExtentY        =   503
+         Caption         =   "area"
+      End
    End
 End
 Attribute VB_Name = "toolpanel_Selections"

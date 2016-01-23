@@ -13,4 +13,4 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Public Sub UpdateAgainstCurrentTheme(): End Sub
+Public Sub ApplyTheme(): End Sub

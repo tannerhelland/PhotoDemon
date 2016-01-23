@@ -58,25 +58,14 @@ Begin VB.Form FormGaussianBlur
       _ExtentY        =   9922
    End
    Begin PhotoDemon.buttonStrip btsQuality 
-      Height          =   600
+      Height          =   1080
       Left            =   6000
       TabIndex        =   3
-      Top             =   3180
+      Top             =   2700
       Width           =   5835
-      _ExtentX        =   11774
-      _ExtentY        =   1058
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      Top             =   2730
-      Width           =   5865
-      _ExtentX        =   10345
-      _ExtentY        =   503
+      _ExtentX        =   10292
+      _ExtentY        =   1905
       Caption         =   "quality"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormGaussianBlur"

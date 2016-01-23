@@ -713,12 +713,12 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 'The command bar's layout is all handled programmatically.  This lets it look good, regardless of the parent form's size or
 ' the current monitor's DPI setting.
-Private Sub updateControlLayout()
+Private Sub UpdateControlLayout()
 
     On Error GoTo skipUpdateLayout
 

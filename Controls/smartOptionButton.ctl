@@ -82,7 +82,7 @@ Private m_FitFailure As Boolean
 'Current control value
 Private m_Value As Boolean
 
-'Rect where the caption is rendered.  This is calculated by updateControlLayout, and it needs to be revisited if the
+'Rect where the caption is rendered.  This is calculated by UpdateControlLayout, and it needs to be revisited if the
 ' caption changes, or the control size changes.
 Private m_CaptionRect As RECTF
 
@@ -188,7 +188,7 @@ Private Sub UpdateOtherButtons()
     
 End Sub
 
-Private Sub IControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_ApplyTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 

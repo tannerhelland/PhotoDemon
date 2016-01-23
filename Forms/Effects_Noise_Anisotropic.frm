@@ -24,24 +24,14 @@ Begin VB.Form FormAnisotropic
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.buttonStrip btsDirection 
-      Height          =   615
-      Left            =   6120
-      TabIndex        =   3
-      Top             =   1920
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   1085
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   360
-      Index           =   0
+      Height          =   975
       Left            =   6000
+      TabIndex        =   3
       Top             =   1560
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   635
+      _ExtentX        =   10186
+      _ExtentY        =   1085
       Caption         =   "directionality"
-      FontSize        =   12
    End
    Begin PhotoDemon.sliderTextCombo sltFlow 
       Height          =   705
@@ -102,24 +92,14 @@ Begin VB.Form FormAnisotropic
       Value           =   1
    End
    Begin PhotoDemon.buttonStrip btsEmphasis 
-      Height          =   615
-      Left            =   6120
-      TabIndex        =   6
-      Top             =   840
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   1085
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   360
-      Index           =   1
+      Height          =   975
       Left            =   6000
+      TabIndex        =   6
       Top             =   480
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   635
+      _ExtentY        =   1720
       Caption         =   "model"
-      FontSize        =   12
    End
 End
 Attribute VB_Name = "FormAnisotropic"
@@ -576,6 +556,6 @@ Private Sub sltStrength_Change()
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = buildParamList("direction", btsDirection.ListIndex, "option", btsEmphasis.ListIndex, "iterations", sltIterations.Value, "flow", sltFlow.Value, "strength", sltStrength.Value)
+    GetLocalParamString = BuildParamList("direction", btsDirection.ListIndex, "option", btsEmphasis.ListIndex, "iterations", sltIterations.Value, "flow", sltFlow.Value, "strength", sltStrength.Value)
 End Function
 

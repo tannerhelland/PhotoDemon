@@ -24,13 +24,14 @@ Begin VB.Form FormRadialBlur
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.buttonStrip btsRender 
-      Height          =   615
-      Left            =   6120
+      Height          =   1095
+      Left            =   6000
       TabIndex        =   4
-      Top             =   3720
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   1085
+      Top             =   3360
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1931
+      Caption         =   "render emphasis"
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -76,18 +77,6 @@ Begin VB.Form FormRadialBlur
       _ExtentX        =   9975
       _ExtentY        =   582
       Caption         =   "blur symmetrically"
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   315
-      Index           =   0
-      Left            =   6000
-      Top             =   3360
-      Width           =   5835
-      _ExtentX        =   10292
-      _ExtentY        =   556
-      Caption         =   "render emphasis"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormRadialBlur"

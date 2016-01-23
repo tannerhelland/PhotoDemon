@@ -72,23 +72,14 @@ Begin VB.Form FormMedian
       NotchValueCustom=   50
    End
    Begin PhotoDemon.buttonStrip btsKernelShape 
-      Height          =   615
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   2640
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   1085
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   375
+      Height          =   1095
       Left            =   6000
+      TabIndex        =   4
       Top             =   2280
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   661
+      _ExtentY        =   1931
       Caption         =   "kernel shape"
-      FontSize        =   12
    End
 End
 Attribute VB_Name = "FormMedian"
@@ -297,7 +288,7 @@ Private Sub fxPreview_ViewportChanged()
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = buildParamList("radius", sltRadius.Value, "percent", sltPercent.Value, "kernelShape", btsKernelShape.ListIndex)
+    GetLocalParamString = BuildParamList("radius", sltRadius.Value, "percent", sltPercent.Value, "kernelShape", btsKernelShape.ListIndex)
 End Function
 
 

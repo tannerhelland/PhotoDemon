@@ -23,25 +23,15 @@ Begin VB.Form FormNoise
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   808
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      Top             =   3000
-      Width           =   5880
-      _ExtentX        =   10372
-      _ExtentY        =   503
-      Caption         =   "appearance"
-      FontSize        =   12
-   End
    Begin PhotoDemon.buttonStrip btsColor 
-      Height          =   615
-      Left            =   6120
+      Height          =   1095
+      Left            =   6000
       TabIndex        =   3
-      Top             =   3480
-      Width           =   5730
-      _ExtentX        =   10107
-      _ExtentY        =   1085
+      Top             =   3000
+      Width           =   5850
+      _ExtentX        =   10319
+      _ExtentY        =   1931
+      Caption         =   "appearance"
       FontSize        =   11
    End
    Begin PhotoDemon.commandBar cmdBar 

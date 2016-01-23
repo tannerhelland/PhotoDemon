@@ -3,7 +3,7 @@ Begin VB.Form FormShadowHighlight
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Shadow / Midtone / Highlight"
-   ClientHeight    =   6510
+   ClientHeight    =   6570
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   12120
@@ -19,7 +19,7 @@ Begin VB.Form FormShadowHighlight
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   434
+   ScaleHeight     =   438
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   808
    ShowInTaskbar   =   0   'False
@@ -28,7 +28,7 @@ Begin VB.Form FormShadowHighlight
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5760
+      Top             =   5820
       Width           =   12120
       _ExtentX        =   21378
       _ExtentY        =   1323
@@ -44,13 +44,14 @@ Begin VB.Form FormShadowHighlight
       _ExtentY        =   9922
    End
    Begin PhotoDemon.buttonStrip btsOptions 
-      Height          =   600
-      Left            =   6120
+      Height          =   960
+      Left            =   6000
       TabIndex        =   2
-      Top             =   5040
-      Width           =   5790
-      _ExtentX        =   10213
-      _ExtentY        =   1058
+      Top             =   4800
+      Width           =   5910
+      _ExtentX        =   10425
+      _ExtentY        =   1693
+      Caption         =   "options"
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -102,18 +103,6 @@ Begin VB.Form FormShadowHighlight
          Min             =   -100
          Max             =   100
       End
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      Top             =   4680
-      Width           =   5940
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "options"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat

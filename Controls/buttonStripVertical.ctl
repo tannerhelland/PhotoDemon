@@ -157,7 +157,7 @@ Public Property Let FontSize(ByVal newSize As Single)
     End If
 End Property
 
-Private Sub IControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_ApplyTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 

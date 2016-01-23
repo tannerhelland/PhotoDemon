@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.838</langversion>
+<langversion>6.8.840</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ILoveVB</author>
@@ -2380,6 +2380,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for UserControl_Support.bas-->
 
+<!-- BEGIN text for VB_Hacks.bas -->
+
+<!-- VB_Hacks.bas contains 0 phrases. -->
+
+<!-- END text for VB_Hacks.bas-->
+
 <!-- BEGIN text for VBP_ZoomModule.bas -->
 
 <phrase>
@@ -2411,30 +2417,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for VBP_ZoomModule.bas-->
 
-<!-- BEGIN text for cSHA256.cls -->
-
-<!-- cSHA256.cls contains 0 phrases. -->
-
-<!-- END text for cSHA256.cls-->
-
-<!-- BEGIN text for IMRUList.cls -->
-
-<!-- IMRUList.cls contains 0 phrases. -->
-
-<!-- END text for IMRUList.cls-->
-
-<!-- BEGIN text for OutsideDevelopment_SPBuffer.cls -->
-
-<!-- OutsideDevelopment_SPBuffer.cls contains 0 phrases. -->
-
-<!-- END text for OutsideDevelopment_SPBuffer.cls-->
-
-<!-- BEGIN text for OutsideDevelopment_SmartBuffer.cls -->
-
-<!-- OutsideDevelopment_SmartBuffer.cls contains 0 phrases. -->
-
-<!-- END text for OutsideDevelopment_SmartBuffer.cls-->
-
 <!-- BEGIN text for cPerlin3D.cls -->
 
 <!-- cPerlin3D.cls contains 0 phrases. -->
@@ -2446,6 +2428,12 @@ Please enter a numeric value.</original>
 <!-- cProgressBarOfficial.cls contains 0 phrases. -->
 
 <!-- END text for cProgressBarOfficial.cls-->
+
+<!-- BEGIN text for cSHA256.cls -->
+
+<!-- cSHA256.cls contains 0 phrases. -->
+
+<!-- END text for cSHA256.cls-->
 
 <!-- BEGIN text for cBasicBuffer.cls -->
 
@@ -2465,6 +2453,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for clsMenuImage.cls-->
 
+<!-- BEGIN text for IMRUList.cls -->
+
+<!-- IMRUList.cls contains 0 phrases. -->
+
+<!-- END text for IMRUList.cls-->
+
 <!-- BEGIN text for pdCaption.cls -->
 
 <!-- pdCaption.cls contains 0 phrases. -->
@@ -2476,6 +2470,57 @@ Please enter a numeric value.</original>
 <!-- pdClipboard.cls contains 0 phrases. -->
 
 <!-- END text for pdClipboard.cls-->
+
+<!-- BEGIN text for pdClipboardMain.cls -->
+
+<phrase>
+<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
+<translation>剪贴板是空的或不包含一个有效的图片格式。请复制一个有效图像到剪贴板并再试一次。</translation>
+</phrase>
+
+<phrase>
+<original>Windows Clipboard Error</original>
+<translation>Windows 剪贴板错误</translation>
+</phrase>
+
+<phrase>
+<original>Clipboard Image</original>
+<translation>剪贴板中的图像</translation>
+</phrase>
+
+<phrase>
+<original>Clipboard data imported successfully</original>
+<translation>剪贴板中的图像导入成功</translation>
+</phrase>
+
+<phrase>
+<original>Image URL found on clipboard.  Attempting to download</original>
+<translation>在剪贴板上发现的图片网址。试图下载</translation>
+</phrase>
+
+<phrase>
+<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
+<translation>图像下载失败。请复制一个有效的图像的URL到剪贴板并再试一次。</translation>
+</phrase>
+
+<phrase>
+<original>Imported Image</original>
+<translation>导入的图像</translation>
+</phrase>
+
+<phrase>
+<original>Image imported successfully</original>
+<translation>图像导入成功</translation>
+</phrase>
+
+<phrase>
+<original>Image download failed.  Please supply a valid image URL and try again.</original>
+<translation>图片下载失败。请提供一个有效的图像链接，并再次尝试。</translation>
+</phrase>
+
+<!-- pdClipboardMain.cls contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for pdClipboardMain.cls-->
 
 <!-- BEGIN text for pdCompositor.cls -->
 
@@ -2708,6 +2753,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdLayer.cls-->
 
+<!-- BEGIN text for pdListSupport.cls -->
+
+<!-- pdListSupport.cls contains 0 phrases. -->
+
+<!-- END text for pdListSupport.cls-->
+
 <!-- BEGIN text for pdMRUManager.cls -->
 
 <!-- pdMRUManager.cls contains 0 phrases. -->
@@ -2886,6 +2937,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdPixelBlender.cls-->
 
+<!-- BEGIN text for pdPixelIterator.cls -->
+
+<!-- pdPixelIterator.cls contains 0 phrases. -->
+
+<!-- END text for pdPixelIterator.cls-->
+
 <!-- BEGIN text for pdPreferences.cls -->
 
 <!-- pdPreferences.cls contains 0 phrases. -->
@@ -2903,6 +2960,12 @@ Please enter a numeric value.</original>
 <!-- pdRandomize.cls contains 0 phrases. -->
 
 <!-- END text for pdRandomize.cls-->
+
+<!-- BEGIN text for pdRedEye.cls -->
+
+<!-- pdRedEye.cls contains 0 phrases. -->
+
+<!-- END text for pdRedEye.cls-->
 
 <!-- BEGIN text for pdScrollBar.cls -->
 
@@ -3009,6 +3072,12 @@ Please enter a numeric value.</original>
 <!-- pdTextRenderer.cls contains 0 phrases. -->
 
 <!-- END text for pdTextRenderer.cls-->
+
+<!-- BEGIN text for pdThemeColors.cls -->
+
+<!-- pdThemeColors.cls contains 0 phrases. -->
+
+<!-- END text for pdThemeColors.cls-->
 
 <!-- BEGIN text for pdToolPreset.cls -->
 
@@ -3131,6 +3200,18 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdZoom.cls-->
 
+<!-- BEGIN text for OutsideDevelopment_SmartBuffer.cls -->
+
+<!-- OutsideDevelopment_SmartBuffer.cls contains 0 phrases. -->
+
+<!-- END text for OutsideDevelopment_SmartBuffer.cls-->
+
+<!-- BEGIN text for OutsideDevelopment_SPBuffer.cls -->
+
+<!-- OutsideDevelopment_SPBuffer.cls contains 0 phrases. -->
+
+<!-- END text for OutsideDevelopment_SPBuffer.cls-->
+
 <!-- BEGIN text for ShellPipe.ctl -->
 
 <!-- ShellPipe.ctl contains 0 phrases. -->
@@ -3144,6 +3225,11 @@ Please enter a numeric value.</original>
 <!-- END text for brushSelector.ctl-->
 
 <!-- BEGIN text for colorSelector.ctl -->
+
+<phrase>
+<original>RGB(%1, %2, %3)</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>Click to enter a full color selection screen.</original>
@@ -3165,7 +3251,7 @@ Please enter a numeric value.</original>
 <translation>主屏幕颜色</translation>
 </phrase>
 
-<!-- colorSelector.ctl contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- colorSelector.ctl contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for colorSelector.ctl-->
 
@@ -3589,6 +3675,12 @@ or the File > Open and File > Import menus.</original>
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdListBox.ctl -->
+
+<!-- pdListBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdListBox.ctl-->
 
 <!-- BEGIN text for pdNavigator.ctl -->
 
@@ -5603,21 +5695,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>Language changed successfully!
-
-Note: some minor program text cannot be live-updated.  Such text will be properly translated the next time you start the application.</original>
-<translation>设置语言成功！
-
-注意：有一些小的程序文本不能立即更新，这样的文字将下次启动应用程序时改变。
-</translation>
-</phrase>
-
-<phrase>
-<original>Language changed successfully</original>
-<translation>切换语言成功</translation>
-</phrase>
-
-<phrase>
 <original>No metadata available.</original>
 <translation>没有可用的元数据。</translation>
 </phrase>
@@ -5752,7 +5829,7 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 569 phrases. 181 were duplicates of existing phrases, so only 388 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 181 were duplicates of existing phrases, so only 386 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -5911,6 +5988,11 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 </phrase>
 
 <phrase>
+<original>output channel</original>
+<translation>输出通道</translation>
+</phrase>
+
+<phrase>
 <original>input channel(s)</original>
 <translation>输入通道</translation>
 </phrase>
@@ -5918,11 +6000,6 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 <phrase>
 <original>options for all channels</original>
 <translation>所有通道选项</translation>
-</phrase>
-
-<phrase>
-<original>output channel</original>
-<translation>输出通道</translation>
 </phrase>
 
 <phrase>
@@ -5998,13 +6075,13 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 </phrase>
 
 <phrase>
-<original>new balance</original>
-<translation>新的平衡</translation>
+<original>tonal range</original>
+<translation>色调范围</translation>
 </phrase>
 
 <phrase>
-<original>tonal range</original>
-<translation>色调范围</translation>
+<original>new balance</original>
+<translation>新的平衡</translation>
 </phrase>
 
 <phrase>
@@ -6246,8 +6323,8 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 </phrase>
 
 <phrase>
-<original>original curve (diagonal line)</original>
-<translation>原始曲线（对角线）</translation>
+<original>histogram overlay</original>
+<translation>直方图覆盖</translation>
 </phrase>
 
 <phrase>
@@ -6256,8 +6333,8 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 </phrase>
 
 <phrase>
-<original>histogram overlay</original>
-<translation>直方图覆盖</translation>
+<original>original curve (diagonal line)</original>
+<translation>原始曲线（对角线）</translation>
 </phrase>
 
 <phrase>
@@ -7012,6 +7089,67 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 
 <!-- END text for Adjustments_Photo_PhotoFilters.frm-->
 
+<!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
+
+<phrase>
+<original>Red eye removal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>strictness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>enforce shape restrictions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color sensitivity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>object sensitivity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>highlight detected regions (preview only)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>enforce size restrictions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Searching image for potential red-eye locations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Refining list of eye candidates</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying final false-positive checks</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying final red-eye corrections (%1 of %2)</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+
+<!-- END text for Adjustments_Photo_RedEye.frm-->
+
 <!-- BEGIN text for Adjustments_Photo_SplitTone.frm (FormSplitTone) -->
 
 <phrase>
@@ -7436,6 +7574,11 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 </phrase>
 
 <phrase>
+<original>shape</original>
+<translation>形状</translation>
+</phrase>
+
+<phrase>
 <original>current node settings</original>
 <translation>当前节点设置</translation>
 </phrase>
@@ -7448,11 +7591,6 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 <phrase>
 <original>full gradient settings</original>
 <translation>全部渐变设置</translation>
-</phrase>
-
-<phrase>
-<original>shape</original>
-<translation>形状</translation>
 </phrase>
 
 <phrase>
@@ -8089,6 +8227,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Artistic_Kaleidoscope.frm (FormKaleidoscope) -->
 
 <phrase>
+<original>secondary angle</original>
+<translation>二次角</translation>
+</phrase>
+
+<phrase>
+<original>radius (percentage)</original>
+<translation>半径（百分比）</translation>
+</phrase>
+
+<phrase>
+<original>render emphasis</original>
+<translation>渲染重点</translation>
+</phrase>
+
+<phrase>
 <original>number of mirrors</original>
 <translation>镜像的数量</translation>
 </phrase>
@@ -8106,21 +8259,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>center position (x, y)</original>
 <translation>中心位置（x，y）</translation>
-</phrase>
-
-<phrase>
-<original>secondary angle</original>
-<translation>二次角</translation>
-</phrase>
-
-<phrase>
-<original>radius (percentage)</original>
-<translation>半径（百分比）</translation>
-</phrase>
-
-<phrase>
-<original>render emphasis</original>
-<translation>渲染重点</translation>
 </phrase>
 
 <phrase>
@@ -8346,6 +8484,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>Blurring chroma (color) data</original>
+<translation>模糊色度（彩色）数据</translation>
+</phrase>
+
+<phrase>
+<original>Merging luminance and chroma into final image</original>
+<translation>合并的亮度和色度成最终图像</translation>
+</phrase>
+
+<phrase>
 <original>good</original>
 <translation>好</translation>
 </phrase>
@@ -8358,16 +8506,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>best</original>
 <translation>最好</translation>
-</phrase>
-
-<phrase>
-<original>Blurring chroma (color) data</original>
-<translation>模糊色度（彩色）数据</translation>
-</phrase>
-
-<phrase>
-<original>Merging luminance and chroma into final image</original>
-<translation>合并的亮度和色度成最终图像</translation>
 </phrase>
 
 <!-- Effects_Blur_ChromaBlur.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -8442,6 +8580,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_RadialBlur.frm-->
+
+<!-- BEGIN text for Effects_Blur_SNN.frm (FormSNN) -->
+
+<phrase>
+<original>Generating symmetric pixel pairs</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Effects_Blur_SNN.frm-->
 
 <!-- BEGIN text for Effects_Blur_SurfaceBlur.frm (FormSurfaceBlur) -->
 
@@ -8690,6 +8839,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Distort_Ripple.frm (FormRipple) -->
 
 <phrase>
+<original>time (phase)</original>
+<translation>时相</translation>
+</phrase>
+
+<phrase>
 <original>height of ripples (amplitude)</original>
 <translation>波纹高度（振幅）</translation>
 </phrase>
@@ -8697,11 +8851,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>length of ripples (wavelength)</original>
 <translation>波纹长度（波长）</translation>
-</phrase>
-
-<phrase>
-<original>time (phase)</original>
-<translation>时相</translation>
 </phrase>
 
 <phrase>
@@ -8909,6 +9058,32 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_Edge_FindEdges.frm-->
 
+<!-- BEGIN text for Effects_Edge_Range.frm (FormRangeFilter) -->
+
+<phrase>
+<original>synchronize search radius</original>
+<translation>同步搜索半径</translation>
+</phrase>
+
+<phrase>
+<original>horizontal radius</original>
+<translation>水平半径</translation>
+</phrase>
+
+<phrase>
+<original>vertical radius</original>
+<translation>垂直半径</translation>
+</phrase>
+
+<phrase>
+<original>Searching each pixel range for edges</original>
+<translation>搜索边缘的每个像素范围</translation>
+</phrase>
+
+<!-- Effects_Edge_Range.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for Effects_Edge_Range.frm-->
+
 <!-- BEGIN text for Effects_Edge_TraceContour.frm (FormContour) -->
 
 <phrase>
@@ -8965,6 +9140,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_LightAndShadow_LensFlare.frm (FormLensFlare) -->
 
 <phrase>
+<original>Note: you can also set a position by clicking the preview window.</original>
+<translation>注意：您还可以设置一个位置，通过单击预览窗口。</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>位置(x,y)</translation>
+</phrase>
+
+<phrase>
 <original>secondary intensity</original>
 <translation>二级强度</translation>
 </phrase>
@@ -8977,16 +9162,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>synchronize intensity</original>
 <translation>同步强度</translation>
-</phrase>
-
-<phrase>
-<original>Note: you can also set a position by clicking the preview window.</original>
-<translation>注意：您还可以设置一个位置，通过单击预览窗口。</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>位置(x,y)</translation>
 </phrase>
 
 <phrase>
@@ -9118,6 +9293,62 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Noise_AddRGBNoise.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
+
+<!-- BEGIN text for Effects_Noise_Anisotropic.frm (FormAnisotropic) -->
+
+<phrase>
+<original>directionality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gradient flow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>iterations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>model</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Calculating energy gradients (pass %1 of %2)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>4-way cardinal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>4-way ordinal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>8-way</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sharpen</original>
+<translation>锐化</translation>
+</phrase>
+
+<phrase>
+<original>smooth</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+
+<!-- END text for Effects_Noise_Anisotropic.frm-->
 
 <!-- BEGIN text for Effects_Noise_BilateralFilter.frm (FormBilateral) -->
 
@@ -9294,6 +9525,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Pixelate_Mezzotint.frm (FormMezzotint) -->
 
 <phrase>
+<original>type</original>
+<translation>类型</translation>
+</phrase>
+
+<phrase>
 <original>randomness</original>
 <translation>随机性</translation>
 </phrase>
@@ -9301,11 +9537,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>stippling</original>
 <translation>点画</translation>
-</phrase>
-
-<phrase>
-<original>type</original>
-<translation>类型</translation>
 </phrase>
 
 <phrase>
@@ -9370,12 +9601,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- BEGIN text for Effects_Sharpen_Sharpen.frm (FormSharpen) -->
 
-<phrase>
-<original>sharpen</original>
-<translation>锐化</translation>
-</phrase>
-
-<!-- Effects_Sharpen_Sharpen.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Sharpen_Sharpen.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Effects_Sharpen_Sharpen.frm-->
 
@@ -9415,6 +9641,37 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Stylize_Diffuse.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Diffuse.frm-->
+
+<!-- BEGIN text for Effects_Stylize_PortraitGlow.frm (FormPortraitGlow) -->
+
+<phrase>
+<original>glow radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>exposure boost</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying petroleum jelly to camera lens</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>classic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>subtle</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_PortraitGlow.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_PortraitGlow.frm-->
 
 <!-- BEGIN text for Effects_Stylize_Solarize.frm (FormSolarize) -->
 
@@ -11415,13 +11672,8 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>metadata options</original>
-<translation>元数据选项</translation>
-</phrase>
-
-<phrase>
-<original>tag values</original>
-<translation>标签值</translation>
+<original>metadata groups in this image</original>
+<translation>图像中的元数据组</translation>
 </phrase>
 
 <phrase>
@@ -11430,13 +11682,18 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>tags in this category</original>
-<translation>标签此类别中</translation>
+<original>tag values</original>
+<translation>标签值</translation>
 </phrase>
 
 <phrase>
-<original>metadata groups in this image</original>
-<translation>图像中的元数据组</translation>
+<original>metadata options</original>
+<translation>元数据选项</translation>
+</phrase>
+
+<phrase>
+<original>tags in this category</original>
+<translation>标签此类别中</translation>
 </phrase>
 
 <phrase>
@@ -11996,16 +12253,11 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <!-- BEGIN text for Startup_Splash.frm (FormSplash) -->
 
 <phrase>
-<original>Live updates</original>
-<translation>检查更新</translation>
-</phrase>
-
-<phrase>
 <original>version %1</original>
 <translation>版本 %1</translation>
 </phrase>
 
-<!-- Startup_Splash.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- Startup_Splash.frm contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Startup_Splash.frm-->
 
@@ -12444,8 +12696,28 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
+<original>tolerance</original>
+<translation>公差：</translation>
+</phrase>
+
+<phrase>
+<original>sampling area</original>
+<translation>采样区：</translation>
+</phrase>
+
+<phrase>
+<original>corner rounding</original>
+<translation>圆角</translation>
+</phrase>
+
+<phrase>
 <original>size (w, h)</original>
 <translation>大小（w,h)</translation>
+</phrase>
+
+<phrase>
+<original>smoothing</original>
+<translation>平滑</translation>
 </phrase>
 
 <phrase>
@@ -12466,26 +12738,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <phrase>
 <original>stroke smoothing</original>
 <translation>行程平滑</translation>
-</phrase>
-
-<phrase>
-<original>sampling area</original>
-<translation>采样区：</translation>
-</phrase>
-
-<phrase>
-<original>tolerance</original>
-<translation>公差：</translation>
-</phrase>
-
-<phrase>
-<original>corner rounding</original>
-<translation>圆角</translation>
-</phrase>
-
-<phrase>
-<original>smoothing</original>
-<translation>平滑</translation>
 </phrase>
 
 <phrase>
@@ -14408,273 +14660,18 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdClipboardMain.cls -->
+<!-- BEGIN text for IControlThemable.cls -->
 
-<phrase>
-<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>剪贴板是空的或不包含一个有效的图片格式。请复制一个有效图像到剪贴板并再试一次。</translation>
-</phrase>
+<!-- IControlThemable.cls contains 0 phrases. -->
 
-<phrase>
-<original>Windows Clipboard Error</original>
-<translation>Windows 剪贴板错误</translation>
-</phrase>
-
-<phrase>
-<original>Clipboard Image</original>
-<translation>剪贴板中的图像</translation>
-</phrase>
-
-<phrase>
-<original>Clipboard data imported successfully</original>
-<translation>剪贴板中的图像导入成功</translation>
-</phrase>
-
-<phrase>
-<original>Image URL found on clipboard.  Attempting to download</original>
-<translation>在剪贴板上发现的图片网址。试图下载</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
-<translation>图像下载失败。请复制一个有效的图像的URL到剪贴板并再试一次。</translation>
-</phrase>
-
-<phrase>
-<original>Imported Image</original>
-<translation>导入的图像</translation>
-</phrase>
-
-<phrase>
-<original>Image imported successfully</original>
-<translation>图像导入成功</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please supply a valid image URL and try again.</original>
-<translation>图片下载失败。请提供一个有效的图像链接，并再次尝试。</translation>
-</phrase>
-
-<!-- pdClipboardMain.cls contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for pdClipboardMain.cls-->
-
-<!-- BEGIN text for Effects_Edge_Range.frm (FormRangeFilter) -->
-
-<phrase>
-<original>synchronize search radius</original>
-<translation>同步搜索半径</translation>
-</phrase>
-
-<phrase>
-<original>horizontal radius</original>
-<translation>水平半径</translation>
-</phrase>
-
-<phrase>
-<original>vertical radius</original>
-<translation>垂直半径</translation>
-</phrase>
-
-<phrase>
-<original>Searching each pixel range for edges</original>
-<translation>搜索边缘的每个像素范围</translation>
-</phrase>
-
-<!-- Effects_Edge_Range.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
-
-<!-- END text for Effects_Edge_Range.frm-->
-
-<!-- BEGIN text for pdPixelIterator.cls -->
-
-<!-- pdPixelIterator.cls contains 0 phrases. -->
-
-<!-- END text for pdPixelIterator.cls-->
-
-<!-- BEGIN text for Effects_Noise_Anisotropic.frm (FormAnisotropic) -->
-
-<phrase>
-<original>directionality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>gradient flow</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>iterations</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>model</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Calculating energy gradients (pass %1 of %2)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>4-way cardinal</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>4-way ordinal</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>8-way</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>smooth</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for Effects_Noise_Anisotropic.frm-->
-
-<!-- BEGIN text for Effects_Blur_SNN.frm (FormSNN) -->
-
-<phrase>
-<original>Generating symmetric pixel pairs</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Effects_Blur_SNN.frm-->
-
-<!-- BEGIN text for Effects_Stylize_PortraitGlow.frm (FormPortraitGlow) -->
-
-<phrase>
-<original>glow radius</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>exposure boost</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Applying petroleum jelly to camera lens</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>classic</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>subtle</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Stylize_PortraitGlow.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for Effects_Stylize_PortraitGlow.frm-->
-
-<!-- BEGIN text for pdListSupport.cls -->
-
-<!-- pdListSupport.cls contains 0 phrases. -->
-
-<!-- END text for pdListSupport.cls-->
-
-<!-- BEGIN text for pdListBox.ctl -->
-
-<!-- pdListBox.ctl contains 0 phrases. -->
-
-<!-- END text for pdListBox.ctl-->
-
-<!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
-
-<phrase>
-<original>Red eye removal</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>strictness</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>enforce shape restrictions</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color sensitivity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>object sensitivity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>highlight detected regions (preview only)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>enforce size restrictions</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Searching image for potential red-eye locations</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Refining list of eye candidates</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Applying final false-positive checks</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Applying final red-eye corrections (%1 of %2)</original>
-<translation></translation>
-</phrase>
-
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
-
-<!-- END text for Adjustments_Photo_RedEye.frm-->
-
-<!-- BEGIN text for pdRedEye.cls -->
-
-<!-- pdRedEye.cls contains 0 phrases. -->
-
-<!-- END text for pdRedEye.cls-->
-
-<!-- BEGIN text for VB_Hacks.bas -->
-
-<!-- VB_Hacks.bas contains 0 phrases. -->
-
-<!-- END text for VB_Hacks.bas-->
+<!-- END text for IControlThemable.cls-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4321 phrases. -->
-<!-- 1802 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 13431 total words. -->
+<!-- As of this build, PhotoDemon contains 4320 phrases. -->
+<!-- 1803 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- These 2517 phrases contain approximately 13403 total words. -->
 
 </pdData>

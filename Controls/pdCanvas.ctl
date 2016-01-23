@@ -275,7 +275,7 @@ Option Explicit
 'This implementation binding will allow us to refer to all themeable controls _
  under a single type, making form control iteration much simpler _
  (we won't need to maintain long lists of UserControl names)
-Implements iControlThemable
+Implements IControlThemable
 
 
 Private Enum PD_MOUSEEVENT
@@ -1928,7 +1928,7 @@ Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, B
 
 End Sub
 
-Private Sub IControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_ApplyTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 

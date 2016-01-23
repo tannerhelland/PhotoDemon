@@ -46,96 +46,14 @@ Begin VB.Form FormLensFlare
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.buttonStrip btsOptions 
-      Height          =   600
-      Left            =   6240
-      TabIndex        =   7
-      Top             =   5160
-      Width           =   5595
-      _ExtentX        =   9869
-      _ExtentY        =   1058
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4695
-      Index           =   1
-      Left            =   5880
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   409
-      TabIndex        =   9
-      Top             =   0
-      Visible         =   0   'False
-      Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltIntensity 
-         Height          =   705
-         Index           =   1
-         Left            =   120
-         TabIndex        =   10
-         Top             =   2040
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "secondary intensity"
-         Min             =   0.01
-         Max             =   3
-         SigDigits       =   2
-         Value           =   1
-         NotchPosition   =   2
-         NotchValueCustom=   1
-      End
-      Begin PhotoDemon.sliderTextCombo sltIntensity 
-         Height          =   705
-         Index           =   2
-         Left            =   120
-         TabIndex        =   11
-         Top             =   3000
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "tertiary intensity"
-         Min             =   0.01
-         Max             =   3
-         SigDigits       =   2
-         Value           =   1
-         NotchPosition   =   2
-         NotchValueCustom=   1
-      End
-      Begin PhotoDemon.buttonStrip btsSyncIntensity 
-         Height          =   600
-         Left            =   330
-         TabIndex        =   12
-         Top             =   1140
-         Width           =   5550
-         _ExtentX        =   9790
-         _ExtentY        =   1058
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   5
-         Left            =   120
-         Top             =   720
-         Width           =   5805
-         _ExtentX        =   10239
-         _ExtentY        =   503
-         Caption         =   "synchronize intensity"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   6
+      Height          =   960
       Left            =   6000
+      TabIndex        =   7
       Top             =   4800
-      Width           =   5820
-      _ExtentX        =   0
-      _ExtentY        =   0
+      Width           =   5835
+      _ExtentX        =   10292
+      _ExtentY        =   1693
       Caption         =   "options"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -247,6 +165,66 @@ Begin VB.Form FormLensFlare
          Caption         =   "position (x, y)"
          FontSize        =   12
          ForeColor       =   4210752
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4695
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   313
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
+      TabIndex        =   9
+      Top             =   0
+      Visible         =   0   'False
+      Width           =   6135
+      Begin PhotoDemon.sliderTextCombo sltIntensity 
+         Height          =   705
+         Index           =   1
+         Left            =   120
+         TabIndex        =   10
+         Top             =   2040
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "secondary intensity"
+         Min             =   0.01
+         Max             =   3
+         SigDigits       =   2
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltIntensity 
+         Height          =   705
+         Index           =   2
+         Left            =   120
+         TabIndex        =   11
+         Top             =   3000
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "tertiary intensity"
+         Min             =   0.01
+         Max             =   3
+         SigDigits       =   2
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
+      End
+      Begin PhotoDemon.buttonStrip btsSyncIntensity 
+         Height          =   1080
+         Left            =   90
+         TabIndex        =   12
+         Top             =   660
+         Width           =   5790
+         _ExtentX        =   10213
+         _ExtentY        =   1905
+         Caption         =   "synchronize intensity"
       End
    End
 End

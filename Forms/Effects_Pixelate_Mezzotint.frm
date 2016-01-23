@@ -24,13 +24,14 @@ Begin VB.Form FormMezzotint
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.buttonStrip btsType 
-      Height          =   615
+      Height          =   1095
       Left            =   6000
       TabIndex        =   4
-      Top             =   600
+      Top             =   240
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   1085
+      _ExtentY        =   1931
+      Caption         =   "type"
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -81,37 +82,14 @@ Begin VB.Form FormMezzotint
       NotchValueCustom=   50
    End
    Begin PhotoDemon.buttonStrip btsStippling 
-      Height          =   615
+      Height          =   1095
       Left            =   6000
       TabIndex        =   2
-      Top             =   4020
+      Top             =   3480
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1085
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   3
-      Left            =   6000
-      Top             =   3600
-      Width           =   5820
-      _ExtentX        =   10266
-      _ExtentY        =   503
       Caption         =   "stippling"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      Top             =   180
-      Width           =   5850
-      _ExtentX        =   10319
-      _ExtentY        =   503
-      Caption         =   "type"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormMezzotint"

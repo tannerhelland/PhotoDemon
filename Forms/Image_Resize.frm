@@ -175,14 +175,14 @@ End Property
 
 'Whenever the user toggles technical and friendly resample options, this sub is called.  It will translate between
 ' friendly and technical choices, as well as displaying the proper combo box.
-Private Sub switchResampleOption()
-
+Private Sub SwitchResampleOption()
+    
     'Technical names
     If CBool(chkNames) Then
     
         'Show a descriptive label
         lblResample.Caption = g_Language.TranslateMessage("resampling algorithm:")
-    
+        
         'Show the proper combo box
         cboResampleTechnical.Visible = True
         cboResampleFriendly.Visible = False
@@ -281,7 +281,7 @@ End Sub
 
 'New to v6.0, PhotoDemon displays friendly resample names by default.  The user can toggle these off at their liking.
 Private Sub chkNames_Click()
-    switchResampleOption
+    SwitchResampleOption
 End Sub
 
 Private Sub cmbFit_Click()
@@ -433,6 +433,9 @@ Private Sub Form_Load()
     cboResampleTechnical.AssignTooltip "Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia."
     chkNames.AssignTooltip "By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques."
     cmbFit.AssignTooltip "When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead."
+    
+    'Make sure the resampling combo box items match up with the selected description preference
+    SwitchResampleOption
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me

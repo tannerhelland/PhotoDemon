@@ -73,7 +73,7 @@ Option Explicit
 'This implementation binding will allow us to refer to all themeable controls _
  under a single type, making form control iteration much simpler _
  (we won't need to maintain long lists of UserControl names)
-Implements iControlThemable
+Implements IControlThemable
 
 
 'By design, this combo box raises fewer events than a standard combo box.  I would prefer the Click() event to actually be Change(),
@@ -841,7 +841,7 @@ Private Sub cResize_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long
     If Not m_InternalResizeState Then syncUserControlSizeToComboSize
 End Sub
 
-Private Sub IControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_ApplyTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 

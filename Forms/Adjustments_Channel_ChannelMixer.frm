@@ -119,17 +119,18 @@ Begin VB.Form FormChannelMixer
       BackColor       =   14802140
    End
    Begin PhotoDemon.buttonStrip btsChannel 
-      Height          =   600
+      Height          =   960
       Left            =   6000
       TabIndex        =   8
-      Top             =   480
+      Top             =   120
       Width           =   6000
       _ExtentX        =   10583
       _ExtentY        =   1058
+      Caption         =   "output channel"
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   5
+      Index           =   0
       Left            =   6000
       Top             =   1320
       Width           =   6015
@@ -139,26 +140,15 @@ Begin VB.Form FormChannelMixer
       FontSize        =   12
       ForeColor       =   4210752
    End
-   Begin PhotoDemon.pdLabel Label1 
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
+      Index           =   1
       Left            =   6000
       Top             =   5760
       Width           =   5820
       _ExtentX        =   10266
       _ExtentY        =   503
       Caption         =   "options for all channels"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      Top             =   120
-      Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   503
-      Caption         =   "output channel"
       FontSize        =   12
       ForeColor       =   4210752
    End

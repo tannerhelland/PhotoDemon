@@ -45,25 +45,14 @@ Begin VB.Form FormCurves
       _ExtentY        =   9922
    End
    Begin PhotoDemon.buttonStrip btsOptions 
-      Height          =   600
-      Left            =   6150
+      Height          =   960
+      Left            =   6030
       TabIndex        =   3
-      Top             =   6720
-      Width           =   6675
-      _ExtentX        =   11774
-      _ExtentY        =   1058
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   2
-      Left            =   6000
       Top             =   6360
-      Width           =   6855
-      _ExtentX        =   12091
-      _ExtentY        =   503
+      Width           =   6795
+      _ExtentX        =   11986
+      _ExtentY        =   1693
       Caption         =   "display"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   1440
@@ -106,25 +95,14 @@ Begin VB.Form FormCurves
          Width           =   6960
       End
       Begin PhotoDemon.buttonStrip btsChannel 
-         Height          =   600
-         Left            =   270
+         Height          =   960
+         Left            =   150
          TabIndex        =   7
-         Top             =   5520
-         Width           =   6675
-         _ExtentX        =   11774
-         _ExtentY        =   1058
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   0
-         Left            =   120
          Top             =   5160
-         Width           =   6810
-         _ExtentX        =   12012
-         _ExtentY        =   503
+         Width           =   6795
+         _ExtentX        =   11986
+         _ExtentY        =   1693
          Caption         =   "channel"
-         FontSize        =   12
-         ForeColor       =   4210752
       End
    End
    Begin VB.PictureBox picContainer 
@@ -142,67 +120,34 @@ Begin VB.Form FormCurves
       Top             =   60
       Width           =   7215
       Begin PhotoDemon.buttonStrip btsHistogram 
-         Height          =   600
-         Left            =   240
+         Height          =   1080
+         Left            =   120
          TabIndex        =   9
-         Top             =   1260
-         Width           =   6675
-         _ExtentX        =   11774
-         _ExtentY        =   1058
+         Top             =   840
+         Width           =   6795
+         _ExtentX        =   11986
+         _ExtentY        =   1905
+         Caption         =   "histogram overlay"
       End
       Begin PhotoDemon.buttonStrip btsGrid 
-         Height          =   600
-         Left            =   240
+         Height          =   1080
+         Left            =   120
          TabIndex        =   2
-         Top             =   2580
-         Width           =   6675
-         _ExtentX        =   11774
-         _ExtentY        =   1058
+         Top             =   2100
+         Width           =   6795
+         _ExtentX        =   11986
+         _ExtentY        =   1905
+         Caption         =   "grid"
       End
       Begin PhotoDemon.buttonStrip btsDiagonalLine 
-         Height          =   600
-         Left            =   240
+         Height          =   1080
+         Left            =   120
          TabIndex        =   8
-         Top             =   3900
-         Width           =   6675
-         _ExtentX        =   11774
-         _ExtentY        =   1058
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   4
-         Left            =   120
-         Top             =   3480
-         Width           =   6765
-         _ExtentX        =   11933
-         _ExtentY        =   503
+         Top             =   3420
+         Width           =   6795
+         _ExtentX        =   11986
+         _ExtentY        =   1905
          Caption         =   "original curve (diagonal line)"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   3
-         Left            =   120
-         Top             =   2160
-         Width           =   6780
-         _ExtentX        =   11959
-         _ExtentY        =   503
-         Caption         =   "grid"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   1
-         Left            =   120
-         Top             =   840
-         Width           =   6825
-         _ExtentX        =   12039
-         _ExtentY        =   503
-         Caption         =   "histogram overlay"
-         FontSize        =   12
-         ForeColor       =   4210752
       End
    End
 End

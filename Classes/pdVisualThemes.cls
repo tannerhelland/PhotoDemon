@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Visual Theming class
 'Copyright 2013-2016 by Tanner Helland
 'Created: 23/October/13
-'Last updated: 26/July/14
-'Last update: start centralizing color definitions
+'Last updated: 22/January/16
+'Last update: implement all the little XML bits that make custom theming files possible
 '
 'There isn't much here yet, but stay tuned - more is coming!
 '
@@ -185,10 +185,10 @@ Public Function LoadThemeFile(ByVal themeFilename As String) As Boolean
     ' (TODO 6.8: make a decision on how much control we expose over theme editing; maybe the /Data folder is unnecessary)
     If g_IsProgramRunning And Not g_ProgramShuttingDown Then
     
-        Dim themePath As String
-        themePath = g_UserPreferences.getThemePath & themeFilename
+        Dim ThemePath As String
+        ThemePath = g_UserPreferences.getThemePath & themeFilename
         
-        If m_XML.loadXMLFile(themePath) Then
+        If m_XML.loadXMLFile(ThemePath) Then
             
             'Perform minor validation on the file
             LoadThemeFile = m_XML.isPDDataType("Visual theme") And m_XML.validateLoadedXMLData("Colors")
@@ -196,13 +196,13 @@ Public Function LoadThemeFile(ByVal themeFilename As String) As Boolean
         Else
             #If DEBUGMODE = 1 Then
                 If g_IsProgramRunning Then
-                    pdDebug.LogAction "WARNING! Failed to load requested theme: " & themePath
+                    pdDebug.LogAction "WARNING! Failed to load requested theme: " & ThemePath
                     pdDebug.LogAction "WARNING! Falling back to default PD theme..."
                 End If
             #End If
             
-            themePath = g_UserPreferences.getThemePath & "Default_Light.xml"
-            LoadThemeFile = m_XML.loadXMLFile(themePath)
+            ThemePath = g_UserPreferences.getThemePath & "Default_Light.xml"
+            LoadThemeFile = m_XML.loadXMLFile(ThemePath)
             LoadThemeFile = LoadThemeFile And m_XML.isPDDataType("Visual theme") And m_XML.validateLoadedXMLData("Colors")
             
         End If
