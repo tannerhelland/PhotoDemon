@@ -97,6 +97,23 @@ Private m_FitFailure As Boolean
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDLABEL_COLOR_LIST
+    [_First] = 0
+    PDL_Background = 0
+    PDL_Caption = 1
+    [_Last] = 1
+    [_Count] = 2
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
+
 'Alignment is handled just like VB's internal label alignment property.
 Public Property Get Alignment() As AlignmentConstants
     Alignment = ucSupport.GetCaptionAlignment()
@@ -296,8 +313,11 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestCaptionSupport False
     ucSupport.SetCaptionAutomaticPainting False
     
-    'In design mode, initialize a base theming class, so our paint functions don't fail
-    If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDLABEL_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "GenericPDControl", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
     
 End Sub
 
@@ -483,11 +503,7 @@ Private Sub RedrawBackBuffer()
     If m_UseCustomBackColor Then
         targetColor = m_BackColor
     Else
-        If g_IsProgramRunning And Not (g_Themer Is Nothing) Then
-            targetColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-        Else
-            targetColor = vbWhite
-        End If
+        targetColor = m_Colors.RetrieveColor(PDL_Background, Me.Enabled)
     End If
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
@@ -495,14 +511,10 @@ Private Sub RedrawBackBuffer()
     bufferDC = ucSupport.GetBackBufferDC(True, targetColor)
     
     'Text color also varies by theme, and possibly control enablement
-    If Me.Enabled Then
-        If m_UseCustomForeColor Then
-            targetColor = m_ForeColor
-        Else
-            If Not (g_Themer Is Nothing) Then targetColor = g_Themer.GetThemeColor(PDTC_TEXT_DEFAULT)
-        End If
+    If m_UseCustomForeColor Then
+        targetColor = m_ForeColor
     Else
-        targetColor = g_Themer.GetThemeColor(PDTC_DISABLED)
+        targetColor = m_Colors.RetrieveColor(PDL_Caption, Me.Enabled)
     End If
     
     'Paint the caption manually
@@ -532,10 +544,28 @@ Private Sub RedrawBackBuffer()
     
 End Sub
 
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+        
+    'Color list retrieval is pretty darn easy - just load each color one at a time, and leave the rest to the color class.
+    ' It will build an internal hash table of the colors we request, which makes rendering much faster.
+    Dim colorValues As PDLABEL_COLOR_LIST
+    
+    With m_Colors
+        .LoadThemeColor PDL_Background, "Background", IDE_WHITE
+        .LoadThemeColor PDL_Caption, "Caption", IDE_GRAY
+    End With
+    
+End Sub
+
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     
-    'The support class handles most of this for us
+    'Because we paint our own captions, we must update our own internal color cache
+    UpdateColorList
+    
+    'The support class handles the rest of this for us
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
     
     'If theme changes require us to redraw our control, the support class will raise additional paint events for us.

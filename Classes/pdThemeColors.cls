@@ -62,7 +62,7 @@ Private m_ObjectName As String
 Public Function InitializeColorList(ByRef srcObjectName As String, ByVal numOfRequiredColors As Long) As Boolean
     
     'First, make sure the target object exists in the theme file.  If it doesn't, there's not much we can do.
-    ' (Note that this step will fail inside the IDE; we have workarounds for this.)
+    ' (Note that this step will fail inside the IDE; a workaround is provided.)
     m_ObjectName = srcObjectName
     If g_IsProgramRunning And Not (g_Themer Is Nothing) Then
         InitializeColorList = g_Themer.VerifyThemeObject(srcObjectName)

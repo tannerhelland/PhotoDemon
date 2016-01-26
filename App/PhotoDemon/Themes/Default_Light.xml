@@ -29,7 +29,7 @@
 		<!-- Colors can be hex RGB values, or named colors that correspond to entries in the Definitions section. -->
 		<Colors>
 		
-			<!-- Default colors are not object-specific.  They are used as fallback values if an object lacks a given color name. -->
+			<!-- Default colors are not object-specific.  They are used as fallback values if an object lacks a given color. -->
 			<Default>
 				<Background>DefaultBackground</Background>
 				<Caption>TextDefault</Caption>
@@ -76,6 +76,7 @@
 			<GenericPDControl>
 				<Background>DefaultBackground</Background>
 				<Caption></Caption>
+				<Caption-disabled></Caption-disabled>
 			</GenericPDControl>
 						
 			<!-- ****************************************************************************************** -->
