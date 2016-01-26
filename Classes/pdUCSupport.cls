@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Comprehensive User Control Support class
 'Copyright 2015-2016 by Tanner Helland
 'Created: 25/October/15  (but built from many parts existing earlier)
-'Last updated: 28/October/15
-'Last update: continue work on initial build
+'Last updated: 25/January/16
+'Last update: integrate proper theming support
 '
 'Now that PD provides so many of its own user controls (UCs), we have to repeat a lot of UC management code.
 ' Painting, custom input handling, subclassing custom window messages - the list goes on for awhile.
@@ -142,6 +142,23 @@ Private m_CustomCaptionRect As RECT
 ' weird ways (e.g. in the middle of other paint operations).  If they require custom painting, this will be set to TRUE.
 Private m_CustomCaptionPaintingActive As Boolean
 
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum UCSUPPORT_COLOR_LIST
+    [_First] = 0
+    UCS_Background = 0
+    UCS_Caption = 1
+    [_Last] = 1
+    [_Count] = 2
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
+
 
 '***************************************************************************
 ' SETUP AND INITIALIZATION FUNCTIONS
@@ -169,6 +186,12 @@ Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         
         'Themed, Unicode-compatible, multiline tooltips
         Set m_ToolTipManager = New pdToolTip
+        
+        'Visual themes integration
+        Set m_Colors = New pdThemeColors
+        Dim colorCount As UCSUPPORT_COLOR_LIST: colorCount = [_Count]
+        m_Colors.InitializeColorList "GenericPDControl", colorCount
+        If Not g_IsProgramRunning Then UpdateColorList
         
         'Flicker-free double-buffered window painting.  For IDE support of windowless controls, we have no choice but to subclass.
         Set m_Painter = New pdWindowPainter
@@ -269,8 +292,6 @@ Public Function GetCaptionTextTranslated() As String
 End Function
 
 Public Sub SetCaptionText(Optional ByVal newCaption As String = "")
-    
-    'If m_Caption Is Nothing Then Set m_Caption = New pdCaption
     
     'Pass the string to the pdCaption instance; it handles the actual mess of sizing and rendering text
     If m_Caption.SetCaption(newCaption) Then
@@ -498,14 +519,10 @@ Private Function ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Opti
     'If the caller specifies a background color, we want to use it.  If they don't, grab the default window background from
     ' PD's central themer.
     If newBackColor = -1 Then
-        If (g_Themer Is Nothing) Then
-            newBackColor = RGB(255, 255, 255)
+        If m_BackColor = -1 Then
+            newBackColor = m_Colors.RetrieveColor(UCS_Background)
         Else
-            If m_BackColor = -1 Then
-                newBackColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-            Else
-                newBackColor = m_BackColor
-            End If
+            newBackColor = m_BackColor
         End If
     End If
     
@@ -885,12 +902,30 @@ Public Sub RequestIDERepaint(ByVal targetDC As Long)
 
 End Sub
 
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+        
+    'Color list retrieval is pretty darn easy - just load each color one at a time, and leave the rest to the color class.
+    ' It will build an internal hash table of the colors we request, which makes rendering much faster.
+    Dim colorValues As UCSUPPORT_COLOR_LIST
+    
+    With m_Colors
+        .LoadThemeColor UCS_Background, "Background", IDE_WHITE
+        .LoadThemeColor UCS_Caption, "Caption", IDE_GRAY
+    End With
+    
+End Sub
+
 'Whenever the caller user control receives an UpdateAgainstTheme/Language request, it needs to relay that to this support
 ' class as well.  We'll update things like the tooltip and text caption (if any) to match the new settings.
 Public Sub UpdateAgainstThemeAndLanguage()
     
     'Tooltips must be refreshed (in case the active language has changed; tooltips manage translations internally)
     m_ToolTipManager.UpdateAgainstCurrentTheme
+    
+    'This control requires some colors from the central themer; update its color cache now
+    UpdateColorList
     
     'The caption manager will also refresh itself
     If m_Caption.IsCaptionActive Then m_Caption.UpdateAgainstCurrentTheme

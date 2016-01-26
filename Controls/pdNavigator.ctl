@@ -58,12 +58,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This implementation binding will allow us to refer to all themeable controls _
- under a single type, making form control iteration much simpler _
- (we won't need to maintain long lists of UserControl names)
-Implements IControlThemable
-
-
 'If the control is resized at run-time, it will request a new thumbnail via this function.  The passed DIB will already
 ' be sized to the
 Public Event RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumbX As Single, ByRef thumbY As Single)
@@ -212,10 +206,6 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
     'Flip the relevant chunk of the buffer to the screen
     BitBlt picNavigator.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
     
-End Sub
-
-Private Sub IControlThemable_ApplyTheme()
-    Call Me.UpdateAgainstCurrentTheme
 End Sub
 
 Private Sub UserControl_Initialize()

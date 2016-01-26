@@ -272,12 +272,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This implementation binding will allow us to refer to all themeable controls _
- under a single type, making form control iteration much simpler _
- (we won't need to maintain long lists of UserControl names)
-Implements IControlThemable
-
-
 Private Enum PD_MOUSEEVENT
     pMouseDown = 0
     pMouseMove = 1
@@ -1926,10 +1920,6 @@ Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, B
     'Notify external UI elements of the change
     RelayViewportChanges
 
-End Sub
-
-Private Sub IControlThemable_ApplyTheme()
-    Call Me.UpdateAgainstCurrentTheme
 End Sub
 
 '(This code is copied from FormMain's OLEDragDrop event - please mirror any changes there)

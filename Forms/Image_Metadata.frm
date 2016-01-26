@@ -105,9 +105,8 @@ Begin VB.Form FormMetadata
       _ExtentY        =   1720
       Caption         =   "tag values"
    End
-   Begin PhotoDemon.pdLabel lblTitle 
+   Begin PhotoDemon.pdLabel lblTechnicalReport 
       Height          =   270
-      Index           =   5
       Left            =   7440
       Top             =   3960
       Width           =   4425
@@ -131,7 +130,7 @@ Begin VB.Form FormMetadata
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   4
+      Index           =   1
       Left            =   7320
       Top             =   1320
       Width           =   4575
@@ -143,7 +142,7 @@ Begin VB.Form FormMetadata
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   1
+      Index           =   0
       Left            =   120
       Top             =   1320
       Width           =   6810
@@ -434,10 +433,12 @@ Private Sub Form_Load()
     btsGroup.ListIndex = 0
     btsGroup_Click 0
     
-    'Technical metadata reports are only available for images that exist on disk
+    'Technical metadata reports are only available for images that actually exist on disk (vs clipboard or scanned images)
     If Len(pdImages(g_CurrentImage).locationOnDisk) <> 0 Then
+        lblTechnicalReport.Visible = True
         cmdTechnicalReport.Visible = True
     Else
+        lblTechnicalReport.Visible = False
         cmdTechnicalReport.Visible = False
     End If
     

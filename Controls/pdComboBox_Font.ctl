@@ -71,12 +71,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This implementation binding will allow us to refer to all themeable controls _
- under a single type, making form control iteration much simpler _
- (we won't need to maintain long lists of UserControl names)
-Implements IControlThemable
-
-
 'By design, this combo box raises fewer events than a standard combo box.  I would prefer the Click() event to actually be Change(),
 ' but I have used Click() throughout VB due to the behavior of the old combo box - and rather than rewrite all that code, I've simply
 ' used the same semantics here.  Note, however, that "Click" will also return changes to the combo box that originate from the keyboard.
@@ -812,10 +806,6 @@ End Sub
 'Flicker-free paint requests for the main control box (e.g. NOT the drop-down list portion)
 Private Sub cPainterBox_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
     drawComboBox True
-End Sub
-
-Private Sub IControlThemable_ApplyTheme()
-    Call Me.UpdateAgainstCurrentTheme
 End Sub
 
 Private Sub tmrHookRelease_Timer()

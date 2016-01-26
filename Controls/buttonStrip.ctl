@@ -55,9 +55,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'All user-facing controls implement a simple translation/theme interface, which requires a single sub (UpdateAgainstCurrentTheme)
-Implements IControlThemable
-
 'This control really only needs one event raised - Click
 Public Event Click(ByVal buttonIndex As Long)
 
@@ -203,6 +200,7 @@ Public Property Let FontBold(ByVal newBoldSetting As Boolean)
     If newBoldSetting <> m_FontBold Then
         m_FontBold = newBoldSetting
         UpdateControlLayout
+        PropertyChanged "FontBold"
     End If
 End Property
 
@@ -226,10 +224,6 @@ Public Property Let FontSizeCaption(ByVal newSize As Single)
     ucSupport.SetCaptionFontSize newSize
     PropertyChanged "FontSizeCaption"
 End Property
-
-Private Sub IControlThemable_ApplyTheme()
-    Me.UpdateAgainstCurrentTheme
-End Sub
 
 'When the control receives focus, if the focus isn't received via mouse click, display a focus rect around the active button
 Private Sub ucSupport_GotFocusAPI()
@@ -547,7 +541,7 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestExtraFunctionality True, True
     ucSupport.SpecifyRequiredKeys VK_RIGHT, VK_LEFT, VK_SPACE
     
-    'Enable caption support, so we don't need an attached label
+    'Enable title caption support, so we don't need an attached label
     ucSupport.RequestCaptionSupport
     
     'Prep the color manager and load default colors
@@ -823,7 +817,7 @@ Private Sub RedrawBackBuffer()
     Dim fontColorSelected As Long, fontColorSelectedHover As Long
     Dim fontColorUnselected As Long, fontColorUnselectedHover As Long
     
-    Dim curColor As Long, curWidth As Single
+    Dim curColor As Long
     Dim isButtonSelected As Boolean, isButtonHovered As Boolean
     Dim enabledState As Boolean
     enabledState = Me.Enabled
@@ -858,7 +852,7 @@ Private Sub RedrawBackBuffer()
     fontColorUnselected = m_Colors.RetrieveColor(BTS_UnselectedText, enabledState, False, False)
     fontColorUnselectedHover = m_Colors.RetrieveColor(BTS_UnselectedText, enabledState, False, True)
     
-    'Start by filling the desired backgruond color, then rendering a single-pixel unselected border around the control.
+    'Start by filling the desired background color, then rendering a single-pixel unselected border around the control.
     ' (The border will be overwritten with Selected or Hovered borders, as necessary.)
     With m_ButtonStripRect
         GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, (.Right - .Left) - 1, (.Bottom - .Top) - 1, btnColorBackground
@@ -912,7 +906,7 @@ Private Sub RedrawBackBuffer()
                     
                 End If
                 
-                'Paint the caption, if one exists
+                'Paint the button's caption, if one exists
                 If Len(.btCaptionTranslated) <> 0 Then
                 
                     If isButtonSelected Then
@@ -1016,7 +1010,7 @@ Public Sub UpdateAgainstCurrentTheme()
     'Update all text managed by the support class (e.g. tooltips)
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
     
-    'This control potentially uses a lot of colors; update its list now
+    'This control requests quite a few colors from the central themer; update its color cache now
     UpdateColorList
     
     'Because translations can change text layout, we need to recalculate font metrics prior to redrawing the button

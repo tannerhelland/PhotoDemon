@@ -42,12 +42,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This implementation binding will allow us to refer to all themeable controls _
- under a single type, making form control iteration much simpler _
- (we won't need to maintain long lists of UserControl names)
-Implements IControlThemable
-
-
 'This control raises much fewer events than a standard ListBox, by design
 Public Event Click()
 
@@ -105,10 +99,6 @@ End Property
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
-
-Private Sub IControlThemable_ApplyTheme()
-    Call Me.UpdateAgainstCurrentTheme
-End Sub
 
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     UpdateMousePosition x, y

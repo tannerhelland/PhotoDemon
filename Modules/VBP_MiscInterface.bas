@@ -1280,7 +1280,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         
         'STEP 1: give all clickable controls a hand icon instead of the default pointer.
         ' (Note: this code sets all command buttons, scroll bars, option buttons, check boxes, list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor)
-        If (Not TypeOf eControl Is PictureBox) And (Not TypeOf eControl Is IControlThemable) Then
+        If (Not TypeOf eControl Is PictureBox) Then
             If ((TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox)) Then
                 setHandCursor eControl
             End If
@@ -1305,26 +1305,25 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         ' TODO 6.8: remove these steps once and for all
         '*******************************************
         
-        'All of PhotoDemon's custom UI controls implement the IControlThemable interface, meaning they support a standardize
-        ' UpdateAgainstCurrentTheme function.  This function updates two things:
+        'All of PhotoDemon's custom UI controls implement an UpdateAgainstCurrentTheme function.  This function updates two things:
         ' 1) The control's visual appearance (to reflect any changes to visual themes)
         ' 2) Updating any translatable text against the current translation
-        '
-        'Note VB's default controls don't expose a .Object reference for us to test, so they will cause this line to error out.
-        ' (Many thanks to @Kroc for implementing this test.)
-        'On Error Resume Next
-        'If (TypeOf eControl.object Is IControlThemable) Then eControl.ApplyTheme
-        'On Error GoTo 0
-        ' (Actual implementation still pending... VB usercontrols do not behave very much like classes, it turns out!)
-        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then eControl.UpdateAgainstCurrentTheme
+        
+        'These controls are fully compatible with PD's theming and translation engines:
         If (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is buttonStripVertical) Then eControl.UpdateAgainstCurrentTheme
+        
+        'These controls currently support translations, but not theming.  (Theming support is actively being worked on, and I'm
+        ' migrating controls to the above "finished" list as they're completed.  Once all controls have been migrated, I'll look
+        ' at a better system for detecting internal PD controls.)
+        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdButton) Or (TypeOf eControl Is pdButtonToolbox) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is pdScrollBar) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is brushSelector) Or (TypeOf eControl Is gradientSelector) Or (TypeOf eControl Is penSelector) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is colorSelector) Or (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdTitle) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is fxPreviewCtl) Then eControl.UpdateAgainstCurrentTheme
         
         'While we're here, forcibly remove TabStops from each picture box.  They should never receive focus, but I often forget
