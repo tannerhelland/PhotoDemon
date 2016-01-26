@@ -4,7 +4,7 @@ Begin VB.Form FormThemeEditor
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Theme editor"
-   ClientHeight    =   8985
+   ClientHeight    =   9105
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   13260
@@ -20,7 +20,7 @@ Begin VB.Form FormThemeEditor
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   599
+   ScaleHeight     =   607
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
@@ -49,32 +49,34 @@ Begin VB.Form FormThemeEditor
       Left            =   120
       TabIndex        =   0
       Top             =   120
-      Width           =   5655
-      _ExtentX        =   9975
+      Width           =   12975
+      _ExtentX        =   15266
       _ExtentY        =   1720
-      Caption         =   "toggle theme (this dialog only):"
+      Caption         =   "toggle theme (please don't exit without clicking LIGHT THEME; otherwise PD may look funky!):"
    End
    Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   855
+      Index           =   0
       Left            =   120
       Top             =   8040
-      Width           =   10335
-      _ExtentX        =   18230
+      Width           =   12975
+      _ExtentX        =   22886
       _ExtentY        =   1508
+      Alignment       =   2
       Caption         =   $"Tools_ThemeEditor.frx":0000
       FontSize        =   12
-      Layout          =   3
+      Layout          =   1
    End
-   Begin PhotoDemon.pdLabel pdLabelTitle 
-      Height          =   285
+   Begin PhotoDemon.pdLabel lblExplanation 
+      Height          =   330
       Index           =   1
       Left            =   120
-      Top             =   1320
-      Width           =   7095
-      _ExtentX        =   12515
-      _ExtentY        =   503
-      Caption         =   "controls that (hypothetically) support visual themes:"
-      FontSize        =   12
+      Top             =   1200
+      Width           =   13095
+      _ExtentX        =   23098
+      _ExtentY        =   582
+      Alignment       =   2
+      Caption         =   "(Note: if you edit a theme file externally, you can toggle the button above to force PD to reload the updated file.)"
    End
 End
 Attribute VB_Name = "FormThemeEditor"

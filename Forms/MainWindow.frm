@@ -1424,7 +1424,7 @@ Begin VB.Form FormMain
          Index           =   9
       End
       Begin VB.Menu mnuTool 
-         Caption         =   "PD developer tools"
+         Caption         =   "Developers"
          Index           =   10
          Begin VB.Menu MnuDevelopers 
             Caption         =   "Debug window"
