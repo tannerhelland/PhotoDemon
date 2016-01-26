@@ -4,7 +4,11 @@
 		
 		<pdDataType>Visual theme</pdDataType>
 		
-		<!-- This is the default "light theme" file for PhotoDemon 6.8. -->
+		<!-- This is the default "light theme" file for PhotoDemon 6.8.  Users should not modify this file directly.-->
+		
+		<Author>PhotoDemon</Author>
+		<Description>Default "light" theme</Description>
+		<Version>6.8.0</Version>
 		
 		<!-- The Definitions section describes any custom, reusable color values you wish to create. -->
 		
@@ -28,12 +32,13 @@
 			<!-- Default colors are not object-specific.  They are used as fallback values if an object lacks a given color name. -->
 			<Default>
 				<Background>DefaultBackground</Background>
+				<Caption>TextDefault</Caption>
+				<Caption-disabled>DisabledGray</Caption-disabled>
 			</Default>
 			
 			<!-- All colors past this point are organized by object name.  Missing values will be taken from the Default section. -->
 			
 			<!-- ****************************************************************************************** -->
-			<!-- PD's "Button Strip" control -->
 			
 			<ButtonStrip>
 				<Background></Background>
@@ -68,7 +73,11 @@
 				<UnselectedTextLightMode-disabled>DisabledGray</UnselectedTextLightMode-disabled>
 			</ButtonStrip>
 			
-			<!-- End "Button Strip" -->
+			<GenericPDControl>
+				<Background>DefaultBackground</Background>
+				<Caption></Caption>
+			</GenericPDControl>
+						
 			<!-- ****************************************************************************************** -->
 		
 		</Colors>

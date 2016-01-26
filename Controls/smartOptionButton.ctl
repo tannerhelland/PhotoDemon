@@ -60,12 +60,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This implementation binding will allow us to refer to all themeable controls _
- under a single type, making form control iteration much simpler _
- (we won't need to maintain long lists of UserControl names)
-Implements IControlThemable
-
-
 'This control really only needs one event raised - Click
 Public Event Click()
 Attribute Click.VB_UserMemId = -600
@@ -186,10 +180,6 @@ Private Sub UpdateOtherButtons()
     
     End If
     
-End Sub
-
-Private Sub IControlThemable_ApplyTheme()
-    Call Me.UpdateAgainstCurrentTheme
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()

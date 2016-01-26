@@ -59,9 +59,6 @@ Private m_WordWrapAllowed As Boolean
 ' combination against a known container width, this will be set to TRUE.
 Private m_FontSizeVerified As Boolean
 
-'Current caption color
-Private m_CaptionColor As Long
-
 'Other font settings.  I implement these as I need them, so some may be missing, by design.
 Private m_FontBold As Boolean, m_FontItalic As Boolean, m_FontUnderline As Boolean
 
@@ -69,6 +66,26 @@ Private m_FontBold As Boolean, m_FontItalic As Boolean, m_FontUnderline As Boole
 ' value at run-time, as part of the translation engine.  Note that this setting is not binding, because some controls
 ' will want to manually call the DrawCaptionCentered function (e.g. button strips, which do a bunch of custom text rendering).
 Private m_Alignment As AlignmentConstants
+
+'Normally, the caption's color is pulled from PD's visual themes engine.  However, parent controls can override the
+' color if they must.
+Private m_CaptionColor As Long, m_CaptionColorCustom As Long
+
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDCAPTION_COLOR_LIST
+    [_First] = 0
+    PDC_Caption = 0
+    [_Last] = 0
+    [_Count] = 1
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
 
 'Get/set alignment.  Please note the caveats under m_Alignment's definition, above.
 Public Function GetAlignment() As AlignmentConstants
@@ -154,7 +171,7 @@ End Function
 'Assign a new caption color.  Remember that color changes do not require rebuilding the font.  Also, font color changes are persistent
 ' (by design), so they will not be overridden except by subsequent setCaptionColor calls.
 Public Sub SetCaptionColor(ByVal newColor As Long)
-    m_CaptionColor = newColor
+    m_CaptionColorCustom = newColor
 End Sub
 
 Public Function GetFontBold() As Boolean
@@ -246,11 +263,8 @@ Private Sub Class_Initialize()
     m_FontItalic = False
     m_FontUnderline = False
     
-    If g_IsProgramRunning And Not (g_Themer Is Nothing) Then
-        m_CaptionColor = g_Themer.GetThemeColor(PDTC_TEXT_DEFAULT)
-    Else
-        m_CaptionColor = RGB(96, 96, 96)
-    End If
+    m_CaptionColor = -1
+    m_CaptionColorCustom = -1
     
 End Sub
 
@@ -344,10 +358,14 @@ Public Sub DrawCaption(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Opt
     Dim tmpFont As pdFont
     Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
     
+    'Make sure colors have correctly retrieved from the active theme
+    
     If customColor <> -1 Then
         tmpFont.SetFontColor customColor
     Else
-        tmpFont.SetFontColor m_CaptionColor
+        If m_Colors Is Nothing Then InitializeColorCache
+        If m_CaptionColor = -1 Then m_CaptionColor = m_Colors.RetrieveColor(PDC_Caption)
+        If m_CaptionColorCustom <> -1 Then tmpFont.SetFontColor m_CaptionColorCustom Else tmpFont.SetFontColor m_CaptionColor
     End If
     
     tmpFont.AttachToDC dstDC
@@ -383,7 +401,9 @@ Public Sub DrawCaption_Clipped(ByVal dstDC As Long, ByVal dstX As Long, ByVal ds
     If customColor <> -1 Then
         tmpFont.SetFontColor customColor
     Else
-        tmpFont.SetFontColor m_CaptionColor
+        If m_Colors Is Nothing Then InitializeColorCache
+        If m_CaptionColor = -1 Then m_CaptionColor = m_Colors.RetrieveColor(PDC_Caption)
+        If m_CaptionColorCustom <> -1 Then tmpFont.SetFontColor m_CaptionColorCustom Else tmpFont.SetFontColor m_CaptionColor
     End If
     
     tmpFont.AttachToDC dstDC
@@ -418,7 +438,9 @@ Friend Sub DrawCaptionCentered(ByVal dstDC As Long, ByRef dstRect As RECT, Optio
     If customColor <> -1 Then
         tmpFont.SetFontColor customColor
     Else
-        tmpFont.SetFontColor m_CaptionColor
+        If m_Colors Is Nothing Then InitializeColorCache
+        If m_CaptionColor = -1 Then m_CaptionColor = m_Colors.RetrieveColor(PDC_Caption)
+        If m_CaptionColorCustom <> -1 Then tmpFont.SetFontColor m_CaptionColorCustom Else tmpFont.SetFontColor m_CaptionColor
     End If
     
     tmpFont.AttachToDC dstDC
@@ -493,6 +515,33 @@ Private Sub VerifyFontSize()
 
 End Sub
 
+'Normally, we initialize the color class at class load, but this class makes that tricky as it may be initialized
+' before PD's theming engine (as FormMain contains controls that use this class).  As such, we manually construct
+' the color class the first time we receive a draw request, which prevents us from even touching the theme engine
+' if we're initialized but never used for drawing.
+Private Sub InitializeColorCache()
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDCAPTION_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "GenericPDControl", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
+End Sub
+
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    
+    If m_Colors Is Nothing Then InitializeColorCache
+    
+    'Color list retrieval is pretty darn easy - just load each color one at a time, and leave the rest to the color class.
+    ' It will build an internal hash table of the colors we request, which makes rendering much faster.
+    Dim colorValues As PDCAPTION_COLOR_LIST
+    
+    With m_Colors
+        .LoadThemeColor PDC_Caption, "Caption", IDE_GRAY
+    End With
+    
+End Sub
+
 'If the theme or language is changed at run-time, the caller should call this function.  It will refresh all tooltips in
 ' its collection against the current language and theme, without requiring any special input or parameters.
 Public Sub UpdateAgainstCurrentTheme()
@@ -530,10 +579,7 @@ Public Sub UpdateAgainstCurrentTheme()
     If StrComp(oldTranslatedText, m_CaptionTranslated, vbBinaryCompare) <> 0 Then m_FontSizeVerified = False
     
     'Theme changes may also affect caption coloring; update the relevant color now
-    If g_IsProgramRunning Then
-        m_CaptionColor = g_Themer.GetThemeColor(PDTC_TEXT_DEFAULT)
-    Else
-        m_CaptionColor = RGB(96, 96, 96)
-    End If
+    m_CaptionColor = -1
+    UpdateColorList
         
 End Sub

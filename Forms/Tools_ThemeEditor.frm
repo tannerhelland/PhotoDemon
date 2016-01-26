@@ -24,14 +24,25 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.buttonStripVertical btsvTest 
+      Height          =   2535
+      Left            =   120
+      TabIndex        =   2
+      Top             =   3000
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   4471
+      Caption         =   "I'm a vertical button strip"
+   End
    Begin PhotoDemon.buttonStrip btsTest 
-      Height          =   615
+      Height          =   975
       Left            =   120
       TabIndex        =   1
-      Top             =   1800
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   1085
+      Top             =   1920
+      Width           =   6375
+      _ExtentX        =   11245
+      _ExtentY        =   1720
+      Caption         =   "I'm a horizontal button strip"
    End
    Begin PhotoDemon.buttonStrip btsToggleTest 
       Height          =   975
@@ -58,11 +69,11 @@ Begin VB.Form FormThemeEditor
       Height          =   285
       Index           =   1
       Left            =   120
-      Top             =   1440
-      Width           =   4455
-      _ExtentX        =   7858
+      Top             =   1320
+      Width           =   7095
+      _ExtentX        =   12515
       _ExtentY        =   503
-      Caption         =   "random control assortment:"
+      Caption         =   "controls that (hypothetically) support visual themes:"
       FontSize        =   12
    End
 End
@@ -95,6 +106,7 @@ Private Sub Form_Load()
     
     For i = 0 To 4
         btsTest.AddItem "Button " & CStr(i + 1)
+        btsvTest.AddItem "Button " & CStr(i + 1)
     Next i
     
     Interface.ApplyThemeAndTranslations Me
