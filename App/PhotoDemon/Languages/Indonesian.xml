@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.70</langversion>
+<langversion>6.6.71</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -5153,8 +5153,8 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 </phrase>
 
 <phrase>
-<original>PD developer tools</original>
-<translation>Alat pengembang PD</translation>
+<original>Developers</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14677,18 +14677,12 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for IControlThemable.cls -->
-
-<!-- IControlThemable.cls contains 0 phrases. -->
-
-<!-- END text for IControlThemable.cls-->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2517</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4320 phrases. -->
 <!-- 1803 are duplicates, so only 2517 unique phrases have been written to file. -->
-<!-- These 2517 phrases contain approximately 13403 total words. -->
+<!-- These 2517 phrases contain approximately 13401 total words. -->
 
 </pdData>

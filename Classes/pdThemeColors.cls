@@ -39,19 +39,9 @@ Option Explicit
 'Number of colors stored by this list.  This must be specified by the caller during the initialization step.
 Private m_NumOfColors As Long
 
-'Color definition.  If a variation is missing, it will be replaced by the BaseColor value.  (As such, the BaseColor
-' value must always be present in a color definition.)
-Private Type pdThemeColor
-    baseColor As Long
-    DisabledColor As Long
-    ActiveColor As Long
-    HoverColor As Long
-    ActiveHoverColor As Long
-End Type
-
 'Actual color list.  This list is only modified during the initialization stage of the class, but it can be
 ' refreshed against a new theme if necessary.
-Private m_ColorList() As pdThemeColor
+Private m_ColorList() As PDThemeColor
 
 'Name of the current object.  Because many controls share the same color names (e.g. "background", "text", etc),
 ' we differentiate between them by object name (e.g. "button-strip").
@@ -73,7 +63,7 @@ Public Function InitializeColorList(ByRef srcObjectName As String, ByVal numOfRe
     'Prep the internal color list
     If numOfRequiredColors > 0 Then
         m_NumOfColors = numOfRequiredColors
-        ReDim m_ColorList(0 To m_NumOfColors - 1) As pdThemeColor
+        ReDim m_ColorList(0 To m_NumOfColors - 1) As PDThemeColor
     Else
         Debug.Print "WARNING!  You can't request zero colors from pdThemeColors.InitializeColorList()!"
     End If
@@ -105,39 +95,52 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
         
         'If the program is running, try to retrieve a matching color from PD's central theme manager.
         If g_IsProgramRunning Then
-        
-            'Ask the central themer to look up this color.  It handles most the cumbersome work, like mapping color
-            ' definition trees back to their source.
-            Dim colorString As String
-            colorString = g_Themer.LookUpColor(m_ObjectName, colorName)
             
-            'If the color lookup was successful, colorString will be non-null.
-            If Len(colorString) <> 0 Then
+            'Start by seeing if the central themer has already cached a value for this color
+            If g_Themer.RetrieveColorFromCache(m_ObjectName, colorName, m_ColorList(colorIndex)) Then
+                colorLookupSuccessful = True
                 
-                'Attempt to convert the string into an RGB long
-                colorLookupSuccessful = Colors.GetColorFromString(colorString, baseColorValue)
-                If colorLookupSuccessful Then
-                    
-                    'Store the base color value.  We'll use this as the basis for all subsequent color calculations.
-                    m_ColorList(colorIndex).baseColor = baseColorValue
-                    
-                    'Because this color successfully exists, we are now going to check for disabled, active, hovered,
-                    ' and active+hovered variants.  Each must be handled individually, and all are optional.  (If an
-                    ' optional variant is missing, we'll just plug in the base color value, with the exception of
-                    ' active+hovered which gets the active color by default.)
-                    FillInColorVariant m_ObjectName, colorName, "disabled", m_ColorList(colorIndex).DisabledColor, baseColorValue
-                    FillInColorVariant m_ObjectName, colorName, "active", m_ColorList(colorIndex).ActiveColor, baseColorValue
-                    FillInColorVariant m_ObjectName, colorName, "hover", m_ColorList(colorIndex).HoverColor, baseColorValue
-                    FillInColorVariant m_ObjectName, colorName, "activehover", m_ColorList(colorIndex).ActiveHoverColor, m_ColorList(colorIndex).ActiveColor
-                    
-                Else
-                    pdDebug.LogAction "WARNING!  The themed color for " & m_ObjectName & ":" & colorName & " couldn't be converted into a valid RGB value."
-                End If
-                 
+            'If this color does not exist in the central cache, we need to parse the original XML file for it
             Else
-                pdDebug.LogAction "WARNING!  The themed color lookup for " & m_ObjectName & ":" & colorName & " failed."
+                
+                'Ask the central themer to look up this color.  It handles most the cumbersome work, like mapping color
+                ' definition trees back to their source.
+                Dim colorString As String
+                colorString = g_Themer.LookUpColor(m_ObjectName, colorName)
+                
+                'If the color lookup was successful, colorString will be non-null.
+                If Len(colorString) <> 0 Then
+                    
+                    'Attempt to convert the string into an RGB long
+                    colorLookupSuccessful = Colors.GetColorFromString(colorString, baseColorValue)
+                    If colorLookupSuccessful Then
+                        
+                        'Store the base color value.  We'll use this as the basis for all subsequent color calculations.
+                        m_ColorList(colorIndex).BaseColor = baseColorValue
+                        
+                        'Because this color successfully exists, we are now going to check for disabled, active, hovered,
+                        ' and active+hovered variants.  Each must be handled individually, and all are optional.  (If an
+                        ' optional variant is missing, we'll just plug in the base color value, with the exception of
+                        ' active+hovered which gets the active color by default.)
+                        FillInColorVariant m_ObjectName, colorName, "disabled", m_ColorList(colorIndex).DisabledColor, baseColorValue
+                        FillInColorVariant m_ObjectName, colorName, "active", m_ColorList(colorIndex).ActiveColor, baseColorValue
+                        FillInColorVariant m_ObjectName, colorName, "hover", m_ColorList(colorIndex).HoverColor, baseColorValue
+                        FillInColorVariant m_ObjectName, colorName, "activehover", m_ColorList(colorIndex).ActiveHoverColor, m_ColorList(colorIndex).ActiveColor
+                        
+                        'With the color table successfully populated, cache its values in the central themer.  This spares
+                        ' future requests for this color from having to repeat these steps from scratch.
+                        g_Themer.AddColorToCache m_ObjectName, colorName, m_ColorList(colorIndex)
+                        
+                    Else
+                        pdDebug.LogAction "WARNING!  The themed color for " & m_ObjectName & ":" & colorName & " couldn't be converted into a valid RGB value."
+                    End If
+                     
+                Else
+                    pdDebug.LogAction "WARNING!  The themed color lookup for " & m_ObjectName & ":" & colorName & " failed."
+                End If
+            
             End If
-        
+            
         End If
         
         'If the program is not running, or if color lookup failed, fall back to the "IDE default" value
@@ -146,7 +149,7 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
             colorLookupSuccessful = Colors.GetColorFromString(IDE_FailsafeColor, baseColorValue)
             If colorLookupSuccessful Then
                 With m_ColorList(colorIndex)
-                    .baseColor = baseColorValue
+                    .BaseColor = baseColorValue
                     .DisabledColor = baseColorValue
                     .ActiveColor = baseColorValue
                     .HoverColor = baseColorValue
@@ -206,7 +209,7 @@ Public Function RetrieveColor(ByVal colorIndex As Long, Optional ByVal enabledSt
                 If hoverState Then
                     RetrieveColor = m_ColorList(colorIndex).HoverColor
                 Else
-                    RetrieveColor = m_ColorList(colorIndex).baseColor
+                    RetrieveColor = m_ColorList(colorIndex).BaseColor
                 End If
             End If
         Else

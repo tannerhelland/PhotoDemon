@@ -294,7 +294,7 @@ End Enum
 ' Undos are created.  We track the ID of each action in preparation for a future History browser that allows the
 ' user to jump to any arbitrary Undo/Redo state.  (Also, to properly update the text of the Undo/Redo menu and
 ' buttons so the user knows which action they are undo/redoing.)
-Public Type undoEntry
+Public Type UndoEntry
     processID As String             'Name of the associated action (e.g. "Gaussian blur")
     processParamString As String    'Processor string supplied to the action
     undoType As PD_UNDO_TYPE        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
@@ -425,7 +425,7 @@ Public Const NUM_OF_LOD_CACHES As Long = 3
 ' (most notably CF_BITMAP) require special heuristics from PD's image load function, because the alpha data CF_BITMAP
 ' provides is unlikely to be valid, but we can't know for sure without examining it.  As such, some clipboard-specific data
 ' can be retrieved via this struct.
-Public Type PD_CLIPBOARD_INFO
+Public Type PD_Clipboard_Info
     pdci_CurrentFormat As PredefinedClipboardFormatConstants
     pdci_OriginalFormat As PredefinedClipboardFormatConstants
     pdci_DIBv5AlphaMask As Long
@@ -471,7 +471,7 @@ End Enum
     Private Const PDLH_FIXED = 0, PDLH_SEPARATORS = 1, PDLH_CUSTOM = 2
 #End If
 
-Public Type PD_DYNAMIC_REGION
+Public Type PD_Dynamic_Region
     RegionID As Integer
     RegionValid As Boolean
     RegionLeft As Long
@@ -481,4 +481,20 @@ Public Type PD_DYNAMIC_REGION
     RegionPixelCount As Long
     SeedPixelX As Long
     SeedPixelY As Long
+End Type
+
+'Color definition.  If one of the non-BaseColor values is missing in the theme, it will be replaced by the
+' BaseColor value.  (As such, the BaseColor value will always be present in a color definition.)
+Public Type PDThemeColor
+    BaseColor As Long
+    DisabledColor As Long
+    ActiveColor As Long
+    HoverColor As Long
+    ActiveHoverColor As Long
+End Type
+
+Public Type PDCachedColor
+    OrigObjectName As String
+    OrigColorName As String
+    OrigColorValues As PDThemeColor
 End Type
