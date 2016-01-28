@@ -376,7 +376,7 @@ Private Sub checkButtonEnablement()
     Else
     
         Dim i As Long
-        For i = cmdLayerAction.lBound To cmdLayerAction.UBound
+        For i = cmdLayerAction.lBound To cmdLayerAction.ubound
             cmdLayerAction(i).Enabled = False
         Next i
         
@@ -1539,9 +1539,9 @@ Private Sub ReflowInterface()
     'Vertical resizing has now been covered successfully.  Time to handle horizontal resizing.
     
     'Left-align the opacity, blend and alpha mode controls against their respective labels.
-    sltLayerOpacity.Left = lblLayerSettings(0).Left + lblLayerSettings(0).InternalWidth + FixDPI(4)
-    cboBlendMode.Left = lblLayerSettings(1).Left + lblLayerSettings(1).InternalWidth + FixDPI(12)
-    cboAlphaMode.Left = lblLayerSettings(2).Left + lblLayerSettings(2).InternalWidth + FixDPI(12)
+    sltLayerOpacity.Left = lblLayerSettings(0).Left + lblLayerSettings(0).PixelWidth + FixDPI(4)
+    cboBlendMode.Left = lblLayerSettings(1).Left + lblLayerSettings(1).PixelWidth + FixDPI(12)
+    cboAlphaMode.Left = lblLayerSettings(2).Left + lblLayerSettings(2).PixelWidth + FixDPI(12)
     
     'Horizontally stretch the opacity, blend, and alpha mode UI inputs
     sltLayerOpacity.Width = Me.ScaleWidth - (sltLayerOpacity.Left + FixDPI(5))

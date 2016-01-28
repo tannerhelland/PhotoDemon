@@ -1177,7 +1177,7 @@ Private Sub drawSliderKnob(Optional ByVal refreshImmediately As Boolean = False)
 End Sub
 
 'Post-translation, we can request an immediate refresh
-Public Sub requestRefresh()
+Public Sub RequestRefresh()
     cBackgroundPainter.RequestRepaint
     cSliderPainter.RequestRepaint
 End Sub

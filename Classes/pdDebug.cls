@@ -237,14 +237,14 @@ Private Function getLogID() As Long
         Dim minDate As Date, minID As Long
         
         'Grab the date of the first file.
-        minDate = File_And_Path_Handling.FileAnyDateTime(logFiles(0))
+        minDate = FileSystem.FileAnyDateTime(logFiles(0))
         minID = 0
         
         'Loop through all other files; if an earlier date is found, mark that as the minimum date and ID
         Dim i As Long
         For i = 1 To 9
-            If File_And_Path_Handling.FileAnyDateTime(logFiles(i)) < minDate Then
-                minDate = File_And_Path_Handling.FileAnyDateTime(logFiles(i))
+            If FileSystem.FileAnyDateTime(logFiles(i)) < minDate Then
+                minDate = FileSystem.FileAnyDateTime(logFiles(i))
                 minID = i
             End If
         Next i

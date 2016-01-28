@@ -77,7 +77,7 @@ Private Function getMRUCaption(ByRef newFile As String) As String
     
     'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
     If g_UserPreferences.GetPref_Long("Core", "MRU Caption Length", 0) = 0 Then
-        getMRUCaption = File_And_Path_Handling.GetFilename(newFile)
+        getMRUCaption = FileSystem.GetFilename(newFile)
     Else
         getMRUCaption = getShortMRU(newFile)
     End If
