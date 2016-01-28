@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.840</langversion>
+<langversion>6.8.841</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ILoveVB</author>
@@ -5140,8 +5140,8 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>PD developer tools</original>
-<translation>PD开发工具</translation>
+<original>Developers</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14660,18 +14660,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for IControlThemable.cls -->
-
-<!-- IControlThemable.cls contains 0 phrases. -->
-
-<!-- END text for IControlThemable.cls-->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2517</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4320 phrases. -->
 <!-- 1803 are duplicates, so only 2517 unique phrases have been written to file. -->
-<!-- These 2517 phrases contain approximately 13403 total words. -->
+<!-- These 2517 phrases contain approximately 13401 total words. -->
 
 </pdData>

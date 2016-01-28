@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.131</langversion>
+<langversion>6.7.132</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -5148,8 +5148,8 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>PD developer tools</original>
-<translation>Herramientas de desarrollo PD</translation>
+<original>Developers</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14672,18 +14672,12 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for IControlThemable.cls -->
-
-<!-- IControlThemable.cls contains 0 phrases. -->
-
-<!-- END text for IControlThemable.cls-->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2517</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4320 phrases. -->
 <!-- 1803 are duplicates, so only 2517 unique phrases have been written to file. -->
-<!-- These 2517 phrases contain approximately 13403 total words. -->
+<!-- These 2517 phrases contain approximately 13401 total words. -->
 
 </pdData>

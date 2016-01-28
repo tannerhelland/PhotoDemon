@@ -104,6 +104,12 @@ Private curThemeColors() As Long
 'XML object for parsing theme files.
 Private m_XML As pdXML
 
+'When colors are retrieved from the theme file, we cache them locally.  This spares us time on subsequent color requests,
+' especially for generic colors (e.g. "Background") which are retrieved by multiple controls.
+Private m_NumColorsCached As Long
+Private m_ColorCache() As PDCachedColor
+Private Const DEFAULT_COLOR_CACHE_SIZE As Long = 16
+
 'Despite an identical name, this function does *not* use the Win32 API to retrieve a color from the system theme.
 ' Instead, it retrieves a color from PD's current theme color cache.
 Friend Function GetThemeColor(ByVal colorType As PD_THEME_COLOR) As Long
@@ -206,6 +212,9 @@ Public Function LoadThemeFile(ByVal themeFilename As String) As Boolean
             LoadThemeFile = LoadThemeFile And m_XML.isPDDataType("Visual theme") And m_XML.validateLoadedXMLData("Colors")
             
         End If
+        
+        'Regardless of success or failure, reset our internal color cache
+        ResetColorCache
         
         'If the user's choice of theme didn't load correctly, or the default theme failed to load, run some heuristics
         ' on the theme folder.
@@ -395,7 +404,8 @@ Public Function LookUpColor(ByVal objectName As String, ByRef colorName As Strin
 
 End Function
 
-'Given the raw value retrieved by LookUpColor(), above, retrieve that color to its ultimate hex representation.
+'Given the raw value retrieved by LookUpColor(), above, retrieve that color's ultimate representation (e.g. not a
+' named color variable, but an actual color literal, like #ff0000).
 Private Function ResolveColor(ByVal initialColorValue As String) As String
 
     Do
@@ -423,6 +433,45 @@ Private Function ResolveColor(ByVal initialColorValue As String) As String
     
     Loop
 
+End Function
+
+'Whenever a new theme is loaded, we must wipe the entire color cache.
+Private Sub ResetColorCache()
+    m_NumColorsCached = 0
+    ReDim m_ColorCache(0 To DEFAULT_COLOR_CACHE_SIZE - 1) As PDCachedColor
+End Sub
+
+'After the external pdThemeColors class has properly resolved a base color (and all its variants) to final RGB longs,
+' it will cache the newly created variable via this function.  This allows subsequent color requests to bypass the
+' XML data entirely.
+Friend Sub AddColorToCache(ByRef objectName As String, ByRef colorName As String, ByRef srcColorEntry As PDThemeColor)
+    
+    m_ColorCache(m_NumColorsCached).OrigObjectName = objectName
+    m_ColorCache(m_NumColorsCached).OrigColorName = colorName
+    m_ColorCache(m_NumColorsCached).OrigColorValues = srcColorEntry
+    
+    m_NumColorsCached = m_NumColorsCached + 1
+    If m_NumColorsCached > UBound(m_ColorCache) Then ReDim Preserve m_ColorCache(0 To m_NumColorsCached * 2 - 1) As PDCachedColor
+    
+End Sub
+
+'Look up a color in the color cache.  If it exists, the function returns TRUE, and the destination PDThemeColor struct
+' is filled with the matching cache values.
+Friend Function RetrieveColorFromCache(ByRef objectName As String, ByRef colorName As String, ByRef dstColorEntry As PDThemeColor) As Boolean
+
+    RetrieveColorFromCache = False
+    
+    Dim i As Long
+    For i = 0 To m_NumColorsCached - 1
+        If StrComp(objectName, m_ColorCache(i).OrigObjectName, vbBinaryCompare) = 0 Then
+            If StrComp(colorName, m_ColorCache(i).OrigColorName, vbBinaryCompare) = 0 Then
+                RetrieveColorFromCache = True
+                dstColorEntry = m_ColorCache(i).OrigColorValues
+                Exit For
+            End If
+        End If
+    Next i
+    
 End Function
 
 Private Sub Class_Initialize()

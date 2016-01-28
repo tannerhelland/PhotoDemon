@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.128</langversion>
+<langversion>6.7.129</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -5146,8 +5146,8 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
-<original>PD developer tools</original>
-<translation>PhotoDemon Entwicklerwerkzeuge</translation>
+<original>Developers</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14670,18 +14670,12 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for IControlThemable.cls -->
-
-<!-- IControlThemable.cls contains 0 phrases. -->
-
-<!-- END text for IControlThemable.cls-->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2517</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4320 phrases. -->
 <!-- 1803 are duplicates, so only 2517 unique phrases have been written to file. -->
-<!-- These 2517 phrases contain approximately 13403 total words. -->
+<!-- These 2517 phrases contain approximately 13401 total words. -->
 
 </pdData>
