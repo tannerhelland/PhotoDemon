@@ -1,4 +1,4 @@
-Attribute VB_Name = "File_And_Path_Handling"
+Attribute VB_Name = "FileSystem"
 '***************************************************************************
 'Miscellaneous Functions Related to File and Folder Interactions
 'Copyright 2001-2016 by Tanner Helland

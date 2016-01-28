@@ -216,14 +216,6 @@ Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
     End If
 End Property
 
-Public Property Get InternalWidth() As Long
-    InternalWidth = ucSupport.GetBackBufferWidth
-End Property
-
-Public Property Get InternalHeight() As Long
-    InternalHeight = ucSupport.GetBackBufferHeight
-End Property
-
 Public Property Get Layout() As PD_LABEL_LAYOUT
     Layout = m_Layout
 End Property
@@ -285,7 +277,7 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
     UpdateControlLayout
 End Sub
 
-'Because we sometimes do run-timre rearranging of label controls, we wrap a couple helper functions to ensure proper high-DPI support
+'Because we sometimes do run-time rearranging of label controls, we wrap a couple helper functions to ensure proper high-DPI support
 Public Function GetLeft() As Long
     Dim controlRect As RECTL
     ucSupport.GetControlRect controlRect
@@ -384,8 +376,8 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     
 End Sub
 
-'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
-' of internal sizing metrics whenever the control size changes.
+'Because this control supports a variety of text layouts, we have to recalculate our internal sizing metrics under
+' a number of different conditions.  This "catch-all" function handles all resize/fit responsibilities.
 Private Sub UpdateControlLayout()
     
     'Retrieve DPI-aware control dimensions from the support class
@@ -550,7 +542,7 @@ Private Sub UpdateColorList()
         
     'Color list retrieval is pretty darn easy - just load each color one at a time, and leave the rest to the color class.
     ' It will build an internal hash table of the colors we request, which makes rendering much faster.
-    Dim colorValues As PDLABEL_COLOR_LIST
+    Dim ColorValues As PDLABEL_COLOR_LIST
     
     With m_Colors
         .LoadThemeColor PDL_Background, "Background", IDE_WHITE

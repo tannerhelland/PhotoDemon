@@ -24,6 +24,16 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdHyperlink pdhlTest 
+      Height          =   375
+      Index           =   0
+      Left            =   3120
+      Top             =   3000
+      Width           =   4455
+      _ExtentX        =   7858
+      _ExtentY        =   661
+      Caption         =   "I'm a basic hyperlink"
+   End
    Begin PhotoDemon.buttonStripVertical btsvTest 
       Height          =   2535
       Left            =   120
@@ -39,8 +49,8 @@ Begin VB.Form FormThemeEditor
       Left            =   120
       TabIndex        =   1
       Top             =   1920
-      Width           =   6375
-      _ExtentX        =   11245
+      Width           =   7455
+      _ExtentX        =   13150
       _ExtentY        =   1720
       Caption         =   "I'm a horizontal button strip"
    End
@@ -77,6 +87,19 @@ Begin VB.Form FormThemeEditor
       _ExtentY        =   582
       Alignment       =   2
       Caption         =   "(Note: if you edit a theme file externally, you can toggle the button above to force PD to reload the updated file.)"
+   End
+   Begin PhotoDemon.pdHyperlink pdhlTest 
+      Height          =   375
+      Index           =   1
+      Left            =   3120
+      Top             =   3480
+      Width           =   4335
+      _ExtentX        =   7646
+      _ExtentY        =   661
+      Caption         =   "I'm a hyperlink with weird formatting"
+      FontBold        =   -1  'True
+      FontItalic      =   -1  'True
+      FontSize        =   12
    End
 End
 Attribute VB_Name = "FormThemeEditor"

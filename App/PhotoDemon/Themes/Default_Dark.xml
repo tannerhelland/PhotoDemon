@@ -21,7 +21,7 @@
 			<DefaultBackground>#313131</DefaultBackground>
 			<DisabledGray>#929292</DisabledGray>
 			<TextDefault>#c0c0c0</TextDefault>
-			<TextHyperlink>#3170c0</TextHyperlink>
+			<TextHyperlink>#52b0ff</TextHyperlink>
 			<TextInvert>#313131</TextInvert>
 		</Definitions>
 		
@@ -74,10 +74,18 @@
 			</ButtonStrip>
 			
 			<GenericPDControl>
-				<Background></Background>
+				<Background>DefaultBackground</Background>
 				<Caption></Caption>
+				<Caption-disabled></Caption-disabled>
 			</GenericPDControl>
 				
+			<PDHyperlink>
+				<Background>DefaultBackground</Background>
+				<Caption>TextHyperlink</Caption>
+				<Caption-disabled>DisabledGray</Caption-disabled>
+				<Caption-hover>AccentDefault</Caption-hover>
+			</PDHyperlink>
+			
 			<!-- ****************************************************************************************** -->
 		
 		</Colors>
