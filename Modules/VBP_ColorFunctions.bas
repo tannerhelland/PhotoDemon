@@ -92,11 +92,11 @@ End Function
 'Present the user with PD's custom color selection dialog.
 ' INPUTS:  1) a Long-type variable (ByRef, of course) which will receive the new color
 '          2) an optional initial color
-'          3) an optional colorSelector control reference, if this dialog is being raised by a colorSelector control.
+'          3) an optional pdColorSelector control reference, if this dialog is being raised by a pdColorSelector control.
 '             (This reference will be used to provide live updates as the user plays with the color dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function showColorDialog(ByRef colorReceive As Long, Optional ByVal initialColor As Long = vbWhite, Optional ByRef callingControl As colorSelector) As Boolean
+Public Function showColorDialog(ByRef colorReceive As Long, Optional ByVal initialColor As Long = vbWhite, Optional ByRef callingControl As pdColorSelector) As Boolean
     
     'As of November 2014, PhotoDemon has its own color selector!
     If choosePDColor(initialColor, colorReceive, callingControl) = vbOK Then
@@ -1045,3 +1045,4 @@ Public Function GetColorFromString(ByRef srcString As String, ByRef dstRGBLong A
     End Select
     
 End Function
+

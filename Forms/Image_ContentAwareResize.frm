@@ -23,7 +23,7 @@ Begin VB.Form FormResizeContentAware
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   647
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormResizeContentAware
       BackColor       =   14802140
       AutoloadLastPreset=   -1  'True
    End
-   Begin PhotoDemon.smartResize ucResize 
+   Begin PhotoDemon.pdResize ucResize 
       Height          =   2850
       Left            =   480
       TabIndex        =   1
@@ -349,4 +349,6 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal 
     End If
     
 End Function
+
+
 

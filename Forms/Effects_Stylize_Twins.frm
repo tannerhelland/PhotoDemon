@@ -24,7 +24,7 @@ Begin VB.Form FormTwins
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.buttonStrip btsOrientation 
+   Begin PhotoDemon.pdButtonStrip btsOrientation 
       Height          =   1095
       Left            =   6000
       TabIndex        =   2
@@ -34,7 +34,7 @@ Begin VB.Form FormTwins
       _ExtentY        =   1931
       Caption         =   "orientation"
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -45,7 +45,7 @@ Begin VB.Form FormTwins
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -78,7 +78,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'This routine mirrors and alphablends an image, making it "tilable" or symmetrical
-Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
    
     If Not toPreview Then Message "Generating image twin..."
     
@@ -222,12 +222,15 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then GenerateTwins btsOrientation.ListIndex, True, fxPreview
+    If cmdBar.previewsAllowed Then GenerateTwins btsOrientation.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 
 

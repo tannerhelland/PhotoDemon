@@ -23,7 +23,7 @@ Begin VB.Form FormLensFlare
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormLensFlare
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -45,7 +45,7 @@ Begin VB.Form FormLensFlare
       DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
-   Begin PhotoDemon.buttonStrip btsOptions 
+   Begin PhotoDemon.pdButtonStrip btsOptions 
       Height          =   960
       Left            =   6000
       TabIndex        =   7
@@ -69,7 +69,7 @@ Begin VB.Form FormLensFlare
       TabIndex        =   2
       Top             =   0
       Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltXCenter 
+      Begin PhotoDemon.pdSlider sltXCenter 
          Height          =   405
          Left            =   120
          TabIndex        =   3
@@ -83,7 +83,7 @@ Begin VB.Form FormLensFlare
          NotchPosition   =   2
          NotchValueCustom=   0.5
       End
-      Begin PhotoDemon.sliderTextCombo sltYCenter 
+      Begin PhotoDemon.pdSlider sltYCenter 
          Height          =   405
          Left            =   3120
          TabIndex        =   4
@@ -97,7 +97,7 @@ Begin VB.Form FormLensFlare
          NotchPosition   =   2
          NotchValueCustom=   0.5
       End
-      Begin PhotoDemon.sliderTextCombo sltIntensity 
+      Begin PhotoDemon.pdSlider sltIntensity 
          Height          =   705
          Index           =   0
          Left            =   120
@@ -114,7 +114,7 @@ Begin VB.Form FormLensFlare
          NotchPosition   =   2
          NotchValueCustom=   1
       End
-      Begin PhotoDemon.sliderTextCombo sltRadius 
+      Begin PhotoDemon.pdSlider sltRadius 
          Height          =   705
          Left            =   120
          TabIndex        =   6
@@ -129,7 +129,7 @@ Begin VB.Form FormLensFlare
          NotchPosition   =   2
          NotchValueCustom=   100
       End
-      Begin PhotoDemon.sliderTextCombo sltHue 
+      Begin PhotoDemon.pdSlider sltHue 
          Height          =   705
          Left            =   120
          TabIndex        =   8
@@ -182,7 +182,7 @@ Begin VB.Form FormLensFlare
       Top             =   0
       Visible         =   0   'False
       Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltIntensity 
+      Begin PhotoDemon.pdSlider sltIntensity 
          Height          =   705
          Index           =   1
          Left            =   120
@@ -199,7 +199,7 @@ Begin VB.Form FormLensFlare
          NotchPosition   =   2
          NotchValueCustom=   1
       End
-      Begin PhotoDemon.sliderTextCombo sltIntensity 
+      Begin PhotoDemon.pdSlider sltIntensity 
          Height          =   705
          Index           =   2
          Left            =   120
@@ -216,7 +216,7 @@ Begin VB.Form FormLensFlare
          NotchPosition   =   2
          NotchValueCustom=   1
       End
-      Begin PhotoDemon.buttonStrip btsSyncIntensity 
+      Begin PhotoDemon.pdButtonStrip btsSyncIntensity 
          Height          =   1080
          Left            =   90
          TabIndex        =   12
@@ -556,7 +556,7 @@ Private Sub mRt4(ByRef srcR As Long, ByRef srcG As Long, ByRef srcB As Long, ByR
 End Sub
 
 'Apply a lens flare filter to an image
-Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal flareRadius As Double = 100, Optional ByVal primaryIntensity As Double = 1#, Optional ByVal secondaryIntensity As Double = 1#, Optional ByVal tertiaryIntensity As Double = 1#, Optional ByVal hueOffset As Double = 0#, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal flareRadius As Double = 100, Optional ByVal primaryIntensity As Double = 1#, Optional ByVal secondaryIntensity As Double = 1#, Optional ByVal tertiaryIntensity As Double = 1#, Optional ByVal hueOffset As Double = 0#, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Applying lens flare..."
     
@@ -795,10 +795,10 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then LensFlare sltXCenter.Value, sltYCenter.Value, sltRadius, sltIntensity(0), sltIntensity(1), sltIntensity(2), sltHue, True, fxPreview
+    If cmdBar.previewsAllowed Then LensFlare sltXCenter.Value, sltYCenter.Value, sltRadius, sltIntensity(0), sltIntensity(1), sltIntensity(2), sltHue, True, pdFxPreview
 End Sub
 
-Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
+Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
     cmdBar.markPreviewStatus False
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
@@ -807,7 +807,7 @@ Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -844,4 +844,8 @@ End Sub
 Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
+
+
+
+
 

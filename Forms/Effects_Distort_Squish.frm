@@ -24,7 +24,7 @@ Begin VB.Form FormSquish
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormSquish
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -45,7 +45,7 @@ Begin VB.Form FormSquish
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltRatioX 
+   Begin PhotoDemon.pdSlider sltRatioX 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -58,7 +58,7 @@ Begin VB.Form FormSquish
       Max             =   100
       SigDigits       =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltRatioY 
+   Begin PhotoDemon.pdSlider sltRatioY 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -71,7 +71,7 @@ Begin VB.Form FormSquish
       Max             =   100
       SigDigits       =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltQuality 
+   Begin PhotoDemon.pdSlider sltQuality 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -137,7 +137,7 @@ End Sub
 'Apply horizontal and/or vertical perspective to an image by shrinking it in one or more directions
 ' Input: xRatio, a value from -100 to 100 that specifies the horizontal perspective
 '        yRatio, same as xRatio but for vertical perspective
-Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Squeezing image..."
     
@@ -416,12 +416,15 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then SquishImage sltRatioX, sltRatioY, CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
+    If cmdBar.previewsAllowed Then SquishImage sltRatioX, sltRatioY, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 
 

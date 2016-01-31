@@ -116,6 +116,7 @@ README_PSC-version.txt
 /Support/Master language XML generator/MasterTranslation.exe
 /Support/Update builder/PhotoDemon_Update_Generator.exe
 /Support/Update patcher/PD_Update_Patcher.exe
+/Support/Project-wide search and replace/VBP_SearchAndReplace.exe
 /Data
 *.tmpxml
 *.backup

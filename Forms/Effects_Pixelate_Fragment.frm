@@ -24,7 +24,7 @@ Begin VB.Form FormFragment
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   793
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormFragment
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -45,7 +45,7 @@ Begin VB.Form FormFragment
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltDistance 
+   Begin PhotoDemon.pdSlider sltDistance 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -58,7 +58,7 @@ Begin VB.Form FormFragment
       SigDigits       =   1
       Value           =   8
    End
-   Begin PhotoDemon.sliderTextCombo sltFragments 
+   Begin PhotoDemon.pdSlider sltFragments 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -71,7 +71,7 @@ Begin VB.Form FormFragment
       Max             =   25
       Value           =   4
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -83,7 +83,7 @@ Begin VB.Form FormFragment
       Max             =   360
       SigDigits       =   2
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
+   Begin PhotoDemon.pdRadioButton OptInterpolate 
       Height          =   360
       Index           =   0
       Left            =   6120
@@ -95,7 +95,7 @@ Begin VB.Form FormFragment
       Caption         =   "quality"
       Value           =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
+   Begin PhotoDemon.pdRadioButton OptInterpolate 
       Height          =   360
       Index           =   1
       Left            =   6120
@@ -173,7 +173,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a fragment filter to the active layer
-Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal rotationAngle As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal rotationAngle As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
    
     If Not toPreview Then Message "Applying beer goggles..."
     
@@ -371,10 +371,10 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then Fragment sltFragments, sltDistance, sltAngle, CLng(cboEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then Fragment sltFragments, sltDistance, sltAngle, CLng(cboEdges.ListIndex), OptInterpolate(0).Value, True, pdFxPreview
 End Sub
 
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -393,4 +393,8 @@ End Sub
 Private Sub sltFragments_Change()
     UpdatePreview
 End Sub
+
+
+
+
 

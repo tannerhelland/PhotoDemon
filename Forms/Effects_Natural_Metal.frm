@@ -23,7 +23,7 @@ Begin VB.Form FormMetal
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormMetal
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -47,7 +47,7 @@ Begin VB.Form FormMetal
       SigDigits       =   1
       Value           =   20
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -56,7 +56,7 @@ Begin VB.Form FormMetal
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltDetail 
+   Begin PhotoDemon.pdSlider sltDetail 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -70,7 +70,7 @@ Begin VB.Form FormMetal
       NotchPosition   =   2
       NotchValueCustom=   4
    End
-   Begin PhotoDemon.colorSelector csHighlight 
+   Begin PhotoDemon.pdColorSelector csHighlight 
       Height          =   975
       Left            =   6000
       TabIndex        =   4
@@ -81,7 +81,7 @@ Begin VB.Form FormMetal
       Caption         =   "highlight color"
       curColor        =   14737632
    End
-   Begin PhotoDemon.colorSelector csShadow 
+   Begin PhotoDemon.pdColorSelector csShadow 
       Height          =   975
       Left            =   6000
       TabIndex        =   5
@@ -122,7 +122,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a metallic "shimmer" to an image
-Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As Double, Optional ByVal shadowColor As Long = 0, Optional ByVal highlightColor As Long = vbWhite, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As Double, Optional ByVal shadowColor As Long = 0, Optional ByVal highlightColor As Long = vbWhite, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Pouring smoldering metal onto image..."
     
@@ -290,7 +290,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyMetalFilter sltDetail.Value, sltRadius.Value, csShadow.Color, csHighlight.Color, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyMetalFilter sltDetail.Value, sltRadius.Value, csShadow.Color, csHighlight.Color, True, pdFxPreview
 End Sub
 
 Private Sub sltDetail_Change()
@@ -302,8 +302,12 @@ Private Sub sltRadius_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 
 

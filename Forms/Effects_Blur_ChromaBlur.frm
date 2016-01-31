@@ -23,7 +23,7 @@ Begin VB.Form FormChromaBlur
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.buttonStrip btsQuality 
+   Begin PhotoDemon.pdButtonStrip btsQuality 
       Height          =   975
       Left            =   6000
       TabIndex        =   3
@@ -33,7 +33,7 @@ Begin VB.Form FormChromaBlur
       _ExtentY        =   1720
       Caption         =   "quality"
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -44,7 +44,7 @@ Begin VB.Form FormChromaBlur
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -53,7 +53,7 @@ Begin VB.Form FormChromaBlur
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -98,7 +98,7 @@ Option Explicit
 ' particularly in digital photos.
 'Inputs: radius of the blur (min 1, no real max - but processing speed obviously drops as the radius increases)
 '        quality of the blur (gaussian approximations - fast, lower quality - vs an actual gaussian - slow, excellent quality)
-Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Blurring chroma (color) data..."
     
@@ -299,12 +299,16 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ChromaBlurFilter sltRadius, btsQuality.ListIndex, True, fxPreview
+    If cmdBar.previewsAllowed Then ChromaBlurFilter sltRadius, btsQuality.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 
 

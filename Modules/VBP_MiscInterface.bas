@@ -1297,8 +1297,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         '         (Also, once all combo boxes are replaced with PD's dedicated replacement, this line can be removed.)
         If (TypeOf eControl Is ComboBox) Then SendMessage eControl.hWnd, CB_SETMINVISIBLE, CLng(eControl.ListCount), ByVal 0&
         
-        'TODO: integrate font handling directly into smartResize
-        If (TypeOf eControl Is smartResize) Then
+        'TODO: integrate font handling directly into pdResize
+        If (TypeOf eControl Is pdResize) Then
             eControl.Font.Name = g_InterfaceFont
         End If
         
@@ -1310,22 +1310,22 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         ' 2) Updating any translatable text against the current translation
         
         'These controls are fully compatible with PD's theming and translation engines:
-        If (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is buttonStripVertical) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdButtonStrip) Or (TypeOf eControl Is pdButtonStripVertical) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdLabel) Then eControl.UpdateAgainstCurrentTheme
         
         'These controls currently support translations, but not theming.  (Theming support is actively being worked on, and I'm
         ' migrating controls to the above "finished" list as they're completed.  Once all controls have been migrated, I'll look
         ' at a better system for detecting internal PD controls.)
-        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdRadioButton) Or (TypeOf eControl Is pdCheckBox) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdButton) Or (TypeOf eControl Is pdButtonToolbox) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdHyperlink) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSpinner) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is pdScrollBar) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is brushSelector) Or (TypeOf eControl Is gradientSelector) Or (TypeOf eControl Is penSelector) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is colorSelector) Or (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdBrushSelector) Or (TypeOf eControl Is pdGradientSelector) Or (TypeOf eControl Is pdPenSelector) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdColorSelector) Or (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdTitle) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is fxPreviewCtl) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdFxPreviewCtl) Then eControl.UpdateAgainstCurrentTheme
         
         'While we're here, forcibly remove TabStops from each picture box.  They should never receive focus, but I often forget
         ' to change this at design-time.
@@ -1650,7 +1650,7 @@ End Sub
 
 'Populate the passed button strip with options related to convolution kernel shape.  The caller can also specify which method they
 ' want set as the default.
-Public Sub PopKernelShapeButtonStrip(ByRef srcBTS As buttonStrip, Optional ByVal defaultShape As PD_PIXEL_REGION_SHAPE = PDPRS_Rectangle)
+Public Sub PopKernelShapeButtonStrip(ByRef srcBTS As pdButtonStrip, Optional ByVal defaultShape As PD_PIXEL_REGION_SHAPE = PDPRS_Rectangle)
     
     srcBTS.AddItem "Square", 0
     srcBTS.AddItem "Circle", 1
@@ -1789,3 +1789,14 @@ End Function
 Public Sub ReleaseResources()
     Set currentDialogReference = Nothing
 End Sub
+
+
+
+
+
+
+
+
+
+
+

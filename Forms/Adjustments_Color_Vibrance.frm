@@ -23,7 +23,7 @@ Begin VB.Form FormVibrance
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormVibrance
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltVibrance 
+   Begin PhotoDemon.pdSlider sltVibrance 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -46,7 +46,7 @@ Begin VB.Form FormVibrance
       Min             =   -100
       Max             =   200
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -82,7 +82,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Adjusting color vibrance..."
     
@@ -208,11 +208,14 @@ Private Sub sltVibrance_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then Vibrance sltVibrance, True, fxPreview
+    If cmdBar.previewsAllowed Then Vibrance sltVibrance, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 

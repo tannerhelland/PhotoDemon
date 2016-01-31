@@ -35,7 +35,7 @@ Begin VB.Form toolpanel_NDFX
       _ExtentY        =   1005
       AutoToggle      =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltQuickFix 
+   Begin PhotoDemon.pdSlider sltQuickFix 
       CausesValidation=   0   'False
       Height          =   405
       Index           =   0
@@ -50,7 +50,7 @@ Begin VB.Form toolpanel_NDFX
       SigDigits       =   2
       SliderTrackStyle=   2
    End
-   Begin PhotoDemon.sliderTextCombo sltQuickFix 
+   Begin PhotoDemon.pdSlider sltQuickFix 
       CausesValidation=   0   'False
       Height          =   405
       Index           =   1
@@ -63,7 +63,7 @@ Begin VB.Form toolpanel_NDFX
       Min             =   -100
       Max             =   100
    End
-   Begin PhotoDemon.sliderTextCombo sltQuickFix 
+   Begin PhotoDemon.pdSlider sltQuickFix 
       CausesValidation=   0   'False
       Height          =   405
       Index           =   2
@@ -76,7 +76,7 @@ Begin VB.Form toolpanel_NDFX
       Min             =   -100
       Max             =   100
    End
-   Begin PhotoDemon.sliderTextCombo sltQuickFix 
+   Begin PhotoDemon.pdSlider sltQuickFix 
       CausesValidation=   0   'False
       Height          =   405
       Index           =   3
@@ -89,7 +89,7 @@ Begin VB.Form toolpanel_NDFX
       Min             =   -100
       Max             =   100
    End
-   Begin PhotoDemon.sliderTextCombo sltQuickFix 
+   Begin PhotoDemon.pdSlider sltQuickFix 
       CausesValidation=   0   'False
       Height          =   405
       Index           =   4
@@ -106,7 +106,7 @@ Begin VB.Form toolpanel_NDFX
       GradientColorRight=   2990335
       GradientColorMiddle=   16777215
    End
-   Begin PhotoDemon.sliderTextCombo sltQuickFix 
+   Begin PhotoDemon.pdSlider sltQuickFix 
       CausesValidation=   0   'False
       Height          =   405
       Index           =   5
@@ -395,3 +395,4 @@ End Sub
 Private Sub sltQuickFix_LostFocusAPI(Index As Integer)
     If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_NDFX Index, sltQuickFix(Index).Value
 End Sub
+

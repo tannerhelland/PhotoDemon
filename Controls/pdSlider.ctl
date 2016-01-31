@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.UserControl sliderTextCombo 
+Begin VB.UserControl pdSlider 
    BackColor       =   &H80000005&
    ClientHeight    =   495
    ClientLeft      =   0
@@ -18,8 +18,8 @@ Begin VB.UserControl sliderTextCombo
    ScaleHeight     =   33
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   400
-   ToolboxBitmap   =   "textSliderCombo.ctx":0000
-   Begin PhotoDemon.textUpDown tudPrimary 
+   ToolboxBitmap   =   "pdSlider.ctx":0000
+   Begin PhotoDemon.pdSpinner tudPrimary 
       Height          =   345
       Left            =   4800
       TabIndex        =   1
@@ -44,13 +44,13 @@ Begin VB.UserControl sliderTextCombo
       Width           =   4695
    End
 End
-Attribute VB_Name = "sliderTextCombo"
+Attribute VB_Name = "pdSlider"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Text / Slider custom control
+'PhotoDemon Slider+Spinner custom control
 'Copyright 2013-2016 by Tanner Helland
 'Created: 19/April/13
 'Last updated: 25/August/15
@@ -1494,3 +1494,6 @@ Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTi
     toolTipManager.SetTooltip Me.hWnd, UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
     toolTipManager.SetTooltip picScroll.hWnd, UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
+
+
+

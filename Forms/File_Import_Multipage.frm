@@ -36,7 +36,7 @@ Begin VB.Form dialog_MultiImage
       _ExtentY        =   1296
       Caption         =   "Load each page as its own image"
    End
-   Begin PhotoDemon.smartCheckBox chkRepeat 
+   Begin PhotoDemon.pdCheckBox chkRepeat 
       Height          =   300
       Left            =   240
       TabIndex        =   2
@@ -183,4 +183,5 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
+
 

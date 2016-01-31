@@ -34,7 +34,7 @@ Begin VB.Form FormFog
       _ExtentY        =   1058
       Caption         =   "Randomize cloud base"
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -45,7 +45,7 @@ Begin VB.Form FormFog
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltScale 
+   Begin PhotoDemon.pdSlider sltScale 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -61,7 +61,7 @@ Begin VB.Form FormFog
       NotchPosition   =   2
       NotchValueCustom=   25
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -71,7 +71,7 @@ Begin VB.Form FormFog
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltContrast 
+   Begin PhotoDemon.pdSlider sltContrast 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -85,7 +85,7 @@ Begin VB.Form FormFog
       NotchPosition   =   2
       NotchValueCustom=   50
    End
-   Begin PhotoDemon.sliderTextCombo sltQuality 
+   Begin PhotoDemon.pdSlider sltQuality 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -100,7 +100,7 @@ Begin VB.Form FormFog
       NotchPosition   =   2
       NotchValueCustom=   5
    End
-   Begin PhotoDemon.sliderTextCombo sltDensity 
+   Begin PhotoDemon.pdSlider sltDensity 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -153,7 +153,7 @@ Private Sub cmbEdges_Click()
 End Sub
 
 'Apply a "fog" effect to an image, using Perlin Noise as the base
-Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDensity As Long, ByVal fxQuality As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDensity As Long, ByVal fxQuality As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Generating artificial fog..."
     
@@ -401,12 +401,15 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxFog sltScale, sltContrast, sltDensity, sltQuality, True, fxPreview
+    If cmdBar.previewsAllowed Then fxFog sltScale, sltContrast, sltDensity, sltQuality, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 
 

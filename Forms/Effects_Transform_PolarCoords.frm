@@ -24,7 +24,7 @@ Begin VB.Form FormPolar
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.buttonStrip btsRender 
+   Begin PhotoDemon.pdButtonStrip btsRender 
       Height          =   1095
       Left            =   6000
       TabIndex        =   6
@@ -34,7 +34,7 @@ Begin VB.Form FormPolar
       _ExtentY        =   1931
       Caption         =   "render emphasis"
    End
-   Begin PhotoDemon.smartCheckBox chkSwapXY 
+   Begin PhotoDemon.pdCheckBox chkSwapXY 
       Height          =   330
       Left            =   6120
       TabIndex        =   1
@@ -44,7 +44,7 @@ Begin VB.Form FormPolar
       _ExtentY        =   582
       Caption         =   "swap x and y coordinates"
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -55,7 +55,7 @@ Begin VB.Form FormPolar
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   3
@@ -65,7 +65,7 @@ Begin VB.Form FormPolar
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -171,7 +171,7 @@ End Sub
 ' 0) Convert rectangular to polar
 ' 1) Convert polar to rectangular
 ' 2) Polar inversion
-Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal swapXAndY As Boolean, ByVal polarRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal swapXAndY As Boolean, ByVal polarRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Performing polar coordinate conversion..."
         
@@ -257,12 +257,17 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ConvertToPolar cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), True, fxPreview
+    If cmdBar.previewsAllowed Then ConvertToPolar cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
+
 
 

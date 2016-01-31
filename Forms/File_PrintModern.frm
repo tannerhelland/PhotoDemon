@@ -117,7 +117,7 @@ Begin VB.Form FormPrintNew
          Top             =   4080
          Width           =   5430
       End
-      Begin PhotoDemon.smartOptionButton optPrintJob 
+      Begin PhotoDemon.pdRadioButton optPrintJob 
          Height          =   375
          Index           =   0
          Left            =   480
@@ -129,7 +129,7 @@ Begin VB.Form FormPrintNew
          Caption         =   "one image per page"
          Value           =   -1  'True
       End
-      Begin PhotoDemon.textUpDown tudCopies 
+      Begin PhotoDemon.pdSpinner tudCopies 
          Height          =   345
          Left            =   5280
          TabIndex        =   14
@@ -197,7 +197,7 @@ Begin VB.Form FormPrintNew
          Top             =   480
          Width           =   4335
       End
-      Begin PhotoDemon.smartOptionButton optPrintJob 
+      Begin PhotoDemon.pdRadioButton optPrintJob 
          Height          =   375
          Index           =   1
          Left            =   480
@@ -208,7 +208,7 @@ Begin VB.Form FormPrintNew
          _ExtentY        =   582
          Caption         =   "multiple images per page"
       End
-      Begin PhotoDemon.smartOptionButton optPrintJob 
+      Begin PhotoDemon.pdRadioButton optPrintJob 
          Height          =   375
          Index           =   2
          Left            =   480
@@ -525,3 +525,5 @@ End Sub
 Private Sub testCurrentPrintSettings()
 
 End Sub
+
+

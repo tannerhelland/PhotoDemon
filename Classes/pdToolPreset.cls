@@ -42,7 +42,7 @@ Private Type pdPreset
     SpecialPresetID As Long         'If this preset is a special, internal PD preset (like Default Settings or Last-Used Settings),
                                     ' this value will be non-zero
     PresetXML As String             'The preset's XML chunk.  This does not include an encoding header or pdDataType; it's just the
-                                    ' string containing the preset's various tags.  The parent commandBar object constructs this.
+                                    ' string containing the preset's various tags.  The parent pdCommandBar object constructs this.
 End Type
 
 'Preset collection for this tool
@@ -244,3 +244,4 @@ Private Sub debugNote(ByVal debugMessage As String)
         If Len(debugMessage) <> 0 Then pdDebug.LogAction "(pdToolPreset debug note) : " & debugMessage
     #End If
 End Sub
+

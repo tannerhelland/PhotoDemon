@@ -1,37 +1,40 @@
 VERSION 5.00
-Begin VB.UserControl smartCheckBox 
+Begin VB.UserControl pdRadioButton 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   ClientHeight    =   375
+   ClientHeight    =   555
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   2520
+   ClientWidth     =   3735
+   ClipBehavior    =   0  'None
    ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
-      Size            =   8.25
+      Size            =   12
       Charset         =   0
       Weight          =   400
       Underline       =   0   'False
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   ForeColor       =   &H00404040&
    HasDC           =   0   'False
    MousePointer    =   99  'Custom
-   ScaleHeight     =   25
+   ScaleHeight     =   37
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   168
-   ToolboxBitmap   =   "smartCheckBox.ctx":0000
+   ScaleWidth      =   249
+   ToolboxBitmap   =   "pdRadioButton.ctx":0000
 End
-Attribute VB_Name = "smartCheckBox"
+Attribute VB_Name = "pdRadioButton"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Checkbox control
+'PhotoDemon Radio Button control
 'Copyright 2013-2016 by Tanner Helland
 'Created: 28/January/13
-'Last updated: 05/November/15
+'Last updated: 03/December/15
 'Last update: integrate with pdUCSupport, which cuts a ton of redundant code
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
@@ -41,7 +44,7 @@ Attribute VB_Exposed = False
 'As such, I've created many of my own UCs for the program.  All are owner-drawn, with the goal of maintaining
 ' visual fidelity across the program, while also enabling key features like Unicode support.
 '
-'A few notes on this checkbox replacement, specifically:
+'A few notes on this radio button replacement, specifically:
 '
 ' 1) The control is no longer autosized based on the current font and caption.  If a caption exceeds the size of the
 '     (manually set) width, the font size will be repeatedly reduced until the caption fits.
@@ -59,6 +62,7 @@ Option Explicit
 
 'This control really only needs one event raised - Click
 Public Event Click()
+Attribute Click.VB_UserMemId = -600
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
@@ -70,18 +74,18 @@ Public Event LostFocusAPI()
 Private m_FitFailure As Boolean
 
 'Current control value
-Private m_Value As CheckBoxConstants
+Private m_Value As Boolean
 
 'Rect where the caption is rendered.  This is calculated by UpdateControlLayout, and it needs to be revisited if the
 ' caption changes, or the control size changes.
 Private m_CaptionRect As RECTF
 
-'Similar rect for the checkbox
-Private m_CheckboxRect As RECTF
+'Similar rect for the radio button itself
+Private m_RadioButtonRect As RECTF
 
 'Whenever the caption changes or the control is resized, the "clickable" rect must be updated.  (This control allows the user
-' to click on either the checkbox, or the caption itself.)  It's tracked separately, because there's some fairly messy padding
-' calculations involved in positioning the checkbox and caption relative to the control as a whole.
+' to click on either the radio button, or the caption itself.)  It's tracked separately, because there's some fairly messy
+' padding calculations involved in positioning the radio button and caption relative to the control as a whole.
 Private m_ClickableRect As RECTF, m_MouseInsideClickableRect As Boolean
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
@@ -127,21 +131,56 @@ Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 
-'State is toggled on each click.  For backwards compatibility reasons, we use VB's built-in checkbox constants, although this control
-' really only supports true/false states.
-Public Property Get Value() As CheckBoxConstants
+'Container hWnd is used to make sure radio button groups lie within the same parent control.
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
+End Property
+
+Public Property Get Value() As Boolean
 Attribute Value.VB_UserMemId = 0
     Value = m_Value
 End Property
 
-Public Property Let Value(ByVal newValue As CheckBoxConstants)
+Public Property Let Value(ByVal newValue As Boolean)
+    
     If m_Value <> newValue Then
+    
         m_Value = newValue
         RedrawBackBuffer
-        RaiseEvent Click
-        PropertyChanged "Value"
+        
+        'It's important to only raise change events when a radio button is set to TRUE.  Otherwise, clicking one button will cause
+        ' Click() events to fire for all other radio buttons (as they're being set to FALSE).
+        If newValue Then
+            UpdateOtherButtons
+            RaiseEvent Click
+            PropertyChanged "Value"
+        End If
+        
     End If
+    
 End Property
+
+'Call to reset all other radio buttons to match this button's new state.  This button's state must be TRUE.
+Private Sub UpdateOtherButtons()
+
+    'If the option button is set to TRUE, turn off all other option buttons on a form
+    If m_Value Then
+
+        'Enumerate through each control on the form; if it's another option button whose value is TRUE, set it to FALSE
+        Dim eControl As Object
+        For Each eControl In Parent.Controls
+            If TypeOf eControl Is pdRadioButton Then
+                If eControl.Container.hWnd = UserControl.ContainerHwnd Then
+                    If Not (eControl.hWnd = UserControl.hWnd) Then
+                        If eControl.Value Then eControl.Value = False
+                    End If
+                End If
+            End If
+        Next eControl
+    
+    End If
+    
+End Sub
 
 Private Sub ucSupport_GotFocusAPI()
     RedrawBackBuffer
@@ -156,14 +195,14 @@ End Sub
 'Space and Enter keypresses toggle control state
 Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
     If Me.Enabled And ((vkCode = VK_SPACE) Or (vkCode = VK_RETURN)) Then
-        If CBool(Me.Value) Then Me.Value = vbUnchecked Else Me.Value = vbChecked
+        Me.Value = True
     End If
 End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     If Me.Enabled And isMouseOverClickArea(x, y) Then
-        If CBool(Me.Value) Then Me.Value = vbUnchecked Else Me.Value = vbChecked
+        Me.Value = True
     End If
 End Sub
 
@@ -228,7 +267,7 @@ End Sub
 Private Sub UserControl_InitProperties()
     Caption = "caption"
     FontSize = 10
-    Value = vbChecked
+    Value = True
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -240,7 +279,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         Caption = .ReadProperty("Caption", "")
         FontSize = .ReadProperty("FontSize", 10)
-        Value = .ReadProperty("Value", vbChecked)
+        Value = .ReadProperty("Value", False)
     End With
 End Sub
 
@@ -252,7 +291,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Caption", ucSupport.GetCaptionText, "caption"
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 10
-        .WriteProperty "Value", Value, vbChecked
+        .WriteProperty "Value", Value, False
     End With
 End Sub
 
@@ -279,8 +318,8 @@ Private Sub UpdateControlLayout()
         
     End If
     
-    'Because the checkbox size and font size are inextricably connected, we now need to retrieve a font object matching the
-    ' current control font size.  That font's metrics will determine how everything gets positioned.
+    'Because the radio button size and font size are inextricably connected, we now need to retrieve a font object matching
+    ' the current control font size.  That font's metrics will determine how everything gets positioned.
     Dim tmpFont As pdFont
     Set tmpFont = Font_Management.GetMatchingUIFont(ucSupport.GetCaptionFontSize)
     tmpFont.SetTextAlignment vbLeftJustify
@@ -295,22 +334,22 @@ Private Sub UpdateControlLayout()
     
     'Using the font metrics, determine a check box offset and size.  Note that 1px is manually added as part of maintaining a
     ' 1px border around the user control as a whole (which is used for a keyboard focus rect).
-    Dim offsetX As Long, offsetY As Long, chkBoxSize As Long
+    Dim offsetX As Long, offsetY As Long, radioButtonSize As Long
     offsetX = 1 + FixDPI(2)
     offsetY = 1 + FixDPI(2)
-    chkBoxSize = bHeight - (offsetY * 2)
+    radioButtonSize = bHeight - (offsetY * 2)
     
-    'Use that to populate the checkbox rect
-    With m_CheckboxRect
+    'Use that to populate the radio button rect; we store it at module-level, and use it for rendering and hit-detection
+    With m_RadioButtonRect
         .Left = offsetX
         .Top = offsetY
-        .Width = chkBoxSize
-        .Height = chkBoxSize
+        .Width = radioButtonSize
+        .Height = radioButtonSize
     End With
     
     'Pass the available space to the support class; it needs this information to auto-fit the caption
     Dim captionLeft As Long
-    captionLeft = (m_CheckboxRect.Left + m_CheckboxRect.Width) + FixDPI(hBoxCaptionPadding)
+    captionLeft = (m_RadioButtonRect.Left + m_RadioButtonRect.Width) + FixDPI(hBoxCaptionPadding)
     ucSupport.SetCaptionCustomPosition captionLeft, 0, bWidth - captionLeft, bHeight
     
     'While here, calculate a caption rect, taking into account the auto-sized caption text (which may be using a different font size)
@@ -322,8 +361,8 @@ Private Sub UpdateControlLayout()
         .Height = ucSupport.GetCaptionHeight(True) + 1
     End With
     
-    'The clickable rect is the union of the checkbox and caption rect.  Calculate it now.
-    Math_Functions.UnionRectF m_ClickableRect, m_CheckboxRect, m_CaptionRect
+    'The clickable rect is the union of the radio button and caption rect.  Calculate it now.
+    Math_Functions.UnionRectF m_ClickableRect, m_RadioButtonRect, m_CaptionRect
     
     'If the caption still does not fit within the available area (typically because we reached the minimum allowable font
     ' size, but the caption was *still* too long), set a module-level failure state to TRUE.  This notifies the renderer
@@ -353,60 +392,42 @@ Private Sub RedrawBackBuffer()
     If g_IsProgramRunning Then
     
         'Colors used throughout this paint function are determined primarily control enablement
-        Dim chkBoxColorBorder As Long, chkBoxColorFill As Long, chkColor As Long
+        Dim radioColorBorder As Long, radioColorFill As Long
         If Me.Enabled Then
             
-            chkColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-            
-            If CBool(m_Value) Then
-                
+            If m_Value Then
                 If m_MouseInsideClickableRect Then
-                    chkBoxColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+                    radioColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+                    radioColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
                 Else
-                    chkBoxColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
+                    radioColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
+                    radioColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
                 End If
-                
-                chkBoxColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                
             Else
-                
                 If m_MouseInsideClickableRect Then
-                    chkBoxColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
+                    radioColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
                 Else
-                    chkBoxColorBorder = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
+                    radioColorBorder = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
                 End If
-                
-                chkBoxColorFill = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-                
+                radioColorFill = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
             End If
             
         Else
-            chkBoxColorBorder = g_Themer.GetThemeColor(PDTC_DISABLED)
-            chkColor = g_Themer.GetThemeColor(PDTC_DISABLED)
-            chkBoxColorFill = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
+            radioColorBorder = g_Themer.GetThemeColor(PDTC_DISABLED)
+            radioColorFill = g_Themer.GetThemeColor(PDTC_DISABLED)
         End If
         
-        'Fill the checkbox area
-        With m_CheckboxRect
-            GDI_Plus.GDIPlusFillRectToDC bufferDC, Int(.Left), Int(.Top), Int(.Width + 1.999), Int(.Height + 1.999), chkBoxColorFill
+        'Draw the radio button border
+        With m_RadioButtonRect
+            GDI_Plus.GDIPlusDrawCircleToDC bufferDC, .Left + .Width / 2, .Top + .Height / 2, .Width / 2, radioColorBorder, 255, 1.5, True
         End With
         
-        'If the check box button is checked, draw a checkmark inside the border
-        If CBool(m_Value) Then
-            
-            Dim pt1 As POINTFLOAT, pt2 As POINTFLOAT, pt3 As POINTFLOAT
-            pt1.x = m_CheckboxRect.Left + 3
-            pt1.y = m_CheckboxRect.Top + (m_CheckboxRect.Height / 2)
-            pt2.x = m_CheckboxRect.Left + (m_CheckboxRect.Width / 2) - 1.5
-            pt2.y = m_CheckboxRect.Top + m_CheckboxRect.Height - 3
-            pt3.x = (m_CheckboxRect.Left + m_CheckboxRect.Width) - 2
-            pt3.y = m_CheckboxRect.Top + 3
-            GDI_Plus.GDIPlusDrawLineToDC bufferDC, pt1.x, pt1.y, pt2.x, pt2.y, chkColor, 255, FixDPI(2), True, LineCapRound, True
-            GDI_Plus.GDIPlusDrawLineToDC bufferDC, pt2.x, pt2.y, pt3.x, pt3.y, chkColor, 255, FixDPI(2), True, LineCapRound, True
+        'If the button state is TRUE, draw a smaller circle inside the border
+        If m_Value Then
+            With m_RadioButtonRect
+                GDI_Plus.GDIPlusFillEllipseToDC bufferDC, .Left + 3#, .Top + 3#, .Width - 6#, .Height - 6#, radioColorFill
+            End With
         End If
-        
-        'Draw the checkbox border
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_CheckboxRect, chkBoxColorBorder, , , , LineJoinMiter
         
     End If
     
@@ -449,3 +470,5 @@ End Sub
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
+
+

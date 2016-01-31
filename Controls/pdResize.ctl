@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.UserControl smartResize 
+Begin VB.UserControl pdResize 
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
@@ -20,7 +20,7 @@ Begin VB.UserControl smartResize
    ScaleHeight     =   190
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   552
-   ToolboxBitmap   =   "smartResize.ctx":0000
+   ToolboxBitmap   =   "pdResize.ctx":0000
    Begin PhotoDemon.pdButtonToolbox cmdAspectRatio 
       Height          =   630
       Left            =   7590
@@ -62,7 +62,7 @@ Begin VB.UserControl smartResize
       _ExtentY        =   635
       FontSize        =   14
    End
-   Begin PhotoDemon.textUpDown tudWidth 
+   Begin PhotoDemon.pdSpinner tudWidth 
       Height          =   345
       Left            =   2130
       TabIndex        =   0
@@ -74,7 +74,7 @@ Begin VB.UserControl smartResize
       Max             =   32767
       Value           =   1
    End
-   Begin PhotoDemon.textUpDown tudHeight 
+   Begin PhotoDemon.pdSpinner tudHeight 
       Height          =   345
       Left            =   2130
       TabIndex        =   1
@@ -86,7 +86,7 @@ Begin VB.UserControl smartResize
       Max             =   32767
       Value           =   1
    End
-   Begin PhotoDemon.textUpDown tudResolution 
+   Begin PhotoDemon.pdSpinner tudResolution 
       Height          =   345
       Left            =   2130
       TabIndex        =   6
@@ -185,7 +185,7 @@ Begin VB.UserControl smartResize
       ForeColor       =   4210752
    End
 End
-Attribute VB_Name = "smartResize"
+Attribute VB_Name = "pdResize"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -913,8 +913,8 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 End Sub
 
 'This function is just a thin wrapper to the public convertOtherUnitToPixels function.  The only difference is that this function requests
-' a reference to the actual textUpDown control requesting conversion, and it will automatically validate that control as necessary.
-Private Function convertUnitToPixels(ByVal unitOfMeasurement As MeasurementUnit, ByRef tudSource As textUpDown, Optional ByVal srcUnitResolution As Double, Optional ByVal initPixelValue As Double) As Double
+' a reference to the actual pdSpinner control requesting conversion, and it will automatically validate that control as necessary.
+Private Function convertUnitToPixels(ByVal unitOfMeasurement As MeasurementUnit, ByRef tudSource As pdSpinner, Optional ByVal srcUnitResolution As Double, Optional ByVal initPixelValue As Double) As Double
 
     If tudSource.IsValid(False) Then
         convertUnitToPixels = convertOtherUnitToPixels(unitOfMeasurement, tudSource.Value, srcUnitResolution, initPixelValue)
@@ -960,4 +960,6 @@ Private Function getCurrentHeightUnit() As Long
         getCurrentHeightUnit = cmbHeightUnit.ListIndex
     End If
 End Function
+
+
 

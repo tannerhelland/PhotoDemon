@@ -24,7 +24,7 @@ Begin VB.Form FormPoke
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormPoke
       DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltStrength 
+   Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -51,7 +51,7 @@ Begin VB.Form FormPoke
       NotchPosition   =   2
       NotchValueCustom=   1
    End
-   Begin PhotoDemon.sliderTextCombo sltXCenter 
+   Begin PhotoDemon.pdSlider sltXCenter 
       Height          =   405
       Left            =   6000
       TabIndex        =   3
@@ -65,7 +65,7 @@ Begin VB.Form FormPoke
       NotchPosition   =   2
       NotchValueCustom=   0.5
    End
-   Begin PhotoDemon.sliderTextCombo sltYCenter 
+   Begin PhotoDemon.pdSlider sltYCenter 
       Height          =   405
       Left            =   9000
       TabIndex        =   4
@@ -79,7 +79,7 @@ Begin VB.Form FormPoke
       NotchPosition   =   2
       NotchValueCustom=   0.5
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -90,7 +90,7 @@ Begin VB.Form FormPoke
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltQuality 
+   Begin PhotoDemon.pdSlider sltQuality 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -191,7 +191,7 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Correct lens distortion in an image
-Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Poking image..."
     
@@ -479,16 +479,16 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyPokeDistort sltStrength, CLng(cboEdges.ListIndex), sltQuality, sltXCenter.Value, sltYCenter.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyPokeDistort sltStrength, CLng(cboEdges.ListIndex), sltQuality, sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 'The user can right-click the preview area to select a new center point
-Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
+Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
     
     cmdBar.markPreviewStatus False
     sltXCenter.Value = xRatio
@@ -505,5 +505,8 @@ End Sub
 Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
+
+
+
 
 

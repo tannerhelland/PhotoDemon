@@ -23,7 +23,7 @@ Begin VB.Form FormBoxBlur
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.sliderTextCombo sltWidth 
+   Begin PhotoDemon.pdSlider sltWidth 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -36,7 +36,7 @@ Begin VB.Form FormBoxBlur
       Max             =   500
       Value           =   2
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -45,7 +45,7 @@ Begin VB.Form FormBoxBlur
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.smartCheckBox chkUnison 
+   Begin PhotoDemon.pdCheckBox chkUnison 
       Height          =   330
       Left            =   6120
       TabIndex        =   2
@@ -55,7 +55,7 @@ Begin VB.Form FormBoxBlur
       _ExtentY        =   582
       Caption         =   "keep both dimensions in sync"
    End
-   Begin PhotoDemon.sliderTextCombo sltHeight 
+   Begin PhotoDemon.pdSlider sltHeight 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -68,7 +68,7 @@ Begin VB.Form FormBoxBlur
       Max             =   500
       Value           =   2
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -113,7 +113,7 @@ End Sub
 
 'Convolve an image using a box blur.  An accumulation approach is used to maximize speed.
 'Input: horizontal and vertical size of the box (I call it radius, because the final box size is 2r + 1)
-Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Applying box blur to image..."
         
@@ -186,7 +186,7 @@ Private Sub syncScrollBars(ByVal srcHorizontal As Boolean)
     
 End Sub
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then BoxBlurFilter sltWidth, sltHeight, True, fxPreview
+    If cmdBar.previewsAllowed Then BoxBlurFilter sltWidth, sltHeight, True, pdFxPreview
 End Sub
 
 Private Sub sltHeight_Change()
@@ -200,6 +200,10 @@ Private Sub sltWidth_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+

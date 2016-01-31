@@ -23,7 +23,7 @@ Begin VB.Form FormReduceColors
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   821
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormReduceColors
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.smartOptionButton optQuant 
+   Begin PhotoDemon.pdRadioButton optQuant 
       Height          =   360
       Index           =   0
       Left            =   6120
@@ -46,7 +46,7 @@ Begin VB.Form FormReduceColors
       Caption         =   "Xiaolin Wu"
       FontSize        =   11
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   3
@@ -55,7 +55,7 @@ Begin VB.Form FormReduceColors
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.smartOptionButton optQuant 
+   Begin PhotoDemon.pdRadioButton optQuant 
       Height          =   360
       Index           =   1
       Left            =   6120
@@ -183,7 +183,7 @@ Private Sub OptQuant_Click(Index As Integer)
 End Sub
 
 'Automatic 8-bit color reduction via the FreeImage DLL.
-Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     'If this is not a preview, and a selection is active on the main image, remove it.
     If (Not toPreview) And pdImages(g_CurrentImage).selectionActive Then
@@ -199,7 +199,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
     'Color reduction only works on a flat copy of the image, so retrieve a composited version now.
     If toPreview Then
         Dim tmpSafeArray As SAFEARRAY2D
-        previewNonStandardImage tmpSafeArray, tmpDIB, fxPreview
+        previewNonStandardImage tmpSafeArray, tmpDIB, pdFxPreview
         
     'If this is not a preview, flatten the image before proceeding further
     Else
@@ -296,17 +296,20 @@ Private Sub UpdatePreview()
     
     If cmdBar.previewsAllowed Then
         If optQuant(0).Value Then
-            ReduceImageColors_Auto FIQ_WUQUANT, True, fxPreview
+            ReduceImageColors_Auto FIQ_WUQUANT, True, pdFxPreview
         Else
-            ReduceImageColors_Auto FIQ_NNQUANT, True, fxPreview
+            ReduceImageColors_Auto FIQ_NNQUANT, True, pdFxPreview
         End If
     End If
     
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 
 

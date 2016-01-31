@@ -136,7 +136,7 @@ Begin VB.Form FormLanguageEditor
          _ExtentY        =   3519
          Multiline       =   -1  'True
       End
-      Begin PhotoDemon.smartCheckBox chkGoogleTranslate 
+      Begin PhotoDemon.pdCheckBox chkGoogleTranslate 
          Height          =   330
          Left            =   5040
          TabIndex        =   4
@@ -163,7 +163,7 @@ Begin VB.Form FormLanguageEditor
          Top             =   360
          Width           =   4500
       End
-      Begin PhotoDemon.smartCheckBox chkShortcut 
+      Begin PhotoDemon.pdCheckBox chkShortcut 
          Height          =   330
          Left            =   5040
          TabIndex        =   5
@@ -273,7 +273,7 @@ Begin VB.Form FormLanguageEditor
          Top             =   1560
          Width           =   10695
       End
-      Begin PhotoDemon.smartOptionButton optBaseLanguage 
+      Begin PhotoDemon.pdRadioButton optBaseLanguage 
          Height          =   375
          Index           =   0
          Left            =   120
@@ -285,7 +285,7 @@ Begin VB.Form FormLanguageEditor
          Caption         =   "start a new language file from scratch"
          Value           =   -1  'True
       End
-      Begin PhotoDemon.smartOptionButton optBaseLanguage 
+      Begin PhotoDemon.pdRadioButton optBaseLanguage 
          Height          =   375
          Index           =   1
          Left            =   120
@@ -1536,5 +1536,7 @@ Private Sub populateAvailableLanguages()
     lstLanguages.ListIndex = -1
     
 End Sub
+
+
 
 

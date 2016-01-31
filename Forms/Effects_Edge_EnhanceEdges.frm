@@ -24,7 +24,7 @@ Begin VB.Form FormEdgeEnhance
    ScaleWidth      =   813
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -52,7 +52,7 @@ Begin VB.Form FormEdgeEnhance
       Top             =   480
       Width           =   5655
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   3
@@ -61,7 +61,7 @@ Begin VB.Form FormEdgeEnhance
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.smartCheckBox chkDirection 
+   Begin PhotoDemon.pdCheckBox chkDirection 
       Height          =   360
       Index           =   0
       Left            =   6240
@@ -72,7 +72,7 @@ Begin VB.Form FormEdgeEnhance
       _ExtentY        =   582
       Caption         =   "horizontal"
    End
-   Begin PhotoDemon.smartCheckBox chkDirection 
+   Begin PhotoDemon.pdCheckBox chkDirection 
       Height          =   360
       Index           =   1
       Left            =   6240
@@ -83,7 +83,7 @@ Begin VB.Form FormEdgeEnhance
       _ExtentY        =   582
       Caption         =   "vertical"
    End
-   Begin PhotoDemon.sliderTextCombo sltStrength 
+   Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -191,7 +191,7 @@ End Sub
 
 'Apply any supported edge detection filter to an image.  Directionality can be specified, but note that only some
 ' algorithms support the parameter.
-Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION, ByVal enhanceStrength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION, ByVal enhanceStrength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     'Applying an edge detection filter generally happens via these steps:
     
@@ -549,7 +549,7 @@ End Function
 
 'This code is a modified version of an algorithm originally developed by Manuel Augusto Santos.  A link to his original
 ' implementation is available from the "Help -> About PhotoDemon" menu option.
-Public Sub FilterSmoothContour(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub FilterSmoothContour(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Tracing image edges with virtual paintbrush..."
         
@@ -670,17 +670,21 @@ End Function
 Private Sub UpdatePreview()
     
     If cmdBar.previewsAllowed Then
-        ApplyEdgeEnhancement LstEdgeOptions.ListIndex, getDirectionality(), sltStrength.Value, True, fxPreview
+        ApplyEdgeEnhancement LstEdgeOptions.ListIndex, getDirectionality(), sltStrength.Value, True, pdFxPreview
     End If
     
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 Private Sub sltStrength_Change()
     UpdatePreview
 End Sub
+
+
+
+
 

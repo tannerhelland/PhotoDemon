@@ -24,7 +24,7 @@ Begin VB.Form FormRotateDistort
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.buttonStrip btsRender 
+   Begin PhotoDemon.pdButtonStrip btsRender 
       Height          =   975
       Left            =   6000
       TabIndex        =   6
@@ -34,7 +34,7 @@ Begin VB.Form FormRotateDistort
       _ExtentY        =   1720
       Caption         =   "render emphasis"
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -45,7 +45,7 @@ Begin VB.Form FormRotateDistort
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -56,7 +56,7 @@ Begin VB.Form FormRotateDistort
       DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -69,7 +69,7 @@ Begin VB.Form FormRotateDistort
       Max             =   360
       SigDigits       =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltXCenter 
+   Begin PhotoDemon.pdSlider sltXCenter 
       Height          =   405
       Left            =   6000
       TabIndex        =   2
@@ -83,7 +83,7 @@ Begin VB.Form FormRotateDistort
       NotchPosition   =   2
       NotchValueCustom=   0.5
    End
-   Begin PhotoDemon.sliderTextCombo sltYCenter 
+   Begin PhotoDemon.pdSlider sltYCenter 
       Height          =   405
       Left            =   9000
       TabIndex        =   3
@@ -190,7 +190,7 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Apply a basic rotation to the image or selected area
-Public Sub RotateFilter(ByVal rotateAngle As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub RotateFilter(ByVal rotateAngle As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Rotating area..."
     
@@ -265,11 +265,11 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then RotateFilter sltAngle.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), sltXCenter.Value, sltYCenter.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then RotateFilter sltAngle.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
 End Sub
 
 'The user can right-click the preview area to select a new center point
-Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
+Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
     
     cmdBar.markPreviewStatus False
     sltXCenter.Value = xRatio
@@ -284,7 +284,7 @@ Private Sub sltAngle_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -295,4 +295,8 @@ End Sub
 Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
+
+
+
+
 

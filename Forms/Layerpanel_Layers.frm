@@ -137,7 +137,7 @@ Begin VB.Form layerpanel_Layers
       Caption         =   "opacity:"
       Layout          =   2
    End
-   Begin PhotoDemon.sliderTextCombo sltLayerOpacity 
+   Begin PhotoDemon.pdSlider sltLayerOpacity 
       CausesValidation=   0   'False
       Height          =   405
       Left            =   960
@@ -1595,4 +1595,5 @@ Public Sub UpdateAgainstCurrentTheme()
     ReflowInterface
     
 End Sub
+
 

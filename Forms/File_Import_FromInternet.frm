@@ -23,7 +23,7 @@ Begin VB.Form FormInternetImport
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   670
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBarMini cmdBarMini 
+   Begin PhotoDemon.pdCommandBarMini cmdBarMini 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -374,5 +374,6 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
+
 
 

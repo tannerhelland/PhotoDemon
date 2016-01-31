@@ -25,7 +25,7 @@ Begin VB.Form FormNewImage
    ScaleWidth      =   642
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -36,7 +36,7 @@ Begin VB.Form FormNewImage
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.smartOptionButton optBackground 
+   Begin PhotoDemon.pdRadioButton optBackground 
       CausesValidation=   0   'False
       Height          =   330
       Index           =   0
@@ -49,7 +49,7 @@ Begin VB.Form FormNewImage
       Caption         =   "transparent"
       Value           =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton optBackground 
+   Begin PhotoDemon.pdRadioButton optBackground 
       CausesValidation=   0   'False
       Height          =   330
       Index           =   1
@@ -61,7 +61,7 @@ Begin VB.Form FormNewImage
       _ExtentY        =   582
       Caption         =   "black"
    End
-   Begin PhotoDemon.smartOptionButton optBackground 
+   Begin PhotoDemon.pdRadioButton optBackground 
       CausesValidation=   0   'False
       Height          =   330
       Index           =   2
@@ -73,7 +73,7 @@ Begin VB.Form FormNewImage
       _ExtentY        =   582
       Caption         =   "white"
    End
-   Begin PhotoDemon.smartOptionButton optBackground 
+   Begin PhotoDemon.pdRadioButton optBackground 
       CausesValidation=   0   'False
       Height          =   330
       Index           =   3
@@ -85,7 +85,7 @@ Begin VB.Form FormNewImage
       _ExtentY        =   582
       Caption         =   "custom color"
    End
-   Begin PhotoDemon.colorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector colorPicker 
       Height          =   615
       Left            =   840
       TabIndex        =   6
@@ -95,7 +95,7 @@ Begin VB.Form FormNewImage
       _ExtentY        =   1085
       curColor        =   16749332
    End
-   Begin PhotoDemon.smartResize ucResize 
+   Begin PhotoDemon.pdResize ucResize 
       Height          =   2850
       Left            =   360
       TabIndex        =   1
@@ -231,4 +231,8 @@ Private Sub calculateDefaultSize()
     End If
 
 End Sub
+
+
+
+
 

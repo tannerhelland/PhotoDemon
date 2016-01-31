@@ -23,7 +23,7 @@ Begin VB.Form FormDiffuse
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   814
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormDiffuse
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltX 
+   Begin PhotoDemon.pdSlider sltX 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -45,7 +45,7 @@ Begin VB.Form FormDiffuse
       Caption         =   "horizontal strength"
       Value           =   1
    End
-   Begin PhotoDemon.smartCheckBox chkWrap 
+   Begin PhotoDemon.pdCheckBox chkWrap 
       Height          =   330
       Left            =   6120
       TabIndex        =   2
@@ -55,7 +55,7 @@ Begin VB.Form FormDiffuse
       _ExtentY        =   582
       Caption         =   "wrap edge values"
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -64,7 +64,7 @@ Begin VB.Form FormDiffuse
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltY 
+   Begin PhotoDemon.pdSlider sltY 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -153,7 +153,7 @@ End Sub
 
 'Custom diffuse effect
 ' Inputs: diameter in x direction, diameter in y direction, whether or not to wrap edge pixels, and optional preview settings
-Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal wrapPixels As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal wrapPixels As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Simulating large image explosion..."
     
@@ -273,7 +273,7 @@ Private Sub sltX_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then DiffuseCustom sltX.Value, sltY.Value, CBool(chkWrap.Value), True, fxPreview
+    If cmdBar.previewsAllowed Then DiffuseCustom sltX.Value, sltY.Value, CBool(chkWrap.Value), True, pdFxPreview
 End Sub
 
 Private Sub sltY_Change()
@@ -281,8 +281,12 @@ Private Sub sltY_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 
 

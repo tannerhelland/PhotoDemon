@@ -23,7 +23,7 @@ Begin VB.Form FormRadialBlur
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.buttonStrip btsRender 
+   Begin PhotoDemon.pdButtonStrip btsRender 
       Height          =   1095
       Left            =   6000
       TabIndex        =   4
@@ -33,7 +33,7 @@ Begin VB.Form FormRadialBlur
       _ExtentY        =   1931
       Caption         =   "render emphasis"
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -44,7 +44,7 @@ Begin VB.Form FormRadialBlur
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -54,7 +54,7 @@ Begin VB.Form FormRadialBlur
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -68,7 +68,7 @@ Begin VB.Form FormRadialBlur
       SigDigits       =   1
       Value           =   1
    End
-   Begin PhotoDemon.smartCheckBox chkSymmetry 
+   Begin PhotoDemon.pdCheckBox chkSymmetry 
       Height          =   300
       Left            =   6120
       TabIndex        =   3
@@ -110,7 +110,7 @@ Option Explicit
 
 'Apply radial blur to an image
 'Inputs: angle of the blur, and whether it should be symmetrical (e.g. equal in +/- angle amounts)
-Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As Boolean, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As Boolean, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Applying radial blur..."
     
@@ -257,12 +257,17 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then RadialBlurFilter sltRadius, CBool(chkSymmetry), CBool(btsRender.ListIndex = 1), True, fxPreview
+    If cmdBar.previewsAllowed Then RadialBlurFilter sltRadius, CBool(chkSymmetry), CBool(btsRender.ListIndex = 1), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
+
 
 

@@ -34,7 +34,7 @@ Begin VB.Form FormThemeEditor
       _ExtentY        =   661
       Caption         =   "I'm a basic hyperlink"
    End
-   Begin PhotoDemon.buttonStripVertical btsvTest 
+   Begin PhotoDemon.pdButtonStripVertical btsvTest 
       Height          =   2535
       Left            =   120
       TabIndex        =   2
@@ -44,7 +44,7 @@ Begin VB.Form FormThemeEditor
       _ExtentY        =   4471
       Caption         =   "I'm a vertical button strip"
    End
-   Begin PhotoDemon.buttonStrip btsTest 
+   Begin PhotoDemon.pdButtonStrip btsTest 
       Height          =   975
       Left            =   120
       TabIndex        =   1
@@ -54,7 +54,7 @@ Begin VB.Form FormThemeEditor
       _ExtentY        =   1720
       Caption         =   "I'm a horizontal button strip"
    End
-   Begin PhotoDemon.buttonStrip btsToggleTest 
+   Begin PhotoDemon.pdButtonStrip btsToggleTest 
       Height          =   975
       Left            =   120
       TabIndex        =   0
@@ -137,3 +137,4 @@ Private Sub Form_Load()
     Interface.ApplyThemeAndTranslations Me
     
 End Sub
+

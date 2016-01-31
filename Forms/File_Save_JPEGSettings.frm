@@ -23,7 +23,7 @@ Begin VB.Form dialog_ExportJPEG
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   874
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.buttonStrip btsCategory 
+   Begin PhotoDemon.pdButtonStrip btsCategory 
       Height          =   615
       Left            =   5880
       TabIndex        =   1
@@ -33,7 +33,7 @@ Begin VB.Form dialog_ExportJPEG
       _ExtentY        =   1085
       FontSize        =   11
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -45,7 +45,7 @@ Begin VB.Form dialog_ExportJPEG
       BackColor       =   14802140
       dontAutoUnloadParent=   -1  'True
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   2
@@ -88,7 +88,7 @@ Begin VB.Form dialog_ExportJPEG
          Caption         =   "click here to review the image's metadata"
          RaiseClickEvent =   -1  'True
       End
-      Begin PhotoDemon.smartCheckBox chkThumbnail 
+      Begin PhotoDemon.pdCheckBox chkThumbnail 
          Height          =   330
          Left            =   360
          TabIndex        =   11
@@ -184,7 +184,7 @@ Begin VB.Form dialog_ExportJPEG
          Visible         =   0   'False
          Width           =   6735
       End
-      Begin PhotoDemon.smartCheckBox chkOptimize 
+      Begin PhotoDemon.pdCheckBox chkOptimize 
          Height          =   330
          Left            =   360
          TabIndex        =   5
@@ -194,7 +194,7 @@ Begin VB.Form dialog_ExportJPEG
          _ExtentY        =   582
          Caption         =   "optimize compression tables"
       End
-      Begin PhotoDemon.smartCheckBox chkProgressive 
+      Begin PhotoDemon.pdCheckBox chkProgressive 
          Height          =   330
          Left            =   360
          TabIndex        =   6
@@ -204,7 +204,7 @@ Begin VB.Form dialog_ExportJPEG
          _ExtentY        =   582
          Caption         =   "use progressive encoding"
       End
-      Begin PhotoDemon.smartCheckBox chkSubsample 
+      Begin PhotoDemon.pdCheckBox chkSubsample 
          Height          =   330
          Left            =   360
          TabIndex        =   7
@@ -214,7 +214,7 @@ Begin VB.Form dialog_ExportJPEG
          _ExtentY        =   582
          Caption         =   "use specific subsampling:"
       End
-      Begin PhotoDemon.sliderTextCombo sltQuality 
+      Begin PhotoDemon.pdSlider sltQuality 
          Height          =   405
          Left            =   2880
          TabIndex        =   8
@@ -227,7 +227,7 @@ Begin VB.Form dialog_ExportJPEG
          Value           =   90
          NotchPosition   =   1
       End
-      Begin PhotoDemon.smartCheckBox chkColorMatching 
+      Begin PhotoDemon.pdCheckBox chkColorMatching 
          Height          =   300
          Left            =   360
          TabIndex        =   9
@@ -609,7 +609,7 @@ Public Sub showDialog()
         
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
-        tmpDIB.createBlank fxPreview.getPreviewWidth, fxPreview.getPreviewHeight
+        tmpDIB.createBlank pdFxPreview.getPreviewWidth, pdFxPreview.getPreviewHeight
     
         Dim notifyFont As pdFont
         Set notifyFont = New pdFont
@@ -622,8 +622,8 @@ Public Sub showDialog()
         notifyFont.AttachToDC tmpDIB.getDIBDC
     
         notifyFont.FastRenderText tmpDIB.getDIBWidth \ 2, tmpDIB.getDIBHeight \ 2, g_Language.TranslateMessage("JPEG previews require the FreeImage plugin.")
-        fxPreview.setOriginalImage tmpDIB
-        fxPreview.setFXImage tmpDIB
+        pdFxPreview.setOriginalImage tmpDIB
+        pdFxPreview.setFXImage tmpDIB
         
         notifyFont.ReleaseFromDC
         Set tmpDIB = Nothing
@@ -641,7 +641,7 @@ Public Sub showDialog()
 
 End Sub
 
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -673,7 +673,7 @@ Private Sub UpdatePreview()
         
         'Start by retrieving the relevant portion of the image, according to the preview window
         Dim tmpSafeArray As SAFEARRAY2D
-        previewNonStandardImage tmpSafeArray, tmpDIB, fxPreview
+        previewNonStandardImage tmpSafeArray, tmpDIB, pdFxPreview
         
         If workingDIB.getDIBColorDepth = 32 Then workingDIB.convertTo24bpp
         
@@ -695,7 +695,7 @@ Private Sub UpdatePreview()
         fillDIBWithJPEGVersion workingDIB, workingDIB, JPEGQuality, IIf(CBool(chkSubsample), getSubsampleConstantFromComboBox(), JPEG_SUBSAMPLING_422)
         
         'Paint the final image to screen and release all temporary objects
-        finalizeNonstandardPreview fxPreview
+        finalizeNonstandardPreview pdFxPreview
                 
     End If
     
@@ -717,4 +717,9 @@ Private Function getSubsampleConstantFromComboBox() As Long
     End Select
     
 End Function
+
+
+
+
+
 

@@ -71,7 +71,7 @@ Begin VB.Form toolpanel_Text
       _ExtentX        =   4260
       _ExtentY        =   661
    End
-   Begin PhotoDemon.buttonStrip btsHAlignment 
+   Begin PhotoDemon.pdButtonStrip btsHAlignment 
       Height          =   435
       Left            =   15720
       TabIndex        =   9
@@ -92,7 +92,7 @@ Begin VB.Form toolpanel_Text
       _ExtentY        =   767
       StickyToggle    =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltTextClarity 
+   Begin PhotoDemon.pdSlider sltTextClarity 
       Height          =   405
       Left            =   11880
       TabIndex        =   4
@@ -104,7 +104,7 @@ Begin VB.Form toolpanel_Text
       NotchPosition   =   2
       NotchValueCustom=   5
    End
-   Begin PhotoDemon.colorSelector csTextFontColor 
+   Begin PhotoDemon.pdColorSelector csTextFontColor 
       Height          =   390
       Left            =   11880
       TabIndex        =   0
@@ -114,7 +114,7 @@ Begin VB.Form toolpanel_Text
       _ExtentY        =   688
       curColor        =   0
    End
-   Begin PhotoDemon.textUpDown tudTextFontSize 
+   Begin PhotoDemon.pdSpinner tudTextFontSize 
       Height          =   345
       Left            =   7680
       TabIndex        =   1
@@ -276,7 +276,7 @@ Begin VB.Form toolpanel_Text
       Caption         =   "alignment:"
       ForeColor       =   0
    End
-   Begin PhotoDemon.buttonStrip btsVAlignment 
+   Begin PhotoDemon.pdButtonStrip btsVAlignment 
       Height          =   435
       Left            =   15720
       TabIndex        =   10
@@ -792,3 +792,7 @@ Public Sub UpdateAgainstCurrentTheme()
     ApplyThemeAndTranslations Me
 
 End Sub
+
+
+
+

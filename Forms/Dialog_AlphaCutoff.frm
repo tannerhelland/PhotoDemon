@@ -24,7 +24,7 @@ Begin VB.Form dialog_AlphaCutoff
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   777
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.colorSelector csComposite 
+   Begin PhotoDemon.pdColorSelector csComposite 
       Height          =   915
       Left            =   4920
       TabIndex        =   1
@@ -34,7 +34,7 @@ Begin VB.Form dialog_AlphaCutoff
       _ExtentY        =   1614
       Caption         =   "background color for compositing"
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -46,7 +46,7 @@ Begin VB.Form dialog_AlphaCutoff
       BackColor       =   14802140
       dontAutoUnloadParent=   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltThreshold 
+   Begin PhotoDemon.pdSlider sltThreshold 
       Height          =   705
       Left            =   4920
       TabIndex        =   0
@@ -257,4 +257,7 @@ End Sub
 Private Sub sltThreshold_Change()
     If sltThreshold.IsValid(False) Then UpdatePreview
 End Sub
+
+
+
 

@@ -32,7 +32,7 @@ Begin VB.Form FormMonochrome
       _ExtentX        =   10186
       _ExtentY        =   661
    End
-   Begin PhotoDemon.sliderTextCombo sltThreshold 
+   Begin PhotoDemon.pdSlider sltThreshold 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -47,7 +47,7 @@ Begin VB.Form FormMonochrome
       NotchPosition   =   2
       NotchValueCustom=   127
    End
-   Begin PhotoDemon.smartCheckBox chkAutoThreshold 
+   Begin PhotoDemon.pdCheckBox chkAutoThreshold 
       Height          =   330
       Left            =   6120
       TabIndex        =   4
@@ -58,7 +58,7 @@ Begin VB.Form FormMonochrome
       Caption         =   "automatically calculate threshold"
       Value           =   0
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   3
@@ -67,7 +67,7 @@ Begin VB.Form FormMonochrome
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.colorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector colorPicker 
       Height          =   615
       Index           =   0
       Left            =   6120
@@ -78,7 +78,7 @@ Begin VB.Form FormMonochrome
       _ExtentY        =   1085
       curColor        =   0
    End
-   Begin PhotoDemon.colorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector colorPicker 
       Height          =   615
       Index           =   1
       Left            =   9000
@@ -88,7 +88,7 @@ Begin VB.Form FormMonochrome
       _ExtentX        =   4895
       _ExtentY        =   1085
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -308,7 +308,7 @@ Private Function calculateOptimalThreshold() As Long
 End Function
 
 'Convert an image to black and white (1-bit image)
-Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal DitherMethod As Long = 0, Optional ByVal lowColor As Long = &H0, Optional ByVal highColor As Long = &HFFFFFF, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal DitherMethod As Long = 0, Optional ByVal lowColor As Long = &H0, Optional ByVal highColor As Long = &HFFFFFF, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Converting image to two colors..."
     
@@ -889,13 +889,18 @@ Private Sub sltThreshold_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then masterBlackWhiteConversion sltThreshold, cboDither.ListIndex, colorPicker(0).Color, colorPicker(1).Color, True, fxPreview
+    If cmdBar.previewsAllowed Then masterBlackWhiteConversion sltThreshold, cboDither.ListIndex, colorPicker(0).Color, colorPicker(1).Color, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
+
 
 
 

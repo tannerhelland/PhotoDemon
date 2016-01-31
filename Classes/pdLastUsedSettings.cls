@@ -149,24 +149,24 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
         Select Case controlType
         
             'Our custom controls all have a .Value property
-            Case "sliderTextCombo", "smartCheckBox", "smartOptionButton", "textUpDown"
+            Case "pdSlider", "pdCheckBox", "pdRadioButton", "pdSpinner"
                 controlValue = Str(eControl.Value)
             
             'Button strips have a .ListIndex property
-            Case "buttonStrip", "buttonStripVertical"
+            Case "pdButtonStrip", "pdButtonStripVertical"
                 controlValue = Str(eControl.ListIndex)
                 
             'Various PD controls have their own custom "value"-type properties.
-            Case "colorSelector", "pdColorWheel", "pdColorVariants"
+            Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
                 controlValue = Str(eControl.Color)
             
-            Case "brushSelector"
+            Case "pdBrushSelector"
                 controlValue = eControl.Brush
                 
-            Case "penSelector"
+            Case "pdPenSelector"
                 controlValue = eControl.Pen
                 
-            Case "gradientSelector"
+            Case "pdGradientSelector"
                 controlValue = eControl.Gradient
             
             'Intrinsic VB controls may have different names for their value properties
@@ -187,7 +187,7 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
                 
             'PhotoDemon's new resize control is a special case.  Because it uses multiple properties (despite being
             ' a single control), we must combine its various values into a single string.
-            Case "smartResize"
+            Case "pdResize"
                 controlValue = buildParams(eControl.imgWidth, eControl.imgHeight, eControl.lockAspectRatio, eControl.unitOfMeasurement, eControl.imgDPI, eControl.unitOfResolution)
         
         End Select
@@ -287,17 +287,17 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
             Select Case controlType
             
                 'Our custom controls all have a .Value property
-                Case "sliderTextCombo", "textUpDown"
+                Case "pdSlider", "pdSpinner"
                     eControl.Value = CDblCustom(controlValue)
                     
-                Case "smartCheckBox"
+                Case "pdCheckBox"
                     eControl.Value = CLng(controlValue)
                 
-                Case "smartOptionButton"
+                Case "pdRadioButton"
                     eControl.Value = CBool(controlValue)
                     
                 'Button strips have a .ListIndex property
-                Case "buttonStrip", "buttonStripVertical"
+                Case "pdButtonStrip", "pdButtonStripVertical"
                     If CLng(controlValue) < eControl.ListCount Then
                         eControl.ListIndex = CLng(controlValue)
                     Else
@@ -305,16 +305,16 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                     End If
                 
                 'Various PD controls have their own custom "value"-type properties.
-                Case "colorSelector", "pdColorWheel", "pdColorVariants"
+                Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
                     eControl.Color = CLng(controlValue)
                     
-                Case "brushSelector"
+                Case "pdBrushSelector"
                     eControl.Brush = controlValue
                 
-                Case "penSelector"
+                Case "pdPenSelector"
                     eControl.Pen = controlValue
                 
-                Case "gradientSelector"
+                Case "pdGradientSelector"
                     eControl.Gradient = controlValue
                                 
                 'Intrinsic VB controls may have different names for their value properties
@@ -337,7 +337,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                     
                 'PD's "smart resize" control has some special needs, on account of using multiple value properties
                 ' within a single control.  Parse out those values from the control string.
-                Case "smartResize"
+                Case "pdResize"
                     
                     Dim cParam As pdParamString
                     Set cParam = New pdParamString
@@ -381,3 +381,13 @@ End Function
 Private Sub Class_Terminate()
     Set parentForm = Nothing
 End Sub
+
+
+
+
+
+
+
+
+
+

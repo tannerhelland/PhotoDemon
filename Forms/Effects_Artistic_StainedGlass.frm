@@ -42,7 +42,7 @@ Begin VB.Form FormStainedGlass
       _ExtentX        =   10186
       _ExtentY        =   661
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -53,7 +53,7 @@ Begin VB.Form FormStainedGlass
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -62,7 +62,7 @@ Begin VB.Form FormStainedGlass
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltSize 
+   Begin PhotoDemon.pdSlider sltSize 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -75,7 +75,7 @@ Begin VB.Form FormStainedGlass
       Max             =   200
       Value           =   50
    End
-   Begin PhotoDemon.sliderTextCombo sltTurbulence 
+   Begin PhotoDemon.pdSlider sltTurbulence 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -90,7 +90,7 @@ Begin VB.Form FormStainedGlass
       NotchPosition   =   2
       NotchValueCustom=   100
    End
-   Begin PhotoDemon.sliderTextCombo sltEdge 
+   Begin PhotoDemon.pdSlider sltEdge 
       Height          =   705
       Left            =   6000
       TabIndex        =   6
@@ -104,7 +104,7 @@ Begin VB.Form FormStainedGlass
       NotchPosition   =   2
       NotchValueCustom=   100
    End
-   Begin PhotoDemon.sliderTextCombo sltShadeQuality 
+   Begin PhotoDemon.pdSlider sltShadeQuality 
       Height          =   705
       Left            =   6000
       TabIndex        =   7
@@ -193,7 +193,7 @@ Private cRandom As pdRandomize
 '  colorSamplingMethod = how to determine cell color (0 = just use pixel at Voronoi point, 1 = average all pixels in cell)
 '  shadeQuality = how detailed to shade each cell (1 = flat, 5 = detailed non-linear depth rendering)
 '  distanceMethod = 0 - Cartesian, 1 - Manhattan, 2 - Chebyshev
-Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, ByVal colorSamplingMethod As Long, ByVal shadeQuality As Long, ByVal edgeThreshold As Double, ByVal distanceMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, ByVal colorSamplingMethod As Long, ByVal shadeQuality As Long, ByVal edgeThreshold As Double, ByVal distanceMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Carving image from stained glass..."
     
@@ -562,11 +562,11 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxStainedGlass sltSize, sltTurbulence, cboColorSampling.ListIndex, sltShadeQuality, sltEdge, cboDistance.ListIndex, True, fxPreview
+    If cmdBar.previewsAllowed Then fxStainedGlass sltSize, sltTurbulence, cboColorSampling.ListIndex, sltShadeQuality, sltEdge, cboDistance.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -585,4 +585,7 @@ End Sub
 Private Sub sltTurbulence_Change()
     UpdatePreview
 End Sub
+
+
+
 

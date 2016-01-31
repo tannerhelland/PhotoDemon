@@ -25,7 +25,7 @@ Begin VB.Form FormSelectionDialogs
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   444
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBarMini cmdBarMini 
+   Begin PhotoDemon.pdCommandBarMini cmdBarMini 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -37,7 +37,7 @@ Begin VB.Form FormSelectionDialogs
       BackColor       =   14802140
       dontAutoUnloadParent=   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltSelValue 
+   Begin PhotoDemon.pdSlider sltSelValue 
       Height          =   405
       Left            =   360
       TabIndex        =   0
@@ -153,3 +153,5 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
+
+

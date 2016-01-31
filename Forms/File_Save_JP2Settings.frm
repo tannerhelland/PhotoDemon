@@ -32,7 +32,7 @@ Begin VB.Form dialog_ExportJP2
       _ExtentX        =   9975
       _ExtentY        =   661
    End
-   Begin PhotoDemon.sliderTextCombo sltQuality 
+   Begin PhotoDemon.pdSlider sltQuality 
       Height          =   405
       Left            =   6120
       TabIndex        =   0
@@ -45,7 +45,7 @@ Begin VB.Form dialog_ExportJP2
       Value           =   16
       NotchPosition   =   1
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -57,7 +57,7 @@ Begin VB.Form dialog_ExportJP2
       BackColor       =   14802140
       dontAutoUnloadParent=   -1  'True
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   2
@@ -194,7 +194,7 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -273,16 +273,19 @@ Private Sub UpdatePreview()
         
         'Start by retrieving the relevant portion of the image, according to the preview window
         Dim tmpSafeArray As SAFEARRAY2D
-        previewNonStandardImage tmpSafeArray, origImageCopy, fxPreview
+        previewNonStandardImage tmpSafeArray, origImageCopy, pdFxPreview
         
         'The public workingDIB object now contains the relevant portion of the preview window.  Use that to
         ' obtain a JPEG-ified version of the image data.
         fillDIBWithJP2Version workingDIB, workingDIB, Abs(sltQuality.Value)
         
         'Paint the final image to screen and release all temporary objects
-        finalizeNonstandardPreview fxPreview
+        finalizeNonstandardPreview pdFxPreview
         
     End If
 
 End Sub
+
+
+
 

@@ -23,7 +23,7 @@ Begin VB.Form FormEqualize
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   5880
       TabIndex        =   4
@@ -37,7 +37,7 @@ Begin VB.Form FormEqualize
       Value           =   1
       GradientColorRight=   1703935
    End
-   Begin PhotoDemon.buttonStrip btsTarget 
+   Begin PhotoDemon.pdButtonStrip btsTarget 
       Height          =   1095
       Left            =   5880
       TabIndex        =   2
@@ -47,7 +47,7 @@ Begin VB.Form FormEqualize
       _ExtentY        =   1931
       Caption         =   "target histogram"
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -58,7 +58,7 @@ Begin VB.Form FormEqualize
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -67,7 +67,7 @@ Begin VB.Form FormEqualize
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.buttonStrip btsMode 
+   Begin PhotoDemon.pdButtonStrip btsMode 
       Height          =   1095
       Left            =   5880
       TabIndex        =   3
@@ -77,7 +77,7 @@ Begin VB.Form FormEqualize
       _ExtentY        =   1931
       Caption         =   "mode"
    End
-   Begin PhotoDemon.buttonStrip btsKernelShape 
+   Begin PhotoDemon.pdButtonStrip btsKernelShape 
       Height          =   1095
       Left            =   5880
       TabIndex        =   5
@@ -113,7 +113,7 @@ Option Explicit
 
 'Equalize the red, green, blue, and/or Luminance channels of an image
 ' (Technically Luminance isn't a channel, but you know what I mean.)
-Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse out the parameter list
     Dim cParams As pdParamXML
@@ -550,7 +550,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -564,9 +564,13 @@ Private Sub UpdateRadiusVisibility()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then EqualizeHistogram GetLocalParamString(), True, fxPreview
+    If cmdBar.previewsAllowed Then EqualizeHistogram GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("target", btsTarget.ListIndex, "mode", btsMode.ListIndex, "kernelShape", btsKernelShape.ListIndex, "radius", sltRadius.Value)
 End Function
+
+
+
+

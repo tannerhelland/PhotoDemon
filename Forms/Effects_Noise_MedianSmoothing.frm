@@ -23,7 +23,7 @@ Begin VB.Form FormMedian
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormMedian
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -43,7 +43,7 @@ Begin VB.Form FormMedian
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -56,7 +56,7 @@ Begin VB.Form FormMedian
       Max             =   200
       Value           =   5
    End
-   Begin PhotoDemon.sliderTextCombo sltPercent 
+   Begin PhotoDemon.pdSlider sltPercent 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -71,7 +71,7 @@ Begin VB.Form FormMedian
       NotchPosition   =   2
       NotchValueCustom=   50
    End
-   Begin PhotoDemon.buttonStrip btsKernelShape 
+   Begin PhotoDemon.pdButtonStrip btsKernelShape 
       Height          =   1095
       Left            =   6000
       TabIndex        =   4
@@ -122,7 +122,7 @@ Private curMode As MedianToolMode
 
 'Apply a median filter to the image (heavily optimized accumulation implementation!)
 'Input: radius of the median (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub ApplyMedianFilter(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyMedianFilter(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse out the parameter list
     Dim cParams As pdParamXML
@@ -279,16 +279,20 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyMedianFilter GetLocalParamString(), True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyMedianFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("radius", sltRadius.Value, "percent", sltPercent.Value, "kernelShape", btsKernelShape.ListIndex)
 End Function
+
+
+
+
 
 

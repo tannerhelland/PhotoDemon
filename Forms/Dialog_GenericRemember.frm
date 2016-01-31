@@ -36,7 +36,7 @@ Begin VB.Form dialog_GenericMemory
       _ExtentY        =   1085
       Caption         =   "&Yes"
    End
-   Begin PhotoDemon.smartCheckBox chkRemember 
+   Begin PhotoDemon.pdCheckBox chkRemember 
       Height          =   330
       Left            =   240
       TabIndex        =   0
@@ -224,4 +224,5 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
+
 

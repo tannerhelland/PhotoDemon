@@ -24,7 +24,7 @@ Begin VB.Form FormPrint
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   583
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.smartCheckBox chkCenter 
+   Begin PhotoDemon.pdCheckBox chkCenter 
       Height          =   330
       Left            =   4080
       TabIndex        =   22
@@ -233,7 +233,7 @@ Begin VB.Form FormPrint
          Width           =   3015
       End
    End
-   Begin PhotoDemon.smartCheckBox chkFit 
+   Begin PhotoDemon.pdCheckBox chkFit 
       Height          =   330
       Left            =   4080
       TabIndex        =   23
@@ -955,3 +955,4 @@ End Sub
 Private Sub txtCopies_GotFocus()
     AutoSelectText txtCopies
 End Sub
+

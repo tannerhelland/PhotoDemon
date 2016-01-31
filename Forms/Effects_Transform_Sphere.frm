@@ -24,7 +24,7 @@ Begin VB.Form FormSpherize
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormSpherize
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -45,7 +45,7 @@ Begin VB.Form FormSpherize
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -58,7 +58,7 @@ Begin VB.Form FormSpherize
       Max             =   180
       SigDigits       =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltOffsetY 
+   Begin PhotoDemon.pdSlider sltOffsetY 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -71,7 +71,7 @@ Begin VB.Form FormSpherize
       Max             =   100
       SigDigits       =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltOffsetX 
+   Begin PhotoDemon.pdSlider sltOffsetX 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -84,7 +84,7 @@ Begin VB.Form FormSpherize
       Max             =   100
       SigDigits       =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltQuality 
+   Begin PhotoDemon.pdSlider sltQuality 
       Height          =   705
       Left            =   6000
       TabIndex        =   7
@@ -99,7 +99,7 @@ Begin VB.Form FormSpherize
       NotchPosition   =   2
       NotchValueCustom=   2
    End
-   Begin PhotoDemon.buttonStrip btsExterior 
+   Begin PhotoDemon.pdButtonStrip btsExterior 
       Height          =   1080
       Left            =   6000
       TabIndex        =   2
@@ -173,7 +173,7 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Apply a "swirl" effect to an image
-Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, ByVal yOffset As Double, ByVal useRays As Boolean, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, ByVal yOffset As Double, ByVal useRays As Boolean, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     'Reverse the rotationAngle value so that POSITIVE values indicate CLOCKWISE rotation.
     ' Also, convert it to radians.
@@ -501,7 +501,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then SpherizeImage sltAngle, sltOffsetX, sltOffsetY, (btsExterior.ListIndex = 1), CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
+    If cmdBar.previewsAllowed Then SpherizeImage sltAngle, sltOffsetX, sltOffsetY, (btsExterior.ListIndex = 1), CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
 End Sub
 
 Private Sub sltOffsetX_Change()
@@ -513,11 +513,15 @@ Private Sub sltOffsetY_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 Private Sub sltQuality_Change()
     UpdatePreview
 End Sub
+
+
+
+
 

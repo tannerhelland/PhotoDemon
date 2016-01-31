@@ -47,7 +47,7 @@ Begin VB.Form toolpanel_Selections
          _ExtentX        =   4313
          _ExtentY        =   635
       End
-      Begin PhotoDemon.buttonStrip btsWandArea 
+      Begin PhotoDemon.pdButtonStrip btsWandArea 
          Height          =   1185
          Left            =   120
          TabIndex        =   15
@@ -58,7 +58,7 @@ Begin VB.Form toolpanel_Selections
          Caption         =   "area"
          FontSizeCaption =   10
       End
-      Begin PhotoDemon.sliderTextCombo sltWandTolerance 
+      Begin PhotoDemon.pdSlider sltWandTolerance 
          CausesValidation=   0   'False
          Height          =   675
          Left            =   3240
@@ -72,7 +72,7 @@ Begin VB.Form toolpanel_Selections
          Max             =   255
          SigDigits       =   1
       End
-      Begin PhotoDemon.buttonStrip btsWandMerge 
+      Begin PhotoDemon.pdButtonStrip btsWandMerge 
          Height          =   1185
          Left            =   6120
          TabIndex        =   17
@@ -108,7 +108,7 @@ Begin VB.Form toolpanel_Selections
          _ExtentX        =   4260
          _ExtentY        =   635
       End
-      Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
+      Begin PhotoDemon.pdSlider sltSelectionBorder 
          CausesValidation=   0   'False
          Height          =   405
          Index           =   0
@@ -122,7 +122,7 @@ Begin VB.Form toolpanel_Selections
          Max             =   10000
          Value           =   1
       End
-      Begin PhotoDemon.textUpDown tudSel 
+      Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   0
          Left            =   2820
@@ -134,7 +134,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   -30000
          Max             =   30000
       End
-      Begin PhotoDemon.textUpDown tudSel 
+      Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   1
          Left            =   2820
@@ -146,7 +146,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   -30000
          Max             =   30000
       End
-      Begin PhotoDemon.textUpDown tudSel 
+      Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   2
          Left            =   4380
@@ -158,7 +158,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   -30000
          Max             =   30000
       End
-      Begin PhotoDemon.textUpDown tudSel 
+      Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   3
          Left            =   4380
@@ -170,7 +170,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   -30000
          Max             =   30000
       End
-      Begin PhotoDemon.sliderTextCombo sltCornerRounding 
+      Begin PhotoDemon.pdSlider sltCornerRounding 
          CausesValidation=   0   'False
          Height          =   405
          Left            =   5760
@@ -240,7 +240,7 @@ Begin VB.Form toolpanel_Selections
       _ExtentX        =   4260
       _ExtentY        =   635
    End
-   Begin PhotoDemon.colorSelector csSelectionHighlight 
+   Begin PhotoDemon.pdColorSelector csSelectionHighlight 
       Height          =   375
       Left            =   120
       TabIndex        =   3
@@ -249,7 +249,7 @@ Begin VB.Form toolpanel_Selections
       _ExtentX        =   3916
       _ExtentY        =   661
    End
-   Begin PhotoDemon.sliderTextCombo sltSelectionFeathering 
+   Begin PhotoDemon.pdSlider sltSelectionFeathering 
       CausesValidation=   0   'False
       Height          =   405
       Left            =   2640
@@ -305,7 +305,7 @@ Begin VB.Form toolpanel_Selections
          _ExtentX        =   4260
          _ExtentY        =   635
       End
-      Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
+      Begin PhotoDemon.pdSlider sltSelectionBorder 
          CausesValidation=   0   'False
          Height          =   405
          Index           =   1
@@ -319,7 +319,7 @@ Begin VB.Form toolpanel_Selections
          Max             =   10000
          Value           =   1
       End
-      Begin PhotoDemon.textUpDown tudSel 
+      Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   4
          Left            =   2820
@@ -331,7 +331,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   -30000
          Max             =   30000
       End
-      Begin PhotoDemon.textUpDown tudSel 
+      Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   5
          Left            =   2820
@@ -343,7 +343,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   -30000
          Max             =   30000
       End
-      Begin PhotoDemon.textUpDown tudSel 
+      Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   6
          Left            =   4380
@@ -355,7 +355,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   -30000
          Max             =   30000
       End
-      Begin PhotoDemon.textUpDown tudSel 
+      Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   7
          Left            =   4380
@@ -422,7 +422,7 @@ Begin VB.Form toolpanel_Selections
          _ExtentX        =   4260
          _ExtentY        =   635
       End
-      Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
+      Begin PhotoDemon.pdSlider sltSelectionBorder 
          CausesValidation=   0   'False
          Height          =   405
          Index           =   2
@@ -436,7 +436,7 @@ Begin VB.Form toolpanel_Selections
          Max             =   10000
          Value           =   1
       End
-      Begin PhotoDemon.textUpDown tudSel 
+      Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   8
          Left            =   2820
@@ -448,7 +448,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   -30000
          Max             =   30000
       End
-      Begin PhotoDemon.textUpDown tudSel 
+      Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   9
          Left            =   2820
@@ -460,7 +460,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   -30000
          Max             =   30000
       End
-      Begin PhotoDemon.textUpDown tudSel 
+      Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   10
          Left            =   4380
@@ -472,7 +472,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   -30000
          Max             =   30000
       End
-      Begin PhotoDemon.textUpDown tudSel 
+      Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
          Index           =   11
          Left            =   4380
@@ -484,7 +484,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   -30000
          Max             =   30000
       End
-      Begin PhotoDemon.sliderTextCombo sltSelectionLineWidth 
+      Begin PhotoDemon.pdSlider sltSelectionLineWidth 
          CausesValidation=   0   'False
          Height          =   405
          Left            =   5880
@@ -562,7 +562,7 @@ Begin VB.Form toolpanel_Selections
          _ExtentX        =   4260
          _ExtentY        =   635
       End
-      Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
+      Begin PhotoDemon.pdSlider sltSelectionBorder 
          CausesValidation=   0   'False
          Height          =   405
          Index           =   3
@@ -576,7 +576,7 @@ Begin VB.Form toolpanel_Selections
          Max             =   10000
          Value           =   1
       End
-      Begin PhotoDemon.sliderTextCombo sltPolygonCurvature 
+      Begin PhotoDemon.pdSlider sltPolygonCurvature 
          CausesValidation=   0   'False
          Height          =   405
          Left            =   2760
@@ -633,7 +633,7 @@ Begin VB.Form toolpanel_Selections
          _ExtentX        =   4260
          _ExtentY        =   635
       End
-      Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
+      Begin PhotoDemon.pdSlider sltSelectionBorder 
          CausesValidation=   0   'False
          Height          =   405
          Index           =   4
@@ -647,7 +647,7 @@ Begin VB.Form toolpanel_Selections
          Max             =   10000
          Value           =   1
       End
-      Begin PhotoDemon.sliderTextCombo sltSmoothStroke 
+      Begin PhotoDemon.pdSlider sltSmoothStroke 
          CausesValidation=   0   'False
          Height          =   405
          Left            =   2760
@@ -1020,3 +1020,7 @@ Public Sub UpdateAgainstCurrentTheme()
     cboWandCompare.AssignTooltip "This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection."
 
 End Sub
+
+
+
+

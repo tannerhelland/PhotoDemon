@@ -23,7 +23,7 @@ Begin VB.Form FormEmbossEngrave
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   801
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormEmbossEngrave
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.colorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector colorPicker 
       Height          =   1095
       Left            =   6000
       TabIndex        =   2
@@ -45,7 +45,7 @@ Begin VB.Form FormEmbossEngrave
       Caption         =   "base color"
       curColor        =   16744576
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -55,7 +55,7 @@ Begin VB.Form FormEmbossEngrave
       _ExtentY        =   9922
       ColorSelection  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltDistance 
+   Begin PhotoDemon.pdSlider sltDistance 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -68,7 +68,7 @@ Begin VB.Form FormEmbossEngrave
       SigDigits       =   2
       Value           =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -81,7 +81,7 @@ Begin VB.Form FormEmbossEngrave
       Max             =   180
       SigDigits       =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltDepth 
+   Begin PhotoDemon.pdSlider sltDepth 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -153,13 +153,13 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub fxPreview_ColorSelected()
-    colorPicker.Color = fxPreview.SelectedColor
+Private Sub pdFxPreview_ColorSelected()
+    colorPicker.Color = pdFxPreview.SelectedColor
 End Sub
 
 'Emboss an image
 ' Inputs: color to emboss to, and whether or not this is a preview (plus the destination picture box if it IS a preview)
-Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, ByVal eDepth As Double, ByVal eColor As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, ByVal eDepth As Double, ByVal eColor As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Embossing image..."
     
@@ -306,11 +306,11 @@ End Sub
 
 'Render a new preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyEmbossEffect sltDistance.Value, sltAngle.Value, sltDepth.Value, colorPicker.Color, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyEmbossEffect sltDistance.Value, sltAngle.Value, sltDepth.Value, colorPicker.Color, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -325,3 +325,7 @@ End Sub
 Private Sub sltDistance_Change()
     UpdatePreview
 End Sub
+
+
+
+

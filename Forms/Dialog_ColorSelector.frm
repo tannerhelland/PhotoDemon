@@ -25,7 +25,7 @@ Begin VB.Form dialog_ColorSelector
    ScaleWidth      =   769
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
-   Begin PhotoDemon.commandBarMini cmdBarMini 
+   Begin PhotoDemon.pdCommandBarMini cmdBarMini 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -323,7 +323,7 @@ Begin VB.Form dialog_ColorSelector
       Top             =   120
       Width           =   3975
    End
-   Begin PhotoDemon.textUpDown tudRGB 
+   Begin PhotoDemon.pdSpinner tudRGB 
       Height          =   345
       Index           =   0
       Left            =   10320
@@ -334,7 +334,7 @@ Begin VB.Form dialog_ColorSelector
       _ExtentY        =   714
       Max             =   255
    End
-   Begin PhotoDemon.textUpDown tudRGB 
+   Begin PhotoDemon.pdSpinner tudRGB 
       Height          =   345
       Index           =   1
       Left            =   10320
@@ -345,7 +345,7 @@ Begin VB.Form dialog_ColorSelector
       _ExtentY        =   714
       Max             =   255
    End
-   Begin PhotoDemon.textUpDown tudRGB 
+   Begin PhotoDemon.pdSpinner tudRGB 
       Height          =   345
       Index           =   2
       Left            =   10320
@@ -356,7 +356,7 @@ Begin VB.Form dialog_ColorSelector
       _ExtentY        =   714
       Max             =   255
    End
-   Begin PhotoDemon.textUpDown tudHSV 
+   Begin PhotoDemon.pdSpinner tudHSV 
       Height          =   345
       Index           =   0
       Left            =   10320
@@ -367,7 +367,7 @@ Begin VB.Form dialog_ColorSelector
       _ExtentY        =   714
       Max             =   359
    End
-   Begin PhotoDemon.textUpDown tudHSV 
+   Begin PhotoDemon.pdSpinner tudHSV 
       Height          =   345
       Index           =   1
       Left            =   10320
@@ -378,7 +378,7 @@ Begin VB.Form dialog_ColorSelector
       _ExtentY        =   714
       Max             =   100
    End
-   Begin PhotoDemon.textUpDown tudHSV 
+   Begin PhotoDemon.pdSpinner tudHSV 
       Height          =   345
       Index           =   2
       Left            =   10320
@@ -603,7 +603,7 @@ Private recentColors() As Long
 
 'If a user control spawned this dialog, it will pass itself as a reference.  We can then send color updates back
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
-Private parentColorControl As colorSelector
+Private parentColorControl As pdColorSelector
 
 '***
 'All declarations below this line are necessary for capturing a color from an arbitrary point on the screen.
@@ -768,7 +768,7 @@ Private Sub cmdCapture_Click()
 End Sub
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog(ByVal initialColor As Long, Optional ByRef callingControl As colorSelector = Nothing)
+Public Sub showDialog(ByVal initialColor As Long, Optional ByRef callingControl As pdColorSelector = Nothing)
 
     'Store a reference to the calling control (if any)
     Set parentColorControl = callingControl
@@ -1651,6 +1651,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 '   add this warning banner to the last routine in your class
 ' *************************************************************
 End Sub
+
+
+
 
 
 

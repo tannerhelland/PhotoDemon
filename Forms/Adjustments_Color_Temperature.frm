@@ -23,7 +23,7 @@ Begin VB.Form FormColorTemp
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   822
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormColorTemp
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   3
@@ -43,7 +43,7 @@ Begin VB.Form FormColorTemp
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltStrength 
+   Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
       Left            =   6000
       TabIndex        =   1
@@ -58,7 +58,7 @@ Begin VB.Form FormColorTemp
       NotchPosition   =   2
       NotchValueCustom=   50
    End
-   Begin PhotoDemon.sliderTextCombo sltTemperature 
+   Begin PhotoDemon.pdSlider sltTemperature 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -141,7 +141,7 @@ Option Explicit
 
 'Cast an image with a new temperature value
 ' Input: desired temperature, whether to preserve luminance or not, and a blend ratio between 1 and 100
-Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal preserveLuminance As Boolean = True, Optional ByVal tempStrength As Double = 25, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal preserveLuminance As Boolean = True, Optional ByVal tempStrength As Double = 25, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Applying new temperature to image..."
     
@@ -345,13 +345,16 @@ Private Sub sltTemperature_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyTemperatureToImage sltTemperature.Value, True, sltStrength.Value / 2, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyTemperatureToImage sltTemperature.Value, True, sltStrength.Value / 2, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 
 
 

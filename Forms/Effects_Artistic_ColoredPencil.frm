@@ -32,7 +32,7 @@ Begin VB.Form FormPencil
       _ExtentX        =   10398
       _ExtentY        =   661
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -43,7 +43,7 @@ Begin VB.Form FormPencil
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -52,7 +52,7 @@ Begin VB.Form FormPencil
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -65,7 +65,7 @@ Begin VB.Form FormPencil
       Max             =   100
       Value           =   5
    End
-   Begin PhotoDemon.sliderTextCombo sltIntensity 
+   Begin PhotoDemon.pdSlider sltIntensity 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -124,7 +124,7 @@ Option Explicit
 '    1 - luminous
 '    2 - pastel
 '    3 - graphite
-Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Double, ByVal pencilStyle As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Double, ByVal pencilStyle As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Sketching image with pencils..."
     
@@ -429,12 +429,15 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxColoredPencil sltRadius, sltIntensity, cboStyle.ListIndex, True, fxPreview
+    If cmdBar.previewsAllowed Then fxColoredPencil sltRadius, sltIntensity, cboStyle.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 
 

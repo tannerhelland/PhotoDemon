@@ -24,7 +24,7 @@ Begin VB.Form FormKaleidoscope
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   809
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormKaleidoscope
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -46,7 +46,7 @@ Begin VB.Form FormKaleidoscope
       DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
-   Begin PhotoDemon.buttonStrip btsOptions 
+   Begin PhotoDemon.pdButtonStrip btsOptions 
       Height          =   1080
       Left            =   6000
       TabIndex        =   3
@@ -71,7 +71,7 @@ Begin VB.Form FormKaleidoscope
       Top             =   360
       Visible         =   0   'False
       Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltAngle2 
+      Begin PhotoDemon.pdSlider sltAngle2 
          Height          =   705
          Left            =   120
          TabIndex        =   2
@@ -83,7 +83,7 @@ Begin VB.Form FormKaleidoscope
          Max             =   360
          SigDigits       =   1
       End
-      Begin PhotoDemon.sliderTextCombo sltRadius 
+      Begin PhotoDemon.pdSlider sltRadius 
          Height          =   705
          Left            =   120
          TabIndex        =   10
@@ -98,7 +98,7 @@ Begin VB.Form FormKaleidoscope
          NotchPosition   =   2
          NotchValueCustom=   100
       End
-      Begin PhotoDemon.buttonStrip btsQuality 
+      Begin PhotoDemon.pdButtonStrip btsQuality 
          Height          =   1080
          Left            =   120
          TabIndex        =   11
@@ -123,7 +123,7 @@ Begin VB.Form FormKaleidoscope
       TabIndex        =   4
       Top             =   360
       Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltMirrors 
+      Begin PhotoDemon.pdSlider sltMirrors 
          Height          =   705
          Left            =   120
          TabIndex        =   6
@@ -138,7 +138,7 @@ Begin VB.Form FormKaleidoscope
          NotchPosition   =   2
          NotchValueCustom=   8
       End
-      Begin PhotoDemon.sliderTextCombo sltAngle 
+      Begin PhotoDemon.pdSlider sltAngle 
          Height          =   705
          Left            =   120
          TabIndex        =   7
@@ -150,7 +150,7 @@ Begin VB.Form FormKaleidoscope
          Max             =   360
          SigDigits       =   1
       End
-      Begin PhotoDemon.sliderTextCombo sltXCenter 
+      Begin PhotoDemon.pdSlider sltXCenter 
          Height          =   405
          Left            =   120
          TabIndex        =   8
@@ -164,7 +164,7 @@ Begin VB.Form FormKaleidoscope
          NotchPosition   =   2
          NotchValueCustom=   0.5
       End
-      Begin PhotoDemon.sliderTextCombo sltYCenter 
+      Begin PhotoDemon.pdSlider sltYCenter 
          Height          =   405
          Left            =   3120
          TabIndex        =   9
@@ -234,7 +234,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a "kaleidoscope" effect to an image
-Public Sub KaleidoscopeImage(ByVal numMirrors As Long, ByVal primaryAngle As Double, ByVal secondaryAngle As Double, ByVal effectRadius As Double, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub KaleidoscopeImage(ByVal numMirrors As Long, ByVal primaryAngle As Double, ByVal secondaryAngle As Double, ByVal effectRadius As Double, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Peering at image through imaginary kaleidoscope..."
     
@@ -439,7 +439,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then KaleidoscopeImage sltMirrors, sltAngle, sltAngle2, sltRadius, (btsQuality.ListIndex = 0), sltXCenter.Value, sltYCenter.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then KaleidoscopeImage sltMirrors, sltAngle, sltAngle2, sltRadius, (btsQuality.ListIndex = 0), sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
 End Sub
 
 'Return a repeating triangle shape in the range [0, 1] with wavelength 1
@@ -452,12 +452,12 @@ Private Function convertTriangle(ByVal trInput As Double) As Double
 End Function
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 'The user can right-click the preview area to select a new center point
-Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
+Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
     
     cmdBar.markPreviewStatus False
     sltXCenter.Value = xRatio
@@ -474,5 +474,9 @@ End Sub
 Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
+
+
+
+
 
 

@@ -23,7 +23,7 @@ Begin VB.Form FormRelief
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   801
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormRelief
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -43,7 +43,7 @@ Begin VB.Form FormRelief
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltDistance 
+   Begin PhotoDemon.pdSlider sltDistance 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -56,7 +56,7 @@ Begin VB.Form FormRelief
       SigDigits       =   2
       Value           =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -69,7 +69,7 @@ Begin VB.Form FormRelief
       Max             =   180
       SigDigits       =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltDepth 
+   Begin PhotoDemon.pdSlider sltDepth 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -137,7 +137,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Apply a relief filter, which gives the image a pseudo-3D appearance
-Public Sub ApplyReliefEffect(ByVal eDistance As Double, ByVal eAngle As Double, ByVal eDepth As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyReliefEffect(ByVal eDistance As Double, ByVal eAngle As Double, ByVal eDepth As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Carving image relief..."
     
@@ -283,11 +283,11 @@ End Sub
 
 'Render a new preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyReliefEffect sltDistance.Value, sltAngle.Value, sltDepth.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyReliefEffect sltDistance.Value, sltAngle.Value, sltDepth.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -302,3 +302,6 @@ End Sub
 Private Sub sltDistance_Change()
     UpdatePreview
 End Sub
+
+
+

@@ -46,7 +46,7 @@ Begin VB.Form dialog_UnsavedChanges
       _ExtentY        =   1296
       Caption         =   "Save the image before closing it"
    End
-   Begin PhotoDemon.smartCheckBox chkRepeat 
+   Begin PhotoDemon.pdCheckBox chkRepeat 
       Height          =   330
       Left            =   3960
       TabIndex        =   3
@@ -287,3 +287,4 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
+

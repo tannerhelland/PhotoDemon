@@ -23,7 +23,7 @@ Begin VB.Form FormChannelMixer
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   810
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   6735
       Left            =   120
       TabIndex        =   1
@@ -32,7 +32,7 @@ Begin VB.Form FormChannelMixer
       _ExtentX        =   9922
       _ExtentY        =   11880
    End
-   Begin PhotoDemon.sliderTextCombo sltRed 
+   Begin PhotoDemon.pdSlider sltRed 
       Height          =   705
       Left            =   6120
       TabIndex        =   2
@@ -46,7 +46,7 @@ Begin VB.Form FormChannelMixer
       SliderTrackStyle=   3
       GradientColorMiddle=   255
    End
-   Begin PhotoDemon.sliderTextCombo sltGreen 
+   Begin PhotoDemon.pdSlider sltGreen 
       Height          =   705
       Left            =   6120
       TabIndex        =   3
@@ -60,7 +60,7 @@ Begin VB.Form FormChannelMixer
       SliderTrackStyle=   3
       GradientColorMiddle=   65280
    End
-   Begin PhotoDemon.sliderTextCombo sltBlue 
+   Begin PhotoDemon.pdSlider sltBlue 
       Height          =   705
       Left            =   6120
       TabIndex        =   4
@@ -74,7 +74,7 @@ Begin VB.Form FormChannelMixer
       SliderTrackStyle=   3
       GradientColorMiddle=   16711680
    End
-   Begin PhotoDemon.smartCheckBox chkMonochrome 
+   Begin PhotoDemon.pdCheckBox chkMonochrome 
       Height          =   375
       Left            =   6120
       TabIndex        =   5
@@ -84,7 +84,7 @@ Begin VB.Form FormChannelMixer
       _ExtentY        =   582
       Caption         =   "monochrome"
    End
-   Begin PhotoDemon.sliderTextCombo sltConstant 
+   Begin PhotoDemon.pdSlider sltConstant 
       Height          =   705
       Left            =   6120
       TabIndex        =   6
@@ -97,7 +97,7 @@ Begin VB.Form FormChannelMixer
       Max             =   255
       SliderTrackStyle=   2
    End
-   Begin PhotoDemon.smartCheckBox chkLuminance 
+   Begin PhotoDemon.pdCheckBox chkLuminance 
       Height          =   375
       Left            =   6120
       TabIndex        =   7
@@ -107,7 +107,7 @@ Begin VB.Form FormChannelMixer
       _ExtentY        =   582
       Caption         =   "preserve luminance"
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -118,7 +118,7 @@ Begin VB.Form FormChannelMixer
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.buttonStrip btsChannel 
+   Begin PhotoDemon.pdButtonStrip btsChannel 
       Height          =   960
       Left            =   6000
       TabIndex        =   8
@@ -262,7 +262,7 @@ End Sub
 'Apply a new channel mixer to the image
 ' Inputs:
 '  - all modifiers as one long string; see "createChannelParamString" for how this string is assembled
-Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Mixing color channels..."
     
@@ -585,7 +585,7 @@ Private Sub sltRed_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyChannelMixer createChannelParamString(), True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyChannelMixer createChannelParamString(), True, pdFxPreview
 End Sub
 
 'Because the user can change multiple channels at once, we need to store all current channel values in memory.
@@ -632,9 +632,14 @@ Private Function createChannelParamString() As String
 End Function
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
+
 
 
 

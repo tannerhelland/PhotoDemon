@@ -23,7 +23,7 @@ Begin VB.Form FormReplaceColor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   788
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormReplaceColor
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -44,7 +44,7 @@ Begin VB.Form FormReplaceColor
       _ExtentY        =   9922
       ColorSelection  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltErase 
+   Begin PhotoDemon.pdSlider sltErase 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -56,7 +56,7 @@ Begin VB.Form FormReplaceColor
       Max             =   199
       Value           =   15
    End
-   Begin PhotoDemon.sliderTextCombo sltBlend 
+   Begin PhotoDemon.pdSlider sltBlend 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -68,7 +68,7 @@ Begin VB.Form FormReplaceColor
       Max             =   200
       Value           =   15
    End
-   Begin PhotoDemon.colorSelector colorOld 
+   Begin PhotoDemon.pdColorSelector colorOld 
       Height          =   975
       Left            =   6000
       TabIndex        =   4
@@ -79,7 +79,7 @@ Begin VB.Form FormReplaceColor
       Caption         =   "color to replace (right-click preview to select)"
       curColor        =   12582912
    End
-   Begin PhotoDemon.colorSelector colorNew 
+   Begin PhotoDemon.pdColorSelector colorNew 
       Height          =   975
       Left            =   6000
       TabIndex        =   5
@@ -149,13 +149,13 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'The user can select a color from the preview window; this helps green screen calculation immensely
-Private Sub fxPreview_ColorSelected()
-    colorOld.Color = fxPreview.SelectedColor
+Private Sub pdFxPreview_ColorSelected()
+    colorOld.Color = pdFxPreview.SelectedColor
     UpdatePreview
 End Sub
 
 'Replace one color in an image with another color, with full blending and feathering support
-Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, Optional ByVal eraseThreshold As Double = 15, Optional ByVal blendThreshold As Double = 30, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, Optional ByVal eraseThreshold As Double = 15, Optional ByVal blendThreshold As Double = 30, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Replacing color..."
     
@@ -297,11 +297,15 @@ End Sub
 
 'Render a new preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ReplaceSelectedColor colorOld.Color, colorNew.Color, sltErase.Value, sltBlend.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ReplaceSelectedColor colorOld.Color, colorNew.Color, sltErase.Value, sltBlend.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 

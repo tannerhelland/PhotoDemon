@@ -23,7 +23,7 @@ Begin VB.Form FormBrightnessContrast
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   805
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormBrightnessContrast
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.smartCheckBox chkSample 
+   Begin PhotoDemon.pdCheckBox chkSample 
       Height          =   330
       Left            =   6120
       TabIndex        =   3
@@ -44,7 +44,7 @@ Begin VB.Form FormBrightnessContrast
       _ExtentY        =   582
       Caption         =   "sample image for true contrast (slower but more accurate)"
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   4
@@ -53,7 +53,7 @@ Begin VB.Form FormBrightnessContrast
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltBright 
+   Begin PhotoDemon.pdSlider sltBright 
       Height          =   705
       Left            =   6000
       TabIndex        =   1
@@ -66,7 +66,7 @@ Begin VB.Form FormBrightnessContrast
       Max             =   255
       Value           =   -10
    End
-   Begin PhotoDemon.sliderTextCombo sltContrast 
+   Begin PhotoDemon.pdSlider sltContrast 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -116,7 +116,7 @@ End Sub
 
 'Single routine for modifying both brightness and contrast.  Brightness is in the range (-255,255) while
 ' contrast is (-100,100).  Optionally, the image can be sampled to obtain a true midpoint for the contrast function.
-Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Optional ByVal TrueContrast As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Optional ByVal TrueContrast As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Adjusting image brightness..."
     
@@ -302,7 +302,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-'RESET button.  All control default values will be reset according to the rules specified in the commandBar user control
+'RESET button.  All control default values will be reset according to the rules specified in the pdCommandBar user control
 ' source.  If we want a different default value applied, we can specify that here.  The important thing to note is
 ' that THE VALUES VISIBLE IN THE IDE DESIGNER DO NOT MATTER.
 Private Sub cmdBar_ResetClick()
@@ -332,12 +332,16 @@ Private Sub sltContrast_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then BrightnessContrast sltBright, sltContrast, CBool(chkSample.Value), True, fxPreview
+    If cmdBar.previewsAllowed Then BrightnessContrast sltBright, sltContrast, CBool(chkSample.Value), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 
 

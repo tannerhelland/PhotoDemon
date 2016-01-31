@@ -23,7 +23,7 @@ Begin VB.Form FormHSL
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormHSL
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltHue 
+   Begin PhotoDemon.pdSlider sltHue 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -47,7 +47,7 @@ Begin VB.Form FormHSL
       Max             =   180
       SliderTrackStyle=   4
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -56,7 +56,7 @@ Begin VB.Form FormHSL
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltSaturation 
+   Begin PhotoDemon.pdSlider sltSaturation 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -69,7 +69,7 @@ Begin VB.Form FormHSL
       Max             =   100
       SliderTrackStyle=   2
    End
-   Begin PhotoDemon.sliderTextCombo sltLuminance 
+   Begin PhotoDemon.pdSlider sltLuminance 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -107,7 +107,7 @@ Option Explicit
 
 'Colorize an image using a hue defined between -1 and 5
 ' Input: desired hue, whether to force saturation to 0.5 or maintain the existing value
-Public Sub AdjustImageHSL(ByVal hModifier As Double, ByVal sModifier As Double, ByVal lModifier As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub AdjustImageHSL(ByVal hModifier As Double, ByVal sModifier As Double, ByVal lModifier As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Adjusting hue, saturation, and luminance values..."
     
@@ -233,11 +233,11 @@ Private Sub sltSaturation_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then AdjustImageHSL sltHue.Value, sltSaturation.Value, sltLuminance.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then AdjustImageHSL sltHue.Value, sltSaturation.Value, sltLuminance.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -253,3 +253,6 @@ Private Sub redrawSaturationSlider()
     sltSaturation.GradientColorRight = RGB(r, g, b)
 
 End Sub
+
+
+

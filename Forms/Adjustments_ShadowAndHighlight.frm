@@ -23,7 +23,7 @@ Begin VB.Form FormShadowHighlight
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   808
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormShadowHighlight
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -43,7 +43,7 @@ Begin VB.Form FormShadowHighlight
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.buttonStrip btsOptions 
+   Begin PhotoDemon.pdButtonStrip btsOptions 
       Height          =   960
       Left            =   6000
       TabIndex        =   2
@@ -67,7 +67,7 @@ Begin VB.Form FormShadowHighlight
       TabIndex        =   4
       Top             =   120
       Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltShadowAmount 
+      Begin PhotoDemon.pdSlider sltShadowAmount 
          Height          =   705
          Left            =   120
          TabIndex        =   6
@@ -79,7 +79,7 @@ Begin VB.Form FormShadowHighlight
          Min             =   -100
          Max             =   100
       End
-      Begin PhotoDemon.sliderTextCombo sltHighlightAmount 
+      Begin PhotoDemon.pdSlider sltHighlightAmount 
          Height          =   705
          Left            =   120
          TabIndex        =   7
@@ -91,7 +91,7 @@ Begin VB.Form FormShadowHighlight
          Min             =   -100
          Max             =   100
       End
-      Begin PhotoDemon.sliderTextCombo sltMidtoneContrast 
+      Begin PhotoDemon.pdSlider sltMidtoneContrast 
          Height          =   705
          Left            =   120
          TabIndex        =   8
@@ -118,7 +118,7 @@ Begin VB.Form FormShadowHighlight
       TabIndex        =   5
       Top             =   120
       Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltShadowWidth 
+      Begin PhotoDemon.pdSlider sltShadowWidth 
          Height          =   705
          Left            =   240
          TabIndex        =   11
@@ -132,7 +132,7 @@ Begin VB.Form FormShadowHighlight
          NotchPosition   =   2
          NotchValueCustom=   75
       End
-      Begin PhotoDemon.sliderTextCombo sltShadowRadius 
+      Begin PhotoDemon.pdSlider sltShadowRadius 
          Height          =   705
          Left            =   240
          TabIndex        =   3
@@ -146,7 +146,7 @@ Begin VB.Form FormShadowHighlight
          NotchPosition   =   2
          NotchValueCustom=   25
       End
-      Begin PhotoDemon.sliderTextCombo sltHighlightWidth 
+      Begin PhotoDemon.pdSlider sltHighlightWidth 
          Height          =   705
          Left            =   240
          TabIndex        =   9
@@ -160,7 +160,7 @@ Begin VB.Form FormShadowHighlight
          NotchPosition   =   2
          NotchValueCustom=   75
       End
-      Begin PhotoDemon.sliderTextCombo sltHighlightRadius 
+      Begin PhotoDemon.pdSlider sltHighlightRadius 
          Height          =   705
          Left            =   240
          TabIndex        =   10
@@ -258,7 +258,7 @@ Private Sub Form_Activate()
 End Sub
 
 'Correct white balance by stretching the histogram and ignoring pixels above or below the 0.05% threshold
-Public Sub ApplyShadowHighlight(ByVal shadowAmount As Double, ByVal midtoneContrast As Double, ByVal highlightAmount As Double, Optional ByVal shadowWidth As Long = 50, Optional ByVal shadowRadius As Double = 0, Optional ByVal highlightWidth As Long = 50, Optional ByVal highlightRadius As Double = 0, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyShadowHighlight(ByVal shadowAmount As Double, ByVal midtoneContrast As Double, ByVal highlightAmount As Double, Optional ByVal shadowWidth As Long = 50, Optional ByVal shadowRadius As Double = 0, Optional ByVal highlightWidth As Long = 50, Optional ByVal highlightRadius As Double = 0, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Adjusting shadows, midtones, and highlights..."
     
@@ -288,11 +288,11 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyShadowHighlight sltShadowAmount, sltMidtoneContrast, sltHighlightAmount, sltShadowWidth, sltShadowRadius, sltHighlightWidth, sltHighlightRadius, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyShadowHighlight sltShadowAmount, sltMidtoneContrast, sltHighlightAmount, sltShadowWidth, sltShadowRadius, sltHighlightWidth, sltHighlightRadius, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -323,4 +323,8 @@ End Sub
 Private Sub sltShadowWidth_Change()
     UpdatePreview
 End Sub
+
+
+
+
 

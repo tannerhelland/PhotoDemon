@@ -24,7 +24,7 @@ Begin VB.Form FormCurves
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   873
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormCurves
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -44,7 +44,7 @@ Begin VB.Form FormCurves
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.buttonStrip btsOptions 
+   Begin PhotoDemon.pdButtonStrip btsOptions 
       Height          =   960
       Left            =   6030
       TabIndex        =   3
@@ -94,7 +94,7 @@ Begin VB.Form FormCurves
          Top             =   0
          Width           =   6960
       End
-      Begin PhotoDemon.buttonStrip btsChannel 
+      Begin PhotoDemon.pdButtonStrip btsChannel 
          Height          =   960
          Left            =   150
          TabIndex        =   7
@@ -119,7 +119,7 @@ Begin VB.Form FormCurves
       TabIndex        =   5
       Top             =   60
       Width           =   7215
-      Begin PhotoDemon.buttonStrip btsHistogram 
+      Begin PhotoDemon.pdButtonStrip btsHistogram 
          Height          =   1080
          Left            =   120
          TabIndex        =   9
@@ -129,7 +129,7 @@ Begin VB.Form FormCurves
          _ExtentY        =   1905
          Caption         =   "histogram overlay"
       End
-      Begin PhotoDemon.buttonStrip btsGrid 
+      Begin PhotoDemon.pdButtonStrip btsGrid 
          Height          =   1080
          Left            =   120
          TabIndex        =   2
@@ -139,7 +139,7 @@ Begin VB.Form FormCurves
          _ExtentY        =   1905
          Caption         =   "grid"
       End
-      Begin PhotoDemon.buttonStrip btsDiagonalLine 
+      Begin PhotoDemon.pdButtonStrip btsDiagonalLine 
          Height          =   1080
          Left            =   120
          TabIndex        =   8
@@ -267,7 +267,7 @@ End Sub
 'Apply four potential curves to an image; one each for RED, GREEN, BLUE, and LUMINANCE/RGB
 ' Input: four lists of 256 values, one list for channel, with each channel explicitly stating the look-up values
 '         for each entry in that channel.
-Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Applying new curve to image..."
     
@@ -676,7 +676,7 @@ Private Sub UpdatePreview()
         redrawPreviewBox
         
         'Redraw the image effect preview
-        ApplyCurveToImage getCurvesParamString(), True, fxPreview
+        ApplyCurveToImage getCurvesParamString(), True, pdFxPreview
         
     End If
     
@@ -1224,9 +1224,12 @@ Private Sub fillResultsArray()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 
 
 

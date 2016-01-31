@@ -178,7 +178,7 @@ Begin VB.Form FormBatchWizard
          Top             =   5460
          Width           =   4095
       End
-      Begin PhotoDemon.smartCheckBox chkActions 
+      Begin PhotoDemon.pdCheckBox chkActions 
          Height          =   300
          Index           =   2
          Left            =   600
@@ -190,7 +190,7 @@ Begin VB.Form FormBatchWizard
          Caption         =   "custom actions from a saved macro file"
          Value           =   0
       End
-      Begin PhotoDemon.smartCheckBox chkActions 
+      Begin PhotoDemon.pdCheckBox chkActions 
          Height          =   300
          Index           =   1
          Left            =   600
@@ -202,7 +202,7 @@ Begin VB.Form FormBatchWizard
          Caption         =   "resize images"
          Value           =   0
       End
-      Begin PhotoDemon.smartOptionButton optActions 
+      Begin PhotoDemon.pdRadioButton optActions 
          Height          =   360
          Index           =   0
          Left            =   120
@@ -214,7 +214,7 @@ Begin VB.Form FormBatchWizard
          Caption         =   "do not apply photo editing actions"
          Value           =   -1  'True
       End
-      Begin PhotoDemon.smartOptionButton optActions 
+      Begin PhotoDemon.pdRadioButton optActions 
          Height          =   360
          Index           =   1
          Left            =   120
@@ -225,7 +225,7 @@ Begin VB.Form FormBatchWizard
          _ExtentY        =   582
          Caption         =   "apply one or more photo editing actions"
       End
-      Begin PhotoDemon.smartCheckBox chkActions 
+      Begin PhotoDemon.pdCheckBox chkActions 
          Height          =   300
          Index           =   0
          Left            =   600
@@ -237,7 +237,7 @@ Begin VB.Form FormBatchWizard
          Caption         =   "fix exposure and lighting problems"
          Value           =   0
       End
-      Begin PhotoDemon.smartResize ucResize 
+      Begin PhotoDemon.pdResize ucResize 
          Height          =   2850
          Left            =   1080
          TabIndex        =   40
@@ -454,7 +454,7 @@ Begin VB.Form FormBatchWizard
          Top             =   1080
          Width           =   3615
       End
-      Begin PhotoDemon.smartCheckBox chkEnablePreview 
+      Begin PhotoDemon.pdCheckBox chkEnablePreview 
          Height          =   330
          Left            =   8160
          TabIndex        =   10
@@ -625,7 +625,7 @@ Begin VB.Form FormBatchWizard
          _ExtentY        =   556
          Text            =   "C:\"
       End
-      Begin PhotoDemon.smartOptionButton optCase 
+      Begin PhotoDemon.pdRadioButton optCase 
          Height          =   330
          Index           =   0
          Left            =   840
@@ -637,7 +637,7 @@ Begin VB.Form FormBatchWizard
          Caption         =   "lowercase"
          Value           =   -1  'True
       End
-      Begin PhotoDemon.smartCheckBox chkRenamePrefix 
+      Begin PhotoDemon.pdCheckBox chkRenamePrefix 
          Height          =   330
          Left            =   480
          TabIndex        =   28
@@ -666,7 +666,7 @@ Begin VB.Form FormBatchWizard
          Top             =   1800
          Width           =   7455
       End
-      Begin PhotoDemon.smartCheckBox chkRenameSuffix 
+      Begin PhotoDemon.pdCheckBox chkRenameSuffix 
          Height          =   330
          Left            =   5760
          TabIndex        =   29
@@ -677,7 +677,7 @@ Begin VB.Form FormBatchWizard
          Caption         =   "add a suffix to each filename:"
          Value           =   0
       End
-      Begin PhotoDemon.smartCheckBox chkRenameRemove 
+      Begin PhotoDemon.pdCheckBox chkRenameRemove 
          Height          =   330
          Left            =   480
          TabIndex        =   30
@@ -688,7 +688,7 @@ Begin VB.Form FormBatchWizard
          Caption         =   "remove the following text (if found) from each filename:"
          Value           =   0
       End
-      Begin PhotoDemon.smartCheckBox chkRenameCase 
+      Begin PhotoDemon.pdCheckBox chkRenameCase 
          Height          =   330
          Left            =   480
          TabIndex        =   31
@@ -699,7 +699,7 @@ Begin VB.Form FormBatchWizard
          Caption         =   "force each filename, including extension, to the following case:"
          Value           =   0
       End
-      Begin PhotoDemon.smartOptionButton optCase 
+      Begin PhotoDemon.pdRadioButton optCase 
          Height          =   330
          Index           =   1
          Left            =   3240
@@ -710,7 +710,7 @@ Begin VB.Form FormBatchWizard
          _ExtentY        =   582
          Caption         =   "UPPERCASE"
       End
-      Begin PhotoDemon.smartCheckBox chkRenameSpaces 
+      Begin PhotoDemon.pdCheckBox chkRenameSpaces 
          Height          =   330
          Left            =   480
          TabIndex        =   34
@@ -721,7 +721,7 @@ Begin VB.Form FormBatchWizard
          Caption         =   "replace spaces in filenames with underscores"
          Value           =   0
       End
-      Begin PhotoDemon.smartCheckBox chkRenameCaseSensitive 
+      Begin PhotoDemon.pdCheckBox chkRenameCaseSensitive 
          Height          =   330
          Left            =   7560
          TabIndex        =   35
@@ -795,7 +795,7 @@ Begin VB.Form FormBatchWizard
          Top             =   1920
          Width           =   7335
       End
-      Begin PhotoDemon.smartOptionButton optFormat 
+      Begin PhotoDemon.pdRadioButton optFormat 
          Height          =   375
          Index           =   0
          Left            =   120
@@ -807,7 +807,7 @@ Begin VB.Form FormBatchWizard
          Caption         =   "keep images in their original format"
          Value           =   -1  'True
       End
-      Begin PhotoDemon.smartOptionButton optFormat 
+      Begin PhotoDemon.pdRadioButton optFormat 
          Height          =   375
          Index           =   1
          Left            =   120
@@ -844,7 +844,7 @@ Begin VB.Form FormBatchWizard
          Tag             =   "GIF - Graphics Interchange Format"
          Top             =   2520
          Width           =   11055
-         Begin PhotoDemon.sliderTextCombo sltThreshold 
+         Begin PhotoDemon.pdSlider sltThreshold 
             Height          =   405
             Left            =   360
             TabIndex        =   74
@@ -1007,7 +1007,7 @@ Begin VB.Form FormBatchWizard
             Top             =   960
             Width           =   7095
          End
-         Begin PhotoDemon.smartCheckBox chkTIFFCMYK 
+         Begin PhotoDemon.pdCheckBox chkTIFFCMYK 
             Height          =   330
             Left            =   360
             TabIndex        =   37
@@ -1056,7 +1056,7 @@ Begin VB.Form FormBatchWizard
          Tag             =   "JP2 - JPEG 2000"
          Top             =   2520
          Width           =   10575
-         Begin PhotoDemon.sliderTextCombo sltJP2Quality 
+         Begin PhotoDemon.pdSlider sltJP2Quality 
             Height          =   405
             Left            =   480
             TabIndex        =   76
@@ -1152,7 +1152,7 @@ Begin VB.Form FormBatchWizard
          Tag             =   "BMP - Windows Bitmap"
          Top             =   2520
          Width           =   10575
-         Begin PhotoDemon.smartCheckBox chkBMPRLE 
+         Begin PhotoDemon.pdCheckBox chkBMPRLE 
             Height          =   330
             Left            =   360
             TabIndex        =   57
@@ -1191,7 +1191,7 @@ Begin VB.Form FormBatchWizard
          Tag             =   "TGA - Truevision (TARGA)"
          Top             =   2520
          Width           =   10695
-         Begin PhotoDemon.smartCheckBox chkTGARLE 
+         Begin PhotoDemon.pdCheckBox chkTGARLE 
             Height          =   330
             Left            =   360
             TabIndex        =   54
@@ -1230,7 +1230,7 @@ Begin VB.Form FormBatchWizard
          Tag             =   "JPG - Joint Photographic Experts Group"
          Top             =   2520
          Width           =   10935
-         Begin PhotoDemon.sliderTextCombo sltQuality 
+         Begin PhotoDemon.pdSlider sltQuality 
             Height          =   405
             Left            =   2640
             TabIndex        =   78
@@ -1280,7 +1280,7 @@ Begin VB.Form FormBatchWizard
             Top             =   990
             Width           =   2055
          End
-         Begin PhotoDemon.smartCheckBox chkOptimize 
+         Begin PhotoDemon.pdCheckBox chkOptimize 
             Height          =   330
             Left            =   480
             TabIndex        =   61
@@ -1290,7 +1290,7 @@ Begin VB.Form FormBatchWizard
             _ExtentY        =   582
             Caption         =   "optimize compression tables"
          End
-         Begin PhotoDemon.smartCheckBox chkThumbnail 
+         Begin PhotoDemon.pdCheckBox chkThumbnail 
             Height          =   330
             Left            =   480
             TabIndex        =   63
@@ -1301,7 +1301,7 @@ Begin VB.Form FormBatchWizard
             Caption         =   "embed thumbnail image"
             Value           =   0
          End
-         Begin PhotoDemon.smartCheckBox chkProgressive 
+         Begin PhotoDemon.pdCheckBox chkProgressive 
             Height          =   330
             Left            =   480
             TabIndex        =   64
@@ -1312,7 +1312,7 @@ Begin VB.Form FormBatchWizard
             Caption         =   "use progressive encoding"
             Value           =   0
          End
-         Begin PhotoDemon.smartCheckBox chkSubsample 
+         Begin PhotoDemon.pdCheckBox chkSubsample 
             Height          =   330
             Left            =   480
             TabIndex        =   65
@@ -1382,7 +1382,7 @@ Begin VB.Form FormBatchWizard
             Value           =   9
             Width           =   7095
          End
-         Begin PhotoDemon.smartCheckBox chkPNGBackground 
+         Begin PhotoDemon.pdCheckBox chkPNGBackground 
             Height          =   330
             Left            =   360
             TabIndex        =   46
@@ -1392,7 +1392,7 @@ Begin VB.Form FormBatchWizard
             _ExtentY        =   582
             Caption         =   "preserve file's original background color, if available"
          End
-         Begin PhotoDemon.smartCheckBox chkPNGInterlacing 
+         Begin PhotoDemon.pdCheckBox chkPNGInterlacing 
             Height          =   330
             Left            =   360
             TabIndex        =   47
@@ -3238,6 +3238,10 @@ End Sub
 'Display a progress update to the user
 Private Sub batchConvertMessage(ByVal newMessage As String)
     lblBatchProgress.Caption = newMessage
-    lblBatchProgress.requestRefresh
+    lblBatchProgress.RequestRefresh
 End Sub
+
+
+
+
 

@@ -23,7 +23,7 @@ Begin VB.Form FormTint
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -32,7 +32,7 @@ Begin VB.Form FormTint
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -43,7 +43,7 @@ Begin VB.Form FormTint
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltTint 
+   Begin PhotoDemon.pdSlider sltTint 
       CausesValidation=   0   'False
       Height          =   705
       Left            =   6000
@@ -91,7 +91,7 @@ Option Explicit
 
 'Change the tint of an image
 ' INPUT: tint adjustment, [-100, 100], 0 = no change
-Public Sub adjustTint(ByVal tintAdjustment As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub adjustTint(ByVal tintAdjustment As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Re-tinting image..."
     
@@ -198,7 +198,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -207,6 +207,9 @@ Private Sub sltTint_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then adjustTint sltTint, True, fxPreview
+    If cmdBar.previewsAllowed Then adjustTint sltTint, True, pdFxPreview
 End Sub
+
+
+
 

@@ -33,7 +33,7 @@ Begin VB.Form FormTile
       _ExtentX        =   9128
       _ExtentY        =   661
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   805
       Left            =   0
@@ -44,7 +44,7 @@ Begin VB.Form FormTile
       _ExtentY        =   1429
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5505
       Left            =   120
       TabIndex        =   3
@@ -54,7 +54,7 @@ Begin VB.Form FormTile
       _ExtentY        =   9710
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.textUpDown tudWidth 
+   Begin PhotoDemon.pdSpinner tudWidth 
       Height          =   345
       Left            =   8040
       TabIndex        =   4
@@ -66,7 +66,7 @@ Begin VB.Form FormTile
       Max             =   32767
       Value           =   1
    End
-   Begin PhotoDemon.textUpDown tudHeight 
+   Begin PhotoDemon.pdSpinner tudHeight 
       Height          =   345
       Left            =   8040
       TabIndex        =   2
@@ -372,8 +372,8 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     Else
     
         'Render the preview and erase the temporary DIB to conserve memory
-        tmpDIB.RenderToPictureBox fxPreview.getPreviewPic
-        fxPreview.setFXImage tmpDIB
+        tmpDIB.RenderToPictureBox pdFxPreview.getPreviewPic
+        pdFxPreview.setFXImage tmpDIB
         
         Set tmpDIB = Nothing
         
@@ -411,7 +411,7 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
     
     'Give the preview object a copy of this image data so it can show it to the user if requested
-    fxPreview.setOriginalImage pdImages(g_CurrentImage).getActiveDIB()
+    pdFxPreview.setOriginalImage pdImages(g_CurrentImage).getActiveDIB()
     
     'Populate the combo box
     cboTarget.AddItem " current screen size", 0
@@ -494,8 +494,11 @@ Private Sub UpdatePreview()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 
 

@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.UserControl colorSelector 
+Begin VB.UserControl pdColorSelector 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    ClientHeight    =   1710
@@ -22,9 +22,9 @@ Begin VB.UserControl colorSelector
    ScaleHeight     =   114
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   312
-   ToolboxBitmap   =   "colorSelector.ctx":0000
+   ToolboxBitmap   =   "pdColorSelector.ctx":0000
 End
-Attribute VB_Name = "colorSelector"
+Attribute VB_Name = "pdColorSelector"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -476,3 +476,4 @@ End Sub
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
+

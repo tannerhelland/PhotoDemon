@@ -23,7 +23,7 @@ Begin VB.Form FormBilateral
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormBilateral
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -47,7 +47,7 @@ Begin VB.Form FormBilateral
       Max             =   25
       Value           =   9
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -56,7 +56,7 @@ Begin VB.Form FormBilateral
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltSpatialFactor 
+   Begin PhotoDemon.pdSlider sltSpatialFactor 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -70,7 +70,7 @@ Begin VB.Form FormBilateral
       SigDigits       =   1
       Value           =   10
    End
-   Begin PhotoDemon.sliderTextCombo sltSpatialPower 
+   Begin PhotoDemon.pdSlider sltSpatialPower 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -84,7 +84,7 @@ Begin VB.Form FormBilateral
       SigDigits       =   2
       Value           =   2
    End
-   Begin PhotoDemon.sliderTextCombo sltColorFactor 
+   Begin PhotoDemon.pdSlider sltColorFactor 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -98,7 +98,7 @@ Begin VB.Form FormBilateral
       SigDigits       =   1
       Value           =   50
    End
-   Begin PhotoDemon.sliderTextCombo sltColorPower 
+   Begin PhotoDemon.pdSlider sltColorPower 
       Height          =   705
       Left            =   6000
       TabIndex        =   6
@@ -111,7 +111,7 @@ Begin VB.Form FormBilateral
       SigDigits       =   2
       Value           =   2
    End
-   Begin PhotoDemon.smartCheckBox chkSeparable 
+   Begin PhotoDemon.pdCheckBox chkSeparable 
       Height          =   330
       Left            =   6000
       TabIndex        =   7
@@ -200,7 +200,7 @@ End Sub
 ' * spatialPower [exponent power, used in spatial function calculation]
 ' * colorFactor [determines the variance of color for a color domain]
 ' * colorPower [exponent power, used in color function calculation]
-Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double, ByVal colorFactor As Double, ByVal colorPower As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double, ByVal colorFactor As Double, ByVal colorPower As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'As a convenience to the user, we display spatial and color factors with a [0, 100].  The color factor can
     ' actually be bumped a bit, to [0, 255], so apply that now.
@@ -378,7 +378,7 @@ End Sub
 ' mitigate this.  All told, the separable function roughly adheres to the expected PxQ / (P+Q) performance boost, and my own
 ' testing shows a 10 megapixel photo at radius 25 to take just 5% of the time that a naive convolution does
 ' (naive: 302 seconds, separable: 14 seconds).
-Public Sub BilateralSmoothingSeparable(ByVal kernelRadius As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double, ByVal colorFactor As Double, ByVal colorPower As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub BilateralSmoothingSeparable(ByVal kernelRadius As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double, ByVal colorFactor As Double, ByVal colorPower As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Applying bilateral smoothing..."
     
@@ -462,9 +462,9 @@ Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then
     
         If CBool(chkSeparable) Then
-            BilateralSmoothingSeparable sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value, True, fxPreview
+            BilateralSmoothingSeparable sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value, True, pdFxPreview
         Else
-            BilateralSmoothing sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value, True, fxPreview
+            BilateralSmoothing sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value, True, pdFxPreview
         End If
         
     End If
@@ -472,6 +472,10 @@ Private Sub UpdatePreview()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+

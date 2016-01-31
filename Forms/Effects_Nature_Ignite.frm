@@ -23,7 +23,7 @@ Begin VB.Form FormIgnite
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.sliderTextCombo sltIntensity 
+   Begin PhotoDemon.pdSlider sltIntensity 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -38,7 +38,7 @@ Begin VB.Form FormIgnite
       NotchPosition   =   2
       NotchValueCustom=   5
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -47,7 +47,7 @@ Begin VB.Form FormIgnite
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -58,7 +58,7 @@ Begin VB.Form FormIgnite
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -71,7 +71,7 @@ Begin VB.Form FormIgnite
       Max             =   500
       Value           =   50
    End
-   Begin PhotoDemon.sliderTextCombo sltOpacity 
+   Begin PhotoDemon.pdSlider sltOpacity 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -117,7 +117,7 @@ Option Explicit
 
 'Apply the "burn" fire effect filter
 'Input: strength of the filter (min 1, no real max - but above 7 it becomes increasingly blown-out)
-Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxOpacity As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxOpacity As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Lighting image on fire..."
     
@@ -331,7 +331,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -341,7 +341,7 @@ Private Sub sltIntensity_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxBurn sltIntensity, sltRadius, sltOpacity, True, fxPreview
+    If cmdBar.previewsAllowed Then fxBurn sltIntensity, sltRadius, sltOpacity, True, pdFxPreview
 End Sub
 
 Private Sub sltOpacity_Change()
@@ -351,3 +351,6 @@ End Sub
 Private Sub sltRadius_Change()
     UpdatePreview
 End Sub
+
+
+

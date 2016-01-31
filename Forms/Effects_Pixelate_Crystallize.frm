@@ -33,7 +33,7 @@ Begin VB.Form FormCrystallize
       _ExtentX        =   10186
       _ExtentY        =   661
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -44,7 +44,7 @@ Begin VB.Form FormCrystallize
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5475
       Left            =   120
       TabIndex        =   1
@@ -53,7 +53,7 @@ Begin VB.Form FormCrystallize
       _ExtentX        =   9922
       _ExtentY        =   9657
    End
-   Begin PhotoDemon.sliderTextCombo sltSize 
+   Begin PhotoDemon.pdSlider sltSize 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -66,7 +66,7 @@ Begin VB.Form FormCrystallize
       Max             =   200
       Value           =   50
    End
-   Begin PhotoDemon.sliderTextCombo sltTurbulence 
+   Begin PhotoDemon.pdSlider sltTurbulence 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -154,7 +154,7 @@ Private m_RndSeed As Long
 '  fxTurbulence = how much to distort cell shape, range [0, 1], 0 = perfect grid
 '  colorSamplingMethod = how to determine cell color (0 = just use pixel at Voronoi point, 1 = average all pixels in cell)
 '  distanceMethod = 0 - Cartesian, 1 - Manhattan, 2 - Chebyshev
-Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, ByVal colorSamplingMethod As Long, ByVal distanceMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, ByVal colorSamplingMethod As Long, ByVal distanceMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Crystallizing image..."
     
@@ -434,11 +434,11 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxCrystallize sltSize, sltTurbulence, cboColorSampling.ListIndex, cboDistance.ListIndex, True, fxPreview
+    If cmdBar.previewsAllowed Then fxCrystallize sltSize, sltTurbulence, cboColorSampling.ListIndex, cboDistance.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -449,4 +449,7 @@ End Sub
 Private Sub sltTurbulence_Change()
     UpdatePreview
 End Sub
+
+
+
 

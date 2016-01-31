@@ -24,7 +24,7 @@ Begin VB.Form FormRipple
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   809
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormRipple
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -46,7 +46,7 @@ Begin VB.Form FormRipple
       DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
-   Begin PhotoDemon.buttonStrip btsOptions 
+   Begin PhotoDemon.pdButtonStrip btsOptions 
       Height          =   1080
       Left            =   6000
       TabIndex        =   2
@@ -71,7 +71,7 @@ Begin VB.Form FormRipple
       Top             =   120
       Visible         =   0   'False
       Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltRadius 
+      Begin PhotoDemon.pdSlider sltRadius 
          Height          =   705
          Left            =   120
          TabIndex        =   3
@@ -86,7 +86,7 @@ Begin VB.Form FormRipple
          NotchPosition   =   2
          NotchValueCustom=   100
       End
-      Begin PhotoDemon.sliderTextCombo sltPhase 
+      Begin PhotoDemon.pdSlider sltPhase 
          Height          =   705
          Left            =   120
          TabIndex        =   11
@@ -133,7 +133,7 @@ Begin VB.Form FormRipple
       TabIndex        =   4
       Top             =   120
       Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltAmplitude 
+      Begin PhotoDemon.pdSlider sltAmplitude 
          Height          =   705
          Left            =   120
          TabIndex        =   6
@@ -145,7 +145,7 @@ Begin VB.Form FormRipple
          Max             =   100
          Value           =   80
       End
-      Begin PhotoDemon.sliderTextCombo sltWavelength 
+      Begin PhotoDemon.pdSlider sltWavelength 
          Height          =   705
          Left            =   120
          TabIndex        =   7
@@ -158,7 +158,7 @@ Begin VB.Form FormRipple
          Max             =   200
          Value           =   16
       End
-      Begin PhotoDemon.sliderTextCombo sltQuality 
+      Begin PhotoDemon.pdSlider sltQuality 
          Height          =   705
          Left            =   120
          TabIndex        =   8
@@ -173,7 +173,7 @@ Begin VB.Form FormRipple
          NotchPosition   =   2
          NotchValueCustom=   2
       End
-      Begin PhotoDemon.sliderTextCombo sltXCenter 
+      Begin PhotoDemon.pdSlider sltXCenter 
          Height          =   405
          Left            =   120
          TabIndex        =   9
@@ -187,7 +187,7 @@ Begin VB.Form FormRipple
          NotchPosition   =   2
          NotchValueCustom=   0.5
       End
-      Begin PhotoDemon.sliderTextCombo sltYCenter 
+      Begin PhotoDemon.pdSlider sltYCenter 
          Height          =   405
          Left            =   3120
          TabIndex        =   10
@@ -271,7 +271,7 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Apply a "water ripple" effect to an image
-Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude As Double, ByVal ripplePhase As Double, ByVal rippleRadius As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude As Double, ByVal ripplePhase As Double, ByVal rippleRadius As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Simulating ripples across image surface..."
     
@@ -580,16 +580,16 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then RippleImage sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, fxPreview
+    If cmdBar.previewsAllowed Then RippleImage sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 'The user can right-click the preview area to select a new center point
-Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
+Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
     
     cmdBar.markPreviewStatus False
     sltXCenter.Value = xRatio
@@ -606,6 +606,10 @@ End Sub
 Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
+
+
+
+
 
 
 

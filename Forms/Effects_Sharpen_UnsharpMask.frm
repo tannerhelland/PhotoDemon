@@ -23,7 +23,7 @@ Begin VB.Form FormUnsharpMask
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormUnsharpMask
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -43,7 +43,7 @@ Begin VB.Form FormUnsharpMask
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltThreshold 
+   Begin PhotoDemon.pdSlider sltThreshold 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -54,7 +54,7 @@ Begin VB.Form FormUnsharpMask
       Caption         =   "threshold"
       Max             =   255
    End
-   Begin PhotoDemon.sliderTextCombo sltAmount 
+   Begin PhotoDemon.pdSlider sltAmount 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -69,7 +69,7 @@ Begin VB.Form FormUnsharpMask
       NotchPosition   =   2
       NotchValueCustom=   1
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -83,7 +83,7 @@ Begin VB.Form FormUnsharpMask
       SigDigits       =   1
       Value           =   5
    End
-   Begin PhotoDemon.buttonStrip btsQuality 
+   Begin PhotoDemon.pdButtonStrip btsQuality 
       Height          =   1080
       Left            =   6000
       TabIndex        =   5
@@ -127,7 +127,7 @@ Option Explicit
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal umThreshold As Long, Optional ByVal gaussQuality As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal umThreshold As Long, Optional ByVal gaussQuality As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
         
     If Not toPreview Then Message "Applying unsharp mask (step %1 of %2)...", 1, 2
         
@@ -361,12 +361,16 @@ Private Sub sltThreshold_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then UnsharpMask sltRadius, sltAmount, sltThreshold, btsQuality.ListIndex, True, fxPreview
+    If cmdBar.previewsAllowed Then UnsharpMask sltRadius, sltAmount, sltThreshold, btsQuality.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 
 

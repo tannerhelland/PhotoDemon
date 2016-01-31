@@ -1,12 +1,11 @@
 VERSION 5.00
-Begin VB.UserControl brushSelector 
+Begin VB.UserControl pdGradientSelector 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   ClientHeight    =   1710
+   ClientHeight    =   3600
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   4680
-   ClipControls    =   0   'False
+   ClientWidth     =   4800
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,31 +16,30 @@ Begin VB.UserControl brushSelector
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
-   HitBehavior     =   0  'None
-   ScaleHeight     =   114
+   ScaleHeight     =   240
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   312
-   ToolboxBitmap   =   "brushSelector.ctx":0000
+   ScaleWidth      =   320
+   ToolboxBitmap   =   "pdGradientSelector.ctx":0000
 End
-Attribute VB_Name = "brushSelector"
+Attribute VB_Name = "pdGradientSelector"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Brush Selector custom control
-'Copyright 2013-2016 by Tanner Helland
-'Created: 30/June/15
+'PhotoDemon Gradient Selector custom control
+'Copyright 2014-2016 by Tanner Helland
+'Created: 23/July/15
 'Last updated: 04/November/15
 'Last update: convert to master UC support class; add caption support; simplify rendering approach
 '
-'This thin user control is basically an empty control that when clicked, displays a brush selection window.  If a
-' brush is selected (e.g. Cancel is not pressed), it updates its appearance to match, and raises a "BrushChanged"
+'This thin user control is basically an empty control that when clicked, displays a gradient editor window.  If a
+' gradient is selected (e.g. Cancel is not pressed), it updates its appearance to match, and raises a "GradientChanged"
 ' event.
 '
 'Though simple, this control solves a lot of problems.  It is especially helpful for improving interaction with the
-' command bar user control, as it easily supports brush reset/randomize/preset events.  It is also nice to be able
-' to update a single master function for brush selection, then have the change propagate to all tool windows.
+' command bar user control, as it easily supports gradient reset/randomize/preset events.  It is also nice to be able
+' to update a single master function for gradient selection, then have the change propagate to all tool windows.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -51,42 +49,30 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This control doesn't really do anything interesting, besides allow a brush to be selected.
-Public Event BrushChanged()
+'This control doesn't really do anything interesting, besides allow a gradient to be selected.
+Public Event GradientChanged()
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
-'The control's current brush settings; this string is how we actually create the brush
-Private m_curBrush As String
+'The control's current gradient settings
+Private m_curGradient As String
 
-'A temporary filler object, used to render the brush preview
-Private m_Filler As pdGraphicsBrush
+'Temporary brush object, used to render the gradient preview
+Private m_Brush As pdGraphicsBrush
 
-'When the "select brush" dialog is live, this will be set to TRUE
+'When the "select gradient" dialog is live, this will be set to TRUE
 Private isDialogLive As Boolean
 
-'The rectangle where the brush preview is actually rendered, and a boolean to track whether the mouse is inside that rect
-Private m_BrushRect As RECTF, m_MouseInsideBrushRect As Boolean
+'The rectangle where the gradient preview is actually rendered, and a boolean to track whether the mouse is inside that rect
+Private m_GradientRect As RECTF, m_MouseInsideGradientRect As Boolean
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
-
-'At present, all this control does is store a brush XML string.  This string defines all brush settings.
-Public Property Get Brush() As String
-    Brush = m_curBrush
-End Property
-
-Public Property Let Brush(ByVal newBrush As String)
-    m_curBrush = newBrush
-    RedrawBackBuffer
-    RaiseEvent BrushChanged
-    PropertyChanged "Brush"
-End Property
 
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
@@ -123,19 +109,31 @@ Public Property Let FontSize(ByVal newSize As Single)
     PropertyChanged "FontSize"
 End Property
 
+'You can retrieve the gradient param string (not a pdGradient object!) via this property
+Public Property Get Gradient() As String
+    Gradient = m_curGradient
+End Property
+
+Public Property Let Gradient(ByVal newGradient As String)
+    m_curGradient = newGradient
+    RedrawBackBuffer
+    RaiseEvent GradientChanged
+    PropertyChanged "Gradient"
+End Property
+
 Public Property Get hWnd() As Long
 Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 
-'Outside functions can call this to force a display of the brush selection window
-Public Sub DisplayBrushSelection()
-    RaiseBrushDialog
+'Outside functions can call this to force a display of the gradient selection window
+Public Sub DisplayGradientSelection()
+    RaiseGradientDialog
 End Sub
 
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     UpdateMousePosition x, y
-    If m_MouseInsideBrushRect Then RaiseBrushDialog
+    If m_MouseInsideGradientRect Then RaiseGradientDialog
 End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -149,8 +147,8 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
 End Sub
 
 Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
-    m_MouseInsideBrushRect = Math_Functions.isPointInRectF(mouseX, mouseY, m_BrushRect)
-    If m_MouseInsideBrushRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
+    m_MouseInsideGradientRect = Math_Functions.isPointInRectF(mouseX, mouseY, m_GradientRect)
+    If m_MouseInsideGradientRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
 End Sub
 
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -175,19 +173,19 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
     UpdateControlLayout
 End Sub
 
-Private Sub RaiseBrushDialog()
+Private Sub RaiseGradientDialog()
 
     isDialogLive = True
     
-    'Store the current brush
-    Dim newBrush As String, oldBrush As String
-    oldBrush = Brush
+    'Backup the current gradient; if the dialog is canceled, we want to restore it
+    Dim newGradient As String, oldGradient As String
+    oldGradient = Gradient
     
-    'Use the brush dialog to select a new color
-    If showBrushDialog(newBrush, oldBrush, Me) Then
-        Brush = newBrush
+    'Display the gradient dialog, then wait for it to return
+    If showGradientDialog(newGradient, oldGradient, Me) Then
+        Gradient = newGradient
     Else
-        Brush = oldBrush
+        Gradient = oldGradient
     End If
     
     isDialogLive = False
@@ -195,8 +193,9 @@ Private Sub RaiseBrushDialog()
 End Sub
 
 Private Sub UserControl_Initialize()
-
-    Set m_Filler = New pdGraphicsBrush
+    
+    Set m_Brush = New pdGraphicsBrush
+    m_Brush.setBrushProperty pgbs_BrushMode, 2
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
@@ -217,9 +216,9 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Private Sub UserControl_InitProperties()
-    Brush = ""
     Caption = ""
     FontSize = 12
+    Gradient = ""
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -229,8 +228,8 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        Brush = .ReadProperty("curBrush", "")
         Caption = .ReadProperty("Caption", "")
+        Gradient = .ReadProperty("curGradient", "")
         FontSize = .ReadProperty("FontSize", 12)
     End With
 End Sub
@@ -241,9 +240,9 @@ End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
-        .WriteProperty "curBrush", m_curBrush, ""
         .WriteProperty "Caption", ucSupport.GetCaptionText, ""
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 12
+        .WriteProperty "curGradient", m_curGradient, ""
     End With
 End Sub
 
@@ -260,8 +259,8 @@ Private Sub UpdateControlLayout()
     ' caption text ends vertically.)
     If ucSupport.IsCaptionActive Then
         
-        'The brush area is placed relative to the caption
-        With m_BrushRect
+        'The clickable area is placed relative to the caption
+        With m_GradientRect
             .Left = FixDPI(8)
             .Top = ucSupport.GetCaptionBottom + 2
             .Width = (bWidth - 2) - .Left
@@ -271,7 +270,7 @@ Private Sub UpdateControlLayout()
     'If there's no caption, allow the clickable portion to fill the entire control
     Else
         
-        With m_BrushRect
+        With m_GradientRect
             .Left = 1
             .Top = 1
             .Width = (bWidth - 2) - .Left
@@ -291,25 +290,25 @@ Private Sub RedrawBackBuffer()
     
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable brush portion.
     If g_IsProgramRunning Then
-        
+    
         'Render the brush first
-        m_Filler.setBoundaryRect m_BrushRect
-        m_Filler.createBrushFromString Me.Brush
+        m_Brush.setBoundaryRect m_GradientRect
+        m_Brush.setBrushProperty pgbs_GradientString, m_curGradient
         
         Dim tmpBrush As Long
-        tmpBrush = m_Filler.getBrushHandle
+        tmpBrush = m_Brush.getBrushHandle
         
-        With m_BrushRect
+        With m_GradientRect
             GDI_Plus.GDIPlusFillPatternToDC bufferDC, .Left, .Top, .Width, .Height, g_CheckerboardPattern
             GDI_Plus.GDIPlusFillDC_Brush bufferDC, tmpBrush, .Left, .Top, .Width, .Height
         End With
         
-        m_Filler.releaseBrushHandle tmpBrush
+        m_Brush.releaseBrushHandle tmpBrush
         
         'Draw borders around the brush results.
         Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long
         
-        If g_IsProgramRunning And m_MouseInsideBrushRect Then
+        If g_IsProgramRunning And m_MouseInsideGradientRect Then
             outlineColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
             outlineWidth = 3
         Else
@@ -317,7 +316,7 @@ Private Sub RedrawBackBuffer()
             outlineWidth = 1
         End If
         
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_BrushRect, outlineColor, , outlineWidth, False, LineJoinMiter
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_GradientRect, outlineColor, , outlineWidth, False, LineJoinMiter
         
     End If
     
@@ -326,10 +325,10 @@ Private Sub RedrawBackBuffer()
     
 End Sub
 
-'If a brush selection dialog is active, it will pass brush updates backward to this function, so that we can let
-' our parent form display live updates *while the user is playing with brushes* - very cool!
-Public Sub NotifyOfLiveBrushChange(ByVal newBrush As String)
-    Brush = newBrush
+'If a gradient selection dialog is active, it will pass gradient updates backward to this function, so that we can let
+' our parent form display live updates *while the user is playing with gradients*.
+Public Sub NotifyOfLiveGradientChange(ByVal newGradient As String)
+    Gradient = newGradient
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
@@ -342,4 +341,6 @@ End Sub
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
+
+
 

@@ -23,7 +23,7 @@ Begin VB.Form FormPortraitGlow
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.buttonStrip btsStyle 
+   Begin PhotoDemon.pdButtonStrip btsStyle 
       Height          =   1095
       Left            =   6000
       TabIndex        =   5
@@ -33,7 +33,7 @@ Begin VB.Form FormPortraitGlow
       _ExtentY        =   1931
       Caption         =   "style"
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -44,7 +44,7 @@ Begin VB.Form FormPortraitGlow
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -53,7 +53,7 @@ Begin VB.Form FormPortraitGlow
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -66,7 +66,7 @@ Begin VB.Form FormPortraitGlow
       Max             =   100
       Value           =   5
    End
-   Begin PhotoDemon.sliderTextCombo sltBoost 
+   Begin PhotoDemon.pdSlider sltBoost 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -77,7 +77,7 @@ Begin VB.Form FormPortraitGlow
       Caption         =   "exposure boost"
       Max             =   200
    End
-   Begin PhotoDemon.sliderTextCombo sltStrength 
+   Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -113,7 +113,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a "portrait glow" effect to an image
-Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse out the parameter list
     Dim cParams As pdParamXML
@@ -270,7 +270,7 @@ Private Sub sltRadius_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -279,9 +279,13 @@ Private Sub sltStrength_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then Me.ApplyPortraitGlow GetLocalParamString, True, fxPreview
+    If cmdBar.previewsAllowed Then Me.ApplyPortraitGlow GetLocalParamString, True, pdFxPreview
 End Sub
 
 Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("style", btsStyle.ListIndex, "radius", sltRadius.Value, "exposure", sltBoost.Value, "strength", sltStrength.Value)
 End Function
+
+
+
+

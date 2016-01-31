@@ -24,7 +24,7 @@ Begin VB.Form FormRechannel
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   793
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.buttonStrip btsColorSpace 
+   Begin PhotoDemon.pdButtonStrip btsColorSpace 
       Height          =   1095
       Left            =   5880
       TabIndex        =   2
@@ -34,7 +34,7 @@ Begin VB.Form FormRechannel
       _ExtentY        =   1931
       Caption         =   "color space"
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -45,7 +45,7 @@ Begin VB.Form FormRechannel
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -65,7 +65,7 @@ Begin VB.Form FormRechannel
       Caption         =   "channel"
       FontSize        =   12
    End
-   Begin PhotoDemon.buttonStrip btsChannel 
+   Begin PhotoDemon.pdButtonStrip btsChannel 
       Height          =   615
       Index           =   0
       Left            =   6000
@@ -76,7 +76,7 @@ Begin VB.Form FormRechannel
       _ExtentX        =   9975
       _ExtentY        =   1085
    End
-   Begin PhotoDemon.buttonStrip btsChannel 
+   Begin PhotoDemon.pdButtonStrip btsChannel 
       Height          =   615
       Index           =   1
       Left            =   6000
@@ -87,7 +87,7 @@ Begin VB.Form FormRechannel
       _ExtentX        =   9975
       _ExtentY        =   1085
    End
-   Begin PhotoDemon.buttonStrip btsChannel 
+   Begin PhotoDemon.pdButtonStrip btsChannel 
       Height          =   615
       Index           =   2
       Left            =   6000
@@ -186,7 +186,7 @@ End Sub
 ' INPUTS:
 ' - color space (currently supports RGB, CMY, CMYK)
 ' - channel (varies by color space)
-Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse out the parameter list
     Dim cParams As pdParamXML
@@ -343,10 +343,10 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then RechannelImage GetLocalParamString(), True, fxPreview
+    If cmdBar.previewsAllowed Then RechannelImage GetLocalParamString(), True, pdFxPreview
 End Sub
 
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -387,4 +387,7 @@ End Function
 Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("ColorSpace", btsColorSpace.ListIndex, "Channel", btsChannel(btsColorSpace.ListIndex).ListIndex)
 End Function
+
+
+
 

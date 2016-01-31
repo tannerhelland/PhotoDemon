@@ -23,7 +23,7 @@ Begin VB.Form FormPosterize
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   798
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormPosterize
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -43,7 +43,7 @@ Begin VB.Form FormPosterize
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.smartCheckBox chkDither 
+   Begin PhotoDemon.pdCheckBox chkDither 
       Height          =   360
       Left            =   6120
       TabIndex        =   2
@@ -53,7 +53,7 @@ Begin VB.Form FormPosterize
       _ExtentY        =   582
       Caption         =   "apply dithering"
    End
-   Begin PhotoDemon.smartCheckBox chkSmartColors 
+   Begin PhotoDemon.pdCheckBox chkSmartColors 
       Height          =   360
       Left            =   6120
       TabIndex        =   3
@@ -63,7 +63,7 @@ Begin VB.Form FormPosterize
       _ExtentY        =   582
       Caption         =   "match existing colors"
    End
-   Begin PhotoDemon.sliderTextCombo sltRed 
+   Begin PhotoDemon.pdSlider sltRed 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -76,7 +76,7 @@ Begin VB.Form FormPosterize
       Max             =   64
       Value           =   6
    End
-   Begin PhotoDemon.sliderTextCombo sltGreen 
+   Begin PhotoDemon.pdSlider sltGreen 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -89,7 +89,7 @@ Begin VB.Form FormPosterize
       Max             =   64
       Value           =   7
    End
-   Begin PhotoDemon.sliderTextCombo sltBlue 
+   Begin PhotoDemon.pdSlider sltBlue 
       Height          =   705
       Left            =   6000
       TabIndex        =   6
@@ -175,16 +175,16 @@ Private Sub UpdatePreview()
     
     If cmdBar.previewsAllowed Then
         If CBool(chkDither) Then
-            ReduceImageColors_BitRGB_ErrorDif sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value), True, fxPreview
+            ReduceImageColors_BitRGB_ErrorDif sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value), True, pdFxPreview
         Else
-            ReduceImageColors_BitRGB sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value), True, fxPreview
+            ReduceImageColors_BitRGB sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value), True, pdFxPreview
         End If
     End If
     
 End Sub
 
 'Bit RGB color reduction (no error diffusion)
-Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, ByVal bValue As Byte, Optional ByVal smartColors As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, ByVal bValue As Byte, Optional ByVal smartColors As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Posterizing image..."
     
@@ -353,7 +353,7 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
 End Sub
 
 'Error Diffusion dithering to x# shades of color per component
-Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue As Byte, ByVal bValue As Byte, Optional ByVal smartColors As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue As Byte, ByVal bValue As Byte, Optional ByVal smartColors As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Posterizing image (with advanced dithering)..."
     
@@ -603,7 +603,11 @@ Private Sub sltRed_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 

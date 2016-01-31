@@ -24,7 +24,7 @@ Begin VB.Form FormRotate
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormRotate
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.smartOptionButton optRotate 
+   Begin PhotoDemon.pdRadioButton optRotate 
       Height          =   360
       Index           =   0
       Left            =   6120
@@ -47,7 +47,7 @@ Begin VB.Form FormRotate
       Caption         =   "adjust size to fit rotated image"
       Value           =   -1  'True
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   2
@@ -57,7 +57,7 @@ Begin VB.Form FormRotate
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton optRotate 
+   Begin PhotoDemon.pdRadioButton optRotate 
       Height          =   360
       Index           =   1
       Left            =   6120
@@ -68,7 +68,7 @@ Begin VB.Form FormRotate
       _ExtentY        =   582
       Caption         =   "keep image at its present size"
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Left            =   6000
       TabIndex        =   1
@@ -222,8 +222,8 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
             
             'Finally, render the preview and erase the temporary DIB to conserve memory
-            tmpDIB.RenderToPictureBox fxPreview.getPreviewPic
-            fxPreview.setFXImage tmpDIB
+            tmpDIB.RenderToPictureBox pdFxPreview.getPreviewPic
+            pdFxPreview.setFXImage tmpDIB
             
             Set tmpDIB = Nothing
             
@@ -414,7 +414,7 @@ Private Sub Form_Activate()
         
     End Select
     
-    convertAspectRatio srcWidth, srcHeight, fxPreview.getPreviewWidth, fxPreview.getPreviewHeight, dWidth, dHeight
+    convertAspectRatio srcWidth, srcHeight, pdFxPreview.getPreviewWidth, pdFxPreview.getPreviewHeight, dWidth, dHeight
     
     'Create a new, smaller image at those dimensions
     If (dWidth < srcWidth) Or (dHeight < srcHeight) Then
@@ -450,7 +450,7 @@ Private Sub Form_Activate()
     smallDIB.SetAlphaPremultiplication False
     
     'Give the preview object a copy of this image data so it can show it to the user if requested
-    fxPreview.setOriginalImage smallDIB
+    pdFxPreview.setOriginalImage smallDIB
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
@@ -494,8 +494,12 @@ Private Sub sltAngle_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 
 

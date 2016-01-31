@@ -23,7 +23,7 @@ Begin VB.Form FormMonoToColor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormMonoToColor
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -43,7 +43,7 @@ Begin VB.Form FormMonoToColor
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -118,7 +118,7 @@ Private iWidth As Long, iHeight As Long
 
 'Given a monochrome image, convert it to grayscale
 'Input: radius of the search area (min 1, no real max - but there are diminishing returns above 50)
-Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Converting monochrome image to grayscale..."
         
@@ -436,7 +436,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ConvertMonoToColor sltRadius.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ConvertMonoToColor sltRadius.Value, True, pdFxPreview
 End Sub
 
 Private Sub sltRadius_Change()
@@ -444,8 +444,11 @@ Private Sub sltRadius_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 
 

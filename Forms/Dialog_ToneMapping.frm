@@ -24,7 +24,7 @@ Begin VB.Form dialog_ToneMapping
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   777
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -50,7 +50,7 @@ Begin VB.Form dialog_ToneMapping
       Top             =   1200
       Width           =   4500
    End
-   Begin PhotoDemon.smartCheckBox chkRemember 
+   Begin PhotoDemon.pdCheckBox chkRemember 
       Height          =   330
       Left            =   4920
       TabIndex        =   3
@@ -61,7 +61,7 @@ Begin VB.Form dialog_ToneMapping
       Caption         =   "in the future, automatically apply these settings"
       Value           =   0
    End
-   Begin PhotoDemon.buttonStrip btsMethod 
+   Begin PhotoDemon.pdButtonStrip btsMethod 
       Height          =   720
       Left            =   4920
       TabIndex        =   4
@@ -84,7 +84,7 @@ Begin VB.Form dialog_ToneMapping
       TabIndex        =   5
       Top             =   2040
       Width           =   6855
-      Begin PhotoDemon.sliderTextCombo sltGamma 
+      Begin PhotoDemon.pdSlider sltGamma 
          Height          =   690
          Index           =   0
          Left            =   120
@@ -113,7 +113,7 @@ Begin VB.Form dialog_ToneMapping
          Caption         =   "normalize"
          FontSize        =   11
       End
-      Begin PhotoDemon.smartOptionButton optNormalize 
+      Begin PhotoDemon.pdRadioButton optNormalize 
          Height          =   330
          Index           =   0
          Left            =   360
@@ -125,7 +125,7 @@ Begin VB.Form dialog_ToneMapping
          Caption         =   "none"
          Value           =   -1  'True
       End
-      Begin PhotoDemon.smartOptionButton optNormalize 
+      Begin PhotoDemon.pdRadioButton optNormalize 
          Height          =   330
          Index           =   1
          Left            =   360
@@ -136,7 +136,7 @@ Begin VB.Form dialog_ToneMapping
          _ExtentY        =   582
          Caption         =   "visible spectrum"
       End
-      Begin PhotoDemon.smartOptionButton optNormalize 
+      Begin PhotoDemon.pdRadioButton optNormalize 
          Height          =   330
          Index           =   2
          Left            =   360
@@ -163,7 +163,7 @@ Begin VB.Form dialog_ToneMapping
       Top             =   2040
       Visible         =   0   'False
       Width           =   6855
-      Begin PhotoDemon.sliderTextCombo sltGamma 
+      Begin PhotoDemon.pdSlider sltGamma 
          Height          =   690
          Index           =   1
          Left            =   120
@@ -181,7 +181,7 @@ Begin VB.Form dialog_ToneMapping
          NotchPosition   =   2
          NotchValueCustom=   1
       End
-      Begin PhotoDemon.sliderTextCombo sltExposure 
+      Begin PhotoDemon.pdSlider sltExposure 
          Height          =   690
          Index           =   0
          Left            =   120
@@ -212,7 +212,7 @@ Begin VB.Form dialog_ToneMapping
       Top             =   2040
       Visible         =   0   'False
       Width           =   6855
-      Begin PhotoDemon.sliderTextCombo sltIntensity 
+      Begin PhotoDemon.pdSlider sltIntensity 
          Height          =   690
          Left            =   120
          TabIndex        =   11
@@ -226,7 +226,7 @@ Begin VB.Form dialog_ToneMapping
          Max             =   4
          SigDigits       =   2
       End
-      Begin PhotoDemon.sliderTextCombo sltAdaptation 
+      Begin PhotoDemon.pdSlider sltAdaptation 
          Height          =   690
          Left            =   120
          TabIndex        =   12
@@ -243,7 +243,7 @@ Begin VB.Form dialog_ToneMapping
          NotchPosition   =   2
          NotchValueCustom=   1
       End
-      Begin PhotoDemon.sliderTextCombo sltColorCorrection 
+      Begin PhotoDemon.pdSlider sltColorCorrection 
          Height          =   690
          Left            =   120
          TabIndex        =   13
@@ -273,7 +273,7 @@ Begin VB.Form dialog_ToneMapping
       Top             =   2040
       Visible         =   0   'False
       Width           =   6855
-      Begin PhotoDemon.sliderTextCombo sltGamma 
+      Begin PhotoDemon.pdSlider sltGamma 
          Height          =   690
          Index           =   2
          Left            =   120
@@ -291,7 +291,7 @@ Begin VB.Form dialog_ToneMapping
          NotchPosition   =   2
          NotchValueCustom=   2.2
       End
-      Begin PhotoDemon.sliderTextCombo sltExposure 
+      Begin PhotoDemon.pdSlider sltExposure 
          Height          =   690
          Index           =   1
          Left            =   120
@@ -309,7 +309,7 @@ Begin VB.Form dialog_ToneMapping
          NotchPosition   =   2
          NotchValueCustom=   2
       End
-      Begin PhotoDemon.sliderTextCombo sltWhitepoint 
+      Begin PhotoDemon.pdSlider sltWhitepoint 
          Height          =   690
          Left            =   120
          TabIndex        =   17
@@ -672,4 +672,9 @@ End Sub
 Private Sub sltWhitepoint_Change()
     UpdatePreview
 End Sub
+
+
+
+
+
 

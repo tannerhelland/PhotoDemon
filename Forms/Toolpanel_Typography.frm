@@ -62,7 +62,7 @@ Begin VB.Form toolpanel_FancyText
          Layout          =   1
       End
    End
-   Begin PhotoDemon.buttonStripVertical btsCategory 
+   Begin PhotoDemon.pdButtonStripVertical btsCategory 
       Height          =   1380
       Left            =   6240
       TabIndex        =   1
@@ -107,7 +107,7 @@ Begin VB.Form toolpanel_FancyText
       Top             =   0
       Visible         =   0   'False
       Width           =   10935
-      Begin PhotoDemon.buttonStripVertical btsAppearanceCategory 
+      Begin PhotoDemon.pdButtonStripVertical btsAppearanceCategory 
          Height          =   1380
          Left            =   0
          TabIndex        =   9
@@ -129,7 +129,7 @@ Begin VB.Form toolpanel_FancyText
          Top             =   0
          Visible         =   0   'False
          Width           =   10935
-         Begin PhotoDemon.penSelector psTextBackground 
+         Begin PhotoDemon.pdPenSelector psTextBackground 
             Height          =   855
             Left            =   4680
             TabIndex        =   40
@@ -138,7 +138,7 @@ Begin VB.Form toolpanel_FancyText
             _ExtentX        =   3625
             _ExtentY        =   1508
          End
-         Begin PhotoDemon.brushSelector bsTextBackground 
+         Begin PhotoDemon.pdBrushSelector bsTextBackground 
             Height          =   855
             Left            =   1200
             TabIndex        =   38
@@ -147,7 +147,7 @@ Begin VB.Form toolpanel_FancyText
             _ExtentX        =   3625
             _ExtentY        =   1508
          End
-         Begin PhotoDemon.smartCheckBox chkBackground 
+         Begin PhotoDemon.pdCheckBox chkBackground 
             Height          =   330
             Left            =   120
             TabIndex        =   12
@@ -184,7 +184,7 @@ Begin VB.Form toolpanel_FancyText
             ForeColor       =   0
             Layout          =   1
          End
-         Begin PhotoDemon.smartCheckBox chkBackgroundBorder 
+         Begin PhotoDemon.pdCheckBox chkBackgroundBorder 
             Height          =   330
             Left            =   3480
             TabIndex        =   39
@@ -209,7 +209,7 @@ Begin VB.Form toolpanel_FancyText
          Top             =   0
          Visible         =   0   'False
          Width           =   10935
-         Begin PhotoDemon.penSelector psText 
+         Begin PhotoDemon.pdPenSelector psText 
             Height          =   855
             Left            =   4680
             TabIndex        =   42
@@ -218,7 +218,7 @@ Begin VB.Form toolpanel_FancyText
             _ExtentX        =   3625
             _ExtentY        =   1508
          End
-         Begin PhotoDemon.brushSelector bsText 
+         Begin PhotoDemon.pdBrushSelector bsText 
             Height          =   855
             Left            =   1200
             TabIndex        =   37
@@ -239,7 +239,7 @@ Begin VB.Form toolpanel_FancyText
             Caption         =   "fill style:"
             Layout          =   1
          End
-         Begin PhotoDemon.smartCheckBox chkFillText 
+         Begin PhotoDemon.pdCheckBox chkFillText 
             Height          =   330
             Left            =   120
             TabIndex        =   36
@@ -261,7 +261,7 @@ Begin VB.Form toolpanel_FancyText
             Caption         =   "outline style:"
             Layout          =   1
          End
-         Begin PhotoDemon.smartCheckBox chkOutlineText 
+         Begin PhotoDemon.pdCheckBox chkOutlineText 
             Height          =   330
             Left            =   3480
             TabIndex        =   41
@@ -286,7 +286,7 @@ Begin VB.Form toolpanel_FancyText
       Top             =   0
       Visible         =   0   'False
       Width           =   10935
-      Begin PhotoDemon.textUpDown tudLineSpacing 
+      Begin PhotoDemon.pdSpinner tudLineSpacing 
          Height          =   345
          Left            =   5160
          TabIndex        =   17
@@ -297,7 +297,7 @@ Begin VB.Form toolpanel_FancyText
          Min             =   -10
          SigDigits       =   2
       End
-      Begin PhotoDemon.textUpDown tudMargin 
+      Begin PhotoDemon.pdSpinner tudMargin 
          Height          =   345
          Index           =   0
          Left            =   5160
@@ -309,7 +309,7 @@ Begin VB.Form toolpanel_FancyText
          Min             =   -1000
          Max             =   1000
       End
-      Begin PhotoDemon.buttonStrip btsHAlignment 
+      Begin PhotoDemon.pdButtonStrip btsHAlignment 
          Height          =   435
          Left            =   1320
          TabIndex        =   4
@@ -331,7 +331,7 @@ Begin VB.Form toolpanel_FancyText
          Caption         =   "alignment:"
          ForeColor       =   0
       End
-      Begin PhotoDemon.buttonStrip btsVAlignment 
+      Begin PhotoDemon.pdButtonStrip btsVAlignment 
          Height          =   435
          Left            =   1320
          TabIndex        =   5
@@ -374,7 +374,7 @@ Begin VB.Form toolpanel_FancyText
          Caption         =   "h. padding:"
          ForeColor       =   0
       End
-      Begin PhotoDemon.textUpDown tudMargin 
+      Begin PhotoDemon.pdSpinner tudMargin 
          Height          =   345
          Index           =   1
          Left            =   6120
@@ -386,7 +386,7 @@ Begin VB.Form toolpanel_FancyText
          Min             =   -1000
          Max             =   1000
       End
-      Begin PhotoDemon.textUpDown tudMargin 
+      Begin PhotoDemon.pdSpinner tudMargin 
          Height          =   345
          Index           =   2
          Left            =   5160
@@ -398,7 +398,7 @@ Begin VB.Form toolpanel_FancyText
          Min             =   -1000
          Max             =   1000
       End
-      Begin PhotoDemon.textUpDown tudMargin 
+      Begin PhotoDemon.pdSpinner tudMargin 
          Height          =   345
          Index           =   3
          Left            =   6120
@@ -447,7 +447,7 @@ Begin VB.Form toolpanel_FancyText
       TabIndex        =   2
       Top             =   0
       Width           =   10935
-      Begin PhotoDemon.buttonStripVertical btsCharCategory 
+      Begin PhotoDemon.pdButtonStripVertical btsCharCategory 
          Height          =   1380
          Left            =   0
          TabIndex        =   18
@@ -469,7 +469,7 @@ Begin VB.Form toolpanel_FancyText
          Top             =   60
          Visible         =   0   'False
          Width           =   10935
-         Begin PhotoDemon.textUpDown tudJitter 
+         Begin PhotoDemon.pdSpinner tudJitter 
             Height          =   345
             Index           =   0
             Left            =   5280
@@ -514,7 +514,7 @@ Begin VB.Form toolpanel_FancyText
             Caption         =   "spacing:"
             ForeColor       =   0
          End
-         Begin PhotoDemon.sliderTextCombo sltCharSpacing 
+         Begin PhotoDemon.pdSlider sltCharSpacing 
             CausesValidation=   0   'False
             Height          =   405
             Left            =   1200
@@ -539,7 +539,7 @@ Begin VB.Form toolpanel_FancyText
             Caption         =   "orientation:"
             ForeColor       =   0
          End
-         Begin PhotoDemon.sliderTextCombo sltCharOrientation 
+         Begin PhotoDemon.pdSlider sltCharOrientation 
             CausesValidation=   0   'False
             Height          =   405
             Left            =   1200
@@ -585,7 +585,7 @@ Begin VB.Form toolpanel_FancyText
             _ExtentX        =   4577
             _ExtentY        =   661
          End
-         Begin PhotoDemon.textUpDown tudJitter 
+         Begin PhotoDemon.pdSpinner tudJitter 
             Height          =   345
             Index           =   1
             Left            =   6675
@@ -609,7 +609,7 @@ Begin VB.Form toolpanel_FancyText
             Caption         =   "inflation:"
             ForeColor       =   0
          End
-         Begin PhotoDemon.sliderTextCombo sltCharInflation 
+         Begin PhotoDemon.pdSlider sltCharInflation 
             CausesValidation=   0   'False
             Height          =   405
             Left            =   5160
@@ -635,7 +635,7 @@ Begin VB.Form toolpanel_FancyText
          Top             =   60
          Visible         =   0   'False
          Width           =   10935
-         Begin PhotoDemon.textUpDown tudTextFontSize 
+         Begin PhotoDemon.pdSpinner tudTextFontSize 
             Height          =   345
             Left            =   1320
             TabIndex        =   20
@@ -716,7 +716,7 @@ Begin VB.Form toolpanel_FancyText
             _ExtentY        =   767
             StickyToggle    =   -1  'True
          End
-         Begin PhotoDemon.smartCheckBox chkHinting 
+         Begin PhotoDemon.pdCheckBox chkHinting 
             Height          =   330
             Left            =   4200
             TabIndex        =   24
@@ -1878,3 +1878,9 @@ Public Sub UpdateAgainstCurrentTheme()
     ApplyThemeAndTranslations Me
 
 End Sub
+
+
+
+
+
+

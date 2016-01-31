@@ -33,7 +33,7 @@ Begin VB.Form FormCanvasSize
       _ExtentX        =   1323
       _ExtentY        =   1005
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -45,7 +45,7 @@ Begin VB.Form FormCanvasSize
       BackColor       =   14802140
       AutoloadLastPreset=   -1  'True
    End
-   Begin PhotoDemon.colorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector colorPicker 
       Height          =   495
       Left            =   840
       TabIndex        =   3
@@ -54,7 +54,7 @@ Begin VB.Form FormCanvasSize
       _ExtentX        =   10398
       _ExtentY        =   873
    End
-   Begin PhotoDemon.smartResize ucResize 
+   Begin PhotoDemon.pdResize ucResize 
       Height          =   2850
       Left            =   360
       TabIndex        =   4
@@ -429,4 +429,7 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     Message "Finished."
     
 End Sub
+
+
+
 

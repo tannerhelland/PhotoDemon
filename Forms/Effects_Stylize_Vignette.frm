@@ -24,7 +24,7 @@ Begin VB.Form FormVignette
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.sliderTextCombo sltXCenter 
+   Begin PhotoDemon.pdSlider sltXCenter 
       Height          =   405
       Left            =   6000
       TabIndex        =   2
@@ -38,7 +38,7 @@ Begin VB.Form FormVignette
       NotchPosition   =   2
       NotchValueCustom=   0.5
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -49,7 +49,7 @@ Begin VB.Form FormVignette
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.smartOptionButton optShape 
+   Begin PhotoDemon.pdRadioButton optShape 
       Height          =   360
       Index           =   0
       Left            =   6120
@@ -61,7 +61,7 @@ Begin VB.Form FormVignette
       Caption         =   "fit to image"
       Value           =   -1  'True
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -72,7 +72,7 @@ Begin VB.Form FormVignette
       DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton optShape 
+   Begin PhotoDemon.pdRadioButton optShape 
       Height          =   360
       Index           =   1
       Left            =   8880
@@ -83,7 +83,7 @@ Begin VB.Form FormVignette
       _ExtentY        =   582
       Caption         =   "circular"
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -98,7 +98,7 @@ Begin VB.Form FormVignette
       NotchPosition   =   2
       NotchValueCustom=   50
    End
-   Begin PhotoDemon.sliderTextCombo sltFeathering 
+   Begin PhotoDemon.pdSlider sltFeathering 
       Height          =   705
       Left            =   6000
       TabIndex        =   6
@@ -111,7 +111,7 @@ Begin VB.Form FormVignette
       Max             =   100
       Value           =   30
    End
-   Begin PhotoDemon.sliderTextCombo sltTransparency 
+   Begin PhotoDemon.pdSlider sltTransparency 
       Height          =   705
       Left            =   6000
       TabIndex        =   7
@@ -124,7 +124,7 @@ Begin VB.Form FormVignette
       Max             =   100
       Value           =   80
    End
-   Begin PhotoDemon.colorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector colorPicker 
       Height          =   930
       Left            =   6000
       TabIndex        =   8
@@ -135,7 +135,7 @@ Begin VB.Form FormVignette
       Caption         =   "color"
       curColor        =   0
    End
-   Begin PhotoDemon.sliderTextCombo sltYCenter 
+   Begin PhotoDemon.pdSlider sltYCenter 
       Height          =   405
       Left            =   9000
       TabIndex        =   9
@@ -210,7 +210,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply vignetting to an image
-Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double, ByVal vTransparency As Double, ByVal vMode As Boolean, ByVal newColor As Long, Optional ByVal centerPosX As Double = 0.5, Optional ByVal centerPosY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double, ByVal vTransparency As Double, ByVal vMode As Boolean, ByVal newColor As Long, Optional ByVal centerPosX As Double = 0.5, Optional ByVal centerPosY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Applying vignetting..."
         
@@ -409,13 +409,13 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub fxPreview_ColorSelected()
-    colorPicker.Color = fxPreview.SelectedColor
+Private Sub pdFxPreview_ColorSelected()
+    colorPicker.Color = pdFxPreview.SelectedColor
     UpdatePreview
 End Sub
 
 'The user can right-click the preview area to select a new center point
-Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
+Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
     
     cmdBar.markPreviewStatus False
     sltXCenter.Value = xRatio
@@ -443,11 +443,11 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, sltXCenter.Value, sltYCenter.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -458,4 +458,9 @@ End Sub
 Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
+
+
+
+
+
 

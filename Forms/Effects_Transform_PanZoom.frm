@@ -24,7 +24,7 @@ Begin VB.Form FormPanAndZoom
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormPanAndZoom
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   4
@@ -44,7 +44,7 @@ Begin VB.Form FormPanAndZoom
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltHorizontal 
+   Begin PhotoDemon.pdSlider sltHorizontal 
       Height          =   705
       Left            =   6000
       TabIndex        =   1
@@ -57,7 +57,7 @@ Begin VB.Form FormPanAndZoom
       Max             =   64
       SigDigits       =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltVertical 
+   Begin PhotoDemon.pdSlider sltVertical 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -70,7 +70,7 @@ Begin VB.Form FormPanAndZoom
       Max             =   64
       SigDigits       =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltZoom 
+   Begin PhotoDemon.pdSlider sltZoom 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -82,7 +82,7 @@ Begin VB.Form FormPanAndZoom
       Min             =   -10
       SigDigits       =   2
    End
-   Begin PhotoDemon.sliderTextCombo sltQuality 
+   Begin PhotoDemon.pdSlider sltQuality 
       Height          =   705
       Left            =   6000
       TabIndex        =   6
@@ -149,7 +149,7 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Apply a Ken Burns effect (basically, variable pan and zoom parameters with optional wrapping)
-Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal newZoom As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal newZoom As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Applying pan and zoom (Ken Burns) effect..."
     
@@ -422,7 +422,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then PanAndZoomFilter sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
+    If cmdBar.previewsAllowed Then PanAndZoomFilter sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
 End Sub
 
 Private Sub sltQuality_Change()
@@ -442,9 +442,12 @@ Private Sub sltZoom_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 
 
 
