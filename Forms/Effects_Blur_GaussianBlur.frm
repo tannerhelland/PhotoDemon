@@ -23,7 +23,7 @@ Begin VB.Form FormGaussianBlur
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormGaussianBlur
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -48,7 +48,7 @@ Begin VB.Form FormGaussianBlur
       SigDigits       =   1
       Value           =   5
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -57,7 +57,7 @@ Begin VB.Form FormGaussianBlur
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.buttonStrip btsQuality 
+   Begin PhotoDemon.pdButtonStrip btsQuality 
       Height          =   1080
       Left            =   6000
       TabIndex        =   3
@@ -108,7 +108,7 @@ Option Explicit
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
         
     If Not toPreview Then Message "Applying gaussian blur..."
         
@@ -198,7 +198,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then GaussianBlurFilter sltRadius.Value, btsQuality.ListIndex, True, fxPreview
+    If cmdBar.previewsAllowed Then GaussianBlurFilter sltRadius.Value, btsQuality.ListIndex, True, pdFxPreview
 End Sub
 
 Private Sub sltRadius_Change()
@@ -206,9 +206,13 @@ Private Sub sltRadius_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 
 
 

@@ -24,7 +24,7 @@ Begin VB.Form FormSplitTone
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormSplitTone
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5505
       Left            =   120
       TabIndex        =   0
@@ -44,7 +44,7 @@ Begin VB.Form FormSplitTone
       _ExtentX        =   9922
       _ExtentY        =   9710
    End
-   Begin PhotoDemon.sliderTextCombo sltBalance 
+   Begin PhotoDemon.pdSlider sltBalance 
       Height          =   705
       Left            =   6000
       TabIndex        =   1
@@ -58,7 +58,7 @@ Begin VB.Form FormSplitTone
       SliderTrackStyle=   3
       GradientColorMiddle=   16777215
    End
-   Begin PhotoDemon.colorSelector cpHighlight 
+   Begin PhotoDemon.pdColorSelector cpHighlight 
       Height          =   975
       Left            =   6000
       TabIndex        =   3
@@ -69,7 +69,7 @@ Begin VB.Form FormSplitTone
       Caption         =   "highlight color"
       curColor        =   16744192
    End
-   Begin PhotoDemon.colorSelector cpShadow 
+   Begin PhotoDemon.pdColorSelector cpShadow 
       Height          =   975
       Left            =   6000
       TabIndex        =   4
@@ -80,7 +80,7 @@ Begin VB.Form FormSplitTone
       Caption         =   "shadow color"
       curColor        =   32767
    End
-   Begin PhotoDemon.sliderTextCombo sltStrength 
+   Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -143,7 +143,7 @@ Option Explicit
 '     highlights, while < 0 will favor shadows.
 '  - Strength parameter, [0, 100].  At 100, current pixel values will be overwritten by their split-toned counterparts.  At 50, the original
 '     and split-toned RGB values will be blended at a 50/50 ratio.  0 = no change.
-Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, ByVal Balance As Double, ByVal Strength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, ByVal Balance As Double, ByVal Strength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Split-toning image..."
     
@@ -313,11 +313,11 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then SplitTone cpHighlight.Color, cpShadow.Color, sltBalance.Value, sltStrength.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then SplitTone cpHighlight.Color, cpShadow.Color, sltBalance.Value, sltStrength.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -336,3 +336,7 @@ Private Sub updateBalanceSlider()
     sltBalance.GradientColorRight = cpHighlight.Color
 
 End Sub
+
+
+
+

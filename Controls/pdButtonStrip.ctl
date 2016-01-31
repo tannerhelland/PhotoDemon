@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.UserControl buttonStrip 
+Begin VB.UserControl pdButtonStrip 
    BackColor       =   &H00FFFFFF&
    ClientHeight    =   765
    ClientLeft      =   0
@@ -18,9 +18,9 @@ Begin VB.UserControl buttonStrip
    ScaleHeight     =   51
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   183
-   ToolboxBitmap   =   "buttonStrip.ctx":0000
+   ToolboxBitmap   =   "pdButtonStrip.ctx":0000
 End
-Attribute VB_Name = "buttonStrip"
+Attribute VB_Name = "pdButtonStrip"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -1050,3 +1050,4 @@ End Sub
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
+

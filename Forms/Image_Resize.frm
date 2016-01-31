@@ -41,7 +41,7 @@ Begin VB.Form FormResize
       _ExtentX        =   13996
       _ExtentY        =   635
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -52,7 +52,7 @@ Begin VB.Form FormResize
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.smartResize ucResize 
+   Begin PhotoDemon.pdResize ucResize 
       Height          =   2850
       Left            =   480
       TabIndex        =   1
@@ -70,7 +70,7 @@ Begin VB.Form FormResize
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin PhotoDemon.smartCheckBox chkNames 
+   Begin PhotoDemon.pdCheckBox chkNames 
       Height          =   300
       Left            =   840
       TabIndex        =   2
@@ -80,7 +80,7 @@ Begin VB.Form FormResize
       _ExtentY        =   582
       Caption         =   "show technical names"
    End
-   Begin PhotoDemon.colorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector colorPicker 
       Height          =   495
       Left            =   840
       TabIndex        =   5
@@ -731,5 +731,9 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     Message "Finished."
     
 End Sub
+
+
+
+
 
 

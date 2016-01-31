@@ -23,7 +23,7 @@ Begin VB.Form FormColorize
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   823
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormColorize
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.smartCheckBox chkSaturation 
+   Begin PhotoDemon.pdCheckBox chkSaturation 
       Height          =   330
       Left            =   6240
       TabIndex        =   2
@@ -44,7 +44,7 @@ Begin VB.Form FormColorize
       _ExtentY        =   582
       Caption         =   "preserve existing saturation"
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -53,7 +53,7 @@ Begin VB.Form FormColorize
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltHue 
+   Begin PhotoDemon.pdSlider sltHue 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -105,7 +105,7 @@ End Sub
 
 'Colorize an image using a hue defined between 0 and 359
 ' Input: desired hue, whether to force saturation to 0.5 or maintain the existing value
-Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturation As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturation As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Colorizing image..."
     
@@ -200,14 +200,18 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ColorizeImage sltHue.Value, CBool(chkSaturation.Value), True, fxPreview
+    If cmdBar.previewsAllowed Then ColorizeImage sltHue.Value, CBool(chkSaturation.Value), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 Private Sub sltHue_Change()
     UpdatePreview
 End Sub
+
+
+
+

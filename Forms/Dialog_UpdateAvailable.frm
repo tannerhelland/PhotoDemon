@@ -36,7 +36,7 @@ Begin VB.Form FormUpdateNotify
       _ExtentY        =   1323
       Caption         =   "Restart PhotoDemon"
    End
-   Begin PhotoDemon.smartCheckBox chkNotify 
+   Begin PhotoDemon.pdCheckBox chkNotify 
       Height          =   330
       Left            =   120
       TabIndex        =   0
@@ -177,3 +177,4 @@ Private Sub Form_Load()
     Me.Move (FormMain.Left + FormMain.Width) - (Me.Width + 90), (FormMain.Top + FormMain.Height) - (Me.Height + 90)
     
 End Sub
+

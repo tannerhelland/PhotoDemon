@@ -23,7 +23,7 @@ Begin VB.Form FormGlassTiles
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormGlassTiles
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -48,7 +48,7 @@ Begin VB.Form FormGlassTiles
       SigDigits       =   1
       Value           =   45
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -58,7 +58,7 @@ Begin VB.Form FormGlassTiles
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltSize 
+   Begin PhotoDemon.pdSlider sltSize 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -71,7 +71,7 @@ Begin VB.Form FormGlassTiles
       Max             =   200
       Value           =   40
    End
-   Begin PhotoDemon.sliderTextCombo sltCurvature 
+   Begin PhotoDemon.pdSlider sltCurvature 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -85,7 +85,7 @@ Begin VB.Form FormGlassTiles
       SigDigits       =   1
       Value           =   8
    End
-   Begin PhotoDemon.sliderTextCombo sltQuality 
+   Begin PhotoDemon.pdSlider sltQuality 
       Height          =   705
       Left            =   6000
       TabIndex        =   6
@@ -154,7 +154,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a glass tile filter to an image
-Public Sub GlassTiles(ByVal lSquareSize As Long, ByVal lCurvature As Double, ByVal lAngle As Double, ByVal superSamplingAmount As Long, ByVal edgeHandling As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub GlassTiles(ByVal lSquareSize As Long, ByVal lCurvature As Double, ByVal lAngle As Double, ByVal superSamplingAmount As Long, ByVal edgeHandling As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Generating glass tiles..."
     
@@ -406,11 +406,14 @@ Private Sub sltSize_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then GlassTiles sltSize.Value, sltCurvature.Value, sltAngle.Value, sltQuality.Value, CLng(cboEdges.ListIndex), True, fxPreview
+    If cmdBar.previewsAllowed Then GlassTiles sltSize.Value, sltCurvature.Value, sltAngle.Value, sltQuality.Value, CLng(cboEdges.ListIndex), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 

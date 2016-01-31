@@ -24,7 +24,7 @@ Begin VB.Form FormMiscDistorts
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -52,7 +52,7 @@ Begin VB.Form FormMiscDistorts
       Top             =   600
       Width           =   5655
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   2
@@ -61,7 +61,7 @@ Begin VB.Form FormMiscDistorts
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltQuality 
+   Begin PhotoDemon.pdSlider sltQuality 
       Height          =   705
       Left            =   6000
       TabIndex        =   1
@@ -140,7 +140,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Correct lens distortion in an image
-Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As Long, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As Long, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Applying %1 distortion...", distortName
     
@@ -481,15 +481,18 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyMiscDistort "", lstDistorts.ListIndex, CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyMiscDistort "", lstDistorts.ListIndex, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 Private Sub sltQuality_Change()
     UpdatePreview
 End Sub
+
+
+
 

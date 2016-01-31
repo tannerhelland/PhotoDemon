@@ -24,7 +24,7 @@ Begin VB.Form FormMetadata
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   801
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBarMini cmdBarMini 
+   Begin PhotoDemon.pdCommandBarMini cmdBarMini 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -59,7 +59,7 @@ Begin VB.Form FormMetadata
       Top             =   1740
       Width           =   255
    End
-   Begin PhotoDemon.buttonStrip btsGroup 
+   Begin PhotoDemon.pdButtonStrip btsGroup 
       Height          =   1095
       Left            =   120
       TabIndex        =   1
@@ -83,7 +83,7 @@ Begin VB.Form FormMetadata
       Top             =   1740
       Width           =   6495
    End
-   Begin PhotoDemon.buttonStrip btsTechnical 
+   Begin PhotoDemon.pdButtonStrip btsTechnical 
       Height          =   975
       Index           =   0
       Left            =   7440
@@ -94,7 +94,7 @@ Begin VB.Form FormMetadata
       _ExtentY        =   1720
       Caption         =   "tag names"
    End
-   Begin PhotoDemon.buttonStrip btsTechnical 
+   Begin PhotoDemon.pdButtonStrip btsTechnical 
       Height          =   975
       Index           =   1
       Left            =   7440
@@ -547,4 +547,6 @@ End Sub
 Private Sub vsMetadata_Scroll()
     redrawMetadataList
 End Sub
+
+
 

@@ -35,7 +35,7 @@ Begin VB.Form FormHistogram
       _ExtentY        =   873
       Caption         =   "Exit histogram"
    End
-   Begin PhotoDemon.smartCheckBox chkLog 
+   Begin PhotoDemon.pdCheckBox chkLog 
       Height          =   330
       Left            =   7320
       TabIndex        =   3
@@ -45,7 +45,7 @@ Begin VB.Form FormHistogram
       _ExtentY        =   582
       Caption         =   "use logarithmic values"
    End
-   Begin PhotoDemon.smartCheckBox chkSmooth 
+   Begin PhotoDemon.pdCheckBox chkSmooth 
       Height          =   330
       Left            =   7320
       TabIndex        =   4
@@ -55,7 +55,7 @@ Begin VB.Form FormHistogram
       _ExtentY        =   582
       Caption         =   "use smooth lines"
    End
-   Begin PhotoDemon.smartCheckBox chkChannel 
+   Begin PhotoDemon.pdCheckBox chkChannel 
       Height          =   330
       Index           =   0
       Left            =   4680
@@ -113,7 +113,7 @@ Begin VB.Form FormHistogram
       Top             =   4200
       Width           =   10335
    End
-   Begin PhotoDemon.smartCheckBox chkChannel 
+   Begin PhotoDemon.pdCheckBox chkChannel 
       Height          =   330
       Index           =   1
       Left            =   4680
@@ -124,7 +124,7 @@ Begin VB.Form FormHistogram
       _ExtentY        =   582
       Caption         =   "green"
    End
-   Begin PhotoDemon.smartCheckBox chkChannel 
+   Begin PhotoDemon.pdCheckBox chkChannel 
       Height          =   330
       Index           =   2
       Left            =   4680
@@ -135,7 +135,7 @@ Begin VB.Form FormHistogram
       _ExtentY        =   582
       Caption         =   "blue"
    End
-   Begin PhotoDemon.smartCheckBox chkChannel 
+   Begin PhotoDemon.pdCheckBox chkChannel 
       Height          =   330
       Index           =   3
       Left            =   4680
@@ -146,7 +146,7 @@ Begin VB.Form FormHistogram
       _ExtentY        =   582
       Caption         =   "luminance"
    End
-   Begin PhotoDemon.smartCheckBox chkFillCurve 
+   Begin PhotoDemon.pdCheckBox chkFillCurve 
       Height          =   330
       Left            =   7320
       TabIndex        =   9
@@ -1026,4 +1026,5 @@ Public Sub StretchHistogram()
     finalizeImageData
         
 End Sub
+
 

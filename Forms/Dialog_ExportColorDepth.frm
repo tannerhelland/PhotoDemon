@@ -23,7 +23,7 @@ Begin VB.Form dialog_ExportColorDepth
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   429
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBarMini cmdBarMini 
+   Begin PhotoDemon.pdCommandBarMini cmdBarMini 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form dialog_ExportColorDepth
       BackColor       =   14802140
       dontAutoUnloadParent=   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton optColorDepth 
+   Begin PhotoDemon.pdRadioButton optColorDepth 
       CausesValidation=   0   'False
       Height          =   375
       Index           =   0
@@ -47,7 +47,7 @@ Begin VB.Form dialog_ExportColorDepth
       _ExtentY        =   582
       Caption         =   "1 bpp (monochrome)"
    End
-   Begin PhotoDemon.smartOptionButton optColorDepth 
+   Begin PhotoDemon.pdRadioButton optColorDepth 
       CausesValidation=   0   'False
       Height          =   375
       Index           =   1
@@ -59,7 +59,7 @@ Begin VB.Form dialog_ExportColorDepth
       _ExtentY        =   582
       Caption         =   "4 bpp (16 shades of gray)"
    End
-   Begin PhotoDemon.smartOptionButton optColorDepth 
+   Begin PhotoDemon.pdRadioButton optColorDepth 
       CausesValidation=   0   'False
       Height          =   375
       Index           =   2
@@ -71,7 +71,7 @@ Begin VB.Form dialog_ExportColorDepth
       _ExtentY        =   582
       Caption         =   "8 bpp (256 colors or full grayscale)"
    End
-   Begin PhotoDemon.smartOptionButton optColorDepth 
+   Begin PhotoDemon.pdRadioButton optColorDepth 
       CausesValidation=   0   'False
       Height          =   375
       Index           =   3
@@ -83,7 +83,7 @@ Begin VB.Form dialog_ExportColorDepth
       _ExtentY        =   582
       Caption         =   "24 bpp (16 million colors)"
    End
-   Begin PhotoDemon.smartOptionButton optColorDepth 
+   Begin PhotoDemon.pdRadioButton optColorDepth 
       CausesValidation=   0   'False
       Height          =   375
       Index           =   4
@@ -247,4 +247,6 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
+
+
 

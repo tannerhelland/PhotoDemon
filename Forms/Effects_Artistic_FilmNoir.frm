@@ -23,7 +23,7 @@ Begin VB.Form FormFilmNoir
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.sliderTextCombo sltShadow 
+   Begin PhotoDemon.pdSlider sltShadow 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -36,7 +36,7 @@ Begin VB.Form FormFilmNoir
       SigDigits       =   1
       Value           =   50
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -45,7 +45,7 @@ Begin VB.Form FormFilmNoir
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -56,7 +56,7 @@ Begin VB.Form FormFilmNoir
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltContrast 
+   Begin PhotoDemon.pdSlider sltContrast 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -69,7 +69,7 @@ Begin VB.Form FormFilmNoir
       SigDigits       =   1
       Value           =   50
    End
-   Begin PhotoDemon.sliderTextCombo sltHighlight 
+   Begin PhotoDemon.pdSlider sltHighlight 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -82,7 +82,7 @@ Begin VB.Form FormFilmNoir
       SigDigits       =   1
       Value           =   50
    End
-   Begin PhotoDemon.sliderTextCombo sltMidpoint 
+   Begin PhotoDemon.pdSlider sltMidpoint 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -95,7 +95,7 @@ Begin VB.Form FormFilmNoir
       SigDigits       =   1
       Value           =   50
    End
-   Begin PhotoDemon.sliderTextCombo sltGrain 
+   Begin PhotoDemon.pdSlider sltGrain 
       Height          =   705
       Left            =   6000
       TabIndex        =   6
@@ -136,7 +136,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a noir-inspired filter to an image.
-Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse out the parameter list
     Dim cParams As pdParamXML
@@ -289,12 +289,12 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxFilmNoir GetLocalParamString(), True, fxPreview
+    If cmdBar.previewsAllowed Then fxFilmNoir GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltContrast_Change()
@@ -320,3 +320,6 @@ End Sub
 Private Function GetLocalParamString() As String
     GetLocalParamString = buildParamList("shadow", sltShadow.Value, "contrast", sltContrast.Value, "midpoint", sltMidpoint.Value, "highlight", sltHighlight.Value, "grain", sltGrain.Value)
 End Function
+
+
+

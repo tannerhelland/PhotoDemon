@@ -23,7 +23,7 @@ Begin VB.Form FormComicBook
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.buttonStrip btsStrength 
+   Begin PhotoDemon.pdButtonStrip btsStrength 
       Height          =   1095
       Left            =   6000
       TabIndex        =   4
@@ -33,7 +33,7 @@ Begin VB.Form FormComicBook
       _ExtentY        =   1931
       Caption         =   "brush smoothing"
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -44,7 +44,7 @@ Begin VB.Form FormComicBook
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -53,7 +53,7 @@ Begin VB.Form FormComicBook
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltInk 
+   Begin PhotoDemon.pdSlider sltInk 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -65,7 +65,7 @@ Begin VB.Form FormComicBook
       Max             =   100
       Value           =   50
    End
-   Begin PhotoDemon.sliderTextCombo sltColor 
+   Begin PhotoDemon.pdSlider sltColor 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -107,7 +107,7 @@ Option Explicit
 'Inputs:
 ' 1) strength of the inking
 ' 2) color smudging, which controls the radius of the median effect applied to the base image
-Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, ByVal colorStrength As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, ByVal colorStrength As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Animating image (stage %1 of %2)...", 1, 3 + colorStrength
     
@@ -265,11 +265,11 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxComicBook sltInk, sltColor, btsStrength.ListIndex, True, fxPreview
+    If cmdBar.previewsAllowed Then fxComicBook sltInk, sltColor, btsStrength.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -280,3 +280,7 @@ End Sub
 Private Sub sltInk_Change()
     UpdatePreview
 End Sub
+
+
+
+

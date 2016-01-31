@@ -45,7 +45,7 @@ Begin VB.Form FormLevels
       _ExtentY        =   661
       StickyToggle    =   -1  'True
    End
-   Begin PhotoDemon.colorSelector csShadow 
+   Begin PhotoDemon.pdColorSelector csShadow 
       Height          =   375
       Left            =   7230
       TabIndex        =   13
@@ -114,7 +114,7 @@ Begin VB.Form FormLevels
       Top             =   4200
       Width           =   6690
    End
-   Begin PhotoDemon.textUpDown tudLevels 
+   Begin PhotoDemon.pdSpinner tudLevels 
       Height          =   345
       Index           =   0
       Left            =   6000
@@ -125,7 +125,7 @@ Begin VB.Form FormLevels
       _ExtentY        =   714
       Max             =   253
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -136,7 +136,7 @@ Begin VB.Form FormLevels
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   3
@@ -146,7 +146,7 @@ Begin VB.Form FormLevels
       _ExtentY        =   9922
       ColorSelection  =   -1  'True
    End
-   Begin PhotoDemon.textUpDown tudLevels 
+   Begin PhotoDemon.pdSpinner tudLevels 
       Height          =   345
       Index           =   1
       Left            =   8760
@@ -160,7 +160,7 @@ Begin VB.Form FormLevels
       SigDigits       =   2
       Value           =   0.5
    End
-   Begin PhotoDemon.textUpDown tudLevels 
+   Begin PhotoDemon.pdSpinner tudLevels 
       Height          =   345
       Index           =   2
       Left            =   11490
@@ -173,7 +173,7 @@ Begin VB.Form FormLevels
       Max             =   255
       Value           =   255
    End
-   Begin PhotoDemon.textUpDown tudLevels 
+   Begin PhotoDemon.pdSpinner tudLevels 
       Height          =   345
       Index           =   3
       Left            =   6000
@@ -184,7 +184,7 @@ Begin VB.Form FormLevels
       _ExtentY        =   714
       Max             =   255
    End
-   Begin PhotoDemon.textUpDown tudLevels 
+   Begin PhotoDemon.pdSpinner tudLevels 
       Height          =   345
       Index           =   4
       Left            =   11355
@@ -196,7 +196,7 @@ Begin VB.Form FormLevels
       Max             =   255
       Value           =   255
    End
-   Begin PhotoDemon.colorSelector csHighlight 
+   Begin PhotoDemon.pdColorSelector csHighlight 
       Height          =   375
       Left            =   10920
       TabIndex        =   14
@@ -206,7 +206,7 @@ Begin VB.Form FormLevels
       _ExtentY        =   661
       ShowMainWindowColor=   0   'False
    End
-   Begin PhotoDemon.buttonStrip btsChannel 
+   Begin PhotoDemon.pdButtonStrip btsChannel 
       Height          =   1080
       Left            =   6000
       TabIndex        =   15
@@ -1104,7 +1104,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Draw an image based on user-adjusted input and output levels
-Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Mapping new image levels..."
     
@@ -1360,25 +1360,25 @@ Private Sub UpdatePreview()
         cmdBar.markPreviewStatus True
         
         'Actually render the levels effect
-        MapImageLevels getLevelsParamString(), True, fxPreview
+        MapImageLevels getLevelsParamString(), True, pdFxPreview
         
     End If
     
 End Sub
 
-Private Sub fxPreview_ColorSelected()
+Private Sub pdFxPreview_ColorSelected()
 
     'Assign the new color to the selected box
     If cmdColorSelect(0).Value Then
-        csShadow.Color = fxPreview.SelectedColor
+        csShadow.Color = pdFxPreview.SelectedColor
     Else
-        csHighlight.Color = fxPreview.SelectedColor
+        csHighlight.Color = pdFxPreview.SelectedColor
     End If
 
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -1413,5 +1413,10 @@ Private Function getLevelsParamString() As String
     getLevelsParamString = tmpString
     
 End Function
+
+
+
+
+
 
 

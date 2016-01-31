@@ -32,7 +32,7 @@ Begin VB.Form FormFadeLast
       _ExtentX        =   10398
       _ExtentY        =   635
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -43,7 +43,7 @@ Begin VB.Form FormFadeLast
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   2
@@ -52,7 +52,7 @@ Begin VB.Form FormFadeLast
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltOpacity 
+   Begin PhotoDemon.pdSlider sltOpacity 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -173,7 +173,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Fade the current image against its most recent previous state, using the opacity and blend mode supplied by the user.
-Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As LAYER_BLENDMODE, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As LAYER_BLENDMODE, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Status bar and message updates are only provided for non-previews.  Also, because PD's central compositor does all the legwork
     ' for this function, and it does not provide detailed progress reports, we use a cheap progress bar estimation method.
@@ -192,7 +192,7 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
     
     'Retrieve previous layer; note that the method used to retrieve this layer varies according to preview state.
     If toPreview Then
-        previewNonStandardImage tmpSafeArray, m_prevLayerDIB, fxPreview, True
+        previewNonStandardImage tmpSafeArray, m_prevLayerDIB, pdFxPreview, True
         Set prevLayerDIBCopy = New pdDIB
         prevLayerDIBCopy.createFromExistingDIB workingDIB
     Else
@@ -201,7 +201,7 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
     
     'Retrieve current layer (same steps as above)
     If toPreview Then
-        previewNonStandardImage tmpSafeArray, m_curLayerDIB, fxPreview, True
+        previewNonStandardImage tmpSafeArray, m_curLayerDIB, pdFxPreview, True
         Set curLayerDIBCopy = New pdDIB
         curLayerDIBCopy.createFromExistingDIB workingDIB
     Else
@@ -230,7 +230,7 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
     If toPreview Then
     
         workingDIB.createFromExistingDIB tmpLayerBottom.layerDIB
-        finalizeNonstandardPreview fxPreview, True
+        finalizeNonstandardPreview pdFxPreview, True
         
     'If this is not a preview, overwrite the relevant layer's contents, then refresh the interface to match.
     Else
@@ -254,15 +254,18 @@ End Sub
 
 'Use this sub to update the on-screen preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxFadeLastAction sltOpacity, cboBlendMode.ListIndex, True, fxPreview
+    If cmdBar.previewsAllowed Then fxFadeLastAction sltOpacity, cboBlendMode.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 Private Sub sltOpacity_Change()
     UpdatePreview
 End Sub
+
+
+
 

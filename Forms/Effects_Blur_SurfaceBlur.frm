@@ -23,7 +23,7 @@ Begin VB.Form FormSurfaceBlur
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormSurfaceBlur
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -43,7 +43,7 @@ Begin VB.Form FormSurfaceBlur
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -57,7 +57,7 @@ Begin VB.Form FormSurfaceBlur
       SigDigits       =   1
       Value           =   5
    End
-   Begin PhotoDemon.sliderTextCombo sltThreshold 
+   Begin PhotoDemon.pdSlider sltThreshold 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -69,7 +69,7 @@ Begin VB.Form FormSurfaceBlur
       Max             =   255
       Value           =   50
    End
-   Begin PhotoDemon.buttonStrip btsQuality 
+   Begin PhotoDemon.pdButtonStrip btsQuality 
       Height          =   1080
       Left            =   6000
       TabIndex        =   5
@@ -79,7 +79,7 @@ Begin VB.Form FormSurfaceBlur
       _ExtentY        =   1058
       Caption         =   "quality"
    End
-   Begin PhotoDemon.buttonStrip btsArea 
+   Begin PhotoDemon.pdButtonStrip btsArea 
       Height          =   1080
       Left            =   6000
       TabIndex        =   2
@@ -124,7 +124,7 @@ Option Explicit
 '   - Threshold (controls edge/surface distinction)
 '   - Smooth Edges (for traditional surface blur (false) vs PD's edge-only softening (true))
 '   - Blur quality (0, 1, 2 for iterative box blur, IIR blur, or true Gaussian, respectively)
-Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, ByVal smoothEdges As Boolean, Optional ByVal sbQuality As Long = 0, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, ByVal smoothEdges As Boolean, Optional ByVal sbQuality As Long = 0, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Analyzing image in preparation for surface blur..."
             
@@ -360,12 +360,16 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then SurfaceBlurFilter sltRadius, sltThreshold, CBool(btsArea.ListIndex = 1), btsQuality.ListIndex, True, fxPreview
+    If cmdBar.previewsAllowed Then SurfaceBlurFilter sltRadius, sltThreshold, CBool(btsArea.ListIndex = 1), btsQuality.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 
 

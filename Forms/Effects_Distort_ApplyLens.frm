@@ -24,7 +24,7 @@ Begin VB.Form FormLens
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormLens
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -46,7 +46,7 @@ Begin VB.Form FormLens
       DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -61,7 +61,7 @@ Begin VB.Form FormLens
       NotchPosition   =   2
       NotchValueCustom=   50
    End
-   Begin PhotoDemon.sliderTextCombo sltIndex 
+   Begin PhotoDemon.pdSlider sltIndex 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -75,7 +75,7 @@ Begin VB.Form FormLens
       SigDigits       =   2
       Value           =   1.2
    End
-   Begin PhotoDemon.sliderTextCombo sltXCenter 
+   Begin PhotoDemon.pdSlider sltXCenter 
       Height          =   405
       Left            =   6000
       TabIndex        =   4
@@ -89,7 +89,7 @@ Begin VB.Form FormLens
       NotchPosition   =   2
       NotchValueCustom=   0.5
    End
-   Begin PhotoDemon.sliderTextCombo sltYCenter 
+   Begin PhotoDemon.pdSlider sltYCenter 
       Height          =   405
       Left            =   9000
       TabIndex        =   5
@@ -103,7 +103,7 @@ Begin VB.Form FormLens
       NotchPosition   =   2
       NotchValueCustom=   0.5
    End
-   Begin PhotoDemon.sliderTextCombo sltQuality 
+   Begin PhotoDemon.pdSlider sltQuality 
       Height          =   705
       Left            =   6000
       TabIndex        =   6
@@ -175,7 +175,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a new lens distortion to an image
-Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius As Double, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius As Double, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     refractiveIndex = 1 / refractiveIndex
 
@@ -465,16 +465,16 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyLensDistortion sltIndex, sltRadius, sltQuality, sltXCenter.Value, sltYCenter.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyLensDistortion sltIndex, sltRadius, sltQuality, sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 'The user can right-click the preview area to select a new center point
-Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
+Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
     
     cmdBar.markPreviewStatus False
     sltXCenter.Value = xRatio
@@ -491,4 +491,7 @@ End Sub
 Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
+
+
+
 

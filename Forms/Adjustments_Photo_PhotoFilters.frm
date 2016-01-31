@@ -35,7 +35,7 @@ Begin VB.Form FormPhotoFilters
       Max             =   100
       LargeChange     =   32
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   744
       Left            =   0
@@ -62,7 +62,7 @@ Begin VB.Form FormPhotoFilters
       Top             =   480
       Width           =   8295
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -71,7 +71,7 @@ Begin VB.Form FormPhotoFilters
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltDensity 
+   Begin PhotoDemon.pdSlider sltDensity 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -585,13 +585,13 @@ Private Sub UpdatePreview()
     If sltDensity.GradientColorRight <> fArray(curFilter).RGBColor Then sltDensity.GradientColorRight = fArray(curFilter).RGBColor
     
     'Render the preview
-    If cmdBar.previewsAllowed Then ApplyPhotoFilter fArray(curFilter).RGBColor, sltDensity.Value, True, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyPhotoFilter fArray(curFilter).RGBColor, sltDensity.Value, True, True, pdFxPreview
     
 End Sub
 
 'Cast an image with a new temperature value
 ' Input: desired temperature, whether to preserve luminance or not, and a blend ratio between 1 and 100
-Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Double, Optional ByVal preserveLuminance As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Double, Optional ByVal preserveLuminance As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Applying photo filter..."
     
@@ -686,10 +686,13 @@ Private Sub vsFilter_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 Private Sub vsFilter_Scroll(ByVal eventIsCritical As Boolean)
     redrawFilterList
 End Sub
+
+
+

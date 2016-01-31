@@ -40,7 +40,7 @@ Begin VB.Form FormScreenCapture
       Layout          =   1
       UseCustomForeColor=   -1  'True
    End
-   Begin PhotoDemon.commandBarMini cmdBarMini 
+   Begin PhotoDemon.pdCommandBarMini cmdBarMini 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -65,7 +65,7 @@ Begin VB.Form FormScreenCapture
       Top             =   600
       Width           =   6855
    End
-   Begin PhotoDemon.smartCheckBox chkMinimize 
+   Begin PhotoDemon.pdCheckBox chkMinimize 
       Height          =   300
       Left            =   840
       TabIndex        =   4
@@ -92,7 +92,7 @@ Begin VB.Form FormScreenCapture
       Top             =   2160
       Width           =   4815
    End
-   Begin PhotoDemon.smartOptionButton optSource 
+   Begin PhotoDemon.pdRadioButton optSource 
       Height          =   375
       Index           =   0
       Left            =   480
@@ -104,7 +104,7 @@ Begin VB.Form FormScreenCapture
       Caption         =   "entire desktop"
       Value           =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton optSource 
+   Begin PhotoDemon.pdRadioButton optSource 
       Height          =   375
       Index           =   1
       Left            =   480
@@ -115,7 +115,7 @@ Begin VB.Form FormScreenCapture
       _ExtentY        =   582
       Caption         =   "specific program (listed by window title)"
    End
-   Begin PhotoDemon.smartCheckBox chkChrome 
+   Begin PhotoDemon.pdCheckBox chkChrome 
       Height          =   330
       Left            =   840
       TabIndex        =   5
@@ -314,4 +314,7 @@ Private Sub DisplayScreenCaptureError()
     lblMinimizedWarning.Visible = False
     
 End Sub
+
+
+
 

@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.UserControl penSelector 
+Begin VB.UserControl pdPenSelector 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    ClientHeight    =   3600
@@ -20,9 +20,9 @@ Begin VB.UserControl penSelector
    ScaleHeight     =   240
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
-   ToolboxBitmap   =   "penSelector.ctx":0000
+   ToolboxBitmap   =   "pdPenSelector.ctx":0000
 End
-Attribute VB_Name = "penSelector"
+Attribute VB_Name = "pdPenSelector"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -354,4 +354,5 @@ End Sub
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
+
 

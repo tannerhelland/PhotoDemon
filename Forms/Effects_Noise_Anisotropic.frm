@@ -23,7 +23,7 @@ Begin VB.Form FormAnisotropic
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.buttonStrip btsDirection 
+   Begin PhotoDemon.pdButtonStrip btsDirection 
       Height          =   975
       Left            =   6000
       TabIndex        =   3
@@ -33,7 +33,7 @@ Begin VB.Form FormAnisotropic
       _ExtentY        =   1085
       Caption         =   "directionality"
    End
-   Begin PhotoDemon.sliderTextCombo sltFlow 
+   Begin PhotoDemon.pdSlider sltFlow 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -46,7 +46,7 @@ Begin VB.Form FormAnisotropic
       Max             =   100
       Value           =   50
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -55,7 +55,7 @@ Begin VB.Form FormAnisotropic
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -66,7 +66,7 @@ Begin VB.Form FormAnisotropic
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltStrength 
+   Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -78,7 +78,7 @@ Begin VB.Form FormAnisotropic
       Max             =   100
       Value           =   50
    End
-   Begin PhotoDemon.sliderTextCombo sltIterations 
+   Begin PhotoDemon.pdSlider sltIterations 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -91,7 +91,7 @@ Begin VB.Form FormAnisotropic
       Max             =   16
       Value           =   1
    End
-   Begin PhotoDemon.buttonStrip btsEmphasis 
+   Begin PhotoDemon.pdButtonStrip btsEmphasis 
       Height          =   975
       Left            =   6000
       TabIndex        =   6
@@ -141,7 +141,7 @@ Option Explicit
 '       flow ([1, 100] - controls the corresponding kappa value; higher numbers = greater propensity for color flow)
 '       strength ([0, 100] - 0 = no change, 100 = fully replace target pixel with anisotropic result,
 '                            1-99 = partially blend original and anisotropic result)
-Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse out the parameter list
     Dim cParams As pdParamXML
@@ -535,12 +535,12 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then Me.ApplyAnisotropicDiffusion GetLocalParamString(), True, fxPreview
+    If cmdBar.previewsAllowed Then Me.ApplyAnisotropicDiffusion GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltFlow_Change()
@@ -558,4 +558,8 @@ End Sub
 Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("direction", btsDirection.ListIndex, "option", btsEmphasis.ListIndex, "iterations", sltIterations.Value, "flow", sltFlow.Value, "strength", sltStrength.Value)
 End Function
+
+
+
+
 

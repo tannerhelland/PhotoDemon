@@ -24,7 +24,7 @@ Begin VB.Form FormPluginManager
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   721
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBarMini cmdBarMini 
+   Begin PhotoDemon.pdCommandBarMini cmdBarMini 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -77,7 +77,7 @@ Begin VB.Form FormPluginManager
       TabIndex        =   50
       Top             =   240
       Width           =   7695
-      Begin PhotoDemon.smartCheckBox chkPNGQuantIE6 
+      Begin PhotoDemon.pdCheckBox chkPNGQuantIE6 
          Height          =   330
          Left            =   480
          TabIndex        =   64
@@ -87,7 +87,7 @@ Begin VB.Form FormPluginManager
          _ExtentY        =   582
          Caption         =   "improve IE6 compatibility (reduces image quality; use with caution)"
       End
-      Begin PhotoDemon.smartCheckBox chkPNGQuantDither 
+      Begin PhotoDemon.pdCheckBox chkPNGQuantDither 
          Height          =   330
          Left            =   480
          TabIndex        =   63
@@ -97,7 +97,7 @@ Begin VB.Form FormPluginManager
          _ExtentY        =   582
          Caption         =   "use dithering to improve output"
       End
-      Begin PhotoDemon.sliderTextCombo sltPNGQuantSpeed 
+      Begin PhotoDemon.pdSlider sltPNGQuantSpeed 
          Height          =   675
          Left            =   480
          TabIndex        =   79
@@ -2249,3 +2249,6 @@ Private Sub lstPlugins_Click()
     Next i
     
 End Sub
+
+
+

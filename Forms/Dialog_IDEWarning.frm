@@ -35,7 +35,7 @@ Begin VB.Form dialog_IDEWarning
       _ExtentY        =   1323
       Caption         =   "I understand the risks of running PhotoDemon in the IDE"
    End
-   Begin PhotoDemon.smartCheckBox chkRepeat 
+   Begin PhotoDemon.pdCheckBox chkRepeat 
       Height          =   300
       Left            =   1140
       TabIndex        =   1
@@ -157,4 +157,5 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
+
 

@@ -24,7 +24,7 @@ Begin VB.Form FormPreferences
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   767
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBarMini cmdBarMini 
+   Begin PhotoDemon.pdCommandBarMini cmdBarMini 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormPreferences
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.buttonStripVertical btsvCategory 
+   Begin PhotoDemon.pdButtonStripVertical btsvCategory 
       Height          =   6675
       Left            =   120
       TabIndex        =   58
@@ -106,7 +106,7 @@ Begin VB.Form FormPreferences
          _ExtentY        =   556
          Text            =   "(none)"
       End
-      Begin PhotoDemon.smartOptionButton optColorManagement 
+      Begin PhotoDemon.pdRadioButton optColorManagement 
          Height          =   330
          Index           =   0
          Left            =   240
@@ -118,7 +118,7 @@ Begin VB.Form FormPreferences
          Caption         =   "use the system color profile"
          Value           =   -1  'True
       End
-      Begin PhotoDemon.colorSelector csAlphaOne 
+      Begin PhotoDemon.pdColorSelector csAlphaOne 
          Height          =   435
          Left            =   6240
          TabIndex        =   17
@@ -128,7 +128,7 @@ Begin VB.Form FormPreferences
          _ExtentY        =   767
          ShowMainWindowColor=   0   'False
       End
-      Begin PhotoDemon.colorSelector csAlphaTwo 
+      Begin PhotoDemon.pdColorSelector csAlphaTwo 
          Height          =   435
          Left            =   7320
          TabIndex        =   18
@@ -138,7 +138,7 @@ Begin VB.Form FormPreferences
          _ExtentY        =   767
          ShowMainWindowColor=   0   'False
       End
-      Begin PhotoDemon.smartOptionButton optColorManagement 
+      Begin PhotoDemon.pdRadioButton optColorManagement 
          Height          =   330
          Index           =   1
          Left            =   240
@@ -309,7 +309,7 @@ Begin VB.Form FormPreferences
             _ExtentX        =   12938
             _ExtentY        =   582
          End
-         Begin PhotoDemon.smartCheckBox chkTIFFCMYK 
+         Begin PhotoDemon.pdCheckBox chkTIFFCMYK 
             Height          =   330
             Left            =   360
             TabIndex        =   53
@@ -403,7 +403,7 @@ Begin VB.Form FormPreferences
          TabIndex        =   45
          Top             =   1680
          Width           =   7935
-         Begin PhotoDemon.smartCheckBox chkPNGBackground 
+         Begin PhotoDemon.pdCheckBox chkPNGBackground 
             Height          =   330
             Left            =   360
             TabIndex        =   55
@@ -413,7 +413,7 @@ Begin VB.Form FormPreferences
             _ExtentY        =   582
             Caption         =   "preserve file's original background color, if available"
          End
-         Begin PhotoDemon.smartCheckBox chkPNGInterlacing 
+         Begin PhotoDemon.pdCheckBox chkPNGInterlacing 
             Height          =   330
             Left            =   360
             TabIndex        =   54
@@ -495,7 +495,7 @@ Begin VB.Form FormPreferences
          TabIndex        =   50
          Top             =   1680
          Width           =   7935
-         Begin PhotoDemon.smartCheckBox chkTGARLE 
+         Begin PhotoDemon.pdCheckBox chkTGARLE 
             Height          =   330
             Left            =   360
             TabIndex        =   25
@@ -532,7 +532,7 @@ Begin VB.Form FormPreferences
          TabIndex        =   43
          Top             =   1680
          Width           =   7935
-         Begin PhotoDemon.smartCheckBox chkBMPRLE 
+         Begin PhotoDemon.pdCheckBox chkBMPRLE 
             Height          =   330
             Left            =   360
             TabIndex        =   26
@@ -587,7 +587,7 @@ Begin VB.Form FormPreferences
          _ExtentX        =   14076
          _ExtentY        =   582
       End
-      Begin PhotoDemon.smartCheckBox chkConfirmUnsaved 
+      Begin PhotoDemon.pdCheckBox chkConfirmUnsaved 
          Height          =   330
          Left            =   240
          TabIndex        =   28
@@ -744,7 +744,7 @@ Begin VB.Form FormPreferences
       TabIndex        =   13
       Top             =   120
       Width           =   8295
-      Begin PhotoDemon.smartCheckBox chkInitialColorDepth 
+      Begin PhotoDemon.pdCheckBox chkInitialColorDepth 
          Height          =   330
          Left            =   240
          TabIndex        =   32
@@ -754,7 +754,7 @@ Begin VB.Form FormPreferences
          _ExtentY        =   582
          Caption         =   "count unique colors in incoming images (to determine optimal color depth)"
       End
-      Begin PhotoDemon.smartCheckBox chkToneMapping 
+      Begin PhotoDemon.pdCheckBox chkToneMapping 
          Height          =   330
          Left            =   240
          TabIndex        =   33
@@ -764,7 +764,7 @@ Begin VB.Form FormPreferences
          _ExtentY        =   582
          Caption         =   "display tone mapping options when importing HDR and RAW images"
       End
-      Begin PhotoDemon.smartCheckBox chkLoadingOrientation 
+      Begin PhotoDemon.pdCheckBox chkLoadingOrientation 
          Height          =   330
          Left            =   240
          TabIndex        =   34
@@ -868,7 +868,7 @@ Begin VB.Form FormPreferences
       TabIndex        =   3
       Top             =   120
       Width           =   8295
-      Begin PhotoDemon.sliderTextCombo sltUndoCompression 
+      Begin PhotoDemon.pdSlider sltUndoCompression 
          Height          =   405
          Left            =   240
          TabIndex        =   38
@@ -1239,7 +1239,7 @@ Begin VB.Form FormPreferences
          Layout          =   1
          UseCustomForeColor=   -1  'True
       End
-      Begin PhotoDemon.smartCheckBox chkUpdates 
+      Begin PhotoDemon.pdCheckBox chkUpdates 
          Height          =   330
          Index           =   0
          Left            =   240
@@ -1270,7 +1270,7 @@ Begin VB.Form FormPreferences
          _ExtentX        =   13996
          _ExtentY        =   661
       End
-      Begin PhotoDemon.smartCheckBox chkUpdates 
+      Begin PhotoDemon.pdCheckBox chkUpdates 
          Height          =   330
          Index           =   1
          Left            =   240
@@ -1313,7 +1313,7 @@ Begin VB.Form FormPreferences
          FontSize        =   12
          ForeColor       =   4210752
       End
-      Begin PhotoDemon.smartCheckBox chkUpdates 
+      Begin PhotoDemon.pdCheckBox chkUpdates 
          Height          =   330
          Index           =   2
          Left            =   240
@@ -1367,7 +1367,7 @@ Begin VB.Form FormPreferences
          _ExtentX        =   11642
          _ExtentY        =   529
       End
-      Begin PhotoDemon.textUpDown tudRecentFiles 
+      Begin PhotoDemon.pdSpinner tudRecentFiles 
          Height          =   345
          Left            =   3900
          TabIndex        =   6
@@ -1379,7 +1379,7 @@ Begin VB.Form FormPreferences
          Max             =   32
          Value           =   10
       End
-      Begin PhotoDemon.colorSelector csCanvasColor 
+      Begin PhotoDemon.pdColorSelector csCanvasColor 
          Height          =   435
          Left            =   6960
          TabIndex        =   9
@@ -1389,7 +1389,7 @@ Begin VB.Form FormPreferences
          _ExtentY        =   767
          ShowMainWindowColor=   0   'False
       End
-      Begin PhotoDemon.smartCheckBox chkMouseHighResolution 
+      Begin PhotoDemon.pdCheckBox chkMouseHighResolution 
          Height          =   330
          Left            =   240
          TabIndex        =   10
@@ -2679,5 +2679,12 @@ Private Sub TxtTempPath_Change()
     End If
     
 End Sub
+
+
+
+
+
+
+
 
 

@@ -24,7 +24,7 @@ Begin VB.Form dialog_AddPreset
    ScaleWidth      =   449
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin PhotoDemon.commandBarMini cmdBarMini 
+   Begin PhotoDemon.pdCommandBarMini cmdBarMini 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -189,3 +189,4 @@ Private Sub Form_Unload(Cancel As Integer)
     Set m_Presets = Nothing
     
 End Sub
+

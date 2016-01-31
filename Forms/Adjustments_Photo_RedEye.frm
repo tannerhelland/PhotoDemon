@@ -23,7 +23,7 @@ Begin VB.Form FormRedEye
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.sliderTextCombo sltShapeStrictness 
+   Begin PhotoDemon.pdSlider sltShapeStrictness 
       Height          =   675
       Left            =   6480
       TabIndex        =   6
@@ -42,7 +42,7 @@ Begin VB.Form FormRedEye
       NotchPosition   =   2
       NotchValueCustom=   50
    End
-   Begin PhotoDemon.smartCheckBox chkShape 
+   Begin PhotoDemon.pdCheckBox chkShape 
       Height          =   375
       Left            =   6000
       TabIndex        =   4
@@ -52,7 +52,7 @@ Begin VB.Form FormRedEye
       _ExtentY        =   661
       Caption         =   "enforce shape restrictions"
    End
-   Begin PhotoDemon.sliderTextCombo sltColor 
+   Begin PhotoDemon.pdSlider sltColor 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -68,7 +68,7 @@ Begin VB.Form FormRedEye
       NotchPosition   =   2
       NotchValueCustom=   100
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -77,7 +77,7 @@ Begin VB.Form FormRedEye
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -88,7 +88,7 @@ Begin VB.Form FormRedEye
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltObject 
+   Begin PhotoDemon.pdSlider sltObject 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -104,7 +104,7 @@ Begin VB.Form FormRedEye
       NotchPosition   =   2
       NotchValueCustom=   100
    End
-   Begin PhotoDemon.smartCheckBox chkHighlight 
+   Begin PhotoDemon.pdCheckBox chkHighlight 
       Height          =   375
       Left            =   6000
       TabIndex        =   5
@@ -114,7 +114,7 @@ Begin VB.Form FormRedEye
       _ExtentY        =   661
       Caption         =   "highlight detected regions (preview only)"
    End
-   Begin PhotoDemon.smartCheckBox chkSize 
+   Begin PhotoDemon.pdCheckBox chkSize 
       Height          =   375
       Left            =   6000
       TabIndex        =   7
@@ -124,7 +124,7 @@ Begin VB.Form FormRedEye
       _ExtentY        =   661
       Caption         =   "enforce size restrictions"
    End
-   Begin PhotoDemon.sliderTextCombo sltSizeStrictness 
+   Begin PhotoDemon.pdSlider sltSizeStrictness 
       Height          =   675
       Left            =   6480
       TabIndex        =   8
@@ -169,7 +169,7 @@ Option Explicit
 Private Const RENDER_DEBUG_REDEYE_DATA As Boolean = False
 
 'Apply automated red-eye correction
-Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse out the parameter list
     Dim cParams As pdParamXML
@@ -979,12 +979,12 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then Me.ApplyRedEyeCorrection GetLocalParamString(), True, fxPreview
+    If cmdBar.previewsAllowed Then Me.ApplyRedEyeCorrection GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Function GetLocalParamString() As String
@@ -1006,3 +1006,7 @@ End Sub
 Private Sub sltSizeStrictness_Change()
     UpdatePreview
 End Sub
+
+
+
+

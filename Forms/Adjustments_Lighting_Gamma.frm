@@ -23,7 +23,7 @@ Begin VB.Form FormGamma
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   804
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormGamma
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.smartCheckBox chkUnison 
+   Begin PhotoDemon.pdCheckBox chkUnison 
       Height          =   330
       Left            =   6120
       TabIndex        =   4
@@ -58,7 +58,7 @@ Begin VB.Form FormGamma
       Top             =   120
       Width           =   3495
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -67,7 +67,7 @@ Begin VB.Form FormGamma
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltGamma 
+   Begin PhotoDemon.pdSlider sltGamma 
       Height          =   705
       Index           =   0
       Left            =   6000
@@ -84,7 +84,7 @@ Begin VB.Form FormGamma
       NotchPosition   =   2
       NotchValueCustom=   1
    End
-   Begin PhotoDemon.sliderTextCombo sltGamma 
+   Begin PhotoDemon.pdSlider sltGamma 
       Height          =   705
       Index           =   1
       Left            =   6000
@@ -101,7 +101,7 @@ Begin VB.Form FormGamma
       NotchPosition   =   2
       NotchValueCustom=   1
    End
-   Begin PhotoDemon.sliderTextCombo sltGamma 
+   Begin PhotoDemon.pdSlider sltGamma 
       Height          =   705
       Index           =   2
       Left            =   6000
@@ -209,7 +209,7 @@ End Sub
 
 'Basic gamma correction.  It's a simple function - use an exponent to adjust R/G/B values.
 ' Inputs: new gamma level, which channels to adjust (r/g/b/all), and optional preview information
-Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bGamma As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bGamma As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
      
     If Not toPreview Then Message "Adjusting gamma values..."
     
@@ -369,7 +369,7 @@ Private Sub UpdatePreview()
         picChart.Refresh
     
         'Once the chart is done, redraw the gamma preview as well
-        GammaCorrect sltGamma(0), sltGamma(1), sltGamma(2), True, fxPreview
+        GammaCorrect sltGamma(0), sltGamma(1), sltGamma(2), True, pdFxPreview
         
     End If
     
@@ -402,9 +402,13 @@ Private Sub sltGamma_Change(Index As Integer)
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 
 
 

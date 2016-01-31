@@ -23,7 +23,7 @@ Begin VB.Form FormColorBalance
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   824
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormColorBalance
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   4
@@ -43,7 +43,7 @@ Begin VB.Form FormColorBalance
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltRed 
+   Begin PhotoDemon.pdSlider sltRed 
       Height          =   405
       Left            =   6000
       TabIndex        =   1
@@ -58,7 +58,7 @@ Begin VB.Form FormColorBalance
       GradientColorRight=   255
       GradientColorMiddle=   8881021
    End
-   Begin PhotoDemon.sliderTextCombo sltGreen 
+   Begin PhotoDemon.pdSlider sltGreen 
       Height          =   405
       Left            =   6000
       TabIndex        =   2
@@ -72,7 +72,7 @@ Begin VB.Form FormColorBalance
       GradientColorLeft=   16711935
       GradientColorRight=   65280
    End
-   Begin PhotoDemon.sliderTextCombo sltBlue 
+   Begin PhotoDemon.pdSlider sltBlue 
       Height          =   405
       Left            =   6000
       TabIndex        =   3
@@ -86,7 +86,7 @@ Begin VB.Form FormColorBalance
       GradientColorLeft=   65535
       GradientColorRight=   16711680
    End
-   Begin PhotoDemon.smartCheckBox chkLuminance 
+   Begin PhotoDemon.pdCheckBox chkLuminance 
       Height          =   360
       Left            =   6240
       TabIndex        =   5
@@ -96,7 +96,7 @@ Begin VB.Form FormColorBalance
       _ExtentY        =   582
       Caption         =   "preserve luminance"
    End
-   Begin PhotoDemon.buttonStrip btsTone 
+   Begin PhotoDemon.pdButtonStrip btsTone 
       Height          =   1080
       Left            =   5880
       TabIndex        =   6
@@ -217,7 +217,7 @@ End Enum
 
 'Apply a new color balance to the image
 ' Input: offset for each of red, green, and blue
-Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal As Long, ByVal nTone As Long, ByVal preserveLuminance As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal As Long, ByVal nTone As Long, ByVal preserveLuminance As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Adjusting color balance..."
     
@@ -469,11 +469,16 @@ Private Sub sltRed_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyColorBalance sltRed, sltGreen, sltBlue, btsTone.ListIndex, CBool(chkLuminance), True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyColorBalance sltRed, sltGreen, sltBlue, btsTone.ListIndex, CBool(chkLuminance), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
+
 

@@ -23,7 +23,7 @@ Begin VB.Form FormRainbow
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormRainbow
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltOffset 
+   Begin PhotoDemon.pdSlider sltOffset 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -46,7 +46,7 @@ Begin VB.Form FormRainbow
       Max             =   359
       SliderTrackStyle=   4
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -56,7 +56,7 @@ Begin VB.Form FormRainbow
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -67,7 +67,7 @@ Begin VB.Form FormRainbow
       Caption         =   "angle"
       Max             =   360
    End
-   Begin PhotoDemon.sliderTextCombo sltStrength 
+   Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -79,7 +79,7 @@ Begin VB.Form FormRainbow
       Max             =   100
       Value           =   100
    End
-   Begin PhotoDemon.sliderTextCombo sltSaturation 
+   Begin PhotoDemon.pdSlider sltSaturation 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -113,7 +113,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a rainbow overlay to an image
-Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As Double, ByVal rainbowStrength As Double, ByVal saturationBoost As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As Double, ByVal rainbowStrength As Double, ByVal saturationBoost As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Sprinkling image with shimmering rainbows..."
     
@@ -278,11 +278,11 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyRainbowEffect sltOffset.Value, sltAngle.Value, sltStrength.Value, sltSaturation.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyRainbowEffect sltOffset.Value, sltAngle.Value, sltStrength.Value, sltSaturation.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -301,3 +301,6 @@ End Sub
 Private Sub sltStrength_Change()
     UpdatePreview
 End Sub
+
+
+

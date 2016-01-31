@@ -23,7 +23,7 @@ Begin VB.Form FormSolarize
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   805
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormSolarize
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -43,7 +43,7 @@ Begin VB.Form FormSolarize
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltThreshold 
+   Begin PhotoDemon.pdSlider sltThreshold 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -82,7 +82,7 @@ Option Explicit
 
 'Subroutine for "solarizing" an image
 ' Inputs: solarize threshold [0,255], optional previewing information
-Public Sub SolarizeImage(ByVal Threshold As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub SolarizeImage(ByVal Threshold As Byte, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Solarizing image..."
     
@@ -176,11 +176,14 @@ Private Sub sltThreshold_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then SolarizeImage sltThreshold.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then SolarizeImage sltThreshold.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 

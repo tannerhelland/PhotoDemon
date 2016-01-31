@@ -33,7 +33,7 @@ Public Const CUSTOM_FILTER_VERSION_2014 As String = "8.2014"
 '    Divisor: Double
 '    Offset: Long
 '    25 Double values, which correspond to entries in a 5x5 convolution matrix, in left-to-right, top-to-bottom order.
-Public Sub ApplyConvolutionFilter(ByVal fullParamString As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyConvolutionFilter(ByVal fullParamString As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Prepare a param parser
     Dim cParams As pdParamString
@@ -957,3 +957,4 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     If cancelCurrentAction Then HorizontalBlur_IIR = 0 Else HorizontalBlur_IIR = 1
 
 End Function
+

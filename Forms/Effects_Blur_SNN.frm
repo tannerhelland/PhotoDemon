@@ -23,7 +23,7 @@ Begin VB.Form FormSNN
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -32,7 +32,7 @@ Begin VB.Form FormSNN
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -43,7 +43,7 @@ Begin VB.Form FormSNN
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltStrength 
+   Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -55,7 +55,7 @@ Begin VB.Form FormSNN
       Max             =   100
       Value           =   50
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -110,7 +110,7 @@ Option Explicit
 '       flow ([1, 100] - controls the corresponding kappa value; higher numbers = greater propensity for color flow)
 '       strength ([0, 100] - 0 = no change, 100 = fully replace target pixel with anisotropic result,
 '                            1-99 = partially blend original and anisotropic result)
-Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     'Parse out the parameter list
     Dim cParams As pdParamXML
@@ -393,12 +393,12 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then Me.ApplySymmetricNearestNeighbor GetLocalParamString(), True, fxPreview
+    If cmdBar.previewsAllowed Then Me.ApplySymmetricNearestNeighbor GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltRadius_Change()
@@ -412,4 +412,7 @@ End Sub
 Private Function GetLocalParamString() As String
     GetLocalParamString = buildParamList("radius", sltRadius.Value, "strength", sltStrength.Value)
 End Function
+
+
+
 

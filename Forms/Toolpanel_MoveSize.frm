@@ -24,7 +24,7 @@ Begin VB.Form toolpanel_MoveSize
    ScaleWidth      =   1110
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.buttonStripVertical btsMoveOptions 
+   Begin PhotoDemon.pdButtonStripVertical btsMoveOptions 
       Height          =   1320
       Left            =   120
       TabIndex        =   14
@@ -47,7 +47,7 @@ Begin VB.Form toolpanel_MoveSize
       TabIndex        =   13
       Top             =   0
       Width           =   14055
-      Begin PhotoDemon.sliderTextCombo sltLayerAngle 
+      Begin PhotoDemon.pdSlider sltLayerAngle 
          Height          =   405
          Left            =   120
          TabIndex        =   15
@@ -79,7 +79,7 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentY        =   1005
          AutoToggle      =   -1  'True
       End
-      Begin PhotoDemon.sliderTextCombo sltLayerShearX 
+      Begin PhotoDemon.pdSlider sltLayerShearX 
          Height          =   405
          Left            =   5400
          TabIndex        =   18
@@ -122,7 +122,7 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentY        =   1005
          AutoToggle      =   -1  'True
       End
-      Begin PhotoDemon.sliderTextCombo sltLayerShearY 
+      Begin PhotoDemon.pdSlider sltLayerShearY 
          Height          =   405
          Left            =   5400
          TabIndex        =   21
@@ -180,7 +180,7 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentY        =   503
          Caption         =   "interaction options:"
       End
-      Begin PhotoDemon.smartCheckBox chkAutoActivateLayer 
+      Begin PhotoDemon.pdCheckBox chkAutoActivateLayer 
          Height          =   330
          Left            =   120
          TabIndex        =   10
@@ -190,7 +190,7 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentY        =   582
          Caption         =   "automatically activate layer beneath mouse"
       End
-      Begin PhotoDemon.smartCheckBox chkIgnoreTransparent 
+      Begin PhotoDemon.pdCheckBox chkIgnoreTransparent 
          Height          =   330
          Left            =   120
          TabIndex        =   11
@@ -200,7 +200,7 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentY        =   582
          Caption         =   "ignore transparent pixels when auto-activating layers"
       End
-      Begin PhotoDemon.smartCheckBox chkLayerBorder 
+      Begin PhotoDemon.pdCheckBox chkLayerBorder 
          Height          =   330
          Left            =   5640
          TabIndex        =   12
@@ -210,7 +210,7 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentY        =   582
          Caption         =   "show layer borders"
       End
-      Begin PhotoDemon.smartCheckBox chkLayerNodes 
+      Begin PhotoDemon.pdCheckBox chkLayerNodes 
          Height          =   330
          Left            =   5640
          TabIndex        =   0
@@ -230,7 +230,7 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentY        =   503
          Caption         =   "display options:"
       End
-      Begin PhotoDemon.smartCheckBox chkRotateNode 
+      Begin PhotoDemon.pdCheckBox chkRotateNode 
          Height          =   330
          Left            =   5640
          TabIndex        =   16
@@ -264,7 +264,7 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentX        =   4895
          _ExtentY        =   529
       End
-      Begin PhotoDemon.textUpDown tudLayerMove 
+      Begin PhotoDemon.pdSpinner tudLayerMove 
          Height          =   345
          Index           =   0
          Left            =   120
@@ -294,7 +294,7 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentY        =   503
          Caption         =   "layer size (w, h):"
       End
-      Begin PhotoDemon.textUpDown tudLayerMove 
+      Begin PhotoDemon.pdSpinner tudLayerMove 
          Height          =   345
          Index           =   1
          Left            =   120
@@ -304,7 +304,7 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentX        =   3625
          _ExtentY        =   609
       End
-      Begin PhotoDemon.textUpDown tudLayerMove 
+      Begin PhotoDemon.pdSpinner tudLayerMove 
          Height          =   345
          Index           =   2
          Left            =   2640
@@ -314,7 +314,7 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentX        =   3625
          _ExtentY        =   609
       End
-      Begin PhotoDemon.textUpDown tudLayerMove 
+      Begin PhotoDemon.pdSpinner tudLayerMove 
          Height          =   345
          Index           =   3
          Left            =   2640
@@ -725,3 +725,7 @@ Public Sub UpdateAgainstCurrentTheme()
     ApplyThemeAndTranslations Me
 
 End Sub
+
+
+
+

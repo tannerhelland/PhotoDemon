@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.UserControl fxPreviewCtl 
+Begin VB.UserControl pdFxPreviewCtl 
    AccessKeys      =   "T"
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
@@ -20,8 +20,8 @@ Begin VB.UserControl fxPreviewCtl
    ScaleHeight     =   379
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   384
-   ToolboxBitmap   =   "fxPreview.ctx":0000
-   Begin PhotoDemon.buttonStrip btsZoom 
+   ToolboxBitmap   =   "pdFxPreview.ctx":0000
+   Begin PhotoDemon.pdButtonStrip btsZoom 
       Height          =   495
       Left            =   2985
       TabIndex        =   1
@@ -62,7 +62,7 @@ Begin VB.UserControl fxPreviewCtl
          Width           =   1455
       End
    End
-   Begin PhotoDemon.buttonStrip btsState 
+   Begin PhotoDemon.pdButtonStrip btsState 
       Height          =   495
       Left            =   0
       TabIndex        =   0
@@ -73,7 +73,7 @@ Begin VB.UserControl fxPreviewCtl
       FontSize        =   8
    End
 End
-Attribute VB_Name = "fxPreviewCtl"
+Attribute VB_Name = "pdFxPreviewCtl"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -706,7 +706,7 @@ End Sub
 'Initialize our effect preview control
 Private Sub UserControl_InitProperties()
     
-    'Set the background of the fxPreview to match the background of our parent object
+    'Set the background of the pdFxPreview to match the background of our parent object
     BackColor = Ambient.BackColor
     
     'Mark the original image as having NOT been set
@@ -846,3 +846,5 @@ Public Sub UpdateAgainstCurrentTheme()
     btsState.UpdateAgainstCurrentTheme
     btsZoom.UpdateAgainstCurrentTheme
 End Sub
+
+

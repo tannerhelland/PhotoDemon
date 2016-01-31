@@ -23,7 +23,7 @@ Begin VB.Form FormExposure
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -48,7 +48,7 @@ Begin VB.Form FormExposure
       Top             =   240
       Width           =   3375
    End
-   Begin PhotoDemon.sliderTextCombo sltExposure 
+   Begin PhotoDemon.pdSlider sltExposure 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -62,7 +62,7 @@ Begin VB.Form FormExposure
       SigDigits       =   2
       SliderTrackStyle=   2
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -71,7 +71,7 @@ Begin VB.Form FormExposure
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltOffset 
+   Begin PhotoDemon.pdSlider sltOffset 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -84,7 +84,7 @@ Begin VB.Form FormExposure
       Max             =   1
       SigDigits       =   2
    End
-   Begin PhotoDemon.sliderTextCombo sltGamma 
+   Begin PhotoDemon.pdSlider sltGamma 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -155,7 +155,7 @@ Option Explicit
 ' PRIMARY INPUT: exposureAdjust represents the number of stops to correct the image.  Each stop corresponds to a power-of-2
 '                 increase (+values) or decrease (-values) in luminance.  Thus an EV of -1 will cut the amount of light in
 '                 half, while an EV of +1 will double the amount of light.
-Public Sub Exposure(ByVal exposureAdjust As Double, ByVal offsetAdjust As Double, ByVal gammaAdjust As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub Exposure(ByVal exposureAdjust As Double, ByVal offsetAdjust As Double, ByVal gammaAdjust As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Adjusting image exposure..."
     
@@ -339,14 +339,14 @@ Private Sub UpdatePreview()
         picChart.Refresh
     
         'Finally, apply the exposure correction to the preview image
-        Exposure sltExposure, sltOffset, sltGamma, True, fxPreview
+        Exposure sltExposure, sltOffset, sltGamma, True, pdFxPreview
         
     End If
     
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -362,4 +362,7 @@ End Sub
 Private Sub sltOffset_Change()
     UpdatePreview
 End Sub
+
+
+
 

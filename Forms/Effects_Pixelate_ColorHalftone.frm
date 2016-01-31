@@ -24,7 +24,7 @@ Begin VB.Form FormColorHalftone
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormColorHalftone
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -44,7 +44,7 @@ Begin VB.Form FormColorHalftone
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Index           =   0
       Left            =   6000
@@ -57,7 +57,7 @@ Begin VB.Form FormColorHalftone
       Max             =   360
       SigDigits       =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -71,7 +71,7 @@ Begin VB.Form FormColorHalftone
       SigDigits       =   1
       Value           =   5
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Index           =   1
       Left            =   6000
@@ -84,7 +84,7 @@ Begin VB.Form FormColorHalftone
       Max             =   360
       SigDigits       =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Index           =   2
       Left            =   6000
@@ -97,7 +97,7 @@ Begin VB.Form FormColorHalftone
       Max             =   360
       SigDigits       =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltDensity 
+   Begin PhotoDemon.pdSlider sltDensity 
       Height          =   705
       Left            =   6000
       TabIndex        =   6
@@ -143,7 +143,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a CMYK halftone filter to the current image.
-Public Sub ColorHalftoneFilter(ByVal pxRadius As Double, ByVal cyanAngle As Double, ByVal magentaAngle As Double, ByVal yellowAngle As Double, ByVal dotDensity As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ColorHalftoneFilter(ByVal pxRadius As Double, ByVal cyanAngle As Double, ByVal magentaAngle As Double, ByVal yellowAngle As Double, ByVal dotDensity As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Printing image to digital halftone surface..."
     
@@ -213,10 +213,10 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ColorHalftoneFilter sltRadius.Value, sltAngle(0).Value, sltAngle(1).Value, sltAngle(2).Value, sltDensity.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ColorHalftoneFilter sltRadius.Value, sltAngle(0).Value, sltAngle(1).Value, sltAngle(2).Value, sltDensity.Value, True, pdFxPreview
 End Sub
 
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -231,3 +231,6 @@ End Sub
 Private Sub sltRadius_Change()
     UpdatePreview
 End Sub
+
+
+

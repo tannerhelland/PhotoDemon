@@ -44,7 +44,7 @@ Begin VB.Form FormNewLayer
       _ExtentY        =   609
       FontSize        =   11
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -55,7 +55,7 @@ Begin VB.Form FormNewLayer
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.smartOptionButton optLayer 
+   Begin PhotoDemon.pdRadioButton optLayer 
       CausesValidation=   0   'False
       Height          =   330
       Index           =   0
@@ -68,7 +68,7 @@ Begin VB.Form FormNewLayer
       Caption         =   "transparent"
       Value           =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton optLayer 
+   Begin PhotoDemon.pdRadioButton optLayer 
       CausesValidation=   0   'False
       Height          =   330
       Index           =   1
@@ -80,7 +80,7 @@ Begin VB.Form FormNewLayer
       _ExtentY        =   582
       Caption         =   "black"
    End
-   Begin PhotoDemon.smartOptionButton optLayer 
+   Begin PhotoDemon.pdRadioButton optLayer 
       CausesValidation=   0   'False
       Height          =   330
       Index           =   2
@@ -92,7 +92,7 @@ Begin VB.Form FormNewLayer
       _ExtentY        =   582
       Caption         =   "white"
    End
-   Begin PhotoDemon.smartOptionButton optLayer 
+   Begin PhotoDemon.pdRadioButton optLayer 
       CausesValidation=   0   'False
       Height          =   330
       Index           =   3
@@ -104,7 +104,7 @@ Begin VB.Form FormNewLayer
       _ExtentY        =   582
       Caption         =   "custom color"
    End
-   Begin PhotoDemon.colorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector colorPicker 
       Height          =   615
       Left            =   840
       TabIndex        =   6
@@ -114,7 +114,7 @@ Begin VB.Form FormNewLayer
       _ExtentY        =   1085
       curColor        =   16749332
    End
-   Begin PhotoDemon.smartCheckBox chkAutoSelectLayer 
+   Begin PhotoDemon.pdCheckBox chkAutoSelectLayer 
       Height          =   300
       Left            =   480
       TabIndex        =   7
@@ -225,4 +225,8 @@ Private Sub Form_Load()
     cboPosition.ListIndex = 0
 
 End Sub
+
+
+
+
 

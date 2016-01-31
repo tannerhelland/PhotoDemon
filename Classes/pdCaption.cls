@@ -29,7 +29,7 @@ Attribute VB_Exposed = False
 ' size and rendering info as relevant.  If a control already manages its own backbuffer (which most do), rendering the
 ' text requires only a single line of code!
 '
-'The initial implementation of this class was the sliderTextCombo UC, so look there for detailed comments on how to
+'The initial implementation of this class was the pdSlider UC, so look there for detailed comments on how to
 ' make use of the class.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -583,3 +583,4 @@ Public Sub UpdateAgainstCurrentTheme()
     UpdateColorList
         
 End Sub
+

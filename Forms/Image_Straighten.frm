@@ -24,7 +24,7 @@ Begin VB.Form FormStraighten
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormStraighten
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -45,7 +45,7 @@ Begin VB.Form FormStraighten
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -223,8 +223,8 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
             Next j
                         
             'Finally, render the preview and erase the temporary DIB to conserve memory
-            finalDIB.RenderToPictureBox fxPreview.getPreviewPic
-            fxPreview.setFXImage finalDIB
+            finalDIB.RenderToPictureBox pdFxPreview.getPreviewPic
+            pdFxPreview.setFXImage finalDIB
             
             Set tmpDIB = Nothing
             Set finalDIB = Nothing
@@ -412,7 +412,7 @@ Private Sub Form_Activate()
         
     End Select
     
-    convertAspectRatio srcWidth, srcHeight, fxPreview.getPreviewWidth, fxPreview.getPreviewHeight, dWidth, dHeight
+    convertAspectRatio srcWidth, srcHeight, pdFxPreview.getPreviewWidth, pdFxPreview.getPreviewHeight, dWidth, dHeight
     
     'Create a new, smaller image at those dimensions
     If (dWidth < srcWidth) Or (dHeight < srcHeight) Then
@@ -448,7 +448,7 @@ Private Sub Form_Activate()
     smallDIB.SetAlphaPremultiplication False
     
     'Give the preview object a copy of this image data so it can show it to the user if requested
-    fxPreview.setOriginalImage smallDIB
+    pdFxPreview.setOriginalImage smallDIB
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
@@ -480,7 +480,10 @@ Private Sub sltAngle_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 

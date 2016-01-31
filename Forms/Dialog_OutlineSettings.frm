@@ -34,7 +34,7 @@ Begin VB.Form dialog_OutlineSettings
       _ExtentX        =   10610
       _ExtentY        =   688
    End
-   Begin PhotoDemon.colorSelector csOutline 
+   Begin PhotoDemon.pdColorSelector csOutline 
       Height          =   1215
       Left            =   120
       TabIndex        =   4
@@ -58,7 +58,7 @@ Begin VB.Form dialog_OutlineSettings
       Top             =   480
       Width           =   12375
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -72,7 +72,7 @@ Begin VB.Form dialog_OutlineSettings
       dontAutoUnloadParent=   -1  'True
       dontResetAutomatically=   -1  'True
    End
-   Begin PhotoDemon.buttonStrip btsStyle 
+   Begin PhotoDemon.pdButtonStrip btsStyle 
       Height          =   1095
       Left            =   120
       TabIndex        =   0
@@ -94,7 +94,7 @@ Begin VB.Form dialog_OutlineSettings
       Caption         =   "preview"
       FontSize        =   12
    End
-   Begin PhotoDemon.sliderTextCombo sltOutlineOpacity 
+   Begin PhotoDemon.pdSlider sltOutlineOpacity 
       CausesValidation=   0   'False
       Height          =   405
       Left            =   120
@@ -108,7 +108,7 @@ Begin VB.Form dialog_OutlineSettings
       NotchPosition   =   2
       NotchValueCustom=   100
    End
-   Begin PhotoDemon.sliderTextCombo sltOutlineWidth 
+   Begin PhotoDemon.pdSlider sltOutlineWidth 
       CausesValidation=   0   'False
       Height          =   705
       Left            =   120
@@ -156,7 +156,7 @@ Begin VB.Form dialog_OutlineSettings
       _ExtentX        =   10610
       _ExtentY        =   688
    End
-   Begin PhotoDemon.sliderTextCombo sltMiterLimit 
+   Begin PhotoDemon.pdSlider sltMiterLimit 
       CausesValidation=   0   'False
       Height          =   705
       Left            =   6480
@@ -207,7 +207,7 @@ Private m_PenPreview As pdGraphicsPen
 
 'If a user control spawned this dialog, it will pass itself as a reference.  We can then send pen updates back
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
-Private parentPenControl As penSelector
+Private parentPenControl As pdPenSelector
 
 'Pen previews are rendered using a pdGraphicsPath as the sample
 Private m_PreviewPath As pdGraphicsPath
@@ -236,7 +236,7 @@ Public Property Get newPen() As String
 End Property
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog(ByVal initialPen As String, Optional ByRef callingControl As penSelector = Nothing)
+Public Sub showDialog(ByVal initialPen As String, Optional ByRef callingControl As pdPenSelector = Nothing)
     
     'Store a reference to the calling control (if any)
     Set parentPenControl = callingControl
@@ -479,3 +479,8 @@ End Sub
 Private Sub sltOutlineWidth_Change()
     UpdatePreview
 End Sub
+
+
+
+
+

@@ -23,7 +23,7 @@ Begin VB.Form FormCrossScreen
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormCrossScreen
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -43,7 +43,7 @@ Begin VB.Form FormCrossScreen
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -56,7 +56,7 @@ Begin VB.Form FormCrossScreen
       SigDigits       =   1
       Value           =   45
    End
-   Begin PhotoDemon.sliderTextCombo sltDistance 
+   Begin PhotoDemon.pdSlider sltDistance 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -70,7 +70,7 @@ Begin VB.Form FormCrossScreen
       SigDigits       =   1
       Value           =   10
    End
-   Begin PhotoDemon.sliderTextCombo sltStrength 
+   Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -83,7 +83,7 @@ Begin VB.Form FormCrossScreen
       SigDigits       =   1
       Value           =   50
    End
-   Begin PhotoDemon.sliderTextCombo sltThreshold 
+   Begin PhotoDemon.pdSlider sltThreshold 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -96,7 +96,7 @@ Begin VB.Form FormCrossScreen
       Max             =   200
       Value           =   20
    End
-   Begin PhotoDemon.sliderTextCombo sltSpokes 
+   Begin PhotoDemon.pdSlider sltSpokes 
       Height          =   705
       Left            =   6000
       TabIndex        =   6
@@ -109,7 +109,7 @@ Begin VB.Form FormCrossScreen
       Max             =   8
       Value           =   4
    End
-   Begin PhotoDemon.sliderTextCombo sltSoftness 
+   Begin PhotoDemon.pdSlider sltSoftness 
       Height          =   705
       Left            =   6000
       TabIndex        =   7
@@ -164,7 +164,7 @@ Private m_rotateDIB As pdDIB, m_mbDIB As pdDIB, m_mbDIBTemp As pdDIB, m_threshol
 '        2) angle of the generated star patterns
 '        3) Distance of the star spokes
 '        4) Strength (opacity) of the generated spokes, which is actually just gamma correction applied to the star mask
-Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double, ByVal csAngle As Double, ByVal csDistance As Double, ByVal csStrength As Double, ByVal csSoftening As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double, ByVal csAngle As Double, ByVal csDistance As Double, ByVal csStrength As Double, ByVal csSoftening As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Applying cross-screen filter..."
         
@@ -478,10 +478,10 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then CrossScreenFilter sltSpokes, sltThreshold, sltAngle, sltDistance, sltStrength, sltSoftness, True, fxPreview
+    If cmdBar.previewsAllowed Then CrossScreenFilter sltSpokes, sltThreshold, sltAngle, sltDistance, sltStrength, sltSoftness, True, pdFxPreview
 End Sub
 
-Private Sub sliderTextCombo1_Change()
+Private Sub pdSlider1_Change()
     UpdatePreview
 End Sub
 
@@ -494,7 +494,7 @@ Private Sub sltDistance_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -513,3 +513,6 @@ End Sub
 Private Sub sltThreshold_Change()
     UpdatePreview
 End Sub
+
+
+

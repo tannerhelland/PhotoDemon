@@ -24,7 +24,7 @@ Attribute VB_Name = "Dialog_Handler"
 Option Explicit
 
 'Display a custom color selection dialog
-Public Function choosePDColor(ByVal oldColor As Long, ByRef newColor As Long, Optional ByRef callingControl As colorSelector) As VbMsgBoxResult
+Public Function choosePDColor(ByVal oldColor As Long, ByRef newColor As Long, Optional ByRef callingControl As pdColorSelector) As VbMsgBoxResult
 
     Load dialog_ColorSelector
     dialog_ColorSelector.showDialog oldColor, callingControl
@@ -390,11 +390,11 @@ End Function
 'Present the user with PD's custom brush selection dialog.
 ' INPUTS:  1) a String-type variable (ByRef, of course) which will receive the new brush parameters
 '          2) an optional initial brush parameter string
-'          3) an optional brushSelector control reference, if this dialog is being raised by a brushSelector control.
+'          3) an optional pdBrushSelector control reference, if this dialog is being raised by a pdBrushSelector control.
 '             (This reference will be used to provide live updates as the user plays with the brush dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function showBrushDialog(ByRef newBrush As String, Optional ByVal initialBrush As String = "", Optional ByRef callingControl As brushSelector) As Boolean
+Public Function showBrushDialog(ByRef newBrush As String, Optional ByVal initialBrush As String = "", Optional ByRef callingControl As pdBrushSelector) As Boolean
     
     If choosePDBrush(initialBrush, newBrush, callingControl) = vbOK Then
         showBrushDialog = True
@@ -405,7 +405,7 @@ Public Function showBrushDialog(ByRef newBrush As String, Optional ByVal initial
 End Function
 
 'Display a custom brush selection dialog
-Public Function choosePDBrush(ByRef oldBrush As String, ByRef newBrush As String, Optional ByRef callingControl As brushSelector) As VbMsgBoxResult
+Public Function choosePDBrush(ByRef oldBrush As String, ByRef newBrush As String, Optional ByRef callingControl As pdBrushSelector) As VbMsgBoxResult
 
     Load dialog_FillSettings
     dialog_FillSettings.showDialog oldBrush, callingControl
@@ -421,11 +421,11 @@ End Function
 'Present the user with PD's custom pen selection dialog.
 ' INPUTS:  1) a String-type variable (ByRef, of course) which will receive the new pen parameters
 '          2) an optional initial pen parameter string
-'          3) an optional penSelector control reference, if this dialog is being raised by a penSelector control.
+'          3) an optional pdPenSelector control reference, if this dialog is being raised by a pdPenSelector control.
 '             (This reference will be used to provide live updates as the user plays with the pen dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function showPenDialog(ByRef newPen As String, Optional ByVal initialPen As String = "", Optional ByRef callingControl As penSelector) As Boolean
+Public Function showPenDialog(ByRef newPen As String, Optional ByVal initialPen As String = "", Optional ByRef callingControl As pdPenSelector) As Boolean
     
     If choosePDPen(initialPen, newPen, callingControl) = vbOK Then
         showPenDialog = True
@@ -436,7 +436,7 @@ Public Function showPenDialog(ByRef newPen As String, Optional ByVal initialPen 
 End Function
 
 'Display a custom pen selection dialog
-Public Function choosePDPen(ByRef oldPen As String, ByRef newPen As String, Optional ByRef callingControl As penSelector) As VbMsgBoxResult
+Public Function choosePDPen(ByRef oldPen As String, ByRef newPen As String, Optional ByRef callingControl As pdPenSelector) As VbMsgBoxResult
 
     Load dialog_OutlineSettings
     dialog_OutlineSettings.showDialog oldPen, callingControl
@@ -452,11 +452,11 @@ End Function
 'Present the user with PD's custom gradient selection dialog.
 ' INPUTS:  1) a String-type variable (ByRef, of course) which will receive the new gradient parameters
 '          2) an optional initial gradient parameter string
-'          3) an optional gradientSelector control reference, if this dialog is being raised by a gradientSelector control.
+'          3) an optional pdGradientSelector control reference, if this dialog is being raised by a pdGradientSelector control.
 '             (This reference will be used to provide live updates as the user plays with the dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function showGradientDialog(ByRef newGradient As String, Optional ByVal initialGradient As String = "", Optional ByRef callingControl As gradientSelector) As Boolean
+Public Function showGradientDialog(ByRef newGradient As String, Optional ByVal initialGradient As String = "", Optional ByRef callingControl As pdGradientSelector) As Boolean
     
     If choosePDGradient(initialGradient, newGradient, callingControl) = vbOK Then
         showGradientDialog = True
@@ -468,7 +468,7 @@ End Function
 
 'Display a custom gradient selection dialog
 ' RETURNS: MsgBoxResult from the dialog itself.  For easier interactions, I recommend using the showGradientDialog function, above.
-Public Function choosePDGradient(ByRef oldGradient As String, ByRef newGradient As String, Optional ByRef callingControl As gradientSelector) As VbMsgBoxResult
+Public Function choosePDGradient(ByRef oldGradient As String, ByRef newGradient As String, Optional ByRef callingControl As pdGradientSelector) As VbMsgBoxResult
 
     Load dialog_GradientEditor
     dialog_GradientEditor.showDialog oldGradient, callingControl
@@ -480,4 +480,8 @@ Public Function choosePDGradient(ByRef oldGradient As String, ByRef newGradient 
     Set dialog_GradientEditor = Nothing
 
 End Function
+
+
+
+
 

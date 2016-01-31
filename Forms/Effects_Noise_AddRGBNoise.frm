@@ -23,7 +23,7 @@ Begin VB.Form FormNoise
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   808
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.buttonStrip btsColor 
+   Begin PhotoDemon.pdButtonStrip btsColor 
       Height          =   1095
       Left            =   6000
       TabIndex        =   3
@@ -34,7 +34,7 @@ Begin VB.Form FormNoise
       Caption         =   "appearance"
       FontSize        =   11
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -45,7 +45,7 @@ Begin VB.Form FormNoise
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -54,7 +54,7 @@ Begin VB.Form FormNoise
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltNoise 
+   Begin PhotoDemon.pdSlider sltNoise 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -96,7 +96,7 @@ End Sub
 
 'Subroutine for adding noise to an image
 ' Inputs: Amount of noise, monochromatic or not, preview settings
-Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Increasing image noise..."
     
@@ -234,11 +234,15 @@ Private Sub sltNoise_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then AddNoise sltNoise.Value, CBool(btsColor.ListIndex = 1), True, fxPreview
+    If cmdBar.previewsAllowed Then AddNoise sltNoise.Value, CBool(btsColor.ListIndex = 1), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 

@@ -23,7 +23,7 @@ Begin VB.Form FormBlackLight
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.sliderTextCombo sltIntensity 
+   Begin PhotoDemon.pdSlider sltIntensity 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -36,7 +36,7 @@ Begin VB.Form FormBlackLight
       SigDigits       =   2
       Value           =   2
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -45,7 +45,7 @@ Begin VB.Form FormBlackLight
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -81,7 +81,7 @@ Option Explicit
 
 'Perform a blacklight filter
 'Input: strength of the filter (min 1, no real max - but above 7 it becomes increasingly blown-out)
-Public Sub fxBlackLight(Optional ByVal Weight As Double = 2#, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub fxBlackLight(Optional ByVal Weight As Double = 2#, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Illuminating image with imaginary blacklight..."
     
@@ -191,7 +191,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -201,5 +201,8 @@ Private Sub sltIntensity_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxBlackLight sltIntensity, True, fxPreview
+    If cmdBar.previewsAllowed Then fxBlackLight sltIntensity, True, pdFxPreview
 End Sub
+
+
+

@@ -23,7 +23,7 @@ Begin VB.Form FormFilmGrain
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   808
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormFilmGrain
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltNoise 
+   Begin PhotoDemon.pdSlider sltNoise 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -47,7 +47,7 @@ Begin VB.Form FormFilmGrain
       Max             =   50
       Value           =   10
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -56,7 +56,7 @@ Begin VB.Form FormFilmGrain
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -100,7 +100,7 @@ Dim iWidth As Long, iHeight As Long
 
 'Subroutine for adding noise to an image
 ' Inputs: Amount of noise, monochromatic or not, preview settings
-Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
         
     If Not toPreview Then Message "Generating film grain texture..."
     
@@ -334,10 +334,13 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then AddFilmGrain sltNoise, sltRadius, True, fxPreview
+    If cmdBar.previewsAllowed Then AddFilmGrain sltNoise, sltRadius, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+

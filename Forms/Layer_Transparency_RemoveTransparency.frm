@@ -23,7 +23,7 @@ Begin VB.Form FormConvert24bpp
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   788
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormConvert24bpp
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -44,7 +44,7 @@ Begin VB.Form FormConvert24bpp
       _ExtentY        =   9922
       ColorSelection  =   -1  'True
    End
-   Begin PhotoDemon.colorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector colorPicker 
       Height          =   1215
       Left            =   6000
       TabIndex        =   2
@@ -105,8 +105,8 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub fxPreview_ColorSelected()
-    colorPicker.Color = fxPreview.SelectedColor
+Private Sub pdFxPreview_ColorSelected()
+    colorPicker.Color = pdFxPreview.SelectedColor
     UpdatePreview
 End Sub
 
@@ -114,15 +114,18 @@ End Sub
 Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then
         Dim tmpSA As SAFEARRAY2D
-        prepImageData tmpSA, True, fxPreview
+        prepImageData tmpSA, True, pdFxPreview
         workingDIB.convertTo24bpp colorPicker.Color
-        finalizeImageData True, fxPreview
+        finalizeImageData True, pdFxPreview
     End If
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 
 

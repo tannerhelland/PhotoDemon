@@ -24,7 +24,7 @@ Begin VB.Form FormMosaic
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormMosaic
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.smartCheckBox chkUnison 
+   Begin PhotoDemon.pdCheckBox chkUnison 
       Height          =   330
       Left            =   6120
       TabIndex        =   4
@@ -45,7 +45,7 @@ Begin VB.Form FormMosaic
       _ExtentY        =   582
       Caption         =   "synchronize block size"
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   5
@@ -54,7 +54,7 @@ Begin VB.Form FormMosaic
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltWidth 
+   Begin PhotoDemon.pdSlider sltWidth 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -67,7 +67,7 @@ Begin VB.Form FormMosaic
       Max             =   64
       Value           =   2
    End
-   Begin PhotoDemon.sliderTextCombo sltHeight 
+   Begin PhotoDemon.pdSlider sltHeight 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -80,7 +80,7 @@ Begin VB.Form FormMosaic
       Max             =   64
       Value           =   2
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Left            =   6000
       TabIndex        =   1
@@ -121,7 +121,7 @@ End Sub
 
 'Apply a pixelate effect (sometimes called "mosaic") to an image
 ' Inputs: width and height of the desired pixelation tiles (in pixels), optional preview settings
-Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVal blockAngle As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVal blockAngle As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Applying mosaic..."
         
@@ -374,7 +374,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then MosaicFilter sltWidth.Value, sltHeight.Value, sltAngle.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then MosaicFilter sltWidth.Value, sltHeight.Value, sltAngle.Value, True, pdFxPreview
 End Sub
 
 Private Sub sltAngle_Change()
@@ -392,7 +392,11 @@ Private Sub sltWidth_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 

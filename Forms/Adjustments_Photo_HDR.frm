@@ -23,7 +23,7 @@ Begin VB.Form FormHDR
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormHDR
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -43,7 +43,7 @@ Begin VB.Form FormHDR
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -56,7 +56,7 @@ Begin VB.Form FormHDR
       Max             =   100
       Value           =   50
    End
-   Begin PhotoDemon.sliderTextCombo sltStrength 
+   Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -129,7 +129,7 @@ Option Explicit
 
 'Apply a CLAHE (contrast limited adaptive histogram equalization) filter to the image
 'Input: radius of the histogram search (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Generating HDR map for image..."
     
@@ -517,7 +517,7 @@ End Sub
 'New test approach to HDR.  Unsharp masking can produce an HDR-like image, and it can do it a hell of a lot faster
 ' than the CLAHE-based method we've been using.  I'm going to have some testers experiment with the new method, to see
 ' if they prefer it.
-Public Sub ApplyImitationHDR(ByVal fxQuality As Double, ByVal blendStrength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyImitationHDR(ByVal fxQuality As Double, ByVal blendStrength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
         
     If Not toPreview Then Message "Generating HDR map for image..."
     
@@ -725,14 +725,17 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyImitationHDR sltRadius.Value, sltStrength.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyImitationHDR sltRadius.Value, sltStrength.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
 Private Sub sltStrength_Change()
     UpdatePreview
 End Sub
+
+
+

@@ -23,7 +23,7 @@ Begin VB.Form FormMotionBlur
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.buttonStrip btsStyle 
+   Begin PhotoDemon.pdButtonStrip btsStyle 
       Height          =   1095
       Left            =   6000
       TabIndex        =   5
@@ -33,7 +33,7 @@ Begin VB.Form FormMotionBlur
       _ExtentY        =   1931
       Caption         =   "style"
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -44,7 +44,7 @@ Begin VB.Form FormMotionBlur
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -53,7 +53,7 @@ Begin VB.Form FormMotionBlur
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -65,7 +65,7 @@ Begin VB.Form FormMotionBlur
       Max             =   359.9
       SigDigits       =   1
    End
-   Begin PhotoDemon.smartCheckBox chkSymmetry 
+   Begin PhotoDemon.pdCheckBox chkSymmetry 
       Height          =   330
       Left            =   6120
       TabIndex        =   3
@@ -75,7 +75,7 @@ Begin VB.Form FormMotionBlur
       _ExtentY        =   582
       Caption         =   "blur symmetrically"
    End
-   Begin PhotoDemon.sliderTextCombo sltDistance 
+   Begin PhotoDemon.pdSlider sltDistance 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -117,7 +117,7 @@ Option Explicit
 
 'Apply motion blur to an image
 'Inputs: angle of the blur, distance of the blur
-Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByVal blurSymmetrically As Boolean, ByVal blurAlgorithm As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByVal blurSymmetrically As Boolean, ByVal blurAlgorithm As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Applying motion blur..."
     
@@ -230,7 +230,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then MotionBlurFilter sltAngle, sltDistance, CBool(chkSymmetry), btsStyle.ListIndex, True, fxPreview
+    If cmdBar.previewsAllowed Then MotionBlurFilter sltAngle, sltDistance, CBool(chkSymmetry), btsStyle.ListIndex, True, pdFxPreview
 End Sub
 
 Private Sub sltAngle_Change()
@@ -242,7 +242,12 @@ Private Sub sltDistance_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
+
 

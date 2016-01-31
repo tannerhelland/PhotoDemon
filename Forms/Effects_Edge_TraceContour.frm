@@ -23,7 +23,7 @@ Begin VB.Form FormContour
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormContour
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.smartCheckBox chkBlackBackground 
+   Begin PhotoDemon.pdCheckBox chkBlackBackground 
       Height          =   375
       Left            =   6120
       TabIndex        =   2
@@ -44,7 +44,7 @@ Begin VB.Form FormContour
       _ExtentY        =   582
       Caption         =   "use black background"
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -53,7 +53,7 @@ Begin VB.Form FormContour
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.smartCheckBox chkSmoothing 
+   Begin PhotoDemon.pdCheckBox chkSmoothing 
       Height          =   375
       Left            =   6120
       TabIndex        =   3
@@ -63,7 +63,7 @@ Begin VB.Form FormContour
       _ExtentY        =   582
       Caption         =   "apply contour smoothing"
    End
-   Begin PhotoDemon.sliderTextCombo sltThickness 
+   Begin PhotoDemon.pdSlider sltThickness 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -108,7 +108,7 @@ End Sub
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the contour (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boolean, ByVal useSmoothing As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boolean, ByVal useSmoothing As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Tracing image contour..."
             
@@ -203,12 +203,16 @@ Private Sub sltThickness_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then TraceContour sltThickness, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value), True, fxPreview
+    If cmdBar.previewsAllowed Then TraceContour sltThickness, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 
 

@@ -113,7 +113,7 @@ End Sub
 'For some odd functions (e.g. export JPEG dialog), it's helpful to have the full power of prepImageData, but against
 ' a target other than the current image's main layer.  This function is roughly equivalent to prepImageData, below, but
 ' stripped down and specifically designed for PREVIEWS ONLY.  A source image must be explicitly supplied.
-Public Sub previewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As pdDIB, ByRef previewTarget As fxPreviewCtl, Optional ByVal leaveAlphaPremultiplied As Boolean = False)
+Public Sub previewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As pdDIB, ByRef previewTarget As pdFxPreviewCtl, Optional ByVal leaveAlphaPremultiplied As Boolean = False)
     
     'Prepare our temporary DIB
     Set workingDIB = New pdDIB
@@ -220,7 +220,7 @@ Public Sub previewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As p
 End Sub
 
 'The counterpart to previewNonStandardImage, above
-Public Sub finalizeNonstandardPreview(ByRef previewTarget As fxPreviewCtl, Optional ByVal alphaAlreadyPremultiplied As Boolean = False)
+Public Sub finalizeNonstandardPreview(ByRef previewTarget As pdFxPreviewCtl, Optional ByVal alphaAlreadyPremultiplied As Boolean = False)
     
     'Because is a preview, we only need to repaint a preview box
     
@@ -243,11 +243,11 @@ End Sub
 'In one of the better triumphs of PD's design, this function is used for both previews and actual filter applications.
 ' The isPreview parameter is used to notify the function of the intended purpose of a given call.  If isPreview is TRUE,
 ' the image will automatically be scaled to the size of the preview area, which allows the tool dialog to render much faster.
-' Note that for this to work, an fxPreview control must be passed to the function.
+' Note that for this to work, an pdFxPreview control must be passed to the function.
 '
 'Finally, the calling routine can optionally specify a different maximum progress bar value.  By default, this is the current
 ' DIB's width, but some routines run vertically and the progress bar maximum needs to be changed accordingly.
-Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False, Optional ByVal doNotUnPremultiplyAlpha As Boolean = False)
+Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False, Optional ByVal doNotUnPremultiplyAlpha As Boolean = False)
 
     'Reset the public "cancel current action" tracker
     cancelCurrentAction = False
@@ -534,7 +534,7 @@ End Sub
 'Unlike prepImageData, this function has to do quite a bit of processing when selections are active.  The selection
 ' mask must be scanned for each pixel, and the results blended with the original image as appropriate.  For 32bpp images
 ' this is especially ugly.  (This is the price we pay for full selection feathering support!)
-Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl, Optional ByVal alphaAlreadyPremultiplied As Boolean = False)
+Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional ByVal alphaAlreadyPremultiplied As Boolean = False)
 
     'If the user canceled the current action, disregard the working DIB and exit immediately.  The central processor
     ' will take care of additional clean-up.
@@ -750,4 +750,5 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
     End If
     
 End Sub
+
 

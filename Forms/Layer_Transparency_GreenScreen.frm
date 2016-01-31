@@ -23,7 +23,7 @@ Begin VB.Form FormTransparency_FromColor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   788
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormTransparency_FromColor
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -44,7 +44,7 @@ Begin VB.Form FormTransparency_FromColor
       _ExtentY        =   9922
       ColorSelection  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltErase 
+   Begin PhotoDemon.pdSlider sltErase 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -56,7 +56,7 @@ Begin VB.Form FormTransparency_FromColor
       Max             =   199
       Value           =   15
    End
-   Begin PhotoDemon.sliderTextCombo sltBlend 
+   Begin PhotoDemon.pdSlider sltBlend 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -68,7 +68,7 @@ Begin VB.Form FormTransparency_FromColor
       Max             =   200
       Value           =   15
    End
-   Begin PhotoDemon.colorSelector colorPicker 
+   Begin PhotoDemon.pdColorSelector colorPicker 
       Height          =   1095
       Left            =   6000
       TabIndex        =   4
@@ -142,15 +142,15 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'The user can select a color from the preview window; this helps green screen calculation immensely
-Private Sub fxPreview_ColorSelected()
-    colorPicker.Color = fxPreview.SelectedColor
+Private Sub pdFxPreview_ColorSelected()
+    colorPicker.Color = pdFxPreview.SelectedColor
     UpdatePreview
 End Sub
 
 'Convert a DIB from 24bpp to 32bpp, based on the supplied convertType value:
 ' 0: use the supplied convertConstant value, and set the entire alpha channel to that
 ' 1: color-based.  Remove the color specified by convertColor, according to the thresholds supplied in eraseThreshold and blendThreshold
-Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eraseThreshold As Double = 15, Optional ByVal blendThreshold As Double = 30, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eraseThreshold As Double = 15, Optional ByVal blendThreshold As Double = 30, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Adding new alpha channel to image..."
     
@@ -299,11 +299,15 @@ End Sub
 
 'Render a new preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then colorToAlpha colorPicker.Color, sltErase.Value, sltBlend.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then colorToAlpha colorPicker.Color, sltErase.Value, sltBlend.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 

@@ -39,7 +39,7 @@ Begin VB.Form dialog_GradientEditor
       TabIndex        =   3
       Top             =   3000
       Width           =   12615
-      Begin PhotoDemon.smartCheckBox chkDistributeEvenly 
+      Begin PhotoDemon.pdCheckBox chkDistributeEvenly 
          Height          =   330
          Left            =   360
          TabIndex        =   12
@@ -79,7 +79,7 @@ Begin VB.Form dialog_GradientEditor
          Top             =   360
          Width           =   12135
       End
-      Begin PhotoDemon.buttonStrip btsShape 
+      Begin PhotoDemon.pdButtonStrip btsShape 
          Height          =   915
          Left            =   240
          TabIndex        =   8
@@ -89,7 +89,7 @@ Begin VB.Form dialog_GradientEditor
          _ExtentY        =   1614
          Caption         =   "shape"
       End
-      Begin PhotoDemon.sliderTextCombo sltNodeOpacity 
+      Begin PhotoDemon.pdSlider sltNodeOpacity 
          Height          =   705
          Left            =   4320
          TabIndex        =   6
@@ -103,7 +103,7 @@ Begin VB.Form dialog_GradientEditor
          NotchPosition   =   2
          NotchValueCustom=   100
       End
-      Begin PhotoDemon.colorSelector csNode 
+      Begin PhotoDemon.pdColorSelector csNode 
          Height          =   855
          Left            =   240
          TabIndex        =   5
@@ -124,7 +124,7 @@ Begin VB.Form dialog_GradientEditor
          Caption         =   "current node settings"
          FontSize        =   12
       End
-      Begin PhotoDemon.sliderTextCombo sltNodePosition 
+      Begin PhotoDemon.pdSlider sltNodePosition 
          Height          =   705
          Left            =   8280
          TabIndex        =   7
@@ -151,7 +151,7 @@ Begin VB.Form dialog_GradientEditor
          Caption         =   "full gradient settings"
          FontSize        =   12
       End
-      Begin PhotoDemon.sliderTextCombo sltAngle 
+      Begin PhotoDemon.pdSlider sltAngle 
          Height          =   705
          Left            =   8280
          TabIndex        =   9
@@ -198,7 +198,7 @@ Begin VB.Form dialog_GradientEditor
          FontSize        =   12
       End
    End
-   Begin PhotoDemon.buttonStrip btsEdit 
+   Begin PhotoDemon.pdButtonStrip btsEdit 
       Height          =   915
       Left            =   120
       TabIndex        =   2
@@ -223,7 +223,7 @@ Begin VB.Form dialog_GradientEditor
       Top             =   480
       Width           =   12075
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -299,7 +299,7 @@ Private m_GradientPreview As pdGradient, m_NodePreview As pdGradient
 
 'If a user control spawned this dialog, it will pass itself as a reference.  We can then send gradient updates back
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
-Private parentGradientControl As gradientSelector
+Private parentGradientControl As pdGradientSelector
 
 'Recently used gradients are loaded to/saved from a custom XML file
 Private m_XMLEngine As pdXML
@@ -344,7 +344,7 @@ Public Property Get newGradient() As String
 End Property
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog(ByVal initialGradient As String, Optional ByRef callingControl As gradientSelector = Nothing)
+Public Sub showDialog(ByVal initialGradient As String, Optional ByRef callingControl As pdGradientSelector = Nothing)
     
     'Store a reference to the calling control (if any)
     Set parentGradientControl = callingControl
@@ -1060,3 +1060,9 @@ Private Sub sltNodePosition_Change()
     End If
     
 End Sub
+
+
+
+
+
+

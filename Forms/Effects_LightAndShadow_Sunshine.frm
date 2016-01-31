@@ -23,7 +23,7 @@ Begin VB.Form FormSunshine
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   1
@@ -36,7 +36,7 @@ Begin VB.Form FormSunshine
       Max             =   200
       Value           =   72
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   0
@@ -47,7 +47,7 @@ Begin VB.Form FormSunshine
       DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltRayCount 
+   Begin PhotoDemon.pdSlider sltRayCount 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -60,7 +60,7 @@ Begin VB.Form FormSunshine
       Max             =   360
       Value           =   100
    End
-   Begin PhotoDemon.sliderTextCombo sltXCenter 
+   Begin PhotoDemon.pdSlider sltXCenter 
       Height          =   405
       Left            =   6000
       TabIndex        =   3
@@ -74,7 +74,7 @@ Begin VB.Form FormSunshine
       NotchPosition   =   2
       NotchValueCustom=   0.5
    End
-   Begin PhotoDemon.sliderTextCombo sltYCenter 
+   Begin PhotoDemon.pdSlider sltYCenter 
       Height          =   405
       Left            =   9000
       TabIndex        =   4
@@ -88,7 +88,7 @@ Begin VB.Form FormSunshine
       NotchPosition   =   2
       NotchValueCustom=   0.5
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -99,7 +99,7 @@ Begin VB.Form FormSunshine
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.colorSelector cpShine 
+   Begin PhotoDemon.pdColorSelector cpShine 
       Height          =   975
       Left            =   6000
       TabIndex        =   5
@@ -110,7 +110,7 @@ Begin VB.Form FormSunshine
       Caption         =   "color"
       curColor        =   8978431
    End
-   Begin PhotoDemon.sliderTextCombo sltVariance 
+   Begin PhotoDemon.pdSlider sltVariance 
       Height          =   705
       Left            =   6000
       TabIndex        =   6
@@ -172,7 +172,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a "sunshine" or "starburst" effect to an image
-Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpokeColor As Long, ByVal lColorShift As Long, Optional ByVal centerX As Double = 0.1, Optional ByVal centerY As Double = 0.1, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpokeColor As Long, ByVal lColorShift As Long, Optional ByVal centerX As Double = 0.1, Optional ByVal centerY As Double = 0.1, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Generating rays of happiness..."
     
@@ -436,7 +436,7 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
+Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
     cmdBar.markPreviewStatus False
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
@@ -453,11 +453,11 @@ Private Sub sltRayCount_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then SunShine sltRadius.Value, sltRayCount.Value, cpShine.Color, sltVariance.Value, sltXCenter.Value, sltYCenter.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then SunShine sltRadius.Value, sltRayCount.Value, cpShine.Color, sltVariance.Value, sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -472,4 +472,8 @@ End Sub
 Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
+
+
+
+
 

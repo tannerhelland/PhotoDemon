@@ -23,7 +23,7 @@ Begin VB.Form FormZoomBlur
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.buttonStrip btsStyle 
+   Begin PhotoDemon.pdButtonStrip btsStyle 
       Height          =   1095
       Left            =   6000
       TabIndex        =   3
@@ -33,7 +33,7 @@ Begin VB.Form FormZoomBlur
       _ExtentY        =   1931
       Caption         =   "style"
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -44,7 +44,7 @@ Begin VB.Form FormZoomBlur
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -54,7 +54,7 @@ Begin VB.Form FormZoomBlur
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltDistance 
+   Begin PhotoDemon.pdSlider sltDistance 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
@@ -100,7 +100,7 @@ Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal 
 
 'Because PD now provides two styles of zoom blur, I've added this wrapper function, which calls the appropriate *actual* zoom blur
 ' function, without the caller having to know details about either implementation.
-Public Sub ZoomBlurWrapper(ByVal useModernStyle As Boolean, ByVal zDistance As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ZoomBlurWrapper(ByVal useModernStyle As Boolean, ByVal zDistance As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If useModernStyle Then
         ZoomBlurModern zDistance, toPreview, dstPic
@@ -112,7 +112,7 @@ End Sub
 
 'Apply motion blur to an image using a "modern" approach that allows for both in and out zoom
 'Inputs: distance of the blur
-Public Sub ZoomBlurModern(ByVal zDistance As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ZoomBlurModern(ByVal zDistance As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Applying zoom blur..."
     
@@ -231,7 +231,7 @@ End Sub
 
 'Apply "traditional" zoom blur to an image
 'Inputs: distance of the blur
-Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
     If Not toPreview Then Message "Applying zoom blur..."
     
@@ -372,7 +372,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ZoomBlurWrapper (btsStyle.ListIndex = 0), sltDistance, True, fxPreview
+    If cmdBar.previewsAllowed Then ZoomBlurWrapper (btsStyle.ListIndex = 0), sltDistance, True, pdFxPreview
 End Sub
 
 Private Sub sltDistance_Change()
@@ -380,8 +380,12 @@ Private Sub sltDistance_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 
 

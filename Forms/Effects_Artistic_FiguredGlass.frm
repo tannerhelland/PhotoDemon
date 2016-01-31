@@ -33,7 +33,7 @@ Begin VB.Form FormFiguredGlass
       _ExtentX        =   9975
       _ExtentY        =   661
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -44,7 +44,7 @@ Begin VB.Form FormFiguredGlass
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltScale 
+   Begin PhotoDemon.pdSlider sltScale 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -57,7 +57,7 @@ Begin VB.Form FormFiguredGlass
       SigDigits       =   1
       Value           =   10
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -67,7 +67,7 @@ Begin VB.Form FormFiguredGlass
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltTurbulence 
+   Begin PhotoDemon.pdSlider sltTurbulence 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -80,7 +80,7 @@ Begin VB.Form FormFiguredGlass
       SigDigits       =   2
       Value           =   0.5
    End
-   Begin PhotoDemon.sliderTextCombo sltQuality 
+   Begin PhotoDemon.pdSlider sltQuality 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -149,7 +149,7 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Apply a "figured glass" effect to an image
-Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Projecting image through simulated glass..."
     
@@ -433,14 +433,17 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then
-        FiguredGlassFX sltScale, sltTurbulence, CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
+        FiguredGlassFX sltScale, sltTurbulence, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
     End If
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
 
 
 

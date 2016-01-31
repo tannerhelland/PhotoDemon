@@ -23,7 +23,7 @@ Begin VB.Form FormTransparency_Basic
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   788
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -34,7 +34,7 @@ Begin VB.Form FormTransparency_Basic
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.smartOptionButton optAlpha 
+   Begin PhotoDemon.pdRadioButton optAlpha 
       Height          =   375
       Index           =   0
       Left            =   6240
@@ -45,7 +45,7 @@ Begin VB.Form FormTransparency_Basic
       _ExtentY        =   582
       Caption         =   "fully opaque"
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -54,7 +54,7 @@ Begin VB.Form FormTransparency_Basic
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.smartOptionButton optAlpha 
+   Begin PhotoDemon.pdRadioButton optAlpha 
       Height          =   375
       Index           =   1
       Left            =   6240
@@ -65,7 +65,7 @@ Begin VB.Form FormTransparency_Basic
       _ExtentY        =   582
       Caption         =   "fully transparent"
    End
-   Begin PhotoDemon.smartOptionButton optAlpha 
+   Begin PhotoDemon.pdRadioButton optAlpha 
       Height          =   330
       Index           =   2
       Left            =   6240
@@ -76,7 +76,7 @@ Begin VB.Form FormTransparency_Basic
       _ExtentY        =   582
       Caption         =   "partially transparent"
    End
-   Begin PhotoDemon.sliderTextCombo sltConstant 
+   Begin PhotoDemon.pdSlider sltConstant 
       Height          =   675
       Left            =   6600
       TabIndex        =   2
@@ -158,7 +158,7 @@ Private Sub optAlpha_Click(Index As Integer)
 End Sub
 
 'Convert a DIB from 24bpp to 32bpp, using a constant alpha channel (specified by the user)
-Public Sub simpleConvert32bpp(Optional ByVal convertConstant As Long = 255, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub simpleConvert32bpp(Optional ByVal convertConstant As Long = 255, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Adding new alpha channel to image..."
     
@@ -198,12 +198,16 @@ End Function
 
 'Render a new preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then simpleConvert32bpp getRelevantAlpha(), True, fxPreview
+    If cmdBar.previewsAllowed Then simpleConvert32bpp getRelevantAlpha(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 
 

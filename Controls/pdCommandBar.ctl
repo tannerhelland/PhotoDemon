@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.UserControl commandBar 
+Begin VB.UserControl pdCommandBar 
    Alignable       =   -1  'True
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
@@ -20,7 +20,7 @@ Begin VB.UserControl commandBar
    ScaleHeight     =   50
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   637
-   ToolboxBitmap   =   "commandBar.ctx":0000
+   ToolboxBitmap   =   "pdCommandBar.ctx":0000
    Begin PhotoDemon.pdButton cmdOK 
       Height          =   510
       Left            =   6600
@@ -84,7 +84,7 @@ Begin VB.UserControl commandBar
       Caption         =   "&Cancel"
    End
 End
-Attribute VB_Name = "commandBar"
+Attribute VB_Name = "pdCommandBar"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -319,7 +319,7 @@ Private Sub RandomizeSettings()
     'Count the number of option buttons on the parent form; this will help us randomize properly
     Dim eControl As Object
     For Each eControl In Parent.Controls
-        If (TypeOf eControl Is smartOptionButton) Then numOfOptionButtons = numOfOptionButtons + 1
+        If (TypeOf eControl Is pdRadioButton) Then numOfOptionButtons = numOfOptionButtons + 1
     Next eControl
     
     'Now, pick a random option button to be set as TRUE
@@ -338,7 +338,7 @@ Private Sub RandomizeSettings()
         Select Case controlType
         
             'Custom PD numeric controls have exposed .Min, .Max, and .Value properties; use them to randomize properly
-            Case "sliderTextCombo", "textUpDown"
+            Case "pdSlider", "pdSpinner"
                 
                 Select Case eControl.SigDigits
                 
@@ -350,11 +350,11 @@ Private Sub RandomizeSettings()
                                             
                 End Select
             
-            Case "colorSelector", "pdColorWheel", "pdColorVariants"
+            Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
                 eControl.Color = Rnd * 16777216
             
             'Check boxes have a 50/50 chance of being set to checked
-            Case "smartCheckBox"
+            Case "pdCheckBox"
                 If Int(Rnd * 2) = 0 Then
                     eControl.Value = vbUnchecked
                 Else
@@ -362,7 +362,7 @@ Private Sub RandomizeSettings()
                 End If
             
             'Option buttons have a 1 in (num of option buttons) chance of being set to TRUE; see code above
-            Case "smartOptionButton"
+            Case "pdRadioButton"
                 If numOfOptionButtons = selectedOptionButton Then eControl.Value = True
                 numOfOptionButtons = numOfOptionButtons + 1
                 
@@ -371,7 +371,7 @@ Private Sub RandomizeSettings()
                 eControl.Value = eControl.Min + Int(Rnd * (eControl.Max - eControl.Min + 1))
             
             'Button strips work like list and drop-down boxes
-            Case "buttonStrip", "buttonStripVertical"
+            Case "pdButtonStrip", "pdButtonStripVertical"
                 eControl.ListIndex = Int(Rnd * eControl.ListCount)
                 
             'List boxes and combo boxes are assigned a random ListIndex
@@ -522,7 +522,7 @@ Private Sub CmdOK_Click()
     For Each eControl In Parent.Controls
         
         'Obviously, we can only validate our own custom objects that have built-in auto-validate functions.
-        If (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Or (TypeOf eControl Is smartResize) Then
+        If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSpinner) Or (TypeOf eControl Is pdResize) Then
             
             'Just to be safe, verify matching container hWnd properties
             If eControl.Container.hWnd = UserControl.ContainerHwnd Then
@@ -594,7 +594,7 @@ Private Sub ResetSettings()
         Select Case controlType
         
             'Custom PD numeric controls have exposed .Min, .Max, and .Value properties
-            Case "sliderTextCombo", "textUpDown"
+            Case "pdSlider", "pdSpinner"
                 If eControl.Min <= 0 Then
                     eControl.Value = 0
                 Else
@@ -602,22 +602,22 @@ Private Sub ResetSettings()
                 End If
                 
             'Color pickers are turned white
-            Case "colorSelector", "pdColorWheel", "pdColorVariants"
+            Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
                 eControl.Color = RGB(255, 255, 255)
             
             'Check boxes are always checked
-            Case "smartCheckBox"
+            Case "pdCheckBox"
                 eControl.Value = vbChecked
             
             'The first option button on the page is selected
-            Case "smartOptionButton"
+            Case "pdRadioButton"
                 If Not optButtonHasBeenSet Then
                     eControl.Value = True
                     optButtonHasBeenSet = True
                 End If
                 
             'Button strips are set to their first entry
-            Case "buttonStrip", "buttonStripVertical"
+            Case "pdButtonStrip", "pdButtonStripVertical"
                 eControl.ListIndex = 0
             
             'Scroll bars obey the same rules as other numeric controls
@@ -862,24 +862,24 @@ Private Sub storePreset(Optional ByVal presetName As String = "last-used setting
         Select Case controlType
         
             'PD-specific sliders, checkboxes, option buttons, and text up/downs return a .Value property
-            Case "sliderTextCombo", "smartCheckBox", "smartOptionButton", "textUpDown"
+            Case "pdSlider", "pdCheckBox", "pdRadioButton", "pdSpinner"
                 controlValue = Str(eControl.Value)
             
             'Button strips have a .ListIndex property
-            Case "buttonStrip", "buttonStripVertical"
+            Case "pdButtonStrip", "pdButtonStripVertical"
                 controlValue = Str(eControl.ListIndex)
             
             'Various PD controls have their own custom "value"-type properties.
-            Case "colorSelector", "pdColorWheel", "pdColorVariants"
+            Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
                 controlValue = Str(eControl.Color)
             
-            Case "brushSelector"
+            Case "pdBrushSelector"
                 controlValue = eControl.Brush
                 
-            Case "penSelector"
+            Case "pdPenSelector"
                 controlValue = eControl.Pen
                 
-            Case "gradientSelector"
+            Case "pdGradientSelector"
                 controlValue = eControl.Gradient
             
             'VB scroll bars return a standard .Value property
@@ -902,7 +902,7 @@ Private Sub storePreset(Optional ByVal presetName As String = "last-used setting
                 
             'PhotoDemon's resize UC is a special case.  Because it uses multiple properties (despite being
             ' a single control), we must combine its various values into a single string.
-            Case "smartResize"
+            Case "pdResize"
                 controlValue = buildParams(eControl.imgWidth, eControl.imgHeight, eControl.lockAspectRatio, eControl.unitOfMeasurement, eControl.imgDPI, eControl.unitOfResolution)
                 
         End Select
@@ -1032,20 +1032,20 @@ Private Function loadPreset(Optional ByVal presetName As String = "last-used set
                 Select Case controlType
                 
                     'Sliders and text up/downs allow for floating-point values, so we always cast these returns as doubles
-                    Case "sliderTextCombo", "textUpDown"
+                    Case "pdSlider", "pdSpinner"
                         eControl.Value = CDblCustom(controlValue)
                     
                     'Check boxes use a long (technically a boolean, as PD's custom check box doesn't support a gray state, but for
                     ' backward compatibility with VB check box constants, we cast to a Long)
-                    Case "smartCheckBox"
+                    Case "pdCheckBox"
                         eControl.Value = CLng(controlValue)
                     
                     'Option buttons use booleans
-                    Case "smartOptionButton"
+                    Case "pdRadioButton"
                         If CBool(controlValue) Then eControl.Value = CBool(controlValue)
                         
                     'Button strips are similar to list boxes, so they use a .ListIndex property
-                    Case "buttonStrip", "buttonStripVertical"
+                    Case "pdButtonStrip", "pdButtonStripVertical"
                     
                         'To protect against future changes that modify the number of available entries in a button strip, we always
                         ' validate the list index against the current list count prior to setting it.
@@ -1056,16 +1056,16 @@ Private Function loadPreset(Optional ByVal presetName As String = "last-used set
                         End If
                     
                     'Various PD controls have their own custom "value"-type properties.
-                    Case "colorSelector", "pdColorWheel", "pdColorVariants"
+                    Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
                         eControl.Color = CLng(controlValue)
                                
-                    Case "brushSelector"
+                    Case "pdBrushSelector"
                         eControl.Brush = controlValue
                     
-                    Case "penSelector"
+                    Case "pdPenSelector"
                         eControl.Pen = controlValue
                     
-                    Case "gradientSelector"
+                    Case "pdGradientSelector"
                         eControl.Gradient = controlValue
                     
                     'Traditional scroll bar values are cast as Longs, despite them only having Int ranges
@@ -1093,7 +1093,7 @@ Private Function loadPreset(Optional ByVal presetName As String = "last-used set
                     
                     'PD's "smart resize" control has some special needs, on account of using multiple value properties
                     ' within a single control.  We now parse out those values from the control string.
-                    Case "smartResize"
+                    Case "pdResize"
                         
                         'Initialize the param string object as necessary
                         If (cParam Is Nothing) Then Set cParam = New pdParamString
@@ -1177,3 +1177,14 @@ End Sub
 Private Function InControlArray(Ctl As Object) As Boolean
     InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
 End Function
+
+
+
+
+
+
+
+
+
+
+

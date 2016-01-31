@@ -879,7 +879,7 @@ Public Sub MenuRadioactive()
 End Sub
 
 'Correct image contrast by stretching the luminance histogram across the full spectrum
-Public Sub AutoContrastCorrect(Optional ByVal percentIgnore As Double = 0.05, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub AutoContrastCorrect(Optional ByVal percentIgnore As Double = 0.05, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Adjusting image contrast..."
     
@@ -1036,3 +1036,4 @@ Public Sub MenuTest()
     Exit Sub
         
 End Sub
+

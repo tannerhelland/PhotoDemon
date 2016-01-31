@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.UserControl buttonStripVertical 
+Begin VB.UserControl pdButtonStripVertical 
    BackColor       =   &H00FFFFFF&
    ClientHeight    =   765
    ClientLeft      =   0
@@ -18,9 +18,9 @@ Begin VB.UserControl buttonStripVertical
    ScaleHeight     =   51
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   183
-   ToolboxBitmap   =   "buttonStripVertical.ctx":0000
+   ToolboxBitmap   =   "pdButtonStripVertical.ctx":0000
 End
-Attribute VB_Name = "buttonStripVertical"
+Attribute VB_Name = "pdButtonStripVertical"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -1022,3 +1022,4 @@ Private Sub SynchronizeToolTipToIndex(Optional ByVal srcIndex As Long = 0)
     End If
 
 End Sub
+

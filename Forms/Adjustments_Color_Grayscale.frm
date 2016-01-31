@@ -33,7 +33,7 @@ Begin VB.Form FormGrayscale
       _ExtentX        =   9763
       _ExtentY        =   661
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -44,7 +44,7 @@ Begin VB.Form FormGrayscale
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.sliderTextCombo sltShades 
+   Begin PhotoDemon.pdSlider sltShades 
       Height          =   705
       Left            =   6000
       TabIndex        =   10
@@ -59,7 +59,7 @@ Begin VB.Form FormGrayscale
       NotchPosition   =   2
       NotchValueCustom=   256
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   4
@@ -81,7 +81,7 @@ Begin VB.Form FormGrayscale
       TabIndex        =   2
       Top             =   2040
       Width           =   5655
-      Begin PhotoDemon.smartOptionButton optDecompose 
+      Begin PhotoDemon.pdRadioButton optDecompose 
          Height          =   360
          Index           =   0
          Left            =   120
@@ -93,7 +93,7 @@ Begin VB.Form FormGrayscale
          Caption         =   "minimum"
          Value           =   -1  'True
       End
-      Begin PhotoDemon.smartOptionButton optDecompose 
+      Begin PhotoDemon.pdRadioButton optDecompose 
          Height          =   360
          Index           =   1
          Left            =   2400
@@ -118,7 +118,7 @@ Begin VB.Form FormGrayscale
       TabIndex        =   3
       Top             =   2040
       Width           =   5535
-      Begin PhotoDemon.smartOptionButton optChannel 
+      Begin PhotoDemon.pdRadioButton optChannel 
          Height          =   360
          Index           =   0
          Left            =   120
@@ -130,7 +130,7 @@ Begin VB.Form FormGrayscale
          Caption         =   "red"
          Value           =   -1  'True
       End
-      Begin PhotoDemon.smartOptionButton optChannel 
+      Begin PhotoDemon.pdRadioButton optChannel 
          Height          =   360
          Index           =   1
          Left            =   1680
@@ -141,7 +141,7 @@ Begin VB.Form FormGrayscale
          _ExtentY        =   582
          Caption         =   "green"
       End
-      Begin PhotoDemon.smartOptionButton optChannel 
+      Begin PhotoDemon.pdRadioButton optChannel 
          Height          =   360
          Index           =   2
          Left            =   3360
@@ -211,7 +211,7 @@ Option Explicit
 
 'Preview the current grayscale conversion technique
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then masterGrayscaleFunction cboMethod.ListIndex, getExtraGrayscaleParams(cboMethod.ListIndex), sltShades.Value, cboDithering.ListIndex, True, fxPreview
+    If cmdBar.previewsAllowed Then masterGrayscaleFunction cboMethod.ListIndex, getExtraGrayscaleParams(cboMethod.ListIndex), sltShades.Value, cboDithering.ListIndex, True, pdFxPreview
 End Sub
 
 Private Sub cboDithering_Click()
@@ -318,7 +318,7 @@ End Sub
 'All different grayscale (black and white) routines are handled by this single function.  As of 16 Feb '14, grayscale operations
 ' are divided into four params: type of transform, optional params for transform (if any), number of shades to use, and
 ' dithering options (if any).  This should allow the user to mix and match the various options at their leisure.
-Public Sub masterGrayscaleFunction(Optional ByVal grayscaleMethod As Long, Optional ByVal additionalParams As String, Optional ByVal numOfShades As Long = 256, Optional ByVal ditheringOptions As Long = 0, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub masterGrayscaleFunction(Optional ByVal grayscaleMethod As Long, Optional ByVal additionalParams As String, Optional ByVal numOfShades As Long = 256, Optional ByVal ditheringOptions As Long = 0, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Converting image to black and white..."
 
@@ -1282,9 +1282,13 @@ Private Sub sltShades_Change()
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+
+
+
 
 
 

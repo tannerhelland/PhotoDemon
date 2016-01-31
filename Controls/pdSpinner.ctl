@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.UserControl textUpDown 
+Begin VB.UserControl pdSpinner 
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BackStyle       =   0  'Transparent
@@ -19,7 +19,7 @@ Begin VB.UserControl textUpDown
    ScaleHeight     =   28
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   75
-   ToolboxBitmap   =   "textUpDown.ctx":0000
+   ToolboxBitmap   =   "pdSpinner.ctx":0000
    Begin VB.Timer tmrDownButton 
       Enabled         =   0   'False
       Left            =   1080
@@ -63,13 +63,13 @@ Begin VB.UserControl textUpDown
       Width           =   1005
    End
 End
-Attribute VB_Name = "textUpDown"
+Attribute VB_Name = "pdSpinner"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Text / UpDown custom control
+'PhotoDemon Spinner (formerly Text+UpDown) custom control
 'Copyright 2013-2016 by Tanner Helland
 'Created: 19/April/13
 'Last updated: 06/January/15
@@ -876,3 +876,4 @@ Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTi
     toolTipManager.SetTooltip Me.hWnd, UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
     toolTipManager.SetTooltip picScroll.hWnd, UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
+

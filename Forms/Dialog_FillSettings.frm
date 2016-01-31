@@ -39,7 +39,7 @@ Begin VB.Form dialog_FillSettings
       Top             =   480
       Width           =   11835
    End
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -53,7 +53,7 @@ Begin VB.Form dialog_FillSettings
       dontAutoUnloadParent=   -1  'True
       dontResetAutomatically=   -1  'True
    End
-   Begin PhotoDemon.buttonStrip btsStyle 
+   Begin PhotoDemon.pdButtonStrip btsStyle 
       Height          =   1050
       Left            =   120
       TabIndex        =   0
@@ -75,7 +75,7 @@ Begin VB.Form dialog_FillSettings
       Caption         =   "preview"
       FontSize        =   12
    End
-   Begin PhotoDemon.sliderTextCombo sltFillOpacity 
+   Begin PhotoDemon.pdSlider sltFillOpacity 
       CausesValidation=   0   'False
       Height          =   705
       Left            =   6120
@@ -115,7 +115,7 @@ Begin VB.Form dialog_FillSettings
       TabIndex        =   5
       Top             =   2400
       Width           =   5775
-      Begin PhotoDemon.gradientSelector gsPrimary 
+      Begin PhotoDemon.pdGradientSelector gsPrimary 
          Height          =   1335
          Left            =   120
          TabIndex        =   14
@@ -194,7 +194,7 @@ Begin VB.Form dialog_FillSettings
          FontSize        =   12
          ForeColor       =   0
       End
-      Begin PhotoDemon.colorSelector csPattern 
+      Begin PhotoDemon.pdColorSelector csPattern 
          Height          =   855
          Index           =   0
          Left            =   0
@@ -205,7 +205,7 @@ Begin VB.Form dialog_FillSettings
          _ExtentY        =   1508
          Caption         =   "pattern color and opacity"
       End
-      Begin PhotoDemon.colorSelector csPattern 
+      Begin PhotoDemon.pdColorSelector csPattern 
          Height          =   855
          Index           =   1
          Left            =   0
@@ -217,7 +217,7 @@ Begin VB.Form dialog_FillSettings
          Caption         =   "background color and opacity"
          curColor        =   0
       End
-      Begin PhotoDemon.sliderTextCombo sltPatternOpacity 
+      Begin PhotoDemon.pdSlider sltPatternOpacity 
          CausesValidation=   0   'False
          Height          =   405
          Index           =   0
@@ -232,7 +232,7 @@ Begin VB.Form dialog_FillSettings
          NotchPosition   =   2
          NotchValueCustom=   100
       End
-      Begin PhotoDemon.sliderTextCombo sltPatternOpacity 
+      Begin PhotoDemon.pdSlider sltPatternOpacity 
          CausesValidation=   0   'False
          Height          =   405
          Index           =   1
@@ -273,7 +273,7 @@ Begin VB.Form dialog_FillSettings
          Caption         =   "solid fill settings"
          FontSize        =   12
       End
-      Begin PhotoDemon.colorSelector csFillColor 
+      Begin PhotoDemon.pdColorSelector csFillColor 
          Height          =   1560
          Left            =   0
          TabIndex        =   7
@@ -345,7 +345,7 @@ Private m_Filler As pdGraphicsBrush
 
 'If a user control spawned this dialog, it will pass itself as a reference.  We can then send brush updates back
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
-Private parentBrushControl As brushSelector
+Private parentBrushControl As pdBrushSelector
 
 'Recently used brushes are loaded to/saved from a custom XML file
 Private m_XMLEngine As pdXML
@@ -371,7 +371,7 @@ Public Property Get newBrush() As String
 End Property
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog(ByVal initialBrush As String, Optional ByRef callingControl As brushSelector = Nothing)
+Public Sub showDialog(ByVal initialBrush As String, Optional ByRef callingControl As pdBrushSelector = Nothing)
 
     Debug.Print "Initial brush=" & initialBrush
 
@@ -605,3 +605,9 @@ Private Sub syncControlsToFillObject()
     m_SuspendRedraws = False
     
 End Sub
+
+
+
+
+
+

@@ -24,7 +24,7 @@ Begin VB.Form FormSwirl
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
+   Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -35,7 +35,7 @@ Begin VB.Form FormSwirl
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   1
@@ -46,7 +46,7 @@ Begin VB.Form FormSwirl
       DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
+   Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
       Left            =   6000
       TabIndex        =   3
@@ -59,7 +59,7 @@ Begin VB.Form FormSwirl
       Max             =   180
       SigDigits       =   1
    End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
       TabIndex        =   4
@@ -74,7 +74,7 @@ Begin VB.Form FormSwirl
       NotchPosition   =   2
       NotchValueCustom=   100
    End
-   Begin PhotoDemon.sliderTextCombo sltQuality 
+   Begin PhotoDemon.pdSlider sltQuality 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
@@ -89,7 +89,7 @@ Begin VB.Form FormSwirl
       NotchPosition   =   2
       NotchValueCustom=   2
    End
-   Begin PhotoDemon.sliderTextCombo sltXCenter 
+   Begin PhotoDemon.pdSlider sltXCenter 
       Height          =   405
       Left            =   6000
       TabIndex        =   6
@@ -103,7 +103,7 @@ Begin VB.Form FormSwirl
       NotchPosition   =   2
       NotchValueCustom=   0.5
    End
-   Begin PhotoDemon.sliderTextCombo sltYCenter 
+   Begin PhotoDemon.pdSlider sltYCenter 
       Height          =   405
       Left            =   9000
       TabIndex        =   7
@@ -196,7 +196,7 @@ Private Sub cboEdges_Click()
 End Sub
 
 'Apply a "swirl" effect to an image
-Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     'Reverse the rotationAngle value so that POSITIVE values indicate CLOCKWISE rotation.
     swirlAngle = -(swirlAngle / 10)
@@ -464,7 +464,7 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
+Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
 
     cmdBar.markPreviewStatus False
     sltXCenter.Value = xRatio
@@ -488,11 +488,11 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then SwirlImage sltAngle, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, fxPreview
+    If cmdBar.previewsAllowed Then SwirlImage sltAngle, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
-Private Sub fxPreview_ViewportChanged()
+Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
@@ -503,4 +503,7 @@ End Sub
 Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
+
+
+
 

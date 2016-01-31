@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.UserControl commandBarMini 
+Begin VB.UserControl pdCommandBarMini 
    Alignable       =   -1  'True
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
@@ -20,7 +20,7 @@ Begin VB.UserControl commandBarMini
    ScaleHeight     =   50
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   637
-   ToolboxBitmap   =   "commandBarMini.ctx":0000
+   ToolboxBitmap   =   "pdCommandBarMini.ctx":0000
    Begin PhotoDemon.pdButton cmdOK 
       Height          =   510
       Left            =   6600
@@ -42,7 +42,7 @@ Begin VB.UserControl commandBarMini
       Caption         =   "&Cancel"
    End
 End
-Attribute VB_Name = "commandBarMini"
+Attribute VB_Name = "pdCommandBarMini"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -234,3 +234,4 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     End With
     
 End Sub
+
