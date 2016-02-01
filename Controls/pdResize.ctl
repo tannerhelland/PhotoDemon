@@ -27,10 +27,10 @@ Begin VB.UserControl pdResize
       TabIndex        =   2
       Top             =   165
       Width           =   630
-      _ExtentX        =   1111
-      _ExtentY        =   1111
-      DontHighlightDownState=   -1  'True
-      StickyToggle    =   -1  'True
+      _extentx        =   1111
+      _extenty        =   1111
+      donthighlightdownstate=   -1  'True
+      stickytoggle    =   -1  'True
    End
    Begin PhotoDemon.pdComboBox cmbResolution 
       Height          =   360
@@ -38,9 +38,9 @@ Begin VB.UserControl pdResize
       TabIndex        =   3
       Top             =   1200
       Width           =   4695
-      _ExtentX        =   8281
-      _ExtentY        =   635
-      FontSize        =   11
+      _extentx        =   8281
+      _extenty        =   635
+      fontsize        =   11
    End
    Begin PhotoDemon.pdComboBox cmbHeightUnit 
       Height          =   360
@@ -48,9 +48,9 @@ Begin VB.UserControl pdResize
       TabIndex        =   4
       Top             =   600
       Width           =   4050
-      _ExtentX        =   7144
-      _ExtentY        =   635
-      FontSize        =   11
+      _extentx        =   7144
+      _extenty        =   635
+      fontsize        =   11
    End
    Begin PhotoDemon.pdComboBox cmbWidthUnit 
       Height          =   360
@@ -58,9 +58,9 @@ Begin VB.UserControl pdResize
       TabIndex        =   5
       Top             =   0
       Width           =   4050
-      _ExtentX        =   7144
-      _ExtentY        =   635
-      FontSize        =   14
+      _extentx        =   7144
+      _extenty        =   635
+      fontsize        =   14
    End
    Begin PhotoDemon.pdSpinner tudWidth 
       Height          =   345
@@ -68,11 +68,11 @@ Begin VB.UserControl pdResize
       TabIndex        =   0
       Top             =   0
       Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   767
-      Min             =   1
-      Max             =   32767
-      Value           =   1
+      _extentx        =   2117
+      _extenty        =   767
+      max             =   32767
+      min             =   1
+      value           =   1
    End
    Begin PhotoDemon.pdSpinner tudHeight 
       Height          =   345
@@ -80,11 +80,11 @@ Begin VB.UserControl pdResize
       TabIndex        =   1
       Top             =   600
       Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   767
-      Min             =   1
-      Max             =   32767
-      Value           =   1
+      _extentx        =   2117
+      _extenty        =   767
+      max             =   32767
+      min             =   1
+      value           =   1
    End
    Begin PhotoDemon.pdSpinner tudResolution 
       Height          =   345
@@ -92,23 +92,23 @@ Begin VB.UserControl pdResize
       TabIndex        =   6
       Top             =   1200
       Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   767
-      Min             =   1
-      Max             =   32767
-      Value           =   1
+      _extentx        =   2117
+      _extenty        =   767
+      max             =   32767
+      min             =   1
+      value           =   1
    End
    Begin PhotoDemon.pdLabel lblResolution 
       Height          =   285
       Left            =   0
       Top             =   1260
       Width           =   1950
-      _ExtentX        =   3440
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "resolution"
-      FontSize        =   12
-      ForeColor       =   4210752
+      _extentx        =   3440
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "resolution"
+      fontsize        =   12
+      forecolor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblDimensions 
       Height          =   285
@@ -116,12 +116,12 @@ Begin VB.UserControl pdResize
       Left            =   0
       Top             =   1830
       Width           =   1950
-      _ExtentX        =   3440
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "dimensions"
-      FontSize        =   12
-      ForeColor       =   4210752
+      _extentx        =   3440
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "dimensions"
+      fontsize        =   12
+      forecolor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblDimensions 
       Height          =   285
@@ -129,11 +129,11 @@ Begin VB.UserControl pdResize
       Left            =   2130
       Top             =   1830
       Width           =   6060
-      _ExtentX        =   10689
-      _ExtentY        =   503
-      Caption         =   "            "
-      FontSize        =   12
-      ForeColor       =   4210752
+      _extentx        =   10689
+      _extenty        =   503
+      caption         =   "            "
+      fontsize        =   12
+      forecolor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblAspectRatio 
       Height          =   285
@@ -141,35 +141,35 @@ Begin VB.UserControl pdResize
       Left            =   2130
       Top             =   2400
       Width           =   6060
-      _ExtentX        =   10689
-      _ExtentY        =   503
-      Caption         =   "            "
-      FontSize        =   12
-      ForeColor       =   4210752
+      _extentx        =   10689
+      _extenty        =   503
+      caption         =   "            "
+      fontsize        =   12
+      forecolor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblWidth 
       Height          =   285
       Left            =   0
       Top             =   60
       Width           =   1950
-      _ExtentX        =   3440
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "width"
-      FontSize        =   12
-      ForeColor       =   4210752
+      _extentx        =   3440
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "width"
+      fontsize        =   12
+      forecolor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblHeight 
       Height          =   285
       Left            =   0
       Top             =   660
       Width           =   1950
-      _ExtentX        =   3440
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "height"
-      FontSize        =   12
-      ForeColor       =   4210752
+      _extentx        =   3440
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "height"
+      fontsize        =   12
+      forecolor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblAspectRatio 
       Height          =   285
@@ -177,12 +177,12 @@ Begin VB.UserControl pdResize
       Left            =   0
       Top             =   2400
       Width           =   1950
-      _ExtentX        =   3440
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "aspect ratio"
-      FontSize        =   12
-      ForeColor       =   4210752
+      _extentx        =   3440
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "aspect ratio"
+      fontsize        =   12
+      forecolor       =   4210752
    End
 End
 Attribute VB_Name = "pdResize"
@@ -657,7 +657,7 @@ End Sub
 ' width and height.  The only thing it immediately changes is the pixel size label, and it only changes that if the current
 ' width/height unit is inches or cm.
 Private Sub tudResolution_Change()
-    updateAspectRatio
+    UpdateAspectRatio
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -841,7 +841,7 @@ Private Sub syncDimensions(ByVal useWidthAsSource As Boolean)
     If useWidthAsSource Then allowedToUpdateWidth = True Else allowedToUpdateHeight = True
     
     'Display a relevant aspect ratio for the current
-    updateAspectRatio
+    UpdateAspectRatio
     
     'Update our image width/height in pixel values, so we can raise them as part of the control's Change event
     imgWidthPixels = convertUnitToPixels(getCurrentWidthUnit, tudWidth, getResolutionAsPPI(), initWidth)
@@ -853,7 +853,7 @@ End Sub
 
 'This control displays an approximate aspect ratio for the selected dimensions.  This can be helpful when
 ' trying to select new width/height values for a specific application with a set aspect ratio (e.g. 16:9 screens).
-Private Sub updateAspectRatio()
+Private Sub UpdateAspectRatio()
 
     If Not g_IsProgramRunning Then Exit Sub
 
@@ -961,5 +961,18 @@ Private Function getCurrentHeightUnit() As Long
     End If
 End Function
 
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
+Public Sub UpdateAgainstCurrentTheme()
+    
+    'Manually update all sub-controls
+    lblWidth.UpdateAgainstCurrentTheme
+    lblHeight.UpdateAgainstCurrentTheme
+    lblResolution.UpdateAgainstCurrentTheme
+    lblDimensions(0).UpdateAgainstCurrentTheme
+    lblDimensions(1).UpdateAgainstCurrentTheme
+    lblAspectRatio(0).UpdateAgainstCurrentTheme
+    lblAspectRatio(1).UpdateAgainstCurrentTheme
+    
+End Sub
 
 
