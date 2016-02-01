@@ -17,9 +17,10 @@
 			<AccentShadow>#3270dc</AccentShadow>
 			<AccentHighlight>#3cafe6</AccentHighlight>
 			<AccentUltralight>#d2f0fa</AccentUltralight>
-			<DefaultGray>#929292</DefaultGray>
-			<DefaultBackground>#ffffff</DefaultBackground>
-			<DisabledGray>#b1bac2</DisabledGray>
+			<BackgroundDefault>#ffffff</BackgroundDefault>
+			<GrayDefault>#929292</GrayDefault>
+			<GrayDisabled>#b1bac2</GrayDisabled>
+			<GrayShadow>#5b5b5b</GrayShadow>
 			<TextDefault>#404040</TextDefault>
 			<TextHyperlink>#3a84e3</TextHyperlink>
 			<TextInvert>#ffffff</TextInvert>
@@ -31,9 +32,13 @@
 		
 			<!-- Default colors are not object-specific.  They are used as fallback values if an object lacks a given color. -->
 			<Default>
-				<Background>DefaultBackground</Background>
+				<Background>BackgroundDefault</Background>
+				<Border>GrayShadow</Border>
+				<Border-active>AccentShadow</Border-active>
+				<Border-disabled>GrayDisabled</Border-disabled>
+				<Border-hover>AccentDefault</Border-hover>
 				<Caption>TextDefault</Caption>
-				<Caption-disabled>DisabledGray</Caption-disabled>
+				<Caption-disabled>GrayDisabled</Caption-disabled>
 			</Default>
 			
 			<!-- All colors past this point are organized by object name.  Missing values will be taken from the Default section. -->
@@ -45,44 +50,65 @@
 				<SelectedItemFill>AccentDefault</SelectedItemFill>
 				<SelectedItemBorder>AccentShadow</SelectedItemBorder> 
 				<SelectedText>TextInvert</SelectedText> 
-				<UnselectedItemFill>DefaultBackground</UnselectedItemFill>
-				<UnselectedItemBorder>DefaultGray</UnselectedItemBorder>
+				<UnselectedItemFill>BackgroundDefault</UnselectedItemFill>
+				<UnselectedItemBorder>GrayDefault</UnselectedItemBorder>
 				<UnselectedItemBorder-hover>AccentDefault</UnselectedItemBorder-hover>
 				<UnselectedText>TextDefault</UnselectedText>
 				<UnselectedText-hover>TextHyperlink</UnselectedText-hover>
-				<SelectedItemFill-disabled>DisabledGray</SelectedItemFill-disabled>
-				<SelectedItemBorder-disabled>DisabledGray</SelectedItemBorder-disabled> 
-				<UnselectedItemBorder-disabled>DisabledGray</UnselectedItemBorder-disabled> 
-				<SelectedText-disabled>DefaultBackground</SelectedText-disabled> 
-				<UnselectedText-disabled>DisabledGray</UnselectedText-disabled>
+				<SelectedItemFill-disabled>GrayDisabled</SelectedItemFill-disabled>
+				<SelectedItemBorder-disabled>GrayDisabled</SelectedItemBorder-disabled> 
+				<UnselectedItemBorder-disabled>GrayDisabled</UnselectedItemBorder-disabled> 
+				<SelectedText-disabled>BackgroundDefault</SelectedText-disabled> 
+				<UnselectedText-disabled>GrayDisabled</UnselectedText-disabled>
 				
 				<!-- On the Text and Typography tool panels, the button strip uses a "lighter" color scheme for the text justification options.  The control internally defines this as "light mode" and it requires special colors. -->
-				<BackgroundLightMode>DefaultBackground</BackgroundLightMode>
+				<BackgroundLightMode>BackgroundDefault</BackgroundLightMode>
 				<SelectedItemFillLightMode>AccentUltralight</SelectedItemFillLightMode>
 				<SelectedItemBorderLightMode>AccentHighlight</SelectedItemBorderLightMode> 
 				<SelectedItemBorderLightMode-hover>AccentDefault</SelectedItemBorderLightMode-hover> 
 				<SelectedTextLightMode>TextDefault</SelectedTextLightMode> 
-				<UnselectedItemFillLightMode>DefaultBackground</UnselectedItemFillLightMode>
-				<UnselectedItemBorderLightMode>DefaultBackground</UnselectedItemBorderLightMode> 
+				<UnselectedItemFillLightMode>BackgroundDefault</UnselectedItemFillLightMode>
+				<UnselectedItemBorderLightMode>BackgroundDefault</UnselectedItemBorderLightMode> 
 				<UnselectedItemBorderLightMode-hover>AccentDefault</UnselectedItemBorderLightMode-hover> 
 				<UnselectedTextLightMode>TextDefault</UnselectedTextLightMode>
-				<SelectedItemFillLightMode-disabled>DisabledGray</SelectedItemFillLightMode-disabled>
-				<SelectedItemBorderLightMode-disabled>DisabledGray</SelectedItemBorderLightMode-disabled> 
-				<UnselectedItemBorderLightMode-disabled>DisabledGray</UnselectedItemBorderLightMode-disabled> 
-				<SelectedTextLightMode-disabled>DefaultBackground</SelectedTextLightMode-disabled> 
-				<UnselectedTextLightMode-disabled>DisabledGray</UnselectedTextLightMode-disabled>
+				<SelectedItemFillLightMode-disabled>GrayDisabled</SelectedItemFillLightMode-disabled>
+				<SelectedItemBorderLightMode-disabled>GrayDisabled</SelectedItemBorderLightMode-disabled> 
+				<UnselectedItemBorderLightMode-disabled>GrayDisabled</UnselectedItemBorderLightMode-disabled> 
+				<SelectedTextLightMode-disabled>BackgroundDefault</SelectedTextLightMode-disabled> 
+				<UnselectedTextLightMode-disabled>GrayDisabled</UnselectedTextLightMode-disabled>
 			</ButtonStrip>
 			
 			<GenericPDControl>
-				<Background>DefaultBackground</Background>
+				<Background>BackgroundDefault</Background>
 				<Caption></Caption>
 				<Caption-disabled></Caption-disabled>
 			</GenericPDControl>
 			
+			<PDBrushSelector>
+				<Border></Border>
+				<Border-active></Border-active>
+				<Border-disabled></Border-disabled>
+				<Border-hover></Border-hover>
+			</PDBrushSelector>
+			
+			<PDGradientSelector>
+				<Border></Border>
+				<Border-active></Border-active>
+				<Border-disabled></Border-disabled>
+				<Border-hover></Border-hover>
+			</PDGradientSelector>
+			
+			<PDPenSelector>
+				<Border></Border>
+				<Border-active></Border-active>
+				<Border-disabled></Border-disabled>
+				<Border-hover></Border-hover>
+			</PDPenSelector>
+			
 			<PDHyperlink>
-				<Background>DefaultBackground</Background>
+				<Background>BackgroundDefault</Background>
 				<Caption>TextHyperlink</Caption>
-				<Caption-disabled>DisabledGray</Caption-disabled>
+				<Caption-disabled>GrayDisabled</Caption-disabled>
 				<Caption-hover>AccentDefault</Caption-hover>
 			</PDHyperlink>
 						

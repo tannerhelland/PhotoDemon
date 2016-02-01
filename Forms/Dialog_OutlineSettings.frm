@@ -309,7 +309,7 @@ Private Sub cmdBar_OKClick()
     'saveRecentPenList
     
     userAnswer = vbOK
-    Me.Hide
+    Me.Visible = False
 
 End Sub
 

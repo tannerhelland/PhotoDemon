@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.129</langversion>
+<langversion>6.7.132</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -3218,173 +3218,6 @@ Geef een numerieke waarde.</translation>
 
 <!-- END text for OutsideDevelopment_SPBuffer.cls-->
 
-<!-- BEGIN text for ShellPipe.ctl -->
-
-<!-- ShellPipe.ctl contains 0 phrases. -->
-
-<!-- END text for ShellPipe.ctl-->
-
-<!-- BEGIN text for brushSelector.ctl -->
-
-<!-- brushSelector.ctl contains 0 phrases. -->
-
-<!-- END text for brushSelector.ctl-->
-
-<!-- BEGIN text for colorSelector.ctl -->
-
-<phrase>
-<original>RGB(%1, %2, %3)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Click to enter a full color selection screen.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Active color</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Click to make the main screen's paint color the active color.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Main screen paint color</original>
-<translation></translation>
-</phrase>
-
-<!-- colorSelector.ctl contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for colorSelector.ctl-->
-
-<!-- BEGIN text for commandBar.ctl -->
-
-<phrase>
-<original>&OK</original>
-<translation>&OK</translation>
-</phrase>
-
-<phrase>
-<original>&Cancel</original>
-<translation>&Annuleren</translation>
-</phrase>
-
-<phrase>
-<original>Saving preset</original>
-<translation>Opslaan voorinstelling</translation>
-</phrase>
-
-<phrase>
-<original>Preset saved.</original>
-<translation>Voorinstelling opgeslagen</translation>
-</phrase>
-
-<phrase>
-<original>Preset save canceled.</original>
-<translation>Voorinstelling opslaan geannuleerd.</translation>
-</phrase>
-
-<phrase>
-<original>Apply this action to the current image.</original>
-<translation>Pas deze actie toe op de huidige afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>OK</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Exit this tool.  No changes will be made to the image.</original>
-<translation>Verlaad dit gereedschap. Er worden geen wijzigingen gemaakt aan de afbeelding.</translation>
-</phrase>
-
-<phrase>
-<original>Cancel</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Reset all settings to their default values.</original>
-<translation>Herzet alle instellingen naar hun standaardwaarden.</translation>
-</phrase>
-
-<phrase>
-<original>Reset</original>
-<translation>Reset</translation>
-</phrase>
-
-<phrase>
-<original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
-<translation>Selecteer nieuwe instellingen voor dit gereedschap willekeurig. Dit is nuttig voor het verkennen hoe verschillende instellingen de afbeelding beïnvloeden.</translation>
-</phrase>
-
-<phrase>
-<original>Randomize</original>
-<translation>Randomize</translation>
-</phrase>
-
-<phrase>
-<original>Save the current settings as a new preset.</original>
-<translation>Sla de huidige instellingen als een nieuwe voorinstelling.</translation>
-</phrase>
-
-<phrase>
-<original>Save preset</original>
-<translation>Opslaan voorinstelling</translation>
-</phrase>
-
-<phrase>
-<original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
-<translation>Eerder opgeslagen voorinstellingen kunnen hier worden geselecteerd. Je kan de huidige instellingen als een nieuwe voorinstelling opslaan door te klikken op de knop "Voorinstelling opslaan" aan de rechterkant.</translation>
-</phrase>
-
-<!-- commandBar.ctl contains 17 phrases.  One was a duplicate of an existing phrase, so only 16 new phrases were written to file. -->
-
-<!-- END text for commandBar.ctl-->
-
-<!-- BEGIN text for commandBarMini.ctl -->
-
-<!-- commandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
-
-<!-- END text for commandBarMini.ctl-->
-
-<!-- BEGIN text for fxPreview.ctl -->
-
-<phrase>
-<original>before</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>after</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>1:1</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>fit</original>
-<translation></translation>
-</phrase>
-
-<!-- fxPreview.ctl contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
-
-<!-- END text for fxPreview.ctl-->
-
-<!-- BEGIN text for gradientSelector.ctl -->
-
-<!-- gradientSelector.ctl contains 0 phrases. -->
-
-<!-- END text for gradientSelector.ctl-->
-
 <!-- BEGIN text for pdAccelerator.ctl -->
 
 <phrase>
@@ -3410,6 +3243,12 @@ Geef een numerieke waarde.</translation>
 <!-- pdAccelerator.ctl contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for pdAccelerator.ctl-->
+
+<!-- BEGIN text for pdBrushSelector.ctl -->
+
+<!-- pdBrushSelector.ctl contains 0 phrases. -->
+
+<!-- END text for pdBrushSelector.ctl-->
 
 <!-- BEGIN text for pdButton.ctl -->
 
@@ -3565,6 +3404,48 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- END text for pdCanvas.ctl-->
 
+<!-- BEGIN text for pdCheckBox.ctl -->
+
+<phrase>
+<original>caption</original>
+<translation>opschrift</translation>
+</phrase>
+
+<!-- pdCheckBox.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
+<!-- END text for pdCheckBox.ctl-->
+
+<!-- BEGIN text for pdColorSelector.ctl -->
+
+<phrase>
+<original>RGB(%1, %2, %3)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click to enter a full color selection screen.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Active color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click to make the main screen's paint color the active color.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Main screen paint color</original>
+<translation></translation>
+</phrase>
+
+<!-- pdColorSelector.ctl contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for pdColorSelector.ctl-->
+
 <!-- BEGIN text for pdColorVariants.ctl -->
 
 <phrase>
@@ -3642,6 +3523,98 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- END text for pdColorWheel.ctl-->
 
+<!-- BEGIN text for pdCommandBar.ctl -->
+
+<phrase>
+<original>&OK</original>
+<translation>&OK</translation>
+</phrase>
+
+<phrase>
+<original>&Cancel</original>
+<translation>&Annuleren</translation>
+</phrase>
+
+<phrase>
+<original>Saving preset</original>
+<translation>Opslaan voorinstelling</translation>
+</phrase>
+
+<phrase>
+<original>Preset saved.</original>
+<translation>Voorinstelling opgeslagen</translation>
+</phrase>
+
+<phrase>
+<original>Preset save canceled.</original>
+<translation>Voorinstelling opslaan geannuleerd.</translation>
+</phrase>
+
+<phrase>
+<original>Apply this action to the current image.</original>
+<translation>Pas deze actie toe op de huidige afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>OK</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Exit this tool.  No changes will be made to the image.</original>
+<translation>Verlaad dit gereedschap. Er worden geen wijzigingen gemaakt aan de afbeelding.</translation>
+</phrase>
+
+<phrase>
+<original>Cancel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset all settings to their default values.</original>
+<translation>Herzet alle instellingen naar hun standaardwaarden.</translation>
+</phrase>
+
+<phrase>
+<original>Reset</original>
+<translation>Reset</translation>
+</phrase>
+
+<phrase>
+<original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
+<translation>Selecteer nieuwe instellingen voor dit gereedschap willekeurig. Dit is nuttig voor het verkennen hoe verschillende instellingen de afbeelding beïnvloeden.</translation>
+</phrase>
+
+<phrase>
+<original>Randomize</original>
+<translation>Randomize</translation>
+</phrase>
+
+<phrase>
+<original>Save the current settings as a new preset.</original>
+<translation>Sla de huidige instellingen als een nieuwe voorinstelling.</translation>
+</phrase>
+
+<phrase>
+<original>Save preset</original>
+<translation>Opslaan voorinstelling</translation>
+</phrase>
+
+<phrase>
+<original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
+<translation>Eerder opgeslagen voorinstellingen kunnen hier worden geselecteerd. Je kan de huidige instellingen als een nieuwe voorinstelling opslaan door te klikken op de knop "Voorinstelling opslaan" aan de rechterkant.</translation>
+</phrase>
+
+<!-- pdCommandBar.ctl contains 17 phrases.  One was a duplicate of an existing phrase, so only 16 new phrases were written to file. -->
+
+<!-- END text for pdCommandBar.ctl-->
+
+<!-- BEGIN text for pdCommandBarMini.ctl -->
+
+<!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for pdCommandBarMini.ctl-->
+
 <!-- BEGIN text for pdComboBox.ctl -->
 
 <!-- pdComboBox.ctl contains 0 phrases. -->
@@ -3666,14 +3639,41 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- END text for pdDownload.ctl-->
 
-<!-- BEGIN text for pdHyperlink.ctl -->
+<!-- BEGIN text for pdFxPreview.ctl -->
 
 <phrase>
-<original>caption</original>
-<translation>opschrift</translation>
+<original>before</original>
+<translation></translation>
 </phrase>
 
-<!-- pdHyperlink.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<phrase>
+<original>after</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>1:1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fit</original>
+<translation></translation>
+</phrase>
+
+<!-- pdFxPreview.ctl contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+
+<!-- END text for pdFxPreview.ctl-->
+
+<!-- BEGIN text for pdGradientSelector.ctl -->
+
+<!-- pdGradientSelector.ctl contains 0 phrases. -->
+
+<!-- END text for pdGradientSelector.ctl-->
+
+<!-- BEGIN text for pdHyperlink.ctl -->
+
+<!-- pdHyperlink.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdHyperlink.ctl-->
 
@@ -3694,6 +3694,99 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- pdNavigator.ctl contains 0 phrases. -->
 
 <!-- END text for pdNavigator.ctl-->
+
+<!-- BEGIN text for pdPenSelector.ctl -->
+
+<!-- pdPenSelector.ctl contains 0 phrases. -->
+
+<!-- END text for pdPenSelector.ctl-->
+
+<!-- BEGIN text for pdRadioButton.ctl -->
+
+<!-- pdRadioButton.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
+<!-- END text for pdRadioButton.ctl-->
+
+<!-- BEGIN text for pdResize.ctl -->
+
+<phrase>
+<original>resolution</original>
+<translation>resolutie</translation>
+</phrase>
+
+<phrase>
+<original>dimensions</original>
+<translation>afmeting</translation>
+</phrase>
+
+<phrase>
+<original>aspect ratio</original>
+<translation>beeldverhouding</translation>
+</phrase>
+
+<phrase>
+<original>percent</original>
+<translation>procent</translation>
+</phrase>
+
+<phrase>
+<original>pixels</original>
+<translation>pixels</translation>
+</phrase>
+
+<phrase>
+<original>inches</original>
+<translation>inches</translation>
+</phrase>
+
+<phrase>
+<original>centimeters</original>
+<translation>centimeters</translation>
+</phrase>
+
+<phrase>
+<original>pixels / inch (PPI)</original>
+<translation>pixels / inch (PPI)</translation>
+</phrase>
+
+<phrase>
+<original>pixels / centimeter (PPCM)</original>
+<translation>pixels / centimeter (PPCM)</translation>
+</phrase>
+
+<phrase>
+<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
+<translation>Preserveer aspect ratio (ook wel Verhoudingengenoemd). Gebruik deze optie om een afbeelding te wijzigen terwijl de breedte en hoogte in sync blijven.</translation>
+</phrase>
+
+<phrase>
+<original>Preserve aspect ratio</original>
+<translation>Preserveer aspect ratio</translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used to resize the image.</original>
+<translation>Wijzig de meeteenheid gebruikt om het formaat te wijzigen.</translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used for image resolution (pixel density).</original>
+<translation>Verander de gebruikte meeteenheid voor de beeldresolutie (pixeldichtheid).</translation>
+</phrase>
+
+<phrase>
+<original>exact aspect ratio will vary by image</original>
+<translation>exacte aspect ratio is afhankelijk van de afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>exact size will vary by image</original>
+<translation>exacte grootte is afhankelijk van de afbeelding</translation>
+</phrase>
+
+<!-- pdResize.ctl contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+
+<!-- END text for pdResize.ctl-->
 
 <!-- BEGIN text for pdScrollBar.ctl -->
 
@@ -3771,6 +3864,18 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- END text for pdScrollBar.ctl-->
 
+<!-- BEGIN text for pdSlider.ctl -->
+
+<!-- pdSlider.ctl contains 0 phrases. -->
+
+<!-- END text for pdSlider.ctl-->
+
+<!-- BEGIN text for pdSpinner.ctl -->
+
+<!-- pdSpinner.ctl contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for pdSpinner.ctl-->
+
 <!-- BEGIN text for pdTextBox.ctl -->
 
 <!-- pdTextBox.ctl contains 0 phrases. -->
@@ -3783,116 +3888,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- END text for pdTitle.ctl-->
 
-<!-- BEGIN text for penSelector.ctl -->
+<!-- BEGIN text for ShellPipe.ctl -->
 
-<!-- penSelector.ctl contains 0 phrases. -->
+<!-- ShellPipe.ctl contains 0 phrases. -->
 
-<!-- END text for penSelector.ctl-->
-
-<!-- BEGIN text for smartCheckBox.ctl -->
-
-<!-- smartCheckBox.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
-
-<!-- END text for smartCheckBox.ctl-->
-
-<!-- BEGIN text for smartOptionButton.ctl -->
-
-<!-- smartOptionButton.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
-
-<!-- END text for smartOptionButton.ctl-->
-
-<!-- BEGIN text for smartResize.ctl -->
-
-<phrase>
-<original>resolution</original>
-<translation>resolutie</translation>
-</phrase>
-
-<phrase>
-<original>dimensions</original>
-<translation>afmeting</translation>
-</phrase>
-
-<phrase>
-<original>aspect ratio</original>
-<translation>beeldverhouding</translation>
-</phrase>
-
-<phrase>
-<original>percent</original>
-<translation>procent</translation>
-</phrase>
-
-<phrase>
-<original>pixels</original>
-<translation>pixels</translation>
-</phrase>
-
-<phrase>
-<original>inches</original>
-<translation>inches</translation>
-</phrase>
-
-<phrase>
-<original>centimeters</original>
-<translation>centimeters</translation>
-</phrase>
-
-<phrase>
-<original>pixels / inch (PPI)</original>
-<translation>pixels / inch (PPI)</translation>
-</phrase>
-
-<phrase>
-<original>pixels / centimeter (PPCM)</original>
-<translation>pixels / centimeter (PPCM)</translation>
-</phrase>
-
-<phrase>
-<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation>Preserveer aspect ratio (ook wel Verhoudingengenoemd). Gebruik deze optie om een afbeelding te wijzigen terwijl de breedte en hoogte in sync blijven.</translation>
-</phrase>
-
-<phrase>
-<original>Preserve aspect ratio</original>
-<translation>Preserveer aspect ratio</translation>
-</phrase>
-
-<phrase>
-<original>Change the unit of measurement used to resize the image.</original>
-<translation>Wijzig de meeteenheid gebruikt om het formaat te wijzigen.</translation>
-</phrase>
-
-<phrase>
-<original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation>Verander de gebruikte meeteenheid voor de beeldresolutie (pixeldichtheid).</translation>
-</phrase>
-
-<phrase>
-<original>exact aspect ratio will vary by image</original>
-<translation>exacte aspect ratio is afhankelijk van de afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>exact size will vary by image</original>
-<translation>exacte grootte is afhankelijk van de afbeelding</translation>
-</phrase>
-
-<!-- smartResize.ctl contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
-
-<!-- END text for smartResize.ctl-->
-
-<!-- BEGIN text for textSliderCombo.ctl -->
-
-<!-- textSliderCombo.ctl contains 0 phrases. -->
-
-<!-- END text for textSliderCombo.ctl-->
-
-<!-- BEGIN text for textUpDown.ctl -->
-
-<!-- textUpDown.ctl contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
-
-<!-- END text for textUpDown.ctl-->
+<!-- END text for ShellPipe.ctl-->
 
 <!-- BEGIN text for MainWindow.frm (FormMain) -->
 
