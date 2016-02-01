@@ -24,18 +24,57 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdHyperlink pdhlTest 
-      Height          =   375
-      Index           =   0
+   Begin PhotoDemon.pdPenSelector pdpsTest 
+      Height          =   1095
       Left            =   3120
+      TabIndex        =   6
+      Top             =   5400
+      Width           =   4455
+      _ExtentX        =   7858
+      _ExtentY        =   1931
+      Caption         =   "Pen selector test"
+   End
+   Begin PhotoDemon.pdGradientSelector pdgsTest 
+      Height          =   1095
+      Left            =   3120
+      TabIndex        =   5
+      Top             =   4200
+      Width           =   4455
+      _ExtentX        =   7858
+      _ExtentY        =   1931
+      Caption         =   "Gradient selector test"
+   End
+   Begin PhotoDemon.pdButtonStrip pdbsEnableTest 
+      Height          =   615
+      Left            =   9240
+      TabIndex        =   4
+      Top             =   7320
+      Width           =   3855
+      _ExtentX        =   6800
+      _ExtentY        =   1085
+   End
+   Begin PhotoDemon.pdBrushSelector pdbsTest 
+      Height          =   1095
+      Left            =   3120
+      TabIndex        =   3
       Top             =   3000
       Width           =   4455
       _ExtentX        =   7858
+      _ExtentY        =   1931
+      Caption         =   "Brush selector test"
+   End
+   Begin PhotoDemon.pdHyperlink pdhlTest 
+      Height          =   375
+      Index           =   0
+      Left            =   120
+      Top             =   7440
+      Width           =   2055
+      _ExtentX        =   3625
       _ExtentY        =   661
       Caption         =   "I'm a basic hyperlink"
    End
    Begin PhotoDemon.pdButtonStripVertical btsvTest 
-      Height          =   2535
+      Height          =   3495
       Left            =   120
       TabIndex        =   2
       Top             =   3000
@@ -91,8 +130,8 @@ Begin VB.Form FormThemeEditor
    Begin PhotoDemon.pdHyperlink pdhlTest 
       Height          =   375
       Index           =   1
-      Left            =   3120
-      Top             =   3480
+      Left            =   2400
+      Top             =   7440
       Width           =   4335
       _ExtentX        =   7646
       _ExtentY        =   661
@@ -134,7 +173,26 @@ Private Sub Form_Load()
         btsvTest.AddItem "Button " & CStr(i + 1)
     Next i
     
+    pdbsEnableTest.AddItem "Enable all", 0
+    pdbsEnableTest.AddItem "Disable all", 1
+    pdbsEnableTest.ListIndex = 0
+    
     Interface.ApplyThemeAndTranslations Me
     
 End Sub
 
+Private Sub pdbsEnableTest_Click(ByVal buttonIndex As Long)
+    
+    Dim enableSetting As Boolean
+    enableSetting = CBool(buttonIndex = 0)
+    
+    Dim eControl As Control
+    For Each eControl In Me.Controls
+        On Error Resume Next
+            If eControl.hWnd <> pdbsEnableTest.hWnd Then
+                eControl.Enabled = enableSetting
+            End If
+        On Error GoTo 0
+    Next
+    
+End Sub

@@ -29,10 +29,10 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Pen Selector custom control
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 04/July/15
-'Last updated: 04/November/15
-'Last update: convert to master UC support class; add caption support; simplify rendering approach
+'Last updated: 01/February/16
+'Last update: finalize theming support
 '
 'This thin user control is basically an empty control that when clicked, displays a pen selection window.  If a
 ' pen is selected (e.g. Cancel is not pressed), it updates its appearance to match, and raises a "PenChanged"
@@ -71,12 +71,28 @@ Private m_PreviewPath As pdGraphicsPath
 Private isDialogLive As Boolean
 
 'The rectangle where the pen preview is actually rendered, and a boolean to track whether the mouse is inside that rect
-Private m_PenRect As RECTF, m_MouseInsidePenRect As Boolean
+Private m_PenRect As RECTF, m_MouseInsidePenRect As Boolean, m_MouseDownPenRect As Boolean
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
+
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDPS_COLOR_LIST
+    [_First] = 0
+    PDPS_Border = 0
+    [_Last] = 0
+    [_Count] = 1
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
 
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
@@ -140,6 +156,14 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     If m_MouseInsidePenRect Then RaisePenDialog
 End Sub
 
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    UpdateMousePosition x, y
+    If m_MouseInsidePenRect Then
+        m_MouseDownPenRect = True
+        RedrawBackBuffer
+    End If
+End Sub
+
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     UpdateMousePosition x, y
     RedrawBackBuffer
@@ -150,14 +174,19 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     RedrawBackBuffer
 End Sub
 
-Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
-    m_MouseInsidePenRect = Math_Functions.isPointInRectF(mouseX, mouseY, m_PenRect)
-    If m_MouseInsidePenRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
-End Sub
-
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     UpdateMousePosition x, y
     RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+    m_MouseDownPenRect = False
+    RedrawBackBuffer
+End Sub
+
+Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
+    m_MouseInsidePenRect = Math_Functions.isPointInRectF(mouseX, mouseY, m_PenRect)
+    If m_MouseInsidePenRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
@@ -204,15 +233,14 @@ Private Sub UserControl_Initialize()
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
-    
-    'Request some additional input functionality (custom mouse events)
     ucSupport.RequestExtraFunctionality True
-    
-    'Enable caption support, so we don't need an attached label
     ucSupport.RequestCaptionSupport
-        
-    'In design mode, initialize a base theming class, so our paint functions don't fail
-    If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
+    
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDPS_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDPenSelector", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -315,20 +343,13 @@ Private Sub RedrawBackBuffer()
         m_PreviewPath.resetPath
         m_PreviewPath.createSamplePathForRect m_PenRect, hPadding, vPadding
         
-        m_PreviewPath.strokePathToDIB_BarePen tmpPen, , bufferDC, True
+        m_PreviewPath.strokePathToDIB_BarePen tmpPen, , bufferDC, True, VarPtr(m_PenRect)
         m_PenPreview.releasePenHandle tmpPen
         
-        'Draw borders around the pen results.
+        'Draw borders around the brush results.
         Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long
-        
-        If g_IsProgramRunning And m_MouseInsidePenRect Then
-            outlineColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-            outlineWidth = 3
-        Else
-            outlineColor = vbBlack
-            outlineWidth = 1
-        End If
-        
+        outlineColor = m_Colors.RetrieveColor(PDPS_Border, Me.Enabled, m_MouseDownPenRect, m_MouseInsidePenRect)
+        If m_MouseInsidePenRect Then outlineWidth = 3 Else outlineWidth = 1
         GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_PenRect, outlineColor, , outlineWidth, False, LineJoinMiter
         
     End If
@@ -344,8 +365,18 @@ Public Sub NotifyOfLivePenChange(ByVal newPen As String)
     Pen = newPen
 End Sub
 
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    Dim ColorValues As PDPS_COLOR_LIST
+    With m_Colors
+        .LoadThemeColor PDPS_Border, "Border", IDE_BLACK
+    End With
+End Sub
+
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
+    UpdateColorList
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
 End Sub
 

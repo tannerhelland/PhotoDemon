@@ -447,7 +447,7 @@ Private Sub cmdBar_OKClick()
     'saveRecentBrushList
     
     userAnswer = vbOK
-    Me.Hide
+    Me.Visible = False
 
 End Sub
 

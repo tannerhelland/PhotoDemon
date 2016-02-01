@@ -78,6 +78,8 @@ Private Declare Function GdipDeletePen Lib "gdiplus" (ByVal hPen As Long) As Lon
 Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal hPath As Long) As Long
 Private Declare Function GdipFillPath Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal hPath As Long) As Long
 Private Declare Function GdipSetRenderingOrigin Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Long, ByVal y As Long) As Long
+Private Declare Function GdipSetClipRect Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single, ByVal combineMode As Long) As Long
+Private Const GDIP_COMBINE_MODE_REPLACE As Long = 0
 
 'Misc GDI+ support types and functions
 Private Const FlatnessDefault As Single = 0.25      'Allowable error when flattening a path.  This value is poorly explained on MSDN, but lower values equal a more precise approximation.  See http://msdn.microsoft.com/en-us/library/ms535572%28v=vs.85%29.aspx
@@ -619,7 +621,7 @@ Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThis
 End Sub
 
 'Stroke the current path, using a bare pen handle for the rendering.
-Public Sub strokePathToDIB_BarePen(ByRef srcPen As Long, Optional ByRef dstDIB As pdDIB = Nothing, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useAA As Boolean = True)
+Public Sub strokePathToDIB_BarePen(ByRef srcPen As Long, Optional ByRef dstDIB As pdDIB = Nothing, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useAA As Boolean = True, Optional ByVal ptrToClippingRectF As Long = 0)
     
     'Obtain a GDI+ handle to the image
     Dim hGraphics As Long
@@ -636,7 +638,14 @@ Public Sub strokePathToDIB_BarePen(ByRef srcPen As Long, Optional ByRef dstDIB A
     Else
         GdipSetSmoothingMode hGraphics, SmoothingModeNone
     End If
-        
+    
+    'If clipping is needed, apply it now
+    If ptrToClippingRectF <> 0 Then
+        Dim tmpRectF As RECTF
+        CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToClippingRectF, LenB(tmpRectF)
+        GdipSetClipRect hGraphics, tmpRectF.Left, tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, GDIP_COMBINE_MODE_REPLACE
+    End If
+    
     'Stroke the path
     GdipDrawPath hGraphics, srcPen, m_PathHandle
         

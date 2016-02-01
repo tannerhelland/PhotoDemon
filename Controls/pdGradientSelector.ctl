@@ -28,10 +28,10 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Gradient Selector custom control
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 23/July/15
-'Last updated: 04/November/15
-'Last update: convert to master UC support class; add caption support; simplify rendering approach
+'Last updated: 01/February/16
+'Last update: finalize theming support
 '
 'This thin user control is basically an empty control that when clicked, displays a gradient editor window.  If a
 ' gradient is selected (e.g. Cancel is not pressed), it updates its appearance to match, and raises a "GradientChanged"
@@ -67,12 +67,28 @@ Private m_Brush As pdGraphicsBrush
 Private isDialogLive As Boolean
 
 'The rectangle where the gradient preview is actually rendered, and a boolean to track whether the mouse is inside that rect
-Private m_GradientRect As RECTF, m_MouseInsideGradientRect As Boolean
+Private m_GradientRect As RECTF, m_MouseInsideGradientRect As Boolean, m_MouseDownGradientRect As Boolean
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
+
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDGS_COLOR_LIST
+    [_First] = 0
+    PDGS_Border = 0
+    [_Last] = 0
+    [_Count] = 1
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
 
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
@@ -136,6 +152,14 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     If m_MouseInsideGradientRect Then RaiseGradientDialog
 End Sub
 
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    UpdateMousePosition x, y
+    If m_MouseInsideGradientRect Then
+        m_MouseDownGradientRect = True
+        RedrawBackBuffer
+    End If
+End Sub
+
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     UpdateMousePosition x, y
     RedrawBackBuffer
@@ -146,14 +170,19 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     RedrawBackBuffer
 End Sub
 
-Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
-    m_MouseInsideGradientRect = Math_Functions.isPointInRectF(mouseX, mouseY, m_GradientRect)
-    If m_MouseInsideGradientRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
-End Sub
-
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     UpdateMousePosition x, y
     RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+    m_MouseDownGradientRect = False
+    RedrawBackBuffer
+End Sub
+
+Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
+    m_MouseInsideGradientRect = Math_Functions.isPointInRectF(mouseX, mouseY, m_GradientRect)
+    If m_MouseInsideGradientRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
@@ -200,15 +229,14 @@ Private Sub UserControl_Initialize()
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
-    
-    'Request some additional input functionality (custom mouse events)
     ucSupport.RequestExtraFunctionality True
-    
-    'Enable caption support, so we don't need an attached label
     ucSupport.RequestCaptionSupport
-        
-    'In design mode, initialize a base theming class, so our paint functions don't fail
-    If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
+    
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDGS_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDGradientSelector", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -306,18 +334,12 @@ Private Sub RedrawBackBuffer()
         m_Brush.releaseBrushHandle tmpBrush
         
         'Draw borders around the brush results.
+        'Draw borders around the brush results.
         Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long
-        
-        If g_IsProgramRunning And m_MouseInsideGradientRect Then
-            outlineColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-            outlineWidth = 3
-        Else
-            outlineColor = vbBlack
-            outlineWidth = 1
-        End If
-        
+        outlineColor = m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, m_MouseDownGradientRect, m_MouseInsideGradientRect)
+        If m_MouseInsideGradientRect Then outlineWidth = 3 Else outlineWidth = 1
         GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_GradientRect, outlineColor, , outlineWidth, False, LineJoinMiter
-        
+       
     End If
     
     'Paint the final result to the screen, as relevant
@@ -331,8 +353,18 @@ Public Sub NotifyOfLiveGradientChange(ByVal newGradient As String)
     Gradient = newGradient
 End Sub
 
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    Dim ColorValues As PDGS_COLOR_LIST
+    With m_Colors
+        .LoadThemeColor PDGS_Border, "Border", IDE_BLACK
+    End With
+End Sub
+
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
+    UpdateColorList
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
 End Sub
 
