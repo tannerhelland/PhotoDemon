@@ -1242,7 +1242,7 @@ Public Sub DisplayWaitScreen(ByVal waitTitle As String, ByRef ownerForm As Form)
     
     FormWait.lblWaitTitle.Caption = waitTitle
     FormWait.lblWaitTitle.Visible = True
-    FormWait.lblWaitTitle.requestRefresh
+    FormWait.lblWaitTitle.RequestRefresh
     
     Screen.MousePointer = vbHourglass
     
@@ -1312,6 +1312,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         'These controls are fully compatible with PD's theming and translation engines:
         If (TypeOf eControl Is pdButtonStrip) Or (TypeOf eControl Is pdButtonStripVertical) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdLabel) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdBrushSelector) Or (TypeOf eControl Is pdGradientSelector) Or (TypeOf eControl Is pdPenSelector) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdResize) Then eControl.UpdateAgainstCurrentTheme
         
         'These controls currently support translations, but not theming.  (Theming support is actively being worked on, and I'm
         ' migrating controls to the above "finished" list as they're completed.  Once all controls have been migrated, I'll look
@@ -1322,7 +1324,6 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSpinner) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is pdScrollBar) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdBrushSelector) Or (TypeOf eControl Is pdGradientSelector) Or (TypeOf eControl Is pdPenSelector) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdColorSelector) Or (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdTitle) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdFxPreviewCtl) Then eControl.UpdateAgainstCurrentTheme
