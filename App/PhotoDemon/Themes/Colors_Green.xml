@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	
+	<pdData>
+		
+		<pdDataType>Color definitions</pdDataType>
+		
+		<!-- This is the default "light theme" color definition data for PhotoDemon 6.8.  Users should not modify this file directly.-->
+		
+		<Author>PhotoDemon</Author>
+		<Description>Blue accent definitions for PhotoDemon's default "dark" theme</Description>
+		<Version>6.8.0</Version>
+		
+		<!-- The Definitions section describes any custom, reusable color values you wish to create. -->
+		
+		<Definitions>
+			<Accent1>#c8e6c9</Accent1>
+			<Accent2>#a5d6a7</Accent2>
+			<Accent3>#81c784</Accent3>
+			<Accent4>#66bb6a</Accent4>
+			<Accent5>#4caf50</Accent5>
+			<Accent6>#43a047</Accent6>
+			<Accent7>#388e3c</Accent7>
+			<Accent8>#2e7d32</Accent8>
+			<Accent9>#1b5e20</Accent9>
+		</Definitions>
+		
+	</pdData>
+	

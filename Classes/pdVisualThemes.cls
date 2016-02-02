@@ -181,7 +181,7 @@ End Sub
 '
 'Also, while this function does return success/failure status, if the load operation fails, PD will automatically
 ' fall back to its default theme to prevent the program from exploding.
-Public Function LoadThemeFile(ByVal themeFilename As String) As Boolean
+Public Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal overrideColorDefinitionFilename As String = vbNullString) As Boolean
     
     'Like most things in PD, themes can exist in two places:
     ' 1) The "untouchable" /App folder, which contains PD's core data
@@ -191,10 +191,10 @@ Public Function LoadThemeFile(ByVal themeFilename As String) As Boolean
     ' (TODO 6.8: make a decision on how much control we expose over theme editing; maybe the /Data folder is unnecessary)
     If g_IsProgramRunning And Not g_ProgramShuttingDown Then
     
-        Dim ThemePath As String
-        ThemePath = g_UserPreferences.getThemePath & themeFilename
+        Dim fullThemePath As String
+        fullThemePath = g_UserPreferences.getThemePath & themeFilename
         
-        If m_XML.loadXMLFile(ThemePath) Then
+        If m_XML.loadXMLFile(fullThemePath) Then
             
             'Perform minor validation on the file
             LoadThemeFile = m_XML.isPDDataType("Visual theme") And m_XML.validateLoadedXMLData("Colors")
@@ -202,19 +202,74 @@ Public Function LoadThemeFile(ByVal themeFilename As String) As Boolean
         Else
             #If DEBUGMODE = 1 Then
                 If g_IsProgramRunning Then
-                    pdDebug.LogAction "WARNING! Failed to load requested theme: " & ThemePath
+                    pdDebug.LogAction "WARNING! Failed to load requested theme: " & fullThemePath
                     pdDebug.LogAction "WARNING! Falling back to default PD theme..."
                 End If
             #End If
             
-            ThemePath = g_UserPreferences.getThemePath & "Default_Light.xml"
-            LoadThemeFile = m_XML.loadXMLFile(ThemePath)
+            fullThemePath = g_UserPreferences.getThemePath & "Default_Light.xml"
+            LoadThemeFile = m_XML.loadXMLFile(fullThemePath)
             LoadThemeFile = LoadThemeFile And m_XML.isPDDataType("Visual theme") And m_XML.validateLoadedXMLData("Colors")
             
         End If
         
         'Regardless of success or failure, reset our internal color cache
         ResetColorCache
+        
+        'Theme files generally consist of two parts: a theme XML file, and a color definition file.  This system allows
+        ' a single theme file to be re-used against multiple color definition files, making it easy to support various
+        ' color schemes with minimal work.
+        
+        'Anyway, if the theme file loaded correctly, we need to also load its color definition file (if any).
+        If LoadThemeFile Then
+        
+            'Color description files are listed under the DefinitionFile tag.  (This tag is optional, so we can
+            ' assume all definitions are embedded in the file if the DefinitionFile tag doesn't exist.)
+            If m_XML.doesTagExist("DefinitionFile") Or (Len(overrideColorDefinitionFilename) <> 0) Then
+            
+                'Load and validate the specified definition file
+                Dim tmpXML As pdXML
+                Set tmpXML = New pdXML
+                
+                Dim fullDefinitionPath As String
+                If Len(overrideColorDefinitionFilename) <> 0 Then
+                    fullDefinitionPath = g_UserPreferences.getThemePath & overrideColorDefinitionFilename
+                Else
+                    fullDefinitionPath = g_UserPreferences.getThemePath & m_XML.getUniqueTag_String("DefinitionFile")
+                End If
+                
+                If tmpXML.loadXMLFile(fullDefinitionPath) Then
+                
+                    If tmpXML.isPDDataType("Color definitions") And tmpXML.validateLoadedXMLData("Definitions") Then
+                    
+                        'Retrieve the definition list
+                        Dim colorDefinitionList As String
+                        colorDefinitionList = tmpXML.getUniqueTag_String("Definitions")
+                        
+                        'Plug it straight into the Definitions section of the current XML file.
+                        colorDefinitionList = colorDefinitionList & m_XML.getUniqueTag_String("Definitions")
+                        
+                        If Not m_XML.updateTag("Definitions", colorDefinitionList) Then
+                            #If DEBUGMODE = 1 Then
+                                If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  The color definition file listed in " & fullThemePath & " couldn't be dynamically inserted into its parent theme."
+                            #End If
+                        End If
+                    
+                    Else
+                        #If DEBUGMODE = 1 Then
+                            If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  The color definition file listed in " & fullThemePath & " failed to validate."
+                        #End If
+                    End If
+                
+                Else
+                    #If DEBUGMODE = 1 Then
+                        If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  The color definition file listed in " & fullThemePath & " failed to load."
+                    #End If
+                End If
+            
+            End If
+        
+        End If
         
         'If the user's choice of theme didn't load correctly, or the default theme failed to load, run some heuristics
         ' on the theme folder.

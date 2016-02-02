@@ -262,7 +262,7 @@ Public Function doesTagExist(ByVal tagName As String, Optional ByVal attributeNa
 End Function
 
 'This is a bit different from the updateTag function below (which exists primarily to deal with INI-style entries).  This function asks
-' for a location in the master string.  The first occurrence of the tag AFTER that location will be updated wiht the new value.  The
+' for a location in the master string.  The first occurrence of the tag AFTER that location will be updated with the new value.  The
 ' current value of the tag does not need to be known.
 '
 'The intended purpose of this function is adding/updating translations to a PD language file.  In that case, getLocationOfParentTag is

@@ -4,25 +4,28 @@
 		
 		<pdDataType>Visual theme</pdDataType>
 		
-		<!-- This is the default "dark theme" file for PhotoDemon 6.8. -->
-				
+		<!-- This is the default "dark theme" file for PhotoDemon 6.8.  Users should not modify this file directly.-->
+		
 		<Author>PhotoDemon</Author>
-		<Description>Default "dark" theme</Description>
+		<Description>Default "light" theme</Description>
 		<Version>6.8.0</Version>
 		
 		<!-- The Definitions section describes any custom, reusable color values you wish to create. -->
 		
 		<Definitions>
-			<AccentDefault>#3cafe6</AccentDefault>
-			<AccentShadow>#d2f0fa</AccentShadow>
-			<AccentHighlight>#3296dc</AccentHighlight>
-			<AccentUltralight>#3270dc</AccentUltralight>
+			<DefinitionFile>Colors_Blue.xml</DefinitionFile>
+			<AccentDefault>Accent5</AccentDefault>
+			<AccentDark>Accent3</AccentDark>
+			<AccentUltradark>Accent1</AccentUltradark>
+			<AccentLight>Accent7</AccentLight>
+			<AccentUltralight>Accent9</AccentUltralight>
 			<BackgroundDefault>#313131</BackgroundDefault>
 			<GrayDefault>#b1bac2</GrayDefault>
 			<GrayDisabled>#929292</GrayDisabled>
 			<GrayShadow>#c4ced7</GrayShadow>
 			<TextDefault>#c0c0c0</TextDefault>
-			<TextHyperlink>#52b0ff</TextHyperlink>
+			<TextHyperlink>Accent4</TextHyperlink>
+			<TextHover>Accent6</TextHover>
 			<TextInvert>#313131</TextInvert>
 		</Definitions>
 		
@@ -30,11 +33,11 @@
 		<!-- Colors can be hex RGB values, or named colors that correspond to entries in the Definitions section. -->
 		<Colors>
 		
-			<!-- Default colors are not object-specific.  They are used as fallback values if an object fails to specify a color. -->
+			<!-- Default colors are not object-specific.  They are used as fallback values if an object lacks a given color. -->
 			<Default>
 				<Background>BackgroundDefault</Background>
 				<Border>GrayShadow</Border>
-				<Border-active>AccentShadow</Border-active>
+				<Border-active>AccentDark</Border-active>
 				<Border-disabled>GrayDisabled</Border-disabled>
 				<Border-hover>AccentDefault</Border-hover>
 				<Caption>TextDefault</Caption>
@@ -48,7 +51,7 @@
 			<ButtonStrip>
 				<Background></Background>
 				<SelectedItemFill>AccentDefault</SelectedItemFill>
-				<SelectedItemBorder>AccentShadow</SelectedItemBorder> 
+				<SelectedItemBorder>AccentDark</SelectedItemBorder> 
 				<SelectedText>TextInvert</SelectedText> 
 				<UnselectedItemFill>BackgroundDefault</UnselectedItemFill>
 				<UnselectedItemBorder>GrayDefault</UnselectedItemBorder>
@@ -64,7 +67,7 @@
 				<!-- On the Text and Typography tool panels, the button strip uses a "lighter" color scheme for the text justification options.  The control internally defines this as "light mode" and it requires special colors. -->
 				<BackgroundLightMode>BackgroundDefault</BackgroundLightMode>
 				<SelectedItemFillLightMode>AccentUltralight</SelectedItemFillLightMode>
-				<SelectedItemBorderLightMode>AccentHighlight</SelectedItemBorderLightMode> 
+				<SelectedItemBorderLightMode>AccentLight</SelectedItemBorderLightMode> 
 				<SelectedItemBorderLightMode-hover>AccentDefault</SelectedItemBorderLightMode-hover> 
 				<SelectedTextLightMode>TextDefault</SelectedTextLightMode> 
 				<UnselectedItemFillLightMode>BackgroundDefault</UnselectedItemFillLightMode>
@@ -109,9 +112,9 @@
 				<Background>BackgroundDefault</Background>
 				<Caption>TextHyperlink</Caption>
 				<Caption-disabled>GrayDisabled</Caption-disabled>
-				<Caption-hover>AccentDefault</Caption-hover>
+				<Caption-hover>TextHover</Caption-hover>
 			</PDHyperlink>
-			
+						
 			<!-- ****************************************************************************************** -->
 		
 		</Colors>
