@@ -28,7 +28,7 @@ Begin VB.Form FormThemeEditor
       Height          =   1095
       Left            =   3120
       TabIndex        =   6
-      Top             =   5400
+      Top             =   5160
       Width           =   4455
       _ExtentX        =   7858
       _ExtentY        =   1931
@@ -38,7 +38,7 @@ Begin VB.Form FormThemeEditor
       Height          =   1095
       Left            =   3120
       TabIndex        =   5
-      Top             =   4200
+      Top             =   3960
       Width           =   4455
       _ExtentX        =   7858
       _ExtentY        =   1931
@@ -57,7 +57,7 @@ Begin VB.Form FormThemeEditor
       Height          =   1095
       Left            =   3120
       TabIndex        =   3
-      Top             =   3000
+      Top             =   2760
       Width           =   4455
       _ExtentX        =   7858
       _ExtentY        =   1931
@@ -77,7 +77,7 @@ Begin VB.Form FormThemeEditor
       Height          =   3495
       Left            =   120
       TabIndex        =   2
-      Top             =   3000
+      Top             =   2760
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   4471
@@ -87,7 +87,7 @@ Begin VB.Form FormThemeEditor
       Height          =   975
       Left            =   120
       TabIndex        =   1
-      Top             =   1920
+      Top             =   1680
       Width           =   7455
       _ExtentX        =   13150
       _ExtentY        =   1720
@@ -98,10 +98,10 @@ Begin VB.Form FormThemeEditor
       Left            =   120
       TabIndex        =   0
       Top             =   120
-      Width           =   12975
-      _ExtentX        =   15266
+      Width           =   6375
+      _ExtentX        =   11245
       _ExtentY        =   1720
-      Caption         =   "toggle theme (please don't exit without clicking LIGHT THEME; otherwise PD may look funky!):"
+      Caption         =   "toggle theme (please click LIGHT THEME before exiting):"
    End
    Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   855
@@ -125,7 +125,7 @@ Begin VB.Form FormThemeEditor
       _ExtentX        =   23098
       _ExtentY        =   582
       Alignment       =   2
-      Caption         =   "(Note: if you edit a theme file externally, you can toggle the button above to force PD to reload the updated file.)"
+      Caption         =   "(Note: if you edit a theme file externally, you can toggle the button(s) above to force PD to refresh its theme cache.)"
    End
    Begin PhotoDemon.pdHyperlink pdhlTest 
       Height          =   375
@@ -140,31 +140,78 @@ Begin VB.Form FormThemeEditor
       FontItalic      =   -1  'True
       FontSize        =   12
    End
+   Begin PhotoDemon.pdButtonStrip btsColorTest 
+      Height          =   975
+      Left            =   6720
+      TabIndex        =   7
+      Top             =   120
+      Width           =   6375
+      _ExtentX        =   11245
+      _ExtentY        =   1720
+      Caption         =   "toggle accent color (please click BLUE before exiting):"
+   End
 End
 Attribute VB_Name = "FormThemeEditor"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-Private Sub btsToggleTest_Click(ByVal buttonIndex As Long)
+Private Sub btsColorTest_Click(ByVal buttonIndex As Long)
+    LoadRelevantThemeFile
+End Sub
 
-    If (buttonIndex = 0) Then
-        g_Themer.LoadThemeFile "Default_Light.xml"
+Private Sub btsToggleTest_Click(ByVal buttonIndex As Long)
+    LoadRelevantThemeFile
+End Sub
+
+'Given the current combination of light/dark theme and accent color, load a new theme file
+Private Sub LoadRelevantThemeFile()
+    
+    'First, figure out which base theme to load
+    Dim baseThemeFile As String
+    
+    If (btsToggleTest.ListIndex = 0) Then
+        baseThemeFile = "Default_Light.xml"
     Else
-        g_Themer.LoadThemeFile "Default_Dark.xml"
+        baseThemeFile = "Default_Dark.xml"
     End If
+    
+    'Next, figure out which accent file to load
+    Dim colorAccentFile As String
+    Select Case btsColorTest.ListIndex
+        
+        Case 0
+            colorAccentFile = "Blue.xml"
+        
+        Case 1
+            colorAccentFile = "Green.xml"
+        
+        Case 2
+            colorAccentFile = "Purple.xml"
+        
+    End Select
+    
+    colorAccentFile = "Colors_" & colorAccentFile
+    
+    'Load and apply the new theme
+    g_Themer.LoadThemeFile baseThemeFile, colorAccentFile
     
     Interface.ApplyThemeAndTranslations Me
     
     'Eventually, form backcolor will be moved into the theming code, but for now, apply it manually
     Me.BackColor = Colors.GetRGBLongFromHex(g_Themer.LookUpColor("Default", "Background"))
     
+
 End Sub
 
 Private Sub Form_Load()
     
     btsToggleTest.AddItem "Light theme", 0
     btsToggleTest.AddItem "Dark theme", 1
+    
+    btsColorTest.AddItem "Blue", 0
+    btsColorTest.AddItem "Green", 1
+    btsColorTest.AddItem "Purple", 2
     
     Dim i As Long
     
