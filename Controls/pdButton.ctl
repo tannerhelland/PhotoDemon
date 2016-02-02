@@ -6,6 +6,7 @@ Begin VB.UserControl pdButton
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   4800
+   ClipBehavior    =   0  'None
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -15,6 +16,7 @@ Begin VB.UserControl pdButton
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    ScaleHeight     =   240
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
@@ -58,61 +60,67 @@ Option Explicit
 'This control really only needs one event raised - Click
 Public Event Click()
 
-'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
-Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, ByRef lpRect As RECT) As Long
-
-'Mouse and keyboard input handlers
-Private WithEvents cMouseEvents As pdInputMouse
-Attribute cMouseEvents.VB_VarHelpID = -1
-Private WithEvents cKeyEvents As pdInputKeyboard
-Attribute cKeyEvents.VB_VarHelpID = -1
-
-'Flicker-free window painter
-Private WithEvents cPainter As pdWindowPainter
-Attribute cPainter.VB_VarHelpID = -1
-
-'Reliable focus detection requires a specialized subclasser
-Private WithEvents cFocusDetector As pdFocusDetector
-Attribute cFocusDetector.VB_VarHelpID = -1
+'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
+' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
-
-'pdCaption manages all caption-related settings, so we don't have to.  (Note that this includes not just the caption, but related
-' settings like caption font size.)
-Private m_Caption As pdCaption
 
 'Rect where the caption is rendered.  This is calculated by UpdateControlLayout, and it needs to be revisited if either the caption
 ' or button images change.
 Private m_CaptionRect As RECT
 
-'Button images.  All are optional.
-Private btImage As pdDIB                'You must specify this image manually, at run-time.
-Private btImageDisabled As pdDIB        'Auto-created disabled version of the image.
-Private btImageHover As pdDIB           'Auto-created hover (glow) version of the image.
+'Optional button image spritesheet.  Sprites are stored vertically, in base/hover/disabled order
+Private m_ImageWidth As Long, m_ImageHeight As Long, m_Images As pdDIB
 
 '(x, y) position of the button image.  This is auto-calculated by the control.
 Private btImageCoords As POINTAPI
 
-'Persistent back buffer, which we manage internally.  This allows for color management (yes, even on UI elements!)
-Private m_BackBuffer As pdDIB
-
-'If the mouse is currently INSIDE the control, this will be set to TRUE
-Private m_MouseInsideUC As Boolean
+'Mouse state trackers
+Private m_MouseInsideUC As Boolean, m_ButtonStateDown As Boolean
 
 'When the control receives focus via keyboard (e.g. NOT by mouse events), we draw a focus rect to help orient the user.
 Private m_FocusRectActive As Boolean
 
-'Current back color
-Private m_BackColor As OLE_COLOR
+'Current back color and background color; back color is for the button, background color is for the 1px border around the button
+Private m_UseCustomBackColor As Boolean, m_UseCustomBackgroundColor As Boolean
+Private m_BackColor As OLE_COLOR, m_BackgroundColor As OLE_COLOR
 
-'Current button state (TRUE when button is down)
-Private m_ButtonStateDown As Boolean
+'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
+' but I've since attempted to wrap these into a single master control support class.
+Private WithEvents ucSupport As pdUCSupport
+Attribute ucSupport.VB_VarHelpID = -1
 
-'Additional helper for rendering themed and multiline tooltips
-Private toolTipManager As pdToolTip
+'Local list of themable colors.  This list includes all potential colors used by the control, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDBUTTON_COLOR_LIST
+    [_First] = 0
+    PDB_Background = 0
+    PDB_ButtonFill = 1
+    PDB_Border = 2
+    PDB_Caption = 3
+    [_Last] = 3
+    [_Count] = 4
+End Enum
 
-'If the control is currently visible, this will be set to TRUE.  This can be used to suppress redraw requests for hidden controls.
-Private m_ControlIsVisible As Boolean
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
+
+'BackColor is an important property for this control, as it may sit on other controls whose backcolor is not guaranteed in advance.
+' So we can't rely on theming alone to determine this value.
+Public Property Get BackgroundColor() As OLE_COLOR
+    BackgroundColor = m_BackgroundColor
+End Property
+
+Public Property Let BackgroundColor(ByVal newColor As OLE_COLOR)
+    If m_BackgroundColor <> newColor Then
+        m_BackgroundColor = newColor
+        RedrawBackBuffer
+    End If
+End Property
 
 'BackColor is an important property for this control, as it may sit on other controls whose backcolor is not guaranteed in advance.
 ' So we can't rely on theming alone to determine this value.
@@ -121,8 +129,32 @@ Public Property Get BackColor() As OLE_COLOR
 End Property
 
 Public Property Let BackColor(ByVal newColor As OLE_COLOR)
-    m_BackColor = newColor
-    RedrawBackBuffer
+    If newColor <> m_BackColor Then
+        m_BackColor = newColor
+        RedrawBackBuffer
+    End If
+End Property
+
+Public Property Get UseCustomBackColor() As Boolean
+    UseCustomBackColor = m_UseCustomBackColor
+End Property
+
+Public Property Let UseCustomBackColor(ByVal newSetting As Boolean)
+    If newSetting <> m_UseCustomBackColor Then
+        m_UseCustomBackColor = newSetting
+        RedrawBackBuffer
+    End If
+End Property
+
+Public Property Get UseCustomBackgroundColor() As Boolean
+    UseCustomBackColor = m_UseCustomBackColor
+End Property
+
+Public Property Let UseCustomBackgroundColor(ByVal newSetting As Boolean)
+    If newSetting <> m_UseCustomBackgroundColor Then
+        m_UseCustomBackgroundColor = newSetting
+        RedrawBackBuffer
+    End If
 End Property
 
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
@@ -131,12 +163,12 @@ End Property
 '                  but I can revisit in the future if it ever becomes relevant.
 Public Property Get Caption() As String
 Attribute Caption.VB_UserMemId = -518
-    Caption = m_Caption.GetCaptionEn
+    Caption = ucSupport.GetCaptionText
 End Property
 
 Public Property Let Caption(ByRef newCaption As String)
     
-    If m_Caption.SetCaption(newCaption) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then UpdateControlLayout
+    ucSupport.SetCaptionText newCaption
     PropertyChanged "Caption"
     
     'Access keys must be handled manually.
@@ -172,11 +204,11 @@ Public Property Let Enabled(ByVal newValue As Boolean)
 End Property
 
 Public Property Get FontSize() As Single
-    FontSize = m_Caption.GetFontSize
+    FontSize = ucSupport.GetCaptionFontSize
 End Property
 
 Public Property Let FontSize(ByVal newSize As Single)
-    If m_Caption.SetFontSize(newSize) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then UpdateControlLayout
+    ucSupport.SetCaptionFontSize newSize
     PropertyChanged "FontSize"
 End Property
 
@@ -190,26 +222,20 @@ Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
-'When the control receives focus, if the focus isn't received via mouse click, display a focus rect
-Private Sub cFocusDetector_GotFocusReliable()
-    
-    'If the mouse is *not* over the user control, assume focus was set via keyboard
-    If Not m_MouseInsideUC Then
-        m_FocusRectActive = True
-        RedrawBackBuffer
-    End If
-    
+'When the control receives focus, if the focus isn't received via mouse click, display a focus rect around the active button
+Private Sub ucSupport_GotFocusAPI()
+    m_FocusRectActive = True
+    RedrawBackBuffer
     RaiseEvent GotFocusAPI
-    
 End Sub
 
 'When the control loses focus, erase any focus rects it may have active
-Private Sub cFocusDetector_LostFocusReliable()
-    makeLostFocusUIChanges
+Private Sub ucSupport_LostFocusAPI()
+    MakeLostFocusUIChanges
     RaiseEvent LostFocusAPI
 End Sub
 
-Private Sub makeLostFocusUIChanges()
+Private Sub MakeLostFocusUIChanges()
     
     'If a focus rect has been drawn, remove it now
     If m_FocusRectActive Or m_ButtonStateDown Or m_MouseInsideUC Then
@@ -222,11 +248,11 @@ Private Sub makeLostFocusUIChanges()
 End Sub
 
 'A few key events are also handled
-Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-        
+Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    
     'When space is pressed, raise a click event.
     If (vkCode = VK_SPACE) Or (vkCode = VK_RETURN) Then
-
+        
         If m_FocusRectActive And Me.Enabled Then
             m_ButtonStateDown = True
             RedrawBackBuffer
@@ -237,8 +263,8 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
 
 End Sub
 
-Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-
+Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    
     'When space is released, redraw the button to match
     If (vkCode = VK_SPACE) Or (vkCode = VK_RETURN) Then
 
@@ -251,71 +277,46 @@ Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
 
 End Sub
 
-'Only left clicks raise Click() events
-Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
-    If Me.Enabled And (Button = pdLeftButton) Then
-        
-        'Note that drawing flags are handled by MouseDown/Up.  Click() is only used for raising a matching Click() event.
-        RaiseEvent Click
-        
-    End If
-    
+'Note that drawing flags are handled by MouseDown/Up.  Click() is only used for raising a matching Click() event.
+Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    If Me.Enabled And (Button = pdLeftButton) Then RaiseEvent Click
 End Sub
 
-Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     If Me.Enabled And ((Button And pdLeftButton) <> 0) Then
-    
-        'Ensure that a focus event has been raised, if it wasn't already
-        If Not cFocusDetector.HasFocus Then cFocusDetector.setFocusManually
-        
-        'Set button state and redraw
         m_ButtonStateDown = True
         RedrawBackBuffer
-        
     End If
-    
 End Sub
 
-Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInsideUC = True
-    cMouseEvents.setSystemCursor IDC_HAND
+    ucSupport.RequestCursor IDC_HAND
     RedrawBackBuffer
 End Sub
 
 'When the mouse leaves the UC, we must repaint the button (as it's no longer hovered)
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
+Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     If m_MouseInsideUC Then
         m_MouseInsideUC = False
         RedrawBackBuffer
     End If
-    
-    'Reset the cursor
-    cMouseEvents.setSystemCursor IDC_ARROW
-    
+    ucSupport.RequestCursor IDC_DEFAULT
 End Sub
 
 'When the mouse enters the button, we must initiate a repaint (to reflect its hovered state)
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
-    'Repaint the control as necessary
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     If Not m_MouseInsideUC Then
         m_MouseInsideUC = True
         RedrawBackBuffer
     End If
-    
 End Sub
 
-Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
-    
-    'If toggle mode is active, remove the button's TRUE state and redraw it
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     If m_ButtonStateDown Then
         m_ButtonStateDown = False
         RedrawBackBuffer
     End If
-    
 End Sub
 
 'Assign a DIB to this button.  Matching disabled and hover state DIBs are automatically generated.
@@ -328,30 +329,49 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
     
         If Len(resName) <> 0 Then loadResourceToDIB resName, srcDIB
         
-        'Start by making a copy of the source DIB
-        Set btImage = New pdDIB
-        btImage.createFromExistingDIB srcDIB
-            
-        'Next, create a grayscale copy of the image for the disabled state
-        Set btImageDisabled = New pdDIB
-        btImageDisabled.createFromExistingDIB btImage
-        GrayscaleDIB btImageDisabled, True
-        If scalePixelsWhenDisabled <> 0 Then ScaleDIBRGBValues btImageDisabled, scalePixelsWhenDisabled, True
+        'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
+        ' (We also check for these != 0 to verify that an image was successfully loaded.)
+        m_ImageWidth = srcDIB.getDIBWidth
+        m_ImageHeight = srcDIB.getDIBHeight
         
-        'Finally, create a "glowy" hovered version of the DIB for hover state
-        Set btImageHover = New pdDIB
-        btImageHover.createFromExistingDIB btImage
+        'Create a vertical sprite-sheet DIB, and mark it as having premultiplied alpha
+        If m_Images Is Nothing Then Set m_Images = New pdDIB
+        m_Images.createBlank m_ImageWidth, m_ImageHeight * 3, srcDIB.getDIBColorDepth, 0, 0
+        m_Images.setInitialAlphaPremultiplicationState True
+        
+        'Copy this normal-state DIB into place at the top of the sheet
+        BitBlt m_Images.getDIBDC, 0, 0, m_ImageWidth, m_ImageHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
+        
+        'Next, make a copy of the source DIB.
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createFromExistingDIB srcDIB
+        
+        'Convert this to a brighter, "glowing" version; we'll use this when rendering a hovered state.
         If customGlowWhenHovered = 0 Then
-            ScaleDIBRGBValues btImageHover, UC_HOVER_BRIGHTNESS, True
+            ScaleDIBRGBValues tmpDIB, UC_HOVER_BRIGHTNESS, True
         Else
-            ScaleDIBRGBValues btImageHover, customGlowWhenHovered, True
+            ScaleDIBRGBValues tmpDIB, customGlowWhenHovered, True
         End If
-    
+        
+        'Copy this DIB into position #2, beneath the base DIB
+        BitBlt m_Images.getDIBDC, 0, m_ImageHeight, m_ImageWidth, m_ImageHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+        
+        'Finally, create a grayscale copy of the original image.  This will serve as the "disabled state" copy.
+        tmpDIB.createFromExistingDIB srcDIB
+        GrayscaleDIB tmpDIB, True
+        If scalePixelsWhenDisabled <> 0 Then ScaleDIBRGBValues tmpDIB, scalePixelsWhenDisabled, True
+        
+        'Place it into position #3, beneath the previous two DIBs
+        BitBlt m_Images.getDIBDC, 0, m_ImageHeight * 2, m_ImageWidth, m_ImageHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+        
+        'Free whatever DIBs we can.  (If the caller passed us the source DIB, we trust them to release it.)
+        Set tmpDIB = Nothing
+        If Len(resName) <> 0 Then Set srcDIB = Nothing
+        
     'If no DIB is provided, remove any existing images
     Else
-        Set btImage = Nothing
-        Set btImageDisabled = Nothing
-        Set btImageHover = Nothing
+        Set m_Images = Nothing
     End If
     
     'Request a control size update, which will also calculate a centered position for the new image
@@ -359,58 +379,40 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
 
 End Sub
 
-'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
-' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
-Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
+Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
+    If updateLayoutToo Then UpdateControlLayout
+    RedrawBackBuffer
+End Sub
 
-    'Flip the relevant chunk of the buffer to the screen
-    BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
-    
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    UpdateControlLayout
 End Sub
 
 Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
     RaiseEvent Click
 End Sub
 
-Private Sub UserControl_Hide()
-    m_ControlIsVisible = False
-End Sub
-
 'INITIALIZE control
 Private Sub UserControl_Initialize()
     
-    'When not in design mode, initialize trackers for input events
-    If g_IsProgramRunning Then
+    'Initialize a master user control support class
+    Set ucSupport = New pdUCSupport
+    ucSupport.RegisterControl UserControl.hWnd
+    ucSupport.RequestExtraFunctionality True, True
+    ucSupport.SpecifyRequiredKeys VK_SPACE, VK_RETURN
     
-        Set cMouseEvents = New pdInputMouse
-        cMouseEvents.addInputTracker Me.hWnd, True, True, , True
-        cMouseEvents.setSystemCursor IDC_HAND
-        
-        Set cKeyEvents = New pdInputKeyboard
-        cKeyEvents.CreateKeyboardTracker "Toolbox button UC", Me.hWnd, VK_SPACE
-        
-        'Also start a flicker-free window painter
-        Set cPainter = New pdWindowPainter
-        cPainter.StartPainter Me.hWnd
-        
-        'Also start a focus detector
-        Set cFocusDetector = New pdFocusDetector
-        cFocusDetector.startFocusTracking Me.hWnd
-        
-        'Create a tooltip engine
-        Set toolTipManager = New pdToolTip
-        
-    'In design mode, initialize a base theming class, so our paint function doesn't fail
-    Else
-        If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
-    End If
+    ucSupport.RequestCaptionSupport True
+    ucSupport.SetCaptionAutomaticPainting False
+    ucSupport.SetCaptionAlignment vbCenter
     
     m_MouseInsideUC = False
     m_FocusRectActive = False
     
-    'Prep the caption object
-    Set m_Caption = New pdCaption
-    m_Caption.SetWordWrapSupport True
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDBUTTON_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDButton", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -420,102 +422,35 @@ End Sub
 'Set default properties
 Private Sub UserControl_InitProperties()
     BackColor = vbWhite
+    BackgroundColor = vbWhite
+    UseCustomBackColor = False
+    UseCustomBackgroundColor = False
     Caption = ""
+    Enabled = True
     FontSize = 10
-End Sub
-
-Private Sub UserControl_LostFocus()
-    makeLostFocusUIChanges
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    
-    'Provide minimal painting within the designer
-    If Not g_IsProgramRunning Then RedrawBackBuffer
-    
+    ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
-        m_BackColor = .ReadProperty("BackColor", vbWhite)
+        BackColor = .ReadProperty("BackColor", vbWhite)
+        BackgroundColor = .ReadProperty("BackgroundColor", vbWhite)
+        UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
+        UseCustomBackgroundColor = .ReadProperty("UseCustomBackgroundColor", False)
         Caption = .ReadProperty("Caption", "")
+        Enabled = .ReadProperty("Enabled", True)
         FontSize = .ReadProperty("FontSize", 10)
     End With
 
 End Sub
 
-'The control dynamically resizes each button to match the dimensions of their relative captions.
 Private Sub UserControl_Resize()
-    UpdateControlLayout
-End Sub
-
-'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
-' of internal sizing metrics whenever the control size changes.
-Private Sub UpdateControlLayout()
-    
-    'Reset the back buffer
-    If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
-    If (m_BackBuffer.getDIBWidth <> UserControl.ScaleWidth) Or (m_BackBuffer.getDIBHeight <> UserControl.ScaleHeight) Then
-        m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, m_BackColor
-    Else
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackColor
-    End If
-    
-    'Next, we need to determine the positioning of the caption and/or image.  Both (or neither) of these may be missing, so handling
-    ' can get a little complicated.
-    
-    'Start with the caption
-    If m_Caption.IsCaptionActive Then
-        
-        'We need to find the available area for the caption.  The caption class will automatically fit any translated text inside
-        ' this rect.
-        Const hTextPadding As Long = 8&, vTextPadding As Long = 4&
-        
-        'The y-positioning of the caption is always constant
-        m_CaptionRect.Top = vTextPadding
-        m_CaptionRect.Bottom = m_BackBuffer.getDIBHeight - vTextPadding
-        
-        'Similarly, the right bound doesn't change either
-        m_CaptionRect.Right = m_BackBuffer.getDIBWidth - hTextPadding
-        
-        'If a button image is active, forcibly calculate its position first.  Its position is hard-coded.
-        If Not (btImage Is Nothing) Then
-        
-            Const leftButtonPadding As Long = 12&
-            btImageCoords.x = FixDPI(leftButtonPadding)
-            btImageCoords.y = (m_BackBuffer.getDIBHeight - btImage.getDIBHeight) \ 2
-            
-            'Use the button's position to calculate an x-coord for the caption, too
-            m_CaptionRect.Left = btImageCoords.x + btImage.getDIBWidth + hTextPadding
-                    
-        Else
-            m_CaptionRect.Left = hTextPadding
-        End If
-        
-        'Notify the caption renderer of this new caption position, which it will use to automatically adjust its font, as necessary
-        m_Caption.SetControlSize m_CaptionRect.Right - m_CaptionRect.Left, m_CaptionRect.Bottom - m_CaptionRect.Top
-    
-    'If there's no caption, center the button image on the control
-    Else
-        
-        'Determine positioning of the button image, if any
-        If Not (btImage Is Nothing) Then
-            btImageCoords.x = (m_BackBuffer.getDIBWidth - btImage.getDIBWidth) \ 2
-            btImageCoords.y = (m_BackBuffer.getDIBHeight - btImage.getDIBHeight) \ 2
-        End If
-        
-    End If
-        
-    'No other special preparation is required for this control, so proceed with recreating the back buffer
-    RedrawBackBuffer
-            
-End Sub
-
-Private Sub UserControl_Show()
-    m_ControlIsVisible = True
-    UpdateControlLayout
+    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -523,140 +458,180 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     'Store all associated properties
     With PropBag
         .WriteProperty "BackColor", m_BackColor, vbWhite
-        .WriteProperty "Caption", m_Caption.GetCaptionEn, ""
-        .WriteProperty "FontSize", m_Caption.GetFontSize, 10
+        .WriteProperty "BackgroundColor", m_BackgroundColor, vbWhite
+        .WriteProperty "UseCustomBackColor", m_UseCustomBackColor, False
+        .WriteProperty "UseCustomBackgroundColor", m_UseCustomBackgroundColor, False
+        .WriteProperty "Caption", ucSupport.GetCaptionText, ""
+        .WriteProperty "Enabled", Me.Enabled, True
+        .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 10
     End With
     
 End Sub
 
-'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub UpdateAgainstCurrentTheme()
+'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
+' of internal sizing metrics whenever the control size changes.
+Private Sub UpdateControlLayout()
     
-    'Make sure captions and tooltips are valid
-    m_Caption.UpdateAgainstCurrentTheme
+    'Retrieve DPI-aware control dimensions from the support class
+    Dim bWidth As Long, bHeight As Long
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
     
-    'Redraw the control, which will also cause a resync against any theme changes
-    UpdateControlLayout
+    'Next, we need to determine the positioning of the caption and/or image.  Both (or neither) of these may be missing, so handling
+    ' can get a little complicated.
     
+    'Start with the caption
+    If ucSupport.IsCaptionActive Then
+        
+        'We need to find the available area for the caption.  The caption class will automatically fit any translated text inside
+        ' this rect.
+        Const hTextPadding As Long = 8&, vTextPadding As Long = 4&
+        
+        'The y-positioning of the caption is always constant
+        m_CaptionRect.Top = vTextPadding
+        m_CaptionRect.Bottom = bHeight - vTextPadding
+        
+        'Similarly, the right bound doesn't change either
+        m_CaptionRect.Right = bWidth - hTextPadding
+        
+        'If a button image is active, forcibly calculate its position first.  Its position is hard-coded.
+        If Not (m_Images Is Nothing) Then
+        
+            Const leftButtonPadding As Long = 12&
+            btImageCoords.x = FixDPI(leftButtonPadding)
+            btImageCoords.y = (bHeight - m_ImageHeight) \ 2
+            
+            'Use the button's position to calculate an x-coord for the caption, too
+            m_CaptionRect.Left = btImageCoords.x + m_ImageWidth + hTextPadding
+                    
+        Else
+            m_CaptionRect.Left = hTextPadding
+        End If
+        
+        'Notify the support class of the caption's boundary rect.  It will use this to auto-fit the caption font.
+        With m_CaptionRect
+            ucSupport.SetCaptionCustomPosition .Left, .Top, .Right - .Left, .Bottom - .Top
+        End With
+        
+    'If there's no caption, center the button image on the control
+    Else
+        
+        'Determine positioning of the button image, if any
+        If Not (m_Images Is Nothing) Then
+            btImageCoords.x = (bWidth - m_ImageWidth) \ 2
+            btImageCoords.y = (bHeight - m_ImageHeight) \ 2
+        End If
+        
+    End If
+    
+    'No other special preparation is required for this control, so proceed with recreating the back buffer
+    RedrawBackBuffer
+            
 End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
 Private Sub RedrawBackBuffer()
     
-    'Start by erasing the back buffer
-    If g_IsProgramRunning Then
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackColor, 255
-    Else
-        m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, RGB(255, 255, 255)
+    'We can improve shutdown performance by ignoring redraw requests when the program is going down
+    If g_ProgramShuttingDown Then
+        If (g_Themer Is Nothing) Then Exit Sub
     End If
+    
+    'Retrieve DPI-aware control dimensions from the support class
+    Dim bWidth As Long, bHeight As Long
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
+    
+    'Figure out which back color to use.  This is normally determined by theme, but individual buttons also allow a custom
+    ' .BackColor property.
+    Dim targetColor As Long
+    If m_UseCustomBackgroundColor Then
+        targetColor = m_BackgroundColor
+    Else
+        targetColor = m_Colors.RetrieveColor(PDB_Background, Me.Enabled)
+    End If
+    
+    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+    Dim bufferDC As Long
+    bufferDC = ucSupport.GetBackBufferDC(True, targetColor)
     
     'Colors used throughout this paint function are determined by several factors:
     ' 1) Control enablement (disabled buttons are grayed)
     ' 2) Hover state (hovered buttons glow)
     ' 3) Value (pressed buttons have a different appearance, obviously)
     ' 4) The central themer (which contains default color values for all these scenarios)
-    Dim btnColorBorder As Long, btnColorFill As Long
-    Dim textColor As Long
-        
-    If Me.Enabled Then
+    Dim btnColorBorder As Long, btnColorFill As Long, btnColorText As Long
+    btnColorBorder = m_Colors.RetrieveColor(PDB_Border, Me.Enabled, m_ButtonStateDown, m_MouseInsideUC Or m_FocusRectActive)
+    btnColorText = m_Colors.RetrieveColor(PDB_Caption, Me.Enabled, m_ButtonStateDown, m_MouseInsideUC)
     
-        'Is the button pressed?
-        If m_ButtonStateDown Then
-            btnColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
-            btnColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
-            textColor = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
-            
-        'The button is not pressed
-        Else
-        
-            'Is the mouse inside the UC?
-            If m_MouseInsideUC Then
-                btnColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
-                btnColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                textColor = g_Themer.GetThemeColor(PDTC_TEXT_TITLE)
-            
-            'The mouse is not inside the UC
-            Else
-                
-                'If focus was received via keyboard, change the border to reflect it
-                If m_FocusRectActive Then
-                    btnColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                Else
-                    btnColorBorder = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
-                End If
-                
-                'Text and fill color is identical regardless of focus
-                btnColorFill = m_BackColor
-                textColor = g_Themer.GetThemeColor(PDTC_TEXT_TITLE)
-            
-            End If
-            
-        End If
-        
-    'The button is disabled
-    Else
-    
+    If m_UseCustomBackColor Then
         btnColorFill = m_BackColor
-        btnColorBorder = g_Themer.GetThemeColor(PDTC_DISABLED)
-        textColor = g_Themer.GetThemeColor(PDTC_DISABLED)
-        
+    Else
+        btnColorFill = m_Colors.RetrieveColor(PDB_ButtonFill, Me.Enabled, m_ButtonStateDown, m_MouseInsideUC)
     End If
     
     'First, we fill the button interior with the established fill color
-    GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth - 1, m_BackBuffer.getDIBHeight - 1, btnColorFill, 255
+    GDI_Plus.GDIPlusFillRectToDC bufferDC, 1, 1, bWidth - 2, bHeight - 2, btnColorFill, 255
     
     'A border is always drawn around the control; its size varies by hover state.  (This is standard Win 10 behavior.)
     Dim borderWidth As Single
     If m_MouseInsideUC Or m_FocusRectActive Then borderWidth = 3 Else borderWidth = 1
-    GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, 0, 0, m_BackBuffer.getDIBWidth - 1, m_BackBuffer.getDIBHeight - 1, btnColorBorder, 255, borderWidth, False, LineJoinMiter
+    GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 1, 1, bWidth - 2, bHeight - 2, btnColorBorder, 255, borderWidth, False, LineJoinMiter
     
     'Paint the image, if any
-    If Not (btImage Is Nothing) Then
+    If Not (m_Images Is Nothing) Then
         
+        'Determine which image from the spritesheet to use.  (This is just a pixel offset.)
+        Dim pxOffset As Long
         If Me.Enabled Then
-            
-            If m_MouseInsideUC Then
-                btImageHover.alphaBlendToDC m_BackBuffer.getDIBDC, 255, btImageCoords.x, btImageCoords.y
-            Else
-                btImage.alphaBlendToDC m_BackBuffer.getDIBDC, 255, btImageCoords.x, btImageCoords.y
-            End If
-            
+            If m_MouseInsideUC Then pxOffset = m_ImageHeight Else pxOffset = 0
         Else
-            btImageDisabled.alphaBlendToDC m_BackBuffer.getDIBDC, 255, btImageCoords.x, btImageCoords.y
+            pxOffset = m_ImageHeight * 2
         End If
+        
+        m_Images.alphaBlendToDCEx bufferDC, btImageCoords.x, btImageCoords.y, m_ImageWidth, m_ImageHeight, 0, pxOffset, m_ImageWidth, m_ImageHeight
         
     End If
     
     'Paint the caption, if any
-    If m_Caption.IsCaptionActive Then
-        m_Caption.SetCaptionColor textColor
-        m_Caption.DrawCaptionCentered m_BackBuffer.getDIBDC, m_CaptionRect
-    End If
-            
-    'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
-    If Not g_IsProgramRunning Then
-        
-        Dim tmpRect As RECT
-        With tmpRect
-            .Left = 0
-            .Top = 0
-            .Right = m_BackBuffer.getDIBWidth
-            .Bottom = m_BackBuffer.getDIBHeight
+    If ucSupport.IsCaptionActive Then
+        With m_CaptionRect
+            ucSupport.PaintCaptionManually_Clipped .Left, .Top, .Right - .Left, .Bottom - .Top, btnColorText, True, , True
         End With
-        
-        DrawFocusRect m_BackBuffer.getDIBDC, tmpRect
-    
     End If
     
-    'Paint the buffer to the screen
-    If g_IsProgramRunning Then cPainter.RequestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
-
+    'Paint the final result to the screen, as relevant
+    ucSupport.RequestRepaint
+    If (Not g_IsProgramRunning) Then UserControl.Refresh
+    
 End Sub
 
-'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
-' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+        
+    'Color list retrieval is pretty darn easy - just load each color one at a time, and leave the rest to the color class.
+    ' It will build an internal hash table of the colors we request, which makes rendering much faster.
+    Dim ColorValues As PDBUTTON_COLOR_LIST
+    
+    With m_Colors
+        .LoadThemeColor PDB_Background, "Background", IDE_WHITE
+        .LoadThemeColor PDB_ButtonFill, "ButtonFill", IDE_WHITE
+        .LoadThemeColor PDB_Border, "Border", IDE_BLACK
+        .LoadThemeColor PDB_Caption, "Caption", IDE_BLUE
+    End With
+    
+End Sub
+
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
+Public Sub UpdateAgainstCurrentTheme()
+    UpdateColorList
+    ucSupport.UpdateAgainstThemeAndLanguage
+End Sub
+
+'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
+' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.SetTooltip Me.hWnd, Me.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
-

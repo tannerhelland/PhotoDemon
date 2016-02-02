@@ -383,7 +383,7 @@ End Sub
 'When all font and caption settings are ready, use this to actually render the caption onto a target DC.  Clipping to the
 ' destination area will occur automatically, with ellipses applied according to the useEllipses parameter.  Note that you
 ' can also request to use the original font size, instead of the auto-fit size.
-Public Sub DrawCaption_Clipped(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, Optional ByVal customColor As Long = -1, Optional ByVal useEllipses As Boolean = False, Optional ByVal useOriginalFontSize As Boolean = False)
+Public Sub DrawCaption_Clipped(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, Optional ByVal customColor As Long = -1, Optional ByVal useEllipses As Boolean = False, Optional ByVal useOriginalFontSize As Boolean = False, Optional ByVal centerVertically As Boolean = False)
     
     'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
     ' this function will automatically calculation a new font size, and stick it inside m_FontSizeCaptionFit.)
@@ -414,9 +414,9 @@ Public Sub DrawCaption_Clipped(ByVal dstDC As Long, ByVal dstX As Long, ByVal ds
     tmpFont.SetTextAlignment m_Alignment
     
     If m_WordWrapAllowed Then
-        tmpFont.FastRenderMultilineTextWithClipping dstX, dstY, dstWidth, dstHeight, m_CaptionTranslated
+        tmpFont.FastRenderMultilineTextWithClipping dstX, dstY, dstWidth, dstHeight, m_CaptionTranslated, centerVertically
     Else
-        tmpFont.FastRenderTextWithClipping dstX, dstY, dstWidth, dstHeight, m_CaptionTranslated, useEllipses
+        tmpFont.FastRenderTextWithClipping dstX, dstY, dstWidth, dstHeight, m_CaptionTranslated, useEllipses, centerVertically
     End If
     
     tmpFont.ReleaseFromDC
@@ -534,7 +534,7 @@ Private Sub UpdateColorList()
     
     'Color list retrieval is pretty darn easy - just load each color one at a time, and leave the rest to the color class.
     ' It will build an internal hash table of the colors we request, which makes rendering much faster.
-    Dim colorValues As PDCAPTION_COLOR_LIST
+    Dim ColorValues As PDCAPTION_COLOR_LIST
     
     With m_Colors
         .LoadThemeColor PDC_Caption, "Caption", IDE_GRAY

@@ -152,11 +152,7 @@ Public Property Let Caption(ByRef newCaption As String)
     
     'Normally we would rely on the ucSupport class to raise redraw events for us, but this label control is a weird one,
     ' since we may need to resize the entire control when the caption changes.  As such, force an immediate layout update.
-    If (Not g_IsProgramRunning) Then
-        UpdateControlLayout
-    Else
-        If (m_Layout = AutoSizeControl) Or (m_Layout = AutoSizeControlPlusWordWrap) Then UpdateControlLayout
-    End If
+    UpdateControlLayout
     
     PropertyChanged "Caption"
     
@@ -513,18 +509,14 @@ Private Sub RedrawBackBuffer()
     Select Case m_Layout
     
         Case AutoFitCaption
-            If m_FitFailure Then
-                ucSupport.PaintCaptionManually_Clipped 0, 0, ucSupport.GetBackBufferWidth, ucSupport.GetBackBufferHeight, targetColor, True, False
-            Else
-                ucSupport.PaintCaptionManually_Clipped 0, 0, ucSupport.GetBackBufferWidth, ucSupport.GetBackBufferHeight, targetColor, False, False
-            End If
-        
+            ucSupport.PaintCaptionManually_Clipped 0, 0, ucSupport.GetBackBufferWidth, ucSupport.GetBackBufferHeight, targetColor, m_FitFailure, False
+            
         Case AutoSizeControl
             ucSupport.PaintCaptionManually_Clipped 0, 0, ucSupport.GetBackBufferWidth, ucSupport.GetBackBufferHeight, targetColor, False, True
             
         Case AutoFitCaptionPlusWordWrap
-            ucSupport.PaintCaptionManually_Clipped 0, 0, ucSupport.GetBackBufferWidth, ucSupport.GetBackBufferHeight, targetColor, False, False
-        
+            ucSupport.PaintCaptionManually_Clipped 0, 0, ucSupport.GetBackBufferWidth, ucSupport.GetBackBufferHeight, targetColor, m_FitFailure, False
+            
         Case AutoSizeControlPlusWordWrap
             ucSupport.PaintCaptionManually_Clipped 0, 0, ucSupport.GetBackBufferWidth, ucSupport.GetBackBufferHeight, targetColor, False, True
             
@@ -565,7 +557,7 @@ Public Sub UpdateAgainstCurrentTheme()
 End Sub
 
 'Post-translation, we can request an immediate refresh
-Public Sub requestRefresh()
+Public Sub RequestRefresh()
     ucSupport.RequestRepaint
 End Sub
 

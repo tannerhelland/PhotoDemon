@@ -465,7 +465,7 @@ Private Function GetAllAvailableFonts() As Boolean
     'Enumerate font families using a temporary DC
     Dim tmpDC As Long
     tmpDC = Drawing.GetMemoryDC()
-    EnumFontFamiliesEx tmpDC, tmpLogFont, AddressOf EnumFontFamExProc, ByVal 0, 0
+    EnumFontFamiliesEx tmpDC, tmpLogFont, AddressOf EnumFontFamExProc, ByVal 0&, 0&
     Drawing.FreeMemoryDC tmpDC
     
     'If at least one font was found, return TRUE
