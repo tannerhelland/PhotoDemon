@@ -44,13 +44,12 @@ Attribute VB_Exposed = False
 '
 ' 1) Unlike pdLabel, pdHyperlink does not support word-wrapping in any form.
 ' 2) High-DPI settings are handled automatically.
-' 3) By design, this control does not accept focus.
-' 4) In its default configuration, this control does not raise any input-related events.  (Clicks are handled
+' 3) In its default configuration, this control does not raise any input-related events.  (Clicks are handled
 '    internally, and they simply shell the associated URL property.)
-' 5) As of March '15, this control exposes properties that allow it to expose a Click event, so the caller can handle
+' 4) As of March '15, this control exposes properties that allow it to expose a Click event, so the caller can handle
 '    the event manually.
-' 4) Coloration is automatically handled by PD's internal theming engine.
-' 5) RTL language support is a work in progress.  I've designed the control so that RTL support can be added simply by
+' 5) Coloration is automatically handled by PD's internal theming engine.
+' 6) RTL language support is a work in progress.  I've designed the control so that RTL support can be added simply by
 '    fixing some layout issues in this control, without the need to modify any control instances throughout PD.
 '    However, working out any bugs is difficult without an RTL language to test, so further work has been postponed
 '    for now.
@@ -65,6 +64,11 @@ Option Explicit
 'In its default configuration, this control raises no events.  However, if default "shell URL behavior" is not desired,
 ' properties can be modified so that a Click() event is raised instead.
 Public Event Click()
+
+'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
+' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
+Public Event GotFocusAPI()
+Public Event LostFocusAPI()
 
 'Rather than handle autosize and wordwrap separately, this control combines them into a single "Layout" property.
 ' All four possible layout approaches are covered by this enum.

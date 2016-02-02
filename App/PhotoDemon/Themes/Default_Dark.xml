@@ -7,7 +7,7 @@
 		<!-- This is the default "dark theme" file for PhotoDemon 6.8.  Users should not modify this file directly.-->
 		
 		<Author>PhotoDemon</Author>
-		<Description>Default "light" theme</Description>
+		<Description>Default "dark" theme</Description>
 		<Version>6.8.0</Version>
 		
 		<!-- The Definitions section describes any custom, reusable color values you wish to create. -->
@@ -22,8 +22,10 @@
 			<BackgroundDefault>#313131</BackgroundDefault>
 			<GrayDefault>#b1bac2</GrayDefault>
 			<GrayDisabled>#929292</GrayDisabled>
-			<GrayShadow>#c4ced7</GrayShadow>
+			<GrayDark>#d3dde6</GrayDark>
+			<GrayLight>#5b5b5b</GrayLight>
 			<TextDefault>#c0c0c0</TextDefault>
+			<TextDark>#d9d9d9</TextDark>
 			<TextHyperlink>Accent4</TextHyperlink>
 			<TextHover>Accent6</TextHover>
 			<TextInvert>#313131</TextInvert>
@@ -36,7 +38,7 @@
 			<!-- Default colors are not object-specific.  They are used as fallback values if an object lacks a given color. -->
 			<Default>
 				<Background>BackgroundDefault</Background>
-				<Border>GrayShadow</Border>
+				<Border>GrayDark</Border>
 				<Border-active>AccentDark</Border-active>
 				<Border-disabled>GrayDisabled</Border-disabled>
 				<Border-hover>AccentDefault</Border-hover>
@@ -93,6 +95,22 @@
 				<Border-disabled></Border-disabled>
 				<Border-hover></Border-hover>
 			</PDBrushSelector>
+			
+			<PDButton>
+				<Background></Background>
+				<Border>GrayDefault</Border>
+				<Border-hover>AccentDefault</Border-hover>
+				<Border-active>AccentDark</Border-active>
+				<Border-disabled>GrayDisabled</Border-disabled>
+				<ButtonFill>BackgroundDefault</ButtonFill>
+				<ButtonFill-active>AccentLight</ButtonFill-active>
+				<ButtonFill-hover>AccentUltralight</ButtonFill-hover>
+				<ButtonFill-disabled>GrayLight</ButtonFill-disabled>
+				<Caption>TextDark</Caption>
+				<Caption-active>TextInvert</Caption-active>
+				<Caption-hover>TextDefault</Caption-hover>
+				<Caption-disabled>GrayDisabled</Caption-disabled>
+			</PDButton>
 			
 			<PDGradientSelector>
 				<Border></Border>

@@ -25,13 +25,14 @@ Begin VB.Form FormBatchWizard
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButton cmdPrevious 
       Height          =   615
-      Left            =   10080
+      Left            =   8160
       TabIndex        =   0
       Top             =   8355
-      Width           =   1725
-      _ExtentX        =   3043
+      Width           =   2700
+      _ExtentX        =   4763
       _ExtentY        =   1085
       Caption         =   "&Previous"
+      Enabled         =   0   'False
    End
    Begin VB.PictureBox picDragAllow 
       Appearance      =   0  'Flat
@@ -69,11 +70,11 @@ Begin VB.Form FormBatchWizard
    End
    Begin PhotoDemon.pdButton cmdNext 
       Height          =   615
-      Left            =   11880
+      Left            =   10920
       TabIndex        =   1
       Top             =   8355
-      Width           =   1725
-      _ExtentX        =   3043
+      Width           =   2700
+      _ExtentX        =   4763
       _ExtentY        =   1085
       Caption         =   "&Next"
    End
@@ -1845,7 +1846,7 @@ End Sub
 
 'This function is used to advance (TRUE) or retreat (FALSE) the active wizard panel
 Private Sub changeBatchPage(ByVal moveForward As Boolean)
-
+    
     'Before doing anything else, see if the user is on the final step.  If they are, initiate the batch conversion.
     If moveForward And m_currentPage = picContainer.Count - 2 Then
         m_currentPage = picContainer.Count - 1
@@ -3240,8 +3241,3 @@ Private Sub batchConvertMessage(ByVal newMessage As String)
     lblBatchProgress.Caption = newMessage
     lblBatchProgress.RequestRefresh
 End Sub
-
-
-
-
-

@@ -180,12 +180,12 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 'The command bar's layout is all handled programmatically.  This lets it look good, regardless of the parent form's size or
 ' the current monitor's DPI setting.
-Private Sub updateControlLayout()
+Private Sub UpdateControlLayout()
 
     On Error GoTo skipUpdateLayout
 
@@ -235,3 +235,18 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     
 End Sub
 
+
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
+Public Sub UpdateAgainstCurrentTheme()
+    
+    'Synchronize the background color of individual controls against the command bar's backcolor
+    cmdOK.UseCustomBackgroundColor = True
+    cmdCancel.UseCustomBackgroundColor = True
+    cmdOK.BackgroundColor = BackColor
+    cmdCancel.BackgroundColor = BackColor
+    
+    'Update individual controls
+    cmdOK.UpdateAgainstCurrentTheme
+    cmdCancel.UpdateAgainstCurrentTheme
+    
+End Sub

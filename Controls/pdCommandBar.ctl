@@ -1178,13 +1178,17 @@ Private Function InControlArray(Ctl As Object) As Boolean
     InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
 End Function
 
-
-
-
-
-
-
-
-
-
-
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
+Public Sub UpdateAgainstCurrentTheme()
+    
+    'Synchronize the background color of individual controls against the command bar's backcolor
+    cmdOK.UseCustomBackgroundColor = True
+    cmdCancel.UseCustomBackgroundColor = True
+    cmdOK.BackgroundColor = BackColor
+    cmdCancel.BackgroundColor = BackColor
+    
+    'Update individual controls
+    cmdOK.UpdateAgainstCurrentTheme
+    cmdCancel.UpdateAgainstCurrentTheme
+    
+End Sub

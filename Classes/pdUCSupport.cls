@@ -417,8 +417,8 @@ Public Sub PaintCaptionManually(Optional ByVal newX As Long = -1, Optional ByVal
 End Sub
 
 'If automatic caption painting is turned off, the caller can use this function paint the caption to any rect of their choosing.
-Public Sub PaintCaptionManually_Clipped(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, Optional ByVal customColor As Long = -1, Optional ByVal useEllipses As Boolean = False, Optional ByVal useOriginalFontSize As Boolean = False)
-    m_Caption.DrawCaption_Clipped m_BackBuffer.getDIBDC, dstX, dstY, dstWidth, dstHeight, customColor, useEllipses, useOriginalFontSize
+Public Sub PaintCaptionManually_Clipped(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, Optional ByVal customColor As Long = -1, Optional ByVal useEllipses As Boolean = False, Optional ByVal useOriginalFontSize As Boolean = False, Optional ByVal centerVertically As Boolean = False)
+    m_Caption.DrawCaption_Clipped m_BackBuffer.getDIBDC, dstX, dstY, dstWidth, dstHeight, customColor, useEllipses, useOriginalFontSize, centerVertically
 End Sub
 
 Public Sub SetCaptionCustomColor(ByVal newColor As Long)
@@ -908,7 +908,7 @@ Private Sub UpdateColorList()
         
     'Color list retrieval is pretty darn easy - just load each color one at a time, and leave the rest to the color class.
     ' It will build an internal hash table of the colors we request, which makes rendering much faster.
-    Dim colorValues As UCSUPPORT_COLOR_LIST
+    Dim ColorValues As UCSUPPORT_COLOR_LIST
     
     With m_Colors
         .LoadThemeColor UCS_Background, "Background", IDE_WHITE

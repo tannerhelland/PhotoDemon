@@ -1313,13 +1313,15 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         If (TypeOf eControl Is pdButtonStrip) Or (TypeOf eControl Is pdButtonStripVertical) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdLabel) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdBrushSelector) Or (TypeOf eControl Is pdGradientSelector) Or (TypeOf eControl Is pdPenSelector) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdCommandBar) Or (TypeOf eControl Is pdCommandBarMini) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdResize) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdButton) Then eControl.UpdateAgainstCurrentTheme
         
         'These controls currently support translations, but not theming.  (Theming support is actively being worked on, and I'm
         ' migrating controls to the above "finished" list as they're completed.  Once all controls have been migrated, I'll look
         ' at a better system for detecting internal PD controls.)
         If (TypeOf eControl Is pdRadioButton) Or (TypeOf eControl Is pdCheckBox) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdButton) Or (TypeOf eControl Is pdButtonToolbox) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdButtonToolbox) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdHyperlink) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSpinner) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then eControl.UpdateAgainstCurrentTheme

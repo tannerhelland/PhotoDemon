@@ -24,6 +24,17 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdButton pdButtonTest 
+      Height          =   465
+      Index           =   0
+      Left            =   7680
+      TabIndex        =   8
+      Top             =   1680
+      Width           =   2775
+      _ExtentX        =   4895
+      _ExtentY        =   820
+      Caption         =   "Button"
+   End
    Begin PhotoDemon.pdPenSelector pdpsTest 
       Height          =   1095
       Left            =   3120
@@ -150,6 +161,17 @@ Begin VB.Form FormThemeEditor
       _ExtentY        =   1720
       Caption         =   "toggle accent color (please click BLUE before exiting):"
    End
+   Begin PhotoDemon.pdButton pdButtonTest 
+      Height          =   465
+      Index           =   1
+      Left            =   7680
+      TabIndex        =   9
+      Top             =   2190
+      Width           =   2775
+      _ExtentX        =   4895
+      _ExtentY        =   820
+      Caption         =   "Button w/ image"
+   End
 End
 Attribute VB_Name = "FormThemeEditor"
 Attribute VB_GlobalNameSpace = False
@@ -223,6 +245,8 @@ Private Sub Form_Load()
     pdbsEnableTest.AddItem "Enable all", 0
     pdbsEnableTest.AddItem "Disable all", 1
     pdbsEnableTest.ListIndex = 0
+    
+    pdButtonTest(1).AssignImage "TF_NEW"
     
     Interface.ApplyThemeAndTranslations Me
     

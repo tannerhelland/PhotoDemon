@@ -271,6 +271,8 @@ Private Sub Form_Load()
     mouseY = -1
     curHoveredCredit = -1
     updateHoverState False
+    cmdOK.UseCustomBackgroundColor = True
+    cmdOK.BackgroundColor = Me.BackColor
     
     'Translate "click to visit" and cache it to improve performance
     clickToVisitText = "(" & g_Language.TranslateMessage("click to visit") & ") "

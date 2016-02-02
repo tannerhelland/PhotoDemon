@@ -22,8 +22,10 @@
 			<BackgroundDefault>#ffffff</BackgroundDefault>
 			<GrayDefault>#929292</GrayDefault>
 			<GrayDisabled>#b1bac2</GrayDisabled>
-			<GrayShadow>#5b5b5b</GrayShadow>
+			<GrayDark>#5b5b5b</GrayDark>
+			<GrayLight>#d3dde6</GrayLight>
 			<TextDefault>#404040</TextDefault>
+			<TextDark>#212121</TextDark>
 			<TextHyperlink>Accent6</TextHyperlink>
 			<TextHover>Accent4</TextHover>
 			<TextInvert>#ffffff</TextInvert>
@@ -36,7 +38,7 @@
 			<!-- Default colors are not object-specific.  They are used as fallback values if an object lacks a given color. -->
 			<Default>
 				<Background>BackgroundDefault</Background>
-				<Border>GrayShadow</Border>
+				<Border>GrayDark</Border>
 				<Border-active>AccentDark</Border-active>
 				<Border-disabled>GrayDisabled</Border-disabled>
 				<Border-hover>AccentDefault</Border-hover>
@@ -93,6 +95,22 @@
 				<Border-disabled></Border-disabled>
 				<Border-hover></Border-hover>
 			</PDBrushSelector>
+			
+			<PDButton>
+				<Background></Background>
+				<Border>GrayDefault</Border>
+				<Border-hover>AccentDefault</Border-hover>
+				<Border-active>AccentDark</Border-active>
+				<Border-disabled>GrayDisabled</Border-disabled>
+				<ButtonFill>BackgroundDefault</ButtonFill>
+				<ButtonFill-active>AccentLight</ButtonFill-active>
+				<ButtonFill-hover>AccentUltralight</ButtonFill-hover>
+				<ButtonFill-disabled>GrayLight</ButtonFill-disabled>
+				<Caption>TextDark</Caption>
+				<Caption-active>TextInvert</Caption-active>
+				<Caption-hover>TextDefault</Caption-hover>
+				<Caption-disabled>GrayDisabled</Caption-disabled>
+			</PDButton>
 			
 			<PDGradientSelector>
 				<Border></Border>

@@ -245,7 +245,7 @@ Public Sub FastRenderText(ByVal dstX As Long, ByVal dstY As Long, ByRef srcStrin
 End Sub
 
 'A roughly identical function to fastRenderText, above, but with a constraining rect
-Public Sub FastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcString As String, Optional ByVal useEllipses As Boolean = True)
+Public Sub FastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcString As String, Optional ByVal useEllipses As Boolean = True, Optional ByVal centerVertically As Boolean = False)
     
     'IMPORTANT NOTE!  Per MSDN, the following caveat is made regarding the source string pointer:
     '  "A pointer to the string that specifies the text to be drawn. If the nCount parameter is -1, the string must
@@ -270,7 +270,7 @@ Public Sub FastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
     ' As such, we pass only the currently relevant length of the string, without our added null chars, and DrawText can use
     ' the extra buffer space as necessary.)
     Dim dtFlags As Long
-    dtFlags = DT_TOP
+    If centerVertically Then dtFlags = DT_VCENTER Else dtFlags = DT_TOP
     
     Select Case curTextAlignment
         
@@ -302,7 +302,7 @@ Public Sub FastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
 End Sub
 
 'A roughly identical function to fastRenderText, above, but with a constraining rect and expansion to multiple lines as necessary
-Public Sub FastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcString As String)
+Public Sub FastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcString As String, Optional ByVal centerVertically As Boolean = False)
     
     'Multiline text does not need ellipses, so this function is actually simpler than its single-line counterpart
     Dim srcStringLen As Long
@@ -320,7 +320,15 @@ Public Sub FastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As
     ' we pass only the currently relevant length of the string, without our added null chars, and DrawText can use the extra
     ' buffer space as necessary.)
     Dim dtFlags As Long
-    dtFlags = DT_TOP Or DT_WORDBREAK
+    dtFlags = DT_WORDBREAK Or DT_TOP
+    If centerVertically Then
+    
+        'Vertical centering isn't automatic when multiline text is used.  Instead, we need to manually calculate centering.
+        Dim tmpHeight As Single
+        tmpHeight = Me.GetHeightOfWordwrapString(srcString, dstWidth)
+        tmpRect.Top = dstY + (dstHeight - tmpHeight) \ 2
+        
+    End If
     
     Select Case curTextAlignment
         
