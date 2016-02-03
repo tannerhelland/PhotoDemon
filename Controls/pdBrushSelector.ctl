@@ -361,10 +361,7 @@ End Sub
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
 ' step must also be called if/when PD's visual theme settings change.
 Private Sub UpdateColorList()
-    Dim ColorValues As PDBS_COLOR_LIST
-    With m_Colors
-        .LoadThemeColor PDBS_Border, "Border", IDE_BLACK
-    End With
+    m_Colors.LoadThemeColor PDBS_Border, "Border", IDE_BLACK
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.

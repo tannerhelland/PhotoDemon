@@ -24,6 +24,20 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdScrollBar pdScrollTest 
+      Height          =   255
+      Index           =   0
+      Left            =   10560
+      TabIndex        =   10
+      Top             =   1680
+      Width           =   2655
+      _ExtentX        =   4683
+      _ExtentY        =   450
+      Min             =   1
+      Max             =   5
+      Value           =   3
+      OrientationHorizontal=   -1  'True
+   End
    Begin PhotoDemon.pdButton pdButtonTest 
       Height          =   465
       Index           =   0
@@ -171,6 +185,33 @@ Begin VB.Form FormThemeEditor
       _ExtentX        =   4895
       _ExtentY        =   820
       Caption         =   "Button w/ image"
+   End
+   Begin PhotoDemon.pdScrollBar pdScrollTest 
+      Height          =   255
+      Index           =   1
+      Left            =   10560
+      TabIndex        =   11
+      Top             =   2040
+      Width           =   2655
+      _ExtentX        =   4683
+      _ExtentY        =   450
+      Max             =   20
+      Value           =   10
+      OrientationHorizontal=   -1  'True
+      VisualStyle     =   1
+   End
+   Begin PhotoDemon.pdScrollBar pdScrollTest 
+      Height          =   255
+      Index           =   2
+      Left            =   10560
+      TabIndex        =   12
+      Top             =   2400
+      Width           =   2655
+      _ExtentX        =   4683
+      _ExtentY        =   450
+      Max             =   1000
+      Value           =   500
+      OrientationHorizontal=   -1  'True
    End
 End
 Attribute VB_Name = "FormThemeEditor"
