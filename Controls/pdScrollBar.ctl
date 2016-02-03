@@ -6,6 +6,7 @@ Begin VB.UserControl pdScrollBar
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   4800
+   ClipBehavior    =   0  'None
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -15,6 +16,9 @@ Begin VB.UserControl pdScrollBar
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
+   HitBehavior     =   0  'None
+   PaletteMode     =   4  'None
    ScaleHeight     =   40
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
@@ -100,11 +104,11 @@ Attribute VB_Exposed = False
 '    event instead of a "Scroll" event.
 ' 2) High DPI settings are handled automatically.
 ' 3) A hand cursor is automatically applied.
-' 4) Coloration is automatically handled by PD's internal theming engine.
+' 4) Visual appearance is automatically handled by PD's master theming engine.
 ' 5) This control represents both horizontal and vertical orientations.  Set the corresponding property to match,
 '     but be forwarned that this does *not* automatically change the control's size to match!  This is by design.
-'     (Although I don't know why it would ever be wise to do this, note thatn you can technically change orientation
-'      at run-time, without penalty, as a side-effect of this implementation decision.)
+'     (Although I don't know why it would ever be wise to do this, note that you can technically change orientation
+'      at run-time, without penalty, as a side-effect of this decision.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -118,42 +122,16 @@ Option Explicit
 ' ignore if you were worried about performance.  If eventIsCritical is TRUE, however, you must respond to the event.
 Public Event Scroll(ByVal eventIsCritical As Boolean)
 
-'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
-Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, ByRef lpRect As RECT) As Long
-
-'Mouse and keyboard input handlers
-Private WithEvents cMouseEvents As pdInputMouse
-Attribute cMouseEvents.VB_VarHelpID = -1
-Private WithEvents cKeyEvents As pdInputKeyboard
-Attribute cKeyEvents.VB_VarHelpID = -1
-
-'Flicker-free window painter
-Private WithEvents cPainter As pdWindowPainter
-Attribute cPainter.VB_VarHelpID = -1
-
-'Reliable focus detection requires a specialized subclasser
-Private WithEvents cFocusDetector As pdFocusDetector
-Attribute cFocusDetector.VB_VarHelpID = -1
+'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
+' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
-'Persistent back buffer, which we manage internally.  This allows for color management (yes, even on UI elements!)
-Private m_BackBuffer As pdDIB
-
-'If the mouse is currently INSIDE the control, this will be set to TRUE
+'If the mouse is currently INSIDE the control, this will be set to TRUE; this affects control rendering
 Private m_MouseInsideUC As Boolean
 
 'When the control receives focus via keyboard (e.g. NOT by mouse events), we draw a focus rect to help orient the user.
 Private m_FocusRectActive As Boolean
-
-'Current back color
-Private m_BackColor As OLE_COLOR
-
-'Additional helper for rendering themed and multiline tooltips
-Private toolTipManager As pdToolTip
-
-'If the control is currently visible, this will be set to TRUE.  This can be used to suppress redraw requests for hidden controls.
-Private m_ControlIsVisible As Boolean
 
 'The scrollbar's orientation is cached at creation time, in case subsequent functions need it
 Private m_OrientationHorizontal As Boolean
@@ -210,6 +188,32 @@ End Enum
 
 Private m_VisualStyle As ScrollBarVisualStyle
 
+'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
+' but I've since attempted to wrap these into a single master control support class.
+Private WithEvents ucSupport As pdUCSupport
+Attribute ucSupport.VB_VarHelpID = -1
+
+'Local list of themable colors.  This list includes all potential colors used by the control, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDSCROLL_COLOR_LIST
+    [_First] = 0
+    PDS_Track = 0
+    PDS_ThumbBorder = 1
+    PDS_ThumbFill = 2
+    PDS_ButtonBorder = 3
+    PDS_ButtonFill = 4
+    PDS_ButtonArrow = 5
+    [_Last] = 5
+    [_Count] = 6
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
+
 'Container hWnd must be exposed for external tooltip handling
 Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
@@ -228,13 +232,9 @@ Attribute Enabled.VB_UserMemId = -514
 End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
-    
     UserControl.Enabled = newValue
     PropertyChanged "Enabled"
-    
-    'Redraw the control
     RedrawBackBuffer
-    
 End Property
 
 'Only a LargeChange value is provided; SmallChange is handled automatically by the scroll bar, depending on the SigDigits
@@ -265,8 +265,8 @@ Public Property Let Max(ByVal newValue As Double)
     End If
     
     'Recalculate thumb size and position
-    determineThumbSize
-    If g_IsProgramRunning Then cPainter.RequestRepaint
+    DetermineThumbSize
+    If g_IsProgramRunning Then ucSupport.RequestRepaint
     
     PropertyChanged "Max"
     
@@ -289,8 +289,8 @@ Public Property Let Min(ByVal newValue As Double)
     End If
     
     'Recalculate thumb size and position, then redraw the button to match
-    determineThumbSize
-    If g_IsProgramRunning Then cPainter.RequestRepaint
+    DetermineThumbSize
+    If g_IsProgramRunning Then ucSupport.RequestRepaint
     
     PropertyChanged "Min"
     
@@ -309,7 +309,7 @@ Public Property Let OrientationHorizontal(ByVal newState As Boolean)
         m_OrientationHorizontal = newState
         
         'Update the popup menu text to match the new layout
-        updatePopupText
+        UpdatePopupText
         
         'Update the positioning of the buttons, track, thumb, etc
         UpdateControlLayout
@@ -355,7 +355,7 @@ Public Property Let Value(ByVal newValue As Double)
         End If
         
         'Recalculate the current thumb position, then redraw the button
-        determineThumbSize
+        DetermineThumbSize
         RedrawBackBuffer True
         
         'Mark the value property as being changed, and raise the corresponding event.
@@ -375,6 +375,7 @@ Public Property Let VisualStyle(ByVal newStyle As ScrollBarVisualStyle)
     
     If newStyle <> m_VisualStyle Then
         m_VisualStyle = newStyle
+        UpdateColorList
         RedrawBackBuffer
         PropertyChanged "VisualStyle"
     End If
@@ -382,7 +383,7 @@ Public Property Let VisualStyle(ByVal newStyle As ScrollBarVisualStyle)
 End Property
 
 'When the control receives focus, if the focus isn't received via mouse click, display a focus rect
-Private Sub cFocusDetector_GotFocusReliable()
+Private Sub ucSupport_GotFocusAPI()
     
     'If the mouse is *not* over the user control, assume focus was set via keyboard
     If Not m_MouseInsideUC Then
@@ -395,12 +396,12 @@ Private Sub cFocusDetector_GotFocusReliable()
 End Sub
 
 'When the control loses focus, erase any focus rects it may have active
-Private Sub cFocusDetector_LostFocusReliable()
-    makeLostFocusUIChanges
+Private Sub ucSupport_LostFocusAPI()
+    MakeLostFocusUIChanges
     RaiseEvent LostFocusAPI
 End Sub
 
-Private Sub makeLostFocusUIChanges()
+Private Sub MakeLostFocusUIChanges()
     
     'If a focus rect has been drawn, remove it now
     If m_FocusRectActive Or m_MouseInsideUC Then
@@ -416,10 +417,10 @@ Private Sub makeLostFocusUIChanges()
 End Sub
 
 'A few key events are also handled
-Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
 
     'Only process key events if this control has focus
-    If m_MouseInsideUC Or cFocusDetector.HasFocus Then
+    If m_MouseInsideUC Or ucSupport.DoIHaveFocus Then
         
         If (vkCode = VK_UP) Or (vkCode = VK_LEFT) Then
             moveValueDown
@@ -446,12 +447,9 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
 End Sub
 
 'Only left clicks raise Click() events
-Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     If Me.Enabled Then
-    
-        'Ensure that a focus event has been raised, if it wasn't already
-        If Not cFocusDetector.HasFocus Then cFocusDetector.setFocusManually
         
         'Separate further handling by button
         Select Case Button
@@ -490,7 +488,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                     m_InitMouseX = x
                     m_InitMouseY = y
                     m_initValue = m_Value
-                    m_initMouseValue = getValueFromMouseCoords(x, y)
+                    m_initMouseValue = GetValueFromMouseCoords(x, y)
                     
                 Else
                 
@@ -505,7 +503,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                         'Cache the mouse positions, so we know when to deactivate the associated timers
                         m_TrackX = x
                         m_TrackY = y
-                        m_initTrackValue = getValueFromMouseCoords(x, y, True)
+                        m_initTrackValue = GetValueFromMouseCoords(x, y, True)
                         
                         'Activate the auto-scroll timers
                         If m_initTrackValue < m_Value Then
@@ -543,13 +541,13 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     
 End Sub
 
-Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInsideUC = True
-    cMouseEvents.setSystemCursor IDC_HAND
+    ucSupport.RequestCursor IDC_HAND
 End Sub
 
 'When the mouse leaves the UC, we must repaint the button (as it's no longer hovered)
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     If m_MouseInsideUC Then
         
@@ -564,12 +562,12 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
     End If
     
     'Reset the cursor
-    cMouseEvents.setSystemCursor IDC_ARROW
+    ucSupport.RequestCursor IDC_ARROW
     
 End Sub
 
 'When the mouse enters the button, we must initiate a repaint (to reflect its hovered state)
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'Reset mouse capture behavior; this greatly simplifies parts of the drawing function
     If Not m_MouseInsideUC Then m_MouseInsideUC = True
@@ -579,7 +577,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         
         'Figure out a new value for the current mouse position
         Dim curValue As Double, valDiff As Double
-        curValue = getValueFromMouseCoords(x, y)
+        curValue = GetValueFromMouseCoords(x, y)
         
         'Solve for the difference between this value and the initial MouseDown value
         valDiff = curValue - m_initMouseValue
@@ -617,7 +615,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 'Cache the mouse positions, so we know where to draw the orientation dot
                 m_TrackX = x
                 m_TrackY = y
-                m_initTrackValue = getValueFromMouseCoords(x, y, True)
+                m_initTrackValue = GetValueFromMouseCoords(x, y, True)
             
             Else
                 m_MouseOverTrack = False
@@ -632,7 +630,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     
 End Sub
 
-Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     
     If Button = pdLeftButton Then
         
@@ -655,8 +653,12 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
     
 End Sub
 
-Private Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Private Sub ucSupport_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     RelayMouseWheelEvent False, Button, Shift, x, y, scrollAmount
+End Sub
+
+Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    RelayMouseWheelEvent True, Button, Shift, x, y, scrollAmount
 End Sub
 
 'If some external window wants the scrollbar to automatically sync to its own wheel events, it can use this wrapper function.
@@ -684,21 +686,6 @@ Public Sub RelayMouseWheelEvent(ByVal wheelIsVertical As Boolean, ByVal Button A
     
 End Sub
 
-Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-    RelayMouseWheelEvent True, Button, Shift, x, y, scrollAmount
-End Sub
-
-'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
-' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
-Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
-
-    'Flip the relevant chunk of the buffer to the screen
-    If Not (m_BackBuffer Is Nothing) Then
-        BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
-    End If
-    
-End Sub
-
 Private Sub MnuScroll_Click(Index As Integer)
     
     Select Case Index
@@ -706,7 +693,7 @@ Private Sub MnuScroll_Click(Index As Integer)
         'Scroll here
         Case 0
             'Change the value to the corresponding value of the context menu position
-            Value = getValueFromMouseCoords(m_ContextMenuX, m_ContextMenuY)
+            Value = GetValueFromMouseCoords(m_ContextMenuX, m_ContextMenuY)
             
         '(separator)
         Case 1
@@ -745,50 +732,40 @@ Private Sub MnuScroll_Click(Index As Integer)
     
 End Sub
 
-Private Sub UserControl_Hide()
-    m_ControlIsVisible = False
+Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
+    If updateLayoutToo Then UpdateControlLayout
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    UpdateControlLayout
 End Sub
 
 'INITIALIZE control
 Private Sub UserControl_Initialize()
     
-    'When not in design mode, initialize trackers for input events
-    If g_IsProgramRunning Then
-    
-        Set cMouseEvents = New pdInputMouse
-        cMouseEvents.addInputTracker Me.hWnd, True, True, , True
-        cMouseEvents.setSystemCursor IDC_HAND
-        
-        Set cKeyEvents = New pdInputKeyboard
-        cKeyEvents.CreateKeyboardTracker "pdScrollBar", Me.hWnd, VK_UP, VK_DOWN, VK_RIGHT, VK_LEFT, VK_END, VK_HOME, VK_PAGEUP, VK_PAGEDOWN
-        
-        'Also start a flicker-free window painter
-        Set cPainter = New pdWindowPainter
-        cPainter.StartPainter Me.hWnd
-        
-        'Also start a focus detector
-        Set cFocusDetector = New pdFocusDetector
-        cFocusDetector.startFocusTracking Me.hWnd
-        
-        'Create a tooltip engine
-        Set toolTipManager = New pdToolTip
-        
-    'In design mode, initialize a base theming class, so our paint function doesn't fail
-    Else
-        If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
-    End If
+    'Initialize a master user control support class
+    Set ucSupport = New pdUCSupport
+    ucSupport.RegisterControl UserControl.hWnd
+    ucSupport.RequestExtraFunctionality True, True
+    ucSupport.SpecifyRequiredKeys VK_UP, VK_DOWN, VK_RIGHT, VK_LEFT, VK_END, VK_HOME, VK_PAGEUP, VK_PAGEDOWN
     
     m_MouseInsideUC = False
     m_FocusRectActive = False
     
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDSCROLL_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDScrollBar", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
+    
     'Update the control size parameters at least once
     UpdateControlLayout
-                
+    
 End Sub
 
 'Set default properties
 Private Sub UserControl_InitProperties()
-    BackColor = vbWhite
     Min = 0
     Max = 10
     Value = 0
@@ -798,22 +775,9 @@ Private Sub UserControl_InitProperties()
     VisualStyle = SBVS_Standard
 End Sub
 
-Private Sub UserControl_LostFocus()
-    makeLostFocusUIChanges
-End Sub
-
-'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
-Private Sub UserControl_Paint()
-    
-    'Provide minimal painting within the designer
-    If Not g_IsProgramRunning Then RedrawBackBuffer
-    
-End Sub
-
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
-        BackColor = .ReadProperty("BackColor", vbWhite)
         Min = .ReadProperty("Min", 0)
         Max = .ReadProperty("Max", 10)
         Value = .ReadProperty("Value", 0)
@@ -825,21 +789,9 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
 End Sub
 
-'The control dynamically resizes each button to match the dimensions of their relative captions.
-Private Sub UserControl_Resize()
-    UpdateControlLayout
-End Sub
-
-Private Sub UserControl_Show()
-    m_ControlIsVisible = True
-    UpdateControlLayout
-End Sub
-
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 
-    'Store all associated properties
     With PropBag
-        .WriteProperty "BackColor", m_BackColor, vbWhite
         .WriteProperty "Min", m_Min, 0
         .WriteProperty "Max", m_Max, 10
         .WriteProperty "Value", m_Value, 0
@@ -849,6 +801,15 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "VisualStyle", m_VisualStyle, SBVS_Standard
     End With
     
+End Sub
+
+'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
+Private Sub UserControl_Paint()
+    ucSupport.RequestIDERepaint UserControl.hDC
+End Sub
+
+Private Sub UserControl_Resize()
+    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
 End Sub
 
 'Timers control repeat value changes when the mouse is held down on an up/down button
@@ -912,14 +873,10 @@ End Sub
 ' slider regions.
 Private Sub UpdateControlLayout()
     
-    'First, make sure the back buffer exists and mirrors the current control size
-    If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
-    
-    If (m_BackBuffer.getDIBWidth <> UserControl.ScaleWidth) Or (m_BackBuffer.getDIBHeight <> UserControl.ScaleHeight) Then
-        m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, m_BackColor
-    Else
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackColor
-    End If
+    'Retrieve DPI-aware control dimensions from the support class
+    Dim bWidth As Long, bHeight As Long
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
     
     'We now need to figure out the position of the up and down buttons.  Their position (obviously) changes based on the
     ' scroll bar's orientation.  Also note that at present, PD makes no special allotments for tiny scrollbars.  They will
@@ -930,15 +887,15 @@ Private Sub UpdateControlLayout()
         With upLeftRect
             .Left = 0
             .Top = 0
-            .Bottom = m_BackBuffer.getDIBHeight - 1
-            .Right = m_BackBuffer.getDIBHeight - 1
+            .Bottom = bHeight - 1
+            .Right = bHeight - 1
         End With
         
         With downRightRect
-            .Left = (m_BackBuffer.getDIBWidth - 1) - upLeftRect.Bottom
+            .Left = (bWidth - 1) - upLeftRect.Bottom
             .Top = 0
-            .Right = m_BackBuffer.getDIBWidth - 1
-            .Bottom = m_BackBuffer.getDIBHeight - 1
+            .Right = bWidth - 1
+            .Bottom = bHeight - 1
         End With
         
     Else
@@ -947,21 +904,18 @@ Private Sub UpdateControlLayout()
         With upLeftRect
             .Left = 0
             .Top = 0
-            .Bottom = m_BackBuffer.getDIBWidth - 1
-            .Right = m_BackBuffer.getDIBWidth - 1
+            .Bottom = bWidth - 1
+            .Right = bWidth - 1
         End With
         
         With downRightRect
             .Left = 0
-            .Right = m_BackBuffer.getDIBWidth - 1
-            .Bottom = m_BackBuffer.getDIBHeight - 1
-            .Top = .Bottom - (m_BackBuffer.getDIBWidth - 1)
+            .Right = bWidth - 1
+            .Bottom = bHeight - 1
+            .Top = .Bottom - (bWidth - 1)
         End With
     
     End If
-    
-    'If the rects overlap, split the difference between them
-    ' TODO: this step isn't relevant for PD, but if it ever becomes relevant, we could add intersect code here.
     
     'With the button rects calculated, use the difference between them to calculate a track rect.
     If m_OrientationHorizontal Then
@@ -969,22 +923,22 @@ Private Sub UpdateControlLayout()
             .Left = upLeftRect.Right + 1
             .Top = 0
             .Right = downRightRect.Left
-            .Bottom = m_BackBuffer.getDIBHeight
+            .Bottom = bHeight
         End With
     Else
         With trackRect
             .Left = 0
             .Top = upLeftRect.Bottom + 1
-            .Right = m_BackBuffer.getDIBWidth
+            .Right = bWidth
             .Bottom = downRightRect.Top
         End With
     End If
     
     'Figure out the size of the "thumb" slider.  That function will automatically place a call to determineThumbRect.
-    determineThumbSize
+    DetermineThumbSize
     
-    'No other special preparation is required for this control, so proceed with recreating the back buffer
-    RedrawBackBuffer True
+    'With all metrics successfully measured, we can now recreate the back buffer
+    If ucSupport.AmIVisible Then RedrawBackBuffer
             
 End Sub
 
@@ -992,168 +946,52 @@ End Sub
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
 Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False)
     
-    'Start by erasing the back buffer
-    If g_IsProgramRunning Then
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackColor, 255
-    Else
-        m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, RGB(255, 255, 255)
-    End If
+    Dim enabledState As Boolean
+    enabledState = Me.Enabled
     
-    'Next, determine a whole bunch of colors.  Inside the IDE, we will fudge values to prevent errors from the external
-    ' themer (and/or GDI+) not being initialized.
-    Dim trackBackColor As Long
+    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDS_Track, enabledState))
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
+    
+    'Next, initialize a whole bunch of color values
     Dim thumbBorderColor As Long, thumbFillColor As Long
     Dim upButtonBorderColor As Long, downButtonBorderColor As Long
     Dim upButtonFillColor As Long, downButtonFillColor As Long
     Dim upButtonArrowColor As Long, downButtonArrowColor As Long
     
-    If Not (g_Themer Is Nothing) Then
-        
-        If Me.Enabled Then
-            
-            'Throughout this function, you'll notice branching behavior based on the control's VisualStyle property.
-            ' PD's main canvas scrollbars look different than other scrollbars throughout the program, by design.
-            
-            'Track
-            If m_VisualStyle = SBVS_Standard Then
-                trackBackColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
-            Else
-                trackBackColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
-            End If
-            
-            'Thumb
-            If m_MouseDownThumb Then
-                
-                If m_VisualStyle = SBVS_Standard Then
-                    thumbBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                    thumbFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                Else
-                    thumbBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
-                    thumbFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                End If
-                
-            Else
-            
-                If m_MouseOverThumb Then
-                    If m_VisualStyle = SBVS_Standard Then
-                        thumbBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                        thumbFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
-                    Else
-                        thumbBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                        thumbFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
-                    End If
-                Else
-                    If m_VisualStyle = SBVS_Standard Then
-                        thumbBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
-                        thumbFillColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
-                    Else
-                        thumbBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
-                        thumbFillColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
-                    End If
-                End If
-                
-            End If
-            
-            If m_MouseDownUpButton Then
-                upButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                upButtonArrowColor = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
-                upButtonFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-            Else
-                If m_MouseOverUpButton Then
-                    If m_VisualStyle = SBVS_Standard Then
-                        upButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
-                        upButtonArrowColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                        upButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-                    Else
-                        upButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                        upButtonArrowColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                        upButtonFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
-                    End If
-                Else
-                    If m_VisualStyle = SBVS_Standard Then
-                        upButtonBorderColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-                        upButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
-                        upButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-                    Else
-                        upButtonBorderColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
-                        upButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
-                        upButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
-                    End If
-                End If
-            End If
-            
-            If m_MouseDownDownButton Then
-                downButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                downButtonArrowColor = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
-                downButtonFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-            Else
-                If m_MouseOverDownButton Then
-                    If m_VisualStyle = SBVS_Standard Then
-                        downButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
-                        downButtonArrowColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                        downButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-                    Else
-                        downButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                        downButtonArrowColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                        downButtonFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
-                    End If
-                Else
-                    If m_VisualStyle = SBVS_Standard Then
-                        downButtonBorderColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-                        downButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
-                        downButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-                    Else
-                        downButtonBorderColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
-                        downButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
-                        downButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
-                    End If
-                End If
-            End If
-        
-        Else
-            trackBackColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
-            thumbBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
-            thumbFillColor = g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
-            upButtonBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
-            upButtonFillColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
-            upButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
-            downButtonBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
-            downButtonFillColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
-            downButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
-        End If
-        
-    Else
-        trackBackColor = vbWindowBackground
-        thumbBorderColor = RGB(127, 127, 127)
-        thumbFillColor = RGB(127, 127, 127)
-        upButtonBorderColor = vbBlack
-        upButtonFillColor = vbWhite
-        upButtonArrowColor = RGB(127, 127, 127)
-        downButtonBorderColor = vbBlack
-        downButtonFillColor = vbWhite
-        downButtonArrowColor = RGB(127, 127, 127)
-    End If
+    thumbBorderColor = m_Colors.RetrieveColor(PDS_ThumbBorder, enabledState, m_MouseDownThumb, m_MouseOverThumb)
+    thumbFillColor = m_Colors.RetrieveColor(PDS_ThumbFill, enabledState, m_MouseDownThumb, m_MouseOverThumb)
+    upButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, enabledState, m_MouseDownUpButton, m_MouseOverUpButton)
+    upButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, enabledState, m_MouseDownUpButton, m_MouseOverUpButton)
+    upButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, enabledState, m_MouseDownUpButton, m_MouseOverUpButton)
+    downButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, enabledState, m_MouseDownDownButton, m_MouseOverDownButton)
+    downButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, enabledState, m_MouseDownDownButton, m_MouseOverDownButton)
+    downButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, enabledState, m_MouseDownDownButton, m_MouseOverDownButton)
     
     'With colors decided (finally!), we can actually draw the damn thing
+    
+    'START HERE
     
     'Paint all backgrounds and borders first
     If g_IsProgramRunning Then
         
         'Track first
-        GDI_Plus.GDIPlusFillDIBRectL m_BackBuffer, trackRect, trackBackColor
+        'GDI_Plus.GDIPlusFillRectLToDC bufferDC, trackRect, trackBackColor
                 
         'Up button
-        GDI_Plus.GDIPlusFillDIBRectL m_BackBuffer, upLeftRect, upButtonFillColor
-        GDI_Plus.GDIPlusDrawRectLOutlineToDC m_BackBuffer.getDIBDC, upLeftRect, upButtonBorderColor, , , False
+        GDI_Plus.GDIPlusFillRectLToDC bufferDC, upLeftRect, upButtonFillColor
+        GDI_Plus.GDIPlusDrawRectLOutlineToDC bufferDC, upLeftRect, upButtonBorderColor, , , False
         
         'Down button
-        GDI_Plus.GDIPlusFillDIBRectL m_BackBuffer, downRightRect, downButtonFillColor
-        GDI_Plus.GDIPlusDrawRectLOutlineToDC m_BackBuffer.getDIBDC, downRightRect, downButtonBorderColor, , , False
+        GDI_Plus.GDIPlusFillRectLToDC bufferDC, downRightRect, downButtonFillColor
+        GDI_Plus.GDIPlusDrawRectLOutlineToDC bufferDC, downRightRect, downButtonBorderColor, , , False
         
         'Thumb
         If m_ThumbSize > 0 Then
-            GDI_Plus.GDIPlusFillDIBRectF m_BackBuffer, thumbRect, thumbFillColor
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC m_BackBuffer.getDIBDC, thumbRect, thumbBorderColor
+            GDI_Plus.GDIPlusFillRectFToDC bufferDC, thumbRect, thumbFillColor
+            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, thumbRect, thumbBorderColor
         End If
         
         'And last, draw the arrows
@@ -1181,8 +1019,8 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
             buttonPt2.y = buttonPt1.y - FixDPIFloat(3)
         End If
         
-        GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, upButtonArrowColor, 255, 2, True, LineCapRound
-        GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, upButtonArrowColor, 255, 2, True, LineCapRound
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, upButtonArrowColor, 255, 2, True, LineCapRound
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, upButtonArrowColor, 255, 2, True, LineCapRound
                     
         'Next, the down/right-pointing arrow
         If m_OrientationHorizontal Then
@@ -1205,33 +1043,20 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
             buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
         End If
         
-        GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, downButtonArrowColor, 255, 2, True, LineCapRound
-        GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, downButtonArrowColor, 255, 2, True, LineCapRound
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, downButtonArrowColor, 255, 2, True, LineCapRound
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, downButtonArrowColor, 255, 2, True, LineCapRound
         
-    'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
-    Else
-    
-        Dim tmpRect As RECT
-        With tmpRect
-            .Left = 0
-            .Top = 0
-            .Right = m_BackBuffer.getDIBWidth
-            .Bottom = m_BackBuffer.getDIBHeight
-        End With
-        
-        DrawFocusRect m_BackBuffer.getDIBDC, tmpRect
-
     End If
     
-    'Paint the buffer to the screen
-    If g_IsProgramRunning Then cPainter.RequestRepaint redrawImmediately Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
-
+    'Paint the final result to the screen, as relevant
+    ucSupport.RequestRepaint
+    
 End Sub
 
 'The thumb size is contingent on multiple factors: the size and positioning of the up/down buttons, the available space
 ' between them, and the range between the control's max/min values.  Call this function to determine a size (BUT NOT A
 ' POSITION) for the thumb.
-Private Sub determineThumbSize()
+Private Sub DetermineThumbSize()
     
     'Start by determining the maximum available size for the thumb
     Dim maxThumbSize As Single
@@ -1278,14 +1103,12 @@ Private Sub determineThumbSize()
     End If
     
     'After determining a thumb size, we must always recalculate the current position.
-    determineThumbRect
+    DetermineThumbRect
     
 End Sub
 
 'Given the control's value, and the (already) determined thumb size, determine its position.
-Private Sub determineThumbRect()
-    
-    If m_BackBuffer Is Nothing Then Exit Sub
+Private Sub DetermineThumbRect()
     
     'Some coordinates are always the same, regardless of position.
     If m_OrientationHorizontal Then
@@ -1352,7 +1175,7 @@ Private Sub determineThumbRect()
 End Sub
 
 'Given an (x, y) coordinate pair, return the "value" corresponding to that position on the scroll bar track.
-Private Function getValueFromMouseCoords(ByVal x As Single, ByVal y As Single, Optional ByVal padToMaxMinRange As Boolean = False) As Double
+Private Function GetValueFromMouseCoords(ByVal x As Single, ByVal y As Single, Optional ByVal padToMaxMinRange As Boolean = False) As Double
     
     'Obviously, value calculations differ depending on the scroll bar's orientation.  Start by figuring out the range afforded
     ' by the track bar portion of the scrollbar.
@@ -1373,24 +1196,24 @@ Private Function getValueFromMouseCoords(ByVal x As Single, ByVal y As Single, O
     
     'Convert that to a matching position on the control's min/max scale
     If m_Min = m_Max Then
-        getValueFromMouseCoords = m_Max
+        GetValueFromMouseCoords = m_Max
     Else
     
-        getValueFromMouseCoords = m_Min + posRatio * (m_Max - m_Min)
+        GetValueFromMouseCoords = m_Min + posRatio * (m_Max - m_Min)
         
         'Clamp output to min/max ranges, as a convenience to the caller
         If padToMaxMinRange Then
-            If getValueFromMouseCoords < m_Min Then
-                getValueFromMouseCoords = m_Min
-            ElseIf getValueFromMouseCoords > m_Max Then
-                getValueFromMouseCoords = m_Max
+            If GetValueFromMouseCoords < m_Min Then
+                GetValueFromMouseCoords = m_Min
+            ElseIf GetValueFromMouseCoords > m_Max Then
+                GetValueFromMouseCoords = m_Max
             End If
         End If
         
     End If
     
     'Just like the .Value property, for integer-only scroll bars, clamp values to their integer range
-    If m_significantDigits = 0 Then getValueFromMouseCoords = Int(getValueFromMouseCoords)
+    If m_significantDigits = 0 Then GetValueFromMouseCoords = Int(GetValueFromMouseCoords)
     
 End Function
 
@@ -1398,7 +1221,7 @@ End Function
 ' 1) the scroll bar orientation changes, or...
 ' 2) the active translation changes...
 ' ...the popup menu text needs to be updated to match
-Private Sub updatePopupText()
+Private Sub UpdatePopupText()
     
     'The text of the scroll bar context menu changes depending on orientation.  We match the verbiage and layout
     ' of the default Windows context menu.
@@ -1426,22 +1249,36 @@ Private Sub updatePopupText()
     
 End Sub
 
-'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub UpdateAgainstCurrentTheme()
+'Before the control is rendered, we need to retrieve all painting colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
     
-    'Update popup menu captions to match the active translation
-    updatePopupText
+    'The color list for this control varies based on the control's "m_VisualStyle" setting.  (Canvas scrollbars are rendered
+    ' differently from non-canvas scrollbars.)
+    Dim colorTag As String
+    If m_VisualStyle = SBVS_Standard Then colorTag = vbNullString Else colorTag = "CanvasMode"
     
-    'Make sure the tooltip (if any) is valid
-    toolTipManager.UpdateAgainstCurrentTheme
-    
-    'Redraw the control, which will also cause a resync against any theme changes
-    UpdateControlLayout
+    With m_Colors
+        .LoadThemeColor PDS_Track, "Track" & colorTag, IDE_WHITE
+        .LoadThemeColor PDS_ThumbBorder, "ThumbBorder" & colorTag, IDE_BLACK
+        .LoadThemeColor PDS_ThumbFill, "ThumbFill" & colorTag, IDE_GRAY
+        .LoadThemeColor PDS_ButtonBorder, "ButtonBorder" & colorTag, IDE_BLACK
+        .LoadThemeColor PDS_ButtonFill, "ButtonFill" & colorTag, IDE_WHITE
+        .LoadThemeColor PDS_ButtonArrow, "ButtonArrow" & colorTag, IDE_GRAY
+    End With
     
 End Sub
 
-'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
-' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.SetTooltip Me.hWnd, Me.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
+Public Sub UpdateAgainstCurrentTheme()
+    UpdatePopupText
+    UpdateColorList
+    ucSupport.UpdateAgainstThemeAndLanguage
 End Sub
+
+'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
+' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+End Sub
+

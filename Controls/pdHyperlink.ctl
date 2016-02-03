@@ -577,16 +577,8 @@ End Sub
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
 ' step must also be called if/when PD's visual theme settings change.
 Private Sub UpdateColorList()
-        
-    'Color list retrieval is pretty darn easy - just load each color one at a time, and leave the rest to the color class.
-    ' It will build an internal hash table of the colors we request, which makes rendering much faster.
-    Dim ColorValues As PDHYPERLINK_COLOR_LIST
-    
-    With m_Colors
-        .LoadThemeColor PDH_Background, "Background", IDE_WHITE
-        .LoadThemeColor PDH_Caption, "Caption", IDE_BLUE
-    End With
-    
+    m_Colors.LoadThemeColor PDH_Background, "Background", IDE_WHITE
+    m_Colors.LoadThemeColor PDH_Caption, "Caption", IDE_BLUE
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.

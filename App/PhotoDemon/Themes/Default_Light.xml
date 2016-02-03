@@ -20,10 +20,12 @@
 			<AccentLight>Accent3</AccentLight>
 			<AccentUltralight>Accent1</AccentUltralight>
 			<BackgroundDefault>#ffffff</BackgroundDefault>
+			<BackgroundCanvas>#a0a0a0</BackgroundCanvas>
+			<BackgroundCommandBar>#dcdce1</BackgroundCommandBar>
 			<GrayDefault>#929292</GrayDefault>
 			<GrayDisabled>#b1bac2</GrayDisabled>
 			<GrayDark>#5b5b5b</GrayDark>
-			<GrayLight>#d3dde6</GrayLight>
+			<GrayLight>#bababa</GrayLight>
 			<TextDefault>#404040</TextDefault>
 			<TextDark>#212121</TextDark>
 			<TextHyperlink>Accent6</TextHyperlink>
@@ -132,6 +134,55 @@
 				<Caption-disabled>GrayDisabled</Caption-disabled>
 				<Caption-hover>TextHover</Caption-hover>
 			</PDHyperlink>
+			
+			<PDScrollBar>
+				<ButtonBorder>BackgroundDefault</ButtonBorder>
+				<ButtonFill>BackgroundDefault</ButtonFill>
+				<ButtonArrow>GrayDefault</ButtonArrow>
+				<ButtonBorder-disabled>GrayLight</ButtonBorder-disabled>
+				<ButtonFill-disabled>GrayLight</ButtonFill-disabled>
+				<ButtonArrow-disabled>GrayLight</ButtonArrow-disabled>
+				<ButtonBorder-active>AccentDefault</ButtonBorder-active>
+				<ButtonFill-active>AccentDefault</ButtonFill-active>
+				<ButtonArrow-active>TextInvert</ButtonArrow-active>
+				<ButtonBorder-hover>AccentDark</ButtonBorder-hover>
+				<ButtonFill-hover>BackgroundDefault</ButtonFill-hover>
+				<ButtonArrow-hover>AccentDefault</ButtonArrow-hover>
+				<ThumbBorder>GrayLight</ThumbBorder>
+				<ThumbFill>Graylight</ThumbFill>
+				<ThumbBorder-disabled>GrayDark</ThumbBorder-disabled>
+				<ThumbFill-disabled>GrayDark</ThumbFill-disabled>
+				<ThumbBorder-active>AccentDefault</ThumbBorder-active>
+				<ThumbFill-active>AccentLight</ThumbFill-active>
+				<ThumbBorder-hover>AccentLight</ThumbBorder-hover>
+				<ThumbFill-hover>AccentUltralight</ThumbFill-hover>
+				<Track>BackgroundCommandBar</Track>
+				<Track-disabled>GrayDefault</Track-disabled>
+				
+				<!-- On the main window, the scroll bar uses a different color scheme.  The control internally defines this as "canvas mode" and it requires special colors. -->
+				<ButtonBorderCanvasMode>BackgroundCommandBar</ButtonBorderCanvasMode>
+				<ButtonFillCanvasMode>BackgroundCommandBar</ButtonFillCanvasMode>
+				<ButtonArrowCanvasMode>GrayDark</ButtonArrowCanvasMode>
+				<ButtonBorderCanvasMode-disabled>GrayLight</ButtonBorderCanvasMode-disabled>
+				<ButtonFillCanvasMode-disabled>GrayLight</ButtonFillCanvasMode-disabled>
+				<ButtonArrowCanvasMode-disabled>GrayLight</ButtonArrowCanvasMode-disabled>
+				<ButtonBorderCanvasMode-active>AccentDefault</ButtonBorderCanvasMode-active>
+				<ButtonFillCanvasMode-active>AccentDefault</ButtonFillCanvasMode-active>
+				<ButtonArrowCanvasMode-active>TextInvert</ButtonArrowCanvasMode-active>
+				<ButtonBorderCanvasMode-hover>AccentLight</ButtonBorderCanvasMode-hover>
+				<ButtonFillCanvasMode-hover>AccentUltralight</ButtonFillCanvasMode-hover>
+				<ButtonArrowCanvasMode-hover>AccentDefault</ButtonArrowCanvasMode-hover>
+				<ThumbBorderCanvasMode>GrayLight</ThumbBorderCanvasMode>
+				<ThumbFillCanvasMode>GrayLight</ThumbFillCanvasMode>
+				<ThumbBorderCanvasMode-disabled>GrayDark</ThumbBorderCanvasMode-disabled>
+				<ThumbFillCanvasMode-disabled>GrayDark</ThumbFillCanvasMode-disabled>
+				<ThumbBorderCanvasMode-active>AccentUltralight</ThumbBorderCanvasMode-active>
+				<ThumbFillCanvasMode-active>AccentDefault</ThumbFillCanvasMode-active>
+				<ThumbBorderCanvasMode-hover>AccentLight</ThumbBorderCanvasMode-hover>
+				<ThumbFillCanvasMode-hover>AccentUltralight</ThumbFillCanvasMode-hover>
+				<TrackCanvasMode>BackgroundCommandBar</TrackCanvasMode>
+				<TrackCanvasMode-disabled>GrayDefault</TrackCanvasMode-disabled>
+			</PDScrollBar>
 						
 			<!-- ****************************************************************************************** -->
 		

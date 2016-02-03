@@ -94,7 +94,7 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
         Dim baseColorValue As Long
         
         'If the program is running, try to retrieve a matching color from PD's central theme manager.
-        If g_IsProgramRunning Then
+        If g_IsProgramRunning And Not (g_Themer Is Nothing) Then
             
             'Start by seeing if the central themer has already cached a value for this color
             If g_Themer.RetrieveColorFromCache(m_ObjectName, colorName, m_ColorList(colorIndex)) Then
@@ -116,7 +116,7 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
                     If colorLookupSuccessful Then
                         
                         'Store the base color value.  We'll use this as the basis for all subsequent color calculations.
-                        m_ColorList(colorIndex).BaseColor = baseColorValue
+                        m_ColorList(colorIndex).baseColor = baseColorValue
                         
                         'Because this color successfully exists, we are now going to check for disabled, active, hovered,
                         ' and active+hovered variants.  Each must be handled individually, and all are optional.  (If an
@@ -149,7 +149,7 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
             colorLookupSuccessful = Colors.GetColorFromString(IDE_FailsafeColor, baseColorValue)
             If colorLookupSuccessful Then
                 With m_ColorList(colorIndex)
-                    .BaseColor = baseColorValue
+                    .baseColor = baseColorValue
                     .DisabledColor = baseColorValue
                     .ActiveColor = baseColorValue
                     .HoverColor = baseColorValue
@@ -209,7 +209,7 @@ Public Function RetrieveColor(ByVal colorIndex As Long, Optional ByVal enabledSt
                 If hoverState Then
                     RetrieveColor = m_ColorList(colorIndex).HoverColor
                 Else
-                    RetrieveColor = m_ColorList(colorIndex).BaseColor
+                    RetrieveColor = m_ColorList(colorIndex).baseColor
                 End If
             End If
         Else
