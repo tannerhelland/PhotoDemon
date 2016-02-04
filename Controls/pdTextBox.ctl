@@ -237,6 +237,7 @@ Private Const WM_COMMAND As Long = &H111
 Private Const WM_NEXTDLGCTL As Long = &H28
 Private Const WM_MOUSEACTIVATE As Long = &H21
 Private Const WM_CTLCOLOREDIT As Long = &H133
+Private Const WM_CTLCOLORSTATIC As Long = &H138
 
 Private Const EN_UPDATE As Long = &H400
 Private Const EM_GETSEL As Long = &HB0
@@ -395,7 +396,7 @@ Public Property Let FontSize(ByVal newSize As Single)
             curFont.CreateFontObject
             
             'Edit box sizes are ideally set by the system, at creation time, so we don't have a choice but to recreate the box now
-            createEditBox
+            CreateEditBox
             
         End If
         
@@ -414,7 +415,7 @@ Public Property Let Multiline(ByVal newState As Boolean)
         
         'Changing the multiline property requires a full recreation of the edit box (e.g. it cannot be changed via window message alone).
         ' Also, note that the createEditBox function will automatically handle the backup/restoration of any text currently in the edit box.
-        createEditBox
+        CreateEditBox
         
         PropertyChanged "Multiline"
         
@@ -517,7 +518,7 @@ Public Property Let Text(ByRef newString As String)
 End Property
 
 'External functions can call this to fully select the text box's contents
-Public Sub selectAll()
+Public Sub SelectAll()
 
     If m_EditBoxHwnd <> 0 Then
         SendMessage m_EditBoxHwnd, EM_SETSEL, ByVal 0&, ByVal -1&
@@ -526,8 +527,8 @@ Public Sub selectAll()
 End Sub
 
 'After curFont has been created, this function can be used to return the "ideal" height of a string rendered via the current font.
-Private Function getIdealStringHeight() As Long
-    getIdealStringHeight = curFont.GetHeightOfString("abc123")
+Private Function GetIdealStringHeight() As Long
+    GetIdealStringHeight = curFont.GetHeightOfString("abc123")
 End Function
 
 'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
@@ -601,7 +602,7 @@ Private Sub UserControl_Initialize()
     End If
     
     'Create an initial font object
-    refreshFont
+    RefreshFont
     
 End Sub
 
@@ -646,7 +647,7 @@ Private Sub UserControl_Resize()
             
             'Retrieve the edit box's window rect, which is generated relative to the underlying DC
             Dim tmpRect As winRect
-            getEditBoxRect tmpRect
+            GetEditBoxRect tmpRect
             
             With tmpRect
                 MoveWindow m_EditBoxHwnd, .x1, .y1, .x2, .y2, 1
@@ -672,7 +673,7 @@ Private Sub UserControl_Show()
     'If we have not yet created the edit box, do so now
     If m_EditBoxHwnd = 0 Then
         
-        createEditBox
+        CreateEditBox
     
     'The edit box has already been created, so we just need to show it.  Note that we explicitly set flags to NOT activate
     ' the window, as we don't want it stealing focus.
@@ -697,7 +698,7 @@ Private Sub UserControl_Show()
 
 End Sub
 
-Private Sub getEditBoxRect(ByRef targetRect As winRect)
+Private Sub GetEditBoxRect(ByRef targetRect As winRect)
 
     With targetRect
         .x1 = 2
@@ -711,21 +712,21 @@ Private Sub getEditBoxRect(ByRef targetRect As winRect)
 End Sub
 
 'Create a brush for drawing the box background
-Private Sub createEditBoxBrush()
+Private Sub CreateEditBoxBrush()
 
-    If m_EditBoxBrush <> 0 Then DeleteObject m_EditBoxBrush
+    If m_EditBoxBrush <> 0 Then UserControl_Support.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
     
     If g_IsProgramRunning Then
-        m_EditBoxBrush = CreateSolidBrush(g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT))
+        m_EditBoxBrush = UserControl_Support.GetSharedGDIBrush(g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT))
     Else
-        m_EditBoxBrush = CreateSolidBrush(RGB(0, 255, 0))
+        m_EditBoxBrush = UserControl_Support.GetSharedGDIBrush(RGB(0, 255, 0))
     End If
 
 End Sub
 
 'As the wrapped system edit box may need to be recreated when certain properties are changed, this function is used to
 ' automate the process of destroying an existing window (if any) and recreating it anew.
-Private Function createEditBox() As Boolean
+Private Function CreateEditBox() As Boolean
 
     'If the edit box already exists, copy its text, then kill it
     Dim curText As String
@@ -734,10 +735,10 @@ Private Function createEditBox() As Boolean
     Else
         curText = m_TextBackup
     End If
-    destroyEditBox
+    DestroyEditBox
     
     'Create a brush for drawing the box background
-    createEditBoxBrush
+    CreateEditBoxBrush
     
     'Figure out which flags to use, based on the control's properties
     Dim flagsWinStyle As Long, flagsWinStyleExtended As Long, flagsEditControl As Long
@@ -760,7 +761,7 @@ Private Function createEditBox() As Boolean
             
             'Determine a standard string height
             Dim idealHeight As Long
-            idealHeight = getIdealStringHeight()
+            idealHeight = GetIdealStringHeight()
             
             'Resize the user control accordingly; the formula for height is the string height + 5px of borders.
             ' (5px = 2px on top, 3px on bottom.)  User control width is not changed.
@@ -779,7 +780,7 @@ Private Function createEditBox() As Boolean
     
     'Retrieve the edit box's window rect, which is generated relative to the underlying DC
     Dim tmpRect As winRect
-    getEditBoxRect tmpRect
+    GetEditBoxRect tmpRect
     
     With tmpRect
         m_EditBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("EDIT"), ByVal StrPtr(""), flagsWinStyle Or flagsEditControl, _
@@ -800,7 +801,7 @@ Private Function createEditBox() As Boolean
             'Subclass the user control as well.  This is necessary for handling update messages from the edit box
             If Not m_ParentHasBeenSubclassed Then
                 cSubclass.ssc_Subclass UserControl.hWnd, 0, 1, Me, True, True, False
-                cSubclass.ssc_AddMsg UserControl.hWnd, MSG_BEFORE, WM_CTLCOLOREDIT, WM_COMMAND
+                cSubclass.ssc_AddMsg UserControl.hWnd, MSG_BEFORE, WM_CTLCOLOREDIT, WM_CTLCOLORSTATIC, WM_COMMAND
                 m_ParentHasBeenSubclassed = True
             End If
             
@@ -808,18 +809,18 @@ Private Function createEditBox() As Boolean
     End If
     
     'Assign the default font to the edit box
-    refreshFont True
+    RefreshFont True
     
     'If the edit box had text before we killed it, restore that text now
     If Len(curText) <> 0 Then Text = curText
     
     'Return TRUE if successful
-    createEditBox = (m_EditBoxHwnd <> 0)
+    CreateEditBox = (m_EditBoxHwnd <> 0)
 
 End Function
 
 'If an edit box currently exists, this function will destroy it.
-Private Function destroyEditBox() As Boolean
+Private Function DestroyEditBox() As Boolean
 
     If m_EditBoxHwnd <> 0 Then
         
@@ -832,17 +833,20 @@ Private Function destroyEditBox() As Boolean
         
     End If
     
-    destroyEditBox = True
+    DestroyEditBox = True
 
 End Function
 
 Private Sub UserControl_Terminate()
     
     'Release the edit box background brush
-    If m_EditBoxBrush <> 0 Then DeleteObject m_EditBoxBrush
+    If m_EditBoxBrush <> 0 Then
+        UserControl_Support.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
+        m_EditBoxBrush = 0
+    End If
     
     'Destroy the edit box, as necessary
-    destroyEditBox
+    DestroyEditBox
     
     'Release any extra subclasser(s)
     If Not cSubclass Is Nothing Then cSubclass.ssc_Terminate
@@ -851,7 +855,7 @@ End Sub
 
 'When the font used for the edit box changes in some way, it can be recreated (refreshed) using this function.  Note that font
 ' creation is expensive, so it's worthwhile to avoid this step as much as possible.
-Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
+Private Sub RefreshFont(Optional ByVal forceRefresh As Boolean = False)
     
     Dim fontRefreshRequired As Boolean
     fontRefreshRequired = curFont.HasFontBeenCreated
@@ -905,10 +909,10 @@ Public Sub UpdateAgainstCurrentTheme()
     If g_IsProgramRunning Then
         
         'Create a brush for drawing the box background
-        createEditBoxBrush
+        CreateEditBoxBrush
         
         'Update the current font, as necessary
-        refreshFont
+        RefreshFont
         
         'Force an immediate repaint
         UpdateControlSize
@@ -999,18 +1003,18 @@ End Function
 'NOTE FOR OUTSIDE USERS!  These key constants are declared publicly in PD, because they are used many places.  You can find virtual keycode
 ' declarations in PD's Public_Constants module, or at this MSDN link:
 ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
-Private Function doesVirtualKeyRequireSpecialHandling(ByVal vKey As Long) As Boolean
+Private Function DoesVirtualKeyRequireSpecialHandling(ByVal vKey As Long) As Boolean
     
     Select Case vKey
     
         Case VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
-            doesVirtualKeyRequireSpecialHandling = True
+            DoesVirtualKeyRequireSpecialHandling = True
             
         Case VK_TAB
-            doesVirtualKeyRequireSpecialHandling = True
+            DoesVirtualKeyRequireSpecialHandling = True
         
         Case Else
-            doesVirtualKeyRequireSpecialHandling = False
+            DoesVirtualKeyRequireSpecialHandling = False
     
     End Select
         
@@ -1105,7 +1109,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                 
                     'The default key handler works just fine for character keys.  However, dialog keys (e.g. arrow keys) get eaten
                     ' by VB, so we must manually catch them in this hook, and forward them direct to the edit control.
-                    If doesVirtualKeyRequireSpecialHandling(wParam) Then
+                    If DoesVirtualKeyRequireSpecialHandling(wParam) Then
                         
                         'Key up events will be raised twice; once in a transitionary stage, and once again in a final stage.
                         ' To prevent double-raising of KeyUp events, we check the transitionary state before proceeding
@@ -1198,7 +1202,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
             
                 'The default key handler works just fine for character keys.  However, dialog keys (e.g. arrow keys) get eaten
                 ' by VB, so we must manually catch them in this hook, and forward them direct to the edit control.
-                If doesVirtualKeyRequireSpecialHandling(wParam) Then
+                If DoesVirtualKeyRequireSpecialHandling(wParam) Then
                     
                     'On a single-line control, the tab key should be used to redirect focus to a new window.
                     If (wParam = VK_TAB) Then
@@ -1320,10 +1324,30 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
             End If
         
-        'The parent receives this message, prior to the edit box being drawn.  The parent can use this to assign text and
+        'The parent receives this message prior to an ENABLED edit box being drawn.  The parent can use this to assign text and
         ' background colors to the edit box.
         Case WM_CTLCOLOREDIT
             
+            'Make sure the command is relative to *our* edit box, and not another one
+            If lParam = m_EditBoxHwnd Then
+            
+                'We can set the text color directly, using the API
+                If g_IsProgramRunning Then
+                    SetTextColor wParam, g_Themer.GetThemeColor(PDTC_TEXT_EDITBOX)
+                Else
+                    SetTextColor wParam, RGB(0, 0, 128)
+                End If
+                
+                'We return the background brush
+                bHandled = True
+                lReturn = m_EditBoxBrush
+                
+            End If
+        
+        'The parent receives this message prior to a DISABLED edit box being drawn.  The parent can use this to assign text and
+        ' background colors to the edit box.
+        Case WM_CTLCOLORSTATIC
+        
             'Make sure the command is relative to *our* edit box, and not another one
             If lParam = m_EditBoxHwnd Then
             
