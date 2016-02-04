@@ -47,6 +47,17 @@ Private m_windowList() As Long, m_wMsgList() As Long
 Private m_windowMsgCount As Long
 Private Const INITIAL_WINDOW_MESSAGE_LIST_SIZE As Long = 16&
 
+'Current list of shared GDI brushes; this spares us from creating unique brushes for every edit box instance
+Private Type SharedGDIBrush
+    brushColor As Long
+    brushHandle As Long
+    numOfOwners As Long
+End Type
+
+Private m_numOfSharedBrushes As Long
+Private m_SharedBrushes() As SharedGDIBrush
+Private Const INIT_SIZE_OF_BRUSH_CACHE As Long = 4&
+
 'Iterate through all sibling controls in our container, and if one is capable of receiving focus, activate it.  I had *really* hoped
 ' to bypass this kind of manual handling by using WM_NEXTDLGCTL, but I failed to get it working reliably with all types of VB windows.
 ' I'm honestly not sure whether VB even uses that message, or whether it uses some internal mechanism for focus tracking; the latter
@@ -280,5 +291,114 @@ Public Sub RemoveMessageRecipient(ByVal targetHwnd As Long)
         End If
     Next i
     
+End Sub
+
+'Edit boxes can all share the same background brush (as they are all themed identically).  Call this function instead
+' of creating your own brush for every text box instance.
+Public Function GetSharedGDIBrush(ByVal requestedColor As Long) As Long
+    
+    'First things first: if this is the first brush requested by the system, initialize the shared brush list
+    If m_numOfSharedBrushes = 0 Then
+        ReDim m_SharedBrushes(0 To INIT_SIZE_OF_BRUSH_CACHE - 1) As SharedGDIBrush
+    End If
+    
+    'Next, look for the requested color in our current cache.  If it exists, we don't want to recreate it.
+    Dim brushExists As Boolean, brushIndex As Long, i As Long
+    brushExists = False
+    
+    If m_numOfSharedBrushes > 0 Then
+            
+        For i = 0 To m_numOfSharedBrushes - 1
+            If m_SharedBrushes(i).brushColor = requestedColor Then
+            
+                'As a failsafe for black brushes, make sure the owner count is valid too
+                If m_SharedBrushes(i).numOfOwners > 0 Then
+                    brushExists = True
+                    brushIndex = i
+                    Exit For
+                End If
+            
+            End If
+        Next i
+            
+    End If
+    
+    'If we found the brush in our cache, increment the owner count, and return the handle immediately
+    If brushExists Then
+        m_SharedBrushes(brushIndex).numOfOwners = m_SharedBrushes(brushIndex).numOfOwners + 1
+        GetSharedGDIBrush = m_SharedBrushes(brushIndex).brushHandle
+    
+    'If the brush doesn't exist, create it anew
+    Else
+    
+        'If the cache is too small, resize it
+        If m_numOfSharedBrushes > UBound(m_SharedBrushes) Then ReDim Preserve m_SharedBrushes(0 To m_numOfSharedBrushes * 2 - 1) As SharedGDIBrush
+        
+        'Update the cache entry with new stats (including the created brush)
+        m_SharedBrushes(m_numOfSharedBrushes).brushColor = requestedColor
+        m_SharedBrushes(m_numOfSharedBrushes).numOfOwners = 1
+        m_SharedBrushes(m_numOfSharedBrushes).brushHandle = CreateSolidBrush(requestedColor)
+        
+        'Return the newly created brush handle, increment the brush count, and exit
+        GetSharedGDIBrush = m_SharedBrushes(m_numOfSharedBrushes).brushHandle
+        m_numOfSharedBrushes = m_numOfSharedBrushes + 1
+    
+    End If
+    
+End Function
+
+'Edit boxes can all share the same background brush (as they are all themed identically).  Call this function after
+' an edit box is unloaded, so we can free the shared brush accordingly.  (If it's more convenient, you can also use
+' the ReleaseSharedGDIBrushByHandle version of this function, below.)
+Public Sub ReleaseSharedGDIBrushByColor(ByVal requestedColor As Long)
+
+    'If the cache is empty, ignore this request
+    If m_numOfSharedBrushes = 0 Then
+        Debug.Print "FYI: UserControl_Support.ReleaseSharedGDIBrush() received a release request, but no shared brushes exist."
+        Exit Sub
+    
+    'If the cache is non-empty, find the matching brush and decrement its count.
+    Else
+    
+        Dim i As Long
+        For i = 0 To m_numOfSharedBrushes - 1
+            
+            If m_SharedBrushes(i).brushColor = requestedColor Then
+                m_SharedBrushes(i).numOfOwners = m_SharedBrushes(i).numOfOwners - 1
+                
+                'Brushes with a count of 0 are immediately killed.
+                If m_SharedBrushes(i).numOfOwners = 0 Then
+                    DeleteObject m_SharedBrushes(i).brushHandle
+                    m_SharedBrushes(i).brushColor = 0
+                End If
+                
+                Exit For
+            End If
+            
+        Next i
+        
+    End If
+
+End Sub
+
+Public Sub ReleaseSharedGDIBrushByHandle(ByVal requestedHandle As Long)
+
+    If m_numOfSharedBrushes = 0 Then
+        Debug.Print "FYI: UserControl_Support.ReleaseSharedGDIBrushByHandle() received a release request, but no shared brushes exist."
+        Exit Sub
+    Else
+        Dim i As Long
+        For i = 0 To m_numOfSharedBrushes - 1
+            If m_SharedBrushes(i).brushHandle = requestedHandle Then
+                m_SharedBrushes(i).numOfOwners = m_SharedBrushes(i).numOfOwners - 1
+                If m_SharedBrushes(i).numOfOwners = 0 Then
+                    DeleteObject m_SharedBrushes(i).brushHandle
+                    m_SharedBrushes(i).brushColor = 0
+                End If
+                Exit For
+            End If
+        Next i
+    End If
+
 End Sub
 
