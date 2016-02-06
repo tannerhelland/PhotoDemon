@@ -66,7 +66,6 @@ Begin VB.Form toolbar_Layers
       _ExtentX        =   6165
       _ExtentY        =   476
       Caption         =   "overview"
-      Value           =   0   'False
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -104,7 +103,6 @@ Begin VB.Form toolbar_Layers
       _ExtentX        =   6165
       _ExtentY        =   476
       Caption         =   "color selector"
-      Value           =   0   'False
    End
    Begin VB.Line lnSeparatorLeft 
       X1              =   0
