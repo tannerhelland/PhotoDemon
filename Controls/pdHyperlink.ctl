@@ -497,7 +497,7 @@ Private Sub UpdateControlLayout()
             If stringHeight = 0 Then stringHeight = 1
             
             'Request a matching size from the support class.
-            ucSupport.RequestNewSize stringWidth, stringHeight
+            ucSupport.RequestNewSize stringWidth, stringHeight, True
             
     End Select
     

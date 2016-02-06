@@ -104,6 +104,7 @@ Option Explicit
 
 'This object can raise a Change (which triggers when the Value property is changed by ANY means)
 Public Event Change()
+Public Event Resize()
 
 'Because we have multiple components on this user control, including an API text box, we report our own Got/Lost focus events.
 Public Event GotFocusAPI()
@@ -212,12 +213,12 @@ End Property
 
 Private Sub cFocusDetector_GotFocusReliable()
     m_ControlFocusCount = m_ControlFocusCount + 1
-    evaluateFocusCount True
+    EvaluateFocusCount True
 End Sub
 
 Private Sub cFocusDetector_LostFocusReliable()
     m_ControlFocusCount = m_ControlFocusCount - 1
-    evaluateFocusCount False
+    EvaluateFocusCount False
 End Sub
 
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -373,7 +374,7 @@ End Sub
 Private Sub txtPrimary_GotFocusAPI()
     
     m_ControlFocusCount = m_ControlFocusCount + 1
-    evaluateFocusCount True
+    EvaluateFocusCount True
     
     'As a convenience to the user, select all text when first clicked
     txtPrimary.selectAll
@@ -382,15 +383,13 @@ End Sub
 
 Private Sub txtPrimary_LostFocusAPI()
     m_ControlFocusCount = m_ControlFocusCount - 1
-    evaluateFocusCount False
+    EvaluateFocusCount False
 End Sub
 
 Private Sub txtPrimary_Resize()
-    
     If UserControl.ScaleHeight <> txtPrimary.Height + 2 Then
         UserControl.Extender.Height = txtPrimary.Height + 2
     End If
-    
 End Sub
 
 Public Property Get hWnd() As Long
@@ -501,7 +500,7 @@ Public Property Let SigDigits(ByVal newValue As Long)
     significantDigits = newValue
         
     'Update the text display to reflect the new significant digit amount, including any decimal places
-    txtPrimary = getFormattedStringValue(controlVal)
+    txtPrimary.Text = getFormattedStringValue(controlVal)
     
     PropertyChanged "SigDigits"
     
@@ -519,7 +518,7 @@ End Sub
 
 Private Sub UserControl_GotFocus()
     m_ControlFocusCount = m_ControlFocusCount + 1
-    evaluateFocusCount True
+    EvaluateFocusCount True
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -573,7 +572,7 @@ End Sub
 
 Private Sub UserControl_LostFocus()
     m_ControlFocusCount = m_ControlFocusCount - 1
-    evaluateFocusCount False
+    EvaluateFocusCount False
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -590,15 +589,15 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    resizeControl
+    ResizeControl
 End Sub
 
-Private Sub resizeControl()
+Private Sub ResizeControl()
 
     'The goal here is to keep the text box and scroll bar nicely aligned, with a 1px border for the red "error" box
     picScroll.Width = FixDPI(18)
     picScroll.Top = 1
-    picScroll.Height = txtPrimary.Height
+    picScroll.Height = txtPrimary.PixelHeight
     
     'Leave a 1px border around the text box, to be used for displaying red during range and numeric errors
     txtPrimary.Left = 1
@@ -606,7 +605,7 @@ Private Sub resizeControl()
     txtPrimary.Width = UserControl.ScaleWidth - 2 - picScroll.Width
     
     'Align the scroll bar container to the right of the text box
-    picScroll.Left = txtPrimary.Left + txtPrimary.Width
+    picScroll.Left = txtPrimary.Left + txtPrimary.PixelWidth
     
     'Calculate new rects for the up/down buttons
     With upRect
@@ -638,6 +637,8 @@ Private Sub resizeControl()
     
     'Request a redraw of the button
     RedrawButton
+    
+    RaiseEvent Resize
     
 End Sub
 
@@ -840,7 +841,7 @@ End Function
 
 'After a component of this control gets or loses focus, it needs to call this function.  This function is responsible for raising
 ' Got/LostFocusAPI events, which are important as an API text box is part of this control.
-Private Sub evaluateFocusCount(ByVal focusCountJustIncremented As Boolean)
+Private Sub EvaluateFocusCount(ByVal focusCountJustIncremented As Boolean)
 
     If focusCountJustIncremented Then
         

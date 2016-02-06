@@ -28,6 +28,7 @@
 			<GrayLight>#bababa</GrayLight>
 			<TextDefault>#404040</TextDefault>
 			<TextDark>#212121</TextDark>
+			<TextEditBox>TextDark</TextEditBox>
 			<TextHyperlink>Accent6</TextHyperlink>
 			<TextHover>Accent4</TextHover>
 			<TextInvert>#ffffff</TextInvert>
@@ -113,6 +114,15 @@
 				<Caption-hover>TextDefault</Caption-hover>
 				<Caption-disabled>GrayDisabled</Caption-disabled>
 			</PDButton>
+			
+			<PDEditBox>
+				<Background>BackgroundDefault</Background>
+				<Background-disabled>GrayLight</Background-disabled>
+				<Border>GrayDefault</Border>
+				<Border-hover>AccentDefault</Border-hover>
+				<Text>TextEditBox</Text>
+				<Text-disabled>GrayDefault</Text-disabled>
+			</PDEditBox>
 			
 			<PDGradientSelector>
 				<Border></Border>

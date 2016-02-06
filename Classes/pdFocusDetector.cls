@@ -125,11 +125,13 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 '* lParam     - Message related data.
 '* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
 '*************************************************************************************************
-
+    
+    'By design, this subclasser does not report any messages as handled.
+    bHandled = False
     
     Select Case uMsg
         
-        Case WM_ACTIVATE, WM_NCACTIVATE
+        Case WM_ACTIVATE
             
             'wParam contains a notification of whether we are gaining or losing focus.
             Select Case wParam
@@ -149,6 +151,16 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     End If
                     
             End Select
+            
+        'This message doesn't really apply to PD, but we cover it for completeness' sake
+        Case WM_NCACTIVATE
+            
+            If Not m_HasFocus Then
+                m_HasFocus = True
+                RaiseEvent GotFocusReliable
+            End If
+            
+            If wParam <> 1 Then lReturn = 1
         
         'Window is losing focus
         Case WM_KILLFOCUS
@@ -168,8 +180,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         
     End Select
     
-    'By design, this subclasser does not report any messages as handled.
-    bHandled = False
 
 ' *************************************************************
 ' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
