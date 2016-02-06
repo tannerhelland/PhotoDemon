@@ -366,14 +366,14 @@ End Function
 
 'Want direct access to a UI font instance?  Get one here.  Note that only size, bold, italic, and underline are currently matched,
 ' as PD doesn't use strikethrough fonts anywhere.
-Public Function GetMatchingUIFont(ByVal FontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As pdFont
+Public Function GetMatchingUIFont(ByVal fontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As pdFont
     
     'Inside the designer, we need to make sure the font collection exists
     If m_ProgramFontCollection Is Nothing Then InitProgramFontCollection
     
     'Add this font size+style combination to the collection, as necessary
     Dim fontIndex As Long
-    fontIndex = m_ProgramFontCollection.AddFontToCache(g_InterfaceFont, FontSize, isBold, isItalic, isUnderline)
+    fontIndex = m_ProgramFontCollection.AddFontToCache(g_InterfaceFont, fontSize, isBold, isItalic, isUnderline)
     
     'Return the handle of the newly created (and/or previously cached) pdFont object
     Set GetMatchingUIFont = m_ProgramFontCollection.GetFontObjectByPosition(fontIndex)
@@ -388,9 +388,9 @@ End Function
 
 'If the caller just wants to know the size of a default string, it's better to use this function.  That spares them from having to
 ' create a redundant font object just to measure text.
-Public Function GetDefaultStringHeight(ByVal FontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As Single
+Public Function GetDefaultStringHeight(ByVal fontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As Single
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(FontSize, isBold, isItalic, isUnderline)
+    Set tmpFont = Font_Management.GetMatchingUIFont(fontSize, isBold, isItalic, isUnderline)
     GetDefaultStringHeight = tmpFont.GetHeightOfString("FfAaBbCctbpqjy1234567890")
 End Function
 
@@ -594,7 +594,7 @@ Public Sub FillLogFontW_Basic(ByRef dstLogFontW As LOGFONTW, ByRef srcFontFace A
 End Sub
 
 'Fill a LOGFONTW struct with a matching PD font size (typically in pixels, but points are also supported)
-Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Single, ByVal fontMeasurementUnit As pdFontUnit)
+Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal fontSize As Single, ByVal fontMeasurementUnit As pdFontUnit)
 
     With dstLogFontW
         
@@ -605,14 +605,14 @@ Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Si
             Case pdfu_Pixel
                 
                 'Convert font size to points
-                FontSize = FontSize * 0.75      '(72 / 96, technically, where 96 is the current screen DPI)
+                fontSize = fontSize * 0.75      '(72 / 96, technically, where 96 is the current screen DPI)
                 
                 'Use the standard point-based formula
-                .lfHeight = Font_Management.ConvertToGDIFontSize(FontSize)
+                .lfHeight = Font_Management.ConvertToGDIFontSize(fontSize)
                 
             'Points are converted using a standard Windows formula; see https://msdn.microsoft.com/en-us/library/dd145037%28v=vs.85%29.aspx
             Case pdfu_Point
-                .lfHeight = Font_Management.ConvertToGDIFontSize(FontSize)
+                .lfHeight = Font_Management.ConvertToGDIFontSize(fontSize)
         
         End Select
         
@@ -712,9 +712,9 @@ End Function
 
 'Given a filled LOGFONTW struct (hopefully filled by the fillLogFontW_* functions above!), attempt to create an actual font object.
 ' Returns TRUE if successful; FALSE otherwise.
-Public Function createGDIFont(ByRef srcLogFont As LOGFONTW, ByRef dstFontHandle As Long) As Boolean
+Public Function CreateGDIFont(ByRef srcLogFont As LOGFONTW, ByRef dstFontHandle As Long) As Boolean
     dstFontHandle = CreateFontIndirect(srcLogFont)
-    createGDIFont = CBool(dstFontHandle <> 0)
+    CreateGDIFont = CBool(dstFontHandle <> 0)
 End Function
 
 'Delete a GDI font; returns TRUE if successful
@@ -764,7 +764,7 @@ Public Function QuickCreateFontAndDC(ByRef srcFontName As String, ByRef dstFont 
     
     Dim tmpLogFont As LOGFONTW
     FillLogFontW_Basic tmpLogFont, srcFontName, False, False, False, False
-    If createGDIFont(tmpLogFont, dstFont) Then
+    If CreateGDIFont(tmpLogFont, dstFont) Then
         
         'Create a temporary DC and select the font into it
         dstDC = Drawing.GetMemoryDC()

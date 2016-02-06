@@ -184,10 +184,6 @@ Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crCo
 'Handle to the system edit box wrapped by this control
 Private m_EditBoxHwnd As Long
 
-'pdFont handles the creation and maintenance of the font used to render the text box.  It is also used to determine control width for
-' single-line text boxes, as the control is auto-sized to fit the current font.
-Private curFont As pdFont
-
 'Rather than use an StdFont container (which requires VB to create redundant font objects), we track font properties manually,
 ' via dedicated properties.
 Private m_FontSize As Single
@@ -330,9 +326,9 @@ Private m_ControlHasFocus As Boolean
 ' UserControl_Resize event, using this variable.
 Private m_InternalResizeState As Boolean
 
-'The system handles drawing of the edit box.  This persistent brush handle is returned to the relevant window message,
-' and WAPI uses it to draw the edit box background.
-Private m_EditBoxBrush As Long
+'The system handles drawing of the edit box.  These persistent brush and font handles are passed to the relevant
+' window messages, and WAPI uses them when rendering the edit box and associated text.
+Private m_EditBoxBrush As Long, m_EditBoxFont As Long
 
 'While inside the hook event, this will be set to TRUE.  Because we raise events directly from the hook, we sometimes need to postpone
 ' crucial actions (like releasing the hook) until the hook proc has exited.
@@ -402,21 +398,12 @@ End Property
 
 Public Property Let FontSize(ByVal newSize As Single)
     
+    'Edit box sizes and margins are typically enforced by the system, at creation time, so it's easiest to just
+    ' recreate the box from scratch if the font settings change.  (This shouldn't typically happen at run-time, FYI)
     If newSize <> m_FontSize Then
         m_FontSize = newSize
-        
-        If Not (curFont Is Nothing) Then
-            
-            'Recreate the font object
-            curFont.ReleaseFromDC
-            curFont.SetFontSize m_FontSize
-            curFont.CreateFontObject
-            
-            'Edit box sizes are ideally set by the system, at creation time, so we don't have a choice but to recreate the box now
-            CreateEditBox
-            
-        End If
-        
+        CreateEditBox
+        PropertyChanged "FontSize"
     End If
     
 End Property
@@ -430,8 +417,10 @@ Public Property Let Multiline(ByVal newState As Boolean)
     If newState <> m_Multiline Then
         m_Multiline = newState
         
-        'Changing the multiline property requires a full recreation of the edit box (e.g. it cannot be changed via window message alone).
-        ' Also, note that the createEditBox function will automatically handle the backup/restoration of any text currently in the edit box.
+        'Changing the multiline property requires a full recreation of the edit box (e.g. it cannot be changed via
+        ' window message alone).
+        ' Also, note that the createEditBox function will automatically handle the backup/restoration of any text
+        ' currently inside the edit box.
         CreateEditBox
         
         PropertyChanged "Multiline"
@@ -528,14 +517,9 @@ Public Property Let Text(ByRef newString As String)
 End Property
 
 'External functions can call this to fully select the text box's contents
-Public Sub selectAll()
+Public Sub SelectAll()
     If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, EM_SETSEL, ByVal 0&, ByVal -1&
 End Sub
-
-'After curFont has been created, this function can be used to return the "ideal" height of a string rendered via the current font.
-Private Function GetIdealStringHeight() As Long
-    GetIdealStringHeight = curFont.GetHeightOfString("ajybf01234567890")
-End Function
 
 Private Sub tmrHookRelease_Timer()
 
@@ -618,6 +602,7 @@ Private Sub UserControl_GotFocus()
     If m_EditBoxHwnd <> 0 Then
         SetForegroundWindow m_EditBoxHwnd
         SetFocus m_EditBoxHwnd
+        If Not m_Multiline Then Me.SelectAll
     End If
     
     'If focusJustArrived Then RaiseEvent GotFocusAPI
@@ -627,8 +612,7 @@ End Sub
 Private Sub UserControl_Initialize()
 
     m_EditBoxHwnd = 0
-    
-    Set curFont = New pdFont
+    m_EditBoxFont = 0
     m_FontSize = 10
     
     'Note that we are not currently responsible for any resize events
@@ -646,9 +630,6 @@ Private Sub UserControl_Initialize()
     Dim colorCount As PDEDITBOX_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDEditBox", colorCount
     If Not g_IsProgramRunning Then UpdateColorList
-    
-    'Create an initial font object
-    refreshFont
     
 End Sub
 
@@ -706,15 +687,19 @@ Public Function PixelHeight() As Long
 End Function
 
 'Create a brush for drawing the box background
-Private Sub CreateEditBoxBrush()
+Private Sub CreateEditBoxGDIObjects()
 
     If m_EditBoxBrush <> 0 Then UserControl_Support.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
+    If m_EditBoxFont <> 0 Then UserControl_Support.ReleaseSharedGDIFontByHandle m_EditBoxFont
     
     If g_IsProgramRunning Then
         m_EditBoxBrush = UserControl_Support.GetSharedGDIBrush(m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, , m_ControlHasFocus))
     Else
         m_EditBoxBrush = UserControl_Support.GetSharedGDIBrush(RGB(0, 255, 0))
     End If
+    
+    m_EditBoxFont = UserControl_Support.GetSharedGDIFont(m_FontSize)
+    If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(ucSupport.AmIVisible(), 1, 0)
 
 End Sub
 
@@ -732,7 +717,7 @@ Private Function CreateEditBox() As Boolean
     DestroyEditBox
     
     'Create a brush for drawing the box background
-    CreateEditBoxBrush
+    CreateEditBoxGDIObjects
     
     'Figure out which flags to use, based on the control's properties
     Dim flagsWinStyle As Long, flagsWinStyleExtended As Long, flagsEditControl As Long
@@ -748,22 +733,20 @@ Private Function CreateEditBox() As Boolean
     End If
     
     'Multiline text boxes can have any height.  Single-line text boxes cannot; they are forced to an ideal height,
-    ' using the current font as our guide.  We check for this here, prior to creating the edit box, as we can't easily
-    ' access our font object once we assign it to the edit box.
+    ' using the current font as our guide.  We check for this here, prior to creating the edit box, so we can create
+    ' it at the proper height.
     If Not m_Multiline Then
-        If Not (curFont Is Nothing) Then
-            
-            'Determine a standard string height
-            Dim idealHeight As Long
-            idealHeight = GetIdealStringHeight()
-            
-            'Resize the user control accordingly; the formula for height is the string height + 5px of borders.
-            ' (5px = 2px on top, 3px on bottom.)  User control width is not changed.
-            m_InternalResizeState = True
-            If g_IsProgramRunning Then ucSupport.RequestNewSize 0, idealHeight + 4, True
-            m_InternalResizeState = False
-            
-        End If
+        
+        'Determine a standard string height
+        Dim idealHeight As Long
+        idealHeight = Font_Management.GetDefaultStringHeight(m_FontSize)
+        
+        'Resize the user control accordingly; the formula for height is the string height + 4px of borders.
+        ' (4px = 2px on top, 2px on bottom.)  User control width is not changed.
+        m_InternalResizeState = True
+        If g_IsProgramRunning Then ucSupport.RequestNewSize 0, idealHeight + 4, True
+        m_InternalResizeState = False
+        
     End If
     
     'Retrieve the edit box's window rect, which is generated relative to the underlying DC
@@ -796,8 +779,8 @@ Private Function CreateEditBox() As Boolean
         End If
     End If
     
-    'Assign the default font to the edit box
-    refreshFont True
+    'Pass an appropriate font handle to the edit box; GDI will use this font for text rendering.
+    If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(ucSupport.AmIVisible(), 1, 0)
     
     'If the edit box had text before we killed it, restore that text now
     If Len(curText) <> 0 Then Text = curText
@@ -830,25 +813,19 @@ End Function
 
 Private Sub UserControl_Resize()
     If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
-    If Not g_IsProgramCompiled Then
-        UpdateControlLayout
-        RaiseEvent Resize
-    End If
-End Sub
-
-Private Sub UserControl_Show()
-    If Not g_IsProgramCompiled Then
-        UpdateControlLayout
-        
-    End If
 End Sub
 
 Private Sub UserControl_Terminate()
     
-    'Release the edit box background brush
+    'Release any GDI objects associated with the edit box
     If m_EditBoxBrush <> 0 Then
         UserControl_Support.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
         m_EditBoxBrush = 0
+    End If
+    
+    If m_EditBoxFont <> 0 Then
+        UserControl_Support.ReleaseSharedGDIFontByHandle m_EditBoxFont
+        m_EditBoxFont = 0
     End If
     
     'Destroy the edit box, as necessary
@@ -856,40 +833,6 @@ Private Sub UserControl_Terminate()
     
     'Release any extra subclasser(s)
     If Not cSubclass Is Nothing Then cSubclass.ssc_Terminate
-    
-End Sub
-
-'When the font used for the edit box changes in some way, it can be recreated (refreshed) using this function.  Note that font
-' creation is expensive, so it's worthwhile to avoid this step as much as possible.
-Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
-    
-    Dim fontRefreshRequired As Boolean
-    fontRefreshRequired = curFont.HasFontBeenCreated
-    
-    'Update each font parameter in turn.  If one (or more) requires a new font object, the font will be recreated as the final step.
-    
-    'Font face is always set automatically, to match the current program-wide font
-    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.GetFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
-        fontRefreshRequired = True
-        curFont.SetFontFace g_InterfaceFont
-    End If
-    
-    'In the future, I may switch to GDI+ for font rendering, as it supports floating-point font sizes.  In the meantime, we check
-    ' parity using an Int() conversion, as GDI only supports integer font sizes.
-    If Int(m_FontSize) <> Int(curFont.GetFontSize) Then
-        fontRefreshRequired = True
-        curFont.SetFontSize m_FontSize
-    End If
-        
-    'Request a new font, if one or more settings have changed
-    If fontRefreshRequired Or forceRefresh Then
-        
-        curFont.CreateFontObject
-        
-        'Whenever the font is recreated, we need to reassign it to the text box.  This is done via the WM_SETFONT message.
-        If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, WM_SETFONT, curFont.GetFontHandle, IIf(UserControl.Extender.Visible, 1, 0)
-            
-    End If
     
 End Sub
 
@@ -962,10 +905,7 @@ Public Sub UpdateAgainstCurrentTheme()
     If g_IsProgramRunning Then
         
         'Create a brush for drawing the box background
-        CreateEditBoxBrush
-        
-        'Update the current font, as necessary
-        refreshFont
+        CreateEditBoxGDIObjects
                 
         'Force an immediate repaint
         UpdateControlLayout
@@ -977,7 +917,7 @@ End Sub
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    If m_EditBoxHwnd <> 0 Then ucSupport.AssignTooltip m_EditBoxHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
 
 'If a virtual key code is numeric, return TRUE.
