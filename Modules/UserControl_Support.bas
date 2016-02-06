@@ -58,6 +58,20 @@ Private m_numOfSharedBrushes As Long
 Private m_SharedBrushes() As SharedGDIBrush
 Private Const INIT_SIZE_OF_BRUSH_CACHE As Long = 4&
 
+'Current list of shared GDI fonts; this spares us from creating unique font for every edit box instance.
+' (Note that we don't use a pdFontCollection object for this, as these fonts are immutable.  If we accidentally
+'  destroy one before its matching edit box is freed, we will crash and burn, so a different handling technique
+'  is requred.)
+Private Type SharedGDIFont
+    fontSize As Single
+    fontHandle As Long
+    numOfOwners As Long
+End Type
+
+Private m_numOfSharedFonts As Long
+Private m_SharedFonts() As SharedGDIFont
+Private Const INIT_SIZE_OF_FONT_CACHE As Long = 4&
+
 'Iterate through all sibling controls in our container, and if one is capable of receiving focus, activate it.  I had *really* hoped
 ' to bypass this kind of manual handling by using WM_NEXTDLGCTL, but I failed to get it working reliably with all types of VB windows.
 ' I'm honestly not sure whether VB even uses that message, or whether it uses some internal mechanism for focus tracking; the latter
@@ -402,3 +416,87 @@ Public Sub ReleaseSharedGDIBrushByHandle(ByVal requestedHandle As Long)
 
 End Sub
 
+'Edit boxes can all share the same rendering font (as they are all themed identically).  Call this function instead
+' of creating your own hFont for every text box instance.
+Public Function GetSharedGDIFont(ByVal requestedSize As Single) As Long
+    
+    'First things first: if this is the first font requested by the system, initialize the shared font list
+    If m_numOfSharedFonts = 0 Then
+        ReDim m_SharedFonts(0 To INIT_SIZE_OF_FONT_CACHE - 1) As SharedGDIFont
+    End If
+    
+    'Next, look for the requested size in our current cache.  If it exists, we don't want to recreate it.
+    Dim fontExists As Boolean, fontIndex As Long, i As Long
+    fontExists = False
+    
+    If m_numOfSharedFonts > 0 Then
+            
+        For i = 0 To m_numOfSharedFonts - 1
+            If m_SharedFonts(i).fontSize = requestedSize Then
+            
+                'As a failsafe, make sure the owner count is valid too
+                If m_SharedFonts(i).numOfOwners > 0 Then
+                    fontExists = True
+                    fontIndex = i
+                    Exit For
+                End If
+            
+            End If
+        Next i
+            
+    End If
+    
+    'If we found the right font in our cache, increment the owner count, and return the handle immediately
+    If fontExists Then
+        m_SharedFonts(fontIndex).numOfOwners = m_SharedFonts(fontIndex).numOfOwners + 1
+        GetSharedGDIFont = m_SharedFonts(fontIndex).fontHandle
+    
+    'If the font doesn't exist, create it anew
+    Else
+    
+        'If the cache is too small, resize it
+        If m_numOfSharedFonts > UBound(m_SharedFonts) Then ReDim Preserve m_SharedFonts(0 To m_numOfSharedFonts * 2 - 1) As SharedGDIFont
+        
+        'Font creation is cumbersome, but PD provides some helper functions to simplify it
+        Dim tmpLogFont As LOGFONTW
+        Font_Management.FillLogFontW_Basic tmpLogFont, g_InterfaceFont, False, False, False, False
+        Font_Management.FillLogFontW_Size tmpLogFont, requestedSize, pdfu_Point
+        Font_Management.FillLogFontW_Quality tmpLogFont, TextRenderingHintClearTypeGridFit
+        
+        'Update the cache entry with new stats (including the created font)
+        m_SharedFonts(m_numOfSharedFonts).fontSize = requestedSize
+        m_SharedFonts(m_numOfSharedFonts).numOfOwners = 1
+        If Not Font_Management.CreateGDIFont(tmpLogFont, m_SharedFonts(m_numOfSharedFonts).fontHandle) Then
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  UserControl_Support.GetSharedGDIFont() failed to create a new UI font handle."
+            #End If
+        End If
+        
+        'Return the newly created font handle, increment the font count, and exit
+        GetSharedGDIFont = m_SharedFonts(m_numOfSharedFonts).fontHandle
+        m_numOfSharedFonts = m_numOfSharedFonts + 1
+    
+    End If
+    
+End Function
+
+Public Sub ReleaseSharedGDIFontByHandle(ByVal requestedHandle As Long)
+
+    If m_numOfSharedFonts = 0 Then
+        Debug.Print "FYI: UserControl_Support.ReleaseSharedGDIFontByHandle() received a release request, but no shared fonts exist."
+        Exit Sub
+    Else
+        Dim i As Long
+        For i = 0 To m_numOfSharedFonts - 1
+            If m_SharedFonts(i).fontHandle = requestedHandle Then
+                m_SharedFonts(i).numOfOwners = m_SharedFonts(i).numOfOwners - 1
+                If m_SharedFonts(i).numOfOwners = 0 Then
+                    Font_Management.DeleteGDIFont m_SharedFonts(i).fontHandle
+                    m_SharedFonts(i).fontHandle = 0
+                End If
+                Exit For
+            End If
+        Next i
+    End If
+
+End Sub
