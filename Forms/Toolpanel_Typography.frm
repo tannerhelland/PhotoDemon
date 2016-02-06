@@ -270,6 +270,7 @@ Begin VB.Form toolpanel_FancyText
             _ExtentX        =   5741
             _ExtentY        =   582
             Caption         =   "outline text"
+            Value           =   0
          End
       End
    End
@@ -1450,7 +1451,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 End Sub
 
 Private Sub Form_Resize()
-    updateAgainstCurrentLayer
+    UpdateAgainstCurrentLayer
 End Sub
 
 Private Sub lastUsedSettings_ReadCustomPresetData()
@@ -1469,7 +1470,7 @@ Private Sub lblConvertLayerConfirm_Click()
     pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).getActiveLayerIndex
     
     'Hide the warning panel and redraw both the viewport, and the UI (as new UI options may now be available)
-    Me.updateAgainstCurrentLayer
+    Me.UpdateAgainstCurrentLayer
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     SyncInterfaceToCurrentImage
     
@@ -1818,7 +1819,7 @@ End Sub
 
 'Outside functions can forcibly request an update against the current layer.  If the current layer is a non-typography text layer of
 ' some type (e.g. basic text), an option will be displayed to convert the layer.
-Public Sub updateAgainstCurrentLayer()
+Public Sub UpdateAgainstCurrentLayer()
     
     If g_OpenImageCount > 0 Then
     
@@ -1845,8 +1846,8 @@ Public Sub updateAgainstCurrentLayer()
                 Me.picConvertLayer.Move 0, 0, Me.ScaleWidth, Me.ScaleHeight
                 
                 'Center all labels on the panel
-                Me.lblConvertLayer.Left = (Me.ScaleWidth - Me.lblConvertLayer.Width) / 2
-                Me.lblConvertLayerConfirm.Left = (Me.ScaleWidth - Me.lblConvertLayerConfirm.Width) / 2
+                Me.lblConvertLayer.Left = (Me.ScaleWidth - lblConvertLayer.PixelWidth) / 2
+                Me.lblConvertLayerConfirm.Left = (Me.ScaleWidth - lblConvertLayerConfirm.PixelWidth) / 2
                 
                 'Display the panel
                 Me.picConvertLayer.Visible = True
