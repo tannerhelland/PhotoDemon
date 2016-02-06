@@ -38,7 +38,7 @@ Option Explicit
 
 'This class raises many events.  Some *must* be responded to.  Others are optional.
 ' (These are poorly documented at present - sorry!)
-Public Event CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef bHandled As Boolean)
+Public Event CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef bHandled As Boolean, ByRef lReturn As Long)
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 Public Event WindowMove(ByVal newLeft As Long, ByVal newTop As Long)
@@ -818,6 +818,14 @@ Friend Sub GetControlRect(ByRef dstRect As RECTL)
     End With
 End Sub
 
+Public Function GetControlWidth() As Long
+    GetControlWidth = m_MoveSize.GetWidth
+End Function
+
+Public Function GetControlHeight() As Long
+    GetControlHeight = m_MoveSize.GetHeight
+End Function
+
 Public Function IsMouseInside() As Boolean
     IsMouseInside = m_MouseInsideUC
 End Function
@@ -839,7 +847,7 @@ Public Sub RequestNewSize(Optional ByVal newWidth As Long = 0, Optional ByVal ne
     If newHeight = 0 Then newHeight = m_MoveSize.GetHeight
     
     m_ResizeEventsSuspended = Not alsoNotifyMeViaEvent
-    m_MoveSize.SetSize newWidth, newHeight
+    m_MoveSize.SetSize newWidth, newHeight, alsoNotifyMeViaEvent
     m_ResizeEventsSuspended = False
     
 End Sub
@@ -1031,7 +1039,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         
         'All other messages are custom requests from the window.  Use them to raise custom message events.
         Case Else
-            RaiseEvent CustomMessage(uMsg, wParam, lParam, bHandled)
+            RaiseEvent CustomMessage(uMsg, wParam, lParam, bHandled, lReturn)
     
     End Select
     

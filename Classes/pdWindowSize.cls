@@ -57,6 +57,7 @@ Private Declare Function ClientToScreen Lib "user32" (ByVal srcHwnd As Long, ByR
 Private Declare Function ScreenToClient Lib "user32" (ByVal srcHwnd As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByRef lpPoints As POINTAPI, ByVal cPoints As Long) As Long
 Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Const GW_OWNER = 4
 
 'Optional window messages to subclass
@@ -143,10 +144,10 @@ End Sub
 Public Sub SetSize(ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
     
     Dim swpFlags As SWP_FLAGS
-    swpFlags = SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOACTIVATE
+    swpFlags = SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER 'Or SWP_NOCOPYBITS
     If Not notifyWindow Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
     
-    SetWindowPos m_hWnd, 0&, 0, 0, newWidth, newHeight, swpFlags
+    SetWindowPos m_hWnd, 0&, 0&, 0&, newWidth, newHeight, swpFlags
     
 End Sub
 
@@ -223,7 +224,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         Case WM_MOVE
             UpdateWinRect
             RaiseEvent WindowMove(m_WindowRect.x1, m_WindowRect.y1)
-        
+            
     End Select
     
 

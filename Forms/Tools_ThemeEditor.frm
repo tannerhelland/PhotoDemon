@@ -24,6 +24,16 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdTextBox pdTextTest 
+      Height          =   255
+      Left            =   7680
+      TabIndex        =   13
+      Top             =   2760
+      Width           =   2775
+      _ExtentX        =   4895
+      _ExtentY        =   450
+      Text            =   "Sample text goes here"
+   End
    Begin PhotoDemon.pdScrollBar pdScrollTest 
       Height          =   255
       Index           =   0

@@ -28,6 +28,7 @@
 			<GrayLight>#5b5b5b</GrayLight>
 			<TextDefault>#c0c0c0</TextDefault>
 			<TextDark>#d9d9d9</TextDark>
+			<TextEditBox>TextDark</TextEditBox>
 			<TextHyperlink>Accent4</TextHyperlink>
 			<TextHover>Accent6</TextHover>
 			<TextInvert>#313131</TextInvert>
@@ -114,6 +115,15 @@
 				<Caption-disabled>GrayDisabled</Caption-disabled>
 			</PDButton>
 			
+			<PDEditBox>
+				<Background>BackgroundDefault</Background>
+				<Background-disabled>GrayLight</Background-disabled>
+				<Border>GrayDefault</Border>
+				<Border-hover>AccentDefault</Border-hover>
+				<Text>TextEditBox</Text>
+				<Text-disabled>GrayDefault</Text-disabled>
+			</PDEditBox>
+			
 			<PDGradientSelector>
 				<Border></Border>
 				<Border-active></Border-active>
@@ -154,8 +164,8 @@
 				<ThumbFill-disabled>GrayDark</ThumbFill-disabled>
 				<ThumbBorder-active>AccentDefault</ThumbBorder-active>
 				<ThumbFill-active>AccentLight</ThumbFill-active>
-				<ThumbBorder-hover>AccentLight</ThumbBorder-hover>
-				<ThumbFill-hover>AccentUltralight</ThumbFill-hover>
+				<ThumbBorder-hover>AccentUltralight</ThumbBorder-hover>
+				<ThumbFill-hover>AccentLight</ThumbFill-hover>
 				<Track>BackgroundCommandBar</Track>
 				<Track-disabled>GrayDefault</Track-disabled>
 				
@@ -178,8 +188,8 @@
 				<ThumbFillCanvasMode-disabled>GrayDark</ThumbFillCanvasMode-disabled>
 				<ThumbBorderCanvasMode-active>AccentUltralight</ThumbBorderCanvasMode-active>
 				<ThumbFillCanvasMode-active>AccentDefault</ThumbFillCanvasMode-active>
-				<ThumbBorderCanvasMode-hover>AccentLight</ThumbBorderCanvasMode-hover>
-				<ThumbFillCanvasMode-hover>AccentUltralight</ThumbFillCanvasMode-hover>
+				<ThumbBorderCanvasMode-hover>AccentUltralight</ThumbBorderCanvasMode-hover>
+				<ThumbFillCanvasMode-hover>AccentLight</ThumbFillCanvasMode-hover>
 				<TrackCanvasMode>BackgroundCommandBar</TrackCanvasMode>
 				<TrackCanvasMode-disabled>GrayDefault</TrackCanvasMode-disabled>
 			</PDScrollBar>

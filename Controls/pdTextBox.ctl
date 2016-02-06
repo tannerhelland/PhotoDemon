@@ -15,6 +15,7 @@ Begin VB.UserControl pdTextBox
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    ScaleHeight     =   65
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   201
@@ -143,6 +144,10 @@ Private Const ES_WANTRETURN = &H1000
 
 'Updating the font is done via WM_SETFONT
 Private Const WM_SETFONT = &H30
+Private Declare Function SetBkMode Lib "gdi32" (ByVal targetDC As Long, ByVal nBkMode As Long) As Long
+Private Declare Function SetBkColor Lib "gdi32" (ByVal targetDC As Long, ByVal nBkColor As Long) As Long
+Private Const SBKM_OPAQUE = 2
+Private Const SBKM_TRANSPARENT = 1
 
 'These constants can be used as the second parameter of the ShowWindow API function
 Private Enum showWindowOptions
@@ -320,13 +325,6 @@ Private m_TimeAtFocusEnter As Long
 ' Got/Lost focus events when the *entire control* loses focus (vs any one individual component).
 Private m_ControlHasFocus As Boolean
 
-'Persistent back buffer, which we manage internally
-Private m_BackBuffer As pdDIB
-
-'Flicker-free window painter
-Private WithEvents cPainter As pdWindowPainter
-Attribute cPainter.VB_VarHelpID = -1
-
 'If the user resizes an edit box, the control's back buffer needs to be redrawn.  If we resize the edit box as part of an internal
 ' AutoSize calculation, however, we will already be in the midst of resizing the backbuffer - so we override the behavior of the
 ' UserControl_Resize event, using this variable.
@@ -344,9 +342,28 @@ Private m_InHookNow As Boolean
 ' text to this string.  When the edit box is created, this text will be automatically placed inside the control.
 Private m_TextBackup As String
 
-'Additional helpers for rendering themed and multiline tooltips
-Private m_Tooltip As pdToolTip
-Private m_ToolString As String
+'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
+' but I've since attempted to wrap these into a single master control support class.
+Private WithEvents ucSupport As pdUCSupport
+Attribute ucSupport.VB_VarHelpID = -1
+
+'Local list of themable colors.  This list includes all potential colors used by the control, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDEDITBOX_COLOR_LIST
+    [_First] = 0
+    PDEB_Background = 0
+    PDEB_Border = 1
+    PDEB_Text = 2
+    [_Last] = 2
+    [_Count] = 3
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
 
 'hWnds aren't exposed by default
 Public Property Get hWnd() As Long
@@ -425,22 +442,15 @@ End Property
 
 'SelStart is used by some PD functions to control caret positioning after automatic text updates (as used in the text up/down)
 Public Property Get SelStart() As Long
-    
-    Dim startPos As Long, endPos As Long, retVal As Long
-    
     If m_EditBoxHwnd <> 0 Then
+        Dim startPos As Long, endPos As Long, retVal As Long
         retVal = SendMessage(m_EditBoxHwnd, EM_GETSEL, startPos, endPos)
         SelStart = startPos
     End If
-    
 End Property
 
 Public Property Let SelStart(ByVal newPosition As Long)
-    
-    If m_EditBoxHwnd <> 0 Then
-        SendMessage m_EditBoxHwnd, EM_SETSEL, newPosition, newPosition
-    End If
-    
+    If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, EM_SETSEL, newPosition, newPosition
 End Property
 
 'Tab handling for API windows is complicated.  This control (like most other PD controls) supports variable tab key behavior.
@@ -518,27 +528,14 @@ Public Property Let Text(ByRef newString As String)
 End Property
 
 'External functions can call this to fully select the text box's contents
-Public Sub SelectAll()
-
-    If m_EditBoxHwnd <> 0 Then
-        SendMessage m_EditBoxHwnd, EM_SETSEL, ByVal 0&, ByVal -1&
-    End If
-
+Public Sub selectAll()
+    If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, EM_SETSEL, ByVal 0&, ByVal -1&
 End Sub
 
 'After curFont has been created, this function can be used to return the "ideal" height of a string rendered via the current font.
 Private Function GetIdealStringHeight() As Long
-    GetIdealStringHeight = curFont.GetHeightOfString("abc123")
+    GetIdealStringHeight = curFont.GetHeightOfString("ajybf01234567890")
 End Function
-
-'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
-' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
-Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
-    
-    'Flip the relevant chunk of the buffer to the screen
-    BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
-        
-End Sub
 
 Private Sub tmrHookRelease_Timer()
 
@@ -552,13 +549,69 @@ Private Sub tmrHookRelease_Timer()
     
 End Sub
 
-'When the control receives focus, forcibly forward focus to the API edit box
+Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
+    If updateLayoutToo Then UpdateControlLayout
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
+    
+    If newVisibility Then
+        
+        'If we have not yet created the edit box, do so now
+        If m_EditBoxHwnd = 0 Then
+            CreateEditBox
+        
+        'The edit box has already been created, so we just need to show it.  Note that we explicitly set flags to NOT activate
+        ' the window, as we don't want it stealing focus.
+        Else
+            ShowWindow m_EditBoxHwnd, SW_SHOWNA
+        End If
+        
+    Else
+        If m_EditBoxHwnd <> 0 Then ShowWindow m_EditBoxHwnd, SW_HIDE
+    End If
+    
+End Sub
+
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    UpdateControlLayout
+    RaiseEvent Resize
+End Sub
+
+Private Sub SynchronizeEditBoxSize()
+    
+    'Ignore resize events generated internally (e.g. sizing a text box to the current font)
+    If Not m_InternalResizeState Then
+    
+        'Reposition the edit text box
+        If m_EditBoxHwnd <> 0 Then
+            
+            'Retrieve the edit box's window rect, which is generated relative to the underlying hWnd
+            Dim tmpRect As winRect
+            GetEditBoxRect tmpRect
+            
+            With tmpRect
+                MoveWindow m_EditBoxHwnd, .x1, .y1, .x2, .y2, 1&
+            End With
+            
+        End If
+        
+    End If
+    
+End Sub
+
 Private Sub UserControl_GotFocus()
+    
+    Dim focusJustArrived As Boolean
+    focusJustArrived = False
     
     'Mark the control-wide focus state
     If Not m_ControlHasFocus Then
         m_ControlHasFocus = True
+        RedrawBackBuffer
         RaiseEvent GotFocusAPI
+        focusJustArrived = True
     End If
     
     'The user control itself should never have focus.  Forward it to the API edit box.
@@ -567,11 +620,8 @@ Private Sub UserControl_GotFocus()
         SetFocus m_EditBoxHwnd
     End If
     
-End Sub
-
-'When the user control is hidden, we must hide the edit box window as well
-Private Sub UserControl_Hide()
-    If m_EditBoxHwnd <> 0 Then ShowWindow m_EditBoxHwnd, SW_HIDE
+    'If focusJustArrived Then RaiseEvent GotFocusAPI
+    
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -587,22 +637,18 @@ Private Sub UserControl_Initialize()
     'At run-time, initialize a subclasser
     If g_IsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
     
-    'When not in design mode, initialize a tracker for mouse events
-    If g_IsProgramRunning Then
-        
-        'Start a flicker-free window painter
-        Set cPainter = New pdWindowPainter
-        cPainter.StartPainter Me.hWnd
-                
-    'In design mode, initialize a base theming class, so our paint function doesn't fail
-    Else
-        
-        Set g_Themer = New pdVisualThemes
-        
-    End If
+    'Initialize a master user control support class
+    Set ucSupport = New pdUCSupport
+    ucSupport.RegisterControl UserControl.hWnd
+    
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDEDITBOX_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDEditBox", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
     
     'Create an initial font object
-    RefreshFont
+    refreshFont
     
 End Sub
 
@@ -619,9 +665,15 @@ Private Sub UserControl_LostFocus()
     'Mark the control-wide focus state
     If m_ControlHasFocus Then
         m_ControlHasFocus = False
+        RedrawBackBuffer
         RaiseEvent LostFocusAPI
     End If
     
+End Sub
+
+'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
+Private Sub UserControl_Paint()
+    ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -636,80 +688,22 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
 End Sub
 
-'When the user control is resized, the text box must be resized to match
-Private Sub UserControl_Resize()
-
-    'Ignore resize events generated internally (e.g. sizing a text box to the current font)
-    If Not m_InternalResizeState Then
-    
-        'Reposition the edit text box
-        If m_EditBoxHwnd <> 0 Then
-            
-            'Retrieve the edit box's window rect, which is generated relative to the underlying DC
-            Dim tmpRect As winRect
-            GetEditBoxRect tmpRect
-            
-            With tmpRect
-                MoveWindow m_EditBoxHwnd, .x1, .y1, .x2, .y2, 1
-            End With
-            
-        End If
-        
-        'Redraw the control background
-        UpdateControlSize
-                
-    End If
-    
-    RaiseEvent Resize
-
-End Sub
-
-'Show the control and the edit box.  (This is the first place the edit box is typically created, as well.)
-Private Sub UserControl_Show()
-    
-    'Redraw the control
-    'UpdateControlSize
-    
-    'If we have not yet created the edit box, do so now
-    If m_EditBoxHwnd = 0 Then
-        
-        CreateEditBox
-    
-    'The edit box has already been created, so we just need to show it.  Note that we explicitly set flags to NOT activate
-    ' the window, as we don't want it stealing focus.
-    Else
-        If m_EditBoxHwnd <> 0 Then ShowWindow m_EditBoxHwnd, SW_SHOWNA
-    End If
-    
-    'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
-    ' using a custom solution (which allows for linebreaks and theming).  Note that this has the ugly side-effect of
-    ' permanently erasing the extender's tooltip, so FOR THIS CONTROL, TOOLTIPS MUST BE SET AT RUN-TIME!
-    '
-    'TODO!  Add helper functions for setting the tooltip to the created hWnd, instead of the VB control
-    m_ToolString = Extender.ToolTipText
-    
-    If Len(m_ToolString) <> 0 Then
-    
-        If (m_Tooltip Is Nothing) Then Set m_Tooltip = New pdToolTip
-        m_Tooltip.SetTooltip m_EditBoxHwnd, Me.hWnd, m_ToolString
-        Extender.ToolTipText = ""
-        
-    End If
-
-End Sub
-
 Private Sub GetEditBoxRect(ByRef targetRect As winRect)
-
     With targetRect
         .x1 = 2
         .y1 = 2
-        .x2 = UserControl.ScaleWidth - 4
-        .y2 = UserControl.ScaleHeight - 4
-        '.x2 = apiWidth(Me.hWnd) - 4
-        '.y2 = apiWidth(Me.hWnd) - 4
+        .x2 = ucSupport.GetControlWidth - 4
+        .y2 = ucSupport.GetControlHeight - 4
     End With
-
 End Sub
+
+Public Function PixelWidth() As Long
+    PixelWidth = ucSupport.GetControlWidth
+End Function
+
+Public Function PixelHeight() As Long
+    PixelHeight = ucSupport.GetControlHeight
+End Function
 
 'Create a brush for drawing the box background
 Private Sub CreateEditBoxBrush()
@@ -717,7 +711,7 @@ Private Sub CreateEditBoxBrush()
     If m_EditBoxBrush <> 0 Then UserControl_Support.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
     
     If g_IsProgramRunning Then
-        m_EditBoxBrush = UserControl_Support.GetSharedGDIBrush(g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT))
+        m_EditBoxBrush = UserControl_Support.GetSharedGDIBrush(m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, , m_ControlHasFocus))
     Else
         m_EditBoxBrush = UserControl_Support.GetSharedGDIBrush(RGB(0, 255, 0))
     End If
@@ -766,13 +760,7 @@ Private Function CreateEditBox() As Boolean
             'Resize the user control accordingly; the formula for height is the string height + 5px of borders.
             ' (5px = 2px on top, 3px on bottom.)  User control width is not changed.
             m_InternalResizeState = True
-            
-            'If the program is running (e.g. NOT design-time) resize the user control to match.  This improves compile-time performance, as there
-            ' are a lot of instances in this control, and their size events will be fired during compilation.
-            If g_IsProgramRunning Then
-                UserControl.Height = PXToTwipsY(idealHeight + 5)
-            End If
-            
+            If g_IsProgramRunning Then ucSupport.RequestNewSize 0, idealHeight + 4, True
             m_InternalResizeState = False
             
         End If
@@ -809,10 +797,13 @@ Private Function CreateEditBox() As Boolean
     End If
     
     'Assign the default font to the edit box
-    RefreshFont True
+    refreshFont True
     
     'If the edit box had text before we killed it, restore that text now
     If Len(curText) <> 0 Then Text = curText
+    
+    'Finally, raise a Resize() event manually, to ensure that any owner controls have a chance to redraw to match
+    RaiseEvent Resize
     
     'Return TRUE if successful
     CreateEditBox = (m_EditBoxHwnd <> 0)
@@ -837,6 +828,21 @@ Private Function DestroyEditBox() As Boolean
 
 End Function
 
+Private Sub UserControl_Resize()
+    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If Not g_IsProgramCompiled Then
+        UpdateControlLayout
+        RaiseEvent Resize
+    End If
+End Sub
+
+Private Sub UserControl_Show()
+    If Not g_IsProgramCompiled Then
+        UpdateControlLayout
+        
+    End If
+End Sub
+
 Private Sub UserControl_Terminate()
     
     'Release the edit box background brush
@@ -855,7 +861,7 @@ End Sub
 
 'When the font used for the edit box changes in some way, it can be recreated (refreshed) using this function.  Note that font
 ' creation is expensive, so it's worthwhile to avoid this step as much as possible.
-Private Sub RefreshFont(Optional ByVal forceRefresh As Boolean = False)
+Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
     
     Dim fontRefreshRequired As Boolean
     fontRefreshRequired = curFont.HasFontBeenCreated
@@ -883,9 +889,6 @@ Private Sub RefreshFont(Optional ByVal forceRefresh As Boolean = False)
         'Whenever the font is recreated, we need to reassign it to the text box.  This is done via the WM_SETFONT message.
         If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, WM_SETFONT, curFont.GetFontHandle, IIf(UserControl.Extender.Visible, 1, 0)
             
-        'Also, the back buffer needs to be rebuilt to reflect the new font metrics
-        UpdateControlSize
-            
     End If
     
 End Sub
@@ -903,8 +906,58 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     
 End Sub
 
+Private Sub UpdateControlLayout()
+    SynchronizeEditBoxSize
+    RedrawBackBuffer
+End Sub
+
+'After the back buffer has been correctly sized and positioned, this function handles the actual painting.  Similarly, for state changes
+' that don't require a resize (e.g. gain/lose focus), this function should be used.
+Private Sub RedrawBackBuffer()
+    
+    'We can improve shutdown performance by ignoring redraw requests when the program is going down
+    If g_ProgramShuttingDown Then
+        If (g_Themer Is Nothing) Then Exit Sub
+    End If
+    
+    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+    Dim bufferDC As Long
+    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, , m_ControlHasFocus))
+    
+    'Retrieve DPI-aware control dimensions from the support class
+    Dim bWidth As Long, bHeight As Long
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
+    
+    'The edit box has a 1px border, whose color changes depending on focus
+    GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, m_Colors.RetrieveColor(PDEB_Border, Me.Enabled, , m_ControlHasFocus)
+
+    'Paint the final result to the screen, as relevant
+    ucSupport.RequestRepaint
+    If (Not g_IsProgramRunning) Then UserControl.Refresh
+    
+End Sub
+
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+        
+    'Color list retrieval is pretty darn easy - just load each color one at a time, and leave the rest to the color class.
+    ' It will build an internal hash table of the colors we request, which makes rendering much faster.
+    With m_Colors
+        .LoadThemeColor PDEB_Background, "Background", IDE_WHITE
+        .LoadThemeColor PDEB_Border, "Border", IDE_BLUE
+        .LoadThemeColor PDEB_Text, "Text", IDE_GRAY
+    End With
+    
+End Sub
+
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
+    
+    'Update any theme-related colors
+    UpdateColorList
+    ucSupport.UpdateAgainstThemeAndLanguage
     
     If g_IsProgramRunning Then
         
@@ -912,86 +965,34 @@ Public Sub UpdateAgainstCurrentTheme()
         CreateEditBoxBrush
         
         'Update the current font, as necessary
-        RefreshFont
-        
+        refreshFont
+                
         'Force an immediate repaint
-        UpdateControlSize
+        UpdateControlLayout
                 
     End If
     
 End Sub
 
-'When the control is resized, several things need to happen:
-' 1) We need to forward the resize request to the API edit window
-' 2) We need to resize the button's back buffer, then redraw it
-Private Sub UpdateControlSize()
-
-    'Reset our back buffer, and reassign the font to it
-    If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
-    m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
-        
-    'Redraw the back buffer
-    RedrawBackBuffer
-
-End Sub
-
-'After the back buffer has been correctly sized and positioned, this function handles the actual painting.  Similarly, for state changes
-' that don't require a resize (e.g. gain/lose focus), this function should be used.
-Private Sub RedrawBackBuffer()
-    
-    'Start by erasing the back buffer
-    If g_IsProgramRunning Then
-    
-        'Fill color changes depending on enablement
-        Dim editBoxBackgroundColor As Long
-        
-        If Me.Enabled Then
-            editBoxBackgroundColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-        Else
-            editBoxBackgroundColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
-        End If
-        
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, editBoxBackgroundColor, 255
-        
-        'If the control is disabled, the BackColor property actually becomes relevant (because the edit box will allow the back color
-        ' to "show through").  As such, set it now, and note that we can use VB's internal property, because it simply wraps the
-        ' matching GDI function(s).
-        UserControl.BackColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
-        
-    Else
-        m_BackBuffer.createBlank m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 24, RGB(255, 255, 255)
-    End If
-    
-    'The edit box has a 1px border, whose color changes depending on focus
-    Dim editBoxBorderColor As Long
-    
-    If m_HasFocus Then
-        editBoxBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-    Else
-        editBoxBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
-    End If
-    
-    'Draw the border
-    GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, 0, 0, m_BackBuffer.getDIBWidth - 1, m_BackBuffer.getDIBHeight - 1, editBoxBorderColor
-    
-    'Paint the buffer to the screen
-    If g_IsProgramRunning Then cPainter.RequestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
-
+'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
+' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
 
 'If a virtual key code is numeric, return TRUE.
-Private Function isVirtualKeyNumeric(ByVal vKey As Long, Optional ByRef numericValue As Long = 0) As Boolean
+Private Function IsVirtualKeyNumeric(ByVal vKey As Long, Optional ByRef numericValue As Long = 0) As Boolean
     
     If (vKey >= VK_0) And (vKey <= VK_9) Then
-        isVirtualKeyNumeric = True
+        IsVirtualKeyNumeric = True
         numericValue = vKey - VK_0
     Else
     
         If (vKey >= VK_NUMPAD0) And (vKey <= VK_NUMPAD9) Then
-            isVirtualKeyNumeric = True
+            IsVirtualKeyNumeric = True
             numericValue = vKey - VK_NUMPAD0
         Else
-            isVirtualKeyNumeric = False
+            IsVirtualKeyNumeric = False
         End If
     End If
     
@@ -1184,7 +1185,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                         
                             'Make sure the keypress is numeric.  If it is, continue assembling a virtual string.
                             Dim numCheck As Long
-                            If isVirtualKeyNumeric(wParam, numCheck) Then
+                            If IsVirtualKeyNumeric(wParam, numCheck) Then
                                 assembledVirtualKeyString = assembledVirtualKeyString & CStr(numCheck)
                             Else
                                 If Len(assembledVirtualKeyString) <> 0 Then assembledVirtualKeyString = ""
@@ -1331,12 +1332,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'Make sure the command is relative to *our* edit box, and not another one
             If lParam = m_EditBoxHwnd Then
             
-                'We can set the text color directly, using the API
-                If g_IsProgramRunning Then
-                    SetTextColor wParam, g_Themer.GetThemeColor(PDTC_TEXT_EDITBOX)
-                Else
-                    SetTextColor wParam, RGB(0, 0, 128)
-                End If
+                'Assign colors directly, using the API
+                SetTextColor wParam, m_Colors.RetrieveColor(PDEB_Text, Me.Enabled, , m_ControlHasFocus)
+                SetBkMode wParam, SBKM_OPAQUE
+                SetBkColor wParam, m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, , m_ControlHasFocus)
                 
                 'We return the background brush
                 bHandled = True
@@ -1351,12 +1350,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'Make sure the command is relative to *our* edit box, and not another one
             If lParam = m_EditBoxHwnd Then
             
-                'We can set the text color directly, using the API
-                If g_IsProgramRunning Then
-                    SetTextColor wParam, g_Themer.GetThemeColor(PDTC_TEXT_EDITBOX)
-                Else
-                    SetTextColor wParam, RGB(0, 0, 128)
-                End If
+                'Assign colors directly, using the API
+                SetTextColor wParam, m_Colors.RetrieveColor(PDEB_Text, Me.Enabled, , m_ControlHasFocus)
+                SetBkMode wParam, SBKM_OPAQUE
+                SetBkColor wParam, m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, , m_ControlHasFocus)
                 
                 'We return the background brush
                 bHandled = True
@@ -1373,8 +1370,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 lReturn = 0
             End If
             
-            'Debug.Print "WM_CHAR: " & wParam & "," & lParam
-        
         'WM_UNICHAR messages are never sent by Windows.  However, third-party IMEs may send them.  Before allowing WM_UNICHAR
         ' messages to pass, Windows will first probe a window by sending the UNICODE_NOCHAR value.  If a window responds with 1
         ' (instead of 0, as DefWindowProc does), Windows will allow WM_UNICHAR messages to pass.
@@ -1383,8 +1378,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 bHandled = True
                 lReturn = 1
             End If
-            'Debug.Print "UNICODE char received: " & wParam & "," & lParam
-        
+            
         'Manually dispatch WM_KEYDOWN messages.
         Case WM_KEYDOWN
             
@@ -1542,7 +1536,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             
             'Start hooking keypresses so we can grab Unicode chars before VB eats 'em
             InstallHookConditional
-                        
+            
         Case WM_KILLFOCUS
         
             'Re-enable PD's main accelerator control

@@ -529,12 +529,12 @@ End Property
 
 Private Sub cFocusDetector_GotFocusReliable()
     m_ControlFocusCount = m_ControlFocusCount + 1
-    evaluateFocusCount True
+    EvaluateFocusCount True
 End Sub
 
 Private Sub cFocusDetector_LostFocusReliable()
     m_ControlFocusCount = m_ControlFocusCount - 1
-    evaluateFocusCount False
+    EvaluateFocusCount False
 End Sub
 
 'Arrow keys can be used to "nudge" the control value in single-unit increments.
@@ -693,17 +693,22 @@ End Sub
 
 Private Sub tudPrimary_GotFocusAPI()
     m_ControlFocusCount = m_ControlFocusCount + 1
-    evaluateFocusCount True
+    EvaluateFocusCount True
 End Sub
 
 Private Sub tudPrimary_LostFocusAPI()
     m_ControlFocusCount = m_ControlFocusCount - 1
-    evaluateFocusCount False
+    EvaluateFocusCount False
+End Sub
+
+Private Sub tudPrimary_Resize()
+    Debug.Print "handling resize now"
+    If Not g_IsProgramCompiled Then UpdateControlLayout
 End Sub
 
 Private Sub UserControl_GotFocus()
     m_ControlFocusCount = m_ControlFocusCount + 1
-    evaluateFocusCount True
+    EvaluateFocusCount True
 End Sub
 
 Private Sub UserControl_Hide()
@@ -793,7 +798,7 @@ End Sub
 
 Private Sub UserControl_LostFocus()
     m_ControlFocusCount = m_ControlFocusCount - 1
-    evaluateFocusCount False
+    EvaluateFocusCount False
 End Sub
 
 Private Sub UserControl_Paint()
@@ -951,7 +956,7 @@ Private Sub UpdateControlLayout()
     If (newWidth_Slider > 0) And (picScroll.Width <> newWidth_Slider) Then widthChanged = True Else widthChanged = False
     
     'We now know enough to reposition the slider picture box
-    If ((picScroll.Top <> newTop_Slider) Or (picScroll.Width <> newWidth_Slider)) And (newWidth_Slider > 0) Then picScroll.Move picScroll.Left, newTop_Slider, newWidth_Slider
+    If ((picScroll.Top <> newTop_Slider) Or (picScroll.Width <> newWidth_Slider)) And (newWidth_Slider > 0) Then picScroll.Move picScroll.Left, newTop_Slider, newWidth_Slider, picScroll.Height
     
     'Vertically center the text up/down relative to the slider
     Dim sliderVerticalCenter As Single
@@ -1448,7 +1453,7 @@ End Sub
 
 'After a component of this control gets or loses focus, it needs to call this function.  This function is responsible for raising
 ' Got/LostFocusAPI events, which are important as an API text box is part of this control.
-Private Sub evaluateFocusCount(ByVal focusCountJustIncremented As Boolean)
+Private Sub EvaluateFocusCount(ByVal focusCountJustIncremented As Boolean)
 
     If focusCountJustIncremented Then
         
