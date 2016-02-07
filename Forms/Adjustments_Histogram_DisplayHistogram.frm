@@ -774,9 +774,9 @@ Private Sub drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeig
     gdiHistogram = getGDIPlusGraphicsFromDC(picH.hDC)
     
     Dim gdiPenSolid As Long, gdiPenTranslucent As Long
-    gdiPenSolid = getGDIPlusPenHandle(curHistColor)
-    gdiPenTranslucent = getGDIPlusPenHandle(curHistColor, 64)
-        
+    gdiPenSolid = GetGDIPlusPenHandle(curHistColor)
+    gdiPenTranslucent = GetGDIPlusPenHandle(curHistColor, 64)
+    
     'If "Fill curve" is selected, we need to manually draw the left-most column (as the draw loop starts at 1)
     ' Note that the luminance curve is never filled.
     If needToFill Then GDIPlusDrawLine_Fast gdiHistogram, gdiPenTranslucent, 0, results(0), 0, histHeight
@@ -789,8 +789,8 @@ Private Sub drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeig
     
     'Free the GDI+ handles
     releaseGDIPlusGraphics gdiHistogram
-    releaseGDIPlusPen gdiPenSolid
-    releaseGDIPlusPen gdiPenTranslucent
+    ReleaseGDIPlusPen gdiPenSolid
+    ReleaseGDIPlusPen gdiPenTranslucent
     
     'Refresh the picture
     picH.Picture = picH.Image
