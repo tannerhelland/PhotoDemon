@@ -1037,7 +1037,7 @@ Public Sub releaseGDIPlusGraphics(ByVal srcHandle As Long)
 End Sub
 
 'Return a persistent handle to a GDI+ pen.  This can be useful if many drawing operations are going to be applied with the same pen.
-Public Function getGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal customLineCap As LineCap = LineCapFlat, Optional ByVal customLinejoin As LineJoin = LineJoinMiter, Optional ByVal customDashMode As DashStyle = DashStyleSolid, Optional ByVal penMiterLimit As Single = 3#, Optional ByVal penPositioning As PenAlignment = PenAlignmentCenter) As Long
+Public Function GetGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal customLineCap As LineCap = LineCapFlat, Optional ByVal customLinejoin As LineJoin = LineJoinMiter, Optional ByVal customDashMode As DashStyle = DashStyleSolid, Optional ByVal penMiterLimit As Single = 3#, Optional ByVal penPositioning As PenAlignment = PenAlignmentCenter) As Long
 
     'Create the requested pen
     Dim iPen As Long
@@ -1068,11 +1068,11 @@ Public Function getGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransp
     If penPositioning <> 0 Then GdipSetPenMode iPen, penPositioning
     
     'Return the handle
-    getGDIPlusPenHandle = iPen
+    GetGDIPlusPenHandle = iPen
 
 End Function
 
-Public Sub releaseGDIPlusPen(ByVal srcPen As Long)
+Public Sub ReleaseGDIPlusPen(ByVal srcPen As Long)
     GdipDeletePen srcPen
 End Sub
 

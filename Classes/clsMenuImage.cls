@@ -468,6 +468,7 @@ End Sub
 
 
 Private Sub DrawCheck(ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal x2 As Long, ByVal y2 As Long, bDisabled As Boolean)
+    
     Dim hPen As Long, oldPen As Long
     Dim hBrush As Long, oldBrush As Long
     
@@ -479,7 +480,8 @@ Private Sub DrawCheck(ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal
     
     Rectangle hDC, x, y, x + x2, y + y2
     
-    DeleteObject SelectObject(hDC, oldPen)
+    SelectObject hDC, oldPen
+    DeleteObject hPen
     Call SelectObject(hDC, oldBrush)
     
 End Sub

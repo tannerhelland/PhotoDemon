@@ -73,7 +73,7 @@ Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, B
 'Given a target picture box, draw a hue preview across the horizontal axis.  This is helpful for tools that provide
 ' a hue slider, so that the user can easily find a color of their choosing.  Optionally, saturation and luminance
 ' can be provided, though it's generally assumed that those values will both be 1.0.
-Public Sub drawHueBox_HSV(ByRef dstPic As PictureBox, Optional ByVal dstSaturation As Double = 1, Optional ByVal dstLuminance As Double = 1)
+Public Sub DrawHueBox_HSV(ByRef dstPic As PictureBox, Optional ByVal dstSaturation As Double = 1, Optional ByVal dstLuminance As Double = 1)
 
     'Retrieve the picture box's dimensions
     Dim picWidth As Long, picHeight As Long
@@ -91,7 +91,7 @@ Public Sub drawHueBox_HSV(ByRef dstPic As PictureBox, Optional ByVal dstSaturati
     Dim x As Long
     For x = 0 To tmpDIB.getDIBWidth - 1
         fHSVtoRGB x / tmpDIB.getDIBWidth, dstSaturation, dstLuminance, tmpR, tmpG, tmpB
-        drawLineToDC tmpDIB.getDIBDC, x, 0, x, picHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255)
+        DrawLineToDC tmpDIB.getDIBDC, x, 0, x, picHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255)
     Next x
     
     'With the hue box complete, render it onto the destination picture box, with color management applied
@@ -102,7 +102,7 @@ End Sub
 'Given a target picture box, draw a saturation preview across the horizontal axis.  This is helpful for tools that provide
 ' a saturation slider, so that the user can easily find a color of their choosing.  Optionally, hue and luminance can be
 ' provided - hue is STRONGLY recommended, but luminance can safely be assumed to be 1.0 (in most cases).
-Public Sub drawSaturationBox_HSV(ByRef dstPic As PictureBox, Optional ByVal dstHue As Double = 1, Optional ByVal dstLuminance As Double = 1)
+Public Sub DrawSaturationBox_HSV(ByRef dstPic As PictureBox, Optional ByVal dstHue As Double = 1, Optional ByVal dstLuminance As Double = 1)
 
     'Retrieve the picture box's dimensions
     Dim picWidth As Long, picHeight As Long
@@ -120,7 +120,7 @@ Public Sub drawSaturationBox_HSV(ByRef dstPic As PictureBox, Optional ByVal dstH
     Dim x As Long
     For x = 0 To tmpDIB.getDIBWidth - 1
         fHSVtoRGB dstHue, x / tmpDIB.getDIBWidth, dstLuminance, tmpR, tmpG, tmpB
-        drawLineToDC tmpDIB.getDIBDC, x, 0, x, picHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255)
+        DrawLineToDC tmpDIB.getDIBDC, x, 0, x, picHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255)
     Next x
     
     'With the hue box complete, render it onto the destination picture box, with color management applied
@@ -129,7 +129,7 @@ Public Sub drawSaturationBox_HSV(ByRef dstPic As PictureBox, Optional ByVal dstH
 End Sub
 
 'Basic wrapper to line-drawing via GDI
-Public Sub drawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
+Public Sub DrawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
 
     'Create a pen with the specified color
     Dim newPen As Long
@@ -150,7 +150,7 @@ Public Sub drawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Lo
 End Sub
 
 'Basic wrappers for rect-filling and rect-tracing via GDI
-Public Sub fillRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
+Public Sub FillRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
 
     'Create a brush with the specified color
     Dim tmpBrush As Long
@@ -169,95 +169,11 @@ Public Sub fillRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Lo
 
 End Sub
 
-Public Sub outlineRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
-    drawLineToDC targetDC, x1, y1, x2, y1, crColor
-    drawLineToDC targetDC, x2, y1, x2, y2, crColor
-    drawLineToDC targetDC, x2, y2, x1, y2, crColor
-    drawLineToDC targetDC, x1, y2, x1, y1, crColor
-End Sub
-
 'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
 Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal x As Long, ByVal y As Long)
     Dim hIcon As Long
     hIcon = LoadIconByID(0, icon)
     DrawIcon hDC, x, y, hIcon
-End Sub
-
-'Used to draw the main image onto a preview picture box
-Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOtherPictureSrc As Boolean = False, Optional ByRef otherPictureSrc As pdDIB, Optional forceWhiteBackground As Boolean = False)
-    
-    Dim tmpDIB As pdDIB
-    
-    'Start by calculating the aspect ratio of both the current image and the previewing picture box
-    Dim dstWidth As Double, dstHeight As Double
-    dstWidth = dstPicture.ScaleWidth
-    dstHeight = dstPicture.ScaleHeight
-    
-    Dim srcWidth As Double, srcHeight As Double
-    
-    'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
-    If useOtherPictureSrc Then
-        srcWidth = otherPictureSrc.getDIBWidth
-        srcHeight = otherPictureSrc.getDIBHeight
-    Else
-        If pdImages(g_CurrentImage).selectionActive Then
-            srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
-            srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
-        Else
-            srcWidth = pdImages(g_CurrentImage).getActiveDIB().getDIBWidth
-            srcHeight = pdImages(g_CurrentImage).getActiveDIB().getDIBHeight
-        End If
-    End If
-            
-    'Now, use that aspect ratio to determine a proper size for our temporary DIB
-    Dim newWidth As Long, newHeight As Long
-    
-    convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
-    
-    'Normally this will draw a preview of pdImages(g_CurrentImage).containingForm's relevant image.  However, another picture source can be specified.
-    If Not useOtherPictureSrc Then
-        
-        'Check to see if a selection is active; if it isn't, simply render the full form
-        If Not pdImages(g_CurrentImage).selectionActive Then
-        
-            If pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth = 32 Then
-                Set tmpDIB = New pdDIB
-                tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB(), newWidth, newHeight, True
-                If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
-                tmpDIB.RenderToPictureBox dstPicture
-            Else
-                pdImages(g_CurrentImage).getActiveDIB().RenderToPictureBox dstPicture
-            End If
-        
-        Else
-        
-            'Copy the current selection into a temporary DIB
-            Set tmpDIB = New pdDIB
-            tmpDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
-            BitBlt tmpDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
-        
-            'If the image is transparent, composite it; otherwise, render the preview using the temporary object
-            If pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth = 32 Then
-                If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
-            End If
-            
-            tmpDIB.RenderToPictureBox dstPicture
-            
-        End If
-        
-    Else
-    
-        If otherPictureSrc.getDIBColorDepth = 32 Then
-            Set tmpDIB = New pdDIB
-            tmpDIB.createFromExistingDIB otherPictureSrc, newWidth, newHeight, True
-            If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
-            tmpDIB.RenderToPictureBox dstPicture
-        Else
-            otherPictureSrc.RenderToPictureBox dstPicture
-        End If
-        
-    End If
-    
 End Sub
 
 'Draw a gradient from Color1 to Color 2 (RGB longs) on a specified picture box
@@ -368,12 +284,12 @@ Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Lon
         'Draw a vertical line at this position, using the calculated color
         If alphaMatters Then
         
-            hGdipPen = GDI_Plus.getGDIPlusPenHandle(RGB(newR, newG, newB), 255, 1, LineCapFlat)
+            hGdipPen = GDI_Plus.GetGDIPlusPenHandle(RGB(newR, newG, newB), 255, 1, LineCapFlat)
             GDI_Plus.GDIPlusDrawLine_Fast hGdipImage, hGdipPen, x, 0, x, dstDIB.getDIBHeight
-            GDI_Plus.releaseGDIPlusPen hGdipPen
+            GDI_Plus.ReleaseGDIPlusPen hGdipPen
         
         Else
-            drawLineToDC dstDIB.getDIBDC, x, 0, x, dstDIB.getDIBHeight, RGB(newR, newG, newB)
+            DrawLineToDC dstDIB.getDIBDC, x, 0, x, dstDIB.getDIBHeight, RGB(newR, newG, newB)
         End If
         
     Next x
@@ -385,7 +301,7 @@ End Sub
 
 'Given a source DIB, fill it with a 2x2 alpha checkerboard pattern matching the user's current preferences.
 ' (The resulting DIB size is contingent on the user's checkerboard pattern size preference, FYI.)
-Public Sub createAlphaCheckerboardDIB(ByRef srcDIB As pdDIB)
+Public Sub CreateAlphaCheckerboardDIB(ByRef srcDIB As pdDIB)
 
     'Retrieve the user's preferred alpha checkerboard colors, and convert the longs into individual RGB components
     Dim chkColorOne As Long, chkColorTwo As Long
@@ -455,29 +371,8 @@ Public Sub createAlphaCheckerboardDIB(ByRef srcDIB As pdDIB)
 
 End Sub
 
-'Given a source DIB, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
-Public Sub fillDIBWithAlphaCheckerboard(ByRef srcDIB As pdDIB, ByVal x1 As Long, ByVal y1 As Long, ByVal bltWidth As Long, ByVal bltHeight As Long)
-
-    'Create a pattern brush from the public checkerboard image
-    Dim hCheckerboard As Long
-    hCheckerboard = CreatePatternBrush(g_CheckerboardPattern.getDIBHandle)
-    
-    'Select the brush into the target DIB's DC
-    Dim hOldBrush As Long
-    hOldBrush = SelectObject(srcDIB.getDIBDC, hCheckerboard)
-    
-    'Paint the DIB
-    SetBrushOrgEx srcDIB.getDIBDC, x1, y1, 0&
-    PatBlt srcDIB.getDIBDC, x1, y1, bltWidth, bltHeight, vbPatCopy
-    
-    'Remove and delete the brush
-    SelectObject srcDIB.getDIBDC, hOldBrush
-    DeleteObject hCheckerboard
-
-End Sub
-
 'Given an (x,y) pair on the current viewport, convert the value to coordinates on the image.
-Public Function convertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Double, ByVal canvasY As Double, ByRef imgX As Double, ByRef imgY As Double, Optional ByVal forceInBounds As Boolean = False) As Boolean
+Public Function ConvertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Double, ByVal canvasY As Double, ByRef imgX As Double, ByRef imgY As Double, Optional ByVal forceInBounds As Boolean = False) As Boolean
 
     If Not (srcImage.imgViewport Is Nothing) Then
     
@@ -505,16 +400,16 @@ Public Function convertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, By
             If imgY >= srcImage.Height - 1 Then imgY = srcImage.Height - 1
         End If
         
-        convertCanvasCoordsToImageCoords = True
+        ConvertCanvasCoordsToImageCoords = True
         
     Else
-        convertCanvasCoordsToImageCoords = False
+        ConvertCanvasCoordsToImageCoords = False
     End If
     
 End Function
 
 'Given an (x,y) pair on the current image, convert the value to coordinates on the current viewport canvas.
-Public Sub convertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal imgX As Double, ByVal imgY As Double, ByRef canvasX As Double, ByRef canvasY As Double, Optional ByVal forceInBounds As Boolean = False)
+Public Sub ConvertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal imgX As Double, ByVal imgY As Double, ByRef canvasX As Double, ByRef canvasY As Double, Optional ByVal forceInBounds As Boolean = False)
 
     If Not (srcImage.imgViewport Is Nothing) Then
     
@@ -554,7 +449,7 @@ End Sub
 
 'Given an (x,y) pair on the current image, convert the value to coordinates relative to the current layer.  This is especially relevant
 ' if the layer has one or more non-destructive affine transforms active.
-Public Function convertImageCoordsToLayerCoords(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal imgX As Single, ByVal imgY As Single, ByRef layerX As Single, ByRef layerY As Single) As Boolean
+Public Function ConvertImageCoordsToLayerCoords(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal imgX As Single, ByVal imgY As Single, ByRef layerX As Single, ByRef layerY As Single) As Boolean
 
     If srcImage Is Nothing Then Exit Function
     If srcLayer Is Nothing Then Exit Function
@@ -579,7 +474,7 @@ Public Function convertImageCoordsToLayerCoords(ByRef srcImage As pdImage, ByRef
             layerX = imgX + srcLayer.getLayerOffsetX
             layerY = imgY + srcLayer.getLayerOffsetY
             
-            convertImageCoordsToLayerCoords = True
+            ConvertImageCoordsToLayerCoords = True
         
         'If we can't invert the matrix, we're in trouble.  Copy out the layer coordinates as a failsafe.
         Else
@@ -589,7 +484,7 @@ Public Function convertImageCoordsToLayerCoords(ByRef srcImage As pdImage, ByRef
             
             Debug.Print "WARNING! Transformation matrix could not be generated."
             
-            convertImageCoordsToLayerCoords = False
+            ConvertImageCoordsToLayerCoords = False
             
         End If
     
@@ -600,14 +495,14 @@ Public Function convertImageCoordsToLayerCoords(ByRef srcImage As pdImage, ByRef
         layerX = imgX
         layerY = imgY
         
-        convertImageCoordsToLayerCoords = True
+        ConvertImageCoordsToLayerCoords = True
     
     End If
     
 End Function
 
 'Given an array of (x,y) pairs set in the current image's coordinate space, convert each pair to the supplied viewport canvas space.
-Public Sub convertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef listOfPoints() As POINTFLOAT, Optional ByVal forceInBounds As Boolean = False)
+Public Sub ConvertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef listOfPoints() As POINTFLOAT, Optional ByVal forceInBounds As Boolean = False)
 
     If srcImage.imgViewport Is Nothing Then Exit Sub
     
@@ -657,7 +552,7 @@ End Sub
 
 'Given a source hWnd and a destination hWnd, translate a coordinate pair between their unique coordinate spaces.  Note that
 ' the screen coordinate space will be used as an intermediary in the conversion.
-Public Sub convertCoordsBetweenHwnds(ByVal srcHwnd As Long, ByVal dstHwnd As Long, ByVal srcX As Long, ByVal srcY As Long, ByRef dstX As Long, ByRef dstY As Long)
+Public Sub ConvertCoordsBetweenHwnds(ByVal srcHwnd As Long, ByVal dstHwnd As Long, ByVal srcX As Long, ByVal srcY As Long, ByRef dstX As Long, ByRef dstY As Long)
     
     'The API we're using require POINTAPI structs
     Dim tmpPoint As POINTAPI
@@ -678,19 +573,19 @@ End Sub
 
 'Given a specific layer, return a RECT filled with that layer's corner coordinates -
 ' IN THE CANVAS COORDINATE SPACE (hence the function name).
-Public Sub getCanvasRectForLayer(ByVal layerIndex As Long, ByRef dstRect As RECT, Optional ByVal useCanvasModifiers As Boolean = False)
+Public Sub GetCanvasRectForLayer(ByVal layerIndex As Long, ByRef dstRect As RECT, Optional ByVal useCanvasModifiers As Boolean = False)
 
     Dim tmpX As Double, tmpY As Double
     
     With pdImages(g_CurrentImage).getLayerByIndex(layerIndex)
         
         'Start with the top-left corner
-        convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX, .getLayerOffsetY, tmpX, tmpY
+        ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX, .getLayerOffsetY, tmpX, tmpY
         dstRect.Left = tmpX
         dstRect.Top = tmpY
         
         'End with the bottom-right corner
-        convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .getLayerWidth(useCanvasModifiers), .getLayerOffsetY + .getLayerHeight(useCanvasModifiers), tmpX, tmpY
+        ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .getLayerWidth(useCanvasModifiers), .getLayerOffsetY + .getLayerHeight(useCanvasModifiers), tmpX, tmpY
         
         'Because layers support sub-pixel positioning, but the canvas rect renderer *does not*, we must manually align the right/bottom coords
         dstRect.Right = Int(tmpX + 0.99)
@@ -701,19 +596,19 @@ Public Sub getCanvasRectForLayer(ByVal layerIndex As Long, ByRef dstRect As RECT
 End Sub
 
 'Same as above, but using floating-point values
-Public Sub getCanvasRectForLayerF(ByVal layerIndex As Long, ByRef dstRect As RECTF, Optional ByVal useCanvasModifiers As Boolean = False)
+Public Sub GetCanvasRectForLayerF(ByVal layerIndex As Long, ByRef dstRect As RECTF, Optional ByVal useCanvasModifiers As Boolean = False)
 
     Dim tmpX As Double, tmpY As Double
     
     With pdImages(g_CurrentImage).getLayerByIndex(layerIndex)
         
         'Start with the top-left corner
-        convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX, .getLayerOffsetY, tmpX, tmpY
+        ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX, .getLayerOffsetY, tmpX, tmpY
         dstRect.Left = tmpX
         dstRect.Top = tmpY
         
         'End with the bottom-right corner
-        convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .getLayerWidth(useCanvasModifiers), .getLayerOffsetY + .getLayerHeight(useCanvasModifiers), tmpX, tmpY
+        ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .getLayerWidth(useCanvasModifiers), .getLayerOffsetY + .getLayerHeight(useCanvasModifiers), tmpX, tmpY
         dstRect.Width = tmpX - dstRect.Left
         dstRect.Height = tmpY - dstRect.Top
         
@@ -722,7 +617,7 @@ Public Sub getCanvasRectForLayerF(ByVal layerIndex As Long, ByRef dstRect As REC
 End Sub
 
 'On the current viewport, render lines around the active layer
-Public Sub drawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer)
+Public Sub DrawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer)
 
     'In the old days, we could get away with assuming layer boundaries form a rectangle, but as of PD 7.0, affine transforms
     ' mean this is no longer guaranteed.
@@ -734,7 +629,7 @@ Public Sub drawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     srcLayer.getLayerCornerCoordinates layerCorners, True, False
     
     'Next, convert each corner from image coordinate space to the active viewport coordinate space
-    Drawing.convertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerCorners, False
+    Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerCorners, False
     
     'Pass the list of coordinates to a pdGraphicsPath object; it will handle the actual UI rendering
     Dim tmpPath As pdGraphicsPath
@@ -753,7 +648,7 @@ Public Sub drawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
 End Sub
 
 'On the current viewport, render standard PD transformation nodes (layer corners, currently) atop the active layer.
-Public Sub drawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As Long = -1)
+Public Sub DrawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As Long = -1)
 
     'In the old days, we could get away with assuming layer boundaries form a rectangle, but as of PD 7.0, affine transforms
     ' mean this is no longer guaranteed.
@@ -765,7 +660,7 @@ Public Sub drawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As p
     srcLayer.getLayerCornerCoordinates layerCorners, True, False
     
     'Next, convert each corner from image coordinate space to the active viewport coordinate space
-    Drawing.convertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerCorners, False
+    Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerCorners, False
     
     Dim circRadius As Long, circAlpha As Long
     circRadius = 7
@@ -783,7 +678,7 @@ Public Sub drawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As p
 End Sub
 
 'As of PD 7.0, on-canvas rotation is now supported.  Use this function to render the current rotation node.
-Public Sub drawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As Long = -1)
+Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As Long = -1)
     
     'Retrieve the layer rotate node position from the specified layer, and convert it into the canvas coordinate space
     Dim layerRotateNodes() As POINTFLOAT
@@ -791,7 +686,7 @@ Public Sub drawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     
     Dim rotateUIRect As RECTF
     srcLayer.getLayerRotationNodeCoordinates layerRotateNodes, True
-    Drawing.convertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerRotateNodes, False
+    Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerRotateNodes, False
     
     'Render the circles
     Dim circRadius As Long, circAlpha As Long

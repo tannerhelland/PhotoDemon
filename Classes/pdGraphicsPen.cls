@@ -163,7 +163,7 @@ Public Function getPenAsString() As String
     
 End Function
 
-Public Sub createPenFromString(ByRef srcString As String)
+Public Sub CreatePenFromString(ByRef srcString As String)
     
     'If the string is empty, prep a default object
     If Len(srcString) = 0 Then
@@ -200,18 +200,18 @@ End Sub
 
 'Return an actual GDI+ pen handle matching the current settings.
 ' Note that the caller is responsible for freeing that handle once done.
-Public Function getPenHandle() As Long
+Public Function GetPenHandle() As Long
     
-    getPenHandle = GDI_Plus.getGDIPlusPenHandle(m_PenColor, m_PenOpacity * 2.55, m_PenWidth, m_PenLineCap, m_PenLineJoin, m_PenMode, m_PenMiterLimit, m_PenAlignment)
+    GetPenHandle = GDI_Plus.GetGDIPlusPenHandle(m_PenColor, m_PenOpacity * 2.55, m_PenWidth, m_PenLineCap, m_PenLineJoin, m_PenMode, m_PenMiterLimit, m_PenAlignment)
     
     'Set some additional settings manually
-    GdipSetPenDashCap197819 getPenHandle, m_PenDashCap
+    GdipSetPenDashCap197819 GetPenHandle, m_PenDashCap
     
 End Function
 
 'Helper function to simplify pen destruction
 Public Sub releasePenHandle(ByVal srcPen As Long)
-    GDI_Plus.releaseGDIPlusPen srcPen
+    GDI_Plus.ReleaseGDIPlusPen srcPen
 End Sub
 
 Private Sub Class_Initialize()
