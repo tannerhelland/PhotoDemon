@@ -20,16 +20,6 @@ Begin VB.UserControl pdSpinner
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   75
    ToolboxBitmap   =   "pdSpinner.ctx":0000
-   Begin VB.Timer tmrDownButton 
-      Enabled         =   0   'False
-      Left            =   1080
-      Top             =   0
-   End
-   Begin VB.Timer tmrUpButton 
-      Enabled         =   0   'False
-      Left            =   1080
-      Top             =   120
-   End
    Begin PhotoDemon.pdTextBox txtPrimary 
       Height          =   315
       Left            =   15
@@ -159,7 +149,11 @@ Private m_MouseOverUpButton As Boolean, m_MouseOverDownButton As Boolean
 ' loses focus, we decrement the counter by 1.  When the counter hits 0, we report a control-wide Got/LostFocusAPI event.
 Private m_ControlFocusCount As Long
 
-Private Declare Function IntersectRect Lib "user32" (ByRef lpDestRect As RECTL, ByRef lpSrc1Rect As RECTL, ByRef lpSrc2Rect As RECTL) As Long
+'To mimic standard scroll bar behavior, we must fire repeat scroll events when the buttons (or track) are clicked and held.
+Private WithEvents m_UpButtonTimer As pdTimer
+Attribute m_UpButtonTimer.VB_VarHelpID = -1
+Private WithEvents m_DownButtonTimer As pdTimer
+Attribute m_DownButtonTimer.VB_VarHelpID = -1
 
 'If the current text value is NOT valid, this will return FALSE
 Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
@@ -233,8 +227,8 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             moveValueDown
             
             'Start the repeat timer as well
-            tmrUpButton.Interval = Interface.GetKeyboardDelay() * 1000
-            tmrUpButton.Enabled = True
+            m_UpButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
+            m_UpButtonTimer.StartTimer
             
         Else
             m_MouseDownUpButton = False
@@ -243,8 +237,8 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         If isPointInRect(x, y, downRect) Then
             m_MouseDownDownButton = True
             moveValueUp
-            tmrDownButton.Interval = Interface.GetKeyboardDelay() * 1000
-            tmrDownButton.Enabled = True
+            m_DownButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
+            m_DownButtonTimer.StartTimer
         Else
             m_MouseDownDownButton = False
         End If
@@ -299,8 +293,8 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
         
         m_MouseDownUpButton = False
         m_MouseDownDownButton = False
-        tmrUpButton.Enabled = False
-        tmrDownButton.Enabled = False
+        m_UpButtonTimer.StopTimer
+        m_DownButtonTimer.StopTimer
         
         'When the mouse is release, raise a "FinalChange" event, which lets the caller know that they can perform any
         ' long-running actions now.
@@ -322,25 +316,25 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
     
 End Sub
 
-Private Sub tmrDownButton_Timer()
-
+Private Sub m_DownButtonTimer_Timer()
+    
     'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
     ' of the delay rate.
-    If tmrDownButton.Interval = Interface.GetKeyboardDelay * 1000 Then
-        tmrDownButton.Interval = Interface.GetKeyboardRepeatRate * 1000
+    If m_DownButtonTimer.Interval = Interface.GetKeyboardDelay * 1000 Then
+        m_DownButtonTimer.Interval = Interface.GetKeyboardRepeatRate * 1000
     End If
     
     'It's a little counter-intuitive, but the DOWN button actually moves the control value UP
     moveValueUp
-
+    
 End Sub
 
-Private Sub tmrUpButton_Timer()
-    
+Private Sub m_UpButtonTimer_Timer()
+
     'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
     ' of the delay rate.
-    If tmrUpButton.Interval = Interface.GetKeyboardDelay * 1000 Then
-        tmrUpButton.Interval = Interface.GetKeyboardRepeatRate * 1000
+    If m_UpButtonTimer.Interval = Interface.GetKeyboardDelay * 1000 Then
+        m_UpButtonTimer.Interval = Interface.GetKeyboardRepeatRate * 1000
     End If
     
     'It's a little counter-intuitive, but the UP button actually moves the control value DOWN
@@ -542,6 +536,12 @@ Private Sub UserControl_Initialize()
     'Also start a focus detector for the spinner picture box
     Set cFocusDetector = New pdFocusDetector
     If g_IsProgramRunning Then cFocusDetector.startFocusTracking picScroll.hWnd
+    
+    'Prep timer objects
+    If g_IsProgramRunning Then
+        Set m_UpButtonTimer = New pdTimer
+        Set m_DownButtonTimer = New pdTimer
+    End If
     
     'Reset the focus count
     m_ControlFocusCount = 0

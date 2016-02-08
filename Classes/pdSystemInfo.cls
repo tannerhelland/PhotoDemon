@@ -22,7 +22,10 @@ Attribute VB_Exposed = False
 ' This module is designed to make such requests easier.
 '
 'I am currently working on migrating random bits of code from other places in PD to this class, so please be patient and ignore
-' duplicate code entries in the meantime.  :)
+' duplicate code entries in the meantime.
+'
+'Many thanks to the following individuals for their help with various functions:
+' - Bonnie West for an optimized ThunderMain hWnd retrieval function (http://www.vbforums.com/showthread.php?682474-VB6-ThunderMain-class)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -160,6 +163,12 @@ End Enum
     Private Const GdiObjects = 0, GdiObjectsPeak = 2, UserObjects = 1, UserObjectsPeak = 4
 #End If
 Private Declare Function GetGuiResources Lib "user32" (ByVal hProcess As Long, ByVal resourceToCheck As GUI_RESOURCE_FLAGS) As Long
+
+'APIs for retrieving a master VB "ThunderMain" hWnd.  Note that the hWnd is automatically cached after first retrieval.
+Private m_ThunderMainHwnd As Long
+Private Const GW_OWNER As Long = 4
+Private Declare Function FindWindowW Lib "user32" (Optional ByVal lpClassName As Long, Optional ByVal lpWindowName As Long) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal uCmd As Long) As Long
 
 'Device caps, or "device capabilities", which can be probed using the constants below
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As DeviceChecks) As Long
@@ -888,4 +897,42 @@ Public Function GetPhotoDemonResourceUsage(Optional ByVal resourceType As GUI_RE
         #End If
     End If
     
+End Function
+
+'Get PD's master hWnd.  The value is cached after an initial call.  Based on a sample project by the ever-talented Bonnie West
+' (http://www.vbforums.com/showthread.php?682474-VB6-ThunderMain-class).
+Public Function GetPhotoDemonMasterHWnd() As Long
+
+    'If we already grabbed the hWnd this session, we can skip right to the end
+    If m_ThunderMainHwnd = 0 Then
+        
+        'If one or more forms exist, we can retrieve ThunderMain directly by grabbing the owner handle of any open form.
+        If Forms.Count Then
+            m_ThunderMainHwnd = GetWindow(Forms(0&).hWnd, GW_OWNER)
+        
+        'If no forms exist, we must retrieve the hWnd manually
+        Else
+        
+            'Cache the current program title
+            Dim strPrevTitle As String
+            strPrevTitle = App.Title
+            
+            'Create a unique, temporary program title
+            App.Title = GetArbitraryGUID()
+            
+            'Find the window matching our new, arbitrary title
+            If g_IsProgramCompiled Then
+                m_ThunderMainHwnd = FindWindowW(StrPtr("ThunderRT6Main"), StrPtr(App.Title))
+            Else
+                m_ThunderMainHwnd = FindWindowW(StrPtr("ThunderMain"), StrPtr(App.Title))
+            End If
+            
+            'Restore the original title
+            App.Title = strPrevTitle
+            
+        End If
+    End If
+    
+    GetPhotoDemonMasterHWnd = m_ThunderMainHwnd
+
 End Function

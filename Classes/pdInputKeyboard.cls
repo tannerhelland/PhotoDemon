@@ -248,19 +248,19 @@ Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
     IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
 End Function
 
-Private Function getHiWord(ByVal lParam As Long) As Integer
+Private Function GetHiWord(ByVal lParam As Long) As Integer
     If lParam And &H80000000 Then
-        getHiWord = (lParam \ 65535) - 1
+        GetHiWord = (lParam \ 65535) - 1
     Else
-        getHiWord = lParam \ 65535
+        GetHiWord = lParam \ 65535
     End If
 End Function
 
-Private Function getLoWord(ByVal lParam As Long) As Integer
+Private Function GetLoWord(ByVal lParam As Long) As Integer
     If lParam And &H8000& Then
-        getLoWord = &H8000 Or (lParam And &H7FFF&)
+        GetLoWord = &H8000 Or (lParam And &H7FFF&)
     Else
-        getLoWord = lParam And &HFFFF&
+        GetLoWord = lParam And &HFFFF&
     End If
 End Function
 
