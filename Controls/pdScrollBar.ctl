@@ -23,16 +23,6 @@ Begin VB.UserControl pdScrollBar
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
    ToolboxBitmap   =   "pdScrollBar.ctx":0000
-   Begin VB.Timer tmrUpButton 
-      Enabled         =   0   'False
-      Left            =   0
-      Top             =   120
-   End
-   Begin VB.Timer tmrDownButton 
-      Enabled         =   0   'False
-      Left            =   0
-      Top             =   0
-   End
    Begin VB.Menu MnuScrollPopup 
       Caption         =   "Scroll"
       Visible         =   0   'False
@@ -214,6 +204,11 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+'To mimic standard scroll bar behavior, we must fire repeat scroll events when the buttons (or track) are clicked and held.
+Private WithEvents m_UpButtonTimer As pdTimer
+Private WithEvents m_DownButtonTimer As pdTimer
+Attribute m_DownButtonTimer.VB_VarHelpID = -1
+
 'Container hWnd must be exposed for external tooltip handling
 Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
@@ -382,6 +377,45 @@ Public Property Let VisualStyle(ByVal newStyle As ScrollBarVisualStyle)
     
 End Property
 
+'Timers control repeat value changes when the mouse is held down on an up/down button
+Private Sub m_DownButtonTimer_Timer()
+
+    'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
+    ' of the delay rate.
+    If m_DownButtonTimer.Interval = Interface.GetKeyboardDelay * 1000 Then
+        m_DownButtonTimer.Interval = Interface.GetKeyboardRepeatRate * 1000
+    End If
+    
+    'It's a little counter-intuitive, but the DOWN button actually moves the control value UP
+    moveValueUp m_MouseDownTrack
+    
+    'If the timer was activated because the user is clicking on the mouse track (and not a button), deactivate the
+    ' timer once the value equals the value under the mouse.
+    If m_MouseDownTrack Then
+        If Math_Functions.isPointInRectF(m_TrackX, m_TrackY, thumbRect) Or (m_Value > m_initTrackValue) Then m_DownButtonTimer.StopTimer
+    End If
+
+End Sub
+
+Private Sub m_UpButtonTimer_Timer()
+
+    'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
+    ' of the delay rate.
+    If m_UpButtonTimer.Interval = Interface.GetKeyboardDelay * 1000 Then
+        m_UpButtonTimer.Interval = Interface.GetKeyboardRepeatRate * 1000
+    End If
+    
+    'It's a little counter-intuitive, but the UP button actually moves the control value DOWN
+    moveValueDown m_MouseDownTrack
+    
+    'If the timer was activated because the user is clicking on the mouse track (and not a button), deactivate the
+    ' timer once the value equals the value under the mouse.
+    If m_MouseDownTrack Then
+        If Math_Functions.isPointInRectF(m_TrackX, m_TrackY, thumbRect) Or (m_Value < m_initTrackValue) Then m_UpButtonTimer.StopTimer
+    End If
+    
+End Sub
+
 'When the control receives focus, if the focus isn't received via mouse click, display a focus rect
 Private Sub ucSupport_GotFocusAPI()
     
@@ -464,8 +498,8 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                     moveValueDown
                     
                     'Start the repeat timer as well
-                    tmrUpButton.Interval = Interface.GetKeyboardDelay() * 1000
-                    tmrUpButton.Enabled = True
+                    m_UpButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
+                    m_UpButtonTimer.StartTimer
                     
                 Else
                     m_MouseDownUpButton = False
@@ -474,8 +508,8 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                 If Math_Functions.isPointInRectL(x, y, downRightRect) Then
                     m_MouseDownDownButton = True
                     moveValueUp
-                    tmrDownButton.Interval = Interface.GetKeyboardDelay() * 1000
-                    tmrDownButton.Enabled = True
+                    m_DownButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
+                    m_DownButtonTimer.StartTimer
                 Else
                     m_MouseDownDownButton = False
                 End If
@@ -508,12 +542,12 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                         'Activate the auto-scroll timers
                         If m_initTrackValue < m_Value Then
                             moveValueDown True
-                            tmrUpButton.Interval = Interface.GetKeyboardDelay() * 1000
-                            tmrUpButton.Enabled = True
+                            m_UpButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
+                            m_UpButtonTimer.StartTimer
                         Else
                             moveValueUp True
-                            tmrDownButton.Interval = Interface.GetKeyboardDelay() * 1000
-                            tmrDownButton.Enabled = True
+                            m_DownButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
+                            m_DownButtonTimer.StartTimer
                         End If
                         
                     Else
@@ -639,8 +673,8 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
         m_MouseDownThumb = False
         m_MouseDownTrack = False
         
-        tmrUpButton.Enabled = False
-        tmrDownButton.Enabled = False
+        m_UpButtonTimer.StopTimer
+        m_DownButtonTimer.StopTimer
         
         'When the mouse is released, raise a final "Scroll" event with the crucial parameter set to TRUE, which lets the
         ' caller know that they can perform any long-running actions now.
@@ -759,6 +793,12 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDScrollBar", colorCount
     If Not g_IsProgramRunning Then UpdateColorList
     
+    'Prep timer objects
+    If g_IsProgramRunning Then
+        Set m_UpButtonTimer = New pdTimer
+        Set m_DownButtonTimer = New pdTimer
+    End If
+    
     'Update the control size parameters at least once
     UpdateControlLayout
     
@@ -810,45 +850,6 @@ End Sub
 
 Private Sub UserControl_Resize()
     If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
-End Sub
-
-'Timers control repeat value changes when the mouse is held down on an up/down button
-Private Sub tmrDownButton_Timer()
-
-    'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
-    ' of the delay rate.
-    If tmrDownButton.Interval = Interface.GetKeyboardDelay * 1000 Then
-        tmrDownButton.Interval = Interface.GetKeyboardRepeatRate * 1000
-    End If
-    
-    'It's a little counter-intuitive, but the DOWN button actually moves the control value UP
-    moveValueUp m_MouseDownTrack
-    
-    'If the timer was activated because the user is clicking on the mouse track (and not a button), deactivate the
-    ' timer once the value equals the value under the mouse.
-    If m_MouseDownTrack Then
-        If Math_Functions.isPointInRectF(m_TrackX, m_TrackY, thumbRect) Or (m_Value > m_initTrackValue) Then tmrDownButton.Enabled = False
-    End If
-
-End Sub
-
-Private Sub tmrUpButton_Timer()
-    
-    'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
-    ' of the delay rate.
-    If tmrUpButton.Interval = Interface.GetKeyboardDelay * 1000 Then
-        tmrUpButton.Interval = Interface.GetKeyboardRepeatRate * 1000
-    End If
-    
-    'It's a little counter-intuitive, but the UP button actually moves the control value DOWN
-    moveValueDown m_MouseDownTrack
-    
-    'If the timer was activated because the user is clicking on the mouse track (and not a button), deactivate the
-    ' timer once the value equals the value under the mouse.
-    If m_MouseDownTrack Then
-        If Math_Functions.isPointInRectF(m_TrackX, m_TrackY, thumbRect) Or (m_Value < m_initTrackValue) Then tmrUpButton.Enabled = False
-    End If
-    
 End Sub
 
 'When the control value is INCREASED, this function is called

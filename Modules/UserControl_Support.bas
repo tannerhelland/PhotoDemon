@@ -63,7 +63,7 @@ Private Const INIT_SIZE_OF_BRUSH_CACHE As Long = 4&
 '  destroy one before its matching edit box is freed, we will crash and burn, so a different handling technique
 '  is requred.)
 Private Type SharedGDIFont
-    fontSize As Single
+    FontSize As Single
     fontHandle As Long
     numOfOwners As Long
 End Type
@@ -71,6 +71,9 @@ End Type
 Private m_numOfSharedFonts As Long
 Private m_SharedFonts() As SharedGDIFont
 Private Const INIT_SIZE_OF_FONT_CACHE As Long = 4&
+
+'Sometimes controls need unique ID values.  This module will provide a non-zero unique ID via the GetUniqueControlID() function.
+Private m_UniqueIDTracker As Long
 
 'Iterate through all sibling controls in our container, and if one is capable of receiving focus, activate it.  I had *really* hoped
 ' to bypass this kind of manual handling by using WM_NEXTDLGCTL, but I failed to get it working reliably with all types of VB windows.
@@ -432,7 +435,7 @@ Public Function GetSharedGDIFont(ByVal requestedSize As Single) As Long
     If m_numOfSharedFonts > 0 Then
             
         For i = 0 To m_numOfSharedFonts - 1
-            If m_SharedFonts(i).fontSize = requestedSize Then
+            If m_SharedFonts(i).FontSize = requestedSize Then
             
                 'As a failsafe, make sure the owner count is valid too
                 If m_SharedFonts(i).numOfOwners > 0 Then
@@ -464,9 +467,9 @@ Public Function GetSharedGDIFont(ByVal requestedSize As Single) As Long
         Font_Management.FillLogFontW_Quality tmpLogFont, TextRenderingHintClearTypeGridFit
         
         'Update the cache entry with new stats (including the created font)
-        m_SharedFonts(m_numOfSharedFonts).fontSize = requestedSize
+        m_SharedFonts(m_numOfSharedFonts).FontSize = requestedSize
         m_SharedFonts(m_numOfSharedFonts).numOfOwners = 1
-        If Not Font_Management.CreateGDIFont(tmpLogFont, m_SharedFonts(m_numOfSharedFonts).fontHandle) Then
+        If Not Font_Management.createGDIFont(tmpLogFont, m_SharedFonts(m_numOfSharedFonts).fontHandle) Then
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "WARNING!  UserControl_Support.GetSharedGDIFont() failed to create a new UI font handle."
             #End If
@@ -500,3 +503,16 @@ Public Sub ReleaseSharedGDIFontByHandle(ByVal requestedHandle As Long)
     End If
 
 End Sub
+
+'Return a unique, non-zero control ID.  Limited to the size of a VB Long (32-bytes), so don't call more than ~4 billion times.
+Public Function GetUniqueControlID() As Long
+    
+    If m_UniqueIDTracker = LONG_MAX Then
+        m_UniqueIDTracker = -1 * LONG_MAX
+    Else
+        m_UniqueIDTracker = m_UniqueIDTracker + 1
+    End If
+    
+    GetUniqueControlID = m_UniqueIDTracker
+    
+End Function

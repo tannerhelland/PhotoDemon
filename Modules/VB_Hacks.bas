@@ -27,6 +27,9 @@ Private Declare Sub SafeArrayUnlock Lib "oleaut32" (ByVal ptrToSA As Long)
 Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
 Private Declare Function GetMem4 Lib "msvbvm60" (ByVal Addr As Long, ByRef dstValue As Long) As Long
 
+'A system info class is used to retrieve ThunderMain's hWnd, if required
+Private m_SysInfo As pdSystemInfo
+
 'Point an internal 2D array at some other 2D array.  Any arrays aliased this way must be freed via Unalias2DArray,
 ' or VB will crash.
 Public Sub Alias2DArray_Byte(ByRef orig2DArray() As Byte, ByRef new2DArray() As Byte, ByRef newArraySA As SAFEARRAY2D)
@@ -110,4 +113,17 @@ Public Sub Unalias2DArray_Long(ByRef orig2DArray() As Long, ByRef new2DArray() A
     GetMem4 VarPtrArray(orig2DArray()), ptrSrc
     SafeArrayUnlock ptrSrc
     
+End Sub
+
+'Retrieve a handle to ThunderMain.  Works in the IDE as well, but the usual caveats apply.
+Public Function GetThunderMainHWnd() As Long
+    If m_SysInfo Is Nothing Then Set m_SysInfo = New pdSystemInfo
+    GetThunderMainHWnd = m_SysInfo.GetPhotoDemonMasterHWnd()
+End Function
+
+'Because we can't use the AddressOf operator inside a class module, timer classes will cheat and AddressOf this
+' function instead.  The unique TimerID we specify is actually a handle to the timer instance.
+' (Thank you to Karl Peterson for suggesting this excellent trick: http://vb.mvps.org/samples/TimerObj/)
+Public Sub StandInTimerProc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal cTimer As pdTimer, ByVal dwTime As Long)
+    cTimer.TimerEventArrived
 End Sub
