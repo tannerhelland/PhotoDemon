@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.74</langversion>
+<langversion>6.6.75</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -3207,12 +3207,6 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for pdZoom.cls-->
 
-<!-- BEGIN text for OutsideDevelopment_SmartBuffer.cls -->
-
-<!-- OutsideDevelopment_SmartBuffer.cls contains 0 phrases. -->
-
-<!-- END text for OutsideDevelopment_SmartBuffer.cls-->
-
 <!-- BEGIN text for OutsideDevelopment_SPBuffer.cls -->
 
 <!-- OutsideDevelopment_SPBuffer.cls contains 0 phrases. -->
@@ -3866,7 +3860,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 <translation></translation>
 </phrase>
 
-<!-- pdScrollBar.ctl contains 36 phrases. 22 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- pdScrollBar.ctl contains 37 phrases. 23 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for pdScrollBar.ctl-->
 
@@ -14677,12 +14671,24 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdEditBoxW.cls -->
+
+<!-- pdEditBoxW.cls contains 0 phrases. -->
+
+<!-- END text for pdEditBoxW.cls-->
+
+<!-- BEGIN text for pdTimer.cls -->
+
+<!-- pdTimer.cls contains 0 phrases. -->
+
+<!-- END text for pdTimer.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4320 phrases. -->
-<!-- 1803 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4321 phrases. -->
+<!-- 1804 are duplicates, so only 2517 unique phrases have been written to file. -->
 <!-- These 2517 phrases contain approximately 13401 total words. -->
 
 </pdData>
