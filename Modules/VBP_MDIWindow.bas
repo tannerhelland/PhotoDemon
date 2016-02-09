@@ -404,3 +404,50 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     End If
     
 End Sub
+
+'Find out whether the mouse pointer is over image contents or just the viewport
+Public Function IsMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcImage As pdImage) As Boolean
+
+    If srcImage.imgViewport Is Nothing Then
+        IsMouseOverImage = False
+        Exit Function
+    End If
+    
+    'Make sure the image is currently visible in the viewport
+    If srcImage.imgViewport.getIntersectState Then
+        
+        'Remember: the imgViewport's intersection rect contains the intersection of the canvas and the image.
+        ' If the target point lies inside this, it's over the image!
+        Dim intRect As RECTF
+        srcImage.imgViewport.getIntersectRectCanvas intRect
+        IsMouseOverImage = Math_Functions.IsPointInRectF(x1, y1, intRect)
+        
+    Else
+        IsMouseOverImage = False
+    End If
+
+End Function
+
+'Find out whether the mouse pointer is over a given layer in an image
+Public Function IsMouseOverLayer(ByVal imgX As Long, ByVal imgY As Long, ByRef srcImage As pdImage, ByRef srcLayerIndex As Long) As Boolean
+
+    If srcImage.imgViewport Is Nothing Then
+        IsMouseOverLayer = False
+        Exit Function
+    End If
+    
+    With srcImage.getLayerByIndex(srcLayerIndex)
+    
+        If (imgX >= .getLayerOffsetX) And (imgX <= .getLayerOffsetX + .getLayerWidth(False)) Then
+            If (imgY >= .getLayerOffsetY) And (imgY <= .getLayerOffsetY + .getLayerHeight(False)) Then
+                IsMouseOverLayer = True
+                Exit Function
+            Else
+                IsMouseOverLayer = False
+            End If
+            IsMouseOverLayer = False
+        End If
+    
+    End With
+    
+End Function

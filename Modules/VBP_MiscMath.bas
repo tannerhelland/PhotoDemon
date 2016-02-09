@@ -20,29 +20,29 @@ Private Declare Function PtInRect Lib "user32" (ByRef lpRect As RECT, ByVal x As
 Private Declare Function PtInRectL Lib "user32" Alias "PtInRect" (ByRef lpRect As RECTL, ByVal x As Long, ByVal y As Long) As Long
 
 'See if a point lies inside a rect (integer)
-Public Function isPointInRect(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECT) As Boolean
+Public Function IsPointInRect(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECT) As Boolean
 
     If PtInRect(srcRect, ptX, ptY) = 0 Then
-        isPointInRect = False
+        IsPointInRect = False
     Else
-        isPointInRect = True
+        IsPointInRect = True
     End If
 
 End Function
 
 'See if a point lies inside a RectL struct
-Public Function isPointInRectL(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECTL) As Boolean
+Public Function IsPointInRectL(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECTL) As Boolean
 
     If PtInRectL(srcRect, ptX, ptY) = 0 Then
-        isPointInRectL = False
+        IsPointInRectL = False
     Else
-        isPointInRectL = True
+        IsPointInRectL = True
     End If
 
 End Function
 
 'See if a point lies inside a rect (float)
-Public Function isPointInRectF(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECTF) As Boolean
+Public Function IsPointInRectF(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECTF) As Boolean
 
     'There's no GDI function for floating-point rects, so we must do this manually
     With srcRect
@@ -52,13 +52,13 @@ Public Function isPointInRectF(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRe
         
             'Check y boundaries
             If (ptY >= .Top) And (ptY <= (.Top + .Height)) Then
-                isPointInRectF = True
+                IsPointInRectF = True
             Else
-                isPointInRectF = False
+                IsPointInRectF = False
             End If
         
         Else
-            isPointInRectF = False
+            IsPointInRectF = False
         End If
     
     End With
