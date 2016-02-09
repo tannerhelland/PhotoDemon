@@ -536,9 +536,9 @@ Private Function ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Opti
         End If
     Else
         If (rpLeft = 0#) And (rpTop = 0#) And (rpWidth = 0#) And (rpHeight = 0#) Then
-            Drawing.fillRectToDC m_BackBuffer.getDIBDC, -1, -1, m_Width + 2, m_Height + 2, newBackColor
+            Drawing.FillRectToDC m_BackBuffer.getDIBDC, -1, -1, m_Width + 2, m_Height + 2, newBackColor
         Else
-            Drawing.fillRectToDC m_BackBuffer.getDIBDC, rpLeft - 1, rpTop - 1, rpWidth + 2, rpHeight + 2, newBackColor
+            Drawing.FillRectToDC m_BackBuffer.getDIBDC, rpLeft - 1, rpTop - 1, rpWidth + 2, rpHeight + 2, newBackColor
         End If
     End If
             
@@ -817,6 +817,14 @@ Friend Sub GetControlRect(ByRef dstRect As RECTL)
         .Bottom = .Top + m_MoveSize.GetHeight
     End With
 End Sub
+
+Public Function GetControlLeft() As Long
+    GetControlLeft = m_MoveSize.GetLeft
+End Function
+
+Public Function GetControlTop() As Long
+    GetControlTop = m_MoveSize.GetTop
+End Function
 
 Public Function GetControlWidth() As Long
     GetControlWidth = m_MoveSize.GetWidth
