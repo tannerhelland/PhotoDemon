@@ -53,6 +53,17 @@ Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 Public Event TabPress(ByVal focusDirectionForward As Boolean)
 
+'While this control doesn't have any internal use for mouse events, it can relay them to its owner.  This allows PD to make
+' UI rendering decisions based on the mouse state of the edit box (e.g. special borders on hover vs inactive).
+Public Event MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Public Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Public Event MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Public Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Public Event MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Public Event MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
+Private WithEvents m_MouseEvents As pdInputMouse
+Attribute m_MouseEvents.VB_VarHelpID = -1
+
 'Window styles
 Private Enum enWindowStyles
     WS_BORDER = &H800000
@@ -319,8 +330,11 @@ Public Property Get BackColor() As Long
 End Property
 
 Public Property Let BackColor(ByVal newColor As Long)
-    m_BackColor = Colors.ConvertSystemColor(newColor)
-    If m_EditBoxHwnd <> 0 Then CreateEditBoxGDIObjects
+    newColor = Colors.ConvertSystemColor(newColor)
+    If newColor <> m_BackColor Then
+        m_BackColor = newColor
+        If m_EditBoxHwnd <> 0 Then CreateEditBoxGDIObjects
+    End If
 End Property
 
 Public Property Get Enabled() As Boolean
@@ -434,13 +448,16 @@ Public Property Let Text(ByRef newString As String)
     
 End Property
 
-Public Property Get textColor() As Long
-    textColor = m_TextColor
+Public Property Get TextColor() As Long
+    TextColor = m_TextColor
 End Property
 
-Public Property Let textColor(ByVal newColor As Long)
-    m_TextColor = Colors.ConvertSystemColor(newColor)
-    If m_EditBoxHwnd <> 0 Then CreateEditBoxGDIObjects
+Public Property Let TextColor(ByVal newColor As Long)
+    newColor = Colors.ConvertSystemColor(newColor)
+    If newColor <> m_TextColor Then
+        m_TextColor = newColor
+        If m_EditBoxHwnd <> 0 Then CreateEditBoxGDIObjects
+    End If
 End Property
 
 Public Property Get Visible() As Boolean
@@ -513,13 +530,16 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
                 cSubclass.ssc_Subclass m_EditBoxHwnd, 0, 1, Me, True, True, True
                 cSubclass.ssc_AddMsg m_EditBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_CHAR, WM_UNICHAR, WM_MOUSEACTIVATE
                 
-                'Subclass the user control as well.  This is necessary for handling update messages from the edit box
+                'Subclass the parent window as well.  This is necessary for handling some update messages from the edit box.
                 If Not m_ParentHasBeenSubclassed Then
                     m_ParentHWnd = parentHwnd
                     cSubclass.ssc_Subclass parentHwnd, 0, 1, Me, True, True, False
                     cSubclass.ssc_AddMsg parentHwnd, MSG_BEFORE, WM_CTLCOLOREDIT, WM_CTLCOLORSTATIC, WM_COMMAND
                     m_ParentHasBeenSubclassed = True
                 End If
+                
+                'Activate mouse events
+                m_MouseEvents.addInputTracker m_EditBoxHwnd, True
                 
             End If
         End If
@@ -549,6 +569,7 @@ Public Function DestroyEditBox() As Boolean
             cSubclass.ssc_UnSubclass m_EditBoxHwnd
             cSubclass.shk_TerminateHooks
         End If
+        If Not (m_MouseEvents Is Nothing) Then Set m_MouseEvents = Nothing
         DestroyEditBox = CBool(DestroyWindow(m_EditBoxHwnd) <> 0)
     Else
         DestroyEditBox = True
@@ -620,9 +641,36 @@ Private Sub RepaintEditBox()
     End If
 End Sub
 
+Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    RaiseEvent MouseEnter(Button, Shift, x, y)
+End Sub
+
+Private Sub m_MouseEvents_MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    RaiseEvent MouseHover(Button, Shift, x, y)
+End Sub
+
+Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    RaiseEvent MouseLeave(Button, Shift, x, y)
+End Sub
+
+Private Sub m_MouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    RaiseEvent MouseWheelHorizontal(Button, Shift, x, y, scrollAmount)
+End Sub
+
+Private Sub m_MouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    RaiseEvent MouseWheelVertical(Button, Shift, x, y, scrollAmount)
+End Sub
+
+Private Sub m_MouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
+    RaiseEvent MouseWheelZoom(Button, Shift, x, y, zoomAmount)
+End Sub
+
 Private Sub Class_Initialize()
     Set m_HookReleaseTimer = New pdTimer
-    If g_IsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
+    If g_IsProgramRunning Then
+        Set cSubclass = New cSelfSubHookCallback
+        Set m_MouseEvents = New pdInputMouse
+    End If
     m_Enabled = True
     m_Visible = True
 End Sub
@@ -988,7 +1036,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             If lParam = m_EditBoxHwnd Then
             
                 'Assign colors directly, using the API
-                SetTextColor wParam, Me.textColor
+                SetTextColor wParam, Me.TextColor
                 SetBkMode wParam, SBKM_OPAQUE
                 SetBkColor wParam, Me.BackColor
                 
@@ -1006,7 +1054,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             If lParam = m_EditBoxHwnd Then
             
                 'Assign colors directly, using the API
-                SetTextColor wParam, Me.textColor
+                SetTextColor wParam, Me.TextColor
                 SetBkMode wParam, SBKM_OPAQUE
                 SetBkColor wParam, Me.BackColor
                 
@@ -1223,6 +1271,3 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 '   add this warning banner to the last routine in your class
 ' *************************************************************
 End Sub
-
-
-
