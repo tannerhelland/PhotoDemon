@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.132</langversion>
+<langversion>6.7.133</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -3206,12 +3206,6 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <!-- END text for pdZoom.cls-->
 
-<!-- BEGIN text for OutsideDevelopment_SmartBuffer.cls -->
-
-<!-- OutsideDevelopment_SmartBuffer.cls contains 0 phrases. -->
-
-<!-- END text for OutsideDevelopment_SmartBuffer.cls-->
-
 <!-- BEGIN text for OutsideDevelopment_SPBuffer.cls -->
 
 <!-- OutsideDevelopment_SPBuffer.cls contains 0 phrases. -->
@@ -3860,7 +3854,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 <translation></translation>
 </phrase>
 
-<!-- pdScrollBar.ctl contains 36 phrases. 22 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- pdScrollBar.ctl contains 37 phrases. 23 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for pdScrollBar.ctl-->
 
@@ -14672,12 +14666,24 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdEditBoxW.cls -->
+
+<!-- pdEditBoxW.cls contains 0 phrases. -->
+
+<!-- END text for pdEditBoxW.cls-->
+
+<!-- BEGIN text for pdTimer.cls -->
+
+<!-- pdTimer.cls contains 0 phrases. -->
+
+<!-- END text for pdTimer.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4320 phrases. -->
-<!-- 1803 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4321 phrases. -->
+<!-- 1804 are duplicates, so only 2517 unique phrases have been written to file. -->
 <!-- These 2517 phrases contain approximately 13401 total words. -->
 
 </pdData>

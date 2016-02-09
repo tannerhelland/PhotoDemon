@@ -375,7 +375,7 @@ End Sub
 'BY DEFAULT, all added hWnds will have MouseEnter/Leave/Wheel events tracked "for free".
 '
 'Note that this function will return TRUE if input tracking was initiated successfully.
-Public Function addInputTracker(ByVal targetHwnd As Long, Optional ByVal alsoTrackMouseEnterLeave As Boolean = False, Optional ByVal alsoTrackStandardMouseEvents As Boolean = False, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal alsoHandleCursorDuties As Boolean = False, Optional ByVal disregardWheelEvents As Boolean = False) As Boolean
+Public Function addInputTracker(ByVal targetHwnd As Long, Optional ByVal alsoTrackMouseEnterLeave As Boolean = False, Optional ByVal alsoTrackStandardMouseEvents As Boolean = False, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal alsoHandleCursorDuties As Boolean = False, Optional ByVal disregardWheelEvents As Boolean = False, Optional ByVal targetWindowIsAPI As Boolean = False) As Boolean
         
     'Add the hWnd to our tracking array.  Note that the hWnd in position 0 is treated as the base.
     If targetHwnd <> 0 Then
@@ -399,7 +399,7 @@ Public Function addInputTracker(ByVal targetHwnd As Long, Optional ByVal alsoTra
     End If
     
     'Attach the subclasser to this hWnd
-    If Not cSubclass.ssc_Subclass(targetHwnd, , 1, Me) Then
+    If Not cSubclass.ssc_Subclass(targetHwnd, , 1, Me, , targetWindowIsAPI, targetWindowIsAPI) Then
         
         Debug.Print "WARNING: input subclasser failed to subclass hWnd #" & targetHwnd & ".  Fix it!"
         addInputTracker = False

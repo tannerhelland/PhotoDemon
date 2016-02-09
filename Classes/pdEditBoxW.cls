@@ -448,11 +448,11 @@ Public Property Let Text(ByRef newString As String)
     
 End Property
 
-Public Property Get TextColor() As Long
-    TextColor = m_TextColor
+Public Property Get textColor() As Long
+    textColor = m_TextColor
 End Property
 
-Public Property Let TextColor(ByVal newColor As Long)
+Public Property Let textColor(ByVal newColor As Long)
     newColor = Colors.ConvertSystemColor(newColor)
     If newColor <> m_TextColor Then
         m_TextColor = newColor
@@ -539,7 +539,7 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
                 End If
                 
                 'Activate mouse events
-                m_MouseEvents.addInputTracker m_EditBoxHwnd, True
+                m_MouseEvents.addInputTracker m_EditBoxHwnd, True, , , , , True
                 
             End If
         End If
@@ -1036,7 +1036,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             If lParam = m_EditBoxHwnd Then
             
                 'Assign colors directly, using the API
-                SetTextColor wParam, Me.TextColor
+                SetTextColor wParam, Me.textColor
                 SetBkMode wParam, SBKM_OPAQUE
                 SetBkColor wParam, Me.BackColor
                 
@@ -1054,7 +1054,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             If lParam = m_EditBoxHwnd Then
             
                 'Assign colors directly, using the API
-                SetTextColor wParam, Me.TextColor
+                SetTextColor wParam, Me.textColor
                 SetBkMode wParam, SBKM_OPAQUE
                 SetBkColor wParam, Me.BackColor
                 
