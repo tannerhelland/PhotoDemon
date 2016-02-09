@@ -119,6 +119,7 @@
 				<Background>BackgroundDefault</Background>
 				<Background-disabled>GrayLight</Background-disabled>
 				<Border>GrayDefault</Border>
+				<Border-active>AccentDark</Border-active>
 				<Border-hover>AccentDefault</Border-hover>
 				<Text>TextEditBox</Text>
 				<Text-disabled>GrayDefault</Text-disabled>

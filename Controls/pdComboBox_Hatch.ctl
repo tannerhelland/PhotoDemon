@@ -1165,18 +1165,18 @@ End Sub
 'NOTE FOR OUTSIDE USERS!  These key constants are declared publicly in PD, because they are used many places.  You can find virtual keycode
 ' declarations in PD's Public_Constants module, or at this MSDN link:
 ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
-Private Function doesVirtualKeyRequireSpecialHandling(ByVal vKey As Long) As Boolean
+Private Function DoesVirtualKeyRequireSpecialHandling(ByVal vKey As Long) As Boolean
     
     Select Case vKey
     
         Case VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
-            doesVirtualKeyRequireSpecialHandling = True
+            DoesVirtualKeyRequireSpecialHandling = True
             
         Case VK_TAB
-            doesVirtualKeyRequireSpecialHandling = True
+            DoesVirtualKeyRequireSpecialHandling = True
         
         Case Else
-            doesVirtualKeyRequireSpecialHandling = False
+            DoesVirtualKeyRequireSpecialHandling = False
     
     End Select
         
@@ -1312,7 +1312,7 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 gdipBrush = GDI_Plus.getGDIPlusPatternBrushHandle(m_CurrentListIndex, vbBlack, 255, vbWhite, 255)
                 
                 Dim gdipPen As Long
-                gdipPen = GDI_Plus.getGDIPlusPenHandle(vbBlack, 192, 1, LineCapRound, LineJoinRound)
+                gdipPen = GDI_Plus.GetGDIPlusPenHandle(vbBlack, 192, 1, LineCapRound, LineJoinRound)
                 
                 'Fill the hatch region, then trace the border
                 hatchPath.fillPathToDIB_BareBrush gdipBrush, , targetDC, True, hatchRect.Left, hatchRect.Top
@@ -1320,7 +1320,7 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 
                 'Release all drawing objects
                 GDI_Plus.releaseGDIPlusBrush gdipBrush
-                GDI_Plus.releaseGDIPlusPen gdipPen
+                GDI_Plus.ReleaseGDIPlusPen gdipPen
                 
                 'Draw the button
                 Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
@@ -1437,7 +1437,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             gdipBrush = GDI_Plus.getGDIPlusPatternBrushHandle(srcDIS.itemID, vbBlack, 255, vbWhite, 255)
             
             Dim gdipPen As Long
-            gdipPen = GDI_Plus.getGDIPlusPenHandle(vbBlack, 192, 1, LineCapRound, LineJoinRound)
+            gdipPen = GDI_Plus.GetGDIPlusPenHandle(vbBlack, 192, 1, LineCapRound, LineJoinRound)
             
             'Fill the hatch region, then trace the border
             hatchPath.fillPathToDIB_BareBrush gdipBrush, , srcDIS.hDC, True, hatchRect.Left, hatchRect.Top
@@ -1445,7 +1445,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             
             'Release all drawing objects
             GDI_Plus.releaseGDIPlusBrush gdipBrush
-            GDI_Plus.releaseGDIPlusPen gdipPen
+            GDI_Plus.ReleaseGDIPlusPen gdipPen
             
             'If the item has focus, draw a rectangular frame around the item.
             If isMouseOverItem Then
@@ -1657,7 +1657,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                 
                 'Dialog keys (e.g. arrow keys) get eaten by VB, so we must manually catch them in this hook, and forward them directly
                 ' to the API control.
-                If doesVirtualKeyRequireSpecialHandling(wParam) Then
+                If DoesVirtualKeyRequireSpecialHandling(wParam) Then
                     
                     'Key up events will be raised twice; once in a transitionary stage, and once again in a final stage.
                     ' To prevent double-raising of KeyUp events, we check the transitionary state before proceeding
@@ -1678,7 +1678,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
             
                 'Dialog keys (e.g. arrow keys) get eaten by VB, so we must manually catch them in this hook, and forward them directly
                 ' to the API control.
-                If doesVirtualKeyRequireSpecialHandling(wParam) Then
+                If DoesVirtualKeyRequireSpecialHandling(wParam) Then
                     
                     'Tab key is used to redirect focus to a new window.
                     If (wParam = VK_TAB) And ((GetTickCount - m_TimeAtFocusEnter) > 250) Then

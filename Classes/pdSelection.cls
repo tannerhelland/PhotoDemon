@@ -487,7 +487,7 @@ End Function
 
 'Simple - use this to select the entire image attached to this selection object.  Note that this DOES NOT render the new selection on-screen,
 ' and it doesn't render a matching selection mask.  The calling function is responsible for that.
-Public Sub selectAll()
+Public Sub SelectAll()
 
     'Set basic information about this selection
     setSelectionShape sRectangle
@@ -1990,7 +1990,7 @@ Private Sub applyFeatheringToMask()
             Message "Feathering selection..."
             CreateApproximateGaussianBlurDIB getSelectionProperty_Long(SP_FEATHERING_RADIUS), tmpDIB, selMask, 1, True
             SetProgBarVal 0
-            releaseProgressBar
+            ReleaseProgressBar
             Message "Finished."
             
         Else
@@ -2018,7 +2018,7 @@ Private Sub applyFeatheringToMask()
             Set dstDIB = Nothing
             
             SetProgBarVal 0
-            releaseProgressBar
+            ReleaseProgressBar
             Message "Finished."
         
         End If
@@ -2042,11 +2042,11 @@ Public Sub renderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
     Dim dstTop As Double, dstBottom As Double
     
     If (sShape = sRectangle) Or (sShape = sCircle) Then
-        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), selLeft, selTop, dstLeft, dstTop
-        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), selLeft + selWidth, selTop + selHeight, dstRight, dstBottom
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), selLeft, selTop, dstLeft, dstTop
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), selLeft + selWidth, selTop + selHeight, dstRight, dstBottom
     Else
-        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), x1, y1, dstLeft, dstTop
-        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), x2, y2, dstRight, dstBottom
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), x1, y1, dstLeft, dstTop
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), x2, y2, dstRight, dstBottom
     End If
     
     
@@ -2091,7 +2091,7 @@ Public Sub renderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
             Case sPolygon
             
                 For i = 0 To m_numOfPolygonPoints - 1
-                    Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_PolygonPoints(i).x, m_PolygonPoints(i).y, dstLeft, dstTop
+                    Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_PolygonPoints(i).x, m_PolygonPoints(i).y, dstLeft, dstTop
                     GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstTop, circRadius, circAlpha
                 Next i
                 
@@ -2147,8 +2147,8 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     '   in effect.)
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double
-    Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, boundLeft, boundTop, dstLeft, dstTop
-    Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, boundLeft + boundWidth, boundTop + boundHeight, dstRight, dstBottom
+    Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, boundLeft, boundTop, dstLeft, dstTop
+    Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, boundLeft + boundWidth, boundTop + boundHeight, dstRight, dstBottom
     
     'Several different selection rendering methods use the same variables.  I've declared the common ones here.
     Dim iData() As Byte
@@ -2179,14 +2179,14 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     
     ReDim xLookup(imgLeft To rightBound) As Long
     For x = imgLeft To rightBound
-        Drawing.convertCanvasCoordsToImageCoords FormMain.mainCanvas(0), srcImage, x, imgTop, newX, newY, True
+        Drawing.ConvertCanvasCoordsToImageCoords FormMain.mainCanvas(0), srcImage, x, imgTop, newX, newY, True
         newXInt = newX
         xLookup(x) = newXInt * 3&
     Next x
     
     ReDim yLookup(imgTop To bottomBound) As Long
     For y = imgTop To bottomBound
-        Drawing.convertCanvasCoordsToImageCoords FormMain.mainCanvas(0), srcImage, imgLeft, y, newX, newY, True
+        Drawing.ConvertCanvasCoordsToImageCoords FormMain.mainCanvas(0), srcImage, imgLeft, y, newX, newY, True
         yLookup(y) = newY
     Next y
     
@@ -2304,11 +2304,11 @@ Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
     Dim dstTop As Double, dstBottom As Double
     
     If (sShape = sRectangle) Or (sShape = sCircle) Then
-        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, selLeft, selTop, dstLeft, dstTop
-        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, selLeft + selWidth, selTop + selHeight, dstRight, dstBottom
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, selLeft, selTop, dstLeft, dstTop
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, selLeft + selWidth, selTop + selHeight, dstRight, dstBottom
     ElseIf (sShape = sLine) Then
-        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, x1, y1, dstLeft, dstTop
-        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, x2, y2, dstRight, dstBottom
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, x1, y1, dstLeft, dstTop
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, x2, y2, dstRight, dstBottom
     End If
     
     'New in version 6.6 is an awesome new path class, which makes the rendering steps much easier than they have historically been.
@@ -2360,9 +2360,9 @@ Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
                 For i = 0 To numOfRenderPoints - 1
                     
                     If (sShape = sPolygon) Then
-                        Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(i).x, m_PolygonPoints(i).y, tmpX, tmpY
+                        Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(i).x, m_PolygonPoints(i).y, tmpX, tmpY
                     Else
-                        Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, m_LassoPoints(i).x, m_LassoPoints(i).y, tmpX, tmpY
+                        Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_LassoPoints(i).x, m_LassoPoints(i).y, tmpX, tmpY
                     End If
                     
                     tmpViewportSpace(i).x = tmpX

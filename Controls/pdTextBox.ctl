@@ -80,6 +80,9 @@ Public Event TabPress(ByVal focusDirectionForward As Boolean)
 Private WithEvents m_EditBox As pdEditBoxW
 Attribute m_EditBox.VB_VarHelpID = -1
 
+'Some mouse states relative to the edit box are tracked, so we can render custom borders around the embedded box
+Private m_MouseOverEditBox As Boolean
+
 'Like other custom PD UC's, tab behavior can be modified depending where the text box is sited
 Private m_TabMode As PDUC_TAB_BEHAVIOR
 
@@ -237,6 +240,16 @@ End Sub
 
 Private Sub m_EditBox_LostFocusAPI()
     ComponentLostFocus
+End Sub
+
+Private Sub m_EditBox_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseOverEditBox = True
+    RedrawBackBuffer
+End Sub
+
+Private Sub m_EditBox_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseOverEditBox = False
+    RedrawBackBuffer
 End Sub
 
 Private Sub m_EditBox_TabPress(ByVal focusDirectionForward As Boolean)
@@ -502,17 +515,27 @@ Private Sub RedrawBackBuffer()
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
-    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, , m_ControlHasFocus))
+    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox))
+    
+    'Relay any recently changed/modified colors to the edit box, so it can repaint itself to match
+    RelayUpdatedColorsToEditBox
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    'The edit box has a 1px border, whose color changes depending on focus
+    'The edit box doesn't actually have a border; we render a pseudo-border onto the underlying UC, as necessary.
     Dim halfPadding As Long
-    halfPadding = EDITBOX_BORDER_PADDING \ 2 - 1
-    GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, halfPadding, halfPadding, (bWidth - 1) - halfPadding, (bHeight - 1) - halfPadding, m_Colors.RetrieveColor(PDEB_Border, Me.Enabled, , m_ControlHasFocus), , 1, False, LineJoinMiter
+    halfPadding = 0     'EDITBOX_BORDER_PADDING \ 2 - 1
+    
+    Dim borderWidth As Single
+    If Not (m_EditBox Is Nothing) Then
+        If m_EditBox.HasFocus Or m_MouseOverEditBox Then borderWidth = 3 Else borderWidth = 1
+    Else
+        borderWidth = 1
+    End If
+    GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, halfPadding, halfPadding, (bWidth - 1) - halfPadding, (bHeight - 1) - halfPadding, m_Colors.RetrieveColor(PDEB_Border, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox), , borderWidth, False, LineJoinMiter
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint
@@ -540,8 +563,8 @@ End Sub
 ' It will relay the relevant themed colors to the edit box class.
 Private Sub RelayUpdatedColorsToEditBox()
     If Not (m_EditBox Is Nothing) Then
-        m_EditBox.BackColor = m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, , m_ControlHasFocus)
-        m_EditBox.textColor = m_Colors.RetrieveColor(PDEB_Text, Me.Enabled, , m_ControlHasFocus)
+        m_EditBox.BackColor = m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
+        m_EditBox.TextColor = m_Colors.RetrieveColor(PDEB_Text, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
     End If
 End Sub
 
