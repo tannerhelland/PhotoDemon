@@ -1,7 +1,6 @@
 VERSION 5.00
 Begin VB.UserControl pdResize 
    Appearance      =   0  'Flat
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    ClientHeight    =   2850
    ClientLeft      =   0
@@ -63,37 +62,37 @@ Begin VB.UserControl pdResize
       FontSize        =   14
    End
    Begin PhotoDemon.pdSpinner tudWidth 
-      Height          =   345
+      Height          =   375
       Left            =   2130
       TabIndex        =   0
       Top             =   0
       Width           =   1200
       _ExtentX        =   2117
-      _ExtentY        =   767
+      _ExtentY        =   661
       Min             =   1
       Max             =   32767
       Value           =   1
    End
    Begin PhotoDemon.pdSpinner tudHeight 
-      Height          =   345
+      Height          =   375
       Left            =   2130
       TabIndex        =   1
       Top             =   600
       Width           =   1200
       _ExtentX        =   2117
-      _ExtentY        =   767
+      _ExtentY        =   661
       Min             =   1
       Max             =   32767
       Value           =   1
    End
    Begin PhotoDemon.pdSpinner tudResolution 
-      Height          =   345
+      Height          =   375
       Left            =   2130
       TabIndex        =   6
       Top             =   1200
       Width           =   1200
       _ExtentX        =   2117
-      _ExtentY        =   767
+      _ExtentY        =   661
       Min             =   1
       Max             =   32767
       Value           =   1
@@ -356,23 +355,23 @@ Private Sub mFont_FontChanged(ByVal PropertyName As String)
     
     Set UserControl.Font = mFont
     
-    lblWidth.fontSize = UserControl.Font.Size
-    tudWidth.fontSize = UserControl.Font.Size
-    cmbWidthUnit.fontSize = UserControl.Font.Size
+    lblWidth.FontSize = UserControl.Font.Size
+    tudWidth.FontSize = UserControl.Font.Size
+    cmbWidthUnit.FontSize = UserControl.Font.Size
     
-    lblHeight.fontSize = UserControl.Font.Size
-    tudHeight.fontSize = UserControl.Font.Size
-    cmbHeightUnit.fontSize = UserControl.Font.Size
+    lblHeight.FontSize = UserControl.Font.Size
+    tudHeight.FontSize = UserControl.Font.Size
+    cmbHeightUnit.FontSize = UserControl.Font.Size
     
-    lblResolution.fontSize = UserControl.Font.Size
-    tudResolution.fontSize = UserControl.Font.Size
-    cmbResolution.fontSize = UserControl.Font.Size
+    lblResolution.FontSize = UserControl.Font.Size
+    tudResolution.FontSize = UserControl.Font.Size
+    cmbResolution.FontSize = UserControl.Font.Size
     
-    lblAspectRatio(0).fontSize = UserControl.Font.Size
-    lblAspectRatio(1).fontSize = UserControl.Font.Size
+    lblAspectRatio(0).FontSize = UserControl.Font.Size
+    lblAspectRatio(1).FontSize = UserControl.Font.Size
     
-    lblDimensions(0).fontSize = UserControl.Font.Size
-    lblDimensions(1).fontSize = UserControl.Font.Size
+    lblDimensions(0).FontSize = UserControl.Font.Size
+    lblDimensions(1).FontSize = UserControl.Font.Size
     
 End Sub
 

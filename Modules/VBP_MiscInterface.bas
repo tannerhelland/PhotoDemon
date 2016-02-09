@@ -42,6 +42,25 @@ Private Const SmoothingNone As Long = &H0
 Private Const SPI_GETKEYBOARDDELAY As Long = &H16
 Private Const SPI_GETKEYBOARDSPEED As Long = &HA
 
+'Types and API calls for processing ESC keypresses mid-loop
+Private Type winMsg
+    hWnd As Long
+    sysMsg As Long
+    wParam As Long
+    lParam As Long
+    msgTime As Long
+    ptX As Long
+    ptY As Long
+End Type
+
+Private Declare Function GetInputState Lib "user32" () As Long
+Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (ByRef lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+Private Const WM_KEYFIRST As Long = &H100
+Private Const WM_KEYLAST As Long = &H108
+Private Const PM_REMOVE As Long = &H1
+
+Public cancelCurrentAction As Boolean
+
 'Constants that define single meta-level actions that require certain controls to be en/disabled.  (For example, use tSave to disable
 ' the File -> Save menu, file toolbar Save button, and Ctrl+S hotkey.)  Constants are listed in roughly the order they appear in the
 ' main menu.
@@ -1794,8 +1813,77 @@ Public Sub ReleaseResources()
     Set currentDialogReference = Nothing
 End Sub
 
+'Wait for (n) milliseconds, while still providing some interactivity via DoEvents.  Thank you to vbforums user "anhn" for the
+' original version of this function, available here: http://www.vbforums.com/showthread.php?546633-VB6-Sleep-Function.
+' Please note that his original code has been modified for use in PhotoDemon.
+Public Sub PauseProgram(ByRef secsDelay As Double)
+   
+   Dim TimeOut   As Double
+   Dim PrevTimer As Double
+   
+   PrevTimer = Timer
+   TimeOut = PrevTimer + secsDelay
+   Do While PrevTimer < TimeOut
+      Sleep 2 '-- Timer is only updated every 1/128 sec
+      DoEvents
+      If Timer < PrevTimer Then TimeOut = TimeOut - 86400 '-- pass midnight
+      PrevTimer = Timer
+   Loop
+   
+End Sub
 
+'This function will quickly and efficiently check the last unprocessed keypress submitted by the user.  If an ESC keypress was found,
+' this function will return TRUE.  It is then up to the calling function to determine how to proceed.
+Public Function UserPressedESC(Optional ByVal displayConfirmationPrompt As Boolean = True) As Boolean
 
+    Dim tmpMsg As winMsg
+    
+    'GetInputState returns a non-0 value if key or mouse events are pending.  By Microsoft's own admission, it is much faster
+    ' than PeekMessage, so to keep things fast we check it before manually inspecting individual messages
+    ' (see http://support.microsoft.com/kb/35605 for more details)
+    If GetInputState() Then
+    
+        'Use the WM_KEYFIRST/LAST constants to explicitly request only keypress messages.  If the user has pressed multiple
+        ' keys besides just ESC, this function may not operate as intended.  (Per the MSDN documentation: "...the first queued
+        ' message that matches the specified filter is retrieved.")  We could technically parse all keypress messages and look
+        ' for just ESC, but this would slow the function without providing any clear benefit.
+        PeekMessage tmpMsg, 0, WM_KEYFIRST, WM_KEYLAST, PM_REMOVE
+        
+        'ESC keypress found!
+        If tmpMsg.wParam = vbKeyEscape Then
+            
+            'If the calling function requested a confirmation prompt, display it now; otherwise exit immediately.
+            If displayConfirmationPrompt Then
+                Dim msgReturn As VbMsgBoxResult
+                msgReturn = PDMsgBox("Are you sure you want to cancel %1?", vbInformation + vbYesNo + vbApplicationModal, "Cancel image processing", LastProcess.Id)
+                If msgReturn = vbYes Then cancelCurrentAction = True Else cancelCurrentAction = False
+            Else
+                cancelCurrentAction = True
+            End If
+            
+        Else
+            cancelCurrentAction = False
+        End If
+        
+    Else
+        cancelCurrentAction = False
+    End If
+    
+    UserPressedESC = cancelCurrentAction
+    
+End Function
 
-
-
+'Calculate and display the current mouse position.
+' INPUTS: x and y coordinates of the mouse cursor, current form, and optionally two Double-type variables to receive the relative
+' coordinates (e.g. location on the image) of the current mouse position.
+Public Sub DisplayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas, Optional ByRef copyX As Double, Optional ByRef copyY As Double)
+    
+    'This function simply wraps the relevant Drawing module function
+    If Drawing.ConvertCanvasCoordsToImageCoords(srcCanvas, srcImage, x1, y1, copyX, copyY) Then
+        
+        'If an image is open, relay the new coordinates to the relevant canvas; it will handle the actual drawing internally
+        If g_OpenImageCount > 0 Then srcCanvas.displayCanvasCoordinates copyX, copyY
+        
+    End If
+    
+End Sub

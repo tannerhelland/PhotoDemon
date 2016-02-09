@@ -163,7 +163,7 @@ Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boole
     
     'If the current text value is not valid, highlight the problem and optionally display an error message box
     If Not retVal Then
-        txtPrimary.selectAll
+        txtPrimary.SelectAll
         If showError Then IsTextEntryValid True
     End If
     
@@ -182,7 +182,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     'Mirror the new enabled setting across child controls
     UserControl.Enabled = newValue
     txtPrimary.Enabled = newValue
-    txtPrimary = getFormattedStringValue(controlVal)
+    txtPrimary = GetFormattedStringValue(controlVal)
     
     'Request a button redraw
     RedrawButton
@@ -220,7 +220,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     'Determine mouse button state for the up and down button areas
     If (Button = pdLeftButton) And Me.Enabled Then
     
-        If isPointInRect(x, y, upRect) Then
+        If IsPointInRect(x, y, upRect) Then
             m_MouseDownUpButton = True
             
             'Adjust the value immediately
@@ -234,7 +234,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             m_MouseDownUpButton = False
         End If
         
-        If isPointInRect(x, y, downRect) Then
+        If IsPointInRect(x, y, downRect) Then
             m_MouseDownDownButton = True
             moveValueUp
             m_DownButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
@@ -269,13 +269,13 @@ End Sub
 Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'Determine mouse hover state for the up and down button areas
-    If isPointInRect(x, y, upRect) Then
+    If IsPointInRect(x, y, upRect) Then
         m_MouseOverUpButton = True
     Else
         m_MouseOverUpButton = False
     End If
     
-    If isPointInRect(x, y, downRect) Then
+    If IsPointInRect(x, y, downRect) Then
         m_MouseOverDownButton = True
     Else
         m_MouseOverDownButton = False
@@ -371,7 +371,7 @@ Private Sub txtPrimary_GotFocusAPI()
     EvaluateFocusCount True
     
     'As a convenience to the user, select all text when first clicked
-    txtPrimary.selectAll
+    txtPrimary.SelectAll
     
 End Sub
 
@@ -423,11 +423,11 @@ Public Property Let Value(ByVal newValue As Double)
         'Mirror the value to the text box
         If Not textBoxInitiated Then
             If (Not IsValid(False)) Then
-                txtPrimary = getFormattedStringValue(controlVal)
+                txtPrimary = GetFormattedStringValue(controlVal)
                 shpError.Visible = False
             Else
                 If Len(txtPrimary) > 0 Then
-                    If StrComp(getFormattedStringValue(txtPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then txtPrimary.Text = getFormattedStringValue(controlVal)
+                    If StrComp(GetFormattedStringValue(txtPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then txtPrimary.Text = GetFormattedStringValue(controlVal)
                 End If
             End If
             
@@ -494,7 +494,7 @@ Public Property Let SigDigits(ByVal newValue As Long)
     significantDigits = newValue
         
     'Update the text display to reflect the new significant digit amount, including any decimal places
-    txtPrimary.Text = getFormattedStringValue(controlVal)
+    txtPrimary.Text = GetFormattedStringValue(controlVal)
     
     PropertyChanged "SigDigits"
     
@@ -777,26 +777,26 @@ End Sub
 
 'Because this control can contain either decimal or float values, we want to make sure any entered strings adhere
 ' to strict formatting rules.
-Private Function getFormattedStringValue(ByVal srcValue As Double) As String
+Private Function GetFormattedStringValue(ByVal srcValue As Double) As String
 
     Select Case significantDigits
     
         Case 0
-            getFormattedStringValue = Format(CStr(srcValue), "#0")
+            GetFormattedStringValue = Format(CStr(srcValue), "#0")
         
         Case 1
-            getFormattedStringValue = Format(CStr(srcValue), "#0.0")
+            GetFormattedStringValue = Format(CStr(srcValue), "#0.0")
             
         Case 2
-            getFormattedStringValue = Format(CStr(srcValue), "#0.00")
+            GetFormattedStringValue = Format(CStr(srcValue), "#0.00")
             
         Case Else
-            getFormattedStringValue = Format(CStr(srcValue), "#0.000")
+            GetFormattedStringValue = Format(CStr(srcValue), "#0.000")
     
     End Select
     
     'Perform a final check for control enablement.  If the control is disabled, we do not (currently) display anything.
-    If Not Me.Enabled Then getFormattedStringValue = ""
+    If Not Me.Enabled Then GetFormattedStringValue = ""
 
 End Function
 
@@ -832,9 +832,10 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
         If (checkVal >= controlMin) And (checkVal <= controlMax) Then
             IsTextEntryValid = True
         Else
-            If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary, getFormattedStringValue(controlMin), getFormattedStringValue(controlMax)
+            If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary, GetFormattedStringValue(controlMin), GetFormattedStringValue(controlMax)
             IsTextEntryValid = False
         End If
+        
     End If
     
 End Function

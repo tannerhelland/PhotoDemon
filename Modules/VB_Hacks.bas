@@ -127,3 +127,10 @@ End Function
 Public Sub StandInTimerProc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal cTimer As pdTimer, ByVal dwTime As Long)
     cTimer.TimerEventArrived
 End Sub
+
+'This beautiful little function comes courtesy of coder Merri:
+' http://www.vbforums.com/showthread.php?536960-RESOLVED-how-can-i-see-if-the-object-is-array-or-not
+Public Function InControlArray(Ctl As Object) As Boolean
+    InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
+End Function
+
