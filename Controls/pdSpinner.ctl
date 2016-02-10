@@ -1,8 +1,6 @@
 VERSION 5.00
 Begin VB.UserControl pdSpinner 
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
-   BackStyle       =   0  'Transparent
    ClientHeight    =   420
    ClientLeft      =   0
    ClientTop       =   0
@@ -16,42 +14,11 @@ Begin VB.UserControl pdSpinner
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    ScaleHeight     =   28
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   75
    ToolboxBitmap   =   "pdSpinner.ctx":0000
-   Begin PhotoDemon.pdTextBox txtPrimary 
-      Height          =   315
-      Left            =   15
-      TabIndex        =   1
-      Top             =   15
-      Width           =   750
-      _ExtentX        =   1323
-      _ExtentY        =   556
-      TabBehavior     =   1
-   End
-   Begin VB.PictureBox picScroll 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   375
-      Left            =   720
-      ScaleHeight     =   25
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   17
-      TabIndex        =   0
-      Top             =   0
-      Width           =   255
-   End
-   Begin VB.Shape shpError 
-      BorderColor     =   &H000000FF&
-      Height          =   390
-      Left            =   0
-      Top             =   0
-      Visible         =   0   'False
-      Width           =   1005
-   End
 End
 Attribute VB_Name = "pdSpinner"
 Attribute VB_GlobalNameSpace = False
@@ -62,8 +29,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Spinner (formerly Text+UpDown) custom control
 'Copyright 2013-2016 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 06/January/15
-'Last update: replace scroll bar with custom buttons that behave like a scroll bar
+'Last updated: 09/February/16
+'Last update: overhaul against ucSupport, new pdEditBoxW class
 '
 'Software like PhotoDemon requires a lot of controls.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -79,11 +46,11 @@ Attribute VB_Exposed = False
 ' combos in the program.
 '
 'This control handles the following things automatically:
-' 1) Synching of text and scroll/slide values
+' 1) Synching of text and spinner values
 ' 2) Validation of text entries, including a function for external validation requests
 ' 3) Locale handling (like the aforementioned comma/decimal replacement in some countries)
 ' 4) A single "Change" event that fires for either scroll or text changes, and only if a text change is valid
-' 5) Support for floating-point values (scroll bar max/min values are automatically adjusted to mimic this)
+' 5) Support for floating-point values, with automatic formatting as relevant
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -92,86 +59,89 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This object can raise a Change (which triggers when the Value property is changed by ANY means)
+'This object can raise a Change event (which triggers when the Value property is changed by ANY means) as well as a
+' an event I call "FinalChange".  FinalChange triggers under the same conditions as Change, *EXCEPT* when the mouse
+' button is held down over one of the spinners.  FinalChange will not fire until the mouse button is released, which
+' makes it ideal for things like syncing time-consuming UI elements.
 Public Event Change()
+Public Event FinalChange()
 Public Event Resize()
-
-'Because we have multiple components on this user control, including an API text box, we report our own Got/Lost focus events.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
-'Reliable focus detection on the spin control requires a specialized subclasser
-Private WithEvents cFocusDetector As pdFocusDetector
-Attribute cFocusDetector.VB_VarHelpID = -1
+'The actual common control edit box is handled by a dedicated class
+Private WithEvents m_EditBox As pdEditBoxW
+Attribute m_EditBox.VB_VarHelpID = -1
 
-'For performance reasons, this object can always raise an event I call "FinalChange".  This triggers under the same conditions as Change,
-' *EXCEPT* when the mouse button is held down.  FinalChange will not fire until the mouse button is released, which makes it ideal
-' for things like syncing time-consuming UI elements.
-Public Event FinalChange()
+'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
+' but I've since attempted to wrap these into a single master control support class.
+Private WithEvents ucSupport As pdUCSupport
+Attribute ucSupport.VB_VarHelpID = -1
 
-'The only exposed font setting is size.  All other settings are handled automatically, by the themer.
-Private m_FontSize As Single
+'Some mouse states relative to the edit box are tracked, so we can render custom borders around the embedded box
+Private m_MouseOverEditBox As Boolean
 
-'Additional helper for rendering themed and multiline tooltips
-Private toolTipManager As pdToolTip
+'Tracking focus is a little sketchy for this control, as it represents a mix of API windows and VB windows.  When a
+' component window receives input, m_FocusCount is incremented by 1.  If a component loses input, m_FocusCount is
+' decremented by 1.  The EvaluateFocusCount() function converts m_FocusCount into a simpler m_HasFocus bool, so make
+' sure to call it whenever m_FocusCount changes.
+Private m_FocusCount As Long, m_HasFocus As Boolean
+Private m_InternalResizeState As Boolean
 
-'Used to track value, min, and max values as floating-points
-Private controlVal As Double, controlMin As Double, controlMax As Double
+'Used to track value, min, and max values with extreme precision
+Private m_Value As Double, m_Min As Double, m_Max As Double
 
-'The number of significant digits for this control.  0 means integer values.
-Private significantDigits As Long
+'The number of significant digits used by this control.  0 means integer values.
+Private m_SigDigits As Long
 
-'If the text box is initiating a value change, we must track that so as to not overwrite the user's entry mid-typing
-Private textBoxInitiated As Boolean
+'If the text box initiates a value change, we must track that so as to not overwrite the user's entry mid-typing
+Private m_TextBoxInitiated As Boolean
 
-'To simplify mouse_down handling, size events fill two rects: one for the "up" spin button, and another for the "down" spin button.
-' These are relative to the picScroll object - not the underlying usercontrol!  (This is necessary due to the way VB handles focus
-' for user controls with child objects on them.)
-Private upRect As RECT, downRect As RECT
-
-'Flicker-free painter for the spin button area
-Private WithEvents cPainter As pdWindowPainter
-Attribute cPainter.VB_VarHelpID = -1
-
-'All spin button painting is performed on this DIB
-Private buttonDIB As pdDIB
-
-'Mouse handler for the spin button area
-Private WithEvents cMouseEvents As pdInputMouse
-Attribute cMouseEvents.VB_VarHelpID = -1
+'To simplify mouse_down handling, resize events fill three rects: one for the "up" spin button, one for the "down"
+' spin button, and one for the edit box itself.  Use these for simplified hit-detection.
+Private m_UpRect As RECTF, m_DownRect As RECTF, m_EditBoxRect As RECTF
 
 'Mouse state for the spin button area
 Private m_MouseDownUpButton As Boolean, m_MouseDownDownButton As Boolean
 Private m_MouseOverUpButton As Boolean, m_MouseOverDownButton As Boolean
 
-'Tracks whether the control (any component) has focus.  This is helpful as we must synchronize between VB's focus events and API
-' focus events.  Every time an individual component gains focus, we increment this counter by 1.  Every time an individual component
-' loses focus, we decrement the counter by 1.  When the counter hits 0, we report a control-wide Got/LostFocusAPI event.
-Private m_ControlFocusCount As Long
-
-'To mimic standard scroll bar behavior, we must fire repeat scroll events when the buttons (or track) are clicked and held.
+'To mimic standard scroll bar behavior on the spin buttons, we repeat scroll events when the buttons are clicked and held.
 Private WithEvents m_UpButtonTimer As pdTimer
 Attribute m_UpButtonTimer.VB_VarHelpID = -1
 Private WithEvents m_DownButtonTimer As pdTimer
 Attribute m_DownButtonTimer.VB_VarHelpID = -1
 
-'If the current text value is NOT valid, this will return FALSE
-Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
-    
-    Dim retVal As Boolean
-    retVal = Not shpError.Visible
-    
-    'If the current text value is not valid, highlight the problem and optionally display an error message box
-    If Not retVal Then
-        txtPrimary.SelectAll
-        If showError Then IsTextEntryValid True
-    End If
-    
-    IsValid = retVal
-    
+'When the current control value is invalid, this is set to TRUE
+Private m_ErrorState As Boolean
+
+'Local list of themable colors.  This list includes all potential colors used by the control, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDSPINNER_COLOR_LIST
+    [_First] = 0
+    PDS_Background = 0
+    PDS_Text = 1
+    PDS_TextBorder = 2
+    PDS_ButtonArrow = 3
+    PDS_ButtonBorder = 4
+    PDS_ButtonFill = 5
+    [_Last] = 5
+    [_Count] = 6
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
+
+'Padding distance (in px) between the user control edges and the edit box edges
+Private Const EDITBOX_BORDER_PADDING As Long = 2&
+
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
-'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
@@ -179,14 +149,15 @@ End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
     
-    'Mirror the new enabled setting across child controls
+    'The separate API-created edit box must be manually de/activated
+    If Not (m_EditBox Is Nothing) Then
+        m_EditBox.Text = GetFormattedStringValue(m_Value)
+        m_EditBox.Enabled = newValue
+        RelayUpdatedColorsToEditBox
+    End If
+    
     UserControl.Enabled = newValue
-    txtPrimary.Enabled = newValue
-    txtPrimary = GetFormattedStringValue(controlVal)
-    
-    'Request a button redraw
-    RedrawButton
-    
+    If g_IsProgramRunning Then RedrawBackBuffer
     PropertyChanged "Enabled"
     
 End Property
@@ -194,240 +165,117 @@ End Property
 Public Property Get FontSize() As Single
 Attribute FontSize.VB_ProcData.VB_Invoke_Property = "StandardFont;Font"
 Attribute FontSize.VB_UserMemId = -512
-    FontSize = m_FontSize
+    If Not (m_EditBox Is Nothing) Then FontSize = m_EditBox.FontSize
 End Property
 
 Public Property Let FontSize(ByVal newSize As Single)
-    If m_FontSize <> newSize Then
-        m_FontSize = newSize
-        txtPrimary.FontSize = m_FontSize
-        PropertyChanged "FontSize"
+    If Not (m_EditBox Is Nothing) Then
+        If newSize <> m_EditBox.FontSize Then
+            m_EditBox.FontSize = newSize
+            PropertyChanged "FontSize"
+        End If
     End If
 End Property
 
-Private Sub cFocusDetector_GotFocusReliable()
-    m_ControlFocusCount = m_ControlFocusCount + 1
-    EvaluateFocusCount True
-End Sub
-
-Private Sub cFocusDetector_LostFocusReliable()
-    m_ControlFocusCount = m_ControlFocusCount - 1
-    EvaluateFocusCount False
-End Sub
-
-Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
-    'Determine mouse button state for the up and down button areas
-    If (Button = pdLeftButton) And Me.Enabled Then
-    
-        If IsPointInRect(x, y, upRect) Then
-            m_MouseDownUpButton = True
-            
-            'Adjust the value immediately
-            moveValueDown
-            
-            'Start the repeat timer as well
-            m_UpButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
-            m_UpButtonTimer.StartTimer
-            
-        Else
-            m_MouseDownUpButton = False
-        End If
-        
-        If IsPointInRect(x, y, downRect) Then
-            m_MouseDownDownButton = True
-            moveValueUp
-            m_DownButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
-            m_DownButtonTimer.StartTimer
-        Else
-            m_MouseDownDownButton = False
-        End If
-        
-        'Request a button redraw
-        RedrawButton
-        
-    End If
-    
-End Sub
-
-Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    cMouseEvents.setSystemCursor IDC_HAND
-End Sub
-
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
-    cMouseEvents.setSystemCursor IDC_DEFAULT
-    
-    m_MouseOverUpButton = False
-    m_MouseOverDownButton = False
-    
-    'Request a button redraw
-    RedrawButton
-    
-End Sub
-
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
-    'Determine mouse hover state for the up and down button areas
-    If IsPointInRect(x, y, upRect) Then
-        m_MouseOverUpButton = True
-    Else
-        m_MouseOverUpButton = False
-    End If
-    
-    If IsPointInRect(x, y, downRect) Then
-        m_MouseOverDownButton = True
-    Else
-        m_MouseOverDownButton = False
-    End If
-    
-    'Request a button redraw
-    RedrawButton
-    
-End Sub
-
-'Reset spin control button state on a mouse up event
-Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
-    
-    If Button = pdLeftButton Then
-        
-        m_MouseDownUpButton = False
-        m_MouseDownDownButton = False
-        m_UpButtonTimer.StopTimer
-        m_DownButtonTimer.StopTimer
-        
-        'When the mouse is release, raise a "FinalChange" event, which lets the caller know that they can perform any
-        ' long-running actions now.
-        RaiseEvent FinalChange
-        
-        'Request a button redraw
-        RedrawButton
-        
-    End If
-        
-End Sub
-
-Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
-    
-    'Flip the button back buffer to the screen
-    If Not (buttonDIB Is Nothing) Then
-        BitBlt cPainter.GetPaintStructDC, 0, 0, buttonDIB.getDIBWidth, buttonDIB.getDIBHeight, buttonDIB.getDIBDC, 0, 0, vbSrcCopy
-    End If
-    
-End Sub
-
-Private Sub m_DownButtonTimer_Timer()
-    
-    'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
-    ' of the delay rate.
-    If m_DownButtonTimer.Interval = Interface.GetKeyboardDelay * 1000 Then
-        m_DownButtonTimer.Interval = Interface.GetKeyboardRepeatRate * 1000
-    End If
-    
-    'It's a little counter-intuitive, but the DOWN button actually moves the control value UP
-    moveValueUp
-    
-End Sub
-
-Private Sub m_UpButtonTimer_Timer()
-
-    'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
-    ' of the delay rate.
-    If m_UpButtonTimer.Interval = Interface.GetKeyboardDelay * 1000 Then
-        m_UpButtonTimer.Interval = Interface.GetKeyboardRepeatRate * 1000
-    End If
-    
-    'It's a little counter-intuitive, but the UP button actually moves the control value DOWN
-    moveValueDown
-    
-End Sub
-
-'When the control value is moved UP via button, this function is called
-Private Sub moveValueUp()
-    Value = controlVal - (1 / (10 ^ significantDigits))
-End Sub
-
-'When the control value is moved DOWN via button, this function is called
-Private Sub moveValueDown()
-    Value = controlVal + (1 / (10 ^ significantDigits))
-End Sub
-
-Private Sub txtPrimary_Change()
-    
-    If IsTextEntryValid() Then
-        If shpError.Visible Then shpError.Visible = False
-        textBoxInitiated = True
-        Value = CDblCustom(txtPrimary)
-        textBoxInitiated = False
-    Else
-        If Me.Enabled Then shpError.Visible = True
-    End If
-    
-End Sub
-
-Private Sub txtPrimary_GotFocusAPI()
-    
-    m_ControlFocusCount = m_ControlFocusCount + 1
-    EvaluateFocusCount True
-    
-    'As a convenience to the user, select all text when first clicked
-    txtPrimary.SelectAll
-    
-End Sub
-
-Private Sub txtPrimary_LostFocusAPI()
-    m_ControlFocusCount = m_ControlFocusCount - 1
-    EvaluateFocusCount False
-End Sub
-
-Private Sub txtPrimary_Resize()
-    If UserControl.ScaleHeight <> txtPrimary.Height + 2 Then
-        UserControl.Extender.Height = txtPrimary.Height + 2
-    End If
-End Sub
-
 Public Property Get hWnd() As Long
+Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 
-'The control's value is simply a reflection of the embedded scroll bar and text box
+'If the current text value is NOT valid, this will return FALSE.  The caller can optionally ask us to display an
+' error message describing the invalidity in more detail.
+Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
+    If m_ErrorState Then
+        m_EditBox.SelectAll
+        If showError Then IsTextEntryValid True
+    End If
+    IsValid = Not m_ErrorState
+End Property
+
+Public Property Get Max() As Double
+    Max = m_Max
+End Property
+
+Public Property Let Max(ByVal newValue As Double)
+        
+    m_Max = newValue
+    
+    'If the current control .Value is greater than the new max, change it to match
+    If m_Value > m_Max Then
+        m_Value = m_Max
+        m_EditBox.Text = GetFormattedStringValue(m_Value)
+        RaiseEvent Change
+    End If
+    
+    PropertyChanged "Max"
+    
+End Property
+
+Public Property Get Min() As Double
+    Min = m_Min
+End Property
+
+Public Property Let Min(ByVal newValue As Double)
+        
+    m_Min = newValue
+    
+    'If the current control .Value is less than the new minimum, change it to match
+    If m_Value < m_Min Then
+        m_Value = m_Min
+        m_EditBox.Text = GetFormattedStringValue(m_Value)
+        RaiseEvent Change
+    End If
+    
+    PropertyChanged "Min"
+    
+End Property
+
+'Significant digits determines whether the control allows float values or int values (and with how much precision)
+Public Property Get SigDigits() As Long
+    SigDigits = m_SigDigits
+End Property
+
+'When the number of significant digits changes, we automatically update the text display to reflect the new amount
+Public Property Let SigDigits(ByVal newValue As Long)
+    m_SigDigits = newValue
+    m_EditBox.Text = GetFormattedStringValue(m_Value)
+    PropertyChanged "SigDigits"
+End Property
+
 Public Property Get Value() As Double
 Attribute Value.VB_UserMemId = 0
-    Value = controlVal
+    Value = m_Value
 End Property
 
 Public Property Let Value(ByVal newValue As Double)
         
-    'Don't make any changes unless the new value deviates from the existing one
-    If (newValue <> controlVal) Or (Not IsValid(False)) Then
+    'For performance reasons, we don't make any internal changes unless the new value deviates from the existing one.
+    ' (The exception to the rule is if the control is currently in error state; if that happens, we process all new
+    ' value requests, in hope of receiving one that resolves the error.)
+    If (newValue <> m_Value) Or m_ErrorState Then
         
-        controlVal = newValue
+        m_Value = newValue
                 
-        'While running, perform bounds-checking.  (It's less important in the designer, as the assumption is that the
-        ' developer will momentarily bring everything into order.)
+        'While running, perform bounds-checking.  (It's less important in the designer, as we assume the developer
+        ' will momentarily solve any faulty bound/value relationships.)
         If g_IsProgramRunning Then
-                
-            'To prevent RTEs, perform an additional bounds check.  Don't assign the value if it's invalid.
-            If controlVal < controlMin Then
-                'Debug.Print "Control value forcibly changed to bring it in-bounds (too low)"
-                controlVal = controlMin
-            End If
-            
-            If controlVal > controlMax Then
-                'Debug.Print "Control value forcibly changed to bring it in-bounds (too high)"
-                controlVal = controlMax
-            End If
-            
+            If m_Value < m_Min Then m_Value = m_Min
+            If m_Value > m_Max Then m_Value = m_Max
         End If
                 
-        'Mirror the value to the text box
-        If Not textBoxInitiated Then
+        'With the value guaranteed to be in-bounds, we can now mirror it to the text box
+        If Not m_TextBoxInitiated Then
+        
+            'Perform a final validity check
             If (Not IsValid(False)) Then
-                txtPrimary = GetFormattedStringValue(controlVal)
-                shpError.Visible = False
+                m_EditBox.Text = GetFormattedStringValue(m_Value)
+                If m_ErrorState Then
+                    m_ErrorState = False
+                    RedrawBackBuffer
+                End If
             Else
-                If Len(txtPrimary) > 0 Then
-                    If StrComp(GetFormattedStringValue(txtPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then txtPrimary.Text = GetFormattedStringValue(controlVal)
+                If Len(m_EditBox.Text) > 0 Then
+                    If StrComp(GetFormattedStringValue(m_EditBox.Text), CStr(m_Value), vbBinaryCompare) <> 0 Then m_EditBox.Text = GetFormattedStringValue(m_Value)
                 End If
             End If
             
@@ -444,354 +292,536 @@ Public Property Let Value(ByVal newValue As Double)
                 
 End Property
 
-'Note: the control's minimum value is settable at run-time
-Public Property Get Min() As Double
-    Min = controlMin
-End Property
-
-Public Property Let Min(ByVal newValue As Double)
-        
-    controlMin = newValue
-    
-    'If the current control .Value is less than the new minimum, change it to match
-    If controlVal < controlMin Then
-        controlVal = controlMin
-        txtPrimary = CStr(controlVal)
-        RaiseEvent Change
-    End If
-    
-    PropertyChanged "Min"
-    
-End Property
-
-'Note: the control's maximum value is settable at run-time
-Public Property Get Max() As Double
-    Max = controlMax
-End Property
-
-Public Property Let Max(ByVal newValue As Double)
-        
-    controlMax = newValue
-    
-    'If the current control .Value is greater than the new max, change it to match
-    If controlVal > controlMax Then
-        controlVal = controlMax
-        txtPrimary = CStr(controlVal)
-        RaiseEvent Change
-    End If
-    
-    PropertyChanged "Max"
-    
-End Property
-
-'Significant digits determines whether the control allows float values or int values (and with how much precision)
-Public Property Get SigDigits() As Long
-    SigDigits = significantDigits
-End Property
-
-Public Property Let SigDigits(ByVal newValue As Long)
-        
-    significantDigits = newValue
-        
-    'Update the text display to reflect the new significant digit amount, including any decimal places
-    txtPrimary.Text = GetFormattedStringValue(controlVal)
-    
-    PropertyChanged "SigDigits"
-    
-End Property
-
-'Mirror the code from the change event, but force a formatted text sync
-Private Sub txtPrimary_Validate(Cancel As Boolean)
-    If IsTextEntryValid() Then
-        If shpError.Visible Then shpError.Visible = False
-        Value = CDblCustom(txtPrimary)
-    Else
-        If Me.Enabled Then shpError.Visible = True
-    End If
+Private Sub ucSupport_GotFocusAPI()
+    m_FocusCount = m_FocusCount + 1
+    EvaluateFocusCount
+    RedrawBackBuffer
 End Sub
 
-Private Sub UserControl_GotFocus()
-    m_ControlFocusCount = m_ControlFocusCount + 1
-    EvaluateFocusCount True
+Private Sub ucSupport_LostFocusAPI()
+    m_FocusCount = m_FocusCount - 1
+    EvaluateFocusCount
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    'Determine mouse button state for the up and down button areas
+    If (Button = pdLeftButton) And Me.Enabled Then
+    
+        If IsPointInRectF(x, y, m_UpRect) Then
+            m_MouseDownUpButton = True
+            m_MouseDownDownButton = False
+            
+            'Adjust the value immediately
+            MoveValueDown
+            
+            'Start the repeat timer as well
+            m_UpButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
+            m_UpButtonTimer.StartTimer
+            
+        Else
+        
+            m_MouseDownUpButton = False
+        
+            If IsPointInRectF(x, y, m_DownRect) Then
+                m_MouseDownDownButton = True
+                MoveValueUp
+                m_DownButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
+                m_DownButtonTimer.StartTimer
+            Else
+                m_MouseDownDownButton = False
+            End If
+            
+        End If
+        
+        'Request a button redraw
+        RedrawBackBuffer
+        
+    End If
+    
+End Sub
+
+Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    ucSupport.RequestCursor IDC_HAND
+End Sub
+
+Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    ucSupport.RequestCursor IDC_DEFAULT
+    
+    m_MouseOverUpButton = False
+    m_MouseOverDownButton = False
+    
+    'Request a button redraw
+    RedrawBackBuffer
+    
+End Sub
+
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    'Determine mouse hover state for the up and down button areas
+    If IsPointInRectF(x, y, m_UpRect) Then
+        m_MouseOverUpButton = True
+        m_MouseOverDownButton = False
+    Else
+        m_MouseOverUpButton = False
+        If IsPointInRectF(x, y, m_DownRect) Then
+            m_MouseOverDownButton = True
+        Else
+            m_MouseOverDownButton = False
+        End If
+    End If
+    
+    'Set an appropriate cursor
+    If m_MouseOverUpButton Or m_MouseOverDownButton Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
+    
+    'Request a button redraw
+    RedrawBackBuffer
+    
+End Sub
+
+'Reset spin control button state on a mouse up event
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+    
+    If Button = pdLeftButton Then
+        
+        m_MouseDownUpButton = False
+        m_MouseDownDownButton = False
+        m_UpButtonTimer.StopTimer
+        m_DownButtonTimer.StopTimer
+        
+        'When the mouse is release, raise a "FinalChange" event, which lets the caller know that they can perform any
+        ' long-running actions now.
+        RaiseEvent FinalChange
+        
+        'Request a button redraw
+        RedrawBackBuffer
+        
+    End If
+        
+End Sub
+
+Private Sub m_DownButtonTimer_Timer()
+    
+    'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
+    ' of the delay rate.
+    If m_DownButtonTimer.Interval = Interface.GetKeyboardDelay * 1000 Then
+        m_DownButtonTimer.Interval = Interface.GetKeyboardRepeatRate * 1000
+    End If
+    
+    'It's a little counter-intuitive, but the DOWN button actually moves the control value UP
+    MoveValueUp
+    
+End Sub
+
+Private Sub m_UpButtonTimer_Timer()
+
+    'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
+    ' of the delay rate.
+    If m_UpButtonTimer.Interval = Interface.GetKeyboardDelay * 1000 Then
+        m_UpButtonTimer.Interval = Interface.GetKeyboardRepeatRate * 1000
+    End If
+    
+    'It's a little counter-intuitive, but the UP button actually moves the control value DOWN
+    MoveValueDown
+    
+End Sub
+
+'When the control value is moved UP via button, this function is called
+Private Sub MoveValueUp()
+    Value = m_Value - (1 / (10 ^ m_SigDigits))
+End Sub
+
+'When the control value is moved DOWN via button, this function is called
+Private Sub MoveValueDown()
+    Value = m_Value + (1 / (10 ^ m_SigDigits))
+End Sub
+
+Private Sub m_EditBox_Change()
+    
+    If IsTextEntryValid() Then
+        If m_ErrorState Then
+            m_ErrorState = False
+            RedrawBackBuffer
+        End If
+        m_TextBoxInitiated = True
+        Value = CDblCustom(m_EditBox.Text)
+        m_TextBoxInitiated = False
+    Else
+        If Me.Enabled Then
+            m_ErrorState = True
+            RedrawBackBuffer
+        End If
+    End If
+    
+End Sub
+
+Private Sub m_EditBox_GotFocusAPI()
+    m_FocusCount = m_FocusCount + 1
+    EvaluateFocusCount
+    m_EditBox.SelectAll
+    RedrawBackBuffer
+End Sub
+
+Private Sub m_EditBox_LostFocusAPI()
+    
+    m_FocusCount = m_FocusCount - 1
+    EvaluateFocusCount
+    
+    'Validate the edit box's contents when focus is lost
+    If IsTextEntryValid() Then
+        If m_ErrorState Then m_ErrorState = False
+        Value = CDblCustom(m_EditBox.Text)
+    Else
+        If Me.Enabled Then m_ErrorState = True
+    End If
+    
+    'Focus changes require a redraw
+    RedrawBackBuffer
+    
+End Sub
+
+Private Sub m_EditBox_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseOverEditBox = True
+    RedrawBackBuffer
+End Sub
+
+Private Sub m_EditBox_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseOverEditBox = False
+    RedrawBackBuffer
+End Sub
+
+Private Sub m_EditBox_Resize()
+    If Not m_InternalResizeState Then UpdateControlLayout
+End Sub
+
+Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
+    If updateLayoutToo Then UpdateControlLayout
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
+    If Not (m_EditBox Is Nothing) Then m_EditBox.Visible = newVisibility
+End Sub
+
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    If Not m_InternalResizeState Then UpdateControlLayout
+    RaiseEvent Resize
+End Sub
+
+Private Sub UserControl_Hide()
+    If Not (m_EditBox Is Nothing) Then m_EditBox.Visible = False
 End Sub
 
 Private Sub UserControl_Initialize()
-        
-    'Prepare a default font size
-    m_FontSize = 10
-    txtPrimary.FontSize = m_FontSize
-        
-    'Prep the spin button back buffer
-    Set buttonDIB = New pdDIB
-    If g_IsProgramRunning Then buttonDIB.createBlank picScroll.ScaleWidth, picScroll.ScaleHeight, 24
     
-    'Prepare a window painter for the spin button area
-    Set cPainter = New pdWindowPainter
-    If g_IsProgramRunning Then cPainter.StartPainter picScroll.hWnd
+    'Note that we are not currently responsible for any resize events
+    m_InternalResizeState = False
     
-    'Prepare an input handler for the spin button area
-    Set cMouseEvents = New pdInputMouse
-    If g_IsProgramRunning Then cMouseEvents.addInputTracker picScroll.hWnd, True, True, False, True, False
+    'Initialize an edit box support class
+    Set m_EditBox = New pdEditBoxW
     
-    'Also start a focus detector for the spinner picture box
-    Set cFocusDetector = New pdFocusDetector
-    If g_IsProgramRunning Then cFocusDetector.startFocusTracking picScroll.hWnd
+    'Initialize a master user control support class
+    Set ucSupport = New pdUCSupport
+    ucSupport.RegisterControl UserControl.hWnd
+    ucSupport.RequestExtraFunctionality True, True
+    
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDSPINNER_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDSpinner", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
     
     'Prep timer objects
     If g_IsProgramRunning Then
         Set m_UpButtonTimer = New pdTimer
         Set m_DownButtonTimer = New pdTimer
     End If
-    
-    'Reset the focus count
-    m_ControlFocusCount = 0
-    
-    'Create a tooltip engine
-    Set toolTipManager = New pdToolTip
-                    
+          
 End Sub
 
 Private Sub UserControl_InitProperties()
-    
     FontSize = 10
-    m_FontSize = 10
-        
     Value = 0
-    controlVal = 0
-    
     Min = 0
-    controlMin = 0
-    
     Max = 10
-    controlMax = 10
-    
     SigDigits = 0
-    significantDigits = 0
-    
-End Sub
-
-Private Sub UserControl_LostFocus()
-    m_ControlFocusCount = m_ControlFocusCount - 1
-    EvaluateFocusCount False
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-
     With PropBag
         FontSize = .ReadProperty("FontSize", 10)
-        ForeColor = .ReadProperty("ForeColor", &H404040)
         SigDigits = .ReadProperty("SigDigits", 0)
         Max = .ReadProperty("Max", 10)
         Min = .ReadProperty("Min", 0)
         Value = .ReadProperty("Value", 0)
     End With
-        
 End Sub
 
-Private Sub UserControl_Resize()
-    ResizeControl
+Private Sub UserControl_Show()
+    If Not (m_EditBox Is Nothing) And g_IsProgramRunning Then CreateEditBox
 End Sub
 
-Private Sub ResizeControl()
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+    With PropBag
+        .WriteProperty "Min", Me.Min, 0
+        .WriteProperty "Max", Me.Max, 10
+        .WriteProperty "SigDigits", Me.SigDigits, 0
+        .WriteProperty "Value", Me.Value, 0
+        .WriteProperty "FontSize", Me.FontSize, 10
+    End With
+End Sub
 
-    'The goal here is to keep the text box and scroll bar nicely aligned, with a 1px border for the red "error" box
-    picScroll.Width = FixDPI(18)
-    picScroll.Top = 1
-    picScroll.Height = txtPrimary.PixelHeight
+'This control's height cannot be set manually.  It will automatically resize itself vertically to match the underlying
+' edit box height (whose size, in turn, is controlled by its current font size).
+Public Sub FitUCHeightToEditBoxHeight()
     
-    'Leave a 1px border around the text box, to be used for displaying red during range and numeric errors
-    txtPrimary.Left = 1
-    txtPrimary.Top = 1
-    txtPrimary.Width = UserControl.ScaleWidth - 2 - picScroll.Width
+    m_InternalResizeState = True
     
-    'Align the scroll bar container to the right of the text box
-    picScroll.Left = txtPrimary.Left + txtPrimary.PixelWidth
-    
-    'Calculate new rects for the up/down buttons
-    With upRect
-        .Left = 0
-        .Right = picScroll.ScaleWidth - 1
-        .Top = 0
-        .Bottom = (picScroll.ScaleHeight \ 2) - 1
-    End With
-    
-    With downRect
-        .Left = 0
-        .Right = picScroll.ScaleWidth - 1
-        .Top = upRect.Bottom + 1
-        .Bottom = picScroll.ScaleHeight - 1
-    End With
-    
-    'Make the shape control (used for errors) the size of the user control
-    shpError.Left = 0
-    shpError.Top = 0
-    shpError.Height = UserControl.ScaleHeight
-    shpError.Width = UserControl.ScaleWidth
-    
-    'Resize the button back buffer to match
-    If Not (buttonDIB Is Nothing) Then
-        If (buttonDIB.getDIBWidth <> picScroll.ScaleWidth) Or (buttonDIB.getDIBHeight <> picScroll.ScaleHeight) Then
-            buttonDIB.createBlank picScroll.ScaleWidth, picScroll.ScaleHeight, 24
-        End If
+    Dim idealUCHeight As Long
+    idealUCHeight = m_EditBox.SuggestedHeight() + EDITBOX_BORDER_PADDING * 2 + 1
+    If ucSupport.GetControlHeight <> idealUCHeight Then
+        Debug.Print "FitUCHeightToEditBoxHeight requested a new size: " & ucSupport.GetControlWidth & "x" & idealUCHeight
+        ucSupport.RequestNewSize ucSupport.GetControlWidth, idealUCHeight, True
+        RaiseEvent Resize
     End If
     
-    'Request a redraw of the button
-    RedrawButton
+    m_InternalResizeState = False
     
-    RaiseEvent Resize
+End Sub
+
+'Generally speaking, the underlying API edit box management class recreates itself as needed, but we need to request its
+' initial creation.  During this stage, we also auto-size ourself to match the edit box's suggested size (if it's a
+' single-line instance; multiline boxes can be whatever vertical size we want).
+Private Sub CreateEditBox()
+    
+    If Not (m_EditBox Is Nothing) Then
+        
+        Dim tmpRect As winRect
+        
+        'Make sure all edit box settings are up-to-date prior to creation
+        m_EditBox.Enabled = Me.Enabled
+        RelayUpdatedColorsToEditBox
+        
+        'Resize ourselves vertically to match the edit box's suggested size.
+        FitUCHeightToEditBoxHeight
+        
+        'Now that we're the proper size, determine where we're gonna stick the edit box (relative to this control instance)
+        UpdatePositionRects
+        
+        'Ask the edit box to create itself!
+        With m_EditBoxRect
+            m_EditBox.CreateEditBox UserControl.hWnd, .Left, .Top, .Width, .Height, False
+        End With
+        
+        'Because control sizes may have changed, we need to repaint everything
+        RedrawBackBuffer
+        
+        'Creating the edit box may have caused this control to resize itself, so as a failsafe, raise a
+        ' Resize() event manually
+        RaiseEvent Resize
+    
+    End If
+    
+End Sub
+
+'This function generates spin button and edit box rects that match the current user control size.  Note that it does not
+' actually move or resize any windows - it simply calculates rect positions.
+Private Sub UpdatePositionRects()
+
+    'Start by caching the actual window size.  (This may be different from VB's measurements, particularly on high-DPI settings)
+    Dim bWidth As Long, bHeight As Long
+    bWidth = ucSupport.GetControlWidth
+    bHeight = ucSupport.GetControlHeight
+    
+    'The goal here is to keep the text box and scroll bar nicely aligned, with a 2px border left around everything
+    ' in case we need to display a red "error" state border.
+    
+    'Because the up/down buttons are fixed-width, we position them first.
+    Dim buttonWidth As Long, buttonHeight As Long, buttonTop As Long, buttonLeft As Long
+    buttonWidth = FixDPI(18)
+    buttonLeft = (bWidth - 1) - (EDITBOX_BORDER_PADDING - 1) - buttonWidth
+    buttonTop = EDITBOX_BORDER_PADDING - 1
+    buttonHeight = ((bHeight - 1) - (buttonTop * 2)) \ 2
+    
+    'Calculate hit-detection rects for the individual up/down buttons
+    With m_UpRect
+        .Left = buttonLeft
+        .Width = buttonWidth
+        .Top = buttonTop
+        .Height = buttonHeight
+    End With
+    
+    With m_DownRect
+        .Left = buttonLeft
+        .Width = buttonWidth
+        .Top = m_UpRect.Top + m_UpRect.Height '+ 1
+        .Height = buttonHeight
+    End With
+    
+    'With the buttons successfully positioned, allow the edit box to fill the remaining space
+    With m_EditBoxRect
+        .Left = EDITBOX_BORDER_PADDING
+        .Top = EDITBOX_BORDER_PADDING
+        .Height = (bHeight - 1) - EDITBOX_BORDER_PADDING * 2 '+ 1
+        .Width = (buttonLeft - .Left) - 1 '- EDITBOX_BORDER_PADDING
+    End With
+    
+    Debug.Print "Update position rects result: " & m_EditBoxRect.Width & "x" & m_EditBoxRect.Height & " (control size: " & ucSupport.GetControlWidth & "x" & ucSupport.GetControlHeight & ")"
+    
+End Sub
+
+'Move the edit box into the position specified by m_EditBoxRect.  If it is already positioned correctly, nothing happens.
+Private Sub VerifyEditBoxPosition()
+    Dim editBoxRect As winRect
+    If m_EditBox.GetPositionRect(editBoxRect) Then
+        If (editBoxRect.x1 <> m_EditBoxRect.Left) Or (editBoxRect.y1 <> m_EditBoxRect.Top) Then
+            If ((editBoxRect.x2 - editBoxRect.x1) <> m_EditBoxRect.Width) Or ((editBoxRect.y2 - editBoxRect.y1) <> m_EditBoxRect.Height) Then
+                With m_EditBoxRect
+                    m_EditBox.Move .Left, .Top, .Width, .Height
+                End With
+            End If
+        End If
+    End If
+End Sub
+
+Private Sub UpdateControlLayout()
+    
+    'Before we do anything else, we need to synchronize the user control's height to the underlying edit box height.
+    ' (The edit box's font determines the default height of this control; we auto-fit to match.)
+    FitUCHeightToEditBoxHeight
+    
+    'With the control height established, we now need to position all sub-elements within the control.
+    UpdatePositionRects
+    
+    'Move the edit box into place, as necessary.
+    VerifyEditBoxPosition
+    
+    'With everything positioned, we need to redraw the control from scratch
+    RedrawBackBuffer
     
 End Sub
 
 'Redraw the spin button area of the control
-Private Sub RedrawButton()
+Private Sub RedrawBackBuffer()
     
-    'Start by determining what color to use for the background.  (In the IDE, we have to supply all colors manually.)
-    Dim buttonBackColor As Long, buttonBorderColor As Long
+    'We can improve shutdown performance by ignoring redraw requests when the program is going down
+    If g_ProgramShuttingDown Then
+        If (g_Themer Is Nothing) Then Exit Sub
+    End If
     
+    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDS_Background, Me.Enabled))
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
+    
+    'Relay any recently changed/modified colors to the edit box, so it can repaint itself to match
+    RelayUpdatedColorsToEditBox
+    
+    'Next, initialize a whole bunch of color values.  Note that up and down buttons are treated separately, as they may
+    ' have different mouse states at any given time.
+    Dim editBoxBorderColor As Long
     Dim upButtonBorderColor As Long, downButtonBorderColor As Long
     Dim upButtonFillColor As Long, downButtonFillColor As Long
     Dim upButtonArrowColor As Long, downButtonArrowColor As Long
     
-    If Not (g_Themer Is Nothing) Then
-        buttonBackColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-        buttonBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
+    editBoxBorderColor = m_Colors.RetrieveColor(PDS_TextBorder, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
+    upButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, Me.Enabled, m_MouseDownUpButton, m_MouseOverUpButton)
+    upButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, Me.Enabled, m_MouseDownUpButton, m_MouseOverUpButton)
+    upButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, Me.Enabled, m_MouseDownUpButton, m_MouseOverUpButton)
+    downButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
+    downButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
+    downButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
+    
+    'Paint button backgrounds and borders.  Note that the active button (if any) is drawn LAST, so that its hover color
+    ' appears over the top of the neighboring button.
+    If m_MouseOverUpButton Then
+        GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_DownRect, downButtonFillColor
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_DownRect, downButtonBorderColor, , 1, True, LineJoinMiter
+        GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_UpRect, upButtonFillColor
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_UpRect, upButtonBorderColor, , 1, True, LineJoinMiter
     Else
-        buttonBackColor = vbWindowBackground
-        buttonBorderColor = RGB(128, 128, 128)
+        GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_UpRect, upButtonFillColor
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_UpRect, upButtonBorderColor, , 1, True, LineJoinMiter
+        GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_DownRect, downButtonFillColor
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_DownRect, downButtonBorderColor, , 1, True, LineJoinMiter
     End If
     
-    'Start by erasing the buffer (which will have already been sized correctly by a previous function) and drawing
-    ' a default border around the entire control.
-    GDI_Plus.GDIPlusFillDIBRect buttonDIB, 0, 0, buttonDIB.getDIBWidth, buttonDIB.getDIBHeight, buttonBackColor
-    
-    'Next, figure out button colors.  These are affected by hover and press state.
-    If m_MouseOverUpButton And Me.Enabled And (Not (g_Themer Is Nothing)) Then
-    
-        If m_MouseDownUpButton Then
-            upButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-            upButtonArrowColor = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
-            upButtonFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-        Else
-            upButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
-            upButtonArrowColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-            upButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-        End If
-    
-    Else
-        If Not (g_Themer Is Nothing) Then
-            upButtonBorderColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-            If Me.Enabled Then upButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT) Else upButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
-            upButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-        Else
-            upButtonBorderColor = vbWindowBackground
-            upButtonArrowColor = RGB(128, 128, 128)
-            upButtonFillColor = vbWindowBackground
-        End If
-    End If
-    
-    If m_MouseOverDownButton And Me.Enabled And (Not (g_Themer Is Nothing)) Then
-    
-        If m_MouseDownDownButton Then
-            downButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-            downButtonArrowColor = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
-            downButtonFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-        Else
-            downButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
-            downButtonArrowColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-            downButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-        End If
-    
-    Else
-        If Not (g_Themer Is Nothing) Then
-            downButtonBorderColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-            If Me.Enabled Then downButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT) Else downButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
-            downButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-        Else
-            downButtonBorderColor = vbWindowBackground
-            downButtonArrowColor = RGB(128, 128, 128)
-            downButtonFillColor = vbWindowBackground
-        End If
-    End If
-    
-    'Paint both button backgrounds and borders
-    GDI_Plus.GDIPlusFillDIBRect buttonDIB, upRect.Left, upRect.Top, upRect.Right - upRect.Left, upRect.Bottom - upRect.Top, upButtonFillColor
-    GDI_Plus.GDIPlusDrawRectOutlineToDC buttonDIB.getDIBDC, upRect.Left, upRect.Top, upRect.Right, upRect.Bottom, upButtonBorderColor
-    
-    GDI_Plus.GDIPlusFillDIBRect buttonDIB, downRect.Left, downRect.Top, downRect.Right - downRect.Left, downRect.Bottom - downRect.Top, downButtonFillColor
-    GDI_Plus.GDIPlusDrawRectOutlineToDC buttonDIB.getDIBDC, downRect.Left, downRect.Top, downRect.Right, downRect.Bottom, downButtonBorderColor
-    
-    'Finally, paint the arrows themselves
+    'Arrows are a bit more complicated, as we have to assemble their coordinates first
     Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
                 
     'Start with the up-pointing arrow
-    buttonPt1.x = upRect.Left + FixDPIFloat(5)
-    buttonPt1.y = (upRect.Bottom - upRect.Top) / 2 + FixDPIFloat(2)
+    buttonPt1.x = m_UpRect.Left + FixDPIFloat(5)
+    buttonPt1.y = (m_UpRect.Height) / 2 + FixDPIFloat(2) '+ FixDPIFloat(EDITBOX_BORDER_PADDING / 3)
     
-    buttonPt3.x = upRect.Right - FixDPIFloat(5)
+    buttonPt3.x = (m_UpRect.Left + m_UpRect.Width) - FixDPIFloat(5)
     buttonPt3.y = buttonPt1.y
     
     buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
     buttonPt2.y = buttonPt1.y - FixDPIFloat(3)
     
-    GDI_Plus.GDIPlusDrawLineToDC buttonDIB.getDIBDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, upButtonArrowColor, 255, 2, True, LineCapRound
-    GDI_Plus.GDIPlusDrawLineToDC buttonDIB.getDIBDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, upButtonArrowColor, 255, 2, True, LineCapRound
+    GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, upButtonArrowColor, 255, 2, True, LineCapRound
+    GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, upButtonArrowColor, 255, 2, True, LineCapRound
                 
     'Next, the down-pointing arrow
-    buttonPt1.x = downRect.Left + FixDPIFloat(5)
-    buttonPt1.y = downRect.Top + (downRect.Bottom - downRect.Top) / 2 - FixDPIFloat(1)
+    buttonPt1.x = m_DownRect.Left + FixDPIFloat(5)
+    buttonPt1.y = m_DownRect.Top + (m_DownRect.Height / 2) - FixDPIFloat(1)
     
-    buttonPt3.x = downRect.Right - FixDPIFloat(5)
+    buttonPt3.x = (m_DownRect.Left + m_DownRect.Width) - FixDPIFloat(5)
     buttonPt3.y = buttonPt1.y
     
     buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
     buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
     
-    GDI_Plus.GDIPlusDrawLineToDC buttonDIB.getDIBDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, downButtonArrowColor, 255, 2, True, LineCapRound
-    GDI_Plus.GDIPlusDrawLineToDC buttonDIB.getDIBDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, downButtonArrowColor, 255, 2, True, LineCapRound
+    GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, downButtonArrowColor, 255, 2, True, LineCapRound
+    GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, downButtonArrowColor, 255, 2, True, LineCapRound
     
-    'As a final step, request a repaint onto the button's container
-    cPainter.RequestRepaint
-
-End Sub
-
-Private Sub UserControl_Show()
-        
-    'Also, force a resize to modify its layout
-    If g_IsProgramRunning Then UserControl_Resize
-        
-End Sub
-
-Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-
-    'Store all associated properties
-    With PropBag
-        .WriteProperty "Min", controlMin, 0
-        .WriteProperty "Max", controlMax, 10
-        .WriteProperty "SigDigits", significantDigits, 0
-        .WriteProperty "Value", controlVal, 0
-        .WriteProperty "FontSize", m_FontSize, 10
-        .WriteProperty "ForeColor", ForeColor, &H404040
+    'Finally, paint the edit box border.  (Note that the edit box doesn't actually have a border; we render a pseudo-border
+    ' onto the underlying UC around its position, instead.)
+    Dim halfPadding As Long
+    halfPadding = 1     'EDITBOX_BORDER_PADDING \ 2 - 1
+    
+    Dim borderWidth As Single
+    If Not (m_EditBox Is Nothing) Then
+        If m_EditBox.HasFocus Or m_MouseOverEditBox Then borderWidth = 3 Else borderWidth = 1
+    Else
+        borderWidth = 1
+    End If
+    
+    Dim tmpRect As RECTF
+    With tmpRect
+        .Left = m_EditBoxRect.Left - halfPadding
+        .Top = m_EditBoxRect.Top - halfPadding
+        .Width = m_EditBoxRect.Width + halfPadding * 2 - 1
+        .Height = m_EditBoxRect.Height + halfPadding * 2 - 1
     End With
+    GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRect, editBoxBorderColor, , borderWidth, False, LineJoinMiter
     
+    'Paint the final result to the screen, as relevant
+    ucSupport.RequestRepaint
+    If (Not g_IsProgramRunning) Then UserControl.Refresh
+
 End Sub
 
 'Because this control can contain either decimal or float values, we want to make sure any entered strings adhere
 ' to strict formatting rules.
 Private Function GetFormattedStringValue(ByVal srcValue As Double) As String
 
-    Select Case significantDigits
+    Select Case m_SigDigits
     
         Case 0
-            GetFormattedStringValue = Format(CStr(srcValue), "#0")
+            GetFormattedStringValue = Format$(CStr(srcValue), "#0")
         
         Case 1
-            GetFormattedStringValue = Format(CStr(srcValue), "#0.0")
+            GetFormattedStringValue = Format$(CStr(srcValue), "#0.0")
             
         Case 2
-            GetFormattedStringValue = Format(CStr(srcValue), "#0.00")
+            GetFormattedStringValue = Format$(CStr(srcValue), "#0.00")
             
         Case Else
-            GetFormattedStringValue = Format(CStr(srcValue), "#0.000")
+            GetFormattedStringValue = Format$(CStr(srcValue), "#0.000")
     
     End Select
     
@@ -806,33 +836,33 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
         
     'Some locales use a comma as a decimal separator.  Check for this and replace as necessary.
     Dim chkString As String
-    chkString = txtPrimary
+    chkString = m_EditBox.Text
     
-    'Remember the current cursor position as necessary
+    'Remember the current cursor position, too - we want to restore it after applying formatting to the numeric string
     Dim cursorPos As Long
-    cursorPos = txtPrimary.SelStart
+    cursorPos = m_EditBox.SelStart
         
     'It may be possible for the user to enter consecutive ",." characters, which then cause the CDbl() below to fail.
     ' Check for this and fix it as necessary.
     If InStr(1, chkString, "..") Then
         chkString = Replace(chkString, "..", ".")
-        txtPrimary = chkString
-        If cursorPos >= Len(txtPrimary) Then cursorPos = Len(txtPrimary)
-        txtPrimary.SelStart = cursorPos
+        m_EditBox.Text = chkString
+        If cursorPos >= Len(chkString) Then cursorPos = Len(chkString)
+        m_EditBox.SelStart = cursorPos
     End If
         
     If Not IsNumeric(chkString) Then
-        If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary
+        If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", m_EditBox.Text
         IsTextEntryValid = False
     Else
         
         Dim checkVal As Double
         checkVal = CDblCustom(chkString)
     
-        If (checkVal >= controlMin) And (checkVal <= controlMax) Then
+        If (checkVal >= m_Min) And (checkVal <= m_Max) Then
             IsTextEntryValid = True
         Else
-            If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary, GetFormattedStringValue(controlMin), GetFormattedStringValue(controlMax)
+            If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", m_EditBox.Text, GetFormattedStringValue(m_Min), GetFormattedStringValue(m_Max)
             IsTextEntryValid = False
         End If
         
@@ -840,42 +870,64 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
     
 End Function
 
-'After a component of this control gets or loses focus, it needs to call this function.  This function is responsible for raising
-' Got/LostFocusAPI events, which are important as an API text box is part of this control.
-Private Sub EvaluateFocusCount(ByVal focusCountJustIncremented As Boolean)
-
-    If focusCountJustIncremented Then
-        
-        'If just incremented from 0 to 1, raise a GotFocusAPI event
-        If m_ControlFocusCount = 1 Then RaiseEvent GotFocusAPI
-        
+'After a component of this control obtains or loses focus, you need to call this function.  This function will figure
+' out if it's time to raise a matching Got/LostFocusAPI event for the control as a whole.
+Private Sub EvaluateFocusCount()
+    If m_FocusCount <> 0 Then
+        If Not m_HasFocus Then
+            m_HasFocus = True
+            RaiseEvent GotFocusAPI
+        End If
     Else
-    
-        'If just decremented from 1 to 0, raise a LostFocusAPI event
-        If m_ControlFocusCount = 0 Then RaiseEvent LostFocusAPI
-    
+        If m_HasFocus Then
+            m_HasFocus = False
+            RaiseEvent LostFocusAPI
+        End If
     End If
+End Sub
 
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+        
+    'Color list retrieval is pretty darn easy - just load each color one at a time, and leave the rest to the color class.
+    ' It will build an internal hash table of the colors we request, which makes rendering much faster.
+    With m_Colors
+        .LoadThemeColor PDS_Background, "Background", IDE_WHITE
+        .LoadThemeColor PDS_Text, "Text", IDE_GRAY
+        .LoadThemeColor PDS_TextBorder, "TextBorder", IDE_BLUE
+        .LoadThemeColor PDS_ButtonArrow, "ButtonArrow", IDE_GRAY
+        .LoadThemeColor PDS_ButtonBorder, "ButtonBorder", IDE_BLUE
+        .LoadThemeColor PDS_ButtonFill, "ButtonFill", IDE_WHITE
+    End With
+    
+    RelayUpdatedColorsToEditBox
+    
+End Sub
+
+'When this control has special knowledge of a state change that affects the edit box's visual appearance, call this function.
+' It will relay the relevant themed colors to the edit box class.
+Private Sub RelayUpdatedColorsToEditBox()
+    If Not (m_EditBox Is Nothing) Then
+        m_EditBox.BackColor = m_Colors.RetrieveColor(PDS_Background, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
+        m_EditBox.textColor = m_Colors.RetrieveColor(PDS_Text, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
+    End If
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     
-    'Text boxes handle their own updating
-    If g_IsProgramRunning Then txtPrimary.UpdateAgainstCurrentTheme
+    'Update any theme-related colors
+    UpdateColorList
+    ucSupport.UpdateAgainstThemeAndLanguage
     
-    'Our tooltip object must also be refreshed (in case the language has changed)
-    If g_IsProgramRunning Then toolTipManager.UpdateAgainstCurrentTheme
-    
-    'Request a repaint
-    If Not cPainter Is Nothing Then cPainter.RequestRepaint
+    If g_IsProgramRunning Then UpdateControlLayout
     
 End Sub
 
-'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
-' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
+'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
+' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.SetTooltip Me.hWnd, UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
-    toolTipManager.SetTooltip picScroll.hWnd, UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    ucSupport.AssignTooltip Me.hWnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
 

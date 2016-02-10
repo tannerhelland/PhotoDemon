@@ -868,7 +868,7 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
     'Reset the selection coordinate boxes to 0
     Dim i As Long
     For i = 0 To tudSel.Count - 1
-        tudSel(i) = 0
+        tudSel(i).Value = 0
     Next i
 
 End Sub

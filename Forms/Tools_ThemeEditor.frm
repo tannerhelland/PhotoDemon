@@ -24,6 +24,15 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdSpinner pdSpinner1 
+      Height          =   375
+      Left            =   7680
+      TabIndex        =   14
+      Top             =   3120
+      Width           =   3495
+      _ExtentX        =   6165
+      _ExtentY        =   661
+   End
    Begin PhotoDemon.pdTextBox pdTextTest 
       Height          =   255
       Left            =   7680

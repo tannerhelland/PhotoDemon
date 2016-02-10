@@ -503,7 +503,7 @@ Public Property Let Value(ByVal newValue As Double)
             If tudPrimary.IsValid(False) Then
                 
                 'The text box contains valid numerical data.  If it matches the current control value, skip the refresh step.
-                If StrComp(getFormattedStringValue(tudPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then
+                If StrComp(getFormattedStringValue(tudPrimary.Value), CStr(controlVal), vbBinaryCompare) <> 0 Then
                     tudPrimary.Value = CStr(controlVal)
                 End If
             
@@ -660,7 +660,7 @@ Private Function isMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Singl
     Else
         
         'If the mouse is not over the slider itself, check the background track as well
-        If isPointInRectF(mouseX, mouseY, m_SliderTrackRect) And alsoCheckBackgroundTrack Then
+        If IsPointInRectF(mouseX, mouseY, m_SliderTrackRect) And alsoCheckBackgroundTrack Then
             isMouseOverSlider = True
         Else
             isMouseOverSlider = False
@@ -702,7 +702,7 @@ Private Sub tudPrimary_LostFocusAPI()
 End Sub
 
 Private Sub tudPrimary_Resize()
-    Debug.Print "handling resize now"
+    'Debug.Print "handling resize now"
     If Not g_IsProgramCompiled Then UpdateControlLayout
 End Sub
 

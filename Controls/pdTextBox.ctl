@@ -20,12 +20,6 @@ Begin VB.UserControl pdTextBox
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   201
    ToolboxBitmap   =   "pdTextBox.ctx":0000
-   Begin VB.Timer tmrHookRelease 
-      Enabled         =   0   'False
-      Interval        =   50
-      Left            =   120
-      Top             =   240
-   End
 End
 Attribute VB_Name = "pdTextBox"
 Attribute VB_GlobalNameSpace = False
@@ -122,13 +116,6 @@ Private m_Colors As pdThemeColors
 'Padding distance (in px) between the user control edges and the edit box edges
 Private Const EDITBOX_BORDER_PADDING As Long = 2&
 
-'hWnds aren't exposed by default
-Public Property Get hWnd() As Long
-Attribute hWnd.VB_UserMemId = -515
-    hWnd = UserControl.hWnd
-End Property
-
-'Container hWnd must be exposed for external tooltip handling
 Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
 End Property
@@ -156,16 +143,16 @@ Public Property Get FontSize() As Single
 End Property
 
 Public Property Let FontSize(ByVal newSize As Single)
-    
-    'Edit box sizes and margins are typically enforced by the system, at creation time, so it's easiest to just
-    ' recreate the box from scratch if the font settings change.  (This shouldn't typically happen at run-time, FYI)
     If Not (m_EditBox Is Nothing) Then
         If newSize <> m_EditBox.FontSize Then
             m_EditBox.FontSize = newSize
             PropertyChanged "FontSize"
         End If
     End If
-    
+End Property
+
+Public Property Get hWnd() As Long
+    hWnd = UserControl.hWnd
 End Property
 
 Public Property Get Multiline() As Boolean
@@ -284,13 +271,18 @@ End Sub
 'Sometimes, we want to change the UC's size to match the edit box.  Other times, we want to change the edit box's size to
 ' match the UC.  Use this two functions to update the appropriate size; if "editBoxGetsMoved" is TRUE, we'll forcibly set
 ' it to match our desired size.
-Private Sub SynchronizeSizes(Optional ByVal editBoxGetsMoved As Boolean = False)
-    If (Not m_InternalResizeState) And (Not m_EditBox Is Nothing) Then
+Private Sub SynchronizeSizes()
+
+    'Only the edit box gets moved, never the UC.  FIX THIS!
+    'Optional ByVal editBoxGetsMoved As Boolean = False
+    
+    If (Not m_EditBox Is Nothing) Then
         
         Dim needToMove As Boolean
         needToMove = True
         
-        'Start by determining a rect that we ideally want the edit box to fit within
+        'Start by determining a rect that we ideally want the edit box to fit within.  Note that x2 and y2 in this measurement
+        ' are RIGHT AND BOTTOM measurements, not WIDTH AND HEIGHT.
         Dim tmpRect As winRect
         CalculateDesiredEditBoxRect tmpRect
         
@@ -307,16 +299,12 @@ Private Sub SynchronizeSizes(Optional ByVal editBoxGetsMoved As Boolean = False)
         'Apply the move conditionally
         If needToMove Then
             m_InternalResizeState = True
-            If editBoxGetsMoved Then
-                m_EditBox.Move tmpRect.x1, tmpRect.y1, tmpRect.x2, tmpRect.y2
-            Else
-                CalculateDesiredUCRect tmpRect
-                ucSupport.RequestNewSize tmpRect.x2 - tmpRect.x1, tmpRect.y2 - tmpRect.y1
-            End If
+            m_EditBox.Move tmpRect.x1, tmpRect.y1, tmpRect.x2, tmpRect.y2
             m_InternalResizeState = False
         End If
         
     End If
+    
 End Sub
 
 'When one of this control's components (either the underlying UC or the edit box) gets focus, call this function to update
@@ -360,15 +348,15 @@ Private Sub CalculateDesiredEditBoxRect(ByRef targetRect As winRect)
     With targetRect
         .x1 = EDITBOX_BORDER_PADDING
         .y1 = EDITBOX_BORDER_PADDING
-        .x2 = ucSupport.GetControlWidth - EDITBOX_BORDER_PADDING * 2
-        .y2 = ucSupport.GetControlHeight - EDITBOX_BORDER_PADDING * 2
+        .x2 = ucSupport.GetControlWidth - EDITBOX_BORDER_PADDING
+        .y2 = ucSupport.GetControlHeight - EDITBOX_BORDER_PADDING
     End With
 End Sub
 
 Private Sub CalculateDesiredUCRect(ByRef targetRect As winRect)
     With targetRect
         .x1 = ucSupport.GetControlLeft
-        .y1 = ucSupport.GetControlLeft
+        .y1 = ucSupport.GetControlTop
         .x2 = .x1 + m_EditBox.GetWidth + EDITBOX_BORDER_PADDING * 2
         .y2 = .y1 + m_EditBox.GetHeight + EDITBOX_BORDER_PADDING * 2
     End With
@@ -406,7 +394,7 @@ Private Sub CreateEditBox()
         CalculateDesiredEditBoxRect tmpRect
         
         'Ask the edit box to create itself!
-        m_EditBox.CreateEditBox UserControl.hWnd, tmpRect.x1, tmpRect.y1, tmpRect.x2, tmpRect.y2, False
+        m_EditBox.CreateEditBox UserControl.hWnd, tmpRect.x1, tmpRect.y1, tmpRect.x2 - tmpRect.x1, tmpRect.y2 - tmpRect.y1, False
         
         'Because contrl sizes may have changed, we need to repaint everything
         RedrawBackBuffer
@@ -461,7 +449,6 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-
     With PropBag
         Enabled = .ReadProperty("Enabled", True)
         FontSize = .ReadProperty("FontSize", 10)
@@ -469,7 +456,6 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         TabBehavior = .ReadProperty("TabBehavior", TabDefaultBehavior)
         Text = .ReadProperty("Text", "")
     End With
-
 End Sub
 
 Private Sub UserControl_Resize()
@@ -485,8 +471,6 @@ Private Sub UserControl_Terminate()
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-
-    'Store all associated properties
     With PropBag
         .WriteProperty "Enabled", Me.Enabled, True
         .WriteProperty "FontSize", Me.FontSize, 10
@@ -494,13 +478,10 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "TabBehavior", m_TabMode, TabDefaultBehavior
         .WriteProperty "Text", Me.Text, ""
     End With
-    
 End Sub
 
 Private Sub UpdateControlLayout()
-    m_InternalResizeState = True
-    SynchronizeSizes True
-    m_InternalResizeState = False
+    SynchronizeSizes
     RedrawBackBuffer
 End Sub
 
@@ -527,7 +508,7 @@ Private Sub RedrawBackBuffer()
     
     'The edit box doesn't actually have a border; we render a pseudo-border onto the underlying UC, as necessary.
     Dim halfPadding As Long
-    halfPadding = 0     'EDITBOX_BORDER_PADDING \ 2 - 1
+    halfPadding = 1     'EDITBOX_BORDER_PADDING \ 2 - 1
     
     Dim borderWidth As Single
     If Not (m_EditBox Is Nothing) Then
@@ -564,7 +545,7 @@ End Sub
 Private Sub RelayUpdatedColorsToEditBox()
     If Not (m_EditBox Is Nothing) Then
         m_EditBox.BackColor = m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
-        m_EditBox.TextColor = m_Colors.RetrieveColor(PDEB_Text, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
+        m_EditBox.textColor = m_Colors.RetrieveColor(PDEB_Text, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
     End If
 End Sub
 
