@@ -608,8 +608,8 @@ Private Sub convertUnitsToNewValue(ByVal oldUnit As MeasurementUnit, ByVal newUn
     tudHeight.SigDigits = tudWidth.SigDigits
     
     'Copy the new values to their respective text boxes
-    tudWidth = newWidth
-    tudHeight = newHeight
+    tudWidth.Value = newWidth
+    tudHeight.Value = newHeight
     
 End Sub
 
@@ -931,7 +931,7 @@ Private Function getResolutionAsPPI() As Double
     
         'cmbResolution only has two entries: inches (0), and cm (1).
         If cmbResolution.ListIndex = RU_PPI Then
-            getResolutionAsPPI = tudResolution
+            getResolutionAsPPI = tudResolution.Value
         Else
             getResolutionAsPPI = getInchesFromCM(tudResolution)
         End If

@@ -484,7 +484,7 @@ End Property
 'Note that (x, y) values for the edit box can be specified.  These are technically optional, but you DO need to supply
 ' a valid x2 and y2 if you want the edit box to actually be visible!  Alternatively, you can set the optional
 ' "determineHeightForMe" parameter to TRUE to have the edit box size itself vertically, according to the current font.
-Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Long = 0, Optional ByVal y1 As Long = 0, Optional ByVal x2 As Long = 0, Optional ByVal y2 As Long = 0, Optional ByVal determineHeightForMe As Boolean = True) As Boolean
+Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Long = 0, Optional ByVal y1 As Long = 0, Optional ByVal xWidth As Long = 0, Optional ByVal yHeight As Long = 0, Optional ByVal determineHeightForMe As Boolean = True) As Boolean
     
     'Ignore all creation requests until we receive one with a valid parent hWnd
     If parentHwnd <> 0 Then
@@ -512,11 +512,11 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
         
         'Multiline text boxes can have any height.  Single-line text boxes should not; we prefer to force them to their
         ' ideal height, using the current font as our guide.
-        If determineHeightForMe Then y2 = y1 + Me.SuggestedHeight
+        If determineHeightForMe Then yHeight = Me.SuggestedHeight
         
         'Create the window!
         m_EditBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("EDIT"), ByVal StrPtr(""), flagsWinStyle Or flagsEditControl, _
-            x1, y1, x2, y2, parentHwnd, 0, App.hInstance, ByVal 0&)
+            x1, y1, xWidth, yHeight, parentHwnd, 0, App.hInstance, ByVal 0&)
         
         'Now that the window exists, we need to pass it any relevant local settings
         Me.Enabled = m_Enabled
@@ -539,7 +539,7 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
                 End If
                 
                 'Activate mouse events
-                m_MouseEvents.addInputTracker m_EditBoxHwnd, True, , , , , True
+                m_MouseEvents.addInputTracker m_EditBoxHwnd, True, , , True, , True
                 
             End If
         End If
@@ -587,10 +587,15 @@ Public Function GetWidth() As Long
     GetWidth = tmpRect.x2 - tmpRect.x1
 End Function
 
+'IMPORTANT NOTE: if the edit box has not yet been created, this function will return the control's *suggested* height, by default.
 Public Function GetHeight() As Long
-    Dim tmpRect As winRect
-    GetWindowRect m_EditBoxHwnd, tmpRect
-    GetHeight = tmpRect.y2 - tmpRect.y1
+    If m_EditBoxHwnd <> 0 Then
+        Dim tmpRect As winRect
+        GetWindowRect m_EditBoxHwnd, tmpRect
+        GetHeight = tmpRect.y2 - tmpRect.y1
+    Else
+        GetHeight = Me.SuggestedHeight
+    End If
 End Function
 
 'Change the edit box position and size in one fell swoop.  Coordinates are RELATIVE TO THE PARENT WINDOW.
@@ -617,17 +622,19 @@ End Function
 'Create the brush and font used to render the edit box background and text
 Private Sub CreateEditBoxGDIObjects()
 
-    If m_EditBoxBrush <> 0 Then UserControl_Support.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
-    If m_EditBoxFont <> 0 Then UserControl_Support.ReleaseSharedGDIFontByHandle m_EditBoxFont
+    Dim repaintRequired As Boolean
     
-    If g_IsProgramRunning Then
+    If m_EditBoxBrush <> UserControl_Support.GetSharedGDIBrush(Me.BackColor) Then
+        If m_EditBoxBrush <> 0 Then UserControl_Support.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
         m_EditBoxBrush = UserControl_Support.GetSharedGDIBrush(Me.BackColor)
-    Else
-        m_EditBoxBrush = UserControl_Support.GetSharedGDIBrush(RGB(0, 255, 0))
+        repaintRequired = True
     End If
     
-    m_EditBoxFont = UserControl_Support.GetSharedGDIFont(m_FontSize)
-    If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(m_Visible, 1, 0)
+    If (m_EditBoxFont <> UserControl_Support.GetSharedGDIFont(m_FontSize)) Or repaintRequired Then
+        If m_EditBoxFont <> 0 Then UserControl_Support.ReleaseSharedGDIFontByHandle m_EditBoxFont
+        m_EditBoxFont = UserControl_Support.GetSharedGDIFont(m_FontSize)
+        If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(m_Visible, 1, 0)
+    End If
 
 End Sub
 
@@ -643,6 +650,7 @@ End Sub
 
 Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     RaiseEvent MouseEnter(Button, Shift, x, y)
+    m_MouseEvents.setSystemCursor IDC_IBEAM
 End Sub
 
 Private Sub m_MouseEvents_MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -651,6 +659,7 @@ End Sub
 
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     RaiseEvent MouseLeave(Button, Shift, x, y)
+    m_MouseEvents.setSystemCursor IDC_DEFAULT
 End Sub
 
 Private Sub m_MouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
@@ -692,7 +701,12 @@ Private Sub Class_Terminate()
     DestroyEditBox
     
     'Release our extra subclasser(s)
-    If Not cSubclass Is Nothing Then cSubclass.ssc_Terminate
+    If Not (m_MouseEvents Is Nothing) Then Set m_MouseEvents = Nothing
+    
+    If Not cSubclass Is Nothing Then
+        cSubclass.ssc_Terminate
+        Set cSubclass = Nothing
+    End If
     
 End Sub
 
@@ -714,7 +728,6 @@ Private Function IsVirtualKeyNumeric(ByVal vKey As Long, Optional ByRef numericV
         IsVirtualKeyNumeric = True
         numericValue = vKey - VK_0
     Else
-    
         If (vKey >= VK_NUMPAD0) And (vKey <= VK_NUMPAD9) Then
             IsVirtualKeyNumeric = True
             numericValue = vKey - VK_NUMPAD0
@@ -776,6 +789,16 @@ End Sub
 'If a hook exists, uninstall it.  DO NOT CALL THIS FUNCTION if the class is currently inside the hook proc.
 Private Sub RemoveKeyboardHook()
     If Not (cSubclass Is Nothing) Then cSubclass.shk_UnHook WH_KEYBOARD
+End Sub
+
+'Release the edit box's keyboard hook.  In some circumstances, we can't do this immediately, so we set a timer that will
+' release the hook as soon as the system allows.
+Private Sub SafelyRemoveKeyboardHook()
+    If m_InHookNow Then
+        m_HookReleaseTimer.StartTimer
+    Else
+        RemoveKeyboardHook
+    End If
 End Sub
 
 'This routine MUST BE KEPT as the next-to-last routine for this form. Its ordinal position determines its ability to hook properly.
@@ -1221,8 +1244,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         ' (Presumably, this is because VB handles focus internally, rather than using standard window messages.)  To avoid the
         ' appearance of two controls simultaneously having focus, we re-set focus to the underlying user control, which forces
         ' VB to redraw the lost focus state of whatever control previously had focus.
-        Case WM_MOUSEACTIVATE
-            If (Not m_HasFocus) And (m_ParentHWnd <> 0) Then SetFocus m_ParentHWnd
+        'Case WM_MOUSEACTIVATE
+        '   If (Not m_HasFocus) And (m_ParentHWnd <> 0) Then SetFocus m_ParentHWnd
             
         'When the control receives focus, initialize a keyboard hook.  This prevents accelerators from working, but it is the
         ' only way to bypass VB's internal message translator, which will forcibly convert certain Unicode chars to ANSI.
@@ -1242,11 +1265,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             
             'Release our hook.  In some circumstances, we can't do this immediately, so we set a timer that will release the hook
             ' as soon as the system allows.
-            If m_InHookNow Then
-                m_HookReleaseTimer.StartTimer
-            Else
-                RemoveKeyboardHook
-            End If
+            SafelyRemoveKeyboardHook
             
             'Re-enable PD's main accelerator control
             FormMain.pdHotkeys.ActivateHook

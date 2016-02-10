@@ -206,6 +206,7 @@ Private m_Colors As pdThemeColors
 
 'To mimic standard scroll bar behavior, we must fire repeat scroll events when the buttons (or track) are clicked and held.
 Private WithEvents m_UpButtonTimer As pdTimer
+Attribute m_UpButtonTimer.VB_VarHelpID = -1
 Private WithEvents m_DownButtonTimer As pdTimer
 Attribute m_DownButtonTimer.VB_VarHelpID = -1
 
@@ -387,12 +388,12 @@ Private Sub m_DownButtonTimer_Timer()
     End If
     
     'It's a little counter-intuitive, but the DOWN button actually moves the control value UP
-    moveValueUp m_MouseDownTrack
+    MoveValueUp m_MouseDownTrack
     
     'If the timer was activated because the user is clicking on the mouse track (and not a button), deactivate the
     ' timer once the value equals the value under the mouse.
     If m_MouseDownTrack Then
-        If Math_Functions.isPointInRectF(m_TrackX, m_TrackY, thumbRect) Or (m_Value > m_initTrackValue) Then m_DownButtonTimer.StopTimer
+        If Math_Functions.IsPointInRectF(m_TrackX, m_TrackY, thumbRect) Or (m_Value > m_initTrackValue) Then m_DownButtonTimer.StopTimer
     End If
 
 End Sub
@@ -406,12 +407,12 @@ Private Sub m_UpButtonTimer_Timer()
     End If
     
     'It's a little counter-intuitive, but the UP button actually moves the control value DOWN
-    moveValueDown m_MouseDownTrack
+    MoveValueDown m_MouseDownTrack
     
     'If the timer was activated because the user is clicking on the mouse track (and not a button), deactivate the
     ' timer once the value equals the value under the mouse.
     If m_MouseDownTrack Then
-        If Math_Functions.isPointInRectF(m_TrackX, m_TrackY, thumbRect) Or (m_Value < m_initTrackValue) Then m_UpButtonTimer.StopTimer
+        If Math_Functions.IsPointInRectF(m_TrackX, m_TrackY, thumbRect) Or (m_Value < m_initTrackValue) Then m_UpButtonTimer.StopTimer
     End If
     
 End Sub
@@ -457,16 +458,16 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
     If m_MouseInsideUC Or ucSupport.DoIHaveFocus Then
         
         If (vkCode = VK_UP) Or (vkCode = VK_LEFT) Then
-            moveValueDown
+            MoveValueDown
             markEventHandled = True
         ElseIf (vkCode = VK_DOWN) Or (vkCode = VK_RIGHT) Then
-            moveValueUp
+            MoveValueUp
             markEventHandled = True
         ElseIf (vkCode = VK_PAGEUP) Then
-            moveValueDown True
+            MoveValueDown True
             markEventHandled = True
         ElseIf (vkCode = VK_PAGEDOWN) Then
-            moveValueUp True
+            MoveValueUp True
             markEventHandled = True
         ElseIf (vkCode = VK_HOME) Then
             Value = Min
@@ -491,11 +492,11 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
             Case pdLeftButton
                 
                 'Determine mouse button state for the up and down button areas
-                If Math_Functions.isPointInRectL(x, y, upLeftRect) Then
+                If Math_Functions.IsPointInRectL(x, y, upLeftRect) Then
                     m_MouseDownUpButton = True
                     
                     'Adjust the value immediately
-                    moveValueDown
+                    MoveValueDown
                     
                     'Start the repeat timer as well
                     m_UpButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
@@ -505,9 +506,9 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                     m_MouseDownUpButton = False
                 End If
                 
-                If Math_Functions.isPointInRectL(x, y, downRightRect) Then
+                If Math_Functions.IsPointInRectL(x, y, downRightRect) Then
                     m_MouseDownDownButton = True
-                    moveValueUp
+                    MoveValueUp
                     m_DownButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
                     m_DownButtonTimer.StartTimer
                 Else
@@ -515,7 +516,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                 End If
                 
                 'Determine button state for the thumb
-                If Math_Functions.isPointInRectF(x, y, thumbRect) Then
+                If Math_Functions.IsPointInRectF(x, y, thumbRect) Then
                     m_MouseDownThumb = True
                     
                     'Store initial x/y/value values at this location
@@ -530,7 +531,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                     
                     'Now we perform a special check for the mouse being inside the track area.  (We do it here so that
                     ' the mouse being over the thumb (which lies *inside* the track) doesn't set this to TRUE.)
-                    If Math_Functions.isPointInRectL(x, y, trackRect) Then
+                    If Math_Functions.IsPointInRectL(x, y, trackRect) Then
                         
                         m_MouseDownTrack = True
                         
@@ -541,11 +542,11 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                         
                         'Activate the auto-scroll timers
                         If m_initTrackValue < m_Value Then
-                            moveValueDown True
+                            MoveValueDown True
                             m_UpButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
                             m_UpButtonTimer.StartTimer
                         Else
-                            moveValueUp True
+                            MoveValueUp True
                             m_DownButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
                             m_DownButtonTimer.StartTimer
                         End If
@@ -622,28 +623,28 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     Else
     
         'Determine mouse hover state for the up and down button areas
-        If Math_Functions.isPointInRectL(x, y, upLeftRect) Then
+        If Math_Functions.IsPointInRectL(x, y, upLeftRect) Then
             m_MouseOverUpButton = True
             m_MouseOverTrack = False
         Else
             m_MouseOverUpButton = False
         End If
         
-        If Math_Functions.isPointInRectL(x, y, downRightRect) Then
+        If Math_Functions.IsPointInRectL(x, y, downRightRect) Then
             m_MouseOverDownButton = True
             m_MouseOverTrack = False
         Else
             m_MouseOverDownButton = False
         End If
             
-        If Math_Functions.isPointInRectF(x, y, thumbRect) Then
+        If Math_Functions.IsPointInRectF(x, y, thumbRect) Then
             m_MouseOverThumb = True
             m_MouseOverTrack = False
         Else
             m_MouseOverThumb = False
             
             'Do a special check for the track now
-            If Math_Functions.isPointInRectL(x, y, trackRect) Then
+            If Math_Functions.IsPointInRectL(x, y, trackRect) Then
                 m_MouseOverTrack = True
                 
                 'Cache the mouse positions, so we know where to draw the orientation dot
@@ -704,14 +705,14 @@ Public Sub RelayMouseWheelEvent(ByVal wheelIsVertical As Boolean, ByVal Button A
         If (Not wheelIsVertical) Then scrollAmount = -1 * scrollAmount
         
         If scrollAmount > 0 Then
-            moveValueDown True
+            MoveValueDown True
         Else
-            moveValueUp True
+            MoveValueUp True
         End If
         
         'If the mouse is over the scroll bar, wheel actions may cause the thumb to move into (and/or out of) the
         ' cursor's position.  As such, we must update that value here.
-        If m_MouseOverThumb <> isPointInRectF(x, y, thumbRect) Then
+        If m_MouseOverThumb <> IsPointInRectF(x, y, thumbRect) Then
             m_MouseOverThumb = Not m_MouseOverThumb
             RedrawBackBuffer
         End If
@@ -745,22 +746,22 @@ Private Sub MnuScroll_Click(Index As Integer)
         
         'Page up
         Case 5
-            moveValueDown True
+            MoveValueDown True
             
         'Page down
         Case 6
-            moveValueUp True
+            MoveValueUp True
         
         '(separator)
         Case 7
         
         'Scroll up
         Case 8
-            moveValueDown
+            MoveValueDown
         
         'Scroll down
         Case 9
-            moveValueUp
+            MoveValueUp
     
     End Select
     
@@ -853,7 +854,7 @@ Private Sub UserControl_Resize()
 End Sub
 
 'When the control value is INCREASED, this function is called
-Private Sub moveValueUp(Optional ByVal useLargeChange As Boolean = False)
+Private Sub MoveValueUp(Optional ByVal useLargeChange As Boolean = False)
     If useLargeChange Then
         Value = m_Value + m_LargeChange
     Else
@@ -862,7 +863,7 @@ Private Sub moveValueUp(Optional ByVal useLargeChange As Boolean = False)
 End Sub
 
 'When the control value is DECREASED, this function is called
-Private Sub moveValueDown(Optional ByVal useLargeChange As Boolean = False)
+Private Sub MoveValueDown(Optional ByVal useLargeChange As Boolean = False)
     If useLargeChange Then
         Value = m_Value - m_LargeChange
     Else
@@ -973,13 +974,8 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     
     'With colors decided (finally!), we can actually draw the damn thing
     
-    'START HERE
-    
     'Paint all backgrounds and borders first
     If g_IsProgramRunning Then
-        
-        'Track first
-        'GDI_Plus.GDIPlusFillRectLToDC bufferDC, trackRect, trackBackColor
                 
         'Up button
         GDI_Plus.GDIPlusFillRectLToDC bufferDC, upLeftRect, upButtonFillColor
@@ -995,7 +991,6 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
             GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, thumbRect, thumbBorderColor
         End If
         
-        'And last, draw the arrows
         'Finally, paint the arrows themselves
         Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
                     

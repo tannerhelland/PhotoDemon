@@ -194,6 +194,27 @@
 				<TrackCanvasMode>BackgroundCommandBar</TrackCanvasMode>
 				<TrackCanvasMode-disabled>GrayDefault</TrackCanvasMode-disabled>
 			</PDScrollBar>
+			
+			<PDSpinner>
+				<Background>BackgroundDefault</Background>
+				<Text>TextEditBox</Text>
+				<Text-disabled>GrayDefault</Text-disabled>
+				<TextBorder>GrayDefault</TextBorder>
+				<TextBorder-active>AccentDark</TextBorder-active>
+				<TextBorder-hover>AccentDefault</TextBorder-hover>
+				<ButtonArrow>GrayDefault</ButtonArrow>
+				<ButtonArrow-disabled>GrayLight</ButtonArrow-disabled>
+				<ButtonArrow-active>TextInvert</ButtonArrow-active>
+				<ButtonArrow-hover>AccentDefault</ButtonArrow-hover>
+				<ButtonBorder>BackgroundDefault</ButtonBorder>
+				<ButtonBorder-disabled>GrayLight</ButtonBorder-disabled>
+				<ButtonBorder-active>AccentDefault</ButtonBorder-active>
+				<ButtonBorder-hover>AccentDark</ButtonBorder-hover>
+				<ButtonFill>BackgroundDefault</ButtonFill>
+				<ButtonFill-disabled>GrayLight</ButtonFill-disabled>
+				<ButtonFill-active>AccentDefault</ButtonFill-active>
+				<ButtonFill-hover>BackgroundDefault</ButtonFill-hover>
+			</PDSpinner>
 						
 			<!-- ****************************************************************************************** -->
 		
