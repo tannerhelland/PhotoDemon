@@ -22,6 +22,7 @@
 			<BackgroundDefault>#313131</BackgroundDefault>
 			<BackgroundCanvas>#1e1e1e</BackgroundCanvas>
 			<BackgroundCommandBar>#3e3e42</BackgroundCommandBar>
+			<ErrorRed>#dc2824</ErrorRed>
 			<GrayDefault>#b1bac2</GrayDefault>
 			<GrayDisabled>#929292</GrayDisabled>
 			<GrayDark>#d3dde6</GrayDark>
@@ -110,9 +111,9 @@
 				<ButtonFill-hover>AccentUltralight</ButtonFill-hover>
 				<ButtonFill-disabled>GrayLight</ButtonFill-disabled>
 				<Caption>TextDark</Caption>
+				<Caption-disabled>TextDark</Caption-disabled>
 				<Caption-active>TextInvert</Caption-active>
 				<Caption-hover>TextDefault</Caption-hover>
-				<Caption-disabled>GrayDisabled</Caption-disabled>
 			</PDButton>
 			
 			<PDEditBox>
@@ -207,13 +208,13 @@
 				<ButtonArrow-active>TextInvert</ButtonArrow-active>
 				<ButtonArrow-hover>AccentDefault</ButtonArrow-hover>
 				<ButtonBorder>BackgroundDefault</ButtonBorder>
-				<ButtonBorder-disabled>GrayLight</ButtonBorder-disabled>
-				<ButtonBorder-active>AccentDefault</ButtonBorder-active>
-				<ButtonBorder-hover>AccentDark</ButtonBorder-hover>
+				<ButtonBorder-active>AccentDark</ButtonBorder-active>
+				<ButtonBorder-hover>AccentDefault</ButtonBorder-hover>
 				<ButtonFill>BackgroundDefault</ButtonFill>
 				<ButtonFill-disabled>GrayLight</ButtonFill-disabled>
 				<ButtonFill-active>AccentDefault</ButtonFill-active>
 				<ButtonFill-hover>BackgroundDefault</ButtonFill-hover>
+				<ErrorBorder>ErrorRed</ErrorBorder>
 			</PDSpinner>
 			
 			<!-- ****************************************************************************************** -->

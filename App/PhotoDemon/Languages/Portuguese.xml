@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.133</langversion>
+<langversion>6.7.134</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -854,7 +854,17 @@ You pode usar o MenuTest () sub no módulo Filters_Miscellaneous para testar seu
 <translation></translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 66 phrases. 20 were duplicates of existing phrases, so only 46 new phrases were written to file. -->
+<phrase>
+<original>Are you sure you want to cancel %1?</original>
+<translation>Tem certeza de que deseja cancelar %1?</translation>
+</phrase>
+
+<phrase>
+<original>Cancel image processing</original>
+<translation>Cancelar processamento de imagem</translation>
+</phrase>
+
+<!-- VBP_MiscInterface.bas contains 68 phrases. 20 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -1362,22 +1372,6 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 <!-- VBP_MiscMath.bas contains 0 phrases. -->
 
 <!-- END text for VBP_MiscMath.bas-->
-
-<!-- BEGIN text for VBP_Misc_Uncategorized.bas -->
-
-<phrase>
-<original>Are you sure you want to cancel %1?</original>
-<translation>Tem certeza de que deseja cancelar %1?</translation>
-</phrase>
-
-<phrase>
-<original>Cancel image processing</original>
-<translation>Cancelar processamento de imagem</translation>
-</phrase>
-
-<!-- VBP_Misc_Uncategorized.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
-
-<!-- END text for VBP_Misc_Uncategorized.bas-->
 
 <!-- BEGIN text for VBP_Win7_Specific_Features.bas -->
 
@@ -2595,6 +2589,12 @@ Please válidos inserir um valor numérico.</translation>
 
 <!-- END text for pdDisplays.cls-->
 
+<!-- BEGIN text for pdEditBoxW.cls -->
+
+<!-- pdEditBoxW.cls contains 0 phrases. -->
+
+<!-- END text for pdEditBoxW.cls-->
+
 <!-- BEGIN text for pdFFT.cls -->
 
 <!-- pdFFT.cls contains 0 phrases. -->
@@ -3085,6 +3085,12 @@ Please válidos inserir um valor numérico.</translation>
 <!-- pdThemeColors.cls contains 0 phrases. -->
 
 <!-- END text for pdThemeColors.cls-->
+
+<!-- BEGIN text for pdTimer.cls -->
+
+<!-- pdTimer.cls contains 0 phrases. -->
+
+<!-- END text for pdTimer.cls-->
 
 <!-- BEGIN text for pdToolPreset.cls -->
 
@@ -14665,18 +14671,6 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for pdEditBoxW.cls -->
-
-<!-- pdEditBoxW.cls contains 0 phrases. -->
-
-<!-- END text for pdEditBoxW.cls-->
-
-<!-- BEGIN text for pdTimer.cls -->
-
-<!-- pdTimer.cls contains 0 phrases. -->
-
-<!-- END text for pdTimer.cls-->
 
 <!-- Automatic text extraction complete. -->
 

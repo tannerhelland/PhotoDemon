@@ -503,7 +503,7 @@ Public Property Let Value(ByVal newValue As Double)
             If tudPrimary.IsValid(False) Then
                 
                 'The text box contains valid numerical data.  If it matches the current control value, skip the refresh step.
-                If StrComp(getFormattedStringValue(tudPrimary.Value), CStr(controlVal), vbBinaryCompare) <> 0 Then
+                If StrComp(GetFormattedStringValue(tudPrimary.Value), CStr(controlVal), vbBinaryCompare) <> 0 Then
                     tudPrimary.Value = CStr(controlVal)
                 End If
             
@@ -1360,21 +1360,21 @@ End Sub
 
 'Because this control can contain either decimal or float values, we want to make sure any entered strings adhere
 ' to strict formatting rules.
-Private Function getFormattedStringValue(ByVal srcValue As Double) As String
+Private Function GetFormattedStringValue(ByVal srcValue As Double) As String
 
     Select Case significantDigits
     
         Case 0
-            getFormattedStringValue = Format(CStr(srcValue), "#0")
+            GetFormattedStringValue = Format(CStr(srcValue), "#0")
         
         Case 1
-            getFormattedStringValue = Format(CStr(srcValue), "#0.0")
+            GetFormattedStringValue = Format(CStr(srcValue), "#0.0")
             
         Case 2
-            getFormattedStringValue = Format(CStr(srcValue), "#0.00")
+            GetFormattedStringValue = Format(CStr(srcValue), "#0.00")
             
         Case Else
-            getFormattedStringValue = Format(CStr(srcValue), "#0.000")
+            GetFormattedStringValue = Format(CStr(srcValue), "#0.000")
     
     End Select
     
