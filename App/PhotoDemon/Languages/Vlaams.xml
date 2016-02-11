@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.133</langversion>
+<langversion>6.7.134</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -854,7 +854,17 @@ Je kan gebruik maken van de MenuTest() sub in de Filters_Miscellaneous module om
 <translation></translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 66 phrases. 20 were duplicates of existing phrases, so only 46 new phrases were written to file. -->
+<phrase>
+<original>Are you sure you want to cancel %1?</original>
+<translation>Weet je zeker dat je %1 wilt annuleren?</translation>
+</phrase>
+
+<phrase>
+<original>Cancel image processing</original>
+<translation>Annuleren afbeeldingsverwerking</translation>
+</phrase>
+
+<!-- VBP_MiscInterface.bas contains 68 phrases. 20 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -1362,22 +1372,6 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <!-- VBP_MiscMath.bas contains 0 phrases. -->
 
 <!-- END text for VBP_MiscMath.bas-->
-
-<!-- BEGIN text for VBP_Misc_Uncategorized.bas -->
-
-<phrase>
-<original>Are you sure you want to cancel %1?</original>
-<translation>Weet je zeker dat je %1 wilt annuleren?</translation>
-</phrase>
-
-<phrase>
-<original>Cancel image processing</original>
-<translation>Annuleren afbeeldingsverwerking</translation>
-</phrase>
-
-<!-- VBP_Misc_Uncategorized.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
-
-<!-- END text for VBP_Misc_Uncategorized.bas-->
 
 <!-- BEGIN text for VBP_Win7_Specific_Features.bas -->
 
@@ -2594,6 +2588,12 @@ Geef een numerieke waarde.</translation>
 
 <!-- END text for pdDisplays.cls-->
 
+<!-- BEGIN text for pdEditBoxW.cls -->
+
+<!-- pdEditBoxW.cls contains 0 phrases. -->
+
+<!-- END text for pdEditBoxW.cls-->
+
 <!-- BEGIN text for pdFFT.cls -->
 
 <!-- pdFFT.cls contains 0 phrases. -->
@@ -3084,6 +3084,12 @@ Geef een numerieke waarde.</translation>
 <!-- pdThemeColors.cls contains 0 phrases. -->
 
 <!-- END text for pdThemeColors.cls-->
+
+<!-- BEGIN text for pdTimer.cls -->
+
+<!-- pdTimer.cls contains 0 phrases. -->
+
+<!-- END text for pdTimer.cls-->
 
 <!-- BEGIN text for pdToolPreset.cls -->
 
@@ -14664,18 +14670,6 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for pdEditBoxW.cls -->
-
-<!-- pdEditBoxW.cls contains 0 phrases. -->
-
-<!-- END text for pdEditBoxW.cls-->
-
-<!-- BEGIN text for pdTimer.cls -->
-
-<!-- pdTimer.cls contains 0 phrases. -->
-
-<!-- END text for pdTimer.cls-->
 
 <!-- Automatic text extraction complete. -->
 

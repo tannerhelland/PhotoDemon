@@ -76,7 +76,7 @@ End Sub
 Public Function isPDDataType(ByVal expectedType As String) As Boolean
     
     Dim reportedType As String
-    reportedType = getTextBetweenTags("pdDataType")
+    reportedType = GetTextBetweenTags("pdDataType")
     
     If StrComp(reportedType, expectedType, m_TextCompareMode) = 0 Then
         isPDDataType = True
@@ -706,7 +706,7 @@ Public Function getUniqueTag_String(ByRef tagName As String, Optional ByVal defa
     End If
     
     Dim tmpString As String
-    tmpString = getTextBetweenTags(tagName, searchLocation)
+    tmpString = GetTextBetweenTags(tagName, searchLocation)
     
     If Len(tmpString) <> 0 Then
         getUniqueTag_String = Trim$(tmpString)
@@ -719,7 +719,7 @@ End Function
 Public Function getUniqueTag_Long(ByVal tagName As String, Optional ByVal defaultReturn As Long = 0, Optional ByVal searchLocation As Long = 1) As Long
     
     Dim tmpString As String
-    tmpString = getTextBetweenTags(tagName, searchLocation)
+    tmpString = GetTextBetweenTags(tagName, searchLocation)
     
     If Len(tmpString) <> 0 Then
         getUniqueTag_Long = CLng(tmpString)
@@ -732,7 +732,7 @@ End Function
 Public Function getUniqueTag_Boolean(ByVal tagName As String, Optional ByVal defaultReturn As Boolean = False, Optional ByVal searchLocation As Long = 1) As Boolean
     
     Dim tmpString As String
-    tmpString = getTextBetweenTags(tagName, searchLocation)
+    tmpString = GetTextBetweenTags(tagName, searchLocation)
     
     If Len(tmpString) <> 0 Then
         getUniqueTag_Boolean = CBool(tmpString)
@@ -745,12 +745,50 @@ End Function
 Public Function getUniqueTag_Double(ByVal tagName As String, Optional ByVal defaultReturn As Double = 0, Optional ByVal searchLocation As Long = 1) As Double
     
     Dim tmpString As String
-    tmpString = getTextBetweenTags(tagName, searchLocation)
+    tmpString = GetTextBetweenTags(tagName, searchLocation)
     
     If Len(tmpString) <> 0 Then
         getUniqueTag_Double = CDblCustom(tmpString)
     Else
         getUniqueTag_Double = defaultReturn
+    End If
+    
+End Function
+
+'The next block of functions returns non-unique tag values in a specified format.  "Non-unique" tags are those that may exist
+' in multiple sections within a file.  A value will only be returned if the requested tag appears within the specified XML section.
+Public Function GetNonUniqueTag_String(ByRef tagName As String, ByVal xmlSection As String, Optional ByVal xmlSectionAttribute As String = vbNullString, Optional ByVal xmlSectionAttributeValue As String = vbNullString, Optional ByVal defaultReturn As String = vbNullString) As String
+        
+    Dim searchStartLocation As Long, searchEndLocation As Long
+    
+    'If a section was provided, start our unique tag search there.  At present, we don't care if our search extends past
+    ' that section, but only because we know it will never happen!
+    If Len(xmlSection) <> 0 Then
+    
+        If Len(xmlSectionAttribute) <> 0 Then
+            searchStartLocation = InStr(1, m_xmlContents, "<" & xmlSection & " " & xmlSectionAttribute & "=""" & xmlSectionAttributeValue & """>", m_TextCompareMode)
+            If searchStartLocation <> 0 Then searchEndLocation = InStr(searchStartLocation, m_xmlContents, "</" & xmlSection & ">", m_TextCompareMode)
+        Else
+            searchStartLocation = InStr(1, m_xmlContents, "<" & xmlSection & ">", m_TextCompareMode)
+            If searchStartLocation <> 0 Then searchEndLocation = InStr(searchStartLocation, m_xmlContents, "</" & xmlSection & ">", m_TextCompareMode)
+        End If
+        If searchStartLocation = 0 Then
+            GetNonUniqueTag_String = defaultReturn
+            Exit Function
+        End If
+        If searchEndLocation = 0 Then searchEndLocation = LONG_MAX
+    Else
+        searchStartLocation = 1
+        searchEndLocation = LONG_MAX
+    End If
+    
+    Dim tmpString As String, foundLocation As Long
+    tmpString = GetTextBetweenTags(tagName, searchStartLocation, foundLocation)
+    
+    If (Len(tmpString) <> 0) And (foundLocation < searchEndLocation) Then
+        GetNonUniqueTag_String = Trim$(tmpString)
+    Else
+        GetNonUniqueTag_String = defaultReturn
     End If
     
 End Function
@@ -900,7 +938,7 @@ End Function
 ' occurence of the specified tag, starting at the specified search position (1 by default).  If the tag is not found, a blank string will
 ' be returned.
 ' Optionally, a Long-type variable can be supplied as whereTagFound if the calling function wants to know where the tag was located.
-Private Function getTextBetweenTags(ByRef tagName As String, Optional ByVal searchLocation As Long = 1, Optional ByRef whereTagFound As Long = -1) As String
+Private Function GetTextBetweenTags(ByRef tagName As String, Optional ByVal searchLocation As Long = 1, Optional ByRef whereTagFound As Long = -1) As String
 
     Dim tagStart As Long, tagEnd As Long
     tagStart = InStr(searchLocation, m_xmlContents, "<" & tagName & ">", m_TextCompareMode)
@@ -924,14 +962,14 @@ Private Function getTextBetweenTags(ByRef tagName As String, Optional ByVal sear
             'If the user passed a long, they want to know where this tag was found - return the location just after the
             ' location where the closing tag was located.
             If whereTagFound <> -1 Then whereTagFound = tagEnd + Len(tagName) + 2
-            getTextBetweenTags = Mid$(m_xmlContents, tagStart, tagEnd - tagStart)
+            GetTextBetweenTags = Mid$(m_xmlContents, tagStart, tagEnd - tagStart)
             
         Else
-            getTextBetweenTags = "ERROR: requested tag wasn't properly closed!"
+            GetTextBetweenTags = "ERROR: requested tag wasn't properly closed!"
         End If
         
     Else
-        getTextBetweenTags = ""
+        GetTextBetweenTags = ""
     End If
 
 End Function

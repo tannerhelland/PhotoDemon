@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.75</langversion>
+<langversion>6.6.76</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -854,7 +854,17 @@ Anda boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk m
 <translation></translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 66 phrases. 20 were duplicates of existing phrases, so only 46 new phrases were written to file. -->
+<phrase>
+<original>Are you sure you want to cancel %1?</original>
+<translation>Apakah Anda Yakin Untuk Membatalkan %1?</translation>
+</phrase>
+
+<phrase>
+<original>Cancel image processing</original>
+<translation>Batal Memproses Gambar</translation>
+</phrase>
+
+<!-- VBP_MiscInterface.bas contains 68 phrases. 20 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -1362,22 +1372,6 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <!-- VBP_MiscMath.bas contains 0 phrases. -->
 
 <!-- END text for VBP_MiscMath.bas-->
-
-<!-- BEGIN text for VBP_Misc_Uncategorized.bas -->
-
-<phrase>
-<original>Are you sure you want to cancel %1?</original>
-<translation>Apakah Anda Yakin Untuk Membatalkan %1?</translation>
-</phrase>
-
-<phrase>
-<original>Cancel image processing</original>
-<translation>Batal Memproses Gambar</translation>
-</phrase>
-
-<!-- VBP_Misc_Uncategorized.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
-
-<!-- END text for VBP_Misc_Uncategorized.bas-->
 
 <!-- BEGIN text for VBP_Win7_Specific_Features.bas -->
 
@@ -2595,6 +2589,12 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for pdDisplays.cls-->
 
+<!-- BEGIN text for pdEditBoxW.cls -->
+
+<!-- pdEditBoxW.cls contains 0 phrases. -->
+
+<!-- END text for pdEditBoxW.cls-->
+
 <!-- BEGIN text for pdFFT.cls -->
 
 <!-- pdFFT.cls contains 0 phrases. -->
@@ -3085,6 +3085,12 @@ Please masukkan nilai berangka.</translation>
 <!-- pdThemeColors.cls contains 0 phrases. -->
 
 <!-- END text for pdThemeColors.cls-->
+
+<!-- BEGIN text for pdTimer.cls -->
+
+<!-- pdTimer.cls contains 0 phrases. -->
+
+<!-- END text for pdTimer.cls-->
 
 <!-- BEGIN text for pdToolPreset.cls -->
 
@@ -14670,18 +14676,6 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for pdEditBoxW.cls -->
-
-<!-- pdEditBoxW.cls contains 0 phrases. -->
-
-<!-- END text for pdEditBoxW.cls-->
-
-<!-- BEGIN text for pdTimer.cls -->
-
-<!-- pdTimer.cls contains 0 phrases. -->
-
-<!-- END text for pdTimer.cls-->
 
 <!-- Automatic text extraction complete. -->
 

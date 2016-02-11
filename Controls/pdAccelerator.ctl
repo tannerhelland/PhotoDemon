@@ -120,6 +120,10 @@ Private m_AcceleratorIndex As Long, m_TimerAtAcceleratorPress As Double
 'Dynamic hooking requires great care, particularly within the IDE.  PD makes all attempts to do it safely.
 Private m_Subclass As cSelfSubHookCallback
 
+'This control may be problematic on systems with system-wide custom key handlers (like some Intel systems, argh).
+' As part of the debug process, we generate extra text on first activation - text that can be ignored on subsequent runs.
+Private m_SubsequentInitialization As Boolean
+
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_UserMemId = -514
@@ -241,11 +245,14 @@ Public Function ActivateHook() As Boolean
             m_HookingActive = m_Subclass.shk_SetHook(WH_KEYBOARD, False, MSG_BEFORE, , 1, Me)
             
             #If DEBUGMODE = 1 Then
-                If m_HookingActive Then
-                    pdDebug.LogAction "pdAccelerator.ActivateHook successful.  Hotkeys enabled for this session."
-                Else
-                    pdDebug.LogAction "WARNING!  pdAccelerator.ActivateHook failed.   Hotkeys disabled for this session."
+                If Not m_SubsequentInitialization Then
+                    If m_HookingActive Then
+                        pdDebug.LogAction "pdAccelerator.ActivateHook successful.  Hotkeys enabled for this session."
+                    Else
+                        pdDebug.LogAction "WARNING!  pdAccelerator.ActivateHook failed.   Hotkeys disabled for this session."
+                    End If
                 End If
+                m_SubsequentInitialization = True
             #End If
             
             ActivateHook = m_HookingActive

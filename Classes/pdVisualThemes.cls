@@ -432,7 +432,7 @@ Public Function LookUpColor(ByVal objectName As String, ByRef colorName As Strin
         
         'Inside the current object's color definition block, retrieve the specified color
         Dim colorDescription As String, finalColor As String
-        colorDescription = m_XML.getUniqueTag_String(colorName, vbNullString, , objectName)
+        colorDescription = m_XML.GetNonUniqueTag_String(colorName, objectName)
         
         'If we retrieved any valid string, attempt to resolve it to an actual color value.  (At this point, the color
         ' may just be a variable instead of an actual hex value.)
@@ -445,7 +445,7 @@ Public Function LookUpColor(ByVal objectName As String, ByRef colorName As Strin
             If StrComp(objectName, DEFAULT_NAMESPACE, vbBinaryCompare) <> 0 Then
                 objectName = DEFAULT_NAMESPACE
                 If m_XML.doesTagExist(objectName) Then
-                    colorDescription = m_XML.getUniqueTag_String(colorName, vbNullString, , objectName)
+                    colorDescription = m_XML.GetNonUniqueTag_String(colorName, objectName)
                     If Len(colorDescription) <> 0 Then finalColor = ResolveColor(colorDescription)
                 End If
             End If

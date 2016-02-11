@@ -227,7 +227,6 @@ Private Const WM_KILLFOCUS As Long = &H8
 Private Const WM_SETTEXT As Long = &HC
 Private Const WM_COMMAND As Long = &H111
 Private Const WM_NEXTDLGCTL As Long = &H28
-Private Const WM_MOUSEACTIVATE As Long = &H21
 Private Const WM_CTLCOLOREDIT As Long = &H133
 Private Const WM_CTLCOLORSTATIC As Long = &H138
 
@@ -325,6 +324,9 @@ Private m_BackColor As Long, m_TextColor As Long
 Private WithEvents m_HookReleaseTimer As pdTimer
 Attribute m_HookReleaseTimer.VB_VarHelpID = -1
 
+'On the first MOUSE_UP event after the control receives focus, we select all text if the user did not make a manual text selection.
+Private m_JustGotFocus As Boolean
+
 Public Property Get BackColor() As Long
     BackColor = m_BackColor
 End Property
@@ -343,7 +345,10 @@ End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
     m_Enabled = newValue
-    If m_EditBoxHwnd <> 0 Then EnableWindow m_EditBoxHwnd, IIf(m_Enabled, 1, 0)
+    If m_EditBoxHwnd <> 0 Then
+        EnableWindow m_EditBoxHwnd, IIf(m_Enabled, 1, 0)
+        CreateEditBoxGDIObjects True
+    End If
 End Property
 
 'Font properties; only a subset are used, as PD handles most font settings automatically
@@ -388,18 +393,27 @@ Public Sub SelectAll()
     If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, EM_SETSEL, ByVal 0&, ByVal -1&
 End Sub
 
+'SelLength is currently treated as read-only
+Public Property Get SelLength() As Long
+    If m_EditBoxHwnd <> 0 Then
+        Dim startPos As Long, endPos As Long, retVal As Long
+        retVal = SendMessage(m_EditBoxHwnd, EM_GETSEL, VarPtr(startPos), endPos)
+        SelLength = Abs(startPos - endPos)
+    End If
+End Property
+
 'SelStart is used by some PD functions to control caret positioning after automatic text updates
 ' (as used in the spinner contol, for example)
 Public Property Get SelStart() As Long
     If m_EditBoxHwnd <> 0 Then
         Dim startPos As Long, endPos As Long, retVal As Long
-        retVal = SendMessage(m_EditBoxHwnd, EM_GETSEL, startPos, endPos)
+        retVal = SendMessage(m_EditBoxHwnd, EM_GETSEL, VarPtr(startPos), endPos)
         SelStart = startPos
     End If
 End Property
 
 Public Property Let SelStart(ByVal newPosition As Long)
-    If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, EM_SETSEL, newPosition, newPosition
+    If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, EM_SETSEL, newPosition, ByVal newPosition
 End Property
 
 'For performance reasons, the text is not always stored locally.  It is retrieved, as needed, from the common control instance.
@@ -505,9 +519,9 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
         
         If m_Multiline Then
             flagsWinStyle = flagsWinStyle Or WS_VSCROLL
-            flagsEditControl = flagsEditControl Or ES_MULTILINE Or ES_WANTRETURN Or ES_AUTOVSCROLL 'Or ES_NOHIDESEL
+            flagsEditControl = flagsEditControl Or ES_MULTILINE Or ES_WANTRETURN Or ES_AUTOVSCROLL
         Else
-            flagsEditControl = flagsEditControl Or ES_AUTOHSCROLL 'Or ES_NOHIDESEL
+            flagsEditControl = flagsEditControl Or ES_AUTOHSCROLL
         End If
         
         'Multiline text boxes can have any height.  Single-line text boxes should not; we prefer to force them to their
@@ -528,7 +542,7 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
                 
                 'Subclass the edit box
                 cSubclass.ssc_Subclass m_EditBoxHwnd, 0, 1, Me, True, True, True
-                cSubclass.ssc_AddMsg m_EditBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_CHAR, WM_UNICHAR, WM_MOUSEACTIVATE
+                cSubclass.ssc_AddMsg m_EditBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_CHAR, WM_UNICHAR
                 
                 'Subclass the parent window as well.  This is necessary for handling some update messages from the edit box.
                 If Not m_ParentHasBeenSubclassed Then
@@ -539,7 +553,7 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
                 End If
                 
                 'Activate mouse events
-                m_MouseEvents.addInputTracker m_EditBoxHwnd, True, , , True, , True
+                m_MouseEvents.addInputTracker m_EditBoxHwnd, True, True, , True, , True
                 
             End If
         End If
@@ -584,7 +598,7 @@ End Function
 Public Function GetWidth() As Long
     Dim tmpRect As winRect
     GetWindowRect m_EditBoxHwnd, tmpRect
-    GetWidth = tmpRect.x2 - tmpRect.x1
+    GetWidth = (tmpRect.x2 - tmpRect.x1)
 End Function
 
 'IMPORTANT NOTE: if the edit box has not yet been created, this function will return the control's *suggested* height, by default.
@@ -592,7 +606,7 @@ Public Function GetHeight() As Long
     If m_EditBoxHwnd <> 0 Then
         Dim tmpRect As winRect
         GetWindowRect m_EditBoxHwnd, tmpRect
-        GetHeight = tmpRect.y2 - tmpRect.y1
+        GetHeight = (tmpRect.y2 - tmpRect.y1)
     Else
         GetHeight = Me.SuggestedHeight
     End If
@@ -609,7 +623,6 @@ Public Sub SetFocusToEditBox()
     If m_EditBoxHwnd <> 0 Then
         SetForegroundWindow m_EditBoxHwnd
         SetFocus m_EditBoxHwnd
-        If Not m_Multiline Then Me.SelectAll
     End If
 End Sub
 
@@ -619,18 +632,19 @@ Public Function SuggestedHeight() As Long
     SuggestedHeight = Font_Management.GetDefaultStringHeight(m_FontSize)
 End Function
 
-'Create the brush and font used to render the edit box background and text
-Private Sub CreateEditBoxGDIObjects()
+'Create the brush and font used to render the edit box background and text.  Normally, we only sync these values with the API window
+' if absolutely necessary, but if you want to forcibly set them (at some performance penalty), set forceSync to TRUE.
+Private Sub CreateEditBoxGDIObjects(Optional ByVal forceSync As Boolean = False)
 
-    Dim repaintRequired As Boolean
+    Dim RepaintRequired As Boolean
     
-    If m_EditBoxBrush <> UserControl_Support.GetSharedGDIBrush(Me.BackColor) Then
+    If (m_EditBoxBrush <> UserControl_Support.GetSharedGDIBrush(Me.BackColor)) Or forceSync Then
         If m_EditBoxBrush <> 0 Then UserControl_Support.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
         m_EditBoxBrush = UserControl_Support.GetSharedGDIBrush(Me.BackColor)
-        repaintRequired = True
+        RepaintRequired = True
     End If
     
-    If (m_EditBoxFont <> UserControl_Support.GetSharedGDIFont(m_FontSize)) Or repaintRequired Then
+    If (m_EditBoxFont <> UserControl_Support.GetSharedGDIFont(m_FontSize)) Or RepaintRequired Or forceSync Then
         If m_EditBoxFont <> 0 Then UserControl_Support.ReleaseSharedGDIFontByHandle m_EditBoxFont
         m_EditBoxFont = UserControl_Support.GetSharedGDIFont(m_FontSize)
         If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(m_Visible, 1, 0)
@@ -660,6 +674,12 @@ End Sub
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     RaiseEvent MouseLeave(Button, Shift, x, y)
     m_MouseEvents.setSystemCursor IDC_DEFAULT
+End Sub
+
+'On first click, we select all text (but only if the user hasn't manually selected text with their initial mouse action)
+Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+    If m_JustGotFocus And Me.SelLength = 0 Then Me.SelectAll
+    m_JustGotFocus = False
 End Sub
 
 Private Sub m_MouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
@@ -1239,13 +1259,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     Debug.Print "Excessively large Unicode buffer value returned: " & unicodeResult
                 
             End Select
-        
-        'On mouse activation, the previous VB window/control that had focus will not be redrawn to reflect its lost focus state.
-        ' (Presumably, this is because VB handles focus internally, rather than using standard window messages.)  To avoid the
-        ' appearance of two controls simultaneously having focus, we re-set focus to the underlying user control, which forces
-        ' VB to redraw the lost focus state of whatever control previously had focus.
-        'Case WM_MOUSEACTIVATE
-        '   If (Not m_HasFocus) And (m_ParentHWnd <> 0) Then SetFocus m_ParentHWnd
             
         'When the control receives focus, initialize a keyboard hook.  This prevents accelerators from working, but it is the
         ' only way to bypass VB's internal message translator, which will forcibly convert certain Unicode chars to ANSI.
@@ -1260,6 +1273,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 InstallKeyboardHook
                 RaiseEvent GotFocusAPI
             End If
+            
+            'This value is important; on MOUSE_UP, we test it, and if the control just received focus, we select all text.
+            m_JustGotFocus = True
             
         Case WM_KILLFOCUS
             

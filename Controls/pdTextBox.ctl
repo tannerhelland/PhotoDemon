@@ -272,9 +272,6 @@ End Sub
 ' match the UC.  Use this two functions to update the appropriate size; if "editBoxGetsMoved" is TRUE, we'll forcibly set
 ' it to match our desired size.
 Private Sub SynchronizeSizes()
-
-    'Only the edit box gets moved, never the UC.  FIX THIS!
-    'Optional ByVal editBoxGetsMoved As Boolean = False
     
     If (Not m_EditBox Is Nothing) Then
         
@@ -299,7 +296,7 @@ Private Sub SynchronizeSizes()
         'Apply the move conditionally
         If needToMove Then
             m_InternalResizeState = True
-            m_EditBox.Move tmpRect.x1, tmpRect.y1, tmpRect.x2, tmpRect.y2
+            m_EditBox.Move tmpRect.x1, tmpRect.y1, tmpRect.x2 - tmpRect.x1, tmpRect.y2 - tmpRect.y1
             m_InternalResizeState = False
         End If
         

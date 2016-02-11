@@ -24,17 +24,20 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdSpinner pdSpinner1 
+   Begin PhotoDemon.pdSpinner pdSpinnerTest 
       Height          =   375
       Left            =   7680
       TabIndex        =   14
-      Top             =   3120
-      Width           =   3495
+      Top             =   3960
+      Width           =   2775
       _ExtentX        =   6165
       _ExtentY        =   661
+      SigDigits       =   2
+      Value           =   5
    End
    Begin PhotoDemon.pdTextBox pdTextTest 
       Height          =   255
+      Index           =   0
       Left            =   7680
       TabIndex        =   13
       Top             =   2760
@@ -231,6 +234,18 @@ Begin VB.Form FormThemeEditor
       Max             =   1000
       Value           =   500
       OrientationHorizontal=   -1  'True
+   End
+   Begin PhotoDemon.pdTextBox pdTextTest 
+      Height          =   735
+      Index           =   1
+      Left            =   7680
+      TabIndex        =   15
+      Top             =   3120
+      Width           =   2775
+      _ExtentX        =   4895
+      _ExtentY        =   1296
+      Multiline       =   -1  'True
+      Text            =   "Sample text goes here"
    End
 End
 Attribute VB_Name = "FormThemeEditor"

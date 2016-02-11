@@ -60,9 +60,9 @@ Begin VB.Form layerpanel_Layers
          TabIndex        =   4
          Top             =   0
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   900
-         AutoToggle      =   -1  'True
+         _extentx        =   953
+         _extenty        =   900
+         autotoggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
@@ -71,9 +71,9 @@ Begin VB.Form layerpanel_Layers
          TabIndex        =   5
          Top             =   0
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   900
-         AutoToggle      =   -1  'True
+         _extentx        =   953
+         _extenty        =   900
+         autotoggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
@@ -82,9 +82,9 @@ Begin VB.Form layerpanel_Layers
          TabIndex        =   6
          Top             =   0
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   900
-         AutoToggle      =   -1  'True
+         _extentx        =   953
+         _extenty        =   900
+         autotoggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
@@ -93,9 +93,9 @@ Begin VB.Form layerpanel_Layers
          TabIndex        =   7
          Top             =   0
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   900
-         AutoToggle      =   -1  'True
+         _extentx        =   953
+         _extenty        =   900
+         autotoggle      =   -1  'True
       End
    End
    Begin VB.VScrollBar vsLayer 
@@ -113,8 +113,8 @@ Begin VB.Form layerpanel_Layers
       TabIndex        =   0
       Top             =   480
       Width           =   2775
-      _ExtentX        =   4895
-      _ExtentY        =   635
+      _extentx        =   4895
+      _extenty        =   635
    End
    Begin PhotoDemon.pdTextBox txtLayerName 
       Height          =   315
@@ -123,8 +123,8 @@ Begin VB.Form layerpanel_Layers
       Top             =   6240
       Visible         =   0   'False
       Width           =   3255
-      _ExtentX        =   5741
-      _ExtentY        =   556
+      _extentx        =   5741
+      _extenty        =   556
    End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
@@ -132,10 +132,10 @@ Begin VB.Form layerpanel_Layers
       Left            =   0
       Top             =   120
       Width           =   675
-      _ExtentX        =   1191
-      _ExtentY        =   423
-      Caption         =   "opacity:"
-      Layout          =   2
+      _extentx        =   1191
+      _extenty        =   423
+      caption         =   "opacity:"
+      layout          =   2
    End
    Begin PhotoDemon.pdSlider sltLayerOpacity 
       CausesValidation=   0   'False
@@ -144,11 +144,11 @@ Begin VB.Form layerpanel_Layers
       TabIndex        =   9
       Top             =   30
       Width           =   2760
-      _ExtentX        =   4868
-      _ExtentY        =   53
-      Max             =   100
-      NotchPosition   =   2
-      NotchValueCustom=   100
+      _extentx        =   4868
+      _extenty        =   53
+      max             =   100
+      notchposition   =   2
+      notchvaluecustom=   100
    End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
@@ -156,10 +156,10 @@ Begin VB.Form layerpanel_Layers
       Left            =   0
       Top             =   540
       Width           =   540
-      _ExtentX        =   953
-      _ExtentY        =   423
-      Caption         =   "blend:"
-      Layout          =   2
+      _extentx        =   953
+      _extenty        =   423
+      caption         =   "blend:"
+      layout          =   2
    End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
@@ -167,10 +167,10 @@ Begin VB.Form layerpanel_Layers
       Left            =   0
       Top             =   960
       Width           =   540
-      _ExtentX        =   953
-      _ExtentY        =   423
-      Caption         =   "alpha:"
-      Layout          =   2
+      _extentx        =   953
+      _extenty        =   423
+      caption         =   "alpha:"
+      layout          =   2
    End
    Begin PhotoDemon.pdComboBox cboAlphaMode 
       Height          =   360
@@ -178,8 +178,8 @@ Begin VB.Form layerpanel_Layers
       TabIndex        =   10
       Top             =   900
       Width           =   2775
-      _ExtentX        =   4895
-      _ExtentY        =   635
+      _extentx        =   4895
+      _extenty        =   635
    End
 End
 Attribute VB_Name = "layerpanel_Layers"
@@ -308,7 +308,7 @@ Private m_PreviousTooltip As String
 
 'External functions can force a full redraw by calling this sub.  (This is necessary whenever layers are added, deleted,
 ' re-ordered, etc.)
-Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
+Public Sub ForceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
     
     If refreshThumbnailCache Then cacheLayerThumbnails
     
@@ -334,16 +334,16 @@ Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
     m_DisableRedraws = False
     
     'resizeLayerUI already calls all the proper redraw functions for us, so simply link it here
-    resizeLayerUI
+    ResizeLayerUI
     
     'Determine which buttons need to be activated.
-    checkButtonEnablement
+    CheckButtonEnablement
     
 End Sub
 
 'Whenever a layer is activated, we must re-determine which buttons the user has access to.  Move up/down are disabled for
 ' entries at either end, and the last layer of an image cannot be deleted.
-Private Sub checkButtonEnablement()
+Private Sub CheckButtonEnablement()
 
     'Make sure at least one image has been loaded
     If (Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0) Then
@@ -376,7 +376,7 @@ Private Sub checkButtonEnablement()
     Else
     
         Dim i As Long
-        For i = cmdLayerAction.lBound To cmdLayerAction.ubound
+        For i = cmdLayerAction.lBound To cmdLayerAction.UBound
             cmdLayerAction(i).Enabled = False
         Next i
         
@@ -577,7 +577,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
     If m_InOLEDragDropMode Then Exit Sub
     
     Dim clickedLayer As Long
-    clickedLayer = getLayerAtPosition(x, y)
+    clickedLayer = GetLayerAtPosition(x, y)
     
     If clickedLayer >= 0 Then
         
@@ -591,19 +591,19 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
             'Check the clicked position against a series of rects, each one representing a unique interaction.
             
             'Has the user clicked a visibility rectangle?
-            If isPointInRect(x, y, m_VisibilityRect) Then
+            If IsPointInRect(x, y, m_VisibilityRect) Then
                 
                 Layer_Handler.setLayerVisibilityByIndex clickedLayer, Not pdImages(g_CurrentImage).getLayerByIndex(clickedLayer).getLayerVisibility, True
                 actionInitiated = True
             
             'Duplicate rectangle?
-            ElseIf isPointInRect(x, y, m_DuplicateRect) Then
+            ElseIf IsPointInRect(x, y, m_DuplicateRect) Then
             
                 Process "Duplicate Layer", False, Str(clickedLayer), UNDO_IMAGE_VECTORSAFE
                 actionInitiated = True
             
             'Merge down rectangle?
-            ElseIf isPointInRect(x, y, m_MergeDownRect) Then
+            ElseIf IsPointInRect(x, y, m_MergeDownRect) Then
             
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, True) >= 0 Then
                     Process "Merge layer down", False, Str(clickedLayer), UNDO_IMAGE
@@ -611,7 +611,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
                 End If
             
             'Merge up rectangle?
-            ElseIf isPointInRect(x, y, m_MergeUpRect) Then
+            ElseIf IsPointInRect(x, y, m_MergeUpRect) Then
             
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, False) >= 0 Then
                     Process "Merge layer up", False, Str(clickedLayer), UNDO_IMAGE
@@ -641,7 +641,7 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
     'Ignore user interaction while in drag/drop mode
     If m_InOLEDragDropMode Then Exit Sub
     
-    If isPointInRect(x, y, m_NameRect) And (Button = pdLeftButton) Then
+    If IsPointInRect(x, y, m_NameRect) And (Button = pdLeftButton) Then
     
         'Move the text layer box into position
         txtLayerName.Move picLayers.Left + m_NameRect.Left, picLayers.Top + m_NameRect.Top, m_NameRect.Right - m_NameRect.Left, m_NameRect.Bottom - m_NameRect.Top
@@ -653,12 +653,12 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
         m_LayerNameEditMode = True
         
         'Fill the text box with the current layer name, and select it
-        txtLayerName.Text = pdImages(g_CurrentImage).getLayerByIndex(getLayerAtPosition(x, y)).getLayerName
+        txtLayerName.Text = pdImages(g_CurrentImage).getLayerByIndex(GetLayerAtPosition(x, y)).getLayerName
         
         'Set an Undo/Redo marker for the existing layer name
-        Processor.flagInitialNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).getLayerByIndex(getLayerAtPosition(x, y)).getLayerName, pdImages(g_CurrentImage).getLayerByIndex(getLayerAtPosition(x, y)).getLayerID
+        Processor.flagInitialNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).getLayerByIndex(GetLayerAtPosition(x, y)).getLayerName, pdImages(g_CurrentImage).getLayerByIndex(GetLayerAtPosition(x, y)).getLayerID
         
-        txtLayerName.selectAll
+        txtLayerName.SelectAll
         txtLayerName.SetFocus
         
     Else
@@ -678,7 +678,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     
     'Retrieve the layer under this position
     Dim clickedLayer As Long
-    clickedLayer = getLayerAtPosition(x, y)
+    clickedLayer = GetLayerAtPosition(x, y)
     
     'Don't proceed unless the user has the mouse over a valid layer
     If (clickedLayer >= 0) And (Not pdImages(g_CurrentImage) Is Nothing) Then
@@ -709,10 +709,10 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
     m_MouseOverLayerBox = False
 
     'Note that no layer is currently hovered
-    updateHoveredLayer -1
+    UpdateHoveredLayer -1
     
     'Redraw the layer box, which no longer has anything hovered
-    redrawLayerBox
+    RedrawLayerBox
 
 End Sub
 
@@ -722,7 +722,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     If m_InOLEDragDropMode Then Exit Sub
     
     'Only display the hand cursor if the cursor is over a layer
-    If getLayerAtPosition(x, y) <> -1 Then
+    If GetLayerAtPosition(x, y) <> -1 Then
         cMouseEvents.setSystemCursor IDC_HAND
     Else
         cMouseEvents.setSystemCursor IDC_ARROW
@@ -741,7 +741,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         
         'Retrieve the layer under this position
         Dim layerIndexUnderMouse As Long
-        layerIndexUnderMouse = getLayerAtPosition(x, y, True)
+        layerIndexUnderMouse = GetLayerAtPosition(x, y, True)
                 
         'Ask the parent pdImage to move the layer for us
         If pdImages(g_CurrentImage).moveLayerToArbitraryIndex(m_LayerIndexToRearrange, layerIndexUnderMouse) Then
@@ -753,7 +753,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             setActiveLayerByIndex layerIndexUnderMouse, False
             
             'Redraw the layer box, and note that thumbnails need to be re-cached
-            Me.forceRedraw True
+            Me.ForceRedraw True
             
             'Redraw the viewport
             Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -763,13 +763,13 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     End If
     
     'If a layer other than the active one is being hovered, highlight that box
-    updateHoveredLayer getLayerAtPosition(x, y)
+    UpdateHoveredLayer GetLayerAtPosition(x, y)
     
     'Update the tooltip contingent on the mouse position.
     Dim toolString As String
     
     'Mouse is over a visibility toggle
-    If isPointInRect(x, y, m_VisibilityRect) Then
+    If IsPointInRect(x, y, m_VisibilityRect) Then
         
         'Fast mouse movements can cause this event to trigger, even when no layer is hovered.
         ' As such, we need to make sure we won't be attempting to access a bad layer index.
@@ -782,14 +782,14 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         End If
         
     'Mouse is over Duplicate
-    ElseIf isPointInRect(x, y, m_DuplicateRect) Then
+    ElseIf IsPointInRect(x, y, m_DuplicateRect) Then
     
         If curLayerHover >= 0 Then
             toolString = g_Language.TranslateMessage("Click to duplicate this layer.")
         End If
     
     'Mouse is over Merge Down
-    ElseIf isPointInRect(x, y, m_MergeDownRect) Then
+    ElseIf IsPointInRect(x, y, m_MergeDownRect) Then
     
         If curLayerHover >= 0 Then
             If Layer_Handler.isLayerAllowedToMergeAdjacent(curLayerHover, True) >= 0 Then
@@ -800,7 +800,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         End If
             
     'Mouse is over Merge Up
-    ElseIf isPointInRect(x, y, m_MergeUpRect) Then
+    ElseIf IsPointInRect(x, y, m_MergeUpRect) Then
     
         If curLayerHover >= 0 Then
             If Layer_Handler.isLayerAllowedToMergeAdjacent(curLayerHover, False) >= 0 Then
@@ -815,7 +815,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     Else
         
         'The tooltip is irrelevant if the current layer is already active
-        If pdImages(g_CurrentImage).getActiveLayerIndex <> getLayerAtPosition(x, y) Then
+        If pdImages(g_CurrentImage).getActiveLayerIndex <> GetLayerAtPosition(x, y) Then
             
             If curLayerHover >= 0 Then
                 toolString = g_Language.TranslateMessage("Click to make this the active layer.")
@@ -843,7 +843,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
     
     'Retrieve the layer under this position
     Dim layerIndexUnderMouse As Long
-    layerIndexUnderMouse = getLayerAtPosition(x, y, True)
+    layerIndexUnderMouse = GetLayerAtPosition(x, y, True)
     
     'Don't proceed further unless an image has been loaded, and the user is not just clicking the layer box
     If (Not pdImages(g_CurrentImage) Is Nothing) And (Not ClickEventAlsoFiring) Then
@@ -862,7 +862,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                 setActiveLayerByIndex layerIndexUnderMouse, False
                 
                 'Redraw the layer box, and note that thumbnails need to be re-cached
-                Me.forceRedraw True
+                Me.ForceRedraw True
                 
                 'Redraw the viewport
                 Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -896,7 +896,7 @@ Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstan
             End If
             
             'If a layer other than the active one is being hovered, highlight that box
-            updateHoveredLayer getLayerAtPosition(x, y)
+            UpdateHoveredLayer GetLayerAtPosition(x, y)
         
         ElseIf scrollAmount > 0 Then
             
@@ -907,7 +907,7 @@ Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstan
             End If
             
             'If a layer other than the active one is being hovered, highlight that box
-            updateHoveredLayer getLayerAtPosition(x, y)
+            UpdateHoveredLayer GetLayerAtPosition(x, y)
             
         End If
         
@@ -951,14 +951,14 @@ Private Sub Form_Load()
     cKeyEventsForm.CreateKeyboardTracker "Layers Toolbar (form)", Me.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_SPACE, VK_TAB, VK_DELETE, VK_INSERT
     
     'No layer has been hovered yet
-    updateHoveredLayer -1
+    UpdateHoveredLayer -1
     
     'Rearranging mode is not active
     m_LayerRearrangingMode = False
     
     'Prepare a DIB for rendering the Layer box
     Set bufferDIB = New pdDIB
-    resizeLayerUI
+    ResizeLayerUI
     
     'Initialize a custom font object for printing layer names
     layerNameColor = RGB(64, 64, 64)
@@ -1032,7 +1032,7 @@ End Sub
 
 'For performance reasons, PD does all layer box rendering to an internal DIB, which is only flipped to the screen as necessary.
 ' Whenever the toolbox is resized, we must recreate this DIB.
-Private Sub resizeLayerUI()
+Private Sub ResizeLayerUI()
 
     'Resize the DIB to be the same size as the Layer UI box
     bufferDIB.createBlank picLayers.ScaleWidth, picLayers.ScaleHeight
@@ -1046,7 +1046,7 @@ Private Sub resizeLayerUI()
     thumbWidth = thumbHeight
     
     'Redraw the toolbar
-    redrawLayerBox
+    RedrawLayerBox
     
 End Sub
 
@@ -1124,7 +1124,7 @@ Private Sub updateLayerScrollbarVisibility()
 End Sub
 
 'Draw the layer box (from scratch)
-Private Sub redrawLayerBox()
+Private Sub RedrawLayerBox()
 
     'Determine an offset based on the current scroll bar value
     Dim scrollOffset As Long
@@ -1142,7 +1142,7 @@ Private Sub redrawLayerBox()
             'Loop through the current layer list, drawing layers as we go
             Dim i As Long
             For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
-                renderLayerBlock (pdImages(g_CurrentImage).getNumOfLayers - 1) - i, 0, FixDPI(i * BLOCKHEIGHT) - scrollOffset - FixDPI(2)
+                RenderLayerBlock (pdImages(g_CurrentImage).getNumOfLayers - 1) - i, 0, FixDPI(i * BLOCKHEIGHT) - scrollOffset - FixDPI(2)
             Next i
             
         End If
@@ -1157,7 +1157,7 @@ Private Sub redrawLayerBox()
 End Sub
 
 'Render an individual "block" for a given layer (including name, thumbnail, and a few button toggles)
-Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
+Private Sub RenderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
 
     'Only draw the current block if it will be visible
     If ((offsetY + FixDPI(BLOCKHEIGHT)) > 0) And (offsetY < m_BufferHeight) Then
@@ -1276,12 +1276,12 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
                 End If
                 
                 'Store the visibility toggle's rect (so that mouse events can more easily calculate hit events)
-                fillRectWithDIBCoords m_VisibilityRect, img_EyeOpen, xObjOffset, yObjOffset
+                FillRectWithDIBCoords m_VisibilityRect, img_EyeOpen, xObjOffset, yObjOffset
                 
                 'Next, provide a "duplicate layer" shortcut
                 xObjOffset = xObjOffset - img_EyeOpen.getDIBWidth - FixDPI(DIST_BETWEEN_HOVER_BUTTONS)
                 img_Duplicate.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
-                fillRectWithDIBCoords m_DuplicateRect, img_Duplicate, xObjOffset, yObjOffset
+                FillRectWithDIBCoords m_DuplicateRect, img_Duplicate, xObjOffset, yObjOffset
                 
                 'Next, give the user dedicated merge down/up buttons.  These are only available if the layer is visible.
                 If tmpLayerRef.getLayerVisibility Then
@@ -1294,7 +1294,7 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
                     Else
                         img_MergeDownDisabled.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
                     End If
-                    fillRectWithDIBCoords m_MergeDownRect, img_MergeDown, xObjOffset, yObjOffset
+                    FillRectWithDIBCoords m_MergeDownRect, img_MergeDown, xObjOffset, yObjOffset
                     
                     '...then Merge up
                     xObjOffset = xObjOffset - img_MergeDown.getDIBWidth - FixDPI(DIST_BETWEEN_HOVER_BUTTONS)
@@ -1303,7 +1303,7 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
                     Else
                         img_MergeUpDisabled.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
                     End If
-                    fillRectWithDIBCoords m_MergeUpRect, img_MergeUp, xObjOffset, yObjOffset
+                    FillRectWithDIBCoords m_MergeUpRect, img_MergeUp, xObjOffset, yObjOffset
                     
                 End If
                 
@@ -1316,7 +1316,7 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
 End Sub
 
 'Given a destination rect and a UI DIB, fill the rect with the UI DIB's coordinates
-Private Sub fillRectWithDIBCoords(ByRef dstRect As RECT, ByRef srcDIB As pdDIB, ByVal xOffset As Long, ByVal yOffset As Long)
+Private Sub FillRectWithDIBCoords(ByRef dstRect As RECT, ByRef srcDIB As pdDIB, ByVal xOffset As Long, ByVal yOffset As Long)
     With dstRect
         .Left = xOffset
         .Top = yOffset
@@ -1328,10 +1328,10 @@ End Sub
 'Given mouse coordinates over the buffer picture box, return the layer at that location.
 ' The optional parameter "reportNearestLayer" will return the index of the top layer if the mouse is in the invalid area
 ' above the top-most layer, and the bottom layer if in the invalid area beneath the bottom-most layer.
-Private Function getLayerAtPosition(ByVal x As Long, ByVal y As Long, Optional ByVal reportNearestLayer As Boolean = False) As Long
+Private Function GetLayerAtPosition(ByVal x As Long, ByVal y As Long, Optional ByVal reportNearestLayer As Boolean = False) As Long
     
     If pdImages(g_CurrentImage) Is Nothing Then
-        getLayerAtPosition = -1
+        GetLayerAtPosition = -1
         Exit Function
     End If
     
@@ -1349,21 +1349,21 @@ Private Function getLayerAtPosition(ByVal x As Long, ByVal y As Long, Optional B
     If Not pdImages(g_CurrentImage) Is Nothing Then
     
         If (tmpLayerCheck >= 0) And (tmpLayerCheck < pdImages(g_CurrentImage).getNumOfLayers) Then
-            getLayerAtPosition = tmpLayerCheck
+            GetLayerAtPosition = tmpLayerCheck
         Else
         
             'If the user wants us to report the *nearest* valid layer
             If reportNearestLayer Then
             
                 If tmpLayerCheck < 0 Then
-                    getLayerAtPosition = 0
+                    GetLayerAtPosition = 0
                 Else
-                    getLayerAtPosition = pdImages(g_CurrentImage).getNumOfLayers - 1
+                    GetLayerAtPosition = pdImages(g_CurrentImage).getNumOfLayers - 1
                 End If
             
             'The user doesn't want us to report the nearest layer.  Report that the mouse is not over a layer.
             Else
-                getLayerAtPosition = -1
+                GetLayerAtPosition = -1
             End If
             
         End If
@@ -1371,14 +1371,6 @@ Private Function getLayerAtPosition(ByVal x As Long, ByVal y As Long, Optional B
     End If
     
 End Function
-
-Private Sub picLayers_GotFocus()
-    'Debug.Print "Layer box received focus"
-End Sub
-
-Private Sub picLayers_LostFocus()
-    'Debug.Print "Layer box lost focus"
-End Sub
 
 Private Sub picLayers_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
@@ -1457,7 +1449,7 @@ Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As 
         m_LayerNameEditMode = False
         
         'Redraw the layer box with the new name
-        redrawLayerBox
+        RedrawLayerBox
         
         'Hide the text box
         txtLayerName.Visible = False
@@ -1479,15 +1471,15 @@ Private Sub txtLayerName_LostFocus()
 End Sub
 
 Private Sub vsLayer_Change()
-    redrawLayerBox
+    RedrawLayerBox
 End Sub
 
 Private Sub vsLayer_Scroll()
-    redrawLayerBox
+    RedrawLayerBox
 End Sub
 
 'Update the currently hovered layer
-Private Sub updateHoveredLayer(ByVal newLayerUnderMouse As Long)
+Private Sub UpdateHoveredLayer(ByVal newLayerUnderMouse As Long)
 
     'If a layer other than the active one is being hovered, highlight that box
     If curLayerHover <> newLayerUnderMouse Then
@@ -1508,7 +1500,7 @@ Private Sub updateHoveredLayer(ByVal newLayerUnderMouse As Long)
             End If
         End If
         
-        redrawLayerBox
+        RedrawLayerBox
         
     End If
 
@@ -1568,7 +1560,7 @@ Private Sub ReflowInterface()
     Next i
     
     'Redraw the internal layer UI DIB
-    resizeLayerUI
+    ResizeLayerUI
 
 End Sub
 
