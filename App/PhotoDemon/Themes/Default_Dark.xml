@@ -17,6 +17,7 @@
 			<AccentDefault>Accent5</AccentDefault>
 			<AccentDark>Accent3</AccentDark>
 			<AccentUltradark>Accent1</AccentUltradark>
+			<AccentSemilight>Accent6</AccentSemilight>
 			<AccentLight>Accent7</AccentLight>
 			<AccentUltralight>Accent9</AccentUltralight>
 			<BackgroundDefault>#313131</BackgroundDefault>
@@ -199,12 +200,13 @@
 			<PDSliderStandalone>
 				<Background>BackgroundDefault</Background>
 				<TrackBack>GrayLight</TrackBack>
-				<TrackFill>AccentLight</TrackFill>
-				<TrackJumpIndicator>AccentShadow</TrackJumpIndicator>
+				<TrackFill>AccentSemilight</TrackFill>
+				<TrackJumpIndicator>AccentDark</TrackJumpIndicator>
 				<ThumbFill>BackgroundDefault</ThumbFill>
 				<ThumbFill-hover>BackgroundDefault</ThumbFill-hover>
-				<ThumbBorder>AccentLight</ThumbBorder>
-				<ThumbBorder-hover>AccentDefault</ThumbBorder-hover>
+				<ThumbBorder>AccentDefault</ThumbBorder>
+				<ThumbBorder-active>AccentDark</ThumbBorder-active>
+				<ThumbBorder-hover>AccentDark</ThumbBorder-hover>
 				<Notch>GrayLight</Notch>
 			</PDSliderStandalone>
 			
@@ -223,7 +225,6 @@
 				<ButtonBorder-active>AccentDark</ButtonBorder-active>
 				<ButtonBorder-hover>AccentDefault</ButtonBorder-hover>
 				<ButtonFill>BackgroundDefault</ButtonFill>
-				<ButtonFill-disabled>GrayLight</ButtonFill-disabled>
 				<ButtonFill-active>AccentDefault</ButtonFill-active>
 				<ButtonFill-hover>BackgroundDefault</ButtonFill-hover>
 				<ErrorBorder>ErrorRed</ErrorBorder>

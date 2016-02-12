@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.134</langversion>
+<langversion>6.7.135</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -14671,6 +14671,12 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdSliderStandalone.ctl -->
+
+<!-- pdSliderStandalone.ctl contains 0 phrases. -->
+
+<!-- END text for pdSliderStandalone.ctl-->
 
 <!-- Automatic text extraction complete. -->
 
