@@ -155,28 +155,12 @@ Private Const SLIDER_DIAMETER As Long = 16
 
 'Track and slider diameter, at current DPI.  This is set when the control is first loaded.  In a perfect world, we would catch screen
 ' DPI changes and update these values accordingly, but I'm postponing that project until a later date.
-Private m_trackDiameter As Single, m_sliderDiameter As Single
+Private m_TrackDiameter As Single, m_SliderDiameter As Single
 
 'Width/height of the full slider area.  These are set at control intialization, and will only be updated if the control size changes.
 ' As ScaleWidth and ScaleHeight properties can be slow to read, we cache these values manually.
 Private m_SliderAreaWidth As Long, m_SliderAreaHeight As Long
 
-'Background track style.  This can be changed at run-time or design-time, and it will (obviously) affect the way the background
-' track is rendered.  For the custom-drawn method, the owner must supply their own DIB for the background area.  Note that the control
-' will automatically crop the supplied DIB to the rounded-rect shape required by the track, so the owner need only supply a stock
-' rectangular DIB.
-Public Enum SLIDER_TRACK_STYLE
-    DefaultStyle = 0
-    NoFrills = 1
-    GradientTwoPoint = 2
-    GradientThreePoint = 3
-    HueSpectrum360 = 4
-    CustomOwnerDrawn = 5
-End Enum
-
-#If False Then
-    Const DefaultStyle = 0, NoFrills = 1, GradientTwoPoint = 2, GradientThreePoint = 3, HueSpectrum360 = 4, CustomOwnerDrawn = 5
-#End If
 
 Private curSliderStyle As SLIDER_TRACK_STYLE
 
@@ -184,21 +168,6 @@ Private curSliderStyle As SLIDER_TRACK_STYLE
 ' 3-color style only, and note that it *must* be accompanied by an owner-supplied middle position value.
 Private gradColorLeft As Long, gradColorRight As Long, gradColorMiddle As Long
 Private gradMiddleValue As Double
-
-'Notch positioning.  This can be changed at run-time or design-time, and it will (obviously) affect where the "zero-position" notch
-' appears.  When "Automatic" is selected, PD will automatically set the notch to one of two places: 0 (if 0 is a selectable position),
-' or the control's minimum value.  For some controls, no notch may be wanted - in this case, use the "none" style.  Finally, a custom
-' position may be required for some tools, like Gamma, where the default value isn't obvious (1.0 in that case), or the Opacity slider,
-' where the default is 100, not 0.
-Public Enum SLIDER_NOTCH_POSITION
-    AutomaticPosition = 0
-    DoNotDisplayNotch = 1
-    CustomPosition = 2
-End Enum
-
-#If False Then
-    Const AutomaticPosition = 0, DoNotDisplayNotch = 1, CustomPosition = 2
-#End If
 
 'Current notch positioning.  If CustomPosition is set, the corresponding NotchCustomValue will be used.
 Private curNotchPosition As SLIDER_NOTCH_POSITION
@@ -263,7 +232,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     tudPrimary.Enabled = newValue
     
     'Redraw the slider; when disabled, the slider itself is not drawn (only the track behind it is)
-    redrawSlider
+    RedrawSlider
     
     PropertyChanged "Enabled"
     
@@ -310,7 +279,7 @@ Public Property Let GradientColorLeft(ByVal newColor As OLE_COLOR)
     If newColor <> gradColorLeft Then
         gradColorLeft = ConvertSystemColor(newColor)
         redrawInternalGradientDIB
-        redrawSlider
+        RedrawSlider
         PropertyChanged "GradientColorLeft"
     End If
 
@@ -322,7 +291,7 @@ Public Property Let GradientColorMiddle(ByVal newColor As OLE_COLOR)
     If newColor <> gradColorMiddle Then
         gradColorMiddle = ConvertSystemColor(newColor)
         redrawInternalGradientDIB
-        redrawSlider
+        RedrawSlider
         PropertyChanged "GradientColorMiddle"
     End If
 
@@ -334,7 +303,7 @@ Public Property Let GradientColorRight(ByVal newColor As OLE_COLOR)
     If newColor <> gradColorRight Then
         gradColorRight = ConvertSystemColor(newColor)
         redrawInternalGradientDIB
-        redrawSlider
+        RedrawSlider
         PropertyChanged "GradientColorRight"
     End If
 
@@ -350,7 +319,7 @@ Public Property Let GradientMiddleValue(ByVal newValue As Double)
     'Store the new value, then redraw the slider to match
     If newValue <> gradMiddleValue Then
         gradMiddleValue = newValue
-        redrawSlider
+        RedrawSlider
         PropertyChanged "GradientMiddleValue"
         redrawInternalGradientDIB
     End If
@@ -383,7 +352,7 @@ Public Property Let Max(ByVal newValue As Double)
     If controlVal > controlMax Then Value = controlMax
     
     'Redraw the control
-    redrawSlider
+    RedrawSlider
     
     PropertyChanged "Max"
     
@@ -406,7 +375,7 @@ Public Property Let Min(ByVal newValue As Double)
     If controlVal < controlMin Then Value = controlMin
     
     'Redraw the control
-    redrawSlider
+    RedrawSlider
     
     PropertyChanged "Min"
     
@@ -423,7 +392,7 @@ Public Property Let NotchPosition(ByVal newPosition As SLIDER_NOTCH_POSITION)
     curNotchPosition = newPosition
     
     'Redraw the control
-    redrawSlider
+    RedrawSlider
     
     'Raise the property changed event
     PropertyChanged "NotchPosition"
@@ -441,7 +410,7 @@ Public Property Let NotchValueCustom(ByVal newValue As Double)
     customNotchValue = newValue
     
     'Redraw the control
-    redrawSlider
+    RedrawSlider
     
     'Raise the property changed event
     PropertyChanged "NotchValueCustom"
@@ -469,7 +438,7 @@ Public Property Let SliderTrackStyle(ByVal newStyle As SLIDER_TRACK_STYLE)
     curSliderStyle = newStyle
     
     'Redraw the control
-    redrawSlider
+    RedrawSlider
     
     'Raise the property changed event
     PropertyChanged "SliderTrackStyle"
@@ -517,7 +486,7 @@ Public Property Let Value(ByVal newValue As Double)
         End If
                 
         'Redraw the slider to reflect the new value
-        drawSliderKnob
+        DrawSliderKnob
         
         'Mark the value property as being changed, and raise the corresponding event.
         If Me.Enabled Then RaiseEvent Change
@@ -542,12 +511,12 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
 
     'Up and right arrows are used to increment the slider value
     If (vkCode = VK_UP) Or (vkCode = VK_RIGHT) Then
-        Value = Value + getIncrementAmount
+        Value = Value + GetIncrementAmount
     End If
     
     'Left and down arrows decrement it
     If (vkCode = VK_LEFT) Or (vkCode = VK_DOWN) Then
-        Value = Value - getIncrementAmount
+        Value = Value - GetIncrementAmount
     End If
 
 End Sub
@@ -557,7 +526,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     If ((Button And pdLeftButton) <> 0) Then
     
         'Check to see if the mouse is over a) the slider control button, or b) the background track
-        If isMouseOverSlider(x, y) Then
+        If IsMouseOverSlider(x, y) Then
         
             'Track various states to make UI rendering easier
             m_MouseDown = True
@@ -569,7 +538,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             
             'Retrieve the current slider x/y values, and store the mouse position relative to those values
             Dim sliderX As Single, sliderY As Single
-            getSliderCoordinates sliderX, sliderY
+            GetSliderCoordinates sliderX, sliderY
             m_InitX = x - sliderX
             m_InitY = y - sliderY
             
@@ -587,7 +556,7 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
     'Reset all hover indicators
     m_MouseOverSlider = False
     m_MouseOverSliderTrack = False
-    redrawSlider
+    RedrawSlider
     
     'Reset the mouse pointer as well
     cMouseEvents.setSystemCursor IDC_ARROW
@@ -613,11 +582,11 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     'If the LMB is not down, modify the cursor according to its position relative to the slider
     Else
         
-        m_MouseOverSlider = isMouseOverSlider(x, y, False)
+        m_MouseOverSlider = IsMouseOverSlider(x, y, False)
         If m_MouseOverSlider Then
             m_MouseOverSliderTrack = False
         Else
-            m_MouseOverSliderTrack = isMouseOverSlider(x, y, True)
+            m_MouseOverSliderTrack = IsMouseOverSlider(x, y, True)
             m_MouseTrackX = x
         End If
         
@@ -628,7 +597,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         End If
         
         'Redraw the button to match the new hover state, if any
-        redrawSlider
+        RedrawSlider
     
     End If
 
@@ -648,22 +617,22 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
     
 End Sub
 
-Private Function isMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Single, Optional ByVal alsoCheckBackgroundTrack As Boolean = True) As Boolean
+Private Function IsMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Single, Optional ByVal alsoCheckBackgroundTrack As Boolean = True) As Boolean
 
     'Retrieve the current x/y position of the slider's CENTER
     Dim sliderX As Single, sliderY As Single
-    getSliderCoordinates sliderX, sliderY
+    GetSliderCoordinates sliderX, sliderY
     
     'See if the mouse is within distance of the slider's center
     If distanceTwoPoints(sliderX, sliderY, mouseX, mouseY) < FixDPI(SLIDER_DIAMETER) \ 2 Then
-        isMouseOverSlider = True
+        IsMouseOverSlider = True
     Else
         
         'If the mouse is not over the slider itself, check the background track as well
         If IsPointInRectF(mouseX, mouseY, m_SliderTrackRect) And alsoCheckBackgroundTrack Then
-            isMouseOverSlider = True
+            IsMouseOverSlider = True
         Else
-            isMouseOverSlider = False
+            IsMouseOverSlider = False
         End If
     End If
 
@@ -746,8 +715,8 @@ Private Sub UserControl_Initialize()
     End If
     
     'Update the control-level track and slider diameters to reflect current screen DPI
-    m_trackDiameter = FixDPI(TRACK_DIAMETER)
-    m_sliderDiameter = FixDPI(SLIDER_DIAMETER)
+    m_TrackDiameter = FixDPI(TRACK_DIAMETER)
+    m_SliderDiameter = FixDPI(SLIDER_DIAMETER)
     
     'Set slider area width/height
     m_SliderAreaWidth = picScroll.ScaleWidth
@@ -806,7 +775,7 @@ Private Sub UserControl_Paint()
     'Provide some visual feedback in the IDE
     If Not g_IsProgramRunning Then
         BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBufferControl.getDIBDC, 0, 0, vbSrcCopy
-        redrawSlider
+        RedrawSlider
     End If
     
 End Sub
@@ -849,7 +818,7 @@ Private Sub UserControl_Show()
     If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Or (curSliderStyle = HueSpectrum360) Then redrawInternalGradientDIB
     
     UpdateControlLayout
-    redrawSlider
+    RedrawSlider
         
 End Sub
 
@@ -977,7 +946,7 @@ Private Sub UpdateControlLayout()
         If ((curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Or (curSliderStyle = HueSpectrum360)) Then redrawInternalGradientDIB
         
         'Redraw the slider as well
-        redrawSlider
+        RedrawSlider
         
     End If
     
@@ -995,7 +964,7 @@ End Sub
 
 'Render a custom slider to the slider area picture box.  Note that the background gradient, if any, should already have been created
 ' in a separate redrawInternalGradientDIB request.
-Private Sub redrawSlider(Optional ByVal refreshImmediately As Boolean = False)
+Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
 
     'Drawing is done in several stages.  The bulk of the slider is rendered to a persistent slider-only DIB, which contains everything
     ' but the knob.  The knob is rendered in a separate step, as it is the most common update required, and we can shortcut by not
@@ -1031,7 +1000,7 @@ Private Sub redrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     
     'Retrieve the current slider x/y position.  Floating-point values are used so we can support sub-pixel positioning!
     Dim relevantSliderPosX As Single, relevantSliderPosY As Single
-    getSliderCoordinates relevantSliderPosX, relevantSliderPosY
+    GetSliderCoordinates relevantSliderPosX, relevantSliderPosY
     
     'Draw the background track according to the current SliderTrackStyle property.
     If Me.Enabled Then
@@ -1045,13 +1014,13 @@ Private Sub redrawSlider(Optional ByVal refreshImmediately As Boolean = False)
             Case DefaultStyle
             
                 'Start by drawing the default background track
-                GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
+                GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_TrackDiameter + 1, True, LineCapRound
                 
                 'Filling the track to the notch position happens in the drawSliderKnob function.
                 
             'No-frills slider: plain gray background (boooring - use only if absolutely necessary)
             Case NoFrills
-                GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
+                GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_TrackDiameter + 1, True, LineCapRound
             
             Case GradientTwoPoint, GradientThreePoint, HueSpectrum360
             
@@ -1059,23 +1028,23 @@ Private Sub redrawSlider(Optional ByVal refreshImmediately As Boolean = False)
                 If m_GradientDIB Is Nothing Then redrawInternalGradientDIB
                 
                 'Draw a stock trackline onto the target DIB.  This will serve as the border of the gradient track area.
-                GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
+                GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_TrackDiameter + 1, True, LineCapRound
                 
                 'Next, draw the gradient effect DIB to the location where we'd normally draw the track line.  Alpha has already been
                 ' calculated for the gradient DIB, so it will sit precisely inside the trackline drawn above, giving the track a
                 ' sharp 1px border.
-                m_GradientDIB.alphaBlendToDC m_SliderBackgroundDIB.getDIBDC, 255, getTrackMinPos - (m_trackDiameter \ 2), 0
+                m_GradientDIB.alphaBlendToDC m_SliderBackgroundDIB.getDIBDC, 255, getTrackMinPos - (m_TrackDiameter \ 2), 0
                 
             Case CustomOwnerDrawn
         
         End Select
         
         'Before carrying on, draw a slight notch above and below the slider track, using the value specified by the associated property
-        drawNotchToDIB m_SliderBackgroundDIB, trackColor
+        DrawNotchToDIB m_SliderBackgroundDIB, trackColor
         
     'Control is disabled; draw a plain track in the background, but no notch or other frills
     Else
-        GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
+        GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_TrackDiameter + 1, True, LineCapRound
     End If
     
     'Store the calculated position of the slider background.  Mouse hit detection code can make use of this, so we don't have to
@@ -1083,17 +1052,17 @@ Private Sub redrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     With m_SliderTrackRect
         .Left = getTrackMinPos
         .Width = getTrackMaxPos - .Left
-        .Top = (m_SliderAreaHeight / 2) - ((m_trackDiameter + 1) / 2)
-        .Height = m_trackDiameter + 1
+        .Top = (m_SliderAreaHeight / 2) - ((m_TrackDiameter + 1) / 2)
+        .Height = m_TrackDiameter + 1
     End With
         
     'The slider background is now ready for action.  As a final step, pass control to the knob renderer function.
-    drawSliderKnob refreshImmediately
+    DrawSliderKnob refreshImmediately
         
 End Sub
 
 'Composite the knob atop the final slider background, and keep the entire thing inside a persitent back buffer.
-Private Sub drawSliderKnob(Optional ByVal refreshImmediately As Boolean = False)
+Private Sub DrawSliderKnob(Optional ByVal refreshImmediately As Boolean = False)
 
     'Copy the background DIB into the back buffer
     BitBlt m_BackBufferSlider.getDIBDC, 0, 0, m_BackBufferSlider.getDIBWidth, m_BackBufferSlider.getDIBHeight, m_SliderBackgroundDIB.getDIBDC, 0, 0, vbSrcCopy
@@ -1127,7 +1096,7 @@ Private Sub drawSliderKnob(Optional ByVal refreshImmediately As Boolean = False)
         
         'Retrieve the current slider x/y position.  Floating-point values are used so we can support sub-pixel positioning!
         Dim relevantSliderPosX As Single, relevantSliderPosY As Single
-        getSliderCoordinates relevantSliderPosX, relevantSliderPosY
+        GetSliderCoordinates relevantSliderPosX, relevantSliderPosY
         
         'Additional draw variables are required for the "default" draw style, which fills the slider track to match the current
         ' knob position.
@@ -1146,10 +1115,10 @@ Private Sub drawSliderKnob(Optional ByVal refreshImmediately As Boolean = False)
             End If
             
             'Convert our newly calculated relevant min value into an actual pixel position on the track
-            getCustomValueCoordinates relevantMin, customX, customY
+            GetCustomValueCoordinates relevantMin, customX, customY
             
             'Draw a highlighted line between the slider position and our calculated relevant minimum
-            GDI_Plus.GDIPlusDrawLineToDC m_BackBufferSlider.getDIBDC, customX, customY, relevantSliderPosX, customY, trackEffectColor, 255, m_trackDiameter + 1, True, LineCapRound
+            GDI_Plus.GDIPlusDrawLineToDC m_BackBufferSlider.getDIBDC, customX, customY, relevantSliderPosX, customY, trackEffectColor, 255, m_TrackDiameter + 1, True, LineCapRound
             
         End If
         
@@ -1158,20 +1127,20 @@ Private Sub drawSliderKnob(Optional ByVal refreshImmediately As Boolean = False)
         If m_MouseOverSliderTrack Then
             
             Dim jumpIndicatorDiameter As Single
-            jumpIndicatorDiameter = m_trackDiameter
+            jumpIndicatorDiameter = m_TrackDiameter
             
             GDI_Plus.GDIPlusFillEllipseToDC m_BackBufferSlider.getDIBDC, m_MouseTrackX - (jumpIndicatorDiameter / 2), (m_SliderAreaHeight \ 2) - (jumpIndicatorDiameter / 2), jumpIndicatorDiameter, jumpIndicatorDiameter, trackJumpIndicatorColor, True
             
         End If
         
         'Draw the background (interior fill) circle of the slider
-        GDI_Plus.GDIPlusFillEllipseToDC m_BackBufferSlider.getDIBDC, relevantSliderPosX - (m_sliderDiameter \ 2), relevantSliderPosY - (m_sliderDiameter \ 2), m_sliderDiameter, m_sliderDiameter, sliderBackgroundColor, True
+        GDI_Plus.GDIPlusFillEllipseToDC m_BackBufferSlider.getDIBDC, relevantSliderPosX - (m_SliderDiameter \ 2), relevantSliderPosY - (m_SliderDiameter \ 2), m_SliderDiameter, m_SliderDiameter, sliderBackgroundColor, True
         
         'Draw the edge (exterior) circle around the slider
         If m_MouseOverSlider Then
-            GDI_Plus.GDIPlusDrawCircleToDC m_BackBufferSlider.getDIBDC, relevantSliderPosX, relevantSliderPosY, m_sliderDiameter \ 2, sliderEdgeColor, 255, 2, True
+            GDI_Plus.GDIPlusDrawCircleToDC m_BackBufferSlider.getDIBDC, relevantSliderPosX, relevantSliderPosY, m_SliderDiameter \ 2, sliderEdgeColor, 255, 2, True
         Else
-            GDI_Plus.GDIPlusDrawCircleToDC m_BackBufferSlider.getDIBDC, relevantSliderPosX, relevantSliderPosY, m_sliderDiameter \ 2, sliderEdgeColor, 255, 1.5, True
+            GDI_Plus.GDIPlusDrawCircleToDC m_BackBufferSlider.getDIBDC, relevantSliderPosX, relevantSliderPosY, m_SliderDiameter \ 2, sliderEdgeColor, 255, 1.5, True
         End If
         
     End If
@@ -1189,7 +1158,7 @@ End Sub
 
 'Render a slight notch at the specified position on the specified DIB.  Note that this sub WILL automatically convert a custom notch
 ' value into it's appropriate x-coordinate; the caller is not responsible for that.
-Private Sub drawNotchToDIB(ByRef dstDIB As pdDIB, ByVal trackColor As Long)
+Private Sub DrawNotchToDIB(ByRef dstDIB As pdDIB, ByVal trackColor As Long)
     
     'First, see if a notch needs to be drawn.  If the notch mode is "none", exit now.
     If curNotchPosition = DoNotDisplayNotch Then Exit Sub
@@ -1238,11 +1207,11 @@ Private Sub drawNotchToDIB(ByRef dstDIB As pdDIB, ByVal trackColor As Long)
     
         'Convert our calculated notch *value* into an actual *pixel position* on the track
         Dim customX As Single, customY As Single
-        getCustomValueCoordinates renderNotchValue, customX, customY
+        GetCustomValueCoordinates renderNotchValue, customX, customY
         
         'Calculate the height of the notch; this varies by DPI, which is automatically factored into m_trackDiameter
         Dim notchSize As Single
-        notchSize = (m_SliderAreaHeight - m_trackDiameter) \ 2 - 4
+        notchSize = (m_SliderAreaHeight - m_TrackDiameter) \ 2 - 4
         
         'Draw a notch above and below the slider's track, then exit
         GDI_Plus.GDIPlusDrawLineToDC dstDIB.getDIBDC, customX, 1, customX, 1 + notchSize, trackColor, 255, 1, True, LineCapFlat
@@ -1258,10 +1227,10 @@ End Sub
 Private Sub redrawInternalGradientDIB()
 
     'Recreate the gradient DIB to the size of the background track area
-    sizeDIBToTrackArea m_GradientDIB
+    SizeDIBToTrackArea m_GradientDIB
     
     Dim trackRadius As Single
-    trackRadius = (m_trackDiameter) \ 2
+    trackRadius = (m_TrackDiameter) \ 2
     
     Dim x As Long
     Dim relativeMiddlePosition As Single, tmpY As Single
@@ -1279,7 +1248,7 @@ Private Sub redrawInternalGradientDIB()
             
             'Calculate a relative pixel position for the supplied gradient middle value
             If (gradMiddleValue >= controlMin) And (gradMiddleValue <= controlMax) Then
-                getCustomValueCoordinates gradMiddleValue, relativeMiddlePosition, tmpY
+                GetCustomValueCoordinates gradMiddleValue, relativeMiddlePosition, tmpY
             Else
                 relativeMiddlePosition = getTrackMinPos + ((getTrackMaxPos - getTrackMinPos) \ 2)
             End If
@@ -1293,7 +1262,7 @@ Private Sub redrawInternalGradientDIB()
         
             'From left-to-right, draw a full hue range onto the DIB
             Dim hueSpread As Long
-            hueSpread = (m_GradientDIB.getDIBWidth - m_trackDiameter)
+            hueSpread = (m_GradientDIB.getDIBWidth - m_TrackDiameter)
             
             Dim tmpR As Double, tmpG As Double, tmpB As Double
             
@@ -1342,7 +1311,7 @@ Private Sub redrawInternalGradientDIB()
     
     'Next, use GDI+ to render a slightly smaller line than the typical track onto the alpha mask.  GDI+'s antialiasing code will automatically
     ' set the relevant alpha bytes for the region of interest.
-    GDI_Plus.GDIPlusDrawLineToDC alphaMask.getDIBDC, trackRadius, m_GradientDIB.getDIBHeight \ 2, m_GradientDIB.getDIBWidth - trackRadius, m_GradientDIB.getDIBHeight \ 2, 0, 255, m_trackDiameter - 1, True, LineCapRound
+    GDI_Plus.GDIPlusDrawLineToDC alphaMask.getDIBDC, trackRadius, m_GradientDIB.getDIBHeight \ 2, m_GradientDIB.getDIBWidth - trackRadius, m_GradientDIB.getDIBHeight \ 2, 0, 255, m_TrackDiameter - 1, True, LineCapRound
     
     'Transfer the alpha from the alpha mask to the gradient DIB itself
     'alphaMask.setAlphaPremultiplication False
@@ -1388,7 +1357,7 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
 End Function
 
 'Retrieve the current coordinates of the slider.  Note that the x/y pair returned references the slider's *center point*.
-Private Sub getSliderCoordinates(ByRef sliderX As Single, ByRef sliderY As Single)
+Private Sub GetSliderCoordinates(ByRef sliderX As Single, ByRef sliderY As Single)
     
     'This dumb catch exists for when sliders are first loaded, and their max/min may both be zero.  This causes a divide-by-zero
     ' error in the horizontal slider position calculation, so if that happens, simply set the slider to its minimum position and exit.
@@ -1411,7 +1380,7 @@ Private Sub getSliderCoordinates(ByRef sliderX As Single, ByRef sliderY As Singl
 End Sub
 
 'Retrieve the current coordinates of any custom value.  Note that the x/y pair returned are the custom value's *center point*.
-Private Sub getCustomValueCoordinates(ByVal customValue As Single, ByRef customX As Single, ByRef customY As Single)
+Private Sub GetCustomValueCoordinates(ByVal customValue As Single, ByRef customX As Single, ByRef customY As Single)
     
     'This dumb catch exists for when sliders are first loaded, and their max/min may both be zero.  This causes a divide-by-zero
     ' error in the horizontal slider position calculation, so if that happens, simply set the slider to its minimum position and exit.
@@ -1427,27 +1396,27 @@ End Sub
 
 'Returns a single increment amount for the current control.  The increment amount varies according to the significant digits setting;
 ' it can be as high as 1.0, or as low as 0.01.
-Private Function getIncrementAmount() As Double
-    getIncrementAmount = 1 / (10 ^ significantDigits)
+Private Function GetIncrementAmount() As Double
+    GetIncrementAmount = 1 / (10 ^ significantDigits)
 End Function
 
 'Return the min/max position of the track behind the slider.  This is used for a lot of things: rendering the track, calculating the
 ' value of the slider during user interactions (by determing the slider position relative to these two values), etc.  The minimum
 ' position is constant once the control is created, but the max position can change if the control size changes.
 Private Function getTrackMinPos() As Long
-    getTrackMinPos = m_sliderDiameter \ 2 + 2
+    getTrackMinPos = m_SliderDiameter \ 2 + 2
 End Function
 
 Private Function getTrackMaxPos() As Long
-    getTrackMaxPos = m_SliderAreaWidth - (m_sliderDiameter \ 2) - 2
+    getTrackMaxPos = m_SliderAreaWidth - (m_SliderDiameter \ 2) - 2
 End Function
 
 'Given a user-supplied DIB, resize it to the area of the background track.  When using a custom-drawn slider, first call this function
 ' (and supply your owner-drawn DIB, obviously), so you know how big of an area is required.
-Public Sub sizeDIBToTrackArea(ByRef targetDIB As pdDIB)
+Public Sub SizeDIBToTrackArea(ByRef targetDIB As pdDIB)
     
     Set targetDIB = New pdDIB
-    targetDIB.createBlank (getTrackMaxPos - getTrackMinPos) + m_trackDiameter, m_SliderAreaHeight, 32, ConvertSystemColor(vbWindowBackground), 255
+    targetDIB.createBlank (getTrackMaxPos - getTrackMinPos) + m_TrackDiameter, m_SliderAreaHeight, 32, ConvertSystemColor(vbWindowBackground), 255
     
 End Sub
 
@@ -1489,7 +1458,7 @@ Public Sub UpdateAgainstCurrentTheme()
     UpdateControlLayout
     
     'Redraw the control to match any updated settings
-    redrawSlider
+    RedrawSlider
     
 End Sub
 
