@@ -24,6 +24,17 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdSliderStandalone pdSliderStandaloneTest 
+      Height          =   375
+      Index           =   0
+      Left            =   7680
+      TabIndex        =   16
+      Top             =   4440
+      Width           =   2775
+      _ExtentX        =   4895
+      _ExtentY        =   661
+      Min             =   -10
+   End
    Begin PhotoDemon.pdSpinner pdSpinnerTest 
       Height          =   375
       Left            =   7680
@@ -246,6 +257,18 @@ Begin VB.Form FormThemeEditor
       _ExtentY        =   1296
       Multiline       =   -1  'True
       Text            =   "Sample text goes here"
+   End
+   Begin PhotoDemon.pdSliderStandalone pdSliderStandaloneTest 
+      Height          =   375
+      Index           =   1
+      Left            =   7680
+      TabIndex        =   17
+      Top             =   4920
+      Width           =   2775
+      _ExtentX        =   4895
+      _ExtentY        =   661
+      Max             =   360
+      SliderTrackStyle=   4
    End
 End
 Attribute VB_Name = "FormThemeEditor"

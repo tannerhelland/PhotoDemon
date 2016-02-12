@@ -196,6 +196,18 @@
 				<TrackCanvasMode-disabled>GrayDefault</TrackCanvasMode-disabled>
 			</PDScrollBar>
 			
+			<PDSliderStandalone>
+				<Background>BackgroundDefault</Background>
+				<TrackBack>GrayLight</TrackBack>
+				<TrackFill>AccentLight</TrackFill>
+				<TrackJumpIndicator>AccentShadow</TrackJumpIndicator>
+				<ThumbFill>BackgroundDefault</ThumbFill>
+				<ThumbFill-hover>BackgroundDefault</ThumbFill-hover>
+				<ThumbBorder>AccentLight</ThumbBorder>
+				<ThumbBorder-hover>AccentDefault</ThumbBorder-hover>
+				<Notch>GrayLight</Notch>
+			</PDSliderStandalone>
+			
 			<PDSpinner>
 				<Background>BackgroundDefault</Background>
 				<Text>TextEditBox</Text>
