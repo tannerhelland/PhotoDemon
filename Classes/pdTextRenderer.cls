@@ -1169,12 +1169,12 @@ Public Function CreateFontObject() As Boolean
         
         'For text metric purposes, we create a duplicate font in GDI format.  This is a hassle, but it's necessary to retrieve
         ' detailed metrics on individual glyphs, as GDI+ doesn't expose very detailed font information.
-        createGDIFont
+        CreateGDIFont
         
     'If GDI+ failed, fall back to GDI and try again.
     Else
         
-        fontCreationSuccess = createGDIFont()
+        fontCreationSuccess = CreateGDIFont()
         
         'If GDI is successful...
         If fontCreationSuccess And (m_GDIFont <> 0) Then
@@ -1327,7 +1327,7 @@ Private Sub reportGDIPlusFailure(ByVal failCode As Long)
 End Sub
 
 'Attempt to create a GDI font matching the current class settings
-Private Function createGDIFont() As Boolean
+Private Function CreateGDIFont() As Boolean
     
     Debug.Print "Attempting to create GDI font object matching the current pdTextRenderer settings..."
     
@@ -1344,18 +1344,18 @@ Private Function createGDIFont() As Boolean
     Font_Management.FillLogFontW_Quality tmpLogFont, convertTextAAToGdipTextHint
     
     'Attempt to create a matching GDI font
-    If Font_Management.createGDIFont(tmpLogFont, m_GDIFont) Then
+    If Font_Management.CreateGDIFont(tmpLogFont, m_GDIFont) Then
         
         'Success!  Note that GDI is an acceptable engine for this font, and return success
         Debug.Print "GDI font creation worked!  Proceeding with rendering."
-        createGDIFont = True
+        CreateGDIFont = True
         
     Else
         
         'Failure!  PD doesn't have a fallback beyond GDI, so this whole request is doomed.
         ' (This shouldn't technically be possible, but if it is, I'd rather laugh than cry.)
         Debug.Print "GDI font creation failed miserably!  Everything is falling apart!  AAAAHHHH!"
-        createGDIFont = False
+        CreateGDIFont = False
     
     End If
     
@@ -1617,8 +1617,8 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     Set tmpOutliner = New pdGraphicsPen
     
     If m_OutlineActive Then
-        tmpOutliner.createPenFromString m_OutlinePen
-        gdipOutlinePen = tmpOutliner.getPenHandle
+        tmpOutliner.CreatePenFromString m_OutlinePen
+        gdipOutlinePen = tmpOutliner.GetPenHandle
     Else
         gdipOutlinePen = 0
     End If
@@ -1638,8 +1638,8 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     Dim gdipBackBorderPen As Long
     
     If m_BackBorderActive Then
-        tmpOutliner.createPenFromString m_BackBorderPen
-        gdipBackBorderPen = tmpOutliner.getPenHandle
+        tmpOutliner.CreatePenFromString m_BackBorderPen
+        gdipBackBorderPen = tmpOutliner.GetPenHandle
     Else
         gdipBackBorderPen = 0
     End If
@@ -1649,7 +1649,7 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     '1) If outline mode is active, increase padding by 1/2 the outline size.  This ensures that the outline is not cropped.
     If m_OutlineActive Then
         
-        tmpOutliner.createPenFromString m_OutlinePen
+        tmpOutliner.CreatePenFromString m_OutlinePen
         
         With boundingRect
             .Left = .Left + tmpOutliner.getPenProperty(pgps_PenWidth)
@@ -1673,7 +1673,7 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     
     If m_BackBorderActive Then
         
-        tmpOutliner.createPenFromString m_BackBorderPen
+        tmpOutliner.CreatePenFromString m_BackBorderPen
         borderWidth = tmpOutliner.getPenProperty(pgps_PenWidth)
         halfBorderWidth = borderWidth / 2
         
@@ -1769,9 +1769,9 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     
     'Release the temporary GDI+ objects we created
     If gdipBackgroundBrush <> 0 Then GDI_Plus.releaseGDIPlusBrush gdipBackgroundBrush
-    If gdipBackBorderPen <> 0 Then GDI_Plus.releaseGDIPlusPen gdipBackBorderPen
+    If gdipBackBorderPen <> 0 Then GDI_Plus.ReleaseGDIPlusPen gdipBackBorderPen
     If gdipFillBrush <> 0 Then GDI_Plus.releaseGDIPlusBrush gdipFillBrush
-    If gdipOutlinePen <> 0 Then GDI_Plus.releaseGDIPlusPen gdipOutlinePen
+    If gdipOutlinePen <> 0 Then GDI_Plus.ReleaseGDIPlusPen gdipOutlinePen
     GDI_Plus.releaseGDIPlusGraphics dstGraphics
     
     'Return success/failure contingent on the return of the GDI+ rendering call
