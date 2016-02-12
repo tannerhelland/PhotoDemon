@@ -282,7 +282,7 @@ Private m_LogPixelsX As Long, m_LogPixelsY As Long
 
 'Internal font caches.  PD uses these to populate things like font selection dropdowns.
 Private m_PDFontCache As pdStringStack
-Private Const INITIAL_PDFONTCACHE_SIZE As Long = 256
+Private Const INITIAL_PDFONTCACHE_SIZE As Long = 64
 Private m_LastFontAdded As String
 
 'Some external functions retrieve specific data from a TextMetrics struct.  We cache our own struct so we can use it
@@ -366,14 +366,14 @@ End Function
 
 'Want direct access to a UI font instance?  Get one here.  Note that only size, bold, italic, and underline are currently matched,
 ' as PD doesn't use strikethrough fonts anywhere.
-Public Function GetMatchingUIFont(ByVal fontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As pdFont
+Public Function GetMatchingUIFont(ByVal FontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As pdFont
     
     'Inside the designer, we need to make sure the font collection exists
     If m_ProgramFontCollection Is Nothing Then InitProgramFontCollection
     
     'Add this font size+style combination to the collection, as necessary
     Dim fontIndex As Long
-    fontIndex = m_ProgramFontCollection.AddFontToCache(g_InterfaceFont, fontSize, isBold, isItalic, isUnderline)
+    fontIndex = m_ProgramFontCollection.AddFontToCache(g_InterfaceFont, FontSize, isBold, isItalic, isUnderline)
     
     'Return the handle of the newly created (and/or previously cached) pdFont object
     Set GetMatchingUIFont = m_ProgramFontCollection.GetFontObjectByPosition(fontIndex)
@@ -388,9 +388,9 @@ End Function
 
 'If the caller just wants to know the size of a default string, it's better to use this function.  That spares them from having to
 ' create a redundant font object just to measure text.
-Public Function GetDefaultStringHeight(ByVal fontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As Single
+Public Function GetDefaultStringHeight(ByVal FontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As Single
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(fontSize, isBold, isItalic, isUnderline)
+    Set tmpFont = Font_Management.GetMatchingUIFont(FontSize, isBold, isItalic, isUnderline)
     GetDefaultStringHeight = tmpFont.GetHeightOfString("FfAaBbCctbpqjy1234567890")
 End Function
 
@@ -594,7 +594,7 @@ Public Sub FillLogFontW_Basic(ByRef dstLogFontW As LOGFONTW, ByRef srcFontFace A
 End Sub
 
 'Fill a LOGFONTW struct with a matching PD font size (typically in pixels, but points are also supported)
-Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal fontSize As Single, ByVal fontMeasurementUnit As pdFontUnit)
+Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Single, ByVal fontMeasurementUnit As pdFontUnit)
 
     With dstLogFontW
         
@@ -605,14 +605,14 @@ Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal fontSize As Si
             Case pdfu_Pixel
                 
                 'Convert font size to points
-                fontSize = fontSize * 0.75      '(72 / 96, technically, where 96 is the current screen DPI)
+                FontSize = FontSize * 0.75      '(72 / 96, technically, where 96 is the current screen DPI)
                 
                 'Use the standard point-based formula
-                .lfHeight = Font_Management.ConvertToGDIFontSize(fontSize)
+                .lfHeight = Font_Management.ConvertToGDIFontSize(FontSize)
                 
             'Points are converted using a standard Windows formula; see https://msdn.microsoft.com/en-us/library/dd145037%28v=vs.85%29.aspx
             Case pdfu_Point
-                .lfHeight = Font_Management.ConvertToGDIFontSize(fontSize)
+                .lfHeight = Font_Management.ConvertToGDIFontSize(FontSize)
         
         End Select
         
