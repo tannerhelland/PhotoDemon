@@ -16,6 +16,7 @@ Begin VB.UserControl pdSliderStandalone
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    ScaleHeight     =   20
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   337
@@ -1005,8 +1006,9 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
     End If
     
     'PD's new rendering method isn't very friendly to "instantaneous" refreshes, because it's asynchronous (by design).
-    ' As such, we currently ignore the "refreshImmediately" parameter, though I'm looking into possible alternative implementations.
-    ucSupport.RequestRepaint
+    ' However, if it's absolutely necessary to apply an immediate refresh, we will attempt to do so.  (Note that this system
+    ' requires the underlying UC to *not* have a dedicated DC.)
+    ucSupport.RequestRepaint Not refreshImmediately, Not refreshImmediately
     
 End Sub
 

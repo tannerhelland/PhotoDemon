@@ -51,6 +51,7 @@ Private Declare Function GetClientRect Lib "user32" (ByVal targetHwnd As Long, B
 Private Declare Function EndPaint Lib "user32" (ByVal targetHwnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
 Private Declare Function BeginPaint Lib "user32" (ByVal targetHwnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
 Private Declare Function GetUpdateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
+Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
 
 'The window being subclassed
 Private m_hWnd As Long
@@ -103,7 +104,13 @@ End Sub
 'If a control experiences an event that requires a repaint, e.g. a Click that changes the control's appearance, it can
 ' manually request a repaint from this function.  Note that - by design - this event will invalidate the entire window,
 ' as it's assumed that a manually requested paint affects the entire client area of the window.
-Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
+'
+'The optional noDedicatedDC parameter is important if the destination window only uses the temporary system DC provided by
+' the WM_PAINT message.  If a window has a dedicated DC, it can paint to it whenever it wants, and the DWM on modern versions of
+' Windows will acquire those updates with relatively little delay.  If, however, a window has no persistent DC, we need to forcibly
+' generate an immediate UpdateWindow event.  Since we don't magically know the DC state of the caller, it's up to them to notify
+' us of what they want.
+Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = False, Optional ByVal noDedicatedDC As Boolean = False)
     
     If (m_hWnd <> 0) Then
         
@@ -114,7 +121,12 @@ Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
         'If desired, the caller can ask us to immediately raise a paint event.  This is helpful when needing an immediate redraw,
         ' without waiting for WM_PAINT to fire, but you obviously need to be aware of the performance implications involved.
         If raiseImmediateDrawEvent Then
-            RaiseEvent PaintWindow(tmpRect.Left, tmpRect.Top, tmpRect.Right - tmpRect.Left, tmpRect.Bottom - tmpRect.Top)
+            If noDedicatedDC Then
+                InvalidateRect m_hWnd, tmpRect, 0&
+                UpdateWindow m_hWnd
+            Else
+                RaiseEvent PaintWindow(tmpRect.Left, tmpRect.Top, tmpRect.Right - tmpRect.Left, tmpRect.Bottom - tmpRect.Top)
+            End If
         
         'Invalidate the client rect, which will automatically trigger the addition of a WM_PAINT message to the window queue.
         ' This way, the window can redraw at the leisure of the system.

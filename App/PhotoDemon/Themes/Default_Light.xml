@@ -17,6 +17,7 @@
 			<AccentDefault>Accent5</AccentDefault>
 			<AccentDark>Accent7</AccentDark>
 			<AccentUltradark>Accent9</AccentUltradark>
+			<AccentSemilight>Accent4</AccentSemilight>
 			<AccentLight>Accent3</AccentLight>
 			<AccentUltralight>Accent1</AccentUltralight>
 			<BackgroundDefault>#ffffff</BackgroundDefault>
@@ -199,12 +200,12 @@
 			<PDSliderStandalone>
 				<Background>BackgroundDefault</Background>
 				<TrackBack>GrayLight</TrackBack>
-				<TrackFill>AccentDefault</TrackFill>
+				<TrackFill>AccentSemilight</TrackFill>
 				<TrackJumpIndicator>AccentDark</TrackJumpIndicator>
 				<ThumbFill>BackgroundDefault</ThumbFill>
 				<ThumbFill-hover>BackgroundDefault</ThumbFill-hover>
 				<ThumbBorder>AccentDefault</ThumbBorder>
-				<ThumbBorder-hover>AccentShadow</ThumbBorder-hover>
+				<ThumbBorder-hover>AccentDefault</ThumbBorder-hover>
 				<Notch>GrayLight</Notch>
 			</PDSliderStandalone>
 			

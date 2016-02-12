@@ -878,11 +878,11 @@ End Sub
 ' for the window to paint itself naturally.  If this is unacceptable, you can set raiseImmediateDrawEvent to TRUE, which
 ' forces the paint event to fire immediately.  (Because window invalidation does not occur, clipping may not be handled
 ' precisely, but that should be okay because the caller knows why a redraw is needed.)
-Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
+Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = False, Optional ByVal noDedicatedDC As Boolean = False)
     
     'When running, rely on the painter to paint the control for us
     If g_IsProgramRunning Then
-        m_Painter.RequestRepaint raiseImmediateDrawEvent
+        m_Painter.RequestRepaint raiseImmediateDrawEvent, noDedicatedDC
     Else
         'Inside the IDE, subclassing is disabled, so we must paint the control manually
         If Not (m_BackBuffer Is Nothing) Then
