@@ -6,6 +6,7 @@ Begin VB.UserControl pdSliderStandalone
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   5055
+   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -15,7 +16,6 @@ Begin VB.UserControl pdSliderStandalone
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   HasDC           =   0   'False
    ScaleHeight     =   20
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   337
@@ -29,8 +29,8 @@ Attribute VB_Exposed = False
 'PhotoDemon standalone Slider custom control
 'Copyright 2013-2016 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 11/February/16
-'Last update: split slider functionality into its own control, which is kinda the best separate we can get in VB6 :/
+'Last updated: 12/February/16
+'Last update: finish last bits of theming work
 '
 'In PD, this control is never used on its own.  It's only a component of the pdSlider control (which also attaches
 ' a spinner), and it's split out here in an attempt to simplify its rendering code and input handling, which are
@@ -169,6 +169,7 @@ Private m_Colors As pdThemeColors
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
@@ -237,6 +238,7 @@ Public Property Let GradientMiddleValue(ByVal newValue As Double)
 End Property
 
 Public Property Get hWnd() As Long
+Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 
@@ -323,6 +325,7 @@ Public Property Let SliderTrackStyle(ByVal newStyle As SLIDER_TRACK_STYLE)
 End Property
 
 Public Property Get Value() As Double
+Attribute Value.VB_UserMemId = 0
     Value = m_Value
 End Property
 
@@ -341,7 +344,7 @@ Public Property Let Value(ByVal newValue As Double)
                 
         'Because we support subpixel positioning for the slider, value changes always require a redraw, even if the slider's
         ' position only changes by a miniscule amount
-        RedrawBackBuffer
+        RedrawBackBuffer True
         
         If Me.Enabled Then RaiseEvent Change
         PropertyChanged "Value"
@@ -349,6 +352,39 @@ Public Property Let Value(ByVal newValue As Double)
     End If
     
 End Property
+
+'To support high-DPI settings properly, we expose some specialized move+size functions
+Public Function GetLeft() As Long
+    GetLeft = ucSupport.GetControlLeft
+End Function
+
+Public Sub SetLeft(ByVal newLeft As Long)
+    ucSupport.RequestNewPosition newLeft, , True
+End Sub
+
+Public Function GetTop() As Long
+    GetTop = ucSupport.GetControlTop
+End Function
+
+Public Sub SetTop(ByVal newTop As Long)
+    ucSupport.RequestNewPosition , newTop, True
+End Sub
+
+Public Function GetWidth() As Long
+    GetWidth = ucSupport.GetControlWidth
+End Function
+
+Public Sub SetWidth(ByVal newWidth As Long)
+    ucSupport.RequestNewSize newWidth, , True
+End Sub
+
+Public Function GetHeight() As Long
+    GetHeight = ucSupport.GetControlHeight
+End Function
+
+Public Sub SetHeight(ByVal newHeight As Long)
+    ucSupport.RequestNewSize , newHeight, True
+End Sub
 
 'This function serves two purposes: most of the time, we use it for hit-detection against the track slider, but some functions
 ' also use it to check hit-detection against the underlying track, which allows for "jump to position" behavior.
@@ -372,14 +408,6 @@ Private Function IsMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Singl
     End If
 
 End Function
-
-Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
-    'Update mouse tracker:
-    'm_MouseInsideBrushRect = Math_Functions.IsPointInRectF(mouseX, mouseY, m_BrushRect)
-    
-    'Contingent on the tracker value, update cursor values to match
-    'If m_MouseInsideBrushRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
-End Sub
 
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
@@ -446,9 +474,6 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         ' are restricted by some combination of the total range and significant digit allowance.
         Value = (m_Max - m_Min) * (((x + m_InitX) - GetTrackLeft) / (GetTrackRight - GetTrackLeft)) + m_Min
         
-        'Force an immediate redraw (instead of waiting for WM_PAINT to process)
-        ucSupport.RequestRepaint True
-        
     'If the LMB is *not* down, modify the cursor according to its position relative to the slider and/or track
     Else
         
@@ -466,9 +491,8 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
             ucSupport.RequestCursor IDC_ARROW
         End If
         
-        'Because hover effects may be rendered on multiple parts of the control, we need redraw the button on MouseMove events
-        RedrawSlider
-    
+        RedrawBackBuffer
+        
     End If
     
 End Sub
@@ -484,8 +508,11 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
-    RedrawSlider
+    If updateLayoutToo Then
+        UpdateControlLayout
+    Else
+        RedrawBackBuffer
+    End If
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
@@ -617,17 +644,17 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     ' required, and we can shortcut the process by not redrawing the full slider on every update.
     
     'Start by retrieving the colors necessary to render various display elements
-    Dim backgroundColor As Long, trackColor As Long
-    backgroundColor = m_Colors.RetrieveColor(PDSS_Background, Me.Enabled, False, m_MouseOverSlider Or m_MouseOverSliderTrack)
+    Dim BackgroundColor As Long, trackColor As Long
+    BackgroundColor = m_Colors.RetrieveColor(PDSS_Background, Me.Enabled, False, m_MouseOverSlider Or m_MouseOverSliderTrack)
     trackColor = m_Colors.RetrieveColor(PDSS_TrackBack, Me.Enabled, False, m_MouseOverSlider Or m_MouseOverSliderTrack)
     
     'Initialize or repaint the background DIB, as necessary
     m_SliderAreaWidth = ucSupport.GetBackBufferWidth
     m_SliderAreaHeight = ucSupport.GetBackBufferHeight
     If (m_SliderBackgroundDIB.getDIBWidth <> m_SliderAreaWidth) Or (m_SliderBackgroundDIB.getDIBHeight <> m_SliderAreaHeight) Then
-        m_SliderBackgroundDIB.createBlank m_SliderAreaWidth, m_SliderAreaHeight, 32, backgroundColor, 255
+        m_SliderBackgroundDIB.createBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, BackgroundColor, 255
     Else
-        If g_IsProgramRunning Then GDI_Plus.GDIPlusFillDIBRect m_SliderBackgroundDIB, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight, backgroundColor, 255
+        If g_IsProgramRunning Then GDI_Plus.GDIPlusFillDIBRect m_SliderBackgroundDIB, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight, BackgroundColor, 255
     End If
         
     'There are a few components to the slider:
@@ -921,9 +948,9 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
     End If
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim backgroundColor As Long, bufferDC As Long
-    backgroundColor = m_Colors.RetrieveColor(PDSS_Background, Me.Enabled, m_MouseDown, m_MouseOverSlider Or m_MouseOverSliderTrack)
-    bufferDC = ucSupport.GetBackBufferDC(True, backgroundColor)
+    Dim BackgroundColor As Long, bufferDC As Long
+    BackgroundColor = m_Colors.RetrieveColor(PDSS_Background, Me.Enabled, m_MouseDown, m_MouseOverSlider Or m_MouseOverSliderTrack)
+    bufferDC = ucSupport.GetBackBufferDC(True, BackgroundColor)
     
     'Copy the previously assembled track onto the back buffer.  (This is faster than AlphaBlending the result, especially because
     ' we don't need any blending.)
@@ -960,7 +987,7 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
             
         End If
         
-        'If the mouse is *not* over the slider, draw a small dot on the background track to indicate where the slider will "jump"
+        'If the mouse is *not* over the slider, but it *is* over the track, draw a small dot to indicate where the slider will "jump"
         ' if the mouse is clicked.
         If m_MouseOverSliderTrack Then
             Dim jumpIndicatorDiameter As Single: jumpIndicatorDiameter = m_TrackDiameter
@@ -977,7 +1004,9 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
         
     End If
     
-    ucSupport.RequestRepaint refreshImmediately
+    'PD's new rendering method isn't very friendly to "instantaneous" refreshes, because it's asynchronous (by design).
+    ' As such, we currently ignore the "refreshImmediately" parameter, though I'm looking into possible alternative implementations.
+    ucSupport.RequestRepaint
     
 End Sub
 

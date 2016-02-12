@@ -199,12 +199,12 @@
 			<PDSliderStandalone>
 				<Background>BackgroundDefault</Background>
 				<TrackBack>GrayLight</TrackBack>
-				<TrackFill>AccentLight</TrackFill>
-				<TrackJumpIndicator>AccentShadow</TrackJumpIndicator>
+				<TrackFill>AccentDefault</TrackFill>
+				<TrackJumpIndicator>AccentDark</TrackJumpIndicator>
 				<ThumbFill>BackgroundDefault</ThumbFill>
 				<ThumbFill-hover>BackgroundDefault</ThumbFill-hover>
-				<ThumbBorder>AccentLight</ThumbBorder>
-				<ThumbBorder-hover>AccentDefault</ThumbBorder-hover>
+				<ThumbBorder>AccentDefault</ThumbBorder>
+				<ThumbBorder-hover>AccentShadow</ThumbBorder-hover>
 				<Notch>GrayLight</Notch>
 			</PDSliderStandalone>
 			
