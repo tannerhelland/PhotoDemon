@@ -495,25 +495,30 @@ Private Sub RedrawBackBuffer()
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox))
     
-    'Relay any recently changed/modified colors to the edit box, so it can repaint itself to match
-    RelayUpdatedColorsToEditBox
+    'This control's render code relies on GDI+ exclusively, so there's no point calling it in the IDE - sorry!
+    If g_IsProgramRunning Then
     
-    'Retrieve DPI-aware control dimensions from the support class
-    Dim bWidth As Long, bHeight As Long
-    bWidth = ucSupport.GetBackBufferWidth
-    bHeight = ucSupport.GetBackBufferHeight
+        'Relay any recently changed/modified colors to the edit box, so it can repaint itself to match
+        RelayUpdatedColorsToEditBox
+        
+        'Retrieve DPI-aware control dimensions from the support class
+        Dim bWidth As Long, bHeight As Long
+        bWidth = ucSupport.GetBackBufferWidth
+        bHeight = ucSupport.GetBackBufferHeight
+        
+        'The edit box doesn't actually have a border; we render a pseudo-border onto the underlying UC, as necessary.
+        Dim halfPadding As Long
+        halfPadding = 1     'EDITBOX_BORDER_PADDING \ 2 - 1
+        
+        Dim borderWidth As Single
+        If Not (m_EditBox Is Nothing) Then
+            If m_EditBox.HasFocus Or m_MouseOverEditBox Then borderWidth = 3 Else borderWidth = 1
+        Else
+            borderWidth = 1
+        End If
+        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, halfPadding, halfPadding, (bWidth - 1) - halfPadding, (bHeight - 1) - halfPadding, m_Colors.RetrieveColor(PDEB_Border, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox), , borderWidth, False, LineJoinMiter
     
-    'The edit box doesn't actually have a border; we render a pseudo-border onto the underlying UC, as necessary.
-    Dim halfPadding As Long
-    halfPadding = 1     'EDITBOX_BORDER_PADDING \ 2 - 1
-    
-    Dim borderWidth As Single
-    If Not (m_EditBox Is Nothing) Then
-        If m_EditBox.HasFocus Or m_MouseOverEditBox Then borderWidth = 3 Else borderWidth = 1
-    Else
-        borderWidth = 1
     End If
-    GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, halfPadding, halfPadding, (bWidth - 1) - halfPadding, (bHeight - 1) - halfPadding, m_Colors.RetrieveColor(PDEB_Border, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox), , borderWidth, False, LineJoinMiter
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint

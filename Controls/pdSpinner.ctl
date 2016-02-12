@@ -718,108 +718,113 @@ Private Sub RedrawBackBuffer()
     bufferDC = ucSupport.GetBackBufferDC(True, BackgroundColor)
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
+        
+    'This control's render code relies on GDI+ exclusively, so there's no point calling it in the IDE - sorry!
+    If g_IsProgramRunning Then
     
-    'Relay any recently changed/modified colors to the edit box, so it can repaint itself to match
-    RelayUpdatedColorsToEditBox
-    
-    'Next, initialize a whole bunch of color values.  Note that up and down buttons are treated separately, as they may
-    ' have different mouse states at any given time.
-    Dim editBoxBorderColor As Long
-    Dim upButtonBorderColor As Long, downButtonBorderColor As Long
-    Dim upButtonFillColor As Long, downButtonFillColor As Long
-    Dim upButtonArrowColor As Long, downButtonArrowColor As Long
-    
-    If m_ErrorState Then
-        editBoxBorderColor = m_Colors.RetrieveColor(PDS_ErrorBorder, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
-    Else
-        editBoxBorderColor = m_Colors.RetrieveColor(PDS_TextBorder, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
+        'Relay any recently changed/modified colors to the edit box, so it can repaint itself to match
+        RelayUpdatedColorsToEditBox
+        
+        'Next, initialize a whole bunch of color values.  Note that up and down buttons are treated separately, as they may
+        ' have different mouse states at any given time.
+        Dim editBoxBorderColor As Long
+        Dim upButtonBorderColor As Long, downButtonBorderColor As Long
+        Dim upButtonFillColor As Long, downButtonFillColor As Long
+        Dim upButtonArrowColor As Long, downButtonArrowColor As Long
+        
+        If m_ErrorState Then
+            editBoxBorderColor = m_Colors.RetrieveColor(PDS_ErrorBorder, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
+        Else
+            editBoxBorderColor = m_Colors.RetrieveColor(PDS_TextBorder, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
+        End If
+        
+        upButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, Me.Enabled, m_MouseDownUpButton, m_MouseOverUpButton)
+        upButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, Me.Enabled, m_MouseDownUpButton, m_MouseOverUpButton)
+        upButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, Me.Enabled, m_MouseDownUpButton, m_MouseOverUpButton)
+        downButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
+        downButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
+        downButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
+        
+        'Start by filling the button regions.  We will overpaint these (as necessary) with relevant border styles
+        GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_DownRect, downButtonFillColor
+        GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_UpRect, upButtonFillColor
+        
+        'Calculate positioning and color of the edit box border.  (Note that the edit box doesn't paint its own border;
+        ' we render a pseudo-border onto the underlying UC around its position, instead.)
+        Dim halfPadding As Long
+        halfPadding = 1
+        
+        Dim borderWidth As Single
+        If Not (m_EditBox Is Nothing) Then
+            If m_EditBox.HasFocus Or m_MouseOverEditBox Then borderWidth = 3 Else borderWidth = 1
+        Else
+            borderWidth = 1
+        End If
+        
+        Dim editBoxRenderRect As RECTF
+        With editBoxRenderRect
+            .Left = m_EditBoxRect.Left - halfPadding
+            .Top = m_EditBoxRect.Top - halfPadding
+            .Width = m_EditBoxRect.Width + halfPadding * 2 - 1
+            .Height = m_EditBoxRect.Height + halfPadding * 2 - 1
+        End With
+        
+        'If the spin buttons are active, we can paint the rectangle immediately.  (If they are NOT active, and we attempt
+        ' to draw a chunky border, their border will accidentally overlap ours, so we must paint later.)
+        If m_MouseOverUpButton Or m_MouseOverDownButton Then
+            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, editBoxRenderRect, editBoxBorderColor, , borderWidth, False, LineJoinMiter
+        End If
+        
+        'Paint button backgrounds and borders.  Note that the active button (if any) is drawn LAST, so that its chunky
+        ' hover border appears over the top of any neighboring UI elements.
+        Dim upButtonBorderWidth As Single, downButtonBorderWidth As Single
+        If m_MouseOverUpButton Then upButtonBorderWidth = 2 Else upButtonBorderWidth = 1
+        If m_MouseOverDownButton Then downButtonBorderWidth = 2 Else downButtonBorderWidth = 1
+        
+        If m_MouseOverUpButton Then
+            If downButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_DownRect, downButtonBorderColor, , downButtonBorderWidth, False, LineJoinMiter
+            If upButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_UpRect, upButtonBorderColor, , upButtonBorderWidth, False, LineJoinMiter
+        Else
+            If upButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_UpRect, upButtonBorderColor, , upButtonBorderWidth, False, LineJoinMiter
+            If downButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_DownRect, downButtonBorderColor, , downButtonBorderWidth, False, LineJoinMiter
+        End If
+        
+        'If neither spin button is active, paint the edit box border last
+        If Not (m_MouseOverUpButton Or m_MouseOverDownButton) Then
+            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, editBoxRenderRect, editBoxBorderColor, , borderWidth, False, LineJoinMiter
+        End If
+        
+        'Calculate coordinate positions for the spin button arrows.  These calculations include a lot of magic numbers, alas,
+        ' to account for things like padding and subpixel positioning.
+        Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
+                    
+        'Start with the up-pointing arrow
+        buttonPt1.x = m_UpRect.Left + FixDPIFloat(4) + 0.5
+        buttonPt1.y = (m_UpRect.Height) / 2 + FixDPIFloat(2)
+        
+        buttonPt3.x = (m_UpRect.Left + m_UpRect.Width) - FixDPIFloat(5) - 0.5
+        buttonPt3.y = buttonPt1.y
+        
+        buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
+        buttonPt2.y = buttonPt1.y - FixDPIFloat(3)
+        
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, upButtonArrowColor, 255, 2, True, LineCapRound
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, upButtonArrowColor, 255, 2, True, LineCapRound
+                    
+        'Next, the down-pointing arrow
+        buttonPt1.x = m_DownRect.Left + FixDPIFloat(4) + 0.5
+        buttonPt1.y = m_DownRect.Top + (m_DownRect.Height / 2) - FixDPIFloat(2)
+        
+        buttonPt3.x = (m_DownRect.Left + m_DownRect.Width) - FixDPIFloat(5) - 0.5
+        buttonPt3.y = buttonPt1.y
+        
+        buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
+        buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
+        
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, downButtonArrowColor, 255, 2, True, LineCapRound
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, downButtonArrowColor, 255, 2, True, LineCapRound
+        
     End If
-    
-    upButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, Me.Enabled, m_MouseDownUpButton, m_MouseOverUpButton)
-    upButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, Me.Enabled, m_MouseDownUpButton, m_MouseOverUpButton)
-    upButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, Me.Enabled, m_MouseDownUpButton, m_MouseOverUpButton)
-    downButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
-    downButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
-    downButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
-    
-    'Start by filling the button regions.  We will overpaint these (as necessary) with relevant border styles
-    GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_DownRect, downButtonFillColor
-    GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_UpRect, upButtonFillColor
-    
-    'Calculate positioning and color of the edit box border.  (Note that the edit box doesn't paint its own border;
-    ' we render a pseudo-border onto the underlying UC around its position, instead.)
-    Dim halfPadding As Long
-    halfPadding = 1
-    
-    Dim borderWidth As Single
-    If Not (m_EditBox Is Nothing) Then
-        If m_EditBox.HasFocus Or m_MouseOverEditBox Then borderWidth = 3 Else borderWidth = 1
-    Else
-        borderWidth = 1
-    End If
-    
-    Dim editBoxRenderRect As RECTF
-    With editBoxRenderRect
-        .Left = m_EditBoxRect.Left - halfPadding
-        .Top = m_EditBoxRect.Top - halfPadding
-        .Width = m_EditBoxRect.Width + halfPadding * 2 - 1
-        .Height = m_EditBoxRect.Height + halfPadding * 2 - 1
-    End With
-    
-    'If the spin buttons are active, we can paint the rectangle immediately.  (If they are NOT active, and we attempt
-    ' to draw a chunky border, their border will accidentally overlap ours, so we must paint later.)
-    If m_MouseOverUpButton Or m_MouseOverDownButton Then
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, editBoxRenderRect, editBoxBorderColor, , borderWidth, False, LineJoinMiter
-    End If
-    
-    'Paint button backgrounds and borders.  Note that the active button (if any) is drawn LAST, so that its chunky
-    ' hover border appears over the top of any neighboring UI elements.
-    Dim upButtonBorderWidth As Single, downButtonBorderWidth As Single
-    If m_MouseOverUpButton Then upButtonBorderWidth = 2 Else upButtonBorderWidth = 1
-    If m_MouseOverDownButton Then downButtonBorderWidth = 2 Else downButtonBorderWidth = 1
-    
-    If m_MouseOverUpButton Then
-        If downButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_DownRect, downButtonBorderColor, , downButtonBorderWidth, False, LineJoinMiter
-        If upButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_UpRect, upButtonBorderColor, , upButtonBorderWidth, False, LineJoinMiter
-    Else
-        If upButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_UpRect, upButtonBorderColor, , upButtonBorderWidth, False, LineJoinMiter
-        If downButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_DownRect, downButtonBorderColor, , downButtonBorderWidth, False, LineJoinMiter
-    End If
-    
-    'If neither spin button is active, paint the edit box border last
-    If Not (m_MouseOverUpButton Or m_MouseOverDownButton) Then
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, editBoxRenderRect, editBoxBorderColor, , borderWidth, False, LineJoinMiter
-    End If
-    
-    'Calculate coordinate positions for the spin button arrows.  These calculations include a lot of magic numbers, alas,
-    ' to account for things like padding and subpixel positioning.
-    Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
-                
-    'Start with the up-pointing arrow
-    buttonPt1.x = m_UpRect.Left + FixDPIFloat(4) + 0.5
-    buttonPt1.y = (m_UpRect.Height) / 2 + FixDPIFloat(2)
-    
-    buttonPt3.x = (m_UpRect.Left + m_UpRect.Width) - FixDPIFloat(5) - 0.5
-    buttonPt3.y = buttonPt1.y
-    
-    buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
-    buttonPt2.y = buttonPt1.y - FixDPIFloat(3)
-    
-    GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, upButtonArrowColor, 255, 2, True, LineCapRound
-    GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, upButtonArrowColor, 255, 2, True, LineCapRound
-                
-    'Next, the down-pointing arrow
-    buttonPt1.x = m_DownRect.Left + FixDPIFloat(4) + 0.5
-    buttonPt1.y = m_DownRect.Top + (m_DownRect.Height / 2) - FixDPIFloat(2)
-    
-    buttonPt3.x = (m_DownRect.Left + m_DownRect.Width) - FixDPIFloat(5) - 0.5
-    buttonPt3.y = buttonPt1.y
-    
-    buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
-    buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
-    
-    GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, downButtonArrowColor, 255, 2, True, LineCapRound
-    GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, downButtonArrowColor, 255, 2, True, LineCapRound
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint
