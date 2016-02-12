@@ -275,9 +275,7 @@ End Sub
 
 'Because we sometimes do run-time rearranging of label controls, we wrap a couple helper functions to ensure proper high-DPI support
 Public Function GetLeft() As Long
-    Dim controlRect As RECTL
-    ucSupport.GetControlRect controlRect
-    GetLeft = controlRect.Left
+    GetLeft = ucSupport.GetControlLeft
 End Function
 
 Public Sub SetLeft(ByVal newLeft As Long)
