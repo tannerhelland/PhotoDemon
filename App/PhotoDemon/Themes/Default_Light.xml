@@ -228,6 +228,22 @@
 				<ButtonFill-hover>BackgroundDefault</ButtonFill-hover>
 				<ErrorBorder>ErrorRed</ErrorBorder>
 			</PDSpinner>
+			
+			<PDTitle>
+				<Background>BackgroundDefault</Background>
+				<Arrow>GrayDefault</Arrow>
+				<Arrow-active>AccentDefault</Arrow-active>
+				<Arrow-hover>AccentDefault</Arrow-hover>
+				<Arrow-disabled>GrayDisabled</Arrow-disabled>
+				<Border>GrayLight</Border>
+				<Border-active>AccentDefault</Border-active>
+				<Border-hover>AccentDefault</Border-hover>
+				<Border-disabled>GrayDisabled</Border-disabled>
+				<Caption>TextDefault</Caption>
+				<Caption-active>AccentDark</Caption-active>
+				<Caption-hover>AccentDark</Caption-hover>
+				<Caption-disabled>GrayDisabled</Caption-disabled>
+			</PDTitle>
 						
 			<!-- ****************************************************************************************** -->
 		

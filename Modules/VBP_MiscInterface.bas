@@ -1337,6 +1337,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         If (TypeOf eControl Is pdScrollBar) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdTextBox) Or (TypeOf eControl Is pdSpinner) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSliderStandalone) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdTitle) Then eControl.UpdateAgainstCurrentTheme
         
         'These controls currently support translations, but not theming.  (Theming support is actively being worked on, and I'm
         ' migrating controls to the above "finished" list as they're completed.  Once all controls have been migrated, I'll look
@@ -1347,7 +1348,6 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         If (TypeOf eControl Is pdResize) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdTitle) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdFxPreviewCtl) Then eControl.UpdateAgainstCurrentTheme
                 
         'While we're here, forcibly remove TabStops from each picture box.  They should never receive focus, but I often forget
