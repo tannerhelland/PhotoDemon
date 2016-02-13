@@ -25,14 +25,15 @@ Begin VB.Form toolbar_Toolbox
    ScaleWidth      =   141
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdLabel lblCategories 
+   Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
       Index           =   0
       Left            =   120
+      TabIndex        =   22
       Top             =   30
-      Width           =   2175
-      _ExtentX        =   450
-      _ExtentY        =   503
+      Width           =   1815
+      _ExtentX        =   3201
+      _ExtentY        =   423
       Caption         =   "file"
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
@@ -124,36 +125,6 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
-   End
-   Begin PhotoDemon.pdLabel lblCategories 
-      Height          =   240
-      Index           =   1
-      Left            =   120
-      Top             =   1620
-      Width           =   2175
-      _ExtentX        =   3836
-      _ExtentY        =   503
-      Caption         =   "undo"
-   End
-   Begin PhotoDemon.pdLabel lblCategories 
-      Height          =   240
-      Index           =   2
-      Left            =   120
-      Top             =   2580
-      Width           =   2175
-      _ExtentX        =   3836
-      _ExtentY        =   503
-      Caption         =   "non-destructive"
-   End
-   Begin PhotoDemon.pdLabel lblCategories 
-      Height          =   240
-      Index           =   3
-      Left            =   120
-      Top             =   3540
-      Width           =   2175
-      _ExtentX        =   3836
-      _ExtentY        =   503
-      Caption         =   "selection"
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -254,16 +225,6 @@ Begin VB.Form toolbar_Toolbox
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
    End
-   Begin PhotoDemon.pdLabel lblCategories 
-      Height          =   240
-      Index           =   4
-      Left            =   120
-      Top             =   5100
-      Width           =   2175
-      _ExtentX        =   3836
-      _ExtentY        =   503
-      Caption         =   "text"
-   End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
       Index           =   9
@@ -284,16 +245,6 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1270
       _ExtentY        =   1058
    End
-   Begin PhotoDemon.pdLabel lblCategories 
-      Height          =   240
-      Index           =   5
-      Left            =   120
-      Top             =   6120
-      Width           =   2175
-      _ExtentX        =   3836
-      _ExtentY        =   503
-      Caption         =   "paint"
-   End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
       Index           =   11
@@ -303,6 +254,61 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+   End
+   Begin PhotoDemon.pdTitle ttlCategories 
+      Height          =   240
+      Index           =   1
+      Left            =   120
+      TabIndex        =   23
+      Top             =   1620
+      Width           =   1815
+      _ExtentX        =   3201
+      _ExtentY        =   423
+      Caption         =   "undo"
+   End
+   Begin PhotoDemon.pdTitle ttlCategories 
+      Height          =   240
+      Index           =   2
+      Left            =   120
+      TabIndex        =   24
+      Top             =   2580
+      Width           =   1815
+      _ExtentX        =   3201
+      _ExtentY        =   423
+      Caption         =   "n-d"
+   End
+   Begin PhotoDemon.pdTitle ttlCategories 
+      Height          =   240
+      Index           =   3
+      Left            =   120
+      TabIndex        =   25
+      Top             =   3540
+      Width           =   1815
+      _ExtentX        =   3201
+      _ExtentY        =   423
+      Caption         =   "select"
+   End
+   Begin PhotoDemon.pdTitle ttlCategories 
+      Height          =   240
+      Index           =   4
+      Left            =   120
+      TabIndex        =   26
+      Top             =   5100
+      Width           =   1815
+      _ExtentX        =   3201
+      _ExtentY        =   423
+      Caption         =   "text"
+   End
+   Begin PhotoDemon.pdTitle ttlCategories 
+      Height          =   240
+      Index           =   5
+      Left            =   120
+      TabIndex        =   27
+      Top             =   6120
+      Width           =   1815
+      _ExtentX        =   3201
+      _ExtentY        =   423
+      Caption         =   "paint"
    End
    Begin VB.Line lnRightSeparator 
       X1              =   136
@@ -555,7 +561,7 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_LostFocus()
-    cMouseEvents.setSystemCursor IDC_ARROW
+    cMouseEvents.setSystemCursor IDC_DEFAULT
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
@@ -586,8 +592,8 @@ Private Sub ReflowToolboxLayout()
     m_rightBoundary = Me.ScaleWidth - 3
     
     'Reflow label width first; they are easy because they simply match the width of the form
-    For i = 0 To lblCategories.UBound
-        lblCategories(i).Width = m_rightBoundary - (lblCategories(i).Left + FixDPI(2))
+    For i = 0 To ttlCategories.UBound
+        ttlCategories(i).SetWidth m_rightBoundary - (ttlCategories(i).GetLeft)
     Next i
     
     lblRecording.Width = m_rightBoundary - (lblRecording.Left + FixDPI(2))
@@ -614,39 +620,40 @@ Private Sub ReflowToolboxLayout()
     m_buttonMarginRight = 0           'Distance between buttons
     
     'If category labels are displayed, make them visible now
-    For i = 0 To lblCategories.UBound
-        If lblCategories(i).Visible <> m_ShowCategoryLabels Then lblCategories(i).Visible = m_ShowCategoryLabels
+    For i = 0 To ttlCategories.UBound
+        If ttlCategories(i).Visible <> m_ShowCategoryLabels Then ttlCategories(i).Visible = m_ShowCategoryLabels
     Next i
     
     'File group.  We position this label manually, and it serves as the reference for all subsequent labels.
     If m_ShowCategoryLabels Then
-        lblCategories(0).Move m_hOffsetDefaultLabel, FixDPI(2)
-        vOffset = lblCategories(0).Top + lblCategories(0).Height + m_labelMarginBottom
+        ttlCategories(0).SetLeft m_hOffsetDefaultLabel
+        ttlCategories(0).SetTop FixDPI(2)
+        vOffset = ttlCategories(0).GetTop + ttlCategories(0).GetHeight + m_labelMarginBottom
     Else
         vOffset = FixDPI(2)
     End If
     
-    ReflowButtonSet False, FILE_NEW, FILE_SAVEAS_FLAT, hOffset, vOffset
+    ReflowButtonSet 0, False, FILE_NEW, FILE_SAVEAS_FLAT, hOffset, vOffset
     
     'Undo group
-    PositionToolLabel lblCategories(1), cmdFile(FILE_SAVEAS_FLAT), hOffset, vOffset
-    ReflowButtonSet False, FILE_UNDO, FILE_REDO, hOffset, vOffset
+    PositionToolLabel 1, cmdFile(FILE_SAVEAS_FLAT), hOffset, vOffset
+    ReflowButtonSet 1, False, FILE_UNDO, FILE_REDO, hOffset, vOffset
     
     'Non-destructive group
-    PositionToolLabel lblCategories(2), cmdFile(FILE_REDO), hOffset, vOffset
-    ReflowButtonSet True, NAV_DRAG, QUICK_FIX_LIGHTING, hOffset, vOffset
+    PositionToolLabel 2, cmdFile(FILE_REDO), hOffset, vOffset
+    ReflowButtonSet 2, True, NAV_DRAG, QUICK_FIX_LIGHTING, hOffset, vOffset
     
     'Selection group
-    PositionToolLabel lblCategories(3), cmdTools(QUICK_FIX_LIGHTING), hOffset, vOffset
-    ReflowButtonSet True, SELECT_RECT, SELECT_WAND, hOffset, vOffset
+    PositionToolLabel 3, cmdTools(QUICK_FIX_LIGHTING), hOffset, vOffset
+    ReflowButtonSet 3, True, SELECT_RECT, SELECT_WAND, hOffset, vOffset
     
     'Vector group
-    PositionToolLabel lblCategories(4), cmdTools(SELECT_WAND), hOffset, vOffset
-    ReflowButtonSet True, VECTOR_TEXT, VECTOR_FANCYTEXT, hOffset, vOffset
+    PositionToolLabel 4, cmdTools(SELECT_WAND), hOffset, vOffset
+    ReflowButtonSet 4, True, VECTOR_TEXT, VECTOR_FANCYTEXT, hOffset, vOffset
     
     'Paint group
-    PositionToolLabel lblCategories(5), cmdTools(VECTOR_FANCYTEXT), hOffset, vOffset
-    ReflowButtonSet True, PAINT_BASICBRUSH, PAINT_BASICBRUSH, hOffset, vOffset
+    PositionToolLabel 5, cmdTools(VECTOR_FANCYTEXT), hOffset, vOffset
+    ReflowButtonSet 5, True, PAINT_BASICBRUSH, PAINT_BASICBRUSH, hOffset, vOffset
         
     'Macro recording message
     If vOffset < cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height Then
@@ -659,17 +666,21 @@ Private Sub ReflowToolboxLayout()
 End Sub
 
 'Companion function to ReflowToolboxLayout(), above.
-Private Sub PositionToolLabel(ByRef targetLabel As Object, ByRef referenceButton As Object, ByRef hOffset As Long, ByRef vOffset As Long)
+Private Sub PositionToolLabel(ByRef targetLabelIndex As Long, ByRef referenceButton As Object, ByRef hOffset As Long, ByRef vOffset As Long)
     
     If m_ShowCategoryLabels Then
-    
-        If vOffset < referenceButton.Top + referenceButton.Height Then
-            vOffset = referenceButton.Top + referenceButton.Height + m_buttonMarginBottom
-        End If
+        
+        Dim heightCalc As Long
+        If ttlCategories(targetLabelIndex - 1).Value Then heightCalc = referenceButton.Height Else heightCalc = 0
+        
+        'If vOffset < referenceButton.Top + heightCalc Then
+            vOffset = referenceButton.Top + heightCalc + m_buttonMarginBottom
+        'End If
         
         vOffset = vOffset + m_labelMarginTop
-        targetLabel.Move m_hOffsetDefaultLabel, vOffset
-        vOffset = targetLabel.Top + targetLabel.Height + m_labelMarginBottom
+        ttlCategories(targetLabelIndex).SetLeft m_hOffsetDefaultLabel
+        ttlCategories(targetLabelIndex).SetTop vOffset
+        vOffset = ttlCategories(targetLabelIndex).GetTop + ttlCategories(targetLabelIndex).GetHeight + m_labelMarginBottom
         hOffset = m_hOffsetDefaultButton
         
     End If
@@ -677,7 +688,7 @@ Private Sub PositionToolLabel(ByRef targetLabel As Object, ByRef referenceButton
 End Sub
 
 'Companion function to ReflowToolboxLayout(), above.
-Private Sub ReflowButtonSet(ByVal categoryIsTools As Boolean, ByVal startIndex As Long, ByVal endIndex As Long, ByRef hOffset As Long, ByRef vOffset As Long)
+Private Sub ReflowButtonSet(ByVal associatedTitleIndex As Long, ByVal categoryIsTools As Boolean, ByVal startIndex As Long, ByVal endIndex As Long, ByRef hOffset As Long, ByRef vOffset As Long)
     
     Dim i As Long, targetObject As Object
         
@@ -694,11 +705,15 @@ Private Sub ReflowButtonSet(ByVal categoryIsTools As Boolean, ByVal startIndex A
         'Move this button into position
         targetObject.Move hOffset, vOffset
         
-        'Calculate a new offset for the next button
-        hOffset = hOffset + targetObject.Width + m_buttonMarginRight
-        If hOffset + targetObject.Width > m_rightBoundary Then
-            hOffset = m_hOffsetDefaultButton
-            vOffset = vOffset + targetObject.Height + m_buttonMarginBottom
+        'If the associated title index is set to TRUE, display the button and calculate a new offset for the next button
+        targetObject.Visible = ttlCategories(associatedTitleIndex).Value
+        
+        If ttlCategories(associatedTitleIndex).Value Then
+            hOffset = hOffset + targetObject.Width + m_buttonMarginRight
+            If hOffset + targetObject.Width > m_rightBoundary Then
+                hOffset = m_hOffsetDefaultButton
+                vOffset = vOffset + targetObject.Height + m_buttonMarginBottom
+            End If
         End If
         
     Next i
@@ -1068,6 +1083,14 @@ Public Sub UpdateAgainstCurrentTheme()
     'Tooltips must be manually re-assigned according to the current language.  This is a necessary evil, if the user switches
     ' between two non-English languages at run-time.
     
+    'Title bars first
+    ttlCategories(0).AssignTooltip "File tools: create, load, and save image files"
+    ttlCategories(1).AssignTooltip "Undo/Redo tools: revert destructive changes made to an image or layer"
+    ttlCategories(2).AssignTooltip "Non-destructive tools: move, rotate, or apply certain photo adjustments without permanently modifying an image"
+    ttlCategories(3).AssignTooltip "Select tools: isolate parts of an image or layer for further editing"
+    ttlCategories(4).AssignTooltip "Text tools: create and edit text layers"
+    ttlCategories(5).AssignTooltip "Paint tools: use a mouse, touchpad, or pen tablet to apply brushstrokes to an image or layer"
+    
     'File tool buttons come first
     cmdFile(FILE_NEW).AssignTooltip "This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.", "New Image"
     cmdFile(FILE_OPEN).AssignTooltip "Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.", "Open one or more images for editing"
@@ -1111,4 +1134,8 @@ Public Sub UpdateAgainstCurrentTheme()
         lnRightSeparator.borderColor = vbHighlight
     End If
     
+End Sub
+
+Private Sub ttlCategories_Click(Index As Integer, ByVal newState As Boolean)
+    ReflowToolboxLayout
 End Sub

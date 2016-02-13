@@ -273,21 +273,37 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
     UpdateControlLayout
 End Sub
 
-'Because we sometimes do run-time rearranging of label controls, we wrap a couple helper functions to ensure proper high-DPI support
+'To support high-DPI settings properly, we expose some specialized move+size functions
 Public Function GetLeft() As Long
     GetLeft = ucSupport.GetControlLeft
 End Function
 
 Public Sub SetLeft(ByVal newLeft As Long)
-    ucSupport.RequestNewPosition newLeft
+    ucSupport.RequestNewPosition newLeft, , True
+End Sub
+
+Public Function GetTop() As Long
+    GetTop = ucSupport.GetControlTop
+End Function
+
+Public Sub SetTop(ByVal newTop As Long)
+    ucSupport.RequestNewPosition , newTop, True
 End Sub
 
 Public Function GetWidth() As Long
-    GetWidth = ucSupport.GetBackBufferWidth
+    GetWidth = ucSupport.GetControlWidth
 End Function
 
 Public Sub SetWidth(ByVal newWidth As Long)
     ucSupport.RequestNewSize newWidth, , True
+End Sub
+
+Public Function GetHeight() As Long
+    GetHeight = ucSupport.GetControlHeight
+End Function
+
+Public Sub SetHeight(ByVal newHeight As Long)
+    ucSupport.RequestNewSize , newHeight, True
 End Sub
 
 'INITIALIZE control
