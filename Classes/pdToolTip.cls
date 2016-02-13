@@ -176,7 +176,9 @@ Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (By
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
 
 'Added by Tanner: due to complexities with always-on-top windows, we must also make tooltips always-on-top
+Private Const WS_POPUP As Long = &H80000000
 Private Const WS_EX_TOPMOST As Long = &H8&
+Private Const WS_EX_TOOLWINDOW As Long = &H80&
 
 'pdToolTip now supports icons
 Public Enum TT_ICON_TYPE
@@ -290,7 +292,10 @@ Public Function SetTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
         End With
                 
         'Create the tooltip window now
-        m_ToolCollection(toolIndex).toolHwnd = CreateWindowEx(0, "tooltips_class32", vbNullString, TTS_ALWAYSTIP Or WS_EX_TOPMOST Or TTS_NOPREFIX, 0, 0, 0, 0, m_ToolCollection(toolIndex).parentHwnd, 0, App.hInstance, ByVal 0&)
+        Dim extendedWindowStyles As Long, windowStyles As Long
+        extendedWindowStyles = WS_EX_TOOLWINDOW
+        windowStyles = TTS_ALWAYSTIP Or TTS_NOPREFIX Or WS_POPUP 'Or WS_EX_TOPMOST Or WS_EX_TOOLWINDOW
+        m_ToolCollection(toolIndex).toolHwnd = CreateWindowEx(extendedWindowStyles, "tooltips_class32", vbNullString, windowStyles, 0, 0, 0, 0, m_ToolCollection(toolIndex).parentHwnd, 0, App.hInstance, ByVal 0&)
         
         'If the window couldn't be created, bail
         If m_ToolCollection(toolIndex).toolHwnd = 0 Then
@@ -365,7 +370,9 @@ Public Function SetTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
     If m_ToolCollection(toolIndex).titleStringTranslated = vbNullString Then m_ToolCollection(toolIndex).titleStringTranslated = ""
     
     'Apply the title and icon settings, if any
-    SendMessage m_ToolCollection(toolIndex).toolHwnd, TTM_SETTITLE, m_ToolCollection(toolIndex).toolIcon, ByVal StrPtr(m_ToolCollection(toolIndex).titleStringTranslated)
+    If Len(m_ToolCollection(toolIndex).titleStringTranslated) <> 0 Or (m_ToolCollection(toolIndex).toolIcon <> 0) Then
+        SendMessage m_ToolCollection(toolIndex).toolHwnd, TTM_SETTITLE, m_ToolCollection(toolIndex).toolIcon, ByVal StrPtr(m_ToolCollection(toolIndex).titleStringTranslated)
+    End If
     
     'We now have two choices: adding the tooltip text anew, or simply updating it.
     Dim toolMsgSuccess As Boolean
