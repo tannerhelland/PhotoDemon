@@ -26,8 +26,8 @@ Begin VB.UserControl pdSlider
       TabIndex        =   1
       Top             =   60
       Width           =   4695
-      _extentx        =   8281
-      _extenty        =   635
+      _ExtentX        =   8281
+      _ExtentY        =   635
    End
    Begin PhotoDemon.pdSpinner tudPrimary 
       Height          =   345
@@ -35,8 +35,8 @@ Begin VB.UserControl pdSlider
       TabIndex        =   0
       Top             =   45
       Width           =   1080
-      _extentx        =   1905
-      _extenty        =   609
+      _ExtentX        =   1905
+      _ExtentY        =   609
    End
 End
 Attribute VB_Name = "pdSlider"
@@ -486,9 +486,13 @@ Private Sub UpdateControlLayout()
     If tudPrimary.GetTop <> newTop_TUD Then tudPrimary.SetTop newTop_TUD
     If tudPrimary.GetLeft <> newLeft_TUD Then tudPrimary.SetLeft newLeft_TUD
     
-    ucSupport.RequestRepaint
+    'Inside the IDE, use a line of dummy code to force a redraw of the control outline
+    If Not g_IsProgramRunning Then
+        Dim bufferDC As Long
+        bufferDC = ucSupport.GetBackBufferDC(True)
+    End If
     
-    'Reset the redraw flag, and request a background repaint
+    ucSupport.RequestRepaint
     m_InternalResizeActive = False
     
 End Sub
