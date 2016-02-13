@@ -24,6 +24,16 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdColorSelector pdColorSelectorTest 
+      Height          =   795
+      Left            =   3120
+      TabIndex        =   19
+      Top             =   5460
+      Width           =   4455
+      _ExtentX        =   7858
+      _ExtentY        =   1402
+      Caption         =   "Color selector test"
+   End
    Begin PhotoDemon.pdTitle pdTitleTest 
       Height          =   375
       Left            =   10560
@@ -95,20 +105,20 @@ Begin VB.Form FormThemeEditor
       Caption         =   "Button"
    End
    Begin PhotoDemon.pdPenSelector pdpsTest 
-      Height          =   1095
+      Height          =   855
       Left            =   3120
       TabIndex        =   6
-      Top             =   5160
+      Top             =   4560
       Width           =   4455
       _ExtentX        =   7858
       _ExtentY        =   1931
       Caption         =   "Pen selector test"
    End
    Begin PhotoDemon.pdGradientSelector pdgsTest 
-      Height          =   1095
+      Height          =   855
       Left            =   3120
       TabIndex        =   5
-      Top             =   3960
+      Top             =   3660
       Width           =   4455
       _ExtentX        =   7858
       _ExtentY        =   1931
@@ -124,7 +134,7 @@ Begin VB.Form FormThemeEditor
       _ExtentY        =   1085
    End
    Begin PhotoDemon.pdBrushSelector pdbsTest 
-      Height          =   1095
+      Height          =   855
       Left            =   3120
       TabIndex        =   3
       Top             =   2760

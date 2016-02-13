@@ -117,6 +117,13 @@
 				<Caption-hover>TextDefault</Caption-hover>
 			</PDButton>
 			
+			<PDColorSelector>
+				<Border></Border>
+				<Border-active></Border-active>
+				<Border-disabled></Border-disabled>
+				<Border-hover></Border-hover>
+			</PDColorSelector>
+			
 			<PDEditBox>
 				<Background>BackgroundDefault</Background>
 				<Background-disabled>GrayLight</Background-disabled>

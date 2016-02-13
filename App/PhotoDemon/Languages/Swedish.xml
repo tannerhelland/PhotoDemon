@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.135</langversion>
+<langversion>6.7.136</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -12392,13 +12392,13 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 </phrase>
 
 <phrase>
-<original>non-destructive</original>
-<translation>icke-förstörande</translation>
+<original>n-d</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>selection</original>
-<translation>val</translation>
+<original>select</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12409,6 +12409,36 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <phrase>
 <original>macro recording in progress</original>
 <translation>makro inspelning pågår</translation>
+</phrase>
+
+<phrase>
+<original>File tools: create, load, and save image files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Undo/Redo tools: revert destructive changes made to an image or layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Non-destructive tools: move, rotate, or apply certain photo adjustments without permanently modifying an image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Select tools: isolate parts of an image or layer for further editing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Text tools: create and edit text layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Paint tools: use a mouse, touchpad, or pen tablet to apply brushstrokes to an image or layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12536,7 +12566,7 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 46 phrases. 15 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 52 phrases. 15 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14680,10 +14710,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2517</phrasecount>
+<phrasecount>2523</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4321 phrases. -->
-<!-- 1804 are duplicates, so only 2517 unique phrases have been written to file. -->
-<!-- These 2517 phrases contain approximately 13401 total words. -->
+<!-- As of this build, PhotoDemon contains 4327 phrases. -->
+<!-- 1804 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 13469 total words. -->
 
 </pdData>
