@@ -24,6 +24,16 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdTitle pdTitleTest 
+      Height          =   375
+      Left            =   10560
+      TabIndex        =   18
+      Top             =   2760
+      Width           =   2655
+      _ExtentX        =   4683
+      _ExtentY        =   661
+      Caption         =   "title test"
+   End
    Begin PhotoDemon.pdSlider pdSliderTest 
       Height          =   735
       Index           =   0

@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.UserControl pdTitle 
    Appearance      =   0  'Flat
    BackColor       =   &H00FFFFFF&
-   ClientHeight    =   3600
+   ClientHeight    =   450
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   4800
+   ClientWidth     =   3930
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -16,9 +16,9 @@ Begin VB.UserControl pdTitle
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
-   ScaleHeight     =   240
+   ScaleHeight     =   30
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   320
+   ScaleWidth      =   262
    ToolboxBitmap   =   "pdTitle.ctx":0000
 End
 Attribute VB_Name = "pdTitle"
@@ -27,10 +27,10 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Collapsible Title Label/Button control
+'PhotoDemon Collapsible Title Label+Button control
 'Copyright 2014-2016 by Tanner Helland
 'Created: 19/October/14
-'Last updated: 29/October/15
+'Last updated: 12/February/16
 'Last update: integrate with pdUCSupport, which cuts a ton of redundant code
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
@@ -68,9 +68,6 @@ Public Event LostFocusAPI()
 ' caption changes, or the control size changes.
 Private m_CaptionRect As RECT
 
-'Current back color
-Private m_BackColor As OLE_COLOR
-
 'Current title state (TRUE when arrow is pointing down, e.g. the associated container is "open")
 Private m_TitleState As Boolean
 
@@ -78,6 +75,25 @@ Private m_TitleState As Boolean
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
+
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDTITLE_COLOR_LIST
+    [_First] = 0
+    PDT_Background = 0
+    PDT_Caption = 1
+    PDT_Arrow = 2
+    PDT_Border = 3
+    [_Last] = 3
+    [_Count] = 4
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
 
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
@@ -116,13 +132,9 @@ Public Property Get Enabled() As Boolean
 End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
-    
     UserControl.Enabled = newValue
-    PropertyChanged "Enabled"
-    
-    'Redraw the control
     RedrawBackBuffer
-    
+    PropertyChanged "Enabled"
 End Property
 
 Public Property Get FontBold() As Boolean
@@ -156,8 +168,8 @@ End Property
 Public Property Let Value(ByVal newState As Boolean)
     If newState <> m_TitleState Then
         m_TitleState = newState
-        PropertyChanged "Value"
         RedrawBackBuffer
+        PropertyChanged "Value"
     End If
 End Property
 
@@ -205,10 +217,12 @@ End Sub
 
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
+    RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
+    RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -237,8 +251,11 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestCaptionSupport
     ucSupport.SetCaptionAutomaticPainting False
     
-    'In design mode, initialize a base theming class, so our paint functions don't fail
-    If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDTITLE_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDTitle", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -247,7 +264,6 @@ End Sub
 
 'Set default properties
 Private Sub UserControl_InitProperties()
-    BackColor = vbWhite
     Caption = ""
     FontBold = False
     FontSize = 10
@@ -261,7 +277,6 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        m_BackColor = .ReadProperty("BackColor", vbWhite)
         Caption = .ReadProperty("Caption", "")
         FontBold = .ReadProperty("FontBold", False)
         FontSize = .ReadProperty("FontSize", 10)
@@ -275,7 +290,6 @@ End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
-        .WriteProperty "BackColor", m_BackColor, vbWhite
         .WriteProperty "Caption", ucSupport.GetCaptionText, ""
         .WriteProperty "FontBold", ucSupport.GetCaptionFontBold, False
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 10
@@ -325,82 +339,51 @@ Private Sub UpdateControlLayout()
             
 End Sub
 
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    With m_Colors
+        .LoadThemeColor PDT_Background, "Background", IDE_WHITE
+        .LoadThemeColor PDT_Caption, "Caption", IDE_BLUE
+        .LoadThemeColor PDT_Arrow, "Arrow", IDE_BLUE
+        .LoadThemeColor PDT_Border, "Border", IDE_BLUE
+    End With
+End Sub
+
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
-    
-    'The support class handles most of this for us
+    UpdateColorList
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    
-    'If theme changes require us to redraw our control, the support class will raise additional paint events for us.
-    
 End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
 Private Sub RedrawBackBuffer()
     
+    Dim ctlFillColor As Long
+    ctlFillColor = m_Colors.RetrieveColor(PDT_Background, Me.Enabled, , ucSupport.IsMouseInside)
+    
+    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+    Dim bufferDC As Long
+    bufferDC = ucSupport.GetBackBufferDC(True, ctlFillColor)
+    
+    Dim bWidth As Long, bHeight As Long
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
+        
     If g_IsProgramRunning Then
         
-        'Colors used throughout this paint function are determined by several factors:
-        ' 1) Control enablement (disabled controls are grayed)
-        ' 2) Hover state (hovered controls glow)
-        ' 3) Value (controls arrow direction)
-        ' 4) The central themer (which contains default color values for all these scenarios)
-        Dim textColor As Long, arrowColor As Long
-        Dim ctlFillColor As Long, ctlTopLineColor As Long
+        Dim textColor As Long, arrowColor As Long, ctlTopLineColor As Long
+        arrowColor = m_Colors.RetrieveColor(PDT_Arrow, Me.Enabled, , ucSupport.IsMouseInside)
+        ctlTopLineColor = m_Colors.RetrieveColor(PDT_Border, Me.Enabled, ucSupport.DoIHaveFocus, ucSupport.IsMouseInside)
+        textColor = m_Colors.RetrieveColor(PDT_Caption, Me.Enabled, , ucSupport.IsMouseInside)
         
-        'For this particular control, fill color is always consistent
-        ctlFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-        
-        If Me.Enabled Then
-            
-            'Is the mouse inside the UC?
-            If ucSupport.IsMouseInside Then
-                textColor = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
-                arrowColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                ctlTopLineColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                
-            'The mouse is not inside the UC
-            Else
-                
-                'If focus was received via keyboard, change the border to reflect it
-                If ucSupport.DoIHaveFocus Then
-                    ctlTopLineColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                Else
-                    ctlTopLineColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
-                End If
-                
-                'Text and arrow color is identical regardless of focus
-                textColor = g_Themer.GetThemeColor(PDTC_TEXT_TITLE)
-                arrowColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
-            
-            End If
-            
-        'The button is disabled
-        Else
-            ctlTopLineColor = g_Themer.GetThemeColor(PDTC_DISABLED)
-            textColor = g_Themer.GetThemeColor(PDTC_DISABLED)
-            arrowColor = g_Themer.GetThemeColor(PDTC_DISABLED)
-        End If
-        
-        'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-        Dim bufferDC As Long
-        bufferDC = ucSupport.GetBackBufferDC(True)
-        
-        Dim bWidth As Long, bHeight As Long
-        bWidth = ucSupport.GetBackBufferWidth
-        bHeight = ucSupport.GetBackBufferHeight
-        
-        'First, we fill the button interior with the established fill color
-        GDI_Plus.GDIPlusFillRectToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, ctlFillColor, 255
-                    
-        'Paint the caption, if any
         If ucSupport.IsCaptionActive Then
             ucSupport.SetCaptionCustomColor textColor
             ucSupport.PaintCaptionManually
         End If
             
-        'Next, paint the drop-down arrow.  To simplify calculations, we first calculate the boundary rect where the arrow will be drawn.
+        'Next, paint the drop-down arrow.  To simplify calculations, we first calculate a boundary rect.
         Dim arrowRect As RECTF
         arrowRect.Left = bWidth - bHeight - FixDPI(2)
         arrowRect.Top = 1
