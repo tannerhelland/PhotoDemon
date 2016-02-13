@@ -74,14 +74,30 @@ Private isDialogLive As Boolean
 ' module-level to know how to render the control during paint events.
 Private m_MouseInPrimaryButton As Boolean, m_MouseInSecondaryButton As Boolean
 
+'Most instances of the control provide a "quick select" box on the right that contains the current main window color.
+' In some places, this color is irrelevant (like the Levels dialog), so we suppress it via a dedicated property.
+Private m_ShowMainWindowColor As Boolean
+
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
-'Most instances of the control provide a "quick select" box on the right that contains the current main window color.
-' In some places, this color is irrelevant (like the Levels dialog), so we suppress it via a dedicated property.
-Private m_ShowMainWindowColor As Boolean
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDCS_COLOR_LIST
+    [_First] = 0
+    PDCS_Border = 0
+    [_Last] = 0
+    [_Count] = 1
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
 
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
@@ -218,11 +234,9 @@ Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
 
+'On program-wide color changes, redraw ourselves accordingly
 Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef bHandled As Boolean, ByRef lReturn As Long)
-    
-    'On program-wide color changes, redraw ourselves accordingly
     If wMsg = WM_PD_PRIMARY_COLOR_CHANGE Then RedrawBackBuffer
-    
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -239,18 +253,17 @@ Private Sub UserControl_Initialize()
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
-    
-    'Request some additional input functionality (custom mouse events)
     ucSupport.RequestExtraFunctionality True
-    
-    'Enable caption support, so we don't need an attached label
     ucSupport.RequestCaptionSupport
     
     'This class needs to redraw itself when the primary window color changes.  Request notifications from the program-wide color change wMsg.
     ucSupport.SubclassCustomMessage WM_PD_PRIMARY_COLOR_CHANGE, True
     
-    'In design mode, initialize a base theming class, so our paint functions don't fail
-    If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDCS_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDColorSelector", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -366,11 +379,11 @@ End Sub
 'Returns TRUE if the mouse is inside the clickable region of the primary color selector
 ' (e.g. NOT the caption area, if one exists)
 Private Function IsMouseInPrimaryButton(ByVal x As Single, ByVal y As Single) As Boolean
-    IsMouseInPrimaryButton = Math_Functions.isPointInRect(x, y, m_PrimaryColorRect)
+    IsMouseInPrimaryButton = Math_Functions.IsPointInRect(x, y, m_PrimaryColorRect)
 End Function
 
 Private Function IsMouseInSecondaryButton(ByVal x As Single, ByVal y As Single) As Boolean
-    IsMouseInSecondaryButton = Math_Functions.isPointInRect(x, y, m_SecondaryColorRect)
+    IsMouseInSecondaryButton = Math_Functions.IsPointInRect(x, y, m_SecondaryColorRect)
 End Function
 
 'Redraw the entire control, including the caption (if present)
@@ -385,14 +398,8 @@ Private Sub RedrawBackBuffer()
     
         'Calculate default border colors.  (Note that there are two: one for hover state, and one for default state)
         Dim defaultBorderColor As Long, activeBorderColor As Long
-        
-        If Me.Enabled Then
-            defaultBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
-            activeBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-        Else
-            defaultBorderColor = g_Themer.GetThemeColor(PDTC_DISABLED)
-            activeBorderColor = defaultBorderColor
-        End If
+        defaultBorderColor = m_Colors.RetrieveColor(PDCS_Border, Me.Enabled)
+        activeBorderColor = m_Colors.RetrieveColor(PDCS_Border, Me.Enabled, , True)
                 
         'Render the primary and secondary color button default appearances
         With m_PrimaryColorRect
@@ -462,13 +469,16 @@ Private Sub MakeNewTooltip()
     
 End Sub
 
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    m_Colors.LoadThemeColor PDCS_Border, "Border", IDE_BLACK
+End Sub
+
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
-    
+    UpdateColorList
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    
-    'If theme changes require us to redraw our control, the support class will raise additional paint events for us.
-    
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
