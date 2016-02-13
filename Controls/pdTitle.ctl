@@ -128,6 +128,7 @@ End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
@@ -157,11 +158,13 @@ End Property
 
 'hWnds aren't exposed by default
 Public Property Get hWnd() As Long
+Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 
 'State is toggled on each click.  TRUE means the accompanying panel should be OPEN.
 Public Property Get Value() As Boolean
+Attribute Value.VB_UserMemId = 0
     Value = m_TitleState
 End Property
 
@@ -172,6 +175,39 @@ Public Property Let Value(ByVal newState As Boolean)
         PropertyChanged "Value"
     End If
 End Property
+
+'To support high-DPI settings properly, we expose some specialized move+size functions
+Public Function GetLeft() As Long
+    GetLeft = ucSupport.GetControlLeft
+End Function
+
+Public Sub SetLeft(ByVal newLeft As Long)
+    ucSupport.RequestNewPosition newLeft, , True
+End Sub
+
+Public Function GetTop() As Long
+    GetTop = ucSupport.GetControlTop
+End Function
+
+Public Sub SetTop(ByVal newTop As Long)
+    ucSupport.RequestNewPosition , newTop, True
+End Sub
+
+Public Function GetWidth() As Long
+    GetWidth = ucSupport.GetControlWidth
+End Function
+
+Public Sub SetWidth(ByVal newWidth As Long)
+    ucSupport.RequestNewSize newWidth, , True
+End Sub
+
+Public Function GetHeight() As Long
+    GetHeight = ucSupport.GetControlHeight
+End Function
+
+Public Sub SetHeight(ByVal newHeight As Long)
+    ucSupport.RequestNewSize , newHeight, True
+End Sub
 
 'A few key events are also handled
 Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
@@ -344,7 +380,7 @@ End Sub
 Private Sub UpdateColorList()
     With m_Colors
         .LoadThemeColor PDT_Background, "Background", IDE_WHITE
-        .LoadThemeColor PDT_Caption, "Caption", IDE_BLUE
+        .LoadThemeColor PDT_Caption, "Caption", IDE_GRAY
         .LoadThemeColor PDT_Arrow, "Arrow", IDE_BLUE
         .LoadThemeColor PDT_Border, "Border", IDE_BLUE
     End With
@@ -370,19 +406,19 @@ Private Sub RedrawBackBuffer()
     Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
-        
+    
+    Dim textColor As Long, arrowColor As Long, ctlTopLineColor As Long
+    arrowColor = m_Colors.RetrieveColor(PDT_Arrow, Me.Enabled, , ucSupport.IsMouseInside)
+    ctlTopLineColor = m_Colors.RetrieveColor(PDT_Border, Me.Enabled, ucSupport.DoIHaveFocus, ucSupport.IsMouseInside)
+    textColor = m_Colors.RetrieveColor(PDT_Caption, Me.Enabled, , ucSupport.IsMouseInside)
+    
+    If ucSupport.IsCaptionActive Then
+        ucSupport.SetCaptionCustomColor textColor
+        ucSupport.PaintCaptionManually
+    End If
+    
     If g_IsProgramRunning Then
-        
-        Dim textColor As Long, arrowColor As Long, ctlTopLineColor As Long
-        arrowColor = m_Colors.RetrieveColor(PDT_Arrow, Me.Enabled, , ucSupport.IsMouseInside)
-        ctlTopLineColor = m_Colors.RetrieveColor(PDT_Border, Me.Enabled, ucSupport.DoIHaveFocus, ucSupport.IsMouseInside)
-        textColor = m_Colors.RetrieveColor(PDT_Caption, Me.Enabled, , ucSupport.IsMouseInside)
-        
-        If ucSupport.IsCaptionActive Then
-            ucSupport.SetCaptionCustomColor textColor
-            ucSupport.PaintCaptionManually
-        End If
-            
+    
         'Next, paint the drop-down arrow.  To simplify calculations, we first calculate a boundary rect.
         Dim arrowRect As RECTF
         arrowRect.Left = bWidth - bHeight - FixDPI(2)
