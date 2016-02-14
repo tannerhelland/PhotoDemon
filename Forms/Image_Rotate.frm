@@ -222,8 +222,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
             
             'Finally, render the preview and erase the temporary DIB to conserve memory
-            tmpDIB.RenderToPictureBox pdFxPreview.getPreviewPic
-            pdFxPreview.setFXImage tmpDIB
+            pdFxPreview.SetFXImage tmpDIB
             
             Set tmpDIB = Nothing
             
@@ -414,7 +413,7 @@ Private Sub Form_Activate()
         
     End Select
     
-    convertAspectRatio srcWidth, srcHeight, pdFxPreview.getPreviewWidth, pdFxPreview.getPreviewHeight, dWidth, dHeight
+    convertAspectRatio srcWidth, srcHeight, pdFxPreview.getPreviewWidth, pdFxPreview.GetPreviewHeight, dWidth, dHeight
     
     'Create a new, smaller image at those dimensions
     If (dWidth < srcWidth) Or (dHeight < srcHeight) Then
@@ -450,7 +449,7 @@ Private Sub Form_Activate()
     smallDIB.SetAlphaPremultiplication False
     
     'Give the preview object a copy of this image data so it can show it to the user if requested
-    pdFxPreview.setOriginalImage smallDIB
+    pdFxPreview.SetOriginalImage smallDIB
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me

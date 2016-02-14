@@ -370,13 +370,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
         Message "Finished."
         
     Else
-    
-        'Render the preview and erase the temporary DIB to conserve memory
-        tmpDIB.RenderToPictureBox pdFxPreview.getPreviewPic
-        pdFxPreview.setFXImage tmpDIB
-        
-        Set tmpDIB = Nothing
-        
+        pdFxPreview.SetFXImage tmpDIB
     End If
 
 End Sub
@@ -411,7 +405,7 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
     
     'Give the preview object a copy of this image data so it can show it to the user if requested
-    pdFxPreview.setOriginalImage pdImages(g_CurrentImage).getActiveDIB()
+    pdFxPreview.SetOriginalImage pdImages(g_CurrentImage).getActiveDIB()
     
     'Populate the combo box
     cboTarget.AddItem " current screen size", 0

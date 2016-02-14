@@ -1284,11 +1284,12 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     'Some forms call this function during the load step, meaning they will be triggered during compilation; avoid this
     If Not g_IsProgramRunning Then Exit Sub
     
-    'Reset all form mouse settings to prevent VB from interfering with our run-time mouse changes
+    'FORM STEP 1: apply any form-level changes (like backcolor), as child controls may pull this automatically
+    dstForm.BackColor = Colors.GetRGBLongFromHex(g_Themer.LookUpColor("Default", "Background"))
     dstForm.MouseIcon = LoadPicture("")
     dstForm.MousePointer = 0
     
-    'FORM STEP 1: Enumerate through every control on the form.  We will be making changes on-the-fly on a per-control basis.
+    'FORM STEP 2: Enumerate through every control on the form and apply theming on a per-control basis.
     Dim eControl As Control
     
     For Each eControl In dstForm.Controls
@@ -1307,7 +1308,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         
         'STEP 2: if the current system is Vista or later, and the user has requested modern typefaces via Edit -> Preferences,
         ' redraw all control fonts using Segoe UI.
-        If ((TypeOf eControl Is TextBox) Or (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox) Or (TypeOf eControl Is Label)) And (Not TypeOf eControl Is PictureBox) Then
+        If ((TypeOf eControl Is TextBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox) Or (TypeOf eControl Is Label)) And (Not TypeOf eControl Is PictureBox) Then
             eControl.fontName = g_InterfaceFont
         End If
         
@@ -1338,6 +1339,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         If (TypeOf eControl Is pdTextBox) Or (TypeOf eControl Is pdSpinner) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSliderStandalone) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdTitle) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdFxPreviewCtl) Or (TypeOf eControl Is pdPreview) Then eControl.UpdateAgainstCurrentTheme
         
         'These controls currently support translations, but not theming.  (Theming support is actively being worked on, and I'm
         ' migrating controls to the above "finished" list as they're completed.  Once all controls have been migrated, I'll look
@@ -1348,7 +1350,6 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         If (TypeOf eControl Is pdResize) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdFxPreviewCtl) Then eControl.UpdateAgainstCurrentTheme
                 
         'While we're here, forcibly remove TabStops from each picture box.  They should never receive focus, but I often forget
         ' to change this at design-time.
@@ -1362,7 +1363,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         
     Next
     
-    'FORM STEP 2: translate the form (and all controls on it)
+    'FORM STEP 3: translate the form (and all controls on it)
     ' Note that this step is not as relevant as it used to be, because all PD controls apply their own translations if/when necessary
     ' during the above eControl.UpdateAgainstCurrentTheme step.  This translation step only handles the form caption (which must be
     ' set specially), and some other oddities like menus, which have not been replaced yet.
@@ -1371,7 +1372,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         g_Language.ApplyTranslations dstForm, useDoEvents
     End If
     
-    'Refresh all non-MDI forms after making the changes above
+    'FORM STEP 4: force a refresh to ensure our changes are immediately visible
     If dstForm.Name <> "FormMain" Then
         dstForm.Refresh
     Else

@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.139</langversion>
+<langversion>6.7.140</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -3870,6 +3870,12 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- pdSlider.ctl contains 0 phrases. -->
 
 <!-- END text for pdSlider.ctl-->
+
+<!-- BEGIN text for pdSliderStandalone.ctl -->
+
+<!-- pdSliderStandalone.ctl contains 0 phrases. -->
+
+<!-- END text for pdSliderStandalone.ctl-->
 
 <!-- BEGIN text for pdSpinner.ctl -->
 
@@ -14702,11 +14708,11 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdSliderStandalone.ctl -->
+<!-- BEGIN text for pdPreview.ctl -->
 
-<!-- pdSliderStandalone.ctl contains 0 phrases. -->
+<!-- pdPreview.ctl contains 0 phrases. -->
 
-<!-- END text for pdSliderStandalone.ctl-->
+<!-- END text for pdPreview.ctl-->
 
 <!-- Automatic text extraction complete. -->
 

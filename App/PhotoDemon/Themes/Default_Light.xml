@@ -23,11 +23,13 @@
 			<BackgroundDefault>#ffffff</BackgroundDefault>
 			<BackgroundCanvas>#a0a0a0</BackgroundCanvas>
 			<BackgroundCommandBar>#dcdce1</BackgroundCommandBar>
+			<Black>#000000</Black>
 			<ErrorRed>#dc2824</ErrorRed>
 			<GrayDefault>#929292</GrayDefault>
 			<GrayDisabled>#b1bac2</GrayDisabled>
 			<GrayDark>#5b5b5b</GrayDark>
 			<GrayLight>#bababa</GrayLight>
+			<GrayNeutral>#7f7f7f</GrayNeutral>
 			<TextDefault>#404040</TextDefault>
 			<TextDark>#212121</TextDark>
 			<TextEditBox>TextDark</TextEditBox>
@@ -134,6 +136,10 @@
 				<Text-disabled>GrayDefault</Text-disabled>
 			</PDEditBox>
 			
+			<PDFXPreview>
+				<Background>BackgroundDefault</Background>
+			</PDFXPreview>
+			
 			<PDGradientSelector>
 				<Border></Border>
 				<Border-active></Border-active>
@@ -154,6 +160,13 @@
 				<Caption-disabled>GrayDisabled</Caption-disabled>
 				<Caption-hover>TextHover</Caption-hover>
 			</PDHyperlink>
+			
+			<PDPreview>
+				<Background>BackgroundDefault</Background>
+				<PreviewBackground>GrayNeutral</PreviewBackground>
+				<PreviewBorder>Black</PreviewBorder>
+				<PreviewBorder-hover>AccentDefault</PreviewBorder-hover>
+			</PDPreview>
 			
 			<PDScrollBar>
 				<ButtonBorder>BackgroundDefault</ButtonBorder>

@@ -20,6 +20,7 @@ Begin VB.UserControl pdSliderStandalone
    ScaleHeight     =   20
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   337
+   ToolboxBitmap   =   "pdSliderStandalone.ctx":0000
 End
 Attribute VB_Name = "pdSliderStandalone"
 Attribute VB_GlobalNameSpace = False
