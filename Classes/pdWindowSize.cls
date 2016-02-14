@@ -144,10 +144,20 @@ End Sub
 Public Sub SetSize(ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
     
     Dim swpFlags As SWP_FLAGS
-    swpFlags = SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER 'Or SWP_NOCOPYBITS
+    swpFlags = SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
     If Not notifyWindow Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
     
     SetWindowPos m_hWnd, 0&, 0&, 0&, newWidth, newHeight, swpFlags
+    
+End Sub
+
+Public Sub SetSizeAndPosition(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
+
+    Dim swpFlags As SWP_FLAGS
+    swpFlags = SWP_NOZORDER Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
+    If Not notifyWindow Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
+    
+    SetWindowPos m_hWnd, 0&, newLeft, newTop, newWidth, newHeight, swpFlags
     
 End Sub
 

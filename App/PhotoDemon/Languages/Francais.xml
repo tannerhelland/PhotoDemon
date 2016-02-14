@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.136</langversion>
+<langversion>6.7.137</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -3869,6 +3869,12 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 <!-- pdSlider.ctl contains 0 phrases. -->
 
 <!-- END text for pdSlider.ctl-->
+
+<!-- BEGIN text for pdSliderStandalone.ctl -->
+
+<!-- pdSliderStandalone.ctl contains 0 phrases. -->
+
+<!-- END text for pdSliderStandalone.ctl-->
 
 <!-- BEGIN text for pdSpinner.ctl -->
 
@@ -14702,11 +14708,11 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdSliderStandalone.ctl -->
+<!-- BEGIN text for pdPreview.ctl -->
 
-<!-- pdSliderStandalone.ctl contains 0 phrases. -->
+<!-- pdPreview.ctl contains 0 phrases. -->
 
-<!-- END text for pdSliderStandalone.ctl-->
+<!-- END text for pdPreview.ctl-->
 
 <!-- Automatic text extraction complete. -->
 

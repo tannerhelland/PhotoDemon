@@ -28,12 +28,14 @@
 			<GrayDisabled>#929292</GrayDisabled>
 			<GrayDark>#d3dde6</GrayDark>
 			<GrayLight>#5b5b5b</GrayLight>
+			<GrayNeutral>#7f7f7f</GrayNeutral>
 			<TextDefault>#c0c0c0</TextDefault>
 			<TextDark>#d9d9d9</TextDark>
 			<TextEditBox>TextDark</TextEditBox>
 			<TextHyperlink>Accent4</TextHyperlink>
 			<TextHover>Accent6</TextHover>
 			<TextInvert>#313131</TextInvert>
+			<White>#ffffff</White>
 		</Definitions>
 		
 		<!-- The Colors section contains a hard-coded list of colors used by PD. -->
@@ -134,6 +136,10 @@
 				<Text-disabled>GrayDefault</Text-disabled>
 			</PDEditBox>
 			
+			<PDFXPreview>
+				<Background>BackgroundDefault</Background>
+			</PDFXPreview>
+			
 			<PDGradientSelector>
 				<Border></Border>
 				<Border-active></Border-active>
@@ -154,6 +160,13 @@
 				<Caption-disabled>GrayDisabled</Caption-disabled>
 				<Caption-hover>TextHover</Caption-hover>
 			</PDHyperlink>
+			
+			<PDPreview>
+				<Background>BackgroundDefault</Background>
+				<PreviewBackground>GrayNeutral</PreviewBackground>
+				<PreviewBorder>White</PreviewBorder>
+				<PreviewBorder-hover>AccentDefault</PreviewBorder-hover>
+			</PDPreview>
 			
 			<PDScrollBar>
 				<ButtonBorder>BackgroundDefault</ButtonBorder>

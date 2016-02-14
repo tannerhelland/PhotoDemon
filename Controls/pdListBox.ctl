@@ -18,6 +18,7 @@ Begin VB.UserControl pdListBox
    ScaleHeight     =   240
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
+   ToolboxBitmap   =   "pdListBox.ctx":0000
 End
 Attribute VB_Name = "pdListBox"
 Attribute VB_GlobalNameSpace = False
@@ -117,7 +118,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
 End Sub
 
 Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
-    m_MouseInsideList = Math_Functions.isPointInRectF(mouseX, mouseY, m_ListRect)
+    m_MouseInsideList = Math_Functions.IsPointInRectF(mouseX, mouseY, m_ListRect)
     If m_MouseInsideList Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
 End Sub
 
