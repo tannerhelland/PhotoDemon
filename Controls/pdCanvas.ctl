@@ -44,11 +44,11 @@ Begin VB.UserControl pdCanvas
       TabIndex        =   11
       Top             =   5640
       Width           =   255
-      _ExtentX        =   450
-      _ExtentY        =   450
-      AutoToggle      =   -1  'True
-      BackColor       =   -2147483626
-      UseCustomBackColor=   -1  'True
+      _extentx        =   450
+      _extenty        =   450
+      autotoggle      =   -1  'True
+      backcolor       =   -2147483626
+      usecustombackcolor=   -1  'True
    End
    Begin PhotoDemon.pdScrollBar hScroll 
       Height          =   255
@@ -56,10 +56,10 @@ Begin VB.UserControl pdCanvas
       TabIndex        =   10
       Top             =   5640
       Width           =   4575
-      _ExtentX        =   8070
-      _ExtentY        =   450
-      OrientationHorizontal=   -1  'True
-      VisualStyle     =   1
+      _extentx        =   8070
+      _extenty        =   450
+      orientationhorizontal=   -1  'True
+      visualstyle     =   1
    End
    Begin PhotoDemon.pdScrollBar vScroll 
       Height          =   4935
@@ -67,9 +67,9 @@ Begin VB.UserControl pdCanvas
       TabIndex        =   9
       Top             =   600
       Width           =   255
-      _ExtentX        =   450
-      _ExtentY        =   8705
-      VisualStyle     =   1
+      _extentx        =   450
+      _extenty        =   8705
+      visualstyle     =   1
    End
    Begin VB.PictureBox picCanvas 
       Appearance      =   0  'Flat
@@ -111,9 +111,9 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   8
          Top             =   15
          Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   556
-         FontSize        =   9
+         _extentx        =   1164
+         _extenty        =   556
+         fontsize        =   9
       End
       Begin PhotoDemon.pdComboBox cmbZoom 
          Height          =   360
@@ -121,22 +121,22 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   7
          Top             =   15
          Width           =   1290
-         _ExtentX        =   2275
-         _ExtentY        =   635
-         FontSize        =   9
+         _extentx        =   2275
+         _extenty        =   635
+         fontsize        =   9
       End
       Begin PhotoDemon.pdLabel lblImgSize 
          Height          =   210
          Left            =   3240
          Top             =   60
          Width           =   345
-         _ExtentX        =   609
-         _ExtentY        =   370
-         BackColor       =   -2147483626
-         Caption         =   "size:"
-         FontSize        =   9
-         Layout          =   2
-         UseCustomBackColor=   -1  'True
+         _extentx        =   609
+         _extenty        =   370
+         backcolor       =   -2147483626
+         caption         =   "size:"
+         fontsize        =   9
+         layout          =   2
+         usecustombackcolor=   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomFit 
          Height          =   345
@@ -144,10 +144,10 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   3
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         BackColor       =   -2147483626
-         UseCustomBackColor=   -1  'True
+         _extentx        =   688
+         _extenty        =   609
+         backcolor       =   -2147483626
+         usecustombackcolor=   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomOut 
          Height          =   345
@@ -155,11 +155,11 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   4
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         AutoToggle      =   -1  'True
-         BackColor       =   -2147483626
-         UseCustomBackColor=   -1  'True
+         _extentx        =   688
+         _extenty        =   609
+         autotoggle      =   -1  'True
+         backcolor       =   -2147483626
+         usecustombackcolor=   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomIn 
          Height          =   345
@@ -167,11 +167,11 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   5
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         AutoToggle      =   -1  'True
-         BackColor       =   -2147483626
-         UseCustomBackColor=   -1  'True
+         _extentx        =   688
+         _extenty        =   609
+         autotoggle      =   -1  'True
+         backcolor       =   -2147483626
+         usecustombackcolor=   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdImgSize 
          Height          =   345
@@ -179,37 +179,37 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   6
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         AutoToggle      =   -1  'True
-         BackColor       =   -2147483626
-         UseCustomBackColor=   -1  'True
+         _extentx        =   688
+         _extenty        =   609
+         autotoggle      =   -1  'True
+         backcolor       =   -2147483626
+         usecustombackcolor=   -1  'True
       End
       Begin PhotoDemon.pdLabel lblCoordinates 
          Height          =   210
          Left            =   5160
          Top             =   60
          Width           =   345
-         _ExtentX        =   609
-         _ExtentY        =   370
-         BackColor       =   -2147483626
-         Caption         =   "size:"
-         FontSize        =   9
-         Layout          =   2
-         UseCustomBackColor=   -1  'True
+         _extentx        =   609
+         _extenty        =   370
+         backcolor       =   -2147483626
+         caption         =   "size:"
+         fontsize        =   9
+         layout          =   2
+         usecustombackcolor=   -1  'True
       End
       Begin PhotoDemon.pdLabel lblMessages 
          Height          =   210
          Left            =   6360
          Top             =   60
          Width           =   6825
-         _ExtentX        =   12039
-         _ExtentY        =   503
-         Alignment       =   1
-         BackColor       =   -2147483626
-         Caption         =   "(messages will appear here at run-time)"
-         FontSize        =   9
-         UseCustomBackColor=   -1  'True
+         _extentx        =   12039
+         _extenty        =   503
+         alignment       =   1
+         backcolor       =   -2147483626
+         caption         =   "(messages will appear here at run-time)"
+         fontsize        =   9
+         usecustombackcolor=   -1  'True
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -401,9 +401,9 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdZoomIn.UpdateAgainstCurrentTheme
     cmdZoomOut.UpdateAgainstCurrentTheme
     cmdImgSize.UpdateAgainstCurrentTheme
-    
     cmbZoom.UpdateAgainstCurrentTheme
     cmbSizeUnit.UpdateAgainstCurrentTheme
+    cmdCenter.UpdateAgainstCurrentTheme
     
     hScroll.UpdateAgainstCurrentTheme
     vScroll.UpdateAgainstCurrentTheme
@@ -417,7 +417,7 @@ Public Sub UpdateAgainstCurrentTheme()
     cmbSizeUnit.ListIndex = backupSizeIndex
     
     'Reflow any dynamically positioned status bar elements
-    'drawStatusBarIcons (g_OpenImageCount > 0)
+    'DrawStatusBarIcons (g_OpenImageCount > 0)
     
     'Note that we don't actually move the last line status bar; that is handled by DisplayImageCoordinates itself
     If g_OpenImageCount > 0 Then
@@ -985,7 +985,7 @@ Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
                             Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), newImageX, newImageY, newCanvasX, newCanvasY
                             
                             'Finally, convert the canvas coordinates to screen coordinates, and move the cursor accordingly
-                            setCursorToCanvasPosition newCanvasX, newCanvasY
+                            SetCursorToCanvasPosition newCanvasX, newCanvasY
                             
                         End If
                         
@@ -1003,7 +1003,7 @@ Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
 End Sub
 
 'Set the mouse cursor to a specified position on the canvas.  This function will automatically handle the translation to screen coordinates.
-Private Sub setCursorToCanvasPosition(ByVal canvasX As Double, ByVal canvasY As Double)
+Private Sub SetCursorToCanvasPosition(ByVal canvasX As Double, ByVal canvasY As Double)
     cMouseEvents.moveCursorToNewPosition canvasX, canvasY
 End Sub
 

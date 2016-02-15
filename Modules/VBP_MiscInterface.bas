@@ -1344,11 +1344,12 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSliderStandalone) Then isPDControl = True
         If (TypeOf eControl Is pdTitle) Then isPDControl = True
         If (TypeOf eControl Is pdFxPreviewCtl) Or (TypeOf eControl Is pdPreview) Then isPDControl = True
+        If (TypeOf eControl Is pdCheckBox) Then isPDControl = True
         
         'These controls currently support translations, but not theming.  (Theming support is actively being worked on, and I'm
         ' migrating controls to the above "finished" list as they're completed.  Once all controls have been migrated, I'll look
         ' at a better system for detecting internal PD controls.)
-        If (TypeOf eControl Is pdRadioButton) Or (TypeOf eControl Is pdCheckBox) Then isPDControl = True
+        If (TypeOf eControl Is pdRadioButton) Then isPDControl = True
         If (TypeOf eControl Is pdCanvas) Then isPDControl = True
         If (TypeOf eControl Is pdCommandBar) Or (TypeOf eControl Is pdCommandBarMini) Then isPDControl = True
         If (TypeOf eControl Is pdResize) Then isPDControl = True

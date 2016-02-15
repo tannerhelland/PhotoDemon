@@ -119,6 +119,28 @@
 				<Caption-hover>TextDefault</Caption-hover>
 			</PDButton>
 			
+			<PDCheckBox>
+				<Background>BackgroundDefault</Background>
+				<ButtonBorder>GrayDefault</ButtonBorder>
+				<ButtonBorder-disabled>GrayDisabled</ButtonBorder-disabled>
+				<ButtonBorder-active>AccentDark</ButtonBorder-active>
+				<ButtonBorder-hover>AccentDark</ButtonBorder-hover>
+				<ButtonBorder-activehover>AccentDefault</ButtonBorder-activehover>
+				<ButtonFill>BackgroundDefault</ButtonFill>
+				<ButtonFill-disabled>BackgroundDefault</ButtonFill-disabled>
+				<ButtonFill-active>AccentLight</ButtonFill-active>
+				<ButtonFill-hover>BackgroundDefault</ButtonFill-hover>
+				<ButtonFill-activehover>AccentLight</ButtonFill-activehover>
+				<Caption>TextDefault</Caption>
+				<Caption-disable>GrayDisabled</Caption-disabled>
+				<Caption-active>TextDefault</Caption-active>
+				<Caption-hover>TextHyperlink</Caption-hover>
+				<Caption-activehover>TextHyperlink</Caption-activehover>
+				<Checkmark>BackgroundDefault</Checkmark>
+				<Checkmark-disabled>GrayDisabled</Checkmark-disabled>
+				<Checkmark-active>White</Checkmark-active>
+			</PDCheckBox>
+			
 			<PDColorSelector>
 				<Border></Border>
 				<Border-active></Border-active>

@@ -31,8 +31,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Checkbox control
 'Copyright 2013-2016 by Tanner Helland
 'Created: 28/January/13
-'Last updated: 05/November/15
-'Last update: integrate with pdUCSupport, which cuts a ton of redundant code
+'Last updated: 15/February/16
+'Last update: finalize theming support
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -88,6 +88,26 @@ Private m_ClickableRect As RECTF, m_MouseInsideClickableRect As Boolean
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
+
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDCHECKBOX_COLOR_LIST
+    [_First] = 0
+    PDCB_Background = 0
+    PDCB_Caption = 1
+    PDCB_ButtonFill = 2
+    PDCB_ButtonBorder = 3
+    PDCB_Checkmark = 4
+    [_Last] = 4
+    [_Count] = 5
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
 
 'IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
 '                 but I can revisit in the future if it ever becomes relevant.
@@ -201,7 +221,7 @@ End Sub
 
 'See if the mouse is over the clickable portion of the control
 Private Function isMouseOverClickArea(ByVal mouseX As Single, ByVal mouseY As Single) As Boolean
-    isMouseOverClickArea = Math_Functions.isPointInRectF(mouseX, mouseY, m_ClickableRect)
+    isMouseOverClickArea = Math_Functions.IsPointInRectF(mouseX, mouseY, m_ClickableRect)
 End Function
 
 Private Sub UserControl_Initialize()
@@ -216,8 +236,11 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestCaptionSupport
     ucSupport.SetCaptionAutomaticPainting False
     
-    'In design mode, initialize a base theming class, so our paint functions don't fail
-    If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDCHECKBOX_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDCheckBox", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -233,7 +256,7 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    ucSupport.RequestIDERepaint UserControl.hDC
+    If Not g_IsProgramRunning Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -344,47 +367,20 @@ Private Sub RedrawBackBuffer()
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
-    bufferDC = ucSupport.GetBackBufferDC(True)
+    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDCB_Background, Me.Enabled))
     
     Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If g_IsProgramRunning Then
+    'Populate colors from the master theme object
+    Dim chkBoxColorBorder As Long, chkBoxColorFill As Long, chkColor As Long, textColor As Long
+    chkBoxColorBorder = m_Colors.RetrieveColor(PDCB_ButtonBorder, Me.Enabled, m_Value, m_MouseInsideClickableRect)
+    chkBoxColorFill = m_Colors.RetrieveColor(PDCB_ButtonFill, Me.Enabled, m_Value, m_MouseInsideClickableRect)
+    chkColor = m_Colors.RetrieveColor(PDCB_Checkmark, Me.Enabled, m_Value, m_MouseInsideClickableRect)
+    textColor = m_Colors.RetrieveColor(PDCB_Caption, Me.Enabled, m_Value, m_MouseInsideClickableRect)
     
-        'Colors used throughout this paint function are determined primarily control enablement
-        Dim chkBoxColorBorder As Long, chkBoxColorFill As Long, chkColor As Long
-        If Me.Enabled Then
-            
-            chkColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-            
-            If CBool(m_Value) Then
-                
-                If m_MouseInsideClickableRect Then
-                    chkBoxColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                Else
-                    chkBoxColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
-                End If
-                
-                chkBoxColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                
-            Else
-                
-                If m_MouseInsideClickableRect Then
-                    chkBoxColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
-                Else
-                    chkBoxColorBorder = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
-                End If
-                
-                chkBoxColorFill = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-                
-            End If
-            
-        Else
-            chkBoxColorBorder = g_Themer.GetThemeColor(PDTC_DISABLED)
-            chkColor = g_Themer.GetThemeColor(PDTC_DISABLED)
-            chkBoxColorFill = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-        End If
+    If g_IsProgramRunning Then
         
         'Fill the checkbox area
         With m_CheckboxRect
@@ -393,7 +389,6 @@ Private Sub RedrawBackBuffer()
         
         'If the check box button is checked, draw a checkmark inside the border
         If CBool(m_Value) Then
-            
             Dim pt1 As POINTFLOAT, pt2 As POINTFLOAT, pt3 As POINTFLOAT
             pt1.x = m_CheckboxRect.Left + 3
             pt1.y = m_CheckboxRect.Top + (m_CheckboxRect.Height / 2)
@@ -405,25 +400,11 @@ Private Sub RedrawBackBuffer()
             GDI_Plus.GDIPlusDrawLineToDC bufferDC, pt2.x, pt2.y, pt3.x, pt3.y, chkColor, 255, FixDPI(2), True, LineCapRound, True
         End If
         
-        'Draw the checkbox border
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_CheckboxRect, chkBoxColorBorder, , , , LineJoinMiter
+        'Draw the checkbox border.  (Note that it has variable width, contingent on MouseOver status.)
+        Dim borderWidth As Single
+        If m_MouseInsideClickableRect Then borderWidth = 3 Else borderWidth = 1
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_CheckboxRect, chkBoxColorBorder, , borderWidth, , LineJoinMiter
         
-    End If
-    
-    'Set the text color according to the mouse position, e.g. highlight the text if the mouse is over it
-    Dim textColor As Long
-    If g_IsProgramRunning Then
-        If Me.Enabled Then
-            If m_MouseInsideClickableRect Then
-                textColor = g_Themer.GetThemeColor(PDTC_TEXT_HYPERLINK)
-            Else
-                textColor = g_Themer.GetThemeColor(PDTC_TEXT_DEFAULT)
-            End If
-        Else
-            textColor = g_Themer.GetThemeColor(PDTC_DISABLED)
-        End If
-    Else
-        textColor = RGB(92, 92, 92)
     End If
     
     'Render the text, appending ellipses as necessary
@@ -438,8 +419,21 @@ Private Sub RedrawBackBuffer()
 
 End Sub
 
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    With m_Colors
+        .LoadThemeColor PDCB_Background, "Background", IDE_WHITE
+        .LoadThemeColor PDCB_Caption, "Caption", IDE_GRAY
+        .LoadThemeColor PDCB_ButtonFill, "ButtonFill", IDE_WHITE
+        .LoadThemeColor PDCB_ButtonBorder, "ButtonBorder", IDE_BLACK
+        .LoadThemeColor PDCB_Checkmark, "Checkmark", IDE_BLUE
+    End With
+End Sub
+
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
+    UpdateColorList
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
     UpdateControlLayout
 End Sub
