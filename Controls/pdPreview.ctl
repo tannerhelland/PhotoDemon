@@ -141,6 +141,18 @@ Public Property Let AllowZoomPan(ByVal isAllowed As Boolean)
     RedrawBackBuffer
 End Property
 
+'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
+Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
+    Enabled = UserControl.Enabled
+End Property
+
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    RedrawBackBuffer
+    PropertyChanged "Enabled"
+End Property
+
 Public Function GetUniqueID() As Double
     GetUniqueID = m_UniqueID
 End Function

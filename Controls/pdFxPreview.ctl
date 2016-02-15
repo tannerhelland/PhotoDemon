@@ -26,8 +26,8 @@ Begin VB.UserControl pdFxPreviewCtl
       TabIndex        =   2
       Top             =   0
       Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   8916
+      _extentx        =   10186
+      _extenty        =   8916
    End
    Begin PhotoDemon.pdButtonStrip btsZoom 
       Height          =   495
@@ -35,9 +35,9 @@ Begin VB.UserControl pdFxPreviewCtl
       TabIndex        =   1
       Top             =   5160
       Width           =   2775
-      _ExtentX        =   4895
-      _ExtentY        =   873
-      FontSize        =   8
+      _extentx        =   4895
+      _extenty        =   873
+      fontsize        =   8
    End
    Begin PhotoDemon.pdButtonStrip btsState 
       Height          =   495
@@ -45,9 +45,9 @@ Begin VB.UserControl pdFxPreviewCtl
       TabIndex        =   0
       Top             =   5160
       Width           =   2775
-      _ExtentX        =   4895
-      _ExtentY        =   873
-      FontSize        =   8
+      _extentx        =   4895
+      _extenty        =   873
+      fontsize        =   8
    End
 End
 Attribute VB_Name = "pdFxPreviewCtl"
@@ -155,6 +155,18 @@ Public Property Let AllowZoomPan(ByVal isAllowed As Boolean)
     pdPreviewBox.AllowZoomPan = isAllowed
     PropertyChanged "DisableZoomPan"
     UpdateControlLayout
+End Property
+
+'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
+Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
+    Enabled = UserControl.Enabled
+End Property
+
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    RedrawBackBuffer
+    PropertyChanged "Enabled"
 End Property
 
 Public Function GetUniqueID() As Double

@@ -109,6 +109,18 @@ Private m_ThumbRect As RECTF, m_ImageRegion As RECTF
 'Last mouse (x, y) values.  We track these so we know whether to highlight the region box inside the navigator.
 Private m_LastMouseX As Single, m_LastMouseY As Single
 
+'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
+Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
+    Enabled = UserControl.Enabled
+End Property
+
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    DrawNavigator
+    PropertyChanged "Enabled"
+End Property
+
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
@@ -131,7 +143,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     
     'If the mouse button is clicked inside the image portion of the navigator, scroll to that (x, y) position
     If (Button And pdLeftButton) <> 0 Then
-        If Math_Functions.isPointInRectF(x, y, m_ImageRegion) Then ScrollToXY x, y
+        If Math_Functions.IsPointInRectF(x, y, m_ImageRegion) Then ScrollToXY x, y
     End If
     
 End Sub
@@ -151,7 +163,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     m_LastMouseX = x: m_LastMouseY = y
     
     'Set the cursor depending on whether the mouse is inside the image portion of the navigator control
-    If Math_Functions.isPointInRectF(x, y, m_ImageRegion) Then
+    If Math_Functions.IsPointInRectF(x, y, m_ImageRegion) Then
         cMouseEvents.setSystemCursor IDC_HAND
     Else
         cMouseEvents.setSystemCursor IDC_DEFAULT
@@ -182,16 +194,16 @@ Private Sub ScrollToXY(ByVal x As Single, ByVal y As Single)
         
         'Next, convert those to the (min, max) scale of the current viewport scrollbars
         Dim hScrollRange As Double, vScrollRange As Double, newHScroll As Double, newVscroll As Double
-        hScrollRange = FormMain.mainCanvas(0).getScrollMax(PD_HORIZONTAL) - FormMain.mainCanvas(0).getScrollMin(PD_HORIZONTAL)
-        vScrollRange = FormMain.mainCanvas(0).getScrollMax(PD_VERTICAL) - FormMain.mainCanvas(0).getScrollMin(PD_VERTICAL)
-        newHScroll = (xRatio * hScrollRange) + FormMain.mainCanvas(0).getScrollMin(PD_HORIZONTAL)
-        newVscroll = (yRatio * vScrollRange) + FormMain.mainCanvas(0).getScrollMin(PD_VERTICAL)
+        hScrollRange = FormMain.mainCanvas(0).GetScrollMax(PD_HORIZONTAL) - FormMain.mainCanvas(0).GetScrollMin(PD_HORIZONTAL)
+        vScrollRange = FormMain.mainCanvas(0).GetScrollMax(PD_VERTICAL) - FormMain.mainCanvas(0).GetScrollMin(PD_VERTICAL)
+        newHScroll = (xRatio * hScrollRange) + FormMain.mainCanvas(0).GetScrollMin(PD_HORIZONTAL)
+        newVscroll = (yRatio * vScrollRange) + FormMain.mainCanvas(0).GetScrollMin(PD_VERTICAL)
         
         'Assign the new scrollbar values, then request a viewport refresh
-        FormMain.mainCanvas(0).setRedrawSuspension True
-        FormMain.mainCanvas(0).setScrollValue PD_HORIZONTAL, newHScroll
-        FormMain.mainCanvas(0).setScrollValue PD_VERTICAL, newVscroll
-        FormMain.mainCanvas(0).setRedrawSuspension False
+        FormMain.mainCanvas(0).SetRedrawSuspension True
+        FormMain.mainCanvas(0).SetScrollValue PD_HORIZONTAL, newHScroll
+        FormMain.mainCanvas(0).SetScrollValue PD_VERTICAL, newVscroll
+        FormMain.mainCanvas(0).SetRedrawSuspension False
         
         Viewport_Engine.Stage3_ExtractRelevantRegion pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
@@ -370,7 +382,7 @@ Private Sub DrawNavigator()
                 Dim useHighlightColor As Boolean
                 
                 If m_MouseInsideBox Then
-                    useHighlightColor = Math_Functions.isPointInRectF(m_LastMouseX, m_LastMouseY, relativeRect)
+                    useHighlightColor = Math_Functions.IsPointInRectF(m_LastMouseX, m_LastMouseY, relativeRect)
                 Else
                     useHighlightColor = False
                 End If
