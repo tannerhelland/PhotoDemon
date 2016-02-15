@@ -182,7 +182,7 @@ End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    If Me.Enabled And isMouseOverClickArea(x, y) Then
+    If Me.Enabled And IsMouseOverClickArea(x, y) Then
         If CBool(Me.Value) Then Me.Value = vbUnchecked Else Me.Value = vbChecked
     End If
 End Sub
@@ -197,8 +197,8 @@ End Sub
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'If the mouse is over the relevant portion of the user control, display the cursor as clickable
-    If m_MouseInsideClickableRect <> isMouseOverClickArea(x, y) Then
-        m_MouseInsideClickableRect = isMouseOverClickArea(x, y)
+    If m_MouseInsideClickableRect <> IsMouseOverClickArea(x, y) Then
+        m_MouseInsideClickableRect = IsMouseOverClickArea(x, y)
         RedrawBackBuffer
     End If
     
@@ -220,8 +220,8 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
 End Sub
 
 'See if the mouse is over the clickable portion of the control
-Private Function isMouseOverClickArea(ByVal mouseX As Single, ByVal mouseY As Single) As Boolean
-    isMouseOverClickArea = Math_Functions.IsPointInRectF(mouseX, mouseY, m_ClickableRect)
+Private Function IsMouseOverClickArea(ByVal mouseX As Single, ByVal mouseY As Single) As Boolean
+    IsMouseOverClickArea = Math_Functions.IsPointInRectF(mouseX, mouseY, m_ClickableRect)
 End Function
 
 Private Sub UserControl_Initialize()
