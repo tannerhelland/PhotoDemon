@@ -33,8 +33,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Toolbox Button control
 'Copyright 2014-2016 by Tanner Helland
 'Created: 19/October/14
-'Last updated: 12/January/15
-'Last update: rewrite control to handle its own caption and tooltip translations
+'Last updated: 14/February/16
+'Last update: finalize theming support
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -87,8 +87,8 @@ Private btImageHover_Pressed As pdDIB   'Auto-created hover (glow) version of th
 Private btImageCoords As POINTAPI
 
 'Current back color.  Because this control sits on a variety of places in PD (like the canvas status bar), its BackColor
-' sometimes needs to be set manually.
-Private m_BackColor As OLE_COLOR
+' sometimes needs to be set manually.  (Note that this custom value will not be used unless m_UseCustomBackColor is TRUE!)
+Private m_BackColor As OLE_COLOR, m_UseCustomBackColor As Boolean
 
 'AutoToggle mode allows the button to operate as a normal button (e.g. no persistent value)
 Private m_AutoToggle As Boolean
@@ -104,6 +104,24 @@ Private m_DontHighlightDownState As Boolean
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
+
+'Local list of themable colors.  This list includes all potential colors used by the control, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDTOOLBUTTON_COLOR_LIST
+    [_First] = 0
+    PDTB_Background = 0
+    PDTB_ButtonFill = 1
+    PDTB_Border = 2
+    [_Last] = 2
+    [_Count] = 3
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
 
 'This toolbox button control is designed to be used in a "radio button"-like system, where buttons exist in a group, and the
 ' pressing of one results in the unpressing of any others.  For the rare circumstances where this behavior is undesirable
@@ -147,13 +165,9 @@ Attribute Enabled.VB_UserMemId = -514
 End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
-    
     UserControl.Enabled = newValue
     PropertyChanged "Enabled"
-    
-    'Redraw the control
     RedrawBackBuffer
-    
 End Property
 
 'Sticky toggle allows this button to operate as a checkbox, where each click toggles its value.  If I was smart, I would have implemented
@@ -202,6 +216,16 @@ Public Property Let Value(ByVal newValue As Boolean)
         
     End If
     
+End Property
+
+Public Property Get UseCustomBackColor() As Boolean
+    UseCustomBackColor = m_UseCustomBackColor
+End Property
+
+Public Property Let UseCustomBackColor(ByVal newValue As Boolean)
+    m_UseCustomBackColor = newValue
+    RedrawBackBuffer
+    PropertyChanged "UseCustomBackColor"
 End Property
 
 'Assign a DIB to this button.  Matching disabled and hover state DIBs are automatically generated.
@@ -320,18 +344,14 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
 
 End Sub
 
+'If space was pressed, and AutoToggle is active, remove the button state and redraw it
 Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-
-    'If space was pressed, and AutoToggle is active, remove the button state and redraw it
     If (vkCode = VK_SPACE) Then
-
         If Me.Enabled And Value And m_AutoToggle Then
             Value = False
             RedrawBackBuffer
         End If
-        
     End If
-
 End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click.
@@ -356,23 +376,21 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
         
 End Sub
 
+'Enter/leave events trigger cursor changes and hover-state redraws, so they must be tracked
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     ucSupport.RequestCursor IDC_HAND
     RedrawBackBuffer
 End Sub
 
-'When the mouse leaves the UC, we must repaint the button (as it's no longer hovered)
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     ucSupport.RequestCursor IDC_DEFAULT
     RedrawBackBuffer
 End Sub
 
+'If toggle mode is active, remove the button's TRUE state and redraw it
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
-    
-    'If toggle mode is active, remove the button's TRUE state and redraw it
     If m_AutoToggle And Value Then Value = False
     RedrawBackBuffer
-    
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
@@ -401,14 +419,15 @@ Private Sub UserControl_Initialize()
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
-    
-    'Request some additional input functionality (custom mouse and key events)
     ucSupport.RequestExtraFunctionality True, True
     ucSupport.SpecifyRequiredKeys VK_SPACE
     
-    'In design mode, initialize a base theming class, so our paint functions don't fail
-    If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
-        
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDTOOLBUTTON_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDToolButton", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
+    
     'Update the control size parameters at least once
     UpdateControlLayout
                 
@@ -416,24 +435,26 @@ End Sub
 
 'Set default properties
 Private Sub UserControl_InitProperties()
-    Value = False
-    BackColor = vbWhite
     AutoToggle = False
-    StickyToggle = False
+    BackColor = vbWhite
     DontHighlightDownState = False
+    StickyToggle = False
+    UseCustomBackColor = False
+    Value = False
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    ucSupport.RequestIDERepaint UserControl.hDC
+    If Not g_IsProgramRunning Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        m_BackColor = .ReadProperty("BackColor", vbWhite)
         AutoToggle = .ReadProperty("AutoToggle", False)
-        m_DontHighlightDownState = .ReadProperty("DontHighlightDownState", False)
+        BackColor = .ReadProperty("BackColor", vbWhite)
+        DontHighlightDownState = .ReadProperty("DontHighlightDownState", False)
         StickyToggle = .ReadProperty("StickyToggle", False)
+        UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
     End With
 End Sub
 
@@ -443,10 +464,11 @@ End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
-        .WriteProperty "BackColor", m_BackColor, vbWhite
-        .WriteProperty "AutoToggle", m_AutoToggle, False
-        .WriteProperty "DontHighlightDownState", m_DontHighlightDownState, False
-        .WriteProperty "StickyToggle", m_StickyToggle, False
+        .WriteProperty "AutoToggle", AutoToggle, False
+        .WriteProperty "BackColor", BackColor, vbWhite
+        .WriteProperty "DontHighlightDownState", DontHighlightDownState, False
+        .WriteProperty "StickyToggle", StickyToggle, False
+        .WriteProperty "UseCustomBackColor", UseCustomBackColor, False
     End With
 End Sub
 
@@ -471,52 +493,33 @@ End Sub
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
 Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
     
-    If g_IsProgramRunning Then
+    'Because this control supports so many different behaviors, color decisions are somewhat complicated.  Note that the
+    ' control's BackColor property is only relevant under certain conditions (e.g. if the matching UseCustomBackColor
+    ' property is set, the button is not pressed, etc).
+    Dim btnColorBorder As Long, btnColorFill As Long
+    Dim considerActive As Boolean
+    considerActive = (m_ButtonState And (Not m_DontHighlightDownState)) Or (m_AutoToggle And ucSupport.isMouseButtonDown(pdLeftButton))
     
-        'Colors used throughout this paint function are determined by several factors:
-        ' 1) Control enablement (disabled buttons are grayed)
-        ' 2) Hover state (hovered buttons glow)
-        ' 3) Value (pressed buttons have a different appearance, obviously)
-        ' 4) The central themer (which contains default values for all these scenarios)
-        Dim btnColorBorder As Long, btnColorFill As Long
-        Dim curColor As Long
-        
-        If Me.Enabled Then
-        
-            'Is the button pressed?
-            If m_ButtonState And (Not m_DontHighlightDownState) Then
-                btnColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
-                btnColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                
-            'The button is not pressed
-            Else
-            
-                'In AutoToggle mode, use mouse state to determine coloring
-                If m_AutoToggle And ucSupport.isMouseButtonDown(pdLeftButton) Then
-                    btnColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
-                    btnColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                Else
-                    If ucSupport.IsMouseInside Then
-                        btnColorFill = m_BackColor
-                        btnColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                    Else
-                        btnColorFill = m_BackColor
-                        btnColorBorder = m_BackColor
-                    End If
-                End If
-            End If
-            
-        'The button is disabled
+    'If our owner has requested a custom backcolor, it takes precedence (but only if the button is inactive)
+    If m_UseCustomBackColor And (Not considerActive) Then
+        btnColorFill = m_BackColor
+        If ucSupport.IsMouseInside Then
+            btnColorBorder = m_Colors.RetrieveColor(PDTB_Border, Me.Enabled, False, True)
         Else
-            btnColorFill = m_BackColor
-            btnColorBorder = m_BackColor
+            btnColorBorder = btnColorFill
         End If
+    Else
+        btnColorFill = m_Colors.RetrieveColor(PDTB_ButtonFill, Me.Enabled, considerActive, ucSupport.IsMouseInside)
+        btnColorBorder = m_Colors.RetrieveColor(PDTB_Border, Me.Enabled, considerActive, ucSupport.IsMouseInside)
+    End If
+    
+    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    bufferDC = ucSupport.GetBackBufferDC(True, btnColorFill)
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
         
-        'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-        Dim bufferDC As Long, bWidth As Long, bHeight As Long
-        bufferDC = ucSupport.GetBackBufferDC(True, btnColorFill)
-        bWidth = ucSupport.GetBackBufferWidth
-        bHeight = ucSupport.GetBackBufferHeight
+    If g_IsProgramRunning Then
         
         'A single-pixel border is always drawn around the control
         GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, btnColorBorder, 255, 1
@@ -547,7 +550,7 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
     End If
     
     'Paint the final result to the screen, as relevant
-    ucSupport.RequestRepaint raiseImmediateDrawEvent
+    ucSupport.RequestRepaint raiseImmediateDrawEvent, raiseImmediateDrawEvent
     
 End Sub
 
@@ -560,8 +563,19 @@ End Sub
 '    cMouseEvents.setCursorOverrideState newState
 'End Sub
 
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    With m_Colors
+        .LoadThemeColor PDTB_Background, "Background", IDE_WHITE
+        .LoadThemeColor PDTB_ButtonFill, "ButtonFill", IDE_WHITE
+        .LoadThemeColor PDTB_Border, "Border", IDE_WHITE
+    End With
+End Sub
+
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
+    UpdateColorList
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
 End Sub
 
