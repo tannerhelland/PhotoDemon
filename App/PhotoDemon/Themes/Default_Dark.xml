@@ -266,6 +266,18 @@
 				<Caption-disabled>GrayDisabled</Caption-disabled>
 			</PDTitle>
 			
+			<PDToolButton>
+				<Background>BackgroundDefault</Background>
+				<Background-disabled>BackgroundDefault</Background-disabled>
+				<ButtonFill>BackgroundDefault</ButtonFill>
+				<ButtonFill-disabled>BackgroundDefault</ButtonFill-disabled>
+				<ButtonFill-active>AccentUltralight</ButtonFill-active>
+				<Border>BackgroundDefault</Border>
+				<Border-disabled>BackgroundDefault</Border-disabled>
+				<Border-active>AccentLight</Border-active>
+				<Border-hover>AccentDefault</Border-hover>
+			</PDToolButton>
+			
 			<!-- ****************************************************************************************** -->
 		
 		</Colors>
