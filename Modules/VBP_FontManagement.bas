@@ -394,6 +394,14 @@ Public Function GetDefaultStringHeight(ByVal FontSize As Single, Optional ByVal 
     GetDefaultStringHeight = tmpFont.GetHeightOfString("FfAaBbCctbpqjy1234567890")
 End Function
 
+'If the caller just wants to measure string width, it's better to use this function.  That spares them from having to
+' create a redundant font object just to measure text.
+Public Function GetDefaultStringWidth(ByRef srcString As String, ByVal FontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As Single
+    Dim tmpFont As pdFont
+    Set tmpFont = Font_Management.GetMatchingUIFont(FontSize, isBold, isItalic, isUnderline)
+    GetDefaultStringWidth = tmpFont.GetWidthOfString(srcString)
+End Function
+
 'Build a system font cache.  Note that this is an expensive operation, and should never be called more than once.
 ' RETURNS: 0 if failure, Number of fonts (>= 0) if successful.  (Note that the *total number of all fonts* is returned,
 '          not just TrueType ones.)
