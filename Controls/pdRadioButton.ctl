@@ -34,8 +34,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Radio Button control
 'Copyright 2013-2016 by Tanner Helland
 'Created: 28/January/13
-'Last updated: 03/December/15
-'Last update: integrate with pdUCSupport, which cuts a ton of redundant code
+'Last updated: 15/February/16
+'Last update: finalize theming support
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -92,6 +92,25 @@ Private m_ClickableRect As RECTF, m_MouseInsideClickableRect As Boolean
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
+
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDRADIOBUTTON_COLOR_LIST
+    [_First] = 0
+    PDRB_Background = 0
+    PDRB_Caption = 1
+    PDRB_ButtonFill = 2
+    PDRB_ButtonBorder = 3
+    [_Last] = 3
+    [_Count] = 4
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
 
 'IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
 '                 but I can revisit in the future if it ever becomes relevant.
@@ -201,7 +220,7 @@ End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    If Me.Enabled And isMouseOverClickArea(x, y) Then
+    If Me.Enabled And IsMouseOverClickArea(x, y) Then
         Me.Value = True
     End If
 End Sub
@@ -216,8 +235,8 @@ End Sub
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'If the mouse is over the relevant portion of the user control, display the cursor as clickable
-    If m_MouseInsideClickableRect <> isMouseOverClickArea(x, y) Then
-        m_MouseInsideClickableRect = isMouseOverClickArea(x, y)
+    If m_MouseInsideClickableRect <> IsMouseOverClickArea(x, y) Then
+        m_MouseInsideClickableRect = IsMouseOverClickArea(x, y)
         RedrawBackBuffer
     End If
     
@@ -239,8 +258,8 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
 End Sub
 
 'See if the mouse is over the clickable portion of the control
-Private Function isMouseOverClickArea(ByVal mouseX As Single, ByVal mouseY As Single) As Boolean
-    isMouseOverClickArea = Math_Functions.isPointInRectF(mouseX, mouseY, m_ClickableRect)
+Private Function IsMouseOverClickArea(ByVal mouseX As Single, ByVal mouseY As Single) As Boolean
+    IsMouseOverClickArea = Math_Functions.IsPointInRectF(mouseX, mouseY, m_ClickableRect)
 End Function
 
 Private Sub UserControl_Initialize()
@@ -255,8 +274,11 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestCaptionSupport
     ucSupport.SetCaptionAutomaticPainting False
     
-    'In design mode, initialize a base theming class, so our paint functions don't fail
-    If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDRADIOBUTTON_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDRadioButton", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -383,43 +405,25 @@ Private Sub RedrawBackBuffer()
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
-    bufferDC = ucSupport.GetBackBufferDC(True)
+    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDRB_Background, Me.Enabled))
     
     Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If g_IsProgramRunning Then
+    'Populate colors from the master theme object
+    Dim radioColorBorder As Long, radioColorFill As Long, textColor As Long
+    radioColorBorder = m_Colors.RetrieveColor(PDRB_ButtonBorder, Me.Enabled, m_Value, m_MouseInsideClickableRect)
+    radioColorFill = m_Colors.RetrieveColor(PDRB_ButtonFill, Me.Enabled, m_Value, m_MouseInsideClickableRect)
+    textColor = m_Colors.RetrieveColor(PDRB_Caption, Me.Enabled, m_Value, m_MouseInsideClickableRect)
     
-        'Colors used throughout this paint function are determined primarily control enablement
-        Dim radioColorBorder As Long, radioColorFill As Long
-        If Me.Enabled Then
-            
-            If m_Value Then
-                If m_MouseInsideClickableRect Then
-                    radioColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                    radioColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                Else
-                    radioColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
-                    radioColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                End If
-            Else
-                If m_MouseInsideClickableRect Then
-                    radioColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
-                Else
-                    radioColorBorder = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
-                End If
-                radioColorFill = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-            End If
-            
-        Else
-            radioColorBorder = g_Themer.GetThemeColor(PDTC_DISABLED)
-            radioColorFill = g_Themer.GetThemeColor(PDTC_DISABLED)
-        End If
+    If g_IsProgramRunning Then
         
         'Draw the radio button border
+        Dim borderWidth As Single
+        If m_MouseInsideClickableRect Then borderWidth = 3# Else borderWidth = 1.5
         With m_RadioButtonRect
-            GDI_Plus.GDIPlusDrawCircleToDC bufferDC, .Left + .Width / 2, .Top + .Height / 2, .Width / 2, radioColorBorder, 255, 1.5, True
+            GDI_Plus.GDIPlusDrawCircleToDC bufferDC, .Left + .Width / 2, .Top + .Height / 2, .Width / 2, radioColorBorder, 255, borderWidth, True
         End With
         
         'If the button state is TRUE, draw a smaller circle inside the border
@@ -429,22 +433,6 @@ Private Sub RedrawBackBuffer()
             End With
         End If
         
-    End If
-    
-    'Set the text color according to the mouse position, e.g. highlight the text if the mouse is over it
-    Dim textColor As Long
-    If g_IsProgramRunning Then
-        If Me.Enabled Then
-            If m_MouseInsideClickableRect Then
-                textColor = g_Themer.GetThemeColor(PDTC_TEXT_HYPERLINK)
-            Else
-                textColor = g_Themer.GetThemeColor(PDTC_TEXT_DEFAULT)
-            End If
-        Else
-            textColor = g_Themer.GetThemeColor(PDTC_DISABLED)
-        End If
-    Else
-        textColor = RGB(92, 92, 92)
     End If
     
     'Render the text, appending ellipses as necessary
@@ -459,8 +447,20 @@ Private Sub RedrawBackBuffer()
 
 End Sub
 
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    With m_Colors
+        .LoadThemeColor PDRB_Background, "Background", IDE_WHITE
+        .LoadThemeColor PDRB_Caption, "Caption", IDE_GRAY
+        .LoadThemeColor PDRB_ButtonFill, "ButtonFill", IDE_BLUE
+        .LoadThemeColor PDRB_ButtonBorder, "ButtonBorder", IDE_BLACK
+    End With
+End Sub
+
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
+    UpdateColorList
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
     UpdateControlLayout
 End Sub

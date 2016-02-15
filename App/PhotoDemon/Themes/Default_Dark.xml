@@ -190,6 +190,25 @@
 				<PreviewBorder-hover>AccentDefault</PreviewBorder-hover>
 			</PDPreview>
 			
+			<PDRadioButton>
+				<Background>BackgroundDefault</Background>
+				<ButtonBorder>GrayDefault</ButtonBorder>
+				<ButtonBorder-disabled>GrayDisabled</ButtonBorder-disabled>
+				<ButtonBorder-active>AccentDark</ButtonBorder-active>
+				<ButtonBorder-hover>AccentDark</ButtonBorder-hover>
+				<ButtonBorder-activehover>AccentDefault</ButtonBorder-activehover>
+				<ButtonFill>BackgroundDefault</ButtonFill>
+				<ButtonFill-disabled>BackgroundDefault</ButtonFill-disabled>
+				<ButtonFill-active>AccentDefault</ButtonFill-active>
+				<ButtonFill-hover>BackgroundDefault</ButtonFill-hover>
+				<ButtonFill-activehover>AccentLight</ButtonFill-activehover>
+				<Caption>TextDefault</Caption>
+				<Caption-disable>GrayDisabled</Caption-disabled>
+				<Caption-active>TextDefault</Caption-active>
+				<Caption-hover>TextHyperlink</Caption-hover>
+				<Caption-activehover>TextHyperlink</Caption-activehover>
+			</PDRadioButton>
+			
 			<PDScrollBar>
 				<ButtonBorder>BackgroundDefault</ButtonBorder>
 				<ButtonFill>BackgroundDefault</ButtonFill>
