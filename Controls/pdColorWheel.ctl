@@ -104,6 +104,17 @@ Private m_Hue As Double, m_Saturation As Double, m_Value As Double
 ' We can use this to help orient the user.
 Private m_HueHover As Double
 
+'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
+Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
+    Enabled = UserControl.Enabled
+End Property
+
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    PropertyChanged "Enabled"
+End Property
+
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
@@ -305,7 +316,7 @@ End Function
 Private Function isMouseInsideSVBox(ByVal x As Single, ByVal y As Single, Optional ByVal calculateSV As Boolean = False, Optional ByRef dstSaturation As Double, Optional ByRef dstValue As Double) As Boolean
     
     'Hit-detection is easy, since we cache the box coordinates when recreating the corresponding DIB
-    isMouseInsideSVBox = Math_Functions.isPointInRectF(x, y, m_SVRectF)
+    isMouseInsideSVBox = Math_Functions.IsPointInRectF(x, y, m_SVRectF)
     
     'If the caller wants us to calculate saturation and value outputs, do so now
     If calculateSV Then

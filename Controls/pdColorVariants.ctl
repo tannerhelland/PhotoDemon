@@ -129,6 +129,17 @@ End Enum
 
 Private m_ControlShape As COLOR_WHEEL_SHAPE
 
+'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
+Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
+    Enabled = UserControl.Enabled
+End Property
+
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    PropertyChanged "Enabled"
+End Property
+
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
@@ -676,7 +687,7 @@ Private Sub DrawUC()
         borderColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
         
         'We can reuse a single border pen for all sub-paths
-        borderPen = GDI_Plus.getGDIPlusPenHandle(borderColor, , , , LineJoinMiter)
+        borderPen = GDI_Plus.GetGDIPlusPenHandle(borderColor, , , , LineJoinMiter)
         
         'Draw each subregion in turn, filling it first, then tracing its borders.
         Dim i As Long, regionBrush As Long
@@ -694,14 +705,14 @@ Private Sub DrawUC()
         m_ColorRegions(CV_Primary).strokePathToDIB_UIStyle m_BackBuffer, , False, False, LineJoinMiter
         
         'Release any remaining GDI+ objects
-        GDI_Plus.releaseGDIPlusPen borderPen
+        GDI_Plus.ReleaseGDIPlusPen borderPen
         
         'If a subregion is currently hovered, trace it with a highlight outline.
         If m_MouseInsideRegion >= 0 Then
             borderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-            borderPen = GDI_Plus.getGDIPlusPenHandle(borderColor, , 3, , LineJoinMiter)
+            borderPen = GDI_Plus.GetGDIPlusPenHandle(borderColor, , 3, , LineJoinMiter)
             m_ColorRegions(m_MouseInsideRegion).strokePathToDIB_BarePen borderPen, m_BackBuffer
-            GDI_Plus.releaseGDIPlusPen borderPen
+            GDI_Plus.ReleaseGDIPlusPen borderPen
         End If
         
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning

@@ -46,8 +46,9 @@ Begin VB.UserControl pdCanvas
       Width           =   255
       _ExtentX        =   450
       _ExtentY        =   450
-      BackColor       =   -2147483626
       AutoToggle      =   -1  'True
+      BackColor       =   -2147483626
+      UseCustomBackColor=   -1  'True
    End
    Begin PhotoDemon.pdScrollBar hScroll 
       Height          =   255
@@ -57,7 +58,6 @@ Begin VB.UserControl pdCanvas
       Width           =   4575
       _ExtentX        =   8070
       _ExtentY        =   450
-      BackColor       =   0
       OrientationHorizontal=   -1  'True
       VisualStyle     =   1
    End
@@ -69,7 +69,6 @@ Begin VB.UserControl pdCanvas
       Width           =   255
       _ExtentX        =   450
       _ExtentY        =   8705
-      BackColor       =   0
       VisualStyle     =   1
    End
    Begin VB.PictureBox picCanvas 
@@ -148,6 +147,7 @@ Begin VB.UserControl pdCanvas
          _ExtentX        =   688
          _ExtentY        =   609
          BackColor       =   -2147483626
+         UseCustomBackColor=   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomOut 
          Height          =   345
@@ -157,8 +157,9 @@ Begin VB.UserControl pdCanvas
          Width           =   390
          _ExtentX        =   688
          _ExtentY        =   609
-         BackColor       =   -2147483626
          AutoToggle      =   -1  'True
+         BackColor       =   -2147483626
+         UseCustomBackColor=   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomIn 
          Height          =   345
@@ -168,8 +169,9 @@ Begin VB.UserControl pdCanvas
          Width           =   390
          _ExtentX        =   688
          _ExtentY        =   609
-         BackColor       =   -2147483626
          AutoToggle      =   -1  'True
+         BackColor       =   -2147483626
+         UseCustomBackColor=   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdImgSize 
          Height          =   345
@@ -179,8 +181,9 @@ Begin VB.UserControl pdCanvas
          Width           =   390
          _ExtentX        =   688
          _ExtentY        =   609
-         BackColor       =   -2147483626
          AutoToggle      =   -1  'True
+         BackColor       =   -2147483626
+         UseCustomBackColor=   -1  'True
       End
       Begin PhotoDemon.pdLabel lblCoordinates 
          Height          =   210
@@ -353,7 +356,7 @@ Public Sub SetNetworkState(ByVal newNetworkState As Boolean)
     'When the state changes, update a module-level variable and redraw the icon.
     If newNetworkState <> m_NetworkAccessActive Then
         m_NetworkAccessActive = newNetworkState
-        drawStatusBarIcons m_LastEnabledState
+        DrawStatusBarIcons m_LastEnabledState
     End If
     
 End Sub
@@ -418,12 +421,12 @@ Public Sub UpdateAgainstCurrentTheme()
     
     'Note that we don't actually move the last line status bar; that is handled by DisplayImageCoordinates itself
     If g_OpenImageCount > 0 Then
-        displayImageSize pdImages(g_CurrentImage), False
+        DisplayImageSize pdImages(g_CurrentImage), False
     Else
-        displayImageSize Nothing, True
+        DisplayImageSize Nothing, True
     End If
     
-    displayCanvasCoordinates 0, 0, True
+    DisplayCanvasCoordinates 0, 0, True
     
     'Restore redraw capabilities
     m_SuspendRedraws = False
@@ -431,7 +434,7 @@ Public Sub UpdateAgainstCurrentTheme()
 End Sub
 
 'Use this function to forcibly prevent the canvas from redrawing itself.  REDRAWS WILL NOT HAPPEN AGAIN UNTIL YOU RESTORE ACCESS!
-Public Sub setRedrawSuspension(ByVal newRedrawValue As Boolean)
+Public Sub SetRedrawSuspension(ByVal newRedrawValue As Boolean)
     m_SuspendRedraws = newRedrawValue
 End Sub
 
@@ -444,12 +447,12 @@ Public Property Let BackColor(newBackColor As Long)
     picCanvas.Refresh
 End Property
 
-Public Sub clearCanvas()
+Public Sub ClearCanvas()
     
     'If no images have been loaded, draw the "load image" placeholder.
     If (g_OpenImageCount = 0) And (Not g_ProgramShuttingDown) Then
         
-        fixChromeLayout
+        FixChromeLayout
     
     'Otherwise, simply clear the user control
     Else
@@ -458,25 +461,25 @@ Public Sub clearCanvas()
         picCanvas.Refresh
         
         'Show scrollbars if they aren't already
-        setScrollVisibility PD_HORIZONTAL, True
-        setScrollVisibility PD_VERTICAL, True
+        SetScrollVisibility PD_HORIZONTAL, True
+        SetScrollVisibility PD_VERTICAL, True
     
     End If
     
 End Sub
 
 'Get/Set scroll bar value
-Public Function getScrollValue(ByVal barType As PD_ORIENTATION) As Long
+Public Function GetScrollValue(ByVal barType As PD_ORIENTATION) As Long
 
     If barType = PD_HORIZONTAL Then
-        getScrollValue = hScroll.Value
+        GetScrollValue = hScroll.Value
     Else
-        getScrollValue = vScroll.Value
+        GetScrollValue = vScroll.Value
     End If
 
 End Function
 
-Public Sub setScrollValue(ByVal barType As PD_ORIENTATION, ByVal newValue As Long)
+Public Sub SetScrollValue(ByVal barType As PD_ORIENTATION, ByVal newValue As Long)
     
     Select Case barType
     
@@ -498,27 +501,27 @@ Public Sub setScrollValue(ByVal barType As PD_ORIENTATION, ByVal newValue As Lon
 End Sub
 
 'Get/Set scroll max/min
-Public Function getScrollMax(ByVal barType As PD_ORIENTATION) As Long
+Public Function GetScrollMax(ByVal barType As PD_ORIENTATION) As Long
 
     If barType = PD_HORIZONTAL Then
-        getScrollMax = hScroll.Max
+        GetScrollMax = hScroll.Max
     Else
-        getScrollMax = vScroll.Max
+        GetScrollMax = vScroll.Max
     End If
 
 End Function
 
-Public Function getScrollMin(ByVal barType As PD_ORIENTATION) As Long
+Public Function GetScrollMin(ByVal barType As PD_ORIENTATION) As Long
 
     If barType = PD_HORIZONTAL Then
-        getScrollMin = hScroll.Min
+        GetScrollMin = hScroll.Min
     Else
-        getScrollMin = vScroll.Min
+        GetScrollMin = vScroll.Min
     End If
 
 End Function
 
-Public Sub setScrollMax(ByVal barType As PD_ORIENTATION, ByVal newMax As Long)
+Public Sub SetScrollMax(ByVal barType As PD_ORIENTATION, ByVal newMax As Long)
     
     If barType = PD_HORIZONTAL Then
         hScroll.Max = newMax
@@ -528,7 +531,7 @@ Public Sub setScrollMax(ByVal barType As PD_ORIENTATION, ByVal newMax As Long)
     
 End Sub
 
-Public Sub setScrollMin(ByVal barType As PD_ORIENTATION, ByVal newMin As Long)
+Public Sub SetScrollMin(ByVal barType As PD_ORIENTATION, ByVal newMin As Long)
     
     If barType = PD_HORIZONTAL Then
         hScroll.Min = newMin
@@ -539,7 +542,7 @@ Public Sub setScrollMin(ByVal barType As PD_ORIENTATION, ByVal newMin As Long)
 End Sub
 
 'Set scroll bar LargeChange value
-Public Sub setScrollLargeChange(ByVal barType As PD_ORIENTATION, ByVal newLargeChange As Long)
+Public Sub SetScrollLargeChange(ByVal barType As PD_ORIENTATION, ByVal newLargeChange As Long)
         
     If barType = PD_HORIZONTAL Then
         hScroll.LargeChange = newLargeChange
@@ -551,7 +554,7 @@ End Sub
 
 'Set scrollbar visibility.  Note that visibility is only toggled as necessary, so this function is preferable to
 ' calling .Visible properties directly.
-Public Sub setScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibility As Boolean)
+Public Sub SetScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibility As Boolean)
     
     'If the scroll bar status wasn't actually changed, we can avoid a forced screen refresh
     Dim changesMade As Boolean
@@ -584,11 +587,11 @@ Public Sub setScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibil
     cmdCenter.Visible = CBool(hScroll.Visible And vScroll.Visible)
     
     'When scroll bar visibility is changed, we must move the main canvas picture box to match
-    If changesMade Then alignCanvasPictureBox
+    If changesMade Then AlignCanvasPictureBox
     
 End Sub
 
-Public Sub displayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize As Boolean = False)
+Public Sub DisplayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize As Boolean = False)
     
     'If the source image is irrelevant, forcibly specify a ClearSize operation
     If (srcImage Is Nothing) Then clearSize = True
@@ -599,7 +602,7 @@ Public Sub displayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
         lblImgSize.Caption = ""
         
         'Also, clear the back of the canvas
-        fixChromeLayout
+        FixChromeLayout
         
     'When size IS displayed, we must also refresh the status bar (now that it dynamically aligns its contents)
     Else
@@ -630,19 +633,19 @@ Public Sub displayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
         
         lblImgSize.Caption = sizeString
         lblImgSize.UpdateAgainstCurrentTheme
-        drawStatusBarIcons True
+        DrawStatusBarIcons True
         
     End If
         
 End Sub
 
-Public Sub displayCanvasMessage(ByRef cMessage As String)
+Public Sub DisplayCanvasMessage(ByRef cMessage As String)
     lblMessages.Caption = cMessage
-    lblMessages.requestRefresh
+    lblMessages.RequestRefresh
 End Sub
 
 'Display the current mouse coordinates
-Public Sub displayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, Optional ByVal clearCoords As Boolean = False)
+Public Sub DisplayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, Optional ByVal clearCoords As Boolean = False)
     
     If clearCoords Then
         lblCoordinates.Caption = ""
@@ -661,7 +664,7 @@ Public Sub displayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, 
     lineStatusBar(2).x2 = lineStatusBar(2).x1
     
     'Make the message area shrink to match the new coordinate display size
-    fixChromeLayout
+    FixChromeLayout
         
 End Sub
 
@@ -674,30 +677,41 @@ End Sub
 ' include the size of canvas scrollbars; that's because the viewport pipeline (Viewport_Engine) is responsible for determining whether
 ' scrollbars are needed, and sizing the picture box accordingly.  But before it can do that, it needs to know how much space it has to
 ' work with.  (In the future, these values could be modified to account for the presence of rulers, among other things.)
-Public Function getMaxAvailableCanvasWidth() As Long
-    getMaxAvailableCanvasWidth = UserControl.ScaleWidth
+Public Function GetMaxAvailableCanvasWidth() As Long
+    GetMaxAvailableCanvasWidth = UserControl.ScaleWidth
 End Function
 
-Public Function getMaxAvailableCanvasHeight() As Long
-    getMaxAvailableCanvasHeight = UserControl.ScaleHeight - Me.getStatusBarHeight()
+Public Function GetMaxAvailableCanvasHeight() As Long
+    GetMaxAvailableCanvasHeight = UserControl.ScaleHeight - Me.GetStatusBarHeight()
 End Function
 
 'Return the current width/height of the canvas picture box
-Public Function getCanvasWidth() As Long
-    getCanvasWidth = picCanvas.ScaleWidth
+Public Function GetCanvasWidth() As Long
+    GetCanvasWidth = picCanvas.ScaleWidth
 End Function
 
-Public Function getCanvasHeight() As Long
-    getCanvasHeight = picCanvas.ScaleHeight
+Public Function GetCanvasHeight() As Long
+    GetCanvasHeight = picCanvas.ScaleHeight
 End Function
 
-Public Function getStatusBarHeight() As Long
-    getStatusBarHeight = picStatusBar.ScaleHeight
+Public Function GetStatusBarHeight() As Long
+    GetStatusBarHeight = picStatusBar.ScaleHeight
 End Function
 
-Public Function getProgBarReference() As PictureBox
-    Set getProgBarReference = picProgressBar
+Public Function GetProgBarReference() As PictureBox
+    Set GetProgBarReference = picProgressBar
 End Function
+
+'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
+Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
+    Enabled = UserControl.Enabled
+End Property
+
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    PropertyChanged "Enabled"
+End Property
 
 Public Property Get hWnd()
     hWnd = UserControl.hWnd
@@ -707,21 +721,21 @@ Public Property Get hDC()
     hDC = picCanvas.hDC
 End Property
 
-Public Sub enableZoomIn(ByVal isEnabled As Boolean)
+Public Sub EnableZoomIn(ByVal isEnabled As Boolean)
     cmdZoomIn.Enabled = isEnabled
 End Sub
 
-Public Sub enableZoomOut(ByVal isEnabled As Boolean)
+Public Sub EnableZoomOut(ByVal isEnabled As Boolean)
     cmdZoomOut.Enabled = isEnabled
 End Sub
 
-Public Sub enableZoomFit(ByVal isEnabled As Boolean)
+Public Sub EnableZoomFit(ByVal isEnabled As Boolean)
     cmdZoomFit.Enabled = isEnabled
     cmdZoomFit.Value = (cmbZoom.ListIndex = g_Zoom.getZoomFitAllIndex)
 End Sub
 
-Public Function getZoomDropDownReference() As pdComboBox
-    Set getZoomDropDownReference = cmbZoom
+Public Function GetZoomDropDownReference() As pdComboBox
+    Set GetZoomDropDownReference = cmbZoom
 End Function
 
 'Key presses are handled by PhotoDemon's custom pdInputKeyboard class
@@ -730,7 +744,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
     markEventHandled = False
 
     'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
-    If isCanvasInteractionAllowed() Then
+    If IsCanvasInteractionAllowed() Then
     
         Dim hOffset As Long, vOffset As Long
         Dim canvasUpdateRequired As Boolean
@@ -921,7 +935,7 @@ Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
     markEventHandled = False
 
     'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
-    If isCanvasInteractionAllowed() Then
+    If IsCanvasInteractionAllowed() Then
         
         'Any further processing depends on which tool is currently active
         Select Case g_CurrentTool
@@ -968,7 +982,7 @@ Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
                             
                             'The returned coordinates will be in image coordinates.  Convert them to viewport coordinates.
                             Dim newCanvasX As Double, newCanvasY As Double
-                            Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), newImageX, newImageY, newCanvasX, newCanvasY
+                            Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), newImageX, newImageY, newCanvasX, newCanvasY
                             
                             'Finally, convert the canvas coordinates to screen coordinates, and move the cursor accordingly
                             setCursorToCanvasPosition newCanvasX, newCanvasY
@@ -994,22 +1008,22 @@ Private Sub setCursorToCanvasPosition(ByVal canvasX As Double, ByVal canvasY As 
 End Sub
 
 Private Sub cmbSizeUnit_Click()
-    If g_OpenImageCount > 0 Then displayImageSize pdImages(g_CurrentImage)
+    If g_OpenImageCount > 0 Then DisplayImageSize pdImages(g_CurrentImage)
 End Sub
 
 Private Sub CmbZoom_Click()
 
     'Only process zoom changes if an image has been loaded
-    If isCanvasInteractionAllowed() Then
+    If IsCanvasInteractionAllowed() Then
         
         'Before updating the current image, we need to retrieve two sets of points: the current center point
         ' of the canvas, in canvas coordinate space, and the current center point of the canvas *in image
         ' coordinate space*.  When zoom is changed, we preserve the current center of the image relative to
         ' the center of teh canvas, to make the zoom operation feel more natural.
         Dim centerXCanvas As Double, centerYCanvas As Double, centerXImage As Double, centerYImage As Double
-        centerXCanvas = FormMain.mainCanvas(0).getCanvasWidth / 2
-        centerYCanvas = FormMain.mainCanvas(0).getCanvasHeight / 2
-        Drawing.convertCanvasCoordsToImageCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), centerXCanvas, centerYCanvas, centerXImage, centerYImage, False
+        centerXCanvas = FormMain.mainCanvas(0).GetCanvasWidth / 2
+        centerYCanvas = FormMain.mainCanvas(0).GetCanvasHeight / 2
+        Drawing.ConvertCanvasCoordsToImageCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), centerXCanvas, centerYCanvas, centerXImage, centerYImage, False
         
         'With those coordinates safely cached, update the currently stored zoom value in the active pdImage object
         pdImages(g_CurrentImage).currentZoomValue = cmbZoom.ListIndex
@@ -1050,7 +1064,7 @@ Private Sub cmdCenter_Click()
 End Sub
 
 Private Sub cmdImgSize_Click()
-    If isCanvasInteractionAllowed() Then Process "Resize image", True
+    If IsCanvasInteractionAllowed() Then Process "Resize image", True
 End Sub
 
 Private Sub cmdZoomFit_Click()
@@ -1058,17 +1072,17 @@ Private Sub cmdZoomFit_Click()
 End Sub
 
 Private Sub cmdZoomIn_Click()
-    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomInIndex(FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex)
+    FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomInIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
 End Sub
 
 Private Sub cmdZoomOut_Click()
-    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomOutIndex(FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex)
+    FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomOutIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
 End Sub
 
 'At present, the only App Commands the canvas will handle are forward/back, which link to Undo/Redo
 Private Sub cMouseEvents_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
-    If isCanvasInteractionAllowed() Then
+    If IsCanvasInteractionAllowed() Then
     
         Select Case cmdID
         
@@ -1095,7 +1109,7 @@ End Sub
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
         
     'Make sure interactions with this canvas are allowed
-    If Not isCanvasInteractionAllowed() Then Exit Sub
+    If Not IsCanvasInteractionAllowed() Then Exit Sub
     
     'Because VB does not allow an user control to receive focus if it contains controls that can receive focus, the arrow buttons
     ' can behave unpredictably (for example, if the zoom box has focus, and the user clicks on the canvas, the canvas will not
@@ -1113,12 +1127,12 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     Dim imgX As Double, imgY As Double
     
     'Note that displayImageCoordinates returns a copy of the displayed coordinates via imgX/Y
-    displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
+    DisplayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
     
     'We also need a copy of the current mouse position relative to the active layer.  (This became necessary in PD 7.0, as layers
     ' may have non-destructive affine transforms active, which means we can't blindly switch between image and layer coordinate spaces!)
     Dim layerX As Single, layerY As Single
-    Drawing.convertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, layerX, layerY
+    Drawing.ConvertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, layerX, layerY
     
     'Display a relevant cursor for the current action
     SetCanvasCursor pMouseUp, Button, x, y, imgX, imgY, layerX, layerY
@@ -1369,7 +1383,7 @@ End Sub
 Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'Make sure interactions with this canvas are allowed
-    If Not isCanvasInteractionAllowed() Then Exit Sub
+    If Not IsCanvasInteractionAllowed() Then Exit Sub
     
     hasMouseMoved = hasMouseMoved + 1
     
@@ -1377,14 +1391,14 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     Dim imgX As Double, imgY As Double
     
     'Display the image coordinates under the mouse pointer
-    displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
+    DisplayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
     
     'We also need a copy of the current mouse position relative to the active layer.  (This became necessary in PD 7.0, as layers
     ' may have non-destructive affine transforms active, which means we can't reuse image coordinates as layer coordinates!)
     '
     'Note also that we refresh the layer transformation matrix if the mouse is not down
     Dim layerX As Single, layerY As Single
-    Drawing.convertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, layerX, layerY
+    Drawing.ConvertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, layerX, layerY
         
     'Check the left mouse button
     If lMouseDown Then
@@ -1518,16 +1532,16 @@ End Sub
 Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     
     'Make sure interactions with this canvas are allowed
-    If Not isCanvasInteractionAllowed() Then Exit Sub
+    If Not IsCanvasInteractionAllowed() Then Exit Sub
     
     'Display the image coordinates under the mouse pointer
     Dim imgX As Double, imgY As Double
-    displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
+    DisplayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
     
     'We also need a copy of the current mouse position relative to the active layer.  (This became necessary in PD 7.0, as layers
     ' may have non-destructive affine transforms active, which means we can't blindly switch between image and layer coordinate spaces!)
     Dim layerX As Single, layerY As Single
-    Drawing.convertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, layerX, layerY
+    Drawing.ConvertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, layerX, layerY
     
     'Display a relevant cursor for the current action
     SetCanvasCursor pMouseUp, Button, x, y, imgX, imgY, layerX, layerY
@@ -1811,10 +1825,10 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     'Finally, set focus to the text layer text entry box
                     If g_CurrentTool = VECTOR_TEXT Then
                         toolpanel_Text.txtTextTool.SetFocus
-                        toolpanel_Text.txtTextTool.selectAll
+                        toolpanel_Text.txtTextTool.SelectAll
                     Else
                         toolpanel_FancyText.txtTextTool.SetFocus
-                        toolpanel_FancyText.txtTextTool.selectAll
+                        toolpanel_FancyText.txtTextTool.SelectAll
                     End If
                     
                 'The user is simply editing an existing layer.
@@ -1848,7 +1862,7 @@ End Sub
 Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     
     'Make sure interactions with this canvas are allowed
-    If Not isCanvasInteractionAllowed() Then Exit Sub
+    If Not IsCanvasInteractionAllowed() Then Exit Sub
     
     'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed BUT a ctrl
     ' button has not been pressed.
@@ -1863,7 +1877,7 @@ End Sub
 Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     
     'Make sure interactions with this canvas are allowed
-    If Not isCanvasInteractionAllowed() Then Exit Sub
+    If Not IsCanvasInteractionAllowed() Then Exit Sub
     
     'PhotoDemon uses the standard photo editor convention of Ctrl+Wheel = zoom, Shift+Wheel = h_scroll, and Wheel = v_scroll.
     ' Some users (for reasons I don't understand??) expect plain mousewheel to zoom the image.  For these users, we now
@@ -1886,11 +1900,11 @@ End Sub
 Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
 
     'Make sure interactions with this canvas are allowed
-    If Not isCanvasInteractionAllowed() Then Exit Sub
+    If Not IsCanvasInteractionAllowed() Then Exit Sub
     
     'Before doing anything else, cache the current mouse coordinates (in both Canvas and Image coordinate spaces)
     Dim imgX As Double, imgY As Double
-    convertCanvasCoordsToImageCoords Me, pdImages(g_CurrentImage), x, y, imgX, imgY, True
+    ConvertCanvasCoordsToImageCoords Me, pdImages(g_CurrentImage), x, y, imgX, imgY, True
     
     'Suspend automatic viewport redraws until we are done with our calculations
     g_AllowViewportRendering = False
@@ -1898,14 +1912,14 @@ Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, B
     'Calculate a new zoom value
     If zoomAmount > 0 Then
         
-        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex > 0 Then
-            FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomInIndex(FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex)
+        If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled And FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex > 0 Then
+            FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomInIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
         End If
            
     ElseIf zoomAmount < 0 Then
         
-        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex <> g_Zoom.getZoomCount Then
-            FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomOutIndex(FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex)
+        If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled And FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex <> g_Zoom.getZoomCount Then
+            FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomOutIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
         End If
            
     End If
@@ -1971,7 +1985,7 @@ Private Sub UserControl_Initialize()
         vScroll.Width = GetSystemMetrics(SM_CXVSCROLL)
         
         'Align the main picture box
-        alignCanvasPictureBox
+        AlignCanvasPictureBox
         
         'Reset any POI trackers
         m_curPointOfInterest = -1
@@ -1984,7 +1998,7 @@ End Sub
 Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
     
     'Make sure interactions with this canvas are allowed
-    If Not isCanvasInteractionAllowed() Then Exit Sub
+    If Not IsCanvasInteractionAllowed() Then Exit Sub
     
     ShiftDown = (Shift And vbShiftMask) > 0
     CtrlDown = (Shift And vbCtrlMask) > 0
@@ -1998,7 +2012,7 @@ End Sub
 Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
     
     'Make sure interactions with this canvas are allowed
-    If Not isCanvasInteractionAllowed() Then Exit Sub
+    If Not IsCanvasInteractionAllowed() Then Exit Sub
     
     ShiftDown = (Shift And vbShiftMask) > 0
     CtrlDown = (Shift And vbCtrlMask) > 0
@@ -2035,22 +2049,22 @@ Private Sub UserControl_Resize()
     cmbSizeUnit.Top = (picStatusBar.ScaleHeight - cmbSizeUnit.Height) \ 2
 
     'Align the canvas picture box to fill the available area
-    alignCanvasPictureBox
+    AlignCanvasPictureBox
     
     'If the control is resizing, the mouse cannot feasibly be over the image - so clear the coordinate box.  Note that this will
     ' also realign all chrome elements, so we don't need a manual fixChromeLayout call here.
-    displayCanvasCoordinates 0, 0, False
+    DisplayCanvasCoordinates 0, 0, False
     
 End Sub
 
-Public Sub alignCanvasPictureBox()
+Public Sub AlignCanvasPictureBox()
     
     'As of version 7.0, scroll bars are always visible.  This matches the behavior of paint-centric software like Krita,
     ' and makes it much easier to enable scrolling past the edge of an image (without resorting to stupid click-hold
     ' scroll behavior like GIMP).
     Dim hScrollTop As Long, hScrollLeft As Long, vScrollTop As Long, vScrollLeft As Long
     hScrollLeft = 0
-    hScrollTop = UserControl.ScaleHeight - (Me.getStatusBarHeight + hScroll.Height)
+    hScrollTop = UserControl.ScaleHeight - (Me.GetStatusBarHeight + hScroll.Height)
     
     vScrollLeft = UserControl.ScaleWidth - vScroll.Width
     vScrollTop = 0
@@ -2163,7 +2177,7 @@ End Sub
 
 'Whenever this window changes size, we may need to re-align various bits of internal chrome (status bar, rulers, etc).  Call this function
 ' to do so.
-Public Sub fixChromeLayout()
+Public Sub FixChromeLayout()
     
     'Move the message label into position (right-aligned, with a slight margin)
     Dim newLeft As Long
@@ -2189,8 +2203,8 @@ Public Sub fixChromeLayout()
         If (Not g_ProgramShuttingDown) Then
         
             'Hide scrollbars if they aren't already
-            setScrollVisibility PD_HORIZONTAL, False
-            setScrollVisibility PD_VERTICAL, False
+            SetScrollVisibility PD_HORIZONTAL, False
+            SetScrollVisibility PD_VERTICAL, False
                         
             Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
@@ -2253,7 +2267,7 @@ Public Sub fixChromeLayout()
 End Sub
 
 'Dynamically render some icons onto the status bar.
-Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
+Public Sub DrawStatusBarIcons(ByVal enabledState As Boolean)
         
     'Note the enabled state at a module level, in case we need to internally refresh the status bar for some reason
     m_LastEnabledState = enabledState
@@ -2352,7 +2366,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         Case NAV_DRAG
         
             'When click-dragging the image to scroll around it, the cursor depends on being over the image
-            If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
+            If IsMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
                 
                 If Button <> 0 Then
                     cMouseEvents.setPNGCursor "HANDCLOSED", 0, 0
@@ -2598,42 +2612,42 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
 End Sub
 
 'Simple unified way to see if canvas interaction is allowed.
-Private Function isCanvasInteractionAllowed() As Boolean
+Private Function IsCanvasInteractionAllowed() As Boolean
 
     'By default, canvas interaction is allowed
-    isCanvasInteractionAllowed = True
+    IsCanvasInteractionAllowed = True
     
     'Now, check a bunch of states that might indicate canvas interactions should not be allowed
     
     'If the main form is disabled, exit
-    If Not FormMain.Enabled Then isCanvasInteractionAllowed = False
+    If Not FormMain.Enabled Then IsCanvasInteractionAllowed = False
         
     'If user input has been forcibly disabled, exit
-    If g_DisableUserInput Then isCanvasInteractionAllowed = False
+    If g_DisableUserInput Then IsCanvasInteractionAllowed = False
     
     'If no images have been loaded, exit
-    If g_OpenImageCount = 0 Then isCanvasInteractionAllowed = False
+    If g_OpenImageCount = 0 Then IsCanvasInteractionAllowed = False
     
     'If our own internal redraw suspension flag is set, exit
-    If m_SuspendRedraws Then isCanvasInteractionAllowed = False
+    If m_SuspendRedraws Then IsCanvasInteractionAllowed = False
     
     'If canvas interactions are disallowed, exit immediately
-    If Not isCanvasInteractionAllowed Then Exit Function
+    If Not IsCanvasInteractionAllowed Then Exit Function
     
     'If the current image does not exist, exit
     If pdImages(g_CurrentImage) Is Nothing Then
-        isCanvasInteractionAllowed = False
+        IsCanvasInteractionAllowed = False
     Else
         
         'If an image has not yet been loaded, exit
-        If Not pdImages(g_CurrentImage).IsActive Then isCanvasInteractionAllowed = False
-        If Not pdImages(g_CurrentImage).loadedSuccessfully Then isCanvasInteractionAllowed = False
-        If pdImages(g_CurrentImage).getNumOfLayers = 0 Then isCanvasInteractionAllowed = False
+        If Not pdImages(g_CurrentImage).IsActive Then IsCanvasInteractionAllowed = False
+        If Not pdImages(g_CurrentImage).loadedSuccessfully Then IsCanvasInteractionAllowed = False
+        If pdImages(g_CurrentImage).getNumOfLayers = 0 Then IsCanvasInteractionAllowed = False
         
     End If
     
     'If the central processor is active, exit
-    If Processor.IsProgramBusy Then isCanvasInteractionAllowed = False
+    If Processor.IsProgramBusy Then IsCanvasInteractionAllowed = False
     
 End Function
 

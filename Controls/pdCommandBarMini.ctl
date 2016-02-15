@@ -116,6 +116,17 @@ Public Property Let BackColor(ByVal newColor As OLE_COLOR)
     
 End Property
 
+'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
+Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
+    Enabled = UserControl.Enabled
+End Property
+
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    PropertyChanged "Enabled"
+End Property
+
 'CANCEL button
 Private Sub CmdCancel_Click()
 

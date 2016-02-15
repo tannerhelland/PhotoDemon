@@ -180,8 +180,8 @@ Public Sub SyncInterfaceToCurrentImage()
         End If
         
         'Erase the main viewport's status bar
-        FormMain.mainCanvas(0).displayImageSize Nothing, True
-        FormMain.mainCanvas(0).drawStatusBarIcons False
+        FormMain.mainCanvas(0).DisplayImageSize Nothing, True
+        FormMain.mainCanvas(0).DrawStatusBarIcons False
         
         'Because dynamic icons are enabled, restore the main program icon and clear the custom image icon cache
         setNewTaskbarIcon origIcon32, FormMain.hWnd
@@ -239,7 +239,7 @@ Public Sub SyncInterfaceToCurrentImage()
             End If
             
             'Draw icons onto the main viewport's status bar
-            FormMain.mainCanvas(0).drawStatusBarIcons True
+            FormMain.mainCanvas(0).DrawStatusBarIcons True
             
             'Next, attempt to enable controls whose state depends on the current image - e.g. "Save", which is only enabled if
             ' the image has not already been saved in its current state.
@@ -284,7 +284,7 @@ Public Sub SyncInterfaceToCurrentImage()
             'Restore the zoom value for this particular image (again, only if the form has been initialized)
             If pdImages(g_CurrentImage).Width <> 0 Then
                 g_AllowViewportRendering = False
-                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = pdImages(g_CurrentImage).currentZoomValue
+                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = pdImages(g_CurrentImage).currentZoomValue
                 g_AllowViewportRendering = True
             End If
             
@@ -786,15 +786,15 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         
         'Zoom controls not just the drop-down zoom box, but the zoom in, zoom out, and zoom fit buttons as well
         Case tZoom
-            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled <> newState Then
-                FormMain.mainCanvas(0).getZoomDropDownReference().Enabled = newState
-                FormMain.mainCanvas(0).enableZoomIn newState
-                FormMain.mainCanvas(0).enableZoomOut newState
-                FormMain.mainCanvas(0).enableZoomFit newState
+            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled <> newState Then
+                FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled = newState
+                FormMain.mainCanvas(0).EnableZoomIn newState
+                FormMain.mainCanvas(0).EnableZoomOut newState
+                FormMain.mainCanvas(0).EnableZoomFit newState
             End If
             
             'When disabling zoom controls, reset the zoom drop-down to 100%
-            If Not newState Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
+            If Not newState Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
         
         'Various layer-related tools (move, etc) are exposed on the tool options dialog.  For consistency, we disable those UI elements
         ' when no images are loaded.
@@ -1289,6 +1289,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     dstForm.MouseIcon = LoadPicture("")
     dstForm.MousePointer = 0
     
+    Dim isPDControl As Boolean, isControlEnabled As Boolean
+    
     'FORM STEP 2: Enumerate through every control on the form and apply theming on a per-control basis.
     Dim eControl As Control
     
@@ -1329,28 +1331,40 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         ' 1) The control's visual appearance (to reflect any changes to visual themes)
         ' 2) Updating any translatable text against the current translation
         
+        isPDControl = False
+        
         'These controls are fully compatible with PD's theming and translation engines:
-        If (TypeOf eControl Is pdButtonStrip) Or (TypeOf eControl Is pdButtonStripVertical) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdColorSelector) Or (TypeOf eControl Is pdBrushSelector) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdGradientSelector) Or (TypeOf eControl Is pdPenSelector) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdButton) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdScrollBar) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdTextBox) Or (TypeOf eControl Is pdSpinner) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSliderStandalone) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdTitle) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdFxPreviewCtl) Or (TypeOf eControl Is pdPreview) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdButtonStrip) Or (TypeOf eControl Is pdButtonStripVertical) Then isPDControl = True
+        If (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Then isPDControl = True
+        If (TypeOf eControl Is pdColorSelector) Or (TypeOf eControl Is pdBrushSelector) Then isPDControl = True
+        If (TypeOf eControl Is pdGradientSelector) Or (TypeOf eControl Is pdPenSelector) Then isPDControl = True
+        If (TypeOf eControl Is pdButton) Or (TypeOf eControl Is pdButtonToolbox) Then isPDControl = True
+        If (TypeOf eControl Is pdScrollBar) Then isPDControl = True
+        If (TypeOf eControl Is pdTextBox) Or (TypeOf eControl Is pdSpinner) Then isPDControl = True
+        If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSliderStandalone) Then isPDControl = True
+        If (TypeOf eControl Is pdTitle) Then isPDControl = True
+        If (TypeOf eControl Is pdFxPreviewCtl) Or (TypeOf eControl Is pdPreview) Then isPDControl = True
         
         'These controls currently support translations, but not theming.  (Theming support is actively being worked on, and I'm
         ' migrating controls to the above "finished" list as they're completed.  Once all controls have been migrated, I'll look
         ' at a better system for detecting internal PD controls.)
-        If (TypeOf eControl Is pdRadioButton) Or (TypeOf eControl Is pdCheckBox) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is pdButtonToolbox) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdCommandBar) Or (TypeOf eControl Is pdCommandBarMini) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdResize) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then eControl.UpdateAgainstCurrentTheme
-                
+        If (TypeOf eControl Is pdRadioButton) Or (TypeOf eControl Is pdCheckBox) Then isPDControl = True
+        If (TypeOf eControl Is pdCanvas) Then isPDControl = True
+        If (TypeOf eControl Is pdCommandBar) Or (TypeOf eControl Is pdCommandBarMini) Then isPDControl = True
+        If (TypeOf eControl Is pdResize) Then isPDControl = True
+        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then isPDControl = True
+        If (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then isPDControl = True
+        
+        If isPDControl Then
+        
+            'Disabled controls will ignore any function calls, so we must manually enable disabled controls prior to theming them
+            isControlEnabled = eControl.Enabled
+            If Not isControlEnabled Then eControl.Enabled = True
+            eControl.UpdateAgainstCurrentTheme
+            If Not isControlEnabled Then eControl.Enabled = False
+            
+        End If
+        
         'While we're here, forcibly remove TabStops from each picture box.  They should never receive focus, but I often forget
         ' to change this at design-time.
         If (TypeOf eControl Is PictureBox) Then eControl.TabStop = False
@@ -1489,7 +1503,7 @@ End Function
 Public Sub DisplaySize(ByRef srcImage As pdImage)
     
     If Not (srcImage Is Nothing) Then
-        FormMain.mainCanvas(0).displayImageSize srcImage
+        FormMain.mainCanvas(0).DisplayImageSize srcImage
     End If
     
     'Size is only displayed when it is changed, so if any controls have a maximum value linked to the size of the image,
@@ -1627,7 +1641,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
             
             'Display the message
             If (Not curMainFormState) And (Not g_ModalDialogActive) Then FormMain.Enabled = True
-            FormMain.mainCanvas(0).displayCanvasMessage newString
+            FormMain.mainCanvas(0).DisplayCanvasMessage newString
             If (Not curMainFormState) Then Replacement_DoEvents FormMain.mainCanvas(0).hWnd
             
             'Restore original form state (only relevant if we had to change state to display the message)
@@ -1656,7 +1670,7 @@ End Function
 
 'When the mouse is moved outside the primary image, clear the image coordinates display
 Public Sub ClearImageCoordinatesDisplay()
-    FormMain.mainCanvas(0).displayCanvasCoordinates 0, 0, True
+    FormMain.mainCanvas(0).DisplayCanvasCoordinates 0, 0, True
 End Sub
 
 'Populate the passed combo box with options related to distort filter edge-handle options.  Also, select the specified method by default.
@@ -1883,7 +1897,7 @@ Public Sub DisplayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef
     If Drawing.ConvertCanvasCoordsToImageCoords(srcCanvas, srcImage, x1, y1, copyX, copyY) Then
         
         'If an image is open, relay the new coordinates to the relevant canvas; it will handle the actual drawing internally
-        If g_OpenImageCount > 0 Then srcCanvas.displayCanvasCoordinates copyX, copyY
+        If g_OpenImageCount > 0 Then srcCanvas.DisplayCanvasCoordinates copyX, copyY
         
     End If
     

@@ -248,6 +248,17 @@ Public Property Let dontResetAutomatically(ByVal newValue As Boolean)
     PropertyChanged "dontResetAutomatically"
 End Property
 
+'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
+Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
+    Enabled = UserControl.Enabled
+End Property
+
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    PropertyChanged "Enabled"
+End Property
+
 'If multiple tools exist on the same form, the parent can use this in its _Load statement to identify which tool
 ' is currently active.  The command bar will then limit its preset actions to that tool name alone.
 Public Sub setToolName(ByVal customName As String)
@@ -292,7 +303,7 @@ End Property
 'When a preset is selected from the drop-down, load it.  Note that we change the combo box .ListIndex when adding a new preset;
 ' to prevent this from causing a redraw, we ignore click events if allowPreviews is FALSE.
 Private Sub cboPreset_Click()
-    If (cboPreset.ListIndex > 0) And allowPreviews Then loadPreset cboPreset.List(cboPreset.ListIndex)
+    If (cboPreset.ListIndex > 0) And allowPreviews Then LoadPreset cboPreset.List(cboPreset.ListIndex)
 End Sub
 
 'Randomize all control values on the page.  This control will automatically handle all standard controls, and a separate
@@ -425,7 +436,7 @@ Private Function savePreset() As Boolean
         allowPreviews = False
         
         'Reset the combo box
-        loadAllPresets
+        LoadAllPresets
         
         'Next, set the combo box index to match the just-added preset
         Dim i As Long
@@ -485,6 +496,7 @@ Public Property Let BackColor(ByVal newColor As OLE_COLOR)
     Dim i As Long
     For i = cmdAction.lBound To cmdAction.UBound
         cmdAction(i).BackColor = UserControl.BackColor
+        cmdAction(i).UseCustomBackColor = True
     Next i
     
     cmdOK.BackColor = RGB(235, 235, 240)
@@ -775,7 +787,7 @@ Private Sub UserControl_Show()
         m_Presets.setPresetFilePath parentToolPath, parentToolName, Trim$(UserControl.Parent.Caption)
         
         'Populate the preset combo box with any presets found in the file.
-        loadAllPresets
+        LoadAllPresets
         
         'The XML object is now primed and ready for use.  Look for last-used control settings, and load them if available.
         ' (Update 25 Aug 2014 - check to see if the parent dialog has disabled this behavior.)
@@ -783,7 +795,7 @@ Private Sub UserControl_Show()
         
             'Attempt to load last-used settings.  If none were found, fire the Reset event, which will supply proper
             ' default values.
-            If Not loadPreset() Then
+            If Not LoadPreset() Then
             
                 ResetSettings
                 
@@ -948,7 +960,7 @@ Private Sub storePreset(Optional ByVal presetName As String = "last-used setting
 End Sub
 
 'This function is called when the user wants to add new preset data to the current preset
-Public Function addPresetData(ByVal presetName As String, ByVal presetData As String)
+Public Function AddPresetData(ByVal presetName As String, ByVal presetData As String)
     
     'Increase the array size
     ReDim Preserve customPresetNames(0 To numCustomPresetEntries) As String
@@ -964,17 +976,17 @@ Public Function addPresetData(ByVal presetName As String, ByVal presetData As St
 End Function
 
 'Inside the ReadCustomPresetData event, the caller can call this function to retrieve any custom preset data from the active preset.
-Public Function retrievePresetData(ByVal customPresetName As String) As String
+Public Function RetrievePresetData(ByVal customPresetName As String) As String
     
     'For this function, we ignore the boolean return of .retrievePresetValue, and simply let the caller deal with blank strings
     ' if they occur.
-    m_Presets.readPresetValue "custom:" & customPresetName, retrievePresetData
+    m_Presets.readPresetValue "custom:" & customPresetName, RetrievePresetData
     
 End Function
 
 'This sub will set the values of all controls on this form, using the values stored in the tool's XML file under the
 ' "presetName" section.  By default, it will look for the last-used settings, as this is its most common request.
-Private Function loadPreset(Optional ByVal presetName As String = "last-used settings") As Boolean
+Private Function LoadPreset(Optional ByVal presetName As String = "last-used settings") As Boolean
     
     'Start by asking the preset engine if the requested preset even exists in the file
     Dim presetExists As Boolean
@@ -1135,11 +1147,11 @@ Private Function loadPreset(Optional ByVal presetName As String = "last-used set
         If controlFullyLoaded Then RaiseEvent RequestPreviewUpdate
         
         'Return success!
-        loadPreset = True
+        LoadPreset = True
                 
     'If the preset does *not* exist, exit without further processing
     Else
-        loadPreset = False
+        LoadPreset = False
         Exit Function
     End If
     
@@ -1147,7 +1159,7 @@ End Function
 
 'Search the preset file for all valid presets.  This sub doesn't actually load any of the presets - it just adds their
 ' names to the preset combo box.
-Private Sub loadAllPresets(Optional ByVal newListIndex As Long = 0)
+Private Sub LoadAllPresets(Optional ByVal newListIndex As Long = 0)
 
     cboPreset.Clear
     
@@ -1190,5 +1202,10 @@ Public Sub UpdateAgainstCurrentTheme()
     'Update individual controls
     cmdOK.UpdateAgainstCurrentTheme
     cmdCancel.UpdateAgainstCurrentTheme
+    
+    Dim i As Long
+    For i = cmdAction.lBound To cmdAction.UBound
+        cmdAction(i).UpdateAgainstCurrentTheme
+    Next i
     
 End Sub
