@@ -977,13 +977,8 @@ End Function
 
 'Similar function to GdiPlusDrawCanvasCircle, above, but draws a RectF outline, specifically
 Public Function GDIPlusDrawCanvasRectF(ByVal dstDC As Long, ByRef srcRect As RECTF, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
-    
-    GDI_Plus.GDIPlusDrawRectFOutlineToDC dstDC, srcRect, RGB(0, 0, 0), cTransparency, 3, True, LineJoinMiter
-    
-    Dim topColor As Long
-    If useHighlightColor Then topColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
-    GDI_Plus.GDIPlusDrawRectFOutlineToDC dstDC, srcRect, topColor, 220, 1.6, True, LineJoinMiter
-    
+    GDI_Plus.GDIPlusDrawRectFOutlineToDC dstDC, srcRect, g_Themer.GetGenericUIColor(UI_UniversalLineEdge, , , useHighlightColor), cTransparency, 3, True, LineJoinMiter
+    GDI_Plus.GDIPlusDrawRectFOutlineToDC dstDC, srcRect, g_Themer.GetGenericUIColor(UI_UniversalLineCenter, , , useHighlightColor), 220, 1.6, True, LineJoinMiter
 End Function
 
 'Use GDI+ to render overlapping black-white-black arcs, which are preferable for on-canvas controls with good readability
