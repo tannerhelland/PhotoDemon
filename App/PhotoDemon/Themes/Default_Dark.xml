@@ -236,6 +236,10 @@
 				<Caption-activehover>TextHyperlink</Caption-activehover>
 			</PDRadioButton>
 			
+			<PDResize>
+				<Background>BackgroundDefault</Background>
+			</PDResize>
+			
 			<PDScrollBar>
 				<ButtonBorder>BackgroundDefault</ButtonBorder>
 				<ButtonFill>BackgroundDefault</ButtonFill>

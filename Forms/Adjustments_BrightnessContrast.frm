@@ -30,9 +30,8 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   0
       Top             =   5790
       Width           =   12075
-      _ExtentX        =   21299
-      _ExtentY        =   1323
-      BackColor       =   14802140
+      _extentx        =   21299
+      _extenty        =   1323
    End
    Begin PhotoDemon.pdCheckBox chkSample 
       Height          =   330
@@ -40,9 +39,9 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   3
       Top             =   3840
       Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   582
-      Caption         =   "sample image for true contrast (slower but more accurate)"
+      _extentx        =   10186
+      _extenty        =   582
+      caption         =   "sample image for true contrast (slower but more accurate)"
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -50,8 +49,8 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   4
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.pdSlider sltBright 
       Height          =   705
@@ -59,12 +58,12 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   1
       Top             =   1680
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
-      Caption         =   "brightness"
-      Min             =   -255
-      Max             =   255
-      Value           =   -10
+      _extentx        =   10398
+      _extenty        =   1270
+      caption         =   "brightness"
+      min             =   -255
+      max             =   255
+      value           =   -10
    End
    Begin PhotoDemon.pdSlider sltContrast 
       Height          =   705
@@ -72,12 +71,12 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   2
       Top             =   2760
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
-      Caption         =   "contrast"
-      Min             =   -100
-      Max             =   100
-      Value           =   10
+      _extentx        =   10398
+      _extenty        =   1270
+      caption         =   "contrast"
+      min             =   -100
+      max             =   100
+      value           =   10
    End
 End
 Attribute VB_Name = "FormBrightnessContrast"
@@ -89,9 +88,9 @@ Attribute VB_Exposed = False
 'Brightness and Contrast Handler
 'Copyright 2001-2016 by Tanner Helland
 'Created: 2/6/01
-'Last updated: 16/August/13
-'Last update: this dialog is my testbed for the new command bar user control, so it received a number of changes
-'              relating to proper command bar implementation.
+'Last updated: 16/February/16
+'Last update: use this dialog to test some new theming options; Form_Load may end up being preferable for theming
+'              steps, after all...
 '
 'The central brightness/contrast handler.  Everything is done via look-up tables, so it's extremely fast.
 ' It's all linear (not logarithmic; sorry). Maybe someday I'll change that, maybe not... honestly, I probably
@@ -106,8 +105,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'While previewing, we don't need to repeatedly sample contrast.  Just do it once and store the value.
-Private previewHasSampled As Boolean
-Private previewSampledContrast As Long
+Private m_previewHasSampled As Boolean
+Private m_previewSampledContrast As Long
 
 'Update the preview when the "sample contrast" checkbox value is changed
 Private Sub chkSample_Click()
@@ -184,7 +183,7 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
         Next y
             If toPreview = False Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal x
                 End If
             End If
@@ -204,9 +203,9 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
         ' non-traditional white balance, sampled contrast offers better results.
         If TrueContrast Then
         
-            If toPreview And previewHasSampled Then
+            If toPreview And m_previewHasSampled Then
             
-                Mean = previewSampledContrast
+                Mean = m_previewSampledContrast
             
             Else
             
@@ -237,8 +236,8 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
                 Mean = (rTotal + gTotal + bTotal) \ 3
                 
                 If toPreview Then
-                    previewSampledContrast = Mean
-                    previewHasSampled = True
+                    m_previewSampledContrast = Mean
+                    m_previewHasSampled = True
                 End If
             
             End If
@@ -274,7 +273,7 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
         Next y
             If toPreview = False Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     If Bright <> 0 Then SetProgBarVal x + finalX Else SetProgBarVal x
                 End If
             End If
@@ -309,10 +308,10 @@ Private Sub cmdBar_ResetClick()
     
 End Sub
 
-Private Sub Form_Activate()
-    
-    previewHasSampled = 0
-    previewSampledContrast = 0
+Private Sub Form_Load()
+
+    m_previewHasSampled = 0
+    m_previewSampledContrast = 0
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
@@ -332,7 +331,7 @@ Private Sub sltContrast_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then BrightnessContrast sltBright, sltContrast, CBool(chkSample.Value), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then BrightnessContrast sltBright, sltContrast, CBool(chkSample.Value), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

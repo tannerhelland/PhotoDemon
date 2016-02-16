@@ -1319,11 +1319,6 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         '         (Also, once all combo boxes are replaced with PD's dedicated replacement, this line can be removed.)
         If (TypeOf eControl Is ComboBox) Then SendMessage eControl.hWnd, CB_SETMINVISIBLE, CLng(eControl.ListCount), ByVal 0&
         
-        'TODO: integrate font handling directly into pdResize
-        If (TypeOf eControl Is pdResize) Then
-            eControl.Font.Name = g_InterfaceFont
-        End If
-        
         ' TODO 6.8: remove these steps once and for all
         '*******************************************
         
@@ -1348,12 +1343,12 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         If (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then isPDControl = True
         If (TypeOf eControl Is pdNavigator) Or (TypeOf eControl Is pdNavigatorInner) Then isPDControl = True
         If (TypeOf eControl Is pdCommandBar) Or (TypeOf eControl Is pdCommandBarMini) Then isPDControl = True
+        If (TypeOf eControl Is pdResize) Then isPDControl = True
         
         'These controls currently support translations, but not theming.  (Theming support is actively being worked on, and I'm
         ' migrating controls to the above "finished" list as they're completed.  Once all controls have been migrated, I'll look
         ' at a better system for detecting internal PD controls.)
         If (TypeOf eControl Is pdCanvas) Then isPDControl = True
-        If (TypeOf eControl Is pdResize) Then isPDControl = True
         If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then isPDControl = True
         
         'Disabled controls will ignore any function calls, so we must manually enable disabled controls prior to theming them
@@ -1387,7 +1382,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     
     'FORM STEP 4: force a refresh to ensure our changes are immediately visible
     If dstForm.Name <> "FormMain" Then
-        dstForm.Refresh
+        'dstForm.Refresh
     Else
         'The main from is a bit different - if it has been translated or changed, it needs menu icons reassigned, because they are
         ' inadvertently dropped when the menu captions change.
