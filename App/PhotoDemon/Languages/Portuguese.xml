@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.137</langversion>
+<langversion>6.7.138</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -3696,11 +3696,23 @@ or os menus File> Open e File> Import.</translation>
 
 <!-- END text for pdNavigator.ctl-->
 
+<!-- BEGIN text for pdNavigatorInner.ctl -->
+
+<!-- pdNavigatorInner.ctl contains 0 phrases. -->
+
+<!-- END text for pdNavigatorInner.ctl-->
+
 <!-- BEGIN text for pdPenSelector.ctl -->
 
 <!-- pdPenSelector.ctl contains 0 phrases. -->
 
 <!-- END text for pdPenSelector.ctl-->
+
+<!-- BEGIN text for pdPreview.ctl -->
+
+<!-- pdPreview.ctl contains 0 phrases. -->
+
+<!-- END text for pdPreview.ctl-->
 
 <!-- BEGIN text for pdRadioButton.ctl -->
 
@@ -14707,12 +14719,6 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for pdPreview.ctl -->
-
-<!-- pdPreview.ctl contains 0 phrases. -->
-
-<!-- END text for pdPreview.ctl-->
 
 <!-- Automatic text extraction complete. -->
 
