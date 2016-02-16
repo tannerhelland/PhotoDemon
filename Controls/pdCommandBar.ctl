@@ -2,7 +2,6 @@ VERSION 5.00
 Begin VB.UserControl pdCommandBar 
    Alignable       =   -1  'True
    Appearance      =   0  'Flat
-   AutoRedraw      =   -1  'True
    ClientHeight    =   750
    ClientLeft      =   0
    ClientTop       =   0
@@ -17,6 +16,7 @@ Begin VB.UserControl pdCommandBar
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    ScaleHeight     =   50
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   637
@@ -93,19 +93,19 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright 2013-2016 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 01/September/15
-'Last update: change OK/Cancel buttons to new pdButton instances, freeing us of any stock VB controls on the command bar!
+'Last updated: 16/February/16
+'Last update: implement theming and migrate to ucSupport so we can finally handle high-DPI displays correctly
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
 '
 'As the program has grown more complex, I have wanted to add a variety of new features to each tool - things like dedicated
 ' "Help" and "Reset" buttons.  Tool presets.  Maybe even a Randomize button.  Adding so many features to each individual
-' tool would be a RIDICULOUSLY time-consuming task, so rather than do that, I have wrapped all universal tool features into
-' a single command bar, which can be dropped onto any new tool form at will.
+' tool would be RIDICULOUSLY time-consuming, so rather than do that, I've wrapped all universal tool features into a
+' single command bar, which can be dropped onto any new tool form.
 '
-'This command bar control encapsulates a huge variety of functionality: some obvious, some not.  Things this control handles
-' for a tool dialog includes:
+'This command bar control encapsulates a huge variety of functionality: some obvious, some not.  Tasks this control
+' performs for its parent dialog includes:
 ' - Validating the contents of all numeric controls when OK is pressed
 ' - Hiding and unloading the parent form when OK is pressed and all controls succesfully validate
 ' - Unloading the parent when Cancel is pressed
@@ -116,9 +116,9 @@ Attribute VB_Exposed = False
 ' - Randomizing all standard controls when Randomize is pressed
 ' - Suspending effect previewing while operations are being performed, and requesting new previews when relevant
 '
-'This impressive functionality spares me from writing a great deal of repetitive code in each tool dialog, but it
-' can be confusing for developers who can't figure out why PD is capable of certain actions - so be forewarned: if
-' PD seems to be "magically" handling things on a tool dialog, it's probably offloading the task to this control.
+'This functionality spares me from writing a great deal of repetitive code in each tool dialog, but it can be
+' confusing for developers who can't figure out why PD is capable of certain actions - so be forewarned: if PD
+' is "magically" handling things on a tool dialog, it's probably offloading the task to this control.
 '
 'As of March 2015, the actual business of loading and storing presets is handled by a separate pdToolPreset object.
 ' Look there for details on how preset files are managed.
@@ -162,46 +162,50 @@ Public Event RequestPreviewUpdate()
 Public Event AddCustomPresetData()
 Public Event ReadCustomPresetData()
 
+'Like other PD controls, this control raises its own specialized focus events.  If you need to track focus,
+' use these instead of the default VB functions.
+Public Event GotFocusAPI()
+Public Event LostFocusAPI()
+
 'Sometimes, for brevity and clarity's sake I use a single dialog for multiple tools (e.g. median/dilate/erode).
 ' Such forms create a problem when reading/writing presets, because the command bar has no idea which tool is
 ' currently active, or even that multiple tools exist on the same form.  In the _Load statement of the parent,
 ' the setToolName function can be called to append a unique tool name to the default one (which is generated from
 ' the Form title by default).  This separates the presets for each tool on that form.  For example, on the Median
 ' dialog, I append the name of the current tool to the default name (Median_<name>, e.g. Median_Dilate).
-Private userSuppliedToolName As String
+Private m_userSuppliedToolName As String
 
 'Results of extra user validations will be stored here
-Private userValidationFailed As Boolean
+Private m_userValidationFailed As Boolean
 
 'If the user wants us to postpone a Cancel-initiated unload, for example if they displayed a custom confirmation
 ' window, this will let us know to suspend the unload for now.
-Private dontShutdownYet As Boolean
+Private m_dontShutdownYet As Boolean
 
 'Each instance of this control lives on a unique tool dialog.  That dialog's name is stored here (automatically
 ' generated at initialization time).
-Private parentToolName As String, parentToolPath As String
+Private m_parentToolName As String, m_parentToolPath As String
 
 'While the control is loading, this will be set to FALSE.  When the control is ready for interactions, this will be
 ' set to TRUE.
-Private controlFullyLoaded As Boolean
+Private m_controlFullyLoaded As Boolean
 
 'When the user control is in the midst of setting control values, this will be set to FALSE.
-Private allowPreviews As Boolean
+Private m_allowPreviews As Boolean
 
 'If the user wants to enable/disable previews, this value will be set.  We will check this in addition to our own
 ' internal preview checks when requesting previews.
-Private userAllowsPreviews As Boolean
+Private m_userAllowsPreviews As Boolean
 
 'When a tool dialog needs to read or write custom preset data (e.g. the Curves dialog, with its unique Curves
 ' user control), we use these variables to store all custom data supplied to us.
-Private numCustomPresetEntries As Long
-Private customPresetNames() As String
-Private customPresetData() As String
-Private curPresetEntry As String
+Private m_numCustomPresetEntries As Long
+Private m_customPresetNames() As String
+Private m_customPresetData() As String
 
 'If a parent dialog wants to suspend auto-load of last-used settings (e.g. the Resize dialog, because last-used
 ' settings will be some other image's dimensions), this bool will be set to TRUE
-Private suspendLastUsedAutoLoad As Boolean
+Private m_suspendLastUsedAutoLoad As Boolean
 
 'If the parent does not want the command bar to auto-unload it when OK or CANCEL is pressed, this will be set to TRUE
 Private m_dontAutoUnloadParent As Boolean
@@ -213,39 +217,60 @@ Private m_dontResetAutomatically As Boolean
 'As of March 2015, presets are now handled by a separate class.  This greatly simplifies the complexity of this user control.
 Private m_Presets As pdToolPreset
 
+'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
+' but I've since attempted to wrap these into a single master control support class.
+Private WithEvents ucSupport As pdUCSupport
+Attribute ucSupport.VB_VarHelpID = -1
+
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDCB_COLOR_LIST
+    [_First] = 0
+    PDCB_Background = 0
+    [_Last] = 0
+    [_Count] = 1
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
+
 'The command bar is set to auto-unload its parent object when OK or CANCEL is pressed.  In some instances (e.g. forms prefaced with
 ' "dialog_", which return a VBMsgBoxResult), this behavior is not desirable.  It can be overridden by setting this property to TRUE.
-Public Property Get dontAutoUnloadParent() As Boolean
-    dontAutoUnloadParent = m_dontAutoUnloadParent
+Public Property Get DontAutoUnloadParent() As Boolean
+    DontAutoUnloadParent = m_dontAutoUnloadParent
 End Property
 
-Public Property Let dontAutoUnloadParent(ByVal newValue As Boolean)
+Public Property Let DontAutoUnloadParent(ByVal newValue As Boolean)
     m_dontAutoUnloadParent = newValue
-    PropertyChanged "dontAutoUnloadParent"
+    PropertyChanged "DontAutoUnloadParent"
 End Property
 
 'Some dialogs (e.g. Resize) may not want us to automatically load their last-used settings, because they need to
 ' populate the dialog with values unique to the current image.  If this property is set, last-used settings will
 ' still be saved and made available as a preset, but they WILL NOT be auto-loaded when the parent dialog loads.
-Public Property Get dontAutoLoadLastPreset() As Boolean
-    dontAutoLoadLastPreset = suspendLastUsedAutoLoad
+Public Property Get DontAutoLoadLastPreset() As Boolean
+    DontAutoLoadLastPreset = m_suspendLastUsedAutoLoad
 End Property
 
-Public Property Let dontAutoLoadLastPreset(ByVal newValue As Boolean)
-    suspendLastUsedAutoLoad = newValue
-    PropertyChanged "dontAutoLoadLastPreset"
+Public Property Let DontAutoLoadLastPreset(ByVal newValue As Boolean)
+    m_suspendLastUsedAutoLoad = newValue
+    PropertyChanged "DontAutoLoadLastPreset"
 End Property
 
 'Some dialogs (e.g. brush selection) may not want us to automatically reset the dialog when the form is first loaded.
 ' If this property is set, the caller is 100% responsible for initializing controls.  (Note that, by design, this setting
 ' does *not* prevent the command bar from firing Reset events in response to UI events.)
-Public Property Get dontResetAutomatically() As Boolean
-    dontResetAutomatically = m_dontResetAutomatically
+Public Property Get DontResetAutomatically() As Boolean
+    DontResetAutomatically = m_dontResetAutomatically
 End Property
 
-Public Property Let dontResetAutomatically(ByVal newValue As Boolean)
+Public Property Let DontResetAutomatically(ByVal newValue As Boolean)
     m_dontResetAutomatically = newValue
-    PropertyChanged "dontResetAutomatically"
+    PropertyChanged "DontResetAutomatically"
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -261,38 +286,31 @@ End Property
 
 'If multiple tools exist on the same form, the parent can use this in its _Load statement to identify which tool
 ' is currently active.  The command bar will then limit its preset actions to that tool name alone.
-Public Sub setToolName(ByVal customName As String)
-    userSuppliedToolName = customName
+Public Sub SetToolName(ByVal customName As String)
+    m_userSuppliedToolName = customName
 End Sub
 
 'Because this user control will change the values of dialog controls at run-time, it is necessary to suspend previewing
 ' while changing values (so that each value change doesn't prompt a preview redraw, and thus slow down the process.)
 ' This property will be automatically set by this control as necessary, and the parent form can also set it - BUT IF IT
 ' DOES, IT NEEDS TO RESET IT WHEN DONE, as obviously this control won't know when the parent is finished with its work.
-Public Function previewsAllowed() As Boolean
-    previewsAllowed = (allowPreviews And controlFullyLoaded And userAllowsPreviews)
+Public Function PreviewsAllowed() As Boolean
+    PreviewsAllowed = (m_allowPreviews And m_controlFullyLoaded And m_userAllowsPreviews)
 End Function
 
-Public Sub markPreviewStatus(ByVal newPreviewSetting As Boolean)
-    
-    userAllowsPreviews = newPreviewSetting
-    
-    'If the client is setting this value to true, it means their work is done - which in turn means we should
-    ' request a new preview.
-    'DISABLED because it causes endless re-preview loops.  Need to check existing implementations to make sure disabling is okay.
-    'If userAllowsPreviews Then RaiseEvent RequestPreviewUpdate
-    
+Public Sub MarkPreviewStatus(ByVal newPreviewSetting As Boolean)
+    m_userAllowsPreviews = newPreviewSetting
 End Sub
 
 'If the user wants to postpone a Cancel-initiated unload for some reason, they can call this function during their
 ' Cancel event.
-Public Sub doNotUnloadForm()
-    dontShutdownYet = True
+Public Sub DoNotUnloadForm()
+    m_dontShutdownYet = True
 End Sub
 
 'If any user-applied extra validations failed, they can call this sub to notify us, and we will adjust our behavior accordingly
-Public Sub validationFailed()
-    userValidationFailed = True
+Public Sub ValidationFailed()
+    m_userValidationFailed = True
 End Sub
 
 'An hWnd is needed for external tooltip handling
@@ -301,9 +319,9 @@ Public Property Get hWnd() As Long
 End Property
 
 'When a preset is selected from the drop-down, load it.  Note that we change the combo box .ListIndex when adding a new preset;
-' to prevent this from causing a redraw, we ignore click events if allowPreviews is FALSE.
+' to prevent this from causing a redraw, we ignore click events if m_allowPreviews is FALSE.
 Private Sub cboPreset_Click()
-    If (cboPreset.ListIndex > 0) And allowPreviews Then LoadPreset cboPreset.List(cboPreset.ListIndex)
+    If (cboPreset.ListIndex > 0) And m_allowPreviews Then LoadPreset cboPreset.List(cboPreset.ListIndex)
 End Sub
 
 'Randomize all control values on the page.  This control will automatically handle all standard controls, and a separate
@@ -311,7 +329,7 @@ End Sub
 Private Sub RandomizeSettings()
 
     'Disable previews
-    allowPreviews = False
+    m_allowPreviews = False
     
     Randomize Timer
     
@@ -408,15 +426,15 @@ Private Sub RandomizeSettings()
     cboPreset.ListIndex = 0
     
     'Enable preview
-    allowPreviews = True
+    m_allowPreviews = True
     
     'Request a preview update
-    If controlFullyLoaded Then RaiseEvent RequestPreviewUpdate
+    If m_controlFullyLoaded Then RaiseEvent RequestPreviewUpdate
     
 End Sub
 
 'Save the current dialog settings as a new preset
-Private Function savePreset() As Boolean
+Private Function SavePreset() As Boolean
 
     Message "Saving preset..."
 
@@ -428,12 +446,12 @@ Private Function savePreset() As Boolean
     
         'Create the new preset.  Note that this will also write the preset out to file, which is important as we want to save
         ' the user's work immediately, in case they cancel the dialog.
-        storePreset newPresetName
+        StorePreset newPresetName
         
         'Next, we need to update the combo box to reflect this new preset.
         
         'Start by disabling previews
-        allowPreviews = False
+        m_allowPreviews = False
         
         'Reset the combo box
         LoadAllPresets
@@ -448,14 +466,14 @@ Private Function savePreset() As Boolean
         Next i
         
         'Re-enable previews
-        allowPreviews = True
+        m_allowPreviews = True
         
         Message "Preset saved."
-        savePreset = True
+        SavePreset = True
         
     Else
         Message "Preset save canceled."
-        savePreset = False
+        SavePreset = False
         Exit Function
     End If
     
@@ -475,34 +493,11 @@ Private Sub cmdAction_Click(Index As Integer)
         
         'Save new preset
         Case 2
-            savePreset
+            SavePreset
     
     End Select
     
 End Sub
-
-'Backcolor is used to control the color of the base user control; nothing else is affected by it.
-' Note that - by design - the back color is hardcoded.  Still TODO is integrating it with theming.
-Public Property Get BackColor() As OLE_COLOR
-    BackColor = RGB(220, 220, 225)
-End Property
-
-Public Property Let BackColor(ByVal newColor As OLE_COLOR)
-    
-    UserControl.BackColor = RGB(220, 220, 225)
-    PropertyChanged "BackColor"
-    
-    'Update all button backgrounds to match
-    Dim i As Long
-    For i = cmdAction.lBound To cmdAction.UBound
-        cmdAction(i).BackColor = UserControl.BackColor
-        cmdAction(i).UseCustomBackColor = True
-    Next i
-    
-    cmdOK.BackColor = RGB(235, 235, 240)
-    cmdCancel.BackColor = RGB(235, 235, 240)
-    
-End Property
 
 'CANCEL button
 Private Sub CmdCancel_Click()
@@ -511,8 +506,8 @@ Private Sub CmdCancel_Click()
     RaiseEvent CancelClick
     
     'If the user asked us to not shutdown yet, obey - otherwise, unload the parent form
-    If dontShutdownYet Then
-        dontShutdownYet = False
+    If m_dontShutdownYet Then
+        m_dontShutdownYet = False
         Exit Sub
     End If
         
@@ -555,15 +550,15 @@ Private Sub CmdOK_Click()
     RaiseEvent ExtraValidations
     
     'If any validations failed (ours or the client's), terminate further processing
-    If userValidationFailed Or (Not validateCheck) Then
-        userValidationFailed = False
+    If m_userValidationFailed Or (Not validateCheck) Then
+        m_userValidationFailed = False
         Exit Sub
     End If
     
     'At this point, we are now free to proceed like any normal OK click.
     
     'Write the current control values to the XML engine.  These will be loaded the next time the user uses this tool.
-    storePreset
+    StorePreset
     
     'Hide the parent form from view
     UserControl.Parent.Visible = False
@@ -580,7 +575,7 @@ End Sub
 Private Sub ResetSettings()
 
     'Disable previews
-    allowPreviews = False
+    m_allowPreviews = False
     
     'By default, controls are reset according to the following pattern:
     ' 1) If a numeric control can be set to 0, it will be.
@@ -662,136 +657,125 @@ Private Sub ResetSettings()
     cboPreset.ListIndex = 0
     
     'Enable previews
-    allowPreviews = True
+    m_allowPreviews = True
     
     'If the control has finished loading, request a preview update
-    If controlFullyLoaded Then RaiseEvent RequestPreviewUpdate
+    If m_controlFullyLoaded Then RaiseEvent RequestPreviewUpdate
     
+End Sub
+
+Private Sub ucSupport_GotFocusAPI()
+    RaiseEvent GotFocusAPI
+End Sub
+
+Private Sub ucSupport_LostFocusAPI()
+    RaiseEvent LostFocusAPI
+End Sub
+
+Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
+    If updateLayoutToo Then UpdateControlLayout
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    UpdateControlLayout
 End Sub
 
 Private Sub UserControl_Initialize()
 
     'Disable certain actions until the control is fully prepped and ready
-    controlFullyLoaded = False
-    allowPreviews = False
-    userAllowsPreviews = True
+    m_controlFullyLoaded = False
+    m_allowPreviews = False
+    m_userAllowsPreviews = True
     
     'Initialize a preset handler
     Set m_Presets = New pdToolPreset
     
     'When running, we can assign images and tooltips to the image-only command buttons
     If g_IsProgramRunning Then
-        
         cmdAction(0).AssignImage "CMDBAR_RESET"
         cmdAction(1).AssignImage "CMDBAR_RANDOM"
         cmdAction(2).AssignImage "CMDBAR_SAVE"
-        
     End If
-    
-    UserControl.BackColor = BackColor
         
     'Validations succeed by default
-    userValidationFailed = False
+    m_userValidationFailed = False
     
     'Parent forms will be unloaded by default when pressing Cancel
-    dontShutdownYet = False
+    m_dontShutdownYet = False
     
     'By default, the user hasn't appended a special name for this instance
-    userSuppliedToolName = ""
+    m_userSuppliedToolName = ""
     
     'We don't enable previews yet - that happens after the Show event fires
+    
+    'Initialize a master user control support class
+    Set ucSupport = New pdUCSupport
+    ucSupport.RegisterControl UserControl.hWnd
+    
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDCB_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDCommandBar", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
+    
+    'Update the control size parameters at least once
+    UpdateControlLayout
     
 End Sub
 
 Private Sub UserControl_InitProperties()
-    
-    BackColor = &HEEEEEE
-    dontAutoLoadLastPreset = False
-    dontAutoUnloadParent = False
-    dontResetAutomatically = False
-    
+    DontAutoLoadLastPreset = False
+    DontAutoUnloadParent = False
+    DontResetAutomatically = False
+End Sub
+
+'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
+Private Sub UserControl_Paint()
+    If Not g_IsProgramRunning Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-    
     With PropBag
-        Set Font = .ReadProperty("Font", Ambient.Font)
-        BackColor = .ReadProperty("BackColor", &HEEEEEE)
-        dontAutoLoadLastPreset = .ReadProperty("AutoloadLastPreset", False)
-        dontAutoUnloadParent = .ReadProperty("dontAutoUnloadParent", False)
-        dontResetAutomatically = .ReadProperty("dontResetAutomatically", False)
+        DontAutoLoadLastPreset = .ReadProperty("AutoloadLastPreset", False)
+        DontAutoUnloadParent = .ReadProperty("DontAutoUnloadParent", False)
+        DontResetAutomatically = .ReadProperty("DontResetAutomatically", False)
     End With
-    
 End Sub
 
 Private Sub UserControl_Resize()
-    UpdateControlLayout
-End Sub
-
-'The command bar's layout is all handled programmatically.  This lets it look good, regardless of the parent form's size or
-' the current monitor's DPI setting.
-Private Sub UpdateControlLayout()
-
-    On Error GoTo skipUpdateLayout
-
-    'Force a standard user control size
-    UserControl.Height = FixDPI(50) * TwipsPerPixelYFix
-    
-    'Make the control the same width as its parent
-    If g_IsProgramRunning Then
-    
-        UserControl.Width = UserControl.Parent.ScaleWidth * TwipsPerPixelXFix
-        
-        'Right-align the Cancel and OK buttons
-        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - FixDPI(8)
-        cmdOK.Left = cmdCancel.Left - cmdOK.Width - FixDPI(8)
-        
-    End If
-    
-'NOTE: this error catch is important, as VB will attempt to update the user control's size even after the parent has
-'       been unloaded, raising error 398 "Client site not available". If we don't catch the error, the compiled .exe
-'       will fail every time a command bar is unloaded (e.g. on almost every tool).
-skipUpdateLayout:
-
+    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_Show()
 
     'Disable previews
-    allowPreviews = False
+    m_allowPreviews = False
     
     'When the control is first made visible, rebuild individual tooltips using a custom solution
     ' (which allows for linebreaks and theming).
     If g_IsProgramRunning Then
-        
-        cmdOK.AssignTooltip "Apply this action to the current image.", "OK"
-        cmdCancel.AssignTooltip "Exit this tool.  No changes will be made to the image.", "Cancel"
-        
-        cmdAction(0).AssignTooltip "Reset all settings to their default values.", "Reset"
-        cmdAction(1).AssignTooltip "Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.", "Randomize"
-        cmdAction(2).AssignTooltip "Save the current settings as a new preset.", "Save preset"
-        cboPreset.AssignTooltip "Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right."
                 
         'Prep a preset file location.  In most cases, this is just the name of the parent form...
-        parentToolName = Replace$(UserControl.Parent.Name, "Form", "", , , vbTextCompare)
+        m_parentToolName = Replace$(UserControl.Parent.Name, "Form", "", , , vbTextCompare)
         
         '...but the caller can also specify a custom name.  This is used when a single PD form handled multiple effects,
         ' like PD's Median/Dilate/Erode implementation.
-        If Len(userSuppliedToolName) <> 0 Then parentToolName = parentToolName & "_" & userSuppliedToolName
+        If Len(m_userSuppliedToolName) <> 0 Then m_parentToolName = m_parentToolName & "_" & m_userSuppliedToolName
         
         'PD stores all preset files in a set preset folder.  This folder is not user-editable.
-        parentToolPath = g_UserPreferences.getPresetPath & parentToolName & ".xml"
+        m_parentToolPath = g_UserPreferences.getPresetPath & m_parentToolName & ".xml"
         
         'If our parent tool has an XML settings file, load it now.  (If one doesn't exist, the preset engine will create
         ' a default one for us.)
-        m_Presets.setPresetFilePath parentToolPath, parentToolName, Trim$(UserControl.Parent.Caption)
+        m_Presets.SetPresetFilePath m_parentToolPath, m_parentToolName, Trim$(UserControl.Parent.Caption)
         
         'Populate the preset combo box with any presets found in the file.
         LoadAllPresets
         
         'The XML object is now primed and ready for use.  Look for last-used control settings, and load them if available.
         ' (Update 25 Aug 2014 - check to see if the parent dialog has disabled this behavior.)
-        If Not suspendLastUsedAutoLoad Then
+        If Not m_suspendLastUsedAutoLoad Then
         
             'Attempt to load last-used settings.  If none were found, fire the Reset event, which will supply proper
             ' default values.
@@ -801,7 +785,7 @@ Private Sub UserControl_Show()
                 
                 'Note that the ResetClick event will re-enable previews, so we must forcibly disable them until the
                 ' end of this function.
-                allowPreviews = False
+                m_allowPreviews = False
         
             End If
         
@@ -809,7 +793,7 @@ Private Sub UserControl_Show()
         ' populate all dialog controls with default values.
         Else
             If Not m_dontResetAutomatically Then ResetSettings
-            allowPreviews = False
+            m_allowPreviews = False
         End If
         
     End If
@@ -826,32 +810,28 @@ Private Sub UserControl_Show()
 somethingStoleFocus:
     
     'Enable previews, and request a refresh
-    controlFullyLoaded = True
-    allowPreviews = True
+    m_controlFullyLoaded = True
+    m_allowPreviews = True
     RaiseEvent RequestPreviewUpdate
     
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-    
-    'Store all associated properties
     With PropBag
-        .WriteProperty "BackColor", BackColor, &HEEEEEE
-        .WriteProperty "AutoloadLastPreset", suspendLastUsedAutoLoad, False
-        .WriteProperty "dontAutoUnloadParent", m_dontAutoUnloadParent, False
-        .WriteProperty "dontResetAutomatically", m_dontResetAutomatically, False
+        .WriteProperty "AutoloadLastPreset", m_suspendLastUsedAutoLoad, False
+        .WriteProperty "DontAutoUnloadParent", m_dontAutoUnloadParent, False
+        .WriteProperty "DontResetAutomatically", m_dontResetAutomatically, False
     End With
-    
 End Sub
 
 'This sub will fill the class's pdXML class (xmlEngine) with the values of all controls on this form, and it will store
 ' those values in the section titled "presetName".
-Private Sub storePreset(Optional ByVal presetName As String = "last-used settings")
+Private Sub StorePreset(Optional ByVal presetName As String = "last-used settings")
     
     presetName = Trim$(presetName)
     
     'Initialize a new preset write with the preset manager
-    m_Presets.beginPresetWrite presetName
+    m_Presets.BeginPresetWrite presetName
     
     Dim controlName As String, controlType As String, controlValue As String
     Dim controlIndex As Long
@@ -864,7 +844,7 @@ Private Sub storePreset(Optional ByVal presetName As String = "last-used setting
         
         'Retrieve the control name and index, if any
         controlName = eControl.Name
-        If InControlArray(eControl) Then controlName = controlName & ":" & CStr(eControl.Index)
+        If VB_Hacks.InControlArray(eControl) Then controlName = controlName & ":" & CStr(eControl.Index)
         
         'Reset our control value checker
         controlValue = ""
@@ -926,7 +906,7 @@ Private Sub storePreset(Optional ByVal presetName As String = "last-used setting
         If Len(controlValue) <> 0 Then
         
             'Use the preset manager to actually store the value
-            m_Presets.writePresetValue controlName, controlValue
+            m_Presets.WritePresetValue controlName, controlValue
             
         End If
     
@@ -936,26 +916,26 @@ Private Sub storePreset(Optional ByVal presetName As String = "last-used setting
     'After all controls are handled, we give the caller a chance to write their own custom preset entries.  Most dialogs
     ' don't need this functionality, but those with custom interfaces (such as the Curves dialog, which has its own
     ' special UI requirements) use this to write any additional values to this preset.
-    numCustomPresetEntries = 0
+    m_numCustomPresetEntries = 0
     RaiseEvent AddCustomPresetData
     
     'If the user added one or more custom preset entries, the custom preset count will be non-zero.
-    If numCustomPresetEntries > 0 Then
+    If m_numCustomPresetEntries > 0 Then
     
         'Loop through all custom data, and add it one-at-a-time to the preset object
         Dim i As Long
-        For i = 0 To numCustomPresetEntries - 1
-            m_Presets.writePresetValue "custom:" & customPresetNames(i), customPresetData(i)
+        For i = 0 To m_numCustomPresetEntries - 1
+            m_Presets.WritePresetValue "custom:" & m_customPresetNames(i), m_customPresetData(i)
         Next i
     
     End If
     
     'We have now added all relevant values to the XML file.  Turn off preset write mode.
-    m_Presets.endPresetWrite
+    m_Presets.EndPresetWrite
     
     'Because the user may still cancel the dialog, we want to request an XML file dump immediately, so
     ' this preset is not lost.
-    m_Presets.writePresetFile
+    m_Presets.WritePresetFile
     
 End Sub
 
@@ -963,24 +943,24 @@ End Sub
 Public Function AddPresetData(ByVal presetName As String, ByVal presetData As String)
     
     'Increase the array size
-    ReDim Preserve customPresetNames(0 To numCustomPresetEntries) As String
-    ReDim Preserve customPresetData(0 To numCustomPresetEntries) As String
+    ReDim Preserve m_customPresetNames(0 To m_numCustomPresetEntries) As String
+    ReDim Preserve m_customPresetData(0 To m_numCustomPresetEntries) As String
 
     'Add the entries
-    customPresetNames(numCustomPresetEntries) = presetName
-    customPresetData(numCustomPresetEntries) = presetData
+    m_customPresetNames(m_numCustomPresetEntries) = presetName
+    m_customPresetData(m_numCustomPresetEntries) = presetData
 
     'Increment the custom data count
-    numCustomPresetEntries = numCustomPresetEntries + 1
+    m_numCustomPresetEntries = m_numCustomPresetEntries + 1
     
 End Function
 
 'Inside the ReadCustomPresetData event, the caller can call this function to retrieve any custom preset data from the active preset.
-Public Function RetrievePresetData(ByVal customPresetName As String) As String
+Public Function RetrievePresetData(ByVal m_customPresetName As String) As String
     
     'For this function, we ignore the boolean return of .retrievePresetValue, and simply let the caller deal with blank strings
     ' if they occur.
-    m_Presets.readPresetValue "custom:" & customPresetName, RetrievePresetData
+    m_Presets.ReadPresetValue "custom:" & m_customPresetName, RetrievePresetData
     
 End Function
 
@@ -990,7 +970,7 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
     
     'Start by asking the preset engine if the requested preset even exists in the file
     Dim presetExists As Boolean
-    presetExists = m_Presets.doesPresetExist(presetName)
+    presetExists = m_Presets.DoesPresetExist(presetName)
     
     'If the preset doesn't exist, look for an un-translated version of the name
     If (Not presetExists) Then
@@ -1002,7 +982,7 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
         
         If StrComp(presetName, originalEnglishName, vbBinaryCompare) <> 0 Then
             presetName = originalEnglishName
-            presetExists = m_Presets.doesPresetExist(presetName)
+            presetExists = m_Presets.DoesPresetExist(presetName)
         End If
         
     End If
@@ -1011,11 +991,11 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
     If presetExists Then
         
         'Initiate preset retrieval
-        m_Presets.beginPresetRead presetName
+        m_Presets.BeginPresetRead presetName
         
         'Loading preset values involves (potentially) changing the value of every single object on this form.  To prevent each
         ' of these changes from triggering a full preview redraw, we forcibly suspend previews now.
-        allowPreviews = False
+        m_allowPreviews = False
         
         'Some specialty user controls (e.g. the resize control) require us to parse out individual values from a lengthy param
         ' string, so to be safe we'll declare a pdParamString handler in advance.
@@ -1031,11 +1011,11 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
             'Control values are saved by control name, and if it exists, control index.  We start by generating a matching preset
             ' name for this control.
             controlName = eControl.Name
-            If InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
+            If VB_Hacks.InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
             If controlIndex >= 0 Then controlName = controlName & ":" & controlIndex
             
             'See if a preset exists for this control and this particular preset
-            If m_Presets.readPresetValue(controlName, controlValue) Then
+            If m_Presets.ReadPresetValue(controlName, controlValue) Then
                 
                 'A value for this control exists, and it has been retrieved into controlValue.  We sort handling of this value
                 ' by control type, as different controls require different input values (bool, int, etc).
@@ -1137,14 +1117,14 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
         RaiseEvent ReadCustomPresetData
         
         'With all preset data successfully loaded, we can reset the preset manager.
-        m_Presets.endPresetRead
+        m_Presets.EndPresetRead
         
         'Re-enable previews
-        allowPreviews = True
+        m_allowPreviews = True
         
         'If the parent dialog is active (e.g. this function is not occurring during the parent dialog's Load process),
         ' request a preview update as the preview has likely changed due to the new control values.
-        If controlFullyLoaded Then RaiseEvent RequestPreviewUpdate
+        If m_controlFullyLoaded Then RaiseEvent RequestPreviewUpdate
         
         'Return success!
         LoadPreset = True
@@ -1168,7 +1148,7 @@ Private Sub LoadAllPresets(Optional ByVal newListIndex As Long = 0)
 
     'Query the preset manager for any available presets.  If found, it will return the number of available presets
     Dim listOfPresets As pdStringStack
-    If m_Presets.getListOfPresets(listOfPresets) > 0 Then
+    If m_Presets.GetListOfPresets(listOfPresets) > 0 Then
         
         'Add all discovered presets to the combo box.  Note that we do not use a traditional stack pop here, as that would cause
         ' the preset order to be reversed!
@@ -1184,28 +1164,105 @@ Private Sub LoadAllPresets(Optional ByVal newListIndex As Long = 0)
 
 End Sub
 
-'This beautiful little function comes courtesy of coder Merri:
-' http://www.vbforums.com/showthread.php?536960-RESOLVED-how-can-i-see-if-the-object-is-array-or-not
-Private Function InControlArray(Ctl As Object) As Boolean
-    InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
-End Function
+'The command bar's layout is all handled programmatically.  This lets it look good, regardless of the parent form's size or
+' the current monitor's DPI setting.
+Private Sub UpdateControlLayout()
+
+    On Error GoTo skipUpdateLayout
+    
+    'Retrieve DPI-aware control dimensions from the support class
+    Dim bWidth As Long, bHeight As Long
+    bWidth = ucSupport.GetControlWidth
+    bHeight = ucSupport.GetControlHeight
+    
+    'Force a standard user control size and bottom-alignment
+    Dim parentWindowWidth As Long, parentWindowHeight As Long
+    parentWindowWidth = g_WindowManager.GetClientWidth(UserControl.Parent.hWnd)
+    parentWindowHeight = g_WindowManager.GetClientHeight(UserControl.Parent.hWnd)
+    
+    Dim moveRequired As Boolean
+    If bHeight <> FixDPI(50) Then moveRequired = True
+    If ucSupport.GetControlTop <> parentWindowHeight - FixDPI(50) Then moveRequired = True
+    
+    If moveRequired Then
+        ucSupport.RequestNewSize , FixDPI(50)
+        ucSupport.RequestNewPosition 0, parentWindowHeight - ucSupport.GetControlHeight
+    End If
+    
+    'Make the control the same width as its parent
+    If g_IsProgramRunning Then
+        
+        If bWidth <> parentWindowWidth Then ucSupport.RequestNewSize parentWindowWidth
+        
+        'Right-align the Cancel and OK buttons
+        cmdCancel.SetLeft parentWindowWidth - cmdCancel.GetWidth - FixDPI(8)
+        cmdOK.SetLeft cmdCancel.GetLeft - cmdOK.GetWidth - FixDPI(8)
+        
+    End If
+    
+'NOTE: this error catch is important, as VB will attempt to update the user control's size even after the parent has
+'       been unloaded, raising error 398 "Client site not available". If we don't catch the error, the compiled .exe
+'       will fail every time a command bar is unloaded (e.g. on almost every tool).
+skipUpdateLayout:
+
+End Sub
+
+'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
+Private Sub RedrawBackBuffer()
+    
+    'We can improve shutdown performance by ignoring redraw requests
+    If g_ProgramShuttingDown Then
+        If (g_Themer Is Nothing) Then Exit Sub
+    End If
+    
+    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+    Dim bufferDC As Long
+    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDCB_Background, Me.Enabled))
+    
+    'Paint the final result to the screen, as relevant
+    ucSupport.RequestRepaint
+    
+End Sub
+
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    m_Colors.LoadThemeColor PDCB_Background, "Background", IDE_GRAY
+End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     
+    cmdOK.AssignTooltip "Apply this action to the current image.", "OK"
+    cmdCancel.AssignTooltip "Exit this tool.  No changes will be made to the image.", "Cancel"
+    cmdAction(0).AssignTooltip "Reset all settings to their default values.", "Reset"
+    cmdAction(1).AssignTooltip "Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.", "Randomize"
+    cmdAction(2).AssignTooltip "Save the current settings as a new preset.", "Save preset"
+    cboPreset.AssignTooltip "Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right."
+    
+    'Because all controls on the command bar are synchronized against a non-standard backcolor, we need to make sure any new
+    ' colors are loaded FIRST
+    UpdateColorList
+    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+    
+    Dim cbBackgroundColor As Long
+    cbBackgroundColor = m_Colors.RetrieveColor(PDCB_Background, Me.Enabled)
+    
     'Synchronize the background color of individual controls against the command bar's backcolor
+    cmdOK.BackgroundColor = cbBackgroundColor
+    cmdCancel.BackgroundColor = cbBackgroundColor
     cmdOK.UseCustomBackgroundColor = True
     cmdCancel.UseCustomBackgroundColor = True
-    cmdOK.BackgroundColor = BackColor
-    cmdCancel.BackgroundColor = BackColor
-    
-    'Update individual controls
     cmdOK.UpdateAgainstCurrentTheme
     cmdCancel.UpdateAgainstCurrentTheme
     
     Dim i As Long
     For i = cmdAction.lBound To cmdAction.UBound
+        cmdAction(i).BackColor = cbBackgroundColor
+        cmdAction(i).UseCustomBackColor = True
         cmdAction(i).UpdateAgainstCurrentTheme
     Next i
+    
+    cboPreset.UpdateAgainstCurrentTheme
     
 End Sub

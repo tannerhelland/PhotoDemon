@@ -812,7 +812,7 @@ End Sub
 
 'Flicker-free paint requests for the main control box (e.g. NOT the drop-down list portion)
 Private Sub cPainterBox_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
-    drawComboBox True
+    DrawComboBox True
 End Sub
 
 Private Sub cResize_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
@@ -1207,13 +1207,10 @@ Private Sub RefreshFont(Optional ByVal forceRefresh As Boolean = False)
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-
-    'Store all associated properties
     With PropBag
         .WriteProperty "Enabled", Me.Enabled, True
         .WriteProperty "FontSize", m_FontSize, 10
     End With
-    
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
@@ -1290,7 +1287,7 @@ Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
 End Function
 
 'Render the combo box area (not the list!)
-Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
+Private Sub DrawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
 
     'Before painting, retrieve detailed information on the combo box
     Dim cbiCombo As COMBOBOXINFO
@@ -1383,6 +1380,7 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 Set tmpFont = Font_Management.GetMatchingUIFont(Me.FontSize)
                 tmpFont.SetFontColor cboTextColor
                 tmpFont.AttachToDC targetDC
+                tmpFont.SetTextAlignment vbLeftJustify
                 
                 With cbiCombo.rcItem
                     tmpFont.FastRenderTextWithClipping .Left + 4, .Top, (.Right - .Left) - FixDPIFloat(8), (.Bottom - .Top) - 2, tmpString, True
@@ -1478,6 +1476,7 @@ Private Function DrawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             Set tmpFont = Font_Management.GetMatchingUIFont(Me.FontSize)
             tmpFont.SetFontColor itemTextColor
             tmpFont.AttachToDC srcDIS.hDC
+            tmpFont.SetTextAlignment vbLeftJustify
             
             With srcDIS.rcItem
                 tmpFont.FastRenderTextWithClipping .Left + 4, .Top, (.Right - .Left) - 4, (.Bottom - .Top) - 2, tmpString, False
