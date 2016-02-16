@@ -201,6 +201,14 @@
 				<Caption-hover>TextHover</Caption-hover>
 			</PDHyperlink>
 			
+			<PDNavigator>
+				<Background>BackgroundDefault</Background>
+			</PDNavigator>
+			
+			<PDNavInner>
+				<Background>BackgroundDefault</Background>
+			</PDNavInner>
+			
 			<PDPreview>
 				<Background>BackgroundDefault</Background>
 				<PreviewBackground>GrayNeutral</PreviewBackground>
