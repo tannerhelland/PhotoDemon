@@ -153,7 +153,7 @@ Public Sub LoadTheProgram()
     'Ask the preferences handler to generate key program folders.  (If these folders don't exist, the handler will create them.)
     LoadMessage "Initializing all program directories..."
     
-    g_UserPreferences.initializePaths
+    g_UserPreferences.InitializePaths
         
     'Now, ask the preferences handler to load all other user settings from the preferences file
     LoadMessage "Loading all user settings..."
@@ -338,6 +338,8 @@ Public Sub LoadTheProgram()
     
     Set g_Themer = New pdVisualThemes
     
+    'Load and validate the user's selected theme file
+    g_Themer.LoadDefaultPDTheme
     
     
     '*************************************************************************************************************************************
@@ -390,7 +392,7 @@ Public Sub LoadTheProgram()
     g_Zoom.initializeViewportEngine
     
     'Populate the main form's zoom drop-down
-    g_Zoom.populateZoomComboBox FormMain.mainCanvas(0).getZoomDropDownReference()
+    g_Zoom.populateZoomComboBox FormMain.mainCanvas(0).GetZoomDropDownReference()
     
     'Populate the main canvas's size unit dropdown
     FormMain.mainCanvas(0).PopulateSizeUnits
@@ -484,7 +486,7 @@ Public Sub LoadTheProgram()
     'Prepare a checkerboard pattern, which will be used behind any transparent objects.  Caching this is much more efficient.
     ' than re-creating it every time it's needed.
     Set g_CheckerboardPattern = New pdDIB
-    Drawing.createAlphaCheckerboardDIB g_CheckerboardPattern
+    Drawing.CreateAlphaCheckerboardDIB g_CheckerboardPattern
     
     'Allow drag-and-drop operations
     g_AllowDragAndDrop = True
@@ -493,8 +495,8 @@ Public Sub LoadTheProgram()
     FormMain.mainCanvas(0).BackColor = g_CanvasBackground
     
     'Clear the main canvas coordinate and size displays
-    FormMain.mainCanvas(0).displayCanvasCoordinates 0, 0, True
-    FormMain.mainCanvas(0).displayImageSize Nothing, True
+    FormMain.mainCanvas(0).DisplayCanvasCoordinates 0, 0, True
+    FormMain.mainCanvas(0).DisplayImageSize Nothing, True
     
     'Throughout the program, g_MouseAccuracy is used to determine how close the mouse cursor must be to a point of interest to
     ' consider it "over" that point.  DPI must be accounted for when calculating this value (as it's calculated in pixels).
@@ -839,7 +841,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             g_AllowViewportRendering = False
             
             'Reset the main viewport's scroll bars
-            FormMain.mainCanvas(0).setScrollValue PD_BOTH, 0
+            FormMain.mainCanvas(0).SetScrollValue PD_BOTH, 0
             
         End If
         
@@ -1441,7 +1443,7 @@ PDI_Load_Continuation:
             'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
             ' update the zoom combo box to match the zoom assigned by the window-fit function.
             g_AllowViewportRendering = False
-            FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = targetImage.currentZoomValue
+            FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = targetImage.currentZoomValue
         
             'Now that the image's window has been fully sized and moved around, use Viewport_Engine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
             g_AllowViewportRendering = True
@@ -1451,7 +1453,7 @@ PDI_Load_Continuation:
             If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then g_RecentFiles.MRU_AddNewFile sFile(thisImage), targetImage
             
             'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
-            FormMain.mainCanvas(0).fixChromeLayout
+            FormMain.mainCanvas(0).FixChromeLayout
             
             'Because ExifTool is sending us data in the background, we periodically yield for metadata piping.
             If targetImage.originalFileFormat <> FIF_PDI Then DoEvents

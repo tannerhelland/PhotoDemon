@@ -184,12 +184,10 @@ Public Sub DisplayColorSelection()
     
 End Sub
 
+'Primary color area raises a dialog; secondary color area copies the color from the main screen
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
-    'Primary color area raises a dialog; secondary color area copies the color from the main screen
     If IsMouseInPrimaryButton(x, y) And ((Button Or pdLeftButton) <> 0) Then DisplayColorSelection
     If IsMouseInSecondaryButton(x, y) And ((Button Or pdLeftButton) <> 0) Then Me.Color = layerpanel_Colors.clrVariants.Color
-    
 End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)

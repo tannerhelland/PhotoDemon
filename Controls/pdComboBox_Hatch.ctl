@@ -1316,7 +1316,7 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 
                 'Fill the hatch region, then trace the border
                 hatchPath.fillPathToDIB_BareBrush gdipBrush, , targetDC, True, hatchRect.Left, hatchRect.Top
-                hatchPath.strokePathToDIB_BarePen gdipPen, , targetDC, True
+                hatchPath.StrokePath_BarePen gdipPen, targetDC, True
                 
                 'Release all drawing objects
                 GDI_Plus.releaseGDIPlusBrush gdipBrush
@@ -1441,7 +1441,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             
             'Fill the hatch region, then trace the border
             hatchPath.fillPathToDIB_BareBrush gdipBrush, , srcDIS.hDC, True, hatchRect.Left, hatchRect.Top
-            hatchPath.strokePathToDIB_BarePen gdipPen, , srcDIS.hDC, True
+            hatchPath.StrokePath_BarePen gdipPen, srcDIS.hDC, True
             
             'Release all drawing objects
             GDI_Plus.releaseGDIPlusBrush gdipBrush

@@ -23,6 +23,7 @@
 			<BackgroundDefault>#313131</BackgroundDefault>
 			<BackgroundCanvas>#1e1e1e</BackgroundCanvas>
 			<BackgroundCommandBar>#3e3e42</BackgroundCommandBar>
+			<Black>#000000</Black>
 			<ErrorRed>#dc2824</ErrorRed>
 			<GrayDefault>#b1bac2</GrayDefault>
 			<GrayDisabled>#929292</GrayDisabled>
@@ -147,6 +148,12 @@
 				<Border-disabled></Border-disabled>
 				<Border-hover></Border-hover>
 			</PDColorSelector>
+			
+			<PDColorVariants>
+				<Background>BackgroundDefault</Background>
+				<Border>GrayDefault</Border>
+				<Border-hover>AccentDefault</Border-hover>
+			</PDColorVariants>
 			
 			<PDEditBox>
 				<Background>BackgroundDefault</Background>
@@ -318,6 +325,12 @@
 				<Border-active>AccentLight</Border-active>
 				<Border-hover>AccentDefault</Border-hover>
 			</PDToolButton>
+			
+			<UIElements>
+				<UniversalLineEdge>Black</UniversalLineEdge>
+				<UniversalLineCenter>White</UniversalLineCenter>
+				<UniversalLineCenter-hover>AccentDefault</UniversalLineCenter-hover>
+			</UIElements>
 			
 			<!-- ****************************************************************************************** -->
 		

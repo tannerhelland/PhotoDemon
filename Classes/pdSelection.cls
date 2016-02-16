@@ -2381,7 +2381,7 @@ Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
     End Select
     
     'Draw the assembled path onto the canvas
-    pdPath.strokePathToDIB_UIStyle dstDIB
+    pdPath.StrokePath_UIStyle dstDIB.getDIBDC
     
 End Sub
 

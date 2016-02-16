@@ -247,7 +247,7 @@ Public Sub showDialog(ByVal initialPen As String, Optional ByRef callingControl 
     'Cache the initial pen parameters so we can access it elsewhere
     m_OldPen = initialPen
     Set m_PenPreview = New pdGraphicsPen
-    m_PenPreview.createPenFromString initialPen
+    m_PenPreview.CreatePenFromString initialPen
     
     If Len(initialPen) = 0 Then initialPen = m_PenPreview.getPenAsString
     
@@ -321,7 +321,7 @@ Private Sub cmdBar_ResetClick()
     
     'Reset our generic outline object
     Set m_PenPreview = New pdGraphicsPen
-    m_PenPreview.createPenFromString ""
+    m_PenPreview.CreatePenFromString ""
     
     'Synchronize all controls to the updated settings
     syncControlsToOutlineObject
@@ -401,7 +401,7 @@ Private Sub UpdatePreview()
         
         'Retrieve a matching pen handle
         Dim gdipPen As Long
-        gdipPen = m_PenPreview.getPenHandle()
+        gdipPen = m_PenPreview.GetPenHandle()
         
         'Prep the preview DIB
         If m_PreviewDIB Is Nothing Then Set m_PreviewDIB = New pdDIB
@@ -431,7 +431,7 @@ Private Sub UpdatePreview()
         
         'Create the preview image
         GDI_Plus.GDIPlusFillDIBRect_Pattern m_PreviewDIB, 0, 0, m_PreviewDIB.getDIBWidth, m_PreviewDIB.getDIBHeight, g_CheckerboardPattern
-        m_PreviewPath.strokePathToDIB_BarePen gdipPen, m_PreviewDIB, , True
+        m_PreviewPath.StrokePath_BarePen gdipPen, m_PreviewDIB.getDIBDC, True
         
         'Copy the preview image to the screen
         m_PreviewDIB.RenderToPictureBox Me.picPenPreview

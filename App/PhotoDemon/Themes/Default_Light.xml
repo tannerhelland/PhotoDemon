@@ -36,6 +36,7 @@
 			<TextHyperlink>Accent6</TextHyperlink>
 			<TextHover>Accent4</TextHover>
 			<TextInvert>#ffffff</TextInvert>
+			<White>#ffffff</White>
 		</Definitions>
 		
 		<!-- The Colors section contains a hard-coded list of colors used by PD. -->
@@ -146,6 +147,12 @@
 				<Border-disabled></Border-disabled>
 				<Border-hover></Border-hover>
 			</PDColorSelector>
+			
+			<PDColorVariants>
+				<Background>BackgroundDefault</Background>
+				<Border>GrayDefault</Border>
+				<Border-hover>AccentDefault</Border-hover>
+			</PDColorVariants>
 			
 			<PDEditBox>
 				<Background>BackgroundDefault</Background>
@@ -316,7 +323,13 @@
 				<Border-active>AccentLight</Border-active>
 				<Border-hover>AccentDefault</Border-hover>
 			</PDToolButton>
-						
+			
+			<UIElements>
+				<UniversalLineEdge>Black</UniversalLineEdge>
+				<UniversalLineCenter>White</UniversalLineCenter>
+				<UniversalLineCenter-hover>AccentDefault</UniversalLineCenter-hover>
+			</UIElements>
+			
 			<!-- ****************************************************************************************** -->
 		
 		</Colors>

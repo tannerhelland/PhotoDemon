@@ -643,7 +643,7 @@ Public Sub DrawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     tmpPath.addLine layerCorners(2).x, layerCorners(2).y, layerCorners(0).x, layerCorners(0).y
     
     'Render the final UI
-    tmpPath.strokePathToDIB_UIStyle Nothing, dstCanvas.hDC
+    tmpPath.StrokePath_UIStyle dstCanvas.hDC
     
 End Sub
 
@@ -712,7 +712,7 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
         Dim tmpPath As pdGraphicsPath
         Set tmpPath = New pdGraphicsPath
         tmpPath.addLine layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(relevantPoint).x, layerRotateNodes(relevantPoint).y
-        tmpPath.strokePathToDIB_UIStyle Nothing, dstDC
+        tmpPath.StrokePath_UIStyle dstDC
         
         'Next, we are going to draw an arc with arrows on the end, to display where the actual rotation will occur.
         ' (At present, we skip this step if shearing is active, as I haven't figured out how to correctly skew the arc into the
@@ -755,7 +755,7 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
             relevantAngle = srcLayer.getLayerAngle + ((relevantPoint - 1) * 90)
             
             tmpPath.addArc rotateBoundRect, relevantAngle - arcSweep / 2, arcSweep
-            tmpPath.strokePathToDIB_UIStyle Nothing, dstDC, False, True, , LineCapArrowAnchor, LineCapArrowAnchor
+            tmpPath.StrokePath_UIStyle dstDC, False, True, , LineCapArrowAnchor, LineCapArrowAnchor
             
         End If
         
