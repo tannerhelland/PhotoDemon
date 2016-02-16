@@ -15,6 +15,7 @@ Begin VB.UserControl pdColorWheel
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    ScaleHeight     =   130
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   138
@@ -29,12 +30,12 @@ Attribute VB_Exposed = False
 'PhotoDemon "Color Wheel" color selector
 'Copyright 2015-2016 by Tanner Helland
 'Created: 19/October/15
-'Last updated: 22/October/15
-'Last update: wrap up initial build
+'Last updated: 15/February/16
+'Last update: implement theming and a few new features
 '
 'In 7.0, a "color selector" panel was added to the right-side toolbar.  Unlike PD's single-color color selector,
 ' this control is designed to provide a quick, on-canvas-friendly mechanism for rapidly switching colors.  The basic
-' design owes much to other photo editors like MyPaint, who pioneered the "wheel" UI for hue selection.
+' design owes much to other photo editors like MyPaint, who pioneered various "wheel" UIs for hue selection.
 '
 'I've designed the control as a UC in case I decide to reuse it elsewhere in PD, but for now, it only makes an
 ' appearance on the main canvas.
@@ -49,25 +50,10 @@ Option Explicit
 'Just like PD's old color selector, this control will raise a ColorChanged event after user interactions.
 Public Event ColorChanged(ByVal newColor As Long, ByVal srcIsInternal As Boolean)
 
-'A specialized class handles mouse input for this control
-Private WithEvents cMouseEvents As pdInputMouse
-Attribute cMouseEvents.VB_VarHelpID = -1
-
-'Reliable focus detection requires a specialized subclasser
-Private WithEvents cFocusDetector As pdFocusDetector
-Attribute cFocusDetector.VB_VarHelpID = -1
+'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
+' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
-
-'Flicker-free window painter
-Private WithEvents cPainter As pdWindowPainter
-Attribute cPainter.VB_VarHelpID = -1
-
-'Additional helper for rendering themed and multiline tooltips
-Private toolTipManager As pdToolTip
-
-'This back buffer is for the composited wheel and center HSV box; it is what gets copied to the screen on Paint events.
-Private m_BackBuffer As pdDIB
 
 'Individual UI components are rendered to their own DIBs, and composited only when necessary.  For some elements
 ' (particularly the hue wheel), creating them from scratch is costly, so reuse is advisable.
@@ -76,9 +62,6 @@ Private m_WheelBuffer As pdDIB, m_SquareBuffer As pdDIB
 'These values help the central renderer know where the mouse is, so we can draw various indicators.
 Private m_MouseInsideWheel As Boolean, m_MouseInsideBox As Boolean
 Private m_MouseDownWheel As Boolean, m_MouseDownBox As Boolean
-
-'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
-Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
 
 'Padding (in pixels) between the edges of the user control and the color wheel.  Automatically adjusted for DPI
 ' at run-time.  Note that this needs to be non-zero, because the padding area is used to render the "slice" overlay
@@ -102,7 +85,30 @@ Private m_Hue As Double, m_Saturation As Double, m_Value As Double
 
 'If the mouse is currently over the hue wheel, but the left mouse button is *not* down, this will be set to a value >= 0.
 ' We can use this to help orient the user.
-Private m_HueHover As Double
+Private m_HueHover As Double, m_SaturationHover As Double, m_ValueHover As Double
+
+'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
+' but I've since attempted to wrap these into a single master control support class.
+Private WithEvents ucSupport As pdUCSupport
+Attribute ucSupport.VB_VarHelpID = -1
+
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDCW_COLOR_LIST
+    [_First] = 0
+    PDCW_Background = 0
+    PDCW_WheelBorder = 1
+    PDCW_BoxBorder = 2
+    [_Last] = 2
+    [_Count] = 3
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
@@ -132,7 +138,7 @@ Public Property Let Color(ByVal newColor As Long)
     'Extract matching HSV values, then redraw the control to match
     Colors.RGBtoHSV Colors.ExtractR(newColor), Colors.ExtractG(newColor), Colors.ExtractB(newColor), m_Hue, m_Saturation, m_Value
     CreateSVSquare
-    DrawUC
+    RedrawBackBuffer
     
     'Raise a matching event, and note that the source was external
     RaiseEvent ColorChanged(newColor, False)
@@ -140,23 +146,23 @@ Public Property Let Color(ByVal newColor As Long)
 End Property
 
 'When the control receives focus, relay the event externally
-Private Sub cFocusDetector_GotFocusReliable()
+Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
 End Sub
 
 'When the control loses focus, relay the event externally
-Private Sub cFocusDetector_LostFocusReliable()
+Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
 
-Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'Right now, only left-clicks are addressed
     If (Button And pdLeftButton) <> 0 Then
     
         'See if the mouse cursor is inside the hue wheel
         Dim tmpHue As Double
-        m_MouseDownWheel = isMouseInsideHueWheel(x, y, True, tmpHue)
+        m_MouseDownWheel = IsMouseInsideHueWheel(x, y, True, tmpHue)
         
         'If the mouse is down inside the wheel area, assign a new hue value to the control
         If m_MouseDownWheel Then
@@ -167,13 +173,13 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             m_MouseDownBox = False
             
             'Set a persistent hand cursor
-            cMouseEvents.setSystemCursor IDC_HAND
+            ucSupport.RequestCursor IDC_HAND
             
             'Any time the hue changes, the SV square must be redrawn
             CreateSVSquare
             
             'Redraw the control to match
-            DrawUC
+            RedrawBackBuffer
             
             'Return the newly selected color
             RaiseEvent ColorChanged(Me.Color, True)
@@ -182,7 +188,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             
             'See if the mouse cursor is inside the saturation + value box
             Dim tmpSaturation As Double, tmpValue As Double
-            m_MouseDownBox = isMouseInsideSVBox(x, y, True, tmpSaturation, tmpValue)
+            m_MouseDownBox = IsMouseInsideSVBox(x, y, True, tmpSaturation, tmpValue)
             
             If m_MouseDownBox Then
                 
@@ -192,10 +198,10 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 m_MouseDownWheel = False
                 
                 'Set a persistent hand cursor
-                cMouseEvents.setSystemCursor IDC_HAND
+                ucSupport.RequestCursor IDC_HAND
                 
                 'Redraw the control to match
-                DrawUC
+                RedrawBackBuffer
                 
                 'Return the newly selected color
                 RaiseEvent ColorChanged(Me.Color, True)
@@ -208,11 +214,13 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     
 End Sub
 
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    cMouseEvents.setSystemCursor IDC_DEFAULT
+Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseInsideWheel = False: m_MouseInsideBox = False
+    ucSupport.RequestCursor IDC_DEFAULT
+    RedrawBackBuffer
 End Sub
 
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     Dim tmpHue As Double, tmpSaturation As Double, tmpValue As Double
     
@@ -220,7 +228,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     If m_MouseDownWheel Then
         
         'Calculate a corresponding hue for this mouse position
-        isMouseInsideHueWheel x, y, True, tmpHue
+        IsMouseInsideHueWheel x, y, True, tmpHue
         
         'Store this as the active hue, and reset box parameters
         m_Hue = tmpHue
@@ -235,7 +243,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     ElseIf m_MouseDownBox Then
     
         'Calculate corresponding saturation and value values for this mouse position
-        isMouseInsideSVBox x, y, True, tmpSaturation, tmpValue
+        IsMouseInsideSVBox x, y, True, tmpSaturation, tmpValue
         
         'Store these as the active saturation+value, and reset wheel parameters
         m_Saturation = tmpSaturation
@@ -248,10 +256,10 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     Else
     
         'Wheel first
-        m_MouseInsideWheel = isMouseInsideHueWheel(x, y, True, tmpHue)
+        m_MouseInsideWheel = IsMouseInsideHueWheel(x, y, True, tmpHue)
         
         If m_MouseInsideWheel Then
-            cMouseEvents.setSystemCursor IDC_HAND
+            ucSupport.RequestCursor IDC_HAND
             m_HueHover = tmpHue
             m_MouseInsideBox = False
         Else
@@ -259,12 +267,16 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             m_HueHover = -1
             
             'Box second
-            m_MouseInsideBox = isMouseInsideSVBox(x, y, True, tmpSaturation, tmpValue)
+            m_MouseInsideBox = IsMouseInsideSVBox(x, y, True, tmpSaturation, tmpValue)
             
             If m_MouseInsideBox Then
-                cMouseEvents.setSystemCursor IDC_HAND
+                m_SaturationHover = tmpSaturation
+                m_ValueHover = tmpValue
+                ucSupport.RequestCursor IDC_HAND
             Else
-                cMouseEvents.setSystemCursor IDC_DEFAULT
+                m_SaturationHover = -1
+                m_ValueHover = -1
+                ucSupport.RequestCursor IDC_DEFAULT
             End If
             
         End If
@@ -272,7 +284,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     End If
     
     'Redraw the UC to match
-    DrawUC
+    RedrawBackBuffer
     
     'If the LMB is down, raise an event to match
     If m_MouseDownWheel Or m_MouseDownBox Then RaiseEvent ColorChanged(Me.Color, True)
@@ -281,7 +293,7 @@ End Sub
 
 'Returns TRUE if the passed (x, y) coordinates lie inside the hue wheel.  An optional output parameter can be provided,
 ' and this function will automatically fill it with the hue value at that (x, y) position.
-Private Function isMouseInsideHueWheel(ByVal x As Single, ByVal y As Single, Optional ByVal calculateHue As Boolean = False, Optional ByRef dstHue As Double) As Boolean
+Private Function IsMouseInsideHueWheel(ByVal x As Single, ByVal y As Single, Optional ByVal calculateHue As Boolean = False, Optional ByRef dstHue As Double) As Boolean
     
     'Start by re-centering the (x, y) pair around the hue wheel's center point
     x = x - m_HueWheelCenterX
@@ -292,7 +304,7 @@ Private Function isMouseInsideHueWheel(ByVal x As Single, ByVal y As Single, Opt
     pxRadius = Sqr(x * x + y * y)
     
     'If the radius lies between the outer and inner hue wheel radii, return true.
-    isMouseInsideHueWheel = CBool((pxRadius <= m_HueRadiusOuter) And (pxRadius >= m_HueRadiusInner))
+    IsMouseInsideHueWheel = CBool((pxRadius <= m_HueRadiusOuter) And (pxRadius >= m_HueRadiusInner))
     
     'If the caller wants us to calculate hue for them, do so now.  Note that we can successfully do this, even if the mouse is
     ' outside the hue wheel - this is important for enabling convenient click-drag behavior!
@@ -313,10 +325,10 @@ End Function
 
 'Returns TRUE if the passed (x, y) coordinates lie inside the saturation + value box.  Optional output parameters can be
 ' provided, and this function will automatically fill them with the SV values at that (x, y) position.
-Private Function isMouseInsideSVBox(ByVal x As Single, ByVal y As Single, Optional ByVal calculateSV As Boolean = False, Optional ByRef dstSaturation As Double, Optional ByRef dstValue As Double) As Boolean
+Private Function IsMouseInsideSVBox(ByVal x As Single, ByVal y As Single, Optional ByVal calculateSV As Boolean = False, Optional ByRef dstSaturation As Double, Optional ByRef dstValue As Double) As Boolean
     
     'Hit-detection is easy, since we cache the box coordinates when recreating the corresponding DIB
-    isMouseInsideSVBox = Math_Functions.IsPointInRectF(x, y, m_SVRectF)
+    IsMouseInsideSVBox = Math_Functions.IsPointInRectF(x, y, m_SVRectF)
     
     'If the caller wants us to calculate saturation and value outputs, do so now
     If calculateSV Then
@@ -339,72 +351,60 @@ Private Function isMouseInsideSVBox(ByVal x As Single, ByVal y As Single, Option
     
 End Function
 
-Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     
     m_MouseDownWheel = False
     m_MouseDownBox = False
     
     'Reset the cursor and hover behavior accordingly
     Dim tmpHue As Double, tmpSaturation As Double, tmpValue As Double
-    m_MouseInsideWheel = isMouseInsideHueWheel(x, y, True, tmpHue)
+    m_MouseInsideWheel = IsMouseInsideHueWheel(x, y, True, tmpHue)
     
     If m_MouseInsideWheel Then
-        cMouseEvents.setSystemCursor IDC_HAND
+        ucSupport.RequestCursor IDC_HAND
         m_HueHover = tmpHue
     Else
         
         m_HueHover = -1
         
-        m_MouseInsideBox = isMouseInsideSVBox(x, y, True, tmpSaturation, tmpValue)
+        m_MouseInsideBox = IsMouseInsideSVBox(x, y, True, tmpSaturation, tmpValue)
         If m_MouseInsideBox Then
-            cMouseEvents.setSystemCursor IDC_HAND
+            ucSupport.RequestCursor IDC_HAND
         Else
-            cMouseEvents.setSystemCursor IDC_DEFAULT
+            ucSupport.RequestCursor IDC_DEFAULT
         End If
         
     End If
     
     'Redraw the control to match
-    DrawUC
+    RedrawBackBuffer
     
 End Sub
 
-'The pdWindowPaint class raises this event when the navigator box needs to be redrawn.  The passed coordinates contain
-' the rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
-Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
-    
-    'Flip the relevant chunk of the buffer to the screen
-    BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
-    
+Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
+    If updateLayoutToo Then UpdateControlLayout
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    UpdateControlLayout
 End Sub
 
 Private Sub UserControl_Initialize()
     
-    If g_IsProgramRunning Then
-        
-        'Initialize mouse handling
-        Set cMouseEvents = New pdInputMouse
-        cMouseEvents.addInputTracker UserControl.hWnd, True, True, , True, True
-        cMouseEvents.setSystemCursor IDC_HAND
-        
-        'Also start a focus detector
-        Set cFocusDetector = New pdFocusDetector
-        cFocusDetector.startFocusTracking Me.hWnd
-        
-        'Also start a flicker-free window painter
-        Set cPainter = New pdWindowPainter
-        cPainter.StartPainter UserControl.hWnd
-        
-        'Create a tooltip engine
-        Set toolTipManager = New pdToolTip
+    'Initialize a master user control support class
+    Set ucSupport = New pdUCSupport
+    ucSupport.RegisterControl UserControl.hWnd
+    ucSupport.RequestExtraFunctionality True
     
-    'In design mode, initialize a base theming class, so our paint function doesn't fail
-    Else
-        If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
-    End If
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDCW_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDColorWheel", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
     
     'Draw the control at least once
-    UpdateControlSize
+    UpdateControlLayout
     
 End Sub
 
@@ -412,12 +412,9 @@ Private Sub UserControl_InitProperties()
     Color = RGB(50, 200, 255)
 End Sub
 
-'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
+'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    
-    'Provide minimal painting within the designer
-    If Not g_IsProgramRunning Then DrawUC
-    
+    ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -425,7 +422,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    UpdateControlSize
+    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
 End Sub
     
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -435,28 +432,15 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 End Sub
 
 'Call this to recreate all buffers against a changed control size.
-Private Sub UpdateControlSize()
+Private Sub UpdateControlLayout()
     
-    'Resize the back buffer to match the container dimensions.
-    If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
-    If (m_BackBuffer.getDIBWidth <> UserControl.ScaleWidth) Or (m_BackBuffer.getDIBHeight <> UserControl.ScaleHeight) Then
-        m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
-    Else
-        m_BackBuffer.resetDIB 0
-    End If
-    
-    'Recreate the color wheel, as its size is dependent on the container size
+    'Recreate all individual components, as their size is dependent on the container size
     If g_IsProgramRunning Then
-    
         CreateColorWheel
-    
-        'Any time the hue wheel changes, the SV square must be redrawn to match
         CreateSVSquare
-        
     End If
     
-    'With the backbuffer and color wheel successfully created, we can finally redraw the rest of the control
-    DrawUC
+    RedrawBackBuffer
     
 End Sub
 
@@ -464,220 +448,232 @@ End Sub
 ' because it relies on that buffer for sizing.
 Private Sub CreateColorWheel()
     
-    'Make sure the backbuffer exists
-    If (m_BackBuffer.getDIBWidth <> 0) And (m_BackBuffer.getDIBHeight <> 0) Then
+    'For now, the color wheel DIB is always square, sized to fit the smallest dimension of the back buffer
+    Dim wheelDiameter As Long
+    If ucSupport.GetBackBufferWidth < ucSupport.GetBackBufferHeight Then wheelDiameter = ucSupport.GetBackBufferWidth Else wheelDiameter = ucSupport.GetBackBufferHeight
     
-        'For now, the color wheel DIB is always square, sized to fit the smallest dimension of the back buffer
-        Dim wheelDiameter As Long
-        If m_BackBuffer.getDIBWidth < m_BackBuffer.getDIBHeight Then wheelDiameter = m_BackBuffer.getDIBWidth Else wheelDiameter = m_BackBuffer.getDIBHeight
-        
-        If (m_WheelBuffer Is Nothing) Then Set m_WheelBuffer = New pdDIB
-        If (m_WheelBuffer.getDIBWidth <> wheelDiameter) Or (m_WheelBuffer.getDIBHeight <> wheelDiameter) Then
-            m_WheelBuffer.createBlank wheelDiameter, wheelDiameter, 32, 0&, 255
-        Else
-            GDI_Plus.GDIPlusFillDIBRect m_WheelBuffer, 0, 0, wheelDiameter, wheelDiameter, 0&, 255
-        End If
-        
-        'We're now going to calculate the inner and outer radius of the wheel.  These are based off hard-coded padding constants,
-        ' the max available diameter, and the current screen DPI.
-        m_HueRadiusOuter = (CSng(wheelDiameter) / 2) - FixDPIFloat(WHEEL_PADDING)
-        m_HueRadiusInner = m_HueRadiusOuter - FixDPIFloat(WHEEL_WIDTH)
-        If m_HueRadiusInner < 5 Then m_HueRadiusInner = 5
-        
-        'We're now going to cheat a bit and use a 2D drawing hack to solve for the alpha bytes of our wheel.  The wheel image is
-        ' already a black square, and atop that we're going to draw a white circle at the outer radius size, and a black circle
-        ' at the inner radius size.  Both will be antialiased.  Black pixels will then be made transparent, while white pixels
-        ' are fully opaque.  Gray pixels will be shaded on-the-fly.
-        m_HueWheelCenterX = wheelDiameter / 2: m_HueWheelCenterY = m_HueWheelCenterX
-        
-        GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.getDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter, RGB(255, 255, 255), 255
-        GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.getDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner, RGB(0, 0, 0), 255
-        
-        'With our "alpha guidance" pixels drawn, we can now loop through the image, rendering actual hue colors as we go.
-        ' For convenience, we will place hue 0 at angle 0.
-        Dim hPixels() As Byte
-        Dim hueSA As SAFEARRAY2D
-        prepSafeArray hueSA, m_WheelBuffer
-        CopyMemory ByVal VarPtrArray(hPixels()), VarPtr(hueSA), 4
-        
-        Dim x As Long, y As Long
-        Dim r As Long, g As Long, b As Long, a As Long, aFloat As Single
-        
-        Dim nX As Double, nY As Double, pxAngle As Double
-        
-        Dim loopWidth As Long, loopHeight As Long
-        loopWidth = (m_WheelBuffer.getDIBWidth - 1) * 4
-        loopHeight = (m_WheelBuffer.getDIBHeight - 1)
-        
-        For y = 0 To loopHeight
-        For x = 0 To loopWidth Step 4
-            
-            'Before calculating anything, check the color at this position.  (Because the image is grayscale, we only need to
-            ' pull a single color value.)
-            b = hPixels(x, y)
-            
-            'If this pixel is black, it will be forced to full transparency.  Apply that now.
-            If b = 0 Then
-                hPixels(x, y) = 0
-                hPixels(x + 1, y) = 0
-                hPixels(x + 2, y) = 0
-                hPixels(x + 3, y) = 0
-            
-            'If this pixel is non-black, it must be colored.  Proceed with hue calculation.
-            Else
-            
-                'Remap the coordinates so that (0, 0) represents the center of the image
-                nX = (x \ 4) - m_HueWheelCenterX
-                nY = y - m_HueWheelCenterY
-                
-                'Calculate an angle for this pixel
-                pxAngle = Math_Functions.Atan2(nY, nX)
-                
-                'ATan2() returns an angle that is positive for counter-clockwise angles (y > 0), and negative for
-                ' clockwise angles (y < 0), on the range [-Pi, +Pi].  Convert this angle to the absolute range [0, 1],
-                ' which is the range used by our HSV conversion function.
-                pxAngle = (pxAngle + PI) / PI_DOUBLE
-                
-                'Calculate an RGB triplet that corresponds to this hue (with max value and saturation)
-                Colors.HSVtoRGB pxAngle, 1#, 1#, r, g, b
-                
-                'Retrieve the "alpha" clue for this pixel
-                a = hPixels(x, y)
-                aFloat = CDbl(a) / 255
-                
-                'Premultiply alpha
-                r = r * aFloat
-                g = g * aFloat
-                b = b * aFloat
-                
-                'Store the new color values
-                hPixels(x, y) = b
-                hPixels(x + 1, y) = g
-                hPixels(x + 2, y) = r
-                hPixels(x + 3, y) = a
-                
-            End If
-        
-        Next x
-        Next y
-        
-        'With our work complete, point the array away from the DIB before VB attempts to deallocate it
-        CopyMemory ByVal VarPtrArray(hPixels), 0&, 4
-        
-        'Mark the wheel DIB's premultiplied alpha state
-        m_WheelBuffer.setInitialAlphaPremultiplicationState True
-        
+    If (m_WheelBuffer Is Nothing) Then Set m_WheelBuffer = New pdDIB
+    If (m_WheelBuffer.getDIBWidth <> wheelDiameter) Or (m_WheelBuffer.getDIBHeight <> wheelDiameter) Then
+        m_WheelBuffer.createBlank wheelDiameter, wheelDiameter, 32, 0&, 255
+    Else
+        If g_IsProgramRunning Then GDI_Plus.GDIPlusFillDIBRect m_WheelBuffer, 0, 0, wheelDiameter, wheelDiameter, 0&, 255
     End If
     
+    'We're now going to calculate the inner and outer radius of the wheel.  These are based off hard-coded padding constants,
+    ' the max available diameter, and the current screen DPI.
+    m_HueRadiusOuter = (CSng(wheelDiameter) / 2) - FixDPIFloat(WHEEL_PADDING)
+    m_HueRadiusInner = m_HueRadiusOuter - FixDPIFloat(WHEEL_WIDTH)
+    If m_HueRadiusInner < 5 Then m_HueRadiusInner = 5
+    
+    'We're now going to cheat a bit and use a 2D drawing hack to solve for the alpha bytes of our wheel.  The wheel image is
+    ' already a black square, and atop that we're going to draw a white circle at the outer radius size, and a black circle
+    ' at the inner radius size.  Both will be antialiased.  Black pixels will then be made transparent, while white pixels
+    ' are fully opaque.  Gray pixels will be shaded on-the-fly.
+    m_HueWheelCenterX = wheelDiameter / 2: m_HueWheelCenterY = m_HueWheelCenterX
+    
+    If g_IsProgramRunning Then
+        GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.getDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter, RGB(255, 255, 255), 255
+        GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.getDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner, RGB(0, 0, 0), 255
+    End If
+    
+    'With our "alpha guidance" pixels drawn, we can now loop through the image, rendering actual hue colors as we go.
+    ' For convenience, we will place hue 0 at angle 0.
+    Dim hPixels() As Byte
+    Dim hueSA As SAFEARRAY2D
+    prepSafeArray hueSA, m_WheelBuffer
+    CopyMemory ByVal VarPtrArray(hPixels()), VarPtr(hueSA), 4
+    
+    Dim x As Long, y As Long
+    Dim r As Long, g As Long, b As Long, a As Long, aFloat As Single
+    
+    Dim nX As Double, nY As Double, pxAngle As Double
+    
+    Dim loopWidth As Long, loopHeight As Long
+    loopWidth = (m_WheelBuffer.getDIBWidth - 1) * 4
+    loopHeight = (m_WheelBuffer.getDIBHeight - 1)
+    
+    For y = 0 To loopHeight
+    For x = 0 To loopWidth Step 4
+        
+        'Before calculating anything, check the color at this position.  (Because the image is grayscale, we only need to
+        ' pull a single color value.)
+        b = hPixels(x, y)
+        
+        'If this pixel is black, it will be forced to full transparency.  Apply that now.
+        If b = 0 Then
+            hPixels(x, y) = 0
+            hPixels(x + 1, y) = 0
+            hPixels(x + 2, y) = 0
+            hPixels(x + 3, y) = 0
+        
+        'If this pixel is non-black, it must be colored.  Proceed with hue calculation.
+        Else
+        
+            'Remap the coordinates so that (0, 0) represents the center of the image
+            nX = (x \ 4) - m_HueWheelCenterX
+            nY = y - m_HueWheelCenterY
+            
+            'Calculate an angle for this pixel
+            pxAngle = Math_Functions.Atan2(nY, nX)
+            
+            'ATan2() returns an angle that is positive for counter-clockwise angles (y > 0), and negative for
+            ' clockwise angles (y < 0), on the range [-Pi, +Pi].  Convert this angle to the absolute range [0, 1],
+            ' which is the range used by our HSV conversion function.
+            pxAngle = (pxAngle + PI) / PI_DOUBLE
+            
+            'Calculate an RGB triplet that corresponds to this hue (with max value and saturation)
+            Colors.HSVtoRGB pxAngle, 1#, 1#, r, g, b
+            
+            'Retrieve the "alpha" clue for this pixel
+            a = hPixels(x, y)
+            aFloat = CDbl(a) / 255
+            
+            'Premultiply alpha
+            r = r * aFloat
+            g = g * aFloat
+            b = b * aFloat
+            
+            'Store the new color values
+            hPixels(x, y) = b
+            hPixels(x + 1, y) = g
+            hPixels(x + 2, y) = r
+            hPixels(x + 3, y) = a
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'With our work complete, point the array away from the DIB before VB attempts to deallocate it
+    CopyMemory ByVal VarPtrArray(hPixels), 0&, 4
+    
+    'Mark the wheel DIB's premultiplied alpha state
+    m_WheelBuffer.setInitialAlphaPremultiplicationState True
+        
 End Sub
 
 'Create a new Saturation + Value square (the square in the middle of the UC).  The square must be redrawn whenever
 ' hue changes, because the hue value determines the square's appearance.
 Private Sub CreateSVSquare()
     
-    'Make sure the backbuffer exists
-    If (m_BackBuffer.getDIBWidth <> 0) And (m_BackBuffer.getDIBHeight <> 0) Then
+    'The SV square is a square that fits (inclusively) within the color wheel.  Basic geometry tells us that one side of the square
+    ' is equal to hypotenuse * sin(45), and we know the hypotenuse already because it's the inner radius of the hue wheel.
+    m_SVRectF.Width = (m_HueRadiusInner * 2) * Sin(PI / 4): m_SVRectF.Height = m_SVRectF.Width
     
-        'The SV square is a square that fits (inclusively) within the color wheel.  Basic geometry tells us that one side of the square
-        ' is equal to hypotenuse * sin(45), and we know the hypotenuse already because it's the inner radius of the hue wheel.
-        m_SVRectF.Width = (m_HueRadiusInner * 2) * Sin(PI / 4): m_SVRectF.Height = m_SVRectF.Width
-        
-        If (m_SquareBuffer Is Nothing) Then Set m_SquareBuffer = New pdDIB
-        If (m_SquareBuffer.getDIBWidth <> CLng(m_SVRectF.Width)) Or (m_SquareBuffer.getDIBHeight <> CLng(m_SVRectF.Height)) Then
-            m_SquareBuffer.createBlank CLng(m_SVRectF.Width), CLng(m_SVRectF.Height), 24
-        Else
-            m_SquareBuffer.resetDIB 0
-        End If
-        
-        'To prevent IDE crashes, bail now during compilation
-        If Not g_IsProgramRunning Then Exit Sub
-        
-        'We now need to fill the square with all possible saturation and value variants, in a pattern where...
-        ' - The y-axis position determines value (1 -> 0)
-        ' - The x-axis position determines saturation (1 -> 0)
-        Dim svPixels() As Byte
-        Dim svSA As SAFEARRAY2D
-        prepSafeArray svSA, m_SquareBuffer
-        CopyMemory ByVal VarPtrArray(svPixels()), VarPtr(svSA), 4
-        
-        Dim x As Long, y As Long
-        Dim r As Long, g As Long, b As Long
-        
-        Dim loopWidth As Long, loopHeight As Long
-        loopWidth = (m_SquareBuffer.getDIBWidth - 1) * 3
-        loopHeight = (m_SquareBuffer.getDIBHeight - 1)
-        
-        Dim lineValue As Double
-        
-        'To improve performance, pre-calculate all value variants, so we don't need to re-calculate them in the inner loop.
-        ' (They are constant for each line.)
-        Dim xPresets() As Double
-        ReDim xPresets(0 To loopWidth) As Double
-        For x = 0 To loopWidth Step 3
-            xPresets(x) = (loopWidth - x) / loopWidth
-        Next x
-        
-        For y = 0 To loopHeight
-            
-            'Y-values are (obviously) consistent for each y-position
-            lineValue = (loopHeight - y) / loopHeight
-            lineValue = Sqr(lineValue)
-            
-        For x = 0 To loopWidth Step 3
-            
-            'The x-axis position determines saturation (1 -> 0)
-            'The y-axis position determines value (1 -> 0)
-            HSVtoRGB m_Hue, xPresets(x), lineValue, r, g, b
-            
-            svPixels(x, y) = b
-            svPixels(x + 1, y) = g
-            svPixels(x + 2, y) = r
-            
-        Next x
-        Next y
-        
-        'With our work complete, point the ImageData() array away from the DIBs and deallocate it
-        CopyMemory ByVal VarPtrArray(svPixels), 0&, 4
-        
-        'While we're here, let's also calculate the top-left rendering origin for the square, so we don't have to do it in the core
-        ' rendering function.
-        Dim tmpX As Double, tmpY As Double
-        Math_Functions.convertPolarToCartesian -(3 * PI) / 4, m_HueRadiusInner, tmpX, tmpY, m_HueWheelCenterX, m_HueWheelCenterY
-        m_SVRectF.Left = tmpX
-        m_SVRectF.Top = tmpY
-        
+    If (m_SquareBuffer Is Nothing) Then Set m_SquareBuffer = New pdDIB
+    If (m_SquareBuffer.getDIBWidth <> CLng(m_SVRectF.Width)) Or (m_SquareBuffer.getDIBHeight <> CLng(m_SVRectF.Height)) Then
+        m_SquareBuffer.createBlank CLng(m_SVRectF.Width), CLng(m_SVRectF.Height), 24
+    Else
+        m_SquareBuffer.resetDIB 0
     End If
-
+    
+    'To prevent IDE crashes, bail now during compilation
+    If Not g_IsProgramRunning Then Exit Sub
+    
+    'We now need to fill the square with all possible saturation and value variants, in a pattern where...
+    ' - The y-axis position determines value (1 -> 0)
+    ' - The x-axis position determines saturation (1 -> 0)
+    Dim svPixels() As Byte
+    Dim svSA As SAFEARRAY2D
+    prepSafeArray svSA, m_SquareBuffer
+    CopyMemory ByVal VarPtrArray(svPixels()), VarPtr(svSA), 4
+    
+    Dim x As Long, y As Long
+    Dim r As Long, g As Long, b As Long
+    
+    Dim loopWidth As Long, loopHeight As Long
+    loopWidth = (m_SquareBuffer.getDIBWidth - 1) * 3
+    loopHeight = (m_SquareBuffer.getDIBHeight - 1)
+    
+    Dim lineValue As Double
+    
+    'To improve performance, pre-calculate all value variants, so we don't need to re-calculate them in the inner loop.
+    ' (They are constant for each line.)
+    Dim xPresets() As Double
+    ReDim xPresets(0 To loopWidth) As Double
+    For x = 0 To loopWidth Step 3
+        xPresets(x) = (loopWidth - x) / loopWidth
+    Next x
+    
+    For y = 0 To loopHeight
+        
+        'Y-values are (obviously) consistent for each y-position
+        lineValue = (loopHeight - y) / loopHeight
+        lineValue = Sqr(lineValue)
+        
+    For x = 0 To loopWidth Step 3
+        
+        'The x-axis position determines saturation (1 -> 0)
+        'The y-axis position determines value (1 -> 0)
+        HSVtoRGB m_Hue, xPresets(x), lineValue, r, g, b
+        
+        svPixels(x, y) = b
+        svPixels(x + 1, y) = g
+        svPixels(x + 2, y) = r
+        
+    Next x
+    Next y
+    
+    'With our work complete, point the ImageData() array away from the DIBs and deallocate it
+    CopyMemory ByVal VarPtrArray(svPixels), 0&, 4
+    
+    'While we're here, let's also calculate the top-left rendering origin for the square, so we don't have to do it in the core
+    ' rendering function.
+    Dim tmpX As Double, tmpY As Double
+    Math_Functions.convertPolarToCartesian -(3 * PI) / 4, m_HueRadiusInner, tmpX, tmpY, m_HueWheelCenterX, m_HueWheelCenterY
+    m_SVRectF.Left = tmpX
+    m_SVRectF.Top = tmpY
+    
 End Sub
 
 'Redraw the UC.  Note that some UI elements must be created prior to calling this function (e.g. the color wheel).
-Private Sub DrawUC()
-
-    'Create the back buffer as necessary.  (This is primarily for solving IDE issues.)
-    If m_BackBuffer Is Nothing Then m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, RGB(255, 255, 255)
+Private Sub RedrawBackBuffer()
+    
+    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDCW_Background, Me.Enabled))
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
+    
+    Dim wheelBorderColor As Long, boxBorderColor As Long, colorPreviewBorder As Long
+    wheelBorderColor = m_Colors.RetrieveColor(PDCW_WheelBorder, Me.Enabled, False, m_MouseInsideWheel)
+    boxBorderColor = m_Colors.RetrieveColor(PDCW_BoxBorder, Me.Enabled, False, m_MouseInsideBox)
+    colorPreviewBorder = m_Colors.RetrieveColor(PDCW_BoxBorder, Me.Enabled, False, False)
     
     If g_IsProgramRunning Then
-    
-        'Paint the background.
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT), 255
         
         'Paint the hue wheel (currently left-aligned)
-        If Not (m_WheelBuffer Is Nothing) Then m_WheelBuffer.alphaBlendToDC m_BackBuffer.getDIBDC
+        If Not (m_WheelBuffer Is Nothing) Then m_WheelBuffer.alphaBlendToDC bufferDC
         
         'Trace the edges of the hue wheel, to help separate the bright portions from the background.
-        GDI_Plus.GDIPlusDrawCircleToDC m_BackBuffer.getDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter, RGB(128, 128, 128), 128
-        GDI_Plus.GDIPlusDrawCircleToDC m_BackBuffer.getDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner, RGB(128, 128, 128), 128
+        Dim borderWidth As Single, borderTransparency As Long
+        If m_MouseInsideWheel Then
+            borderWidth = 2#
+            borderTransparency = 255
+        Else
+            borderWidth = 1#
+            borderTransparency = 128
+        End If
+        GDI_Plus.GDIPlusDrawCircleToDC bufferDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter, wheelBorderColor, borderTransparency, borderWidth
+        GDI_Plus.GDIPlusDrawCircleToDC bufferDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner, wheelBorderColor, borderTransparency, borderWidth
         
         'Paint the saturation+value square
         If Not (m_SquareBuffer Is Nothing) Then
             
             'Copy the square into place.  Note that we must use GDI+ to support subpixel positioning.
             With m_SVRectF
-                GDI_Plus.GDIPlus_StretchBlt m_BackBuffer, .Left, .Top, .Width, .Height, m_SquareBuffer, 0, 0, m_SquareBuffer.getDIBWidth, m_SquareBuffer.getDIBHeight, , InterpolationModeBilinear
+                GDI_Plus.GDIPlus_StretchBlt Nothing, .Left, .Top, .Width, .Height, m_SquareBuffer, 0, 0, m_SquareBuffer.getDIBWidth, m_SquareBuffer.getDIBHeight, , InterpolationModeBilinear, bufferDC
             End With
             
             'Trace the edges of the square, to help separate the bright portions from the background
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC m_BackBuffer.getDIBDC, m_SVRectF, RGB(128, 128, 128), 128, 1, True, LineJoinRound, True
+            If m_MouseInsideBox Then
+                borderWidth = 2#
+                borderTransparency = 255
+            Else
+                borderWidth = 1#
+                borderTransparency = 128
+            End If
+            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_SVRectF, boxBorderColor, borderTransparency, borderWidth, True, LineJoinMiter, True
             
         End If
         
@@ -713,7 +709,7 @@ Private Sub DrawUC()
         slicePath.closeCurrentFigure
         
         'Render the completed slice onto the overlay
-        slicePath.StrokePath_UIStyle m_BackBuffer.getDIBDC, , m_MouseDownWheel
+        slicePath.StrokePath_UIStyle bufferDC, , m_MouseDownWheel
         
         'Lastly, let's draw a circle around the current saturation + value point.
         
@@ -737,38 +733,56 @@ Private Sub DrawUC()
         svY = svY + m_SVRectF.Top
         
         'Draw a canvas-style circle around that point
-        GDI_Plus.GDIPlusDrawCanvasCircle m_BackBuffer.getDIBDC, svX, svY, COLOR_CIRCLE_RADIUS, , m_MouseDownBox
+        GDI_Plus.GDIPlusDrawCanvasCircle bufferDC, svX, svY, COLOR_CIRCLE_RADIUS, , m_MouseDownBox
         
-    'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
-    Else
+        'Finally, if the mouse is over the hue wheel or SV box, but the mouse is *NOT* down, we want to paint a little
+        ' color triangle to let the user know what color they'd get if they DID click the mouse button in this location.
+        If (m_MouseInsideBox Or m_MouseInsideWheel) Then
         
-        Dim tmpRect As RECT
-        With tmpRect
-            .Left = 0
-            .Top = 0
-            .Right = m_BackBuffer.getDIBWidth
-            .Bottom = m_BackBuffer.getDIBHeight
-        End With
+            'Generate a color value for this position
+            Dim proposedColor As Long
+            If m_MouseDownBox Or m_MouseDownWheel Then
+                proposedColor = GetCurrentRGB
+            Else
+                If m_MouseInsideBox Then
+                    proposedColor = GetHypotheticalRGB(m_Hue, m_SaturationHover, m_ValueHover)
+                Else
+                    proposedColor = GetHypotheticalRGB(m_HueHover, m_Saturation, m_Value)
+                End If
+            End If
+            
+            'Paint the color in a small triangle in the corner
+            Dim pcPath As pdGraphicsPath
+            Set pcPath = New pdGraphicsPath
+            
+            Dim pcLength As Double, wWidth As Double, wHeight As Double
+            wWidth = m_WheelBuffer.getDIBWidth - 1: wHeight = m_WheelBuffer.getDIBHeight - 1
+            pcLength = Sqr(wWidth * wWidth + wHeight * wHeight) / 2
+            pcLength = (pcLength - (wWidth / 2)) * (PI_HALF * 0.8)
+            pcPath.addTriangle wWidth, wHeight, wWidth - pcLength, wHeight, wWidth, wHeight - pcLength
+            
+            Dim pcBrush As Long, pcPen As Long
+            pcBrush = GDI_Plus.getGDIPlusSolidBrushHandle(proposedColor)
+            pcPen = GDI_Plus.GetGDIPlusPenHandle(colorPreviewBorder, 192, , LineCapRound, LineJoinRound)
+            pcPath.fillPathToDIB_BareBrush pcBrush, , bufferDC
+            pcPath.StrokePath_BarePen pcPen, bufferDC
+            GDI_Plus.ReleaseGDIPlusPen pcPen
+            GDI_Plus.releaseGDIPlusBrush pcBrush
+            Set pcPath = Nothing
+            
+        End If
         
-        DrawFocusRect m_BackBuffer.getDIBDC, tmpRect
-    
     End If
     
     'Paint the final result to the screen, as relevant
-    If g_IsProgramRunning Then
-        cPainter.RequestRepaint
-    Else
-        BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
-    End If
+    ucSupport.RequestRepaint
 
 End Sub
 
-'Given a hue on the range [0, 1], return a GDIPlus-friendly UI angle for the hue wheel
+'Given a hue on the range [0, 1], return a GDIPlus-friendly UI angle for the hue wheel.
+' (A hue of "0" corresponds to an angle of Pi.  A hue of "1" corresponds to an angle of -Pi (hue is circular).)
 Private Function GetUIAngleOfHue(ByVal srcHue As Single) As Single
-    
-    'A hue of "0" corresponds to an angle of Pi.  A hue of "1" corresponds to an angle of -Pi (hue is circular).
     GetUIAngleOfHue = (srcHue * PI_DOUBLE) - PI
-    
 End Function
 
 'Convert the control's current HSV triplet into a corresponding RGB long
@@ -778,20 +792,34 @@ Private Function GetCurrentRGB() As Long
     GetCurrentRGB = RGB(r, g, b)
 End Function
 
-'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
-' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.SetTooltip Me.hWnd, Me.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+'Given an arbitrary HSV triplet, return the corresponding RGB long
+Private Function GetHypotheticalRGB(ByVal h As Double, ByVal s As Double, ByVal v As Double) As Long
+    Dim r As Long, g As Long, b As Long
+    Colors.HSVtoRGB h, s, v, r, g, b
+    GetHypotheticalRGB = RGB(r, g, b)
+End Function
+
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    With m_Colors
+        .LoadThemeColor PDCW_Background, "Background", IDE_WHITE
+        .LoadThemeColor PDCW_WheelBorder, "WheelBorder", IDE_GRAY
+        .LoadThemeColor PDCW_BoxBorder, "BoxBorder", IDE_GRAY
+    End With
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
 ' and/or retranslating any text against the current language.
 Public Sub UpdateAgainstCurrentTheme()
-    
-    'Update the tooltip, if any
-    If g_IsProgramRunning Then toolTipManager.UpdateAgainstCurrentTheme
-        
-    'Redraw the control (in case anything has changed)
-    UpdateControlSize
-    
+    UpdateColorList
+    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+    UpdateControlLayout
 End Sub
+
+'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
+' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+End Sub
+
