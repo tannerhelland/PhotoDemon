@@ -154,6 +154,14 @@
 				<Border-hover>AccentDefault</Border-hover>
 			</PDColorVariants>
 			
+			<PDColorWheel>
+				<Background>BackgroundDefault</Background>
+				<WheelBorder>GrayDefault</WheelBorder>
+				<WheelBorder-hover>AccentDefault</WheelBorder-hover>
+				<BoxBorder>GrayDefault</BoxBorder>
+				<BoxBorder-hover>AccentDefault</BoxBorder-hover>
+			</PDColorWheel>
+			
 			<PDEditBox>
 				<Background>BackgroundDefault</Background>
 				<Background-disabled>GrayLight</Background-disabled>
