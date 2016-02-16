@@ -560,7 +560,7 @@ Private Sub dynamicallyFitDropDown(ByVal listHwnd As Long)
         totalHeight = totalHeight + 2
         
         'If we haven't calcualted a largest width yet, do so now
-        If m_LargestWidth = 0 Then refreshFont
+        If m_LargestWidth = 0 Then RefreshFont
         
         'Figure out if the combo box width is larger than the minimum width required by the font preview; take the larger of the two
         Dim dropWidth As Long
@@ -805,7 +805,7 @@ End Sub
 
 'Flicker-free paint requests for the main control box (e.g. NOT the drop-down list portion)
 Private Sub cPainterBox_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
-    drawComboBox True
+    DrawComboBox True
 End Sub
 
 Private Sub tmrHookRelease_Timer()
@@ -864,7 +864,7 @@ Private Sub UserControl_Initialize()
     End If
     
     'Create an initial font object.  This uses the current system font, and it renders all font names consistently.
-    refreshFont
+    RefreshFont
     
     'Initialize our font collection.  This is used to store a copy of each font face, as it's encountered, which we use to render preview
     ' text on the right side of the font dropdown.
@@ -941,7 +941,7 @@ Private Sub getComboBoxRect(ByRef targetRect As winRect)
 End Sub
 
 'Create a brush for drawing the box background
-Private Sub createComboBoxBrush()
+Private Sub CreateComboBoxBrush()
 
     If m_ComboBoxBrush <> 0 Then DeleteObject m_ComboBoxBrush
     
@@ -954,27 +954,27 @@ Private Sub createComboBoxBrush()
 End Sub
 
 'After curFont has been created, this function can be used to return the "ideal" height of a string rendered via the current font.
-Private Function getIdealStringHeight() As Long
+Private Function GetIdealStringHeight() As Long
     
     If g_IsProgramRunning Then
-        getIdealStringHeight = curFont.GetHeightOfString("FfAaBbCctbpqjy1234567890")
+        GetIdealStringHeight = curFont.GetHeightOfString("FfAaBbCctbpqjy1234567890")
         
     'Return a dummy value in the IDE
     Else
-        getIdealStringHeight = 20
+        GetIdealStringHeight = 20
     End If
     
 End Function
 
 'Same idea as the above function, but for width
-Private Function getIdealStringWidth(ByVal srcString As String) As Long
+Private Function GetIdealStringWidth(ByVal srcString As String) As Long
     
     If g_IsProgramRunning Then
-        getIdealStringWidth = curFont.GetWidthOfString(srcString)
+        GetIdealStringWidth = curFont.GetWidthOfString(srcString)
         
     'Return a dummy value in the IDE
     Else
-        getIdealStringWidth = 100
+        GetIdealStringWidth = 100
     End If
     
 End Function
@@ -990,7 +990,7 @@ Private Function createComboBox() As Boolean
     destroyComboBox
     
     'Create a brush for drawing the box background
-    createComboBoxBrush
+    CreateComboBoxBrush
     
     'Figure out which flags to use, based on the control's properties
     Dim flagsWinStyle As Long, flagsWinStyleExtended As Long, flagsComboControl As Long
@@ -1008,7 +1008,7 @@ Private Function createComboBox() As Boolean
     If Not (curFont Is Nothing) Then
         
         Dim idealHeight As Long
-        idealHeight = getIdealStringHeight()
+        idealHeight = GetIdealStringHeight()
         
         'Cache this value at module-level; we will need it for subsequent WM_MEASUREITEM requests sent to the parent
         m_ItemHeight = idealHeight
@@ -1103,7 +1103,7 @@ Private Function createComboBox() As Boolean
     End If
     
     'Assign the default font to the combo box
-    refreshFont True
+    RefreshFont True
     
     'If we backed up previous combo box entries at some point, we must restore those entries now.
     If m_listOfFonts.getNumOfStrings > 0 Then
@@ -1178,7 +1178,7 @@ End Sub
 
 'When the font used for the edit box changes in some way, it can be recreated (refreshed) using this function.  Note that font
 ' creation is expensive, so it's worthwhile to avoid this step as much as possible.
-Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
+Private Sub RefreshFont(Optional ByVal forceRefresh As Boolean = False)
     
     Dim fontRefreshRequired As Boolean
     fontRefreshRequired = curFont.HasFontBeenCreated
@@ -1258,7 +1258,7 @@ Public Sub UpdateAgainstCurrentTheme()
                 
         'Update the current font, as necessary.  We must do this prior to creating the combo box, as the font object's size determines
         ' the height of individual combo box entries.
-        refreshFont
+        RefreshFont
         
         'Recreate the combo box entirely
         createComboBox
@@ -1299,7 +1299,7 @@ Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
 End Function
 
 'Render the combo box area (not the list!)
-Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
+Private Sub DrawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
 
     'Before painting, retrieve detailed information on the combo box
     Dim cbiCombo As COMBOBOXINFO
@@ -1439,7 +1439,7 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
 End Sub
 
 'Given a DRAWITEMSTRUCT object, draw the corresponding item.  This function returns TRUE if drawing was successful.
-Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
+Private Function DrawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
 
     Dim drawSuccess As Boolean
     drawSuccess = False
@@ -1610,13 +1610,13 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
     
     End If
     
-    drawComboBoxEntry = drawSuccess
+    DrawComboBoxEntry = drawSuccess
 
 End Function
 
 'Due to some complexities with the way combo box sizes are handled, adjustments to height require recreating the combo box.  Adjustments to width,
 ' however, are no problem at all.  They can be requested via this function.
-Public Sub requestNewWidth(Optional ByVal newWidth As Long = 100, Optional ByVal autoCalculateWidth As Boolean = False)
+Public Sub RequestNewWidth(Optional ByVal newWidth As Long = 100, Optional ByVal autoCalculateWidth As Boolean = False)
 
     'Get the window rect of the current combo box
     Dim comboRect As RECTL
@@ -1634,7 +1634,7 @@ Public Sub requestNewWidth(Optional ByVal newWidth As Long = 100, Optional ByVal
             For i = 0 To m_listOfFonts.getNumOfStrings - 1
                 
                 'Calculate an ideal width for this string, using the current font
-                testWidth = getIdealStringWidth(m_listOfFonts.GetString(i))
+                testWidth = GetIdealStringWidth(m_listOfFonts.GetString(i))
                 
                 'Track the largest encountered width
                 If testWidth > maxTextWidth Then maxTextWidth = testWidth
@@ -2095,7 +2095,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 CopyMemory DIS, ByVal lParam, LenB(DIS)
                 
                 'Forward the DrawItemStruct to the dedicated draw sub
-                If drawComboBoxEntry(DIS) Then
+                If DrawComboBoxEntry(DIS) Then
                     bHandled = True
                     lReturn = 1
                 End If

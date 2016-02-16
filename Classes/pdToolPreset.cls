@@ -23,8 +23,8 @@ Attribute VB_Exposed = False
 '
 'Supporting presets for every possible tool is an unpleasant task.  This class is designed to make it easier.
 '
-'Each command bar contains an instance of this class.  All preset management is forwarded to us, and in return, we supply
-' preset names and/or values as the command bar needs them.
+'Each command bar contains an instance of this class.  All preset management is forwarded to us, and in return,
+' we supply preset names and/or values as the command bar needs them.
 '
 'This class also handles all preset file/save operations.
 '
@@ -68,7 +68,7 @@ Private m_ActivePresetName As String
 
 'The caller must specify a preset path prior to any other interactions.
 ' Note that this function ALSO LOADS THE PRESET FILE.  (It seemed redundant to force separate handling for that step.)
-Public Sub setPresetFilePath(ByRef srcPresetFilePath As String, ByRef toolName As String, Optional ByRef toolDescription As String = "")
+Public Sub SetPresetFilePath(ByRef srcPresetFilePath As String, ByRef toolName As String, Optional ByRef toolDescription As String = "")
     
     m_PresetFilePath = srcPresetFilePath
     m_ToolName = toolName
@@ -78,25 +78,25 @@ Public Sub setPresetFilePath(ByRef srcPresetFilePath As String, ByRef toolName A
             
         'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
         If (Not m_XMLEngine.loadXMLFile(srcPresetFilePath)) Or Not (m_XMLEngine.validateLoadedXMLData("toolName")) Then
-            debugNote "This tool's preset file may be corrupted.  A new preset file has been created."
-            resetXMLData
+            DebugNote "This tool's preset file may be corrupted.  A new preset file has been created."
+            ResetXMLData
         End If
         
     Else
-        resetXMLData
+        ResetXMLData
     End If
     
 End Sub
 
 'After the caller is done working with presets, they can call this function to write the current preset collection to file.
-Public Sub writePresetFile()
+Public Sub WritePresetFile()
     m_XMLEngine.writeXMLToFile m_PresetFilePath
 End Sub
 
 'Given a pdStringStack object, fill it with a list of all available preset names.
 '
 'RETURNS: number of presets found; 0 if no presets were found, which also happens if the preset file does not exist
-Public Function getListOfPresets(ByRef dstStringStack As pdStringStack) As Long
+Public Function GetListOfPresets(ByRef dstStringStack As pdStringStack) As Long
     
     'As a convenience to the caller, initialize the string stack for them
     Set dstStringStack = New pdStringStack
@@ -111,10 +111,10 @@ Public Function getListOfPresets(ByRef dstStringStack As pdStringStack) As Long
             dstStringStack.AddString m_XMLEngine.getUniqueTag_String("fullPresetName", , , "presetEntry", "id", allPresets(i))
         Next i
         
-        getListOfPresets = UBound(allPresets) + 1
+        GetListOfPresets = UBound(allPresets) + 1
     
     Else
-        getListOfPresets = 0
+        GetListOfPresets = 0
     End If
     
 End Function
@@ -122,7 +122,7 @@ End Function
 'See if a given preset exists in the preset file.
 '
 'Returns TRUE if the requested preset is found; FALSE otherwise.
-Public Function doesPresetExist(ByVal presetName As String) As Boolean
+Public Function DoesPresetExist(ByVal presetName As String) As Boolean
 
     'Users can name presets however they'd like, but when looking up preset data, we only use XML-friendly tag names
     ' (e.g. no spaces, etc).
@@ -130,13 +130,13 @@ Public Function doesPresetExist(ByVal presetName As String) As Boolean
     xmlSafePresetName = m_XMLEngine.getXMLSafeTagName(Trim$(presetName))
     
     'The XML engine handles the actual preset search
-    doesPresetExist = m_XMLEngine.doesTagExist("presetEntry", "id", xmlSafePresetName)
+    DoesPresetExist = m_XMLEngine.doesTagExist("presetEntry", "id", xmlSafePresetName)
 
 End Function
 
 'Prior to retrieving preset values, the caller MUST CALL THIS SUB.  It initializes all relevant XML settings, greatly improving
 ' performance during preset retrieval.
-Public Sub beginPresetRead(ByVal presetName As String)
+Public Sub BeginPresetRead(ByVal presetName As String)
     
     'Users can name presets however they'd like, but when looking up preset data, we only use XML-friendly tag names
     ' (e.g. no spaces, etc).
@@ -148,32 +148,32 @@ End Sub
 ' for the currently active preset (as set by beginPresetRetrieval), and store it in the destination string.
 '
 'Returns TRUE if object name exists for preset name; FALSE otherwise.
-Public Function readPresetValue(ByVal objectName As String, ByRef dstObjectValue As String) As Boolean
+Public Function ReadPresetValue(ByVal objectName As String, ByRef dstObjectValue As String) As Boolean
     
     'Perform a failsafe check to make sure preset retrieval has been initialized
     If Len(m_ActivePresetName) <> 0 Then
     
         'Retrieve said value, and return TRUE if a non-zero length string is found
         dstObjectValue = m_XMLEngine.getUniqueTag_String(objectName, "", , "presetEntry", "id", m_ActivePresetName)
-        readPresetValue = CBool(Len(dstObjectValue) <> 0)
+        ReadPresetValue = CBool(Len(dstObjectValue) <> 0)
         
     Else
         
-        debugNote "You can't retrieve presets without first calling beginPresetRead!"
-        readPresetValue = False
+        DebugNote "You can't retrieve presets without first calling beginPresetRead!"
+        ReadPresetValue = False
         
     End If
     
 End Function
 
 'Counterpart to beginPresetRead, above.  No variables or returns are necessary, as it simply clears the m_ActivePresetName string.
-Public Sub endPresetRead()
+Public Sub EndPresetRead()
     m_ActivePresetName = ""
 End Sub
 
 'Prior to writing preset values, the caller MUST CALL THIS SUB.  It initializes all relevant XML settings, greatly improving
 ' performance during preset writes.
-Public Sub beginPresetWrite(ByVal presetName As String)
+Public Sub BeginPresetWrite(ByVal presetName As String)
     
     'Users can name presets however they'd like, but when looking up preset data, we only use XML-friendly tag names
     ' (e.g. no spaces, etc).
@@ -198,7 +198,7 @@ End Sub
 
 'Given two things: an object name and a object value, write the two as a standard preset pair into the
 ' master XML object.
-Public Sub writePresetValue(ByRef objectName As String, ByRef objectValue As String)
+Public Sub WritePresetValue(ByRef objectName As String, ByRef objectValue As String)
     
     'Perform a failsafe check to make sure preset writing has been initialized
     If Len(m_ActivePresetName) <> 0 Then
@@ -208,18 +208,18 @@ Public Sub writePresetValue(ByRef objectName As String, ByRef objectValue As Str
     
     'If preset writing hasn't been initialized, there's nothing we can do
     Else
-        debugNote "You can't write presets without first calling beginPresetWrite!"
+        DebugNote "You can't write presets without first calling beginPresetWrite!"
     End If
     
 End Sub
 
 'Counterpart to beginPresetWrite, above.  No variables or returns are necessary, as it simply clears the m_ActivePresetName string.
-Public Sub endPresetWrite()
+Public Sub EndPresetWrite()
     m_ActivePresetName = ""
 End Sub
 
 'Reset the XML engine for this session.  Note that the XML object SHOULD ALREADY BE INSTANTIATED before calling this function.
-Private Function resetXMLData()
+Private Function ResetXMLData()
 
     m_XMLEngine.prepareNewXML "Tool preset"
     m_XMLEngine.writeBlankLine
@@ -239,7 +239,7 @@ Private Sub Class_Initialize()
     Set m_File = New pdFSO
 End Sub
 
-Private Sub debugNote(ByVal debugMessage As String)
+Private Sub DebugNote(ByVal debugMessage As String)
     #If DEBUGMODE = 1 Then
         If Len(debugMessage) <> 0 Then pdDebug.LogAction "(pdToolPreset debug note) : " & debugMessage
     #End If

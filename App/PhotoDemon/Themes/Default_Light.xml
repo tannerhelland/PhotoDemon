@@ -162,6 +162,10 @@
 				<BoxBorder-hover>AccentDefault</BoxBorder-hover>
 			</PDColorWheel>
 			
+			<PDCommandBar>
+				<Background>#dcdce1</Background>
+			</PDCommandBar>
+			
 			<PDEditBox>
 				<Background>BackgroundDefault</Background>
 				<Background-disabled>GrayLight</Background-disabled>

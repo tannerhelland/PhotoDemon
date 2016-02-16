@@ -2,7 +2,6 @@ VERSION 5.00
 Begin VB.UserControl pdCommandBarMini 
    Alignable       =   -1  'True
    Appearance      =   0  'Flat
-   AutoRedraw      =   -1  'True
    ClientHeight    =   750
    ClientLeft      =   0
    ClientTop       =   0
@@ -17,6 +16,7 @@ Begin VB.UserControl pdCommandBarMini
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    ScaleHeight     =   50
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   637
@@ -51,8 +51,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "Mini" Command Bar control
 'Copyright 2013-2016 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 02/September/15
-'Last update: separate from the main command bar, to allow for simpler code.
+'Last updated: 16/February/16
+'Last update: implement theming and migrate to ucSupport so we can finally handle high-DPI displays correctly
 '
 'This control is a stripped-down version of the primary CommandBar user control.  It is meant for dialogs where
 ' save/load preset support is irrelevant, while still supporting the same theming and translation options as
@@ -69,6 +69,11 @@ Option Explicit
 Public Event OKClick()
 Public Event CancelClick()
 
+'Like other PD controls, this control raises its own specialized focus events.  If you need to track focus,
+' use these instead of the default VB functions.
+Public Event GotFocusAPI()
+Public Event LostFocusAPI()
+
 'If the user wants us to postpone the automated unload after OK or Cancel is pressed, this will let us know to suspend it.
 ' (This is controlled via the doNotUnloadForm sub, below, which should be called during the OK or CANCEL events this control raises.)
 Private m_dontShutdownYet As Boolean
@@ -77,43 +82,47 @@ Private m_dontShutdownYet As Boolean
 ' (This is controlled via property.)
 Private m_dontAutoUnloadParent As Boolean
 
+'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
+' but I've since attempted to wrap these into a single master control support class.
+Private WithEvents ucSupport As pdUCSupport
+Attribute ucSupport.VB_VarHelpID = -1
+
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDCB_COLOR_LIST
+    [_First] = 0
+    PDCB_Background = 0
+    [_Last] = 0
+    [_Count] = 1
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
+
 'The command bar is set to auto-unload its parent object when OK or CANCEL is pressed.  In some instances (e.g. forms prefaced with
 ' "dialog_", which return a VBMsgBoxResult), this behavior is not desirable.  It can be overridden by setting this property to TRUE.
-Public Property Get dontAutoUnloadParent() As Boolean
-    dontAutoUnloadParent = m_dontAutoUnloadParent
+Public Property Get DontAutoUnloadParent() As Boolean
+    DontAutoUnloadParent = m_dontAutoUnloadParent
 End Property
 
-Public Property Let dontAutoUnloadParent(ByVal newValue As Boolean)
+Public Property Let DontAutoUnloadParent(ByVal newValue As Boolean)
     m_dontAutoUnloadParent = newValue
     PropertyChanged "dontAutoUnloadParent"
 End Property
 
 'If the user wants to postpone an OK or Cancel-initiated unload for some reason, they can call this function during their
 ' Cancel event.
-Public Sub doNotUnloadForm()
+Public Sub DoNotUnloadForm()
     m_dontShutdownYet = True
 End Sub
 
 'hWnd is used for external focus tracking
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
-End Property
-
-'Backcolor is used to control the color of the base user control; nothing else is affected by it.
-' Note that - by design - the back color is hardcoded.  Still TODO is integrating it with theming.
-Public Property Get BackColor() As OLE_COLOR
-    BackColor = RGB(220, 220, 225)
-End Property
-
-Public Property Let BackColor(ByVal newColor As OLE_COLOR)
-    
-    UserControl.BackColor = RGB(220, 220, 225)
-    PropertyChanged "BackColor"
-    
-    'Update all button backgrounds to match
-    cmdOK.BackColor = RGB(235, 235, 240)
-    cmdCancel.BackColor = RGB(235, 235, 240)
-    
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -167,58 +176,58 @@ Private Sub CmdOK_Click()
     
 End Sub
 
+Private Sub ucSupport_GotFocusAPI()
+    RaiseEvent GotFocusAPI
+End Sub
+
+Private Sub ucSupport_LostFocusAPI()
+    RaiseEvent LostFocusAPI
+End Sub
+
+Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
+    If updateLayoutToo Then UpdateControlLayout
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    UpdateControlLayout
+End Sub
+
 Private Sub UserControl_Initialize()
-    
-    UserControl.BackColor = BackColor
     
     'Parent forms will be unloaded by default when pressing Cancel
     m_dontShutdownYet = False
     
+    'Initialize a master user control support class
+    Set ucSupport = New pdUCSupport
+    ucSupport.RegisterControl UserControl.hWnd
+    
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDCB_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDCommandBar", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
+    
+    'Update the control size parameters at least once
+    UpdateControlLayout
+    
 End Sub
 
 Private Sub UserControl_InitProperties()
-    BackColor = &HEEEEEE
-    dontAutoUnloadParent = False
+    DontAutoUnloadParent = False
+End Sub
+
+'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
+Private Sub UserControl_Paint()
+    If Not g_IsProgramRunning Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-    
-    With PropBag
-        BackColor = .ReadProperty("BackColor", &HEEEEEE)
-        dontAutoUnloadParent = .ReadProperty("dontAutoUnloadParent", False)
-    End With
-    
+    DontAutoUnloadParent = PropBag.ReadProperty("dontAutoUnloadParent", False)
 End Sub
 
 Private Sub UserControl_Resize()
-    UpdateControlLayout
-End Sub
-
-'The command bar's layout is all handled programmatically.  This lets it look good, regardless of the parent form's size or
-' the current monitor's DPI setting.
-Private Sub UpdateControlLayout()
-
-    On Error GoTo skipUpdateLayout
-
-    'Force a standard user control size
-    UserControl.Height = FixDPI(50) * TwipsPerPixelYFix
-    
-    'Make the control the same width as its parent
-    If g_IsProgramRunning Then
-    
-        UserControl.Width = UserControl.Parent.ScaleWidth * TwipsPerPixelXFix
-        
-        'Right-align the Cancel and OK buttons
-        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - FixDPI(8)
-        cmdOK.Left = cmdCancel.Left - cmdOK.Width - FixDPI(8)
-        
-    End If
-    
-'NOTE: this error catch is important, as VB will attempt to update the user control's size even after the parent has
-'       been unloaded, raising error 398 "Client site not available". If we don't catch the error, the compiled .exe
-'       will fail every time a command bar is unloaded (e.g. on almost every tool).
-skipUpdateLayout:
-
+    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_Show()
@@ -237,26 +246,91 @@ somethingStoleFocus:
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+    PropBag.WriteProperty "DontAutoUnloadParent", m_dontAutoUnloadParent, False
+End Sub
+
+'The command bar's layout is all handled programmatically.  This lets it look good, regardless of the parent form's size or
+' the current monitor's DPI setting.
+Private Sub UpdateControlLayout()
+
+    On Error GoTo skipUpdateLayout
+
+    'Retrieve DPI-aware control dimensions from the support class
+    Dim bWidth As Long, bHeight As Long
+    bWidth = ucSupport.GetControlWidth
+    bHeight = ucSupport.GetControlHeight
     
-    'Store all associated properties
-    With PropBag
-        .WriteProperty "BackColor", BackColor, &HEEEEEE
-        .WriteProperty "dontAutoUnloadParent", m_dontAutoUnloadParent, False
-    End With
+    'Force a standard user control size and bottom-alignment
+    Dim parentWindowWidth As Long, parentWindowHeight As Long
+    parentWindowWidth = g_WindowManager.GetClientWidth(UserControl.Parent.hWnd)
+    parentWindowHeight = g_WindowManager.GetClientHeight(UserControl.Parent.hWnd)
+    
+    Dim moveRequired As Boolean
+    If bHeight <> FixDPI(50) Then moveRequired = True
+    If ucSupport.GetControlTop <> parentWindowHeight - FixDPI(50) Then moveRequired = True
+    
+    If moveRequired Then
+        ucSupport.RequestNewSize , FixDPI(50)
+        ucSupport.RequestNewPosition 0, parentWindowHeight - ucSupport.GetControlHeight
+    End If
+    
+    'Make the control the same width as its parent
+    If g_IsProgramRunning Then
+        
+        If bWidth <> parentWindowWidth Then ucSupport.RequestNewSize parentWindowWidth
+        
+        'Right-align the Cancel and OK buttons
+        cmdCancel.SetLeft parentWindowWidth - cmdCancel.GetWidth - FixDPI(8)
+        cmdOK.SetLeft cmdCancel.GetLeft - cmdOK.GetWidth - FixDPI(8)
+        
+    End If
+    
+'NOTE: this error catch is important, as VB will attempt to update the user control's size even after the parent has
+'       been unloaded, raising error 398 "Client site not available". If we don't catch the error, the compiled .exe
+'       will fail every time a command bar is unloaded (e.g. on almost every tool).
+skipUpdateLayout:
+
+End Sub
+
+'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
+Private Sub RedrawBackBuffer()
+    
+    'We can improve shutdown performance by ignoring redraw requests
+    If g_ProgramShuttingDown Then
+        If (g_Themer Is Nothing) Then Exit Sub
+    End If
+    
+    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+    Dim bufferDC As Long
+    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDCB_Background, Me.Enabled))
+    
+    'Paint the final result to the screen, as relevant
+    ucSupport.RequestRepaint
     
 End Sub
 
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    m_Colors.LoadThemeColor PDCB_Background, "Background", IDE_GRAY
+End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     
+    'Because all controls on the command bar are synchronized against a non-standard backcolor, we need to make sure any new
+    ' colors are loaded FIRST
+    UpdateColorList
+    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+    
+    Dim cbBackgroundColor As Long
+    cbBackgroundColor = m_Colors.RetrieveColor(PDCB_Background, Me.Enabled)
+    
     'Synchronize the background color of individual controls against the command bar's backcolor
+    cmdOK.BackgroundColor = cbBackgroundColor
+    cmdCancel.BackgroundColor = cbBackgroundColor
     cmdOK.UseCustomBackgroundColor = True
     cmdCancel.UseCustomBackgroundColor = True
-    cmdOK.BackgroundColor = BackColor
-    cmdCancel.BackgroundColor = BackColor
-    
-    'Update individual controls
     cmdOK.UpdateAgainstCurrentTheme
     cmdCancel.UpdateAgainstCurrentTheme
     
