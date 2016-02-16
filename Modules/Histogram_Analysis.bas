@@ -217,15 +217,15 @@ Public Sub generateHistogramImages(ByRef histogramData() As Double, ByRef channe
         tmpPath.addPolygon 260, VarPtr(histogramShape(0)), True, True
         
         'Prep pens and brushes in the current color
-        tmpPen = GDI_Plus.getGDIPlusPenHandle(hColor, 255, 1, LineCapRound, LineJoinRound)
+        tmpPen = GDI_Plus.GetGDIPlusPenHandle(hColor, 255, 1, LineCapRound, LineJoinRound)
         tmpBrush = GDI_Plus.getGDIPlusSolidBrushHandle(hColor, 64)
         
         'Render the paths to their target DIBs
         tmpPath.fillPathToDIB_BareBrush tmpBrush, dstDIBs(i)
-        tmpPath.strokePathToDIB_BarePen tmpPen, dstDIBs(i)
+        tmpPath.StrokePath_BarePen tmpPen, dstDIBs(i).getDIBDC
         
         'Free our pen and brush resources
-        GDI_Plus.releaseGDIPlusPen tmpPen
+        GDI_Plus.ReleaseGDIPlusPen tmpPen
         GDI_Plus.releaseGDIPlusBrush tmpBrush
         
         'Mark alpha premultiplication status

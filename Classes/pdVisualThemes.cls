@@ -27,6 +27,14 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+
+'***************************************************************************
+'FYI FEB 2015:
+' A bunch of the declarations in this class will be disappearing in the coming weeks.  PD's new XML theme format
+' is coming along nicely, and most of PD's custom controls have already been migrated to the new system.
+' As such, please ignore the dust until this class reaches its final form.
+'***************************************************************************
+
 'I have no idea what colors will actually be used in the final theme format; these are just placeholders for now,
 ' to enable centralized coloration of a few UCs.  The end goal is to provide the smallest possible subset of colors
 ' necessary to render PD's various UI elements.
@@ -110,6 +118,24 @@ Private m_NumColorsCached As Long
 Private m_ColorCache() As PDCachedColor
 Private Const DEFAULT_COLOR_CACHE_SIZE As Long = 16
 
+'For the most part, we leave individual controls to manage their own color lists.  This provides excellent flexibility
+' with UI rendering.  However, there are some colors that appear so frequently throughout PD that it makes more sense
+' to cache them here, so one-off functions don't need to deal with messy color maintenance.
+Public Enum PD_UI_COLOR_LIST
+    [_First] = 0
+    UI_UniversalLineEdge = 0
+    UI_UniversalLineCenter = 1
+    [_Last] = 1
+    [_Count] = 2
+End Enum
+
+#If False Then
+    Private Const PDUIC_UniversalLineEdge = 0, PDUIC_UniversalLineCenter = 1
+#End If
+
+'Color retrieval and storage of program-wide UI colors is handled by a dedicated class
+Private m_UniversalColors As pdThemeColors
+
 'Despite an identical name, this function does *not* use the Win32 API to retrieve a color from the system theme.
 ' Instead, it retrieves a color from PD's current theme color cache.
 Friend Function GetThemeColor(ByVal colorType As PD_THEME_COLOR) As Long
@@ -139,7 +165,7 @@ Private Sub ResetThemeCache()
 End Sub
 
 'Fill the curThemeColors array with PD's default color scheme
-Private Sub LoadDefaultPDTheme()
+Public Sub LoadDefaultPDTheme()
 
     'Default to the light theme
     ' (TODO: read the user's preference for theme, which should probably be just a path to the theme file?)
@@ -158,7 +184,9 @@ Private Sub LoadDefaultPDTheme()
     themeLoadedCorrectly = Me.LoadThemeFile(themeFilename)
     
     #If DEBUGMODE = 1 Then
-        If Not themeLoadedCorrectly Then
+        If themeLoadedCorrectly Then
+            If g_IsProgramRunning Then pdDebug.LogAction "Successfully loaded theme file: " & themeFilename
+        Else
             If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  Failed to load theme file: " & themeFilename
         End If
     #End If
@@ -213,7 +241,7 @@ Public Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
             
         End If
         
-        'Regardless of success or failure, reset our internal color cache
+        'Regardless of success or failure, reset our internal color cache(s)
         ResetColorCache
         
         'Theme files generally consist of two parts: a theme XML file, and a color definition file.  This system allows
@@ -270,6 +298,9 @@ Public Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
             End If
         
         End If
+        
+        'With all color definitions imported, we can now cache a few program-wide UI colors
+        CacheUniversalColors
         
         'If the user's choice of theme didn't load correctly, or the default theme failed to load, run some heuristics
         ' on the theme folder.
@@ -529,10 +560,36 @@ Friend Function RetrieveColorFromCache(ByRef objectName As String, ByRef colorNa
     
 End Function
 
+'For the most part, PD lets individual control instances manage their own color lists.  This provides high levels of
+' flexibility with rendering, as different controls may favor different techniques.  However, some colors are so
+' ubiquitous throughout PD that it's easier to cache their results locally, then let outside functions retrieve colors
+' with minimal effort on this part.
+'
+'Obviously, this cache must be reset any time a new theme file is loaded.  As there is no easy way for external functions
+' to be notified of such a change, you should *not* reuse colors retrieved from this cache.  They need to be retrieved
+' anew on every use.
+Private Sub CacheUniversalColors()
+
+    Dim colorCount As PD_UI_COLOR_LIST: colorCount = [_Count]
+    m_UniversalColors.InitializeColorList "UIElements", colorCount
+    
+    With m_UniversalColors
+        .LoadThemeColor UI_UniversalLineEdge, "UniversalLineEdge", IDE_BLUE
+        .LoadThemeColor UI_UniversalLineCenter, "UniversalLineCenter", IDE_GRAY
+    End With
+    
+End Sub
+
+'External functions can use this to retrieve a color from the local m_UniversalColors cache.  If an object requires
+' a bunch of object-specific colors, they will get better performance by managing their own color cache.
+Friend Function GetGenericUIColor(ByVal colorID As PD_UI_COLOR_LIST, Optional ByVal enabledState As Boolean = True, Optional ByVal activeState As Boolean = False, Optional ByVal hoverState As Boolean = False) As Long
+    GetGenericUIColor = m_UniversalColors.RetrieveColor(colorID, enabledState, activeState, hoverState)
+End Function
+
 Private Sub Class_Initialize()
     
-    'Prep our XML parser
     Set m_XML = New pdXML
+    Set m_UniversalColors = New pdThemeColors
     
     'OLD CODE FOLLOWS
     
@@ -543,9 +600,5 @@ Private Sub Class_Initialize()
     ' missing theme entry.  Instead, we use -1 to represent a missing entry.  The color retrieval function
     ' will automatically cascade to the nearest relevant value if an entry can't be found.
     ResetThemeCache
-    
-    'Populate the color cache with PD's default theme values.  If something goes wrong when attempting to load the
-    ' user's theme of choice, this at least ensures that we have a valid fallback.
-    LoadDefaultPDTheme
     
 End Sub

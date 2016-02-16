@@ -563,7 +563,7 @@ End Function
 ' BEGIN: DRAWING FUNCTIONS
 
 'Stroke the current path, using the default arrangement for PD's current theme
-Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useHighlightColor As Boolean = False, Optional ByVal useHQOffsets As Boolean = True, Optional ByVal customLinejoin As LineJoin = LineJoinRound, Optional ByVal useCustomStartCap As LineCap = LineCapRound, Optional ByVal useCustomEndCap As LineCap = LineCapRound)
+Public Sub StrokePath_UIStyle(ByVal dstDC As Long, Optional ByVal useHighlightColor As Boolean = False, Optional ByVal useHQOffsets As Boolean = True, Optional ByVal customLinejoin As LineJoin = LineJoinRound, Optional ByVal useCustomStartCap As LineCap = LineCapRound, Optional ByVal useCustomEndCap As LineCap = LineCapRound)
 
     'PD's default behavior for UI-related paths is to stroke a path twice; once with a thickness of 2px
     ' (which actually ends up being more like 1px along the path, and 0.5 px along either side)
@@ -575,12 +575,7 @@ Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThis
     
     'Obtain a GDI+ handle to the image
     Dim hGraphics As Long
-    
-    If useThisDCInstead <> 0 Then
-        GdipCreateFromHDC useThisDCInstead, hGraphics
-    Else
-        GdipCreateFromHDC dstDIB.getDIBDC, hGraphics
-    End If
+    GdipCreateFromHDC dstDC, hGraphics
     
     'Activate AA
     GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias
@@ -592,15 +587,10 @@ Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThis
         GdipSetPixelOffsetMode hGraphics, PixelOffsetModeHighSpeed
     End If
     
-    'Create two pens, each of which will be used to stroke the line
+    'Create two pens, each of which will be used to stroke the line.  Note that specific color definitions are pulled from PD's central themer.
     Dim hBlackPen As Long, hWhitePen As Long
-    GdipCreatePen1 fillQuadWithVBRGB(RGB(0, 0, 0), 192), 3#, gdipUnitPixel, hBlackPen
-    
-    If useHighlightColor Then
-        GdipCreatePen1 fillQuadWithVBRGB(g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT), 220), 1.6, gdipUnitPixel, hWhitePen
-    Else
-        GdipCreatePen1 fillQuadWithVBRGB(RGB(255, 255, 255), 220), 1.6, gdipUnitPixel, hWhitePen
-    End If
+    GdipCreatePen1 fillQuadWithVBRGB(g_Themer.GetGenericUIColor(UI_UniversalLineEdge, , , useHighlightColor), 192), 3#, gdipUnitPixel, hBlackPen
+    GdipCreatePen1 fillQuadWithVBRGB(g_Themer.GetGenericUIColor(UI_UniversalLineCenter, , , useHighlightColor), 220), 1.6, gdipUnitPixel, hWhitePen
     
     'Populate line end and join parameters
     GdipSetPenLineCap hBlackPen, useCustomStartCap, useCustomEndCap, DashCapRound
@@ -621,16 +611,11 @@ Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThis
 End Sub
 
 'Stroke the current path, using a bare pen handle for the rendering.
-Public Sub strokePathToDIB_BarePen(ByRef srcPen As Long, Optional ByRef dstDIB As pdDIB = Nothing, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useAA As Boolean = True, Optional ByVal ptrToClippingRectF As Long = 0)
+Public Sub StrokePath_BarePen(ByRef srcPen As Long, ByVal dstDC As Long, Optional ByVal useAA As Boolean = True, Optional ByVal ptrToClippingRectF As Long = 0)
     
     'Obtain a GDI+ handle to the image
     Dim hGraphics As Long
-    
-    If useThisDCInstead <> 0 Then
-        GdipCreateFromHDC useThisDCInstead, hGraphics
-    Else
-        GdipCreateFromHDC dstDIB.getDIBDC, hGraphics
-    End If
+    GdipCreateFromHDC dstDC, hGraphics
     
     'Activate AA
     If useAA Then

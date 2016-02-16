@@ -426,7 +426,7 @@ Private Sub cmdBar_AddCustomPresetData()
     '
     'However, there's no reason to require horrible duplication code, when the gradient class is already capable of serializing
     ' all relevant data for this control!
-    cmdBar.addPresetData "FullGradientDefinition", m_GradientPreview.getGradientAsString
+    cmdBar.AddPresetData "FullGradientDefinition", m_GradientPreview.getGradientAsString
 
 End Sub
 
@@ -456,7 +456,7 @@ Private Sub cmdBar_ReadCustomPresetData()
     '
     'However, there's no reason to require horrible duplication code, when the gradient class is already capable of serializing
     ' all relevant data for this control!
-    m_GradientPreview.createGradientFromString cmdBar.retrievePresetData("FullGradientDefinition")
+    m_GradientPreview.createGradientFromString cmdBar.RetrievePresetData("FullGradientDefinition")
     
     'Synchronize all controls to the updated settings
     syncControlsToGradientObject
@@ -1010,17 +1010,17 @@ Private Sub drawGradientNodes()
             
             'All other renders vary by hover state
             If i = m_CurPoint Then
-                tmpBlock.strokePathToDIB_BarePen activeOutlinePen.getPenHandle, m_InteractiveDIB
+                tmpBlock.StrokePath_BarePen activeOutlinePen.GetPenHandle, m_InteractiveDIB.getDIBDC
                 tmpArrow.fillPathToDIB_BareBrush activeArrowFill.getBrushHandle, m_InteractiveDIB
-                tmpArrow.strokePathToDIB_BarePen activeOutlinePen.getPenHandle, m_InteractiveDIB
+                tmpArrow.StrokePath_BarePen activeOutlinePen.GetPenHandle, m_InteractiveDIB.getDIBDC
             ElseIf i = m_CurHoverPoint Then
-                tmpBlock.strokePathToDIB_BarePen activeOutlinePen.getPenHandle, m_InteractiveDIB
+                tmpBlock.StrokePath_BarePen activeOutlinePen.GetPenHandle, m_InteractiveDIB.getDIBDC
                 tmpArrow.fillPathToDIB_BareBrush activeArrowFill.getBrushHandle, m_InteractiveDIB
-                tmpArrow.strokePathToDIB_BarePen activeOutlinePen.getPenHandle, m_InteractiveDIB
+                tmpArrow.StrokePath_BarePen activeOutlinePen.GetPenHandle, m_InteractiveDIB.getDIBDC
             Else
-                tmpBlock.strokePathToDIB_BarePen inactiveOutlinePen.getPenHandle, m_InteractiveDIB
+                tmpBlock.StrokePath_BarePen inactiveOutlinePen.GetPenHandle, m_InteractiveDIB.getDIBDC
                 tmpArrow.fillPathToDIB_BareBrush inactiveArrowFill.getBrushHandle, m_InteractiveDIB
-                tmpArrow.strokePathToDIB_BarePen inactiveOutlinePen.getPenHandle, m_InteractiveDIB
+                tmpArrow.StrokePath_BarePen inactiveOutlinePen.GetPenHandle, m_InteractiveDIB.getDIBDC
             End If
             
         Next i

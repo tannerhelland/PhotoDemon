@@ -15,6 +15,7 @@ Begin VB.UserControl pdColorVariants
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    ScaleHeight     =   132
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   159
@@ -51,33 +52,12 @@ Option Explicit
 
 'Just like PD's old color selector, this control will raise a ColorChanged event after user interactions.
 Public Event ColorChanged(ByVal newColor As Long, ByVal srcIsInternal As Boolean)
-
-'A specialized class handles mouse input for this control
-Private WithEvents cMouseEvents As pdInputMouse
-Attribute cMouseEvents.VB_VarHelpID = -1
-
-'Reliable focus detection requires a specialized subclasser
-Private WithEvents cFocusDetector As pdFocusDetector
-Attribute cFocusDetector.VB_VarHelpID = -1
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
-
-'Flicker-free window painter
-Private WithEvents cPainter As pdWindowPainter
-Attribute cPainter.VB_VarHelpID = -1
-
-'Additional helper for rendering themed and multiline tooltips
-Private toolTipManager As pdToolTip
-
-'This back buffer is for the fully composited control; it is what gets copied to the screen on Paint events.
-Private m_BackBuffer As pdDIB
 
 'These values help the central renderer know where the mouse is, so we can draw various on-screen indicators.
 ' If set to -1, the mouse is not inside any box.
 Private m_MouseInsideRegion As Long
-
-'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
-Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
 
 'Size (in pixels) of the variant selectors surrounding the primary color box.  This must be manually adjusted for
 ' DPI settings at run-time.  Note that at least 1px is lost to borders on either side, as well.
@@ -129,6 +109,28 @@ End Enum
 
 Private m_ControlShape As COLOR_WHEEL_SHAPE
 
+'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
+' but I've since attempted to wrap these into a single master control support class.
+Private WithEvents ucSupport As pdUCSupport
+Attribute ucSupport.VB_VarHelpID = -1
+
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDCV_COLOR_LIST
+    [_First] = 0
+    PDCV_Background = 0
+    PDCV_Border = 1
+    [_Last] = 1
+    [_Count] = 2
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
+
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_UserMemId = -514
@@ -159,7 +161,7 @@ Public Property Let Color(ByVal newColor As Long)
     
     'Recalculate all color variants, then redraw the control
     CalculateVariantColors
-    DrawUC
+    RedrawBackBuffer
     
     RaiseEvent ColorChanged(m_ColorList(0), False)
     PropertyChanged "Color"
@@ -173,22 +175,22 @@ End Property
 Public Property Let WheelShape(ByVal newShape As COLOR_WHEEL_SHAPE)
     If m_ControlShape <> newShape Then
         m_ControlShape = newShape
-        UpdateControlSize
+        UpdateControlLayout
         PropertyChanged "WheelShape"
     End If
 End Property
 
 'When the control receives focus, relay the event externally
-Private Sub cFocusDetector_GotFocusReliable()
+Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
 End Sub
 
 'When the control loses focus, relay the event externally
-Private Sub cFocusDetector_LostFocusReliable()
+Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
 
-Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'Right now, only left-clicks are addressed
     If (Button And pdLeftButton) <> 0 Then
@@ -205,12 +207,10 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 m_ColorList(0) = m_ColorList(m_MouseInsideRegion)
             End If
             
-            'Recalculate all color variants to match the new color (if any)
+            'Recalculate all color variants to match the new color (if any) and redraw the control
             MakeNewTooltip m_MouseInsideRegion
             CalculateVariantColors
-            
-            'Redraw the control to reflect this new color
-            DrawUC
+            RedrawBackBuffer
             
             'Raise an event to match
             RaiseEvent ColorChanged(m_ColorList(0), True)
@@ -221,13 +221,13 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     
 End Sub
 
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    cMouseEvents.setSystemCursor IDC_DEFAULT
+Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    ucSupport.RequestCursor IDC_DEFAULT
     m_MouseInsideRegion = -1
-    DrawUC
+    RedrawBackBuffer
 End Sub
 
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'Calculate a new hovered box ID, if any
     Dim oldMouseIndex As Long
@@ -235,12 +235,12 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     m_MouseInsideRegion = GetRegionFromPoint(x, y)
     
     'Modify the cursor to match
-    If (m_MouseInsideRegion >= 0) Then cMouseEvents.setSystemCursor IDC_HAND Else cMouseEvents.setSystemCursor IDC_DEFAULT
+    If (m_MouseInsideRegion >= 0) Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
     
     'If the box ID has changed, update the tooltip and redraw the control to match
     If (m_MouseInsideRegion <> oldMouseIndex) Then
         MakeNewTooltip m_MouseInsideRegion
-        DrawUC
+        RedrawBackBuffer
     End If
     
 End Sub
@@ -263,41 +263,29 @@ Private Function GetRegionFromPoint(ByVal x As Single, ByVal y As Single) As Lon
 
 End Function
 
-'The pdWindowPaint class raises this event when the navigator box needs to be redrawn.  The passed coordinates contain
-' the rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
-Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
-    
-    'Flip the relevant chunk of the buffer to the screen
-    BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
-    
+Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
+    If updateLayoutToo Then UpdateControlLayout
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    UpdateControlLayout
 End Sub
 
 Private Sub UserControl_Initialize()
     
-    If g_IsProgramRunning Then
-        
-        'Initialize mouse handling
-        Set cMouseEvents = New pdInputMouse
-        cMouseEvents.addInputTracker UserControl.hWnd, True, True, , True, True
-        cMouseEvents.setSystemCursor IDC_HAND
-        
-        'Also start a focus detector
-        Set cFocusDetector = New pdFocusDetector
-        cFocusDetector.startFocusTracking Me.hWnd
-        
-        'Also start a flicker-free window painter
-        Set cPainter = New pdWindowPainter
-        cPainter.StartPainter UserControl.hWnd
-        
-        'Create a tooltip engine
-        Set toolTipManager = New pdToolTip
-    
-    'In design mode, initialize a base theming class, so our paint function doesn't fail
-    Else
-        If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
-    End If
+    'Initialize a master user control support class
+    Set ucSupport = New pdUCSupport
+    ucSupport.RegisterControl UserControl.hWnd
+    ucSupport.RequestExtraFunctionality True
     
     m_MouseInsideRegion = -1
+    
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDCV_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDColorVariants", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
     
     'Prep the various color variant lists
     ReDim m_ColorList(0 To NUM_OF_VARIANTS - 1) As Long
@@ -311,7 +299,7 @@ Private Sub UserControl_Initialize()
     CalculateVariantColors
     
     'Draw the control at least once
-    UpdateControlSize
+    UpdateControlLayout
     
 End Sub
 
@@ -320,12 +308,9 @@ Private Sub UserControl_InitProperties()
     WheelShape = CWS_Circular
 End Sub
 
-'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
+'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    
-    'Provide minimal painting within the designer
-    If Not g_IsProgramRunning Then DrawUC
-    
+    ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -334,7 +319,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    UpdateControlSize
+    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
 End Sub
     
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -362,15 +347,12 @@ Public Sub DisplayColorSelection()
 End Sub
 
 'Call this to recreate all buffers against a changed control size.
-Private Sub UpdateControlSize()
+Private Sub UpdateControlLayout()
     
-    'Resize the back buffer to match the container dimensions.
-    If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
-    If (m_BackBuffer.getDIBWidth <> UserControl.ScaleWidth) Or (m_BackBuffer.getDIBHeight <> UserControl.ScaleHeight) Then
-        m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
-    Else
-        m_BackBuffer.resetDIB 0
-    End If
+    'Retrieve DPI-aware control dimensions from the support class
+    Dim bWidth As Long, bHeight As Long
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
     
     If g_IsProgramRunning Then
         
@@ -386,8 +368,8 @@ Private Sub UpdateControlSize()
         Dim ucLeft As Long, ucTop As Long, ucBottom As Long, ucRight As Long
         ucLeft = 1
         ucTop = 1
-        ucBottom = m_BackBuffer.getDIBHeight - 2
-        ucRight = m_BackBuffer.getDIBWidth - 2
+        ucBottom = bHeight - 2
+        ucRight = bWidth - 2
         
         'How we actually create the regions varies depending on the current control orientation.
         If m_ControlShape = CWS_Circular Then
@@ -399,7 +381,7 @@ Private Sub UpdateControlSize()
     End If
     
     'With the backbuffer and rects successfully constructed, we can finally redraw the control
-    DrawUC
+    RedrawBackBuffer
     
 End Sub
 
@@ -673,18 +655,18 @@ Private Sub CalculateVariantColors()
 End Sub
 
 'Redraw the UC.  Note that some UI elements must be created prior to calling this function (e.g. the color wheel).
-Private Sub DrawUC()
+Private Sub RedrawBackBuffer()
 
-    'Create the back buffer as necessary.  (This is primarily for solving IDE issues.)
-    If m_BackBuffer Is Nothing Then m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, RGB(255, 255, 255)
+    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDCV_Background, Me.Enabled))
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
     
     If g_IsProgramRunning Then
     
-        'Paint the background.
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT), 255
-        
-        Dim fillColor As Long, borderColor As Long, borderPen As Long
-        borderColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
+        Dim borderColor As Long, borderPen As Long
+        borderColor = m_Colors.RetrieveColor(PDCV_Border, Me.Enabled, False, False)
         
         'We can reuse a single border pen for all sub-paths
         borderPen = GDI_Plus.GetGDIPlusPenHandle(borderColor, , , , LineJoinMiter)
@@ -694,48 +676,32 @@ Private Sub DrawUC()
         For i = CV_Primary To CV_RedDown
             
             regionBrush = GDI_Plus.getGDIPlusSolidBrushHandle(m_ColorList(i), 255)
-            m_ColorRegions(i).fillPathToDIB_BareBrush regionBrush, m_BackBuffer
+            m_ColorRegions(i).fillPathToDIB_BareBrush regionBrush, , bufferDC
             GDI_Plus.releaseGDIPlusBrush regionBrush
             
-            m_ColorRegions(i).strokePathToDIB_BarePen borderPen, m_BackBuffer
+            m_ColorRegions(i).StrokePath_BarePen borderPen, bufferDC
             
         Next i
         
-        'Draw a special outline around the central primary color, to help it stand out more
-        m_ColorRegions(CV_Primary).strokePathToDIB_UIStyle m_BackBuffer, , False, False, LineJoinMiter
+        'Draw a special outline around the central primary color, to help it stand out more.  (But only do this if
+        ' the central primary color is UNSELECTED; if it's selected, we'll paint it in the accent color momentarily.)
+        If m_MouseInsideRegion <> CV_Primary Then m_ColorRegions(CV_Primary).StrokePath_UIStyle bufferDC, False, False, LineJoinMiter
         
         'Release any remaining GDI+ objects
         GDI_Plus.ReleaseGDIPlusPen borderPen
         
         'If a subregion is currently hovered, trace it with a highlight outline.
         If m_MouseInsideRegion >= 0 Then
-            borderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-            borderPen = GDI_Plus.GetGDIPlusPenHandle(borderColor, , 3, , LineJoinMiter)
-            m_ColorRegions(m_MouseInsideRegion).strokePathToDIB_BarePen borderPen, m_BackBuffer
+            borderColor = m_Colors.RetrieveColor(PDCV_Border, Me.Enabled, True, True)
+            borderPen = GDI_Plus.GetGDIPlusPenHandle(borderColor, , 3#, , LineJoinMiter)
+            m_ColorRegions(m_MouseInsideRegion).StrokePath_BarePen borderPen, bufferDC
             GDI_Plus.ReleaseGDIPlusPen borderPen
         End If
         
-    'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
-    Else
-        
-        Dim tmpRect As RECT
-        With tmpRect
-            .Left = 0
-            .Top = 0
-            .Right = m_BackBuffer.getDIBWidth
-            .Bottom = m_BackBuffer.getDIBHeight
-        End With
-        
-        DrawFocusRect m_BackBuffer.getDIBDC, tmpRect
-    
     End If
     
     'Paint the final result to the screen, as relevant
-    If g_IsProgramRunning Then
-        cPainter.RequestRepaint
-    Else
-        BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
-    End If
+    ucSupport.RequestRepaint
 
 End Sub
 
@@ -802,21 +768,23 @@ Private Sub MakeNewTooltip(ByVal activeIndex As COLOR_VARIANTS)
     
 End Sub
 
-'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
-' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.SetTooltip Me.hWnd, Me.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    m_Colors.LoadThemeColor PDCV_Background, "Background", IDE_WHITE
+    m_Colors.LoadThemeColor PDCV_Border, "Border", IDE_BLACK
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
 ' and/or retranslating any text against the current language.
 Public Sub UpdateAgainstCurrentTheme()
-    
-    'Update the tooltip, if any
-    If g_IsProgramRunning Then toolTipManager.UpdateAgainstCurrentTheme
-        
-    'Redraw the control (in case anything has changed)
-    UpdateControlSize
-    
+    UpdateColorList
+    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+    UpdateControlLayout
 End Sub
 
+'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
+' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+End Sub

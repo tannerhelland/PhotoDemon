@@ -185,7 +185,7 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
 End Sub
 
 Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
-    m_MouseInsidePenRect = Math_Functions.isPointInRectF(mouseX, mouseY, m_PenRect)
+    m_MouseInsidePenRect = Math_Functions.IsPointInRectF(mouseX, mouseY, m_PenRect)
     If m_MouseInsidePenRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
 End Sub
 
@@ -329,10 +329,10 @@ Private Sub RedrawBackBuffer()
         End With
         
         'Next, create a matching GDI+ pen
-        m_PenPreview.createPenFromString Me.Pen
+        m_PenPreview.CreatePenFromString Me.Pen
         
         Dim tmpPen As Long
-        tmpPen = m_PenPreview.getPenHandle
+        tmpPen = m_PenPreview.GetPenHandle
         
         'Prep the preview path.  Note that we manually pad it to make the preview look a little prettier.
         Dim hPadding As Single, vPadding As Single
@@ -343,7 +343,7 @@ Private Sub RedrawBackBuffer()
         m_PreviewPath.resetPath
         m_PreviewPath.createSamplePathForRect m_PenRect, hPadding, vPadding
         
-        m_PreviewPath.strokePathToDIB_BarePen tmpPen, , bufferDC, True, VarPtr(m_PenRect)
+        m_PreviewPath.StrokePath_BarePen tmpPen, bufferDC, True, VarPtr(m_PenRect)
         m_PenPreview.releasePenHandle tmpPen
         
         'Draw borders around the brush results.

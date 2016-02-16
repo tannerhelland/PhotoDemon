@@ -713,7 +713,7 @@ Private Sub DrawUC()
         slicePath.closeCurrentFigure
         
         'Render the completed slice onto the overlay
-        slicePath.strokePathToDIB_UIStyle m_BackBuffer, , m_MouseDownWheel
+        slicePath.StrokePath_UIStyle m_BackBuffer.getDIBDC, , m_MouseDownWheel
         
         'Lastly, let's draw a circle around the current saturation + value point.
         
