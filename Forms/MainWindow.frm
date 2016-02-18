@@ -1769,15 +1769,16 @@ Private Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConst
         If g_MouseOverImageTabstrip Then
             
             'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-            Drawing.convertCoordsBetweenHwnds Me.hWnd, toolbar_ImageTabs.hWnd, x, y, newX, newY
+            Drawing.ConvertCoordsBetweenHwnds Me.hWnd, toolbar_ImageTabs.hWnd, x, y, newX, newY
             toolbar_ImageTabs.cMouseEvents_MouseWheelHorizontal Button, Shift, newX, newY, scrollAmount
         
         'Assume mouse is over the canvas
         Else
         
             'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-            Drawing.convertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
-            FormMain.mainCanvas(0).cMouseEvents_MouseWheelHorizontal Button, Shift, newX, newY, scrollAmount
+            'TODO 7.0: fix mousewheel events when the main form has focus!
+            Drawing.ConvertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
+            'FormMain.mainCanvas(0).cMouseEvents_MouseWheelHorizontal Button, Shift, newX, newY, scrollAmount
             
         End If
         
@@ -1797,15 +1798,16 @@ Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstan
         If g_MouseOverImageTabstrip Then
             
             'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-            Drawing.convertCoordsBetweenHwnds Me.hWnd, toolbar_ImageTabs.hWnd, x, y, newX, newY
+            Drawing.ConvertCoordsBetweenHwnds Me.hWnd, toolbar_ImageTabs.hWnd, x, y, newX, newY
             toolbar_ImageTabs.cMouseEvents_MouseWheelVertical Button, Shift, newX, newY, scrollAmount
         
         'Assume mouse is over the main canvas
         Else
             
             'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-            Drawing.convertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
-            FormMain.mainCanvas(0).cMouseEvents_MouseWheelVertical Button, Shift, newX, newY, scrollAmount
+            Drawing.ConvertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
+            'TODO 7.0: clean up this mess
+            'FormMain.mainCanvas(0).cMouseEvents_MouseWheelVertical Button, Shift, newX, newY, scrollAmount
             
         End If
         
@@ -1822,8 +1824,9 @@ Private Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, 
         Dim newX As Long, newY As Long
     
         'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-        Drawing.convertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
-        FormMain.mainCanvas(0).cMouseEvents_MouseWheelZoom Button, Shift, newX, newY, zoomAmount
+        Drawing.ConvertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
+        'TODO 7.0: fix this mess
+        'FormMain.mainCanvas(0).cMouseEvents_MouseWheelZoom Button, Shift, newX, newY, zoomAmount
     
     End If
 
@@ -1832,30 +1835,29 @@ End Sub
 'When the main form is resized, we must re-align the main canvas
 Private Sub Form_Resize()
     
-    refreshAllCanvases
+    RefreshAllCanvases
 
 End Sub
 
 'Resize all currently active canvases
-Public Sub refreshAllCanvases()
+Public Sub RefreshAllCanvases()
 
     'If the main form has been minimized, don't refresh anything
     If FormMain.WindowState = vbMinimized Then Exit Sub
 
     'Start by reorienting the canvas to fill the full available client area
     Dim mainRect As winRect
-    
     g_WindowManager.GetActualMainFormClientRect mainRect, False, False
     
     'API is used instead of .Move as it produces smoother movement
     MoveWindow mainCanvas(0).hWnd, mainRect.x1, mainRect.y1, mainRect.x2 - mainRect.x1, mainRect.y2 - mainRect.y1, 1
-    mainCanvas(0).alignCanvasPictureBox
-    mainCanvas(0).fixChromeLayout
+    'TODO 7.0: fix this mess
+    mainCanvas(0).AlignCanvasView
+    mainCanvas(0).FixChromeLayout
+    mainCanvas(0).UpdateAgainstCurrentTheme
     
     'Refresh any current windows
-    If g_OpenImageCount > 0 Then
-        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), mainCanvas(0)
-    End If
+    If g_OpenImageCount > 0 Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), mainCanvas(0)
     
 End Sub
 
@@ -2423,40 +2425,40 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
         
         'Actual size
         If .HotKeyName(acceleratorIndex) = "Actual_Size" Then
-            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
+            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
         End If
         
         'Various zoom values
         If .HotKeyName(acceleratorIndex) = "Zoom_161" Then
-            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 2
+            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 2
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_81" Then
-            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 4
+            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 4
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_41" Then
-            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 8
+            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 8
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_21" Then
-            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 10
+            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 10
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_12" Then
-            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 14
+            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 14
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_14" Then
-            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 16
+            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 16
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_18" Then
-            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 19
+            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 19
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_116" Then
-            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 21
+            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 21
         End If
         
         'Remove selection
@@ -2714,7 +2716,7 @@ Private Sub Form_Load()
     #End If
     
     'With all toolboxes loaded, we need to synchronize the main canvas layout against any that remain visible
-    refreshAllCanvases
+    RefreshAllCanvases
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Preparing input tracker..."
@@ -4369,28 +4371,28 @@ End Sub
 Private Sub MnuSpecificZoom_Click(Index As Integer)
 
     'Only attempt to change zoom if the primary zoom box is not currently disabled
-    If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then
+    If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then
 
         Select Case Index
         
             Case 0
-                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 2
+                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 2
             Case 1
-                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 4
+                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 4
             Case 2
-                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 8
+                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 8
             Case 3
-                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 10
+                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 10
             Case 4
-                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
+                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
             Case 5
-                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 14
+                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 14
             Case 6
-                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 16
+                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 16
             Case 7
-                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 19
+                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 19
             Case 8
-                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 21
+                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 21
                 
         End Select
 
@@ -4674,14 +4676,14 @@ End Sub
 
 'Zoom in/out rely on the g_Zoom object to calculate a new value
 Private Sub MnuZoomIn_Click()
-    If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex > 0 Then
-        FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomInIndex(FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex)
+    If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled And FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex > 0 Then
+        FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomInIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
     End If
 End Sub
 
 Private Sub MnuZoomOut_Click()
-    If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex <> g_Zoom.getZoomCount Then
-        FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomOutIndex(FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex)
+    If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled And FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex <> g_Zoom.getZoomCount Then
+        FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomOutIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
     End If
 End Sub
 

@@ -492,7 +492,8 @@ Public Sub LoadTheProgram()
     g_AllowDragAndDrop = True
     
     'Set the main canvas background color
-    FormMain.mainCanvas(0).BackColor = g_CanvasBackground
+    'TODO: figure out canvas background settings
+    'FormMain.mainCanvas(0).BackColor = g_CanvasBackground
     
     'Clear the main canvas coordinate and size displays
     FormMain.mainCanvas(0).DisplayCanvasCoordinates 0, 0, True

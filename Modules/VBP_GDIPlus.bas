@@ -2887,18 +2887,18 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
 End Sub
 
 'At start-up, this function is called to determine whether or not we have GDI+ available on this machine.
-Public Function isGDIPlusAvailable() As Boolean
+Public Function IsGDIPlusAvailable() As Boolean
 
     Dim gdiCheck As GdiplusStartupInput
     gdiCheck.GdiplusVersion = 1
     
     If (GdiplusStartup(g_GDIPlusToken, gdiCheck) <> [OK]) Then
-        isGDIPlusAvailable = False
+        IsGDIPlusAvailable = False
         g_GDIPlusAvailable = False
         g_GDIPlusFXAvailable = False
     Else
     
-        isGDIPlusAvailable = True
+        IsGDIPlusAvailable = True
         g_GDIPlusAvailable = True
         
         'Next, we're going to create a dummy graphics container.  This is useful for GDI+ functions that require world transformation data.

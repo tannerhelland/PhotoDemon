@@ -359,7 +359,7 @@ Private Function IsMouseOverButton(ByVal mouseX As Single, ByVal mouseY As Singl
     Dim i As Long
     For i = 0 To m_numOfButtons - 1
     
-        If Math_Functions.isPointInRect(mouseX, mouseY, m_Buttons(i).btBounds) Then
+        If Math_Functions.IsPointInRect(mouseX, mouseY, m_Buttons(i).btBounds) Then
             IsMouseOverButton = i
             Exit Function
         End If
@@ -463,7 +463,7 @@ End Sub
 Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB)
     
     'Load the requested resource DIB, as necessary
-    If Len(resName) <> 0 Then loadResourceToDIB resName, srcDIB
+    If Len(resName) <> 0 Then LoadResourceToDIB resName, srcDIB
     
     'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
     ' (We also check for these != 0 to verify that an image was successfully loaded.)
@@ -524,8 +524,6 @@ Private Sub UserControl_Initialize()
     'Request some additional input functionality (custom mouse and key events)
     ucSupport.RequestExtraFunctionality True, True
     ucSupport.SpecifyRequiredKeys VK_UP, VK_DOWN, VK_SPACE
-    
-    'Enable title caption support, so we don't need an attached label
     ucSupport.RequestCaptionSupport
     
     'Prep the color manager and load default colors
@@ -742,7 +740,7 @@ End Sub
 'Because the control may consist of a non-clickable region (the caption) and a clickable region (the buttonstrip),
 ' we can't blindly assign a hand cursor to the entire control.
 Private Sub UpdateCursor(ByVal x As Single, ByVal y As Single)
-    If Math_Functions.isPointInRect(x, y, m_ButtonStripRect) Then
+    If Math_Functions.IsPointInRect(x, y, m_ButtonStripRect) Then
         ucSupport.RequestCursor IDC_HAND
     Else
         ucSupport.RequestCursor IDC_DEFAULT

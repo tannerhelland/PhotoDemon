@@ -162,12 +162,12 @@ Public Property Get hWnd() As Long
 End Property
 
 'OffsetX/Y are used when the preview is in 1:1 mode, and the user is allowed to scroll around the underlying image
-Public Property Get OffsetX() As Long
-    If m_HScrollAllowed Then OffsetX = ValidateXOffset(m_HScrollValue + m_OffsetX) Else OffsetX = 0
+Public Property Get offsetX() As Long
+    If m_HScrollAllowed Then offsetX = ValidateXOffset(m_HScrollValue + m_OffsetX) Else offsetX = 0
 End Property
 
-Public Property Get OffsetY() As Long
-    If m_VScrollAllowed Then OffsetY = ValidateYOffset(m_VScrollValue + m_OffsetY) Else OffsetY = 0
+Public Property Get offsetY() As Long
+    If m_VScrollAllowed Then offsetY = ValidateYOffset(m_VScrollValue + m_OffsetY) Else offsetY = 0
 End Property
 
 'External functions may need to access the color selected by the preview control
@@ -466,8 +466,8 @@ Private Sub GetDIBXYFromMouseXY(ByVal mouseX As Single, ByVal mouseY As Single, 
     'We now have an original DIB width/height pair, destination DIB width/height pair, preview (x, y) offset - all that's left
     ' is a source (x, y) offset.
     Dim srcX As Single, srcY As Single
-    srcX = Me.OffsetX
-    srcY = Me.OffsetY
+    srcX = Me.offsetX
+    srcY = Me.offsetY
     
     'Convert the destination (x, y) pair to the [0, 1] range.
     Dim dstX As Single, dstY As Single
@@ -721,7 +721,7 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, halfBorder, halfBorder, (ucSupport.GetControlWidth - 1) - halfBorder, (ucSupport.GetControlHeight - 1) - halfBorder, ctlBorderColor, , borderWidth, False, LineJoinMiter
         
         'Paint the results to the screen!  (Note that we request an immediate redraw, rather than waiting for WM_PAINT to fire.)
-        If g_IsProgramRunning Then ucSupport.RequestRepaint True, True
+        If g_IsProgramRunning Then ucSupport.RequestRepaint True
         
     End If
 

@@ -251,11 +251,7 @@ Public Function SetTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
     'See if a translation is currently active.  If it is, we will auto-translate both the tooltip text and title automatically.
     Dim isTranslationActive As Boolean
     If Not (g_Language Is Nothing) Then
-        If g_Language.translationActive Then
-            isTranslationActive = True
-        Else
-            isTranslationActive = False
-        End If
+        isTranslationActive = g_Language.translationActive
     Else
         isTranslationActive = False
     End If
@@ -293,8 +289,8 @@ Public Function SetTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
                 
         'Create the tooltip window now
         Dim extendedWindowStyles As Long, windowStyles As Long
-        extendedWindowStyles = WS_EX_TOOLWINDOW
-        windowStyles = TTS_ALWAYSTIP Or TTS_NOPREFIX Or WS_POPUP 'Or WS_EX_TOPMOST Or WS_EX_TOOLWINDOW
+        extendedWindowStyles = 0&   'WS_EX_TOOLWINDOW
+        windowStyles = TTS_ALWAYSTIP Or TTS_NOPREFIX Or WS_POPUP
         m_ToolCollection(toolIndex).toolHwnd = CreateWindowEx(extendedWindowStyles, "tooltips_class32", vbNullString, windowStyles, 0, 0, 0, 0, m_ToolCollection(toolIndex).parentHwnd, 0, App.hInstance, ByVal 0&)
         
         'If the window couldn't be created, bail
@@ -312,52 +308,39 @@ Public Function SetTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
         
     'The tool does exist, so all we need to do is update the text and/or title parameters
     Else
-    
-        'Fill the current tool collection entry with the passed parameters
+        
+        'Start by comparing the requested text to the current tooltip text.  If they match, we can ignore this request.
+        Dim newTranslatedText As String, newTranslatedTitle As String
+        
+        If isTranslationActive Then
+            newTranslatedText = g_Language.TranslateMessage(textString)
+            newTranslatedTitle = g_Language.TranslateMessage(titleString)
+        Else
+            newTranslatedText = textString
+            newTranslatedTitle = titleString
+        End If
+        
+        If StrComp(newTranslatedText, m_ToolCollection(toolIndex).textStringTranslated, vbBinaryCompare) = 0 Then
+            If StrComp(newTranslatedTitle, m_ToolCollection(toolIndex).titleStringTranslated, vbBinaryCompare) = 0 Then
+                
+                'The newly request strings are identical.  Ignore this update request.
+                SetTooltip = True
+                Exit Function
+                
+            End If
+        End If
+            
+        'If we made it here, the requested tooltip text and/or title are new.  Fill the relevant tool collection entry
+        ' with the updated parameters.
         With m_ToolCollection(toolIndex)
             .textStringEn = textString
             .titleStringEn = titleString
-            
-            If isTranslationActive Then
-                .textStringTranslated = g_Language.TranslateMessage(.textStringEn)
-                .titleStringTranslated = g_Language.TranslateMessage(.titleStringEn)
-            Else
-                .textStringTranslated = .textStringEn
-                .titleStringTranslated = .titleStringEn
-            End If
-            
+            .textStringTranslated = newTranslatedText
+            .titleStringTranslated = newTranslatedTitle
         End With
     
     End If
     
-    'Tooltips are set using the TOOLINFO struct.  Construct one now.
-    ' Note that the compiled .exe can take advantage of some unique features (such as automatic parsing of links).
-    ' As such, I provide two code paths here: one for the IDE, and one for the compiled .exe.  These do not differ
-    ' at present, but they may in the future.
-    Dim currentToolInfo_Compiled As TOOLINFO_COMPILED, currentToolInfo_IDE As TOOLINFO_IDE
-    
-    If g_IsProgramCompiled Then
-    
-        With currentToolInfo_Compiled
-            .cbSize = LenB(currentToolInfo_Compiled)
-            .hWnd = m_ToolCollection(toolIndex).childHwnd
-            .uId = m_ToolCollection(toolIndex).childHwnd
-            .uFlags = TTF_SUBCLASS Or TTF_IDISHWND Or TTF_CENTERTIP Or TTF_TRANSPARENT
-            .lpszTextPointer = StrPtr(m_ToolCollection(toolIndex).textStringTranslated)
-        End With
-    
-    Else
-        
-        With currentToolInfo_IDE
-            .cbSize = LenB(currentToolInfo_IDE)
-            .hWnd = m_ToolCollection(toolIndex).childHwnd
-            .uId = m_ToolCollection(toolIndex).childHwnd
-            .uFlags = TTF_SUBCLASS Or TTF_IDISHWND Or TTF_CENTERTIP Or TTF_TRANSPARENT
-            .lpszTextPointer = StrPtr(m_ToolCollection(toolIndex).textStringTranslated)
-        End With
-        
-    End If
-        
     'If a title string or icon has been specified, create them now.  (Both are set by the same message.)
     ' IMPORTANT CAVEAT!  Title and icon are ignored if the tooltip itself is blank.  This behavior is set by Windows,
     ' and cannot be changed short of rendering tooltips manually.
@@ -369,9 +352,32 @@ Public Function SetTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
     ' (MSDN specifically states that a valid pointer *must* be passed; see http://msdn.microsoft.com/en-us/library/windows/desktop/bb760414%28v=vs.85%29.aspx)
     If m_ToolCollection(toolIndex).titleStringTranslated = vbNullString Then m_ToolCollection(toolIndex).titleStringTranslated = ""
     
-    'Apply the title and icon settings, if any
-    If Len(m_ToolCollection(toolIndex).titleStringTranslated) <> 0 Or (m_ToolCollection(toolIndex).toolIcon <> 0) Then
-        SendMessage m_ToolCollection(toolIndex).toolHwnd, TTM_SETTITLE, m_ToolCollection(toolIndex).toolIcon, ByVal StrPtr(m_ToolCollection(toolIndex).titleStringTranslated)
+    'Tooltips are set using the TOOLINFO struct.  Construct one now.
+    ' Note that the compiled .exe can take advantage of some unique features (such as automatic parsing of links).
+    ' As such, I provide two code paths here: one for the IDE, and one for the compiled .exe.  These do not differ
+    ' at present, but they may in the future.
+    Dim currentToolInfo_Compiled As TOOLINFO_COMPILED, currentToolInfo_IDE As TOOLINFO_IDE
+    
+    If g_IsProgramCompiled Then
+    
+        With currentToolInfo_Compiled
+            .cbSize = LenB(currentToolInfo_Compiled)
+            .hWnd = m_ToolCollection(toolIndex).parentHwnd
+            .uId = m_ToolCollection(toolIndex).childHwnd
+            .uFlags = TTF_SUBCLASS Or TTF_CENTERTIP Or TTF_TRANSPARENT Or TTF_IDISHWND
+            .lpszTextPointer = StrPtr(m_ToolCollection(toolIndex).textStringTranslated)
+        End With
+    
+    Else
+        
+        With currentToolInfo_IDE
+            .cbSize = LenB(currentToolInfo_IDE)
+            .hWnd = m_ToolCollection(toolIndex).childHwnd
+            .uId = m_ToolCollection(toolIndex).childHwnd
+            .uFlags = TTF_SUBCLASS Or TTF_CENTERTIP Or TTF_TRANSPARENT Or TTF_IDISHWND
+            .lpszTextPointer = StrPtr(m_ToolCollection(toolIndex).textStringTranslated)
+        End With
+        
     End If
     
     'We now have two choices: adding the tooltip text anew, or simply updating it.
@@ -386,7 +392,7 @@ Public Function SetTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
             toolMsgSuccess = CBool(SendMessage(m_ToolCollection(toolIndex).toolHwnd, TTM_ADDTOOL, 0&, currentToolInfo_IDE))
         End If
     
-    'The tooltip does exist; simply update it
+    'The tooltip already exists; simply update it
     Else
         
         If g_IsProgramCompiled Then
@@ -395,6 +401,11 @@ Public Function SetTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
             toolMsgSuccess = CBool(SendMessage(m_ToolCollection(toolIndex).toolHwnd, TTM_UPDATETIPTEXT, 0&, currentToolInfo_IDE))
         End If
         
+    End If
+    
+    'Now we can apply any additional title and icon settings
+    If Len(m_ToolCollection(toolIndex).titleStringTranslated) <> 0 Or (m_ToolCollection(toolIndex).toolIcon <> 0) Then
+        SendMessage m_ToolCollection(toolIndex).toolHwnd, TTM_SETTITLE, m_ToolCollection(toolIndex).toolIcon, ByVal StrPtr(m_ToolCollection(toolIndex).titleStringTranslated)
     End If
     
     'We don't have much use for this return value at present, but it doesn't hurt to return it

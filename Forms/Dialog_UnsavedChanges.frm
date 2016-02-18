@@ -190,7 +190,7 @@ Public Sub showDialog(ByRef ownerForm As Form)
     imageName = pdImages(imageBeingClosed).originalFileNameAndExtension
     If Len(Trim$(imageName)) = 0 Then imageName = g_Language.TranslateMessage("This image")
     lblWarning.Caption = g_Language.TranslateMessage("%1 has unsaved changes.  What would you like to do?", imageName)
-    lblWarning.requestRefresh
+    lblWarning.RequestRefresh
     
     'Make some measurements of the form size.  We need these if we choose to display the check box at the bottom of the form
     Dim vDifference As Long

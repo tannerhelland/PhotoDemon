@@ -545,7 +545,7 @@ Private Sub dynamicallyFitDropDown(ByVal listHwnd As Long)
         totalHeight = totalHeight + 2
         
         'If we haven't calcualted a largest width yet, do so now
-        If m_LargestWidth = 0 Then refreshFont
+        If m_LargestWidth = 0 Then RefreshFont
         
         'Figure out if the combo box width is larger than the minimum width required by the font preview; take the larger of the two
         Dim dropWidth As Long
@@ -690,7 +690,7 @@ Public Property Let FontSize(ByVal newSize As Single)
             curFont.CreateFontObject
             
             'Combo box sizes are set by the system, at creation time, so we don't have a choice but to recreate the box now
-            createComboBox
+            CreateComboBox
             
             'Note that the dropdown size is dirty, because the list's contents have changed
             m_DropDownSizeIsClean = False
@@ -725,7 +725,7 @@ End Sub
 
 'Flicker-free paint requests for the main control box (e.g. NOT the drop-down list portion)
 Private Sub cPainterBox_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
-    drawComboBox True
+    DrawComboBox True
 End Sub
 
 Private Sub tmrHookRelease_Timer()
@@ -783,7 +783,7 @@ Private Sub UserControl_Initialize()
     End If
     
     'Create an initial font object.  This uses the current system font, and it renders all hatch numbers consistently.
-    refreshFont
+    RefreshFont
     
 End Sub
 
@@ -819,7 +819,7 @@ Private Sub UserControl_Show()
         'If we have not yet created the combo box, do so now.
         If m_ComboBoxHwnd = 0 Then
             
-            createComboBox
+            CreateComboBox
             
         'The combo box has already been created, so we just need to show it.  Note that we explicitly set flags to NOT activate
         ' the window, as we don't want it stealing focus.
@@ -848,7 +848,7 @@ Private Sub getComboBoxRect(ByRef targetRect As winRect)
 End Sub
 
 'Create a brush for drawing the box background
-Private Sub createComboBoxBrush()
+Private Sub CreateComboBoxBrush()
 
     If m_ComboBoxBrush <> 0 Then DeleteObject m_ComboBoxBrush
     
@@ -888,16 +888,16 @@ End Function
 
 'As the wrapped system combo box may need to be recreated when certain properties are changed, this function is used to
 ' automate the process of destroying an existing window (if any) and recreating it anew.
-Private Function createComboBox() As Boolean
+Private Function CreateComboBox() As Boolean
     
     'Cache the current listindex
     m_BackupListIndex = ListIndex
     
     'If the combo box already exists, kill it
-    destroyComboBox
+    DestroyComboBox
     
     'Create a brush for drawing the box background
-    createComboBoxBrush
+    CreateComboBoxBrush
     
     'Figure out which flags to use, based on the control's properties
     Dim flagsWinStyle As Long, flagsWinStyleExtended As Long, flagsComboControl As Long
@@ -1010,7 +1010,7 @@ Private Function createComboBox() As Boolean
     End If
     
     'Assign the default font to the combo box
-    refreshFont True
+    RefreshFont True
     
     'If we backed up previous combo box entries at some point, we must restore those entries now.
     copyHatchesToComboBox
@@ -1022,12 +1022,12 @@ Private Function createComboBox() As Boolean
     syncUserControlSizeToComboSize
         
     'Return TRUE if successful
-    createComboBox = (m_ComboBoxHwnd <> 0)
+    CreateComboBox = (m_ComboBoxHwnd <> 0)
 
 End Function
 
 'If an edit box currently exists, this function will destroy it.
-Private Function destroyComboBox() As Boolean
+Private Function DestroyComboBox() As Boolean
 
     If m_ComboBoxHwnd <> 0 Then
         
@@ -1047,7 +1047,7 @@ Private Function destroyComboBox() As Boolean
         
     End If
     
-    destroyComboBox = True
+    DestroyComboBox = True
 
 End Function
 
@@ -1072,7 +1072,7 @@ Private Sub UserControl_Terminate()
     If m_ComboBoxBrush <> 0 Then DeleteObject m_ComboBoxBrush
         
     'Destroy the edit box, as necessary
-    destroyComboBox
+    DestroyComboBox
     
     'Release any extra subclasser(s)
     If Not (cSubclass Is Nothing) Then cSubclass.ssc_Terminate
@@ -1081,7 +1081,7 @@ End Sub
 
 'When the font used for the edit box changes in some way, it can be recreated (refreshed) using this function.  Note that font
 ' creation is expensive, so it's worthwhile to avoid this step as much as possible.
-Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
+Private Sub RefreshFont(Optional ByVal forceRefresh As Boolean = False)
     
     Dim fontRefreshRequired As Boolean
     fontRefreshRequired = curFont.HasFontBeenCreated
@@ -1147,10 +1147,10 @@ Public Sub UpdateAgainstCurrentTheme()
                 
         'Update the current font, as necessary.  We must do this prior to creating the combo box, as the font object's size determines
         ' the height of individual combo box entries.
-        refreshFont
+        RefreshFont
         
         'Recreate the combo box entirely
-        createComboBox
+        CreateComboBox
         
         'Force an immediate repaint
         cPainterBox.RequestRepaint
@@ -1188,7 +1188,7 @@ Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
 End Function
 
 'Render the combo box area (not the list!)
-Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
+Private Sub DrawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
 
     'Before painting, retrieve detailed information on the combo box
     Dim cbiCombo As COMBOBOXINFO
@@ -1362,7 +1362,7 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
 End Sub
 
 'Given a DRAWITEMSTRUCT object, draw the corresponding item.  This function returns TRUE if drawing was successful.
-Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
+Private Function DrawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
 
     Dim drawSuccess As Boolean
     drawSuccess = False
@@ -1472,7 +1472,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
     
     End If
     
-    drawComboBoxEntry = drawSuccess
+    DrawComboBoxEntry = drawSuccess
 
 End Function
 
@@ -1929,7 +1929,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 CopyMemory DIS, ByVal lParam, LenB(DIS)
                 
                 'Forward the DrawItemStruct to the dedicated draw sub
-                If drawComboBoxEntry(DIS) Then
+                If DrawComboBoxEntry(DIS) Then
                     bHandled = True
                     lReturn = 1
                 End If

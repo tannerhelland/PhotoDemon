@@ -32,7 +32,6 @@ Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'API needed for converting PNG data to icon or cursor format
-Private Declare Sub CreateStreamOnHGlobal Lib "ole32" (ByRef hGlobal As Any, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any)
 Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef mImage As Long) As Long
 Private Declare Function GdipCreateHICONFromBitmap Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef hbmReturn As Long) As Long
 Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal gdiBitmap As Long, ByRef hBmpReturn As Long, ByVal Background As Long) As GDIPlusStatus
@@ -812,27 +811,27 @@ End Sub
 
 'Given an image in the .exe's resource section (typically a PNG image), return an icon handle to it (hIcon).
 ' The calling function is responsible for deleting this object once they are done with it.
-Public Function createIconFromResource(ByVal resTitle As String) As Long
+Public Function CreateIconFromResource(ByVal resTitle As String) As Long
     
     'Start by extracting the PNG data into a bytestream
     Dim ImageData() As Byte
     ImageData() = LoadResData(resTitle, "CUSTOM")
     
-    Dim IStream As IUnknown
     Dim hBitmap As Long, hIcon As Long
-        
-    CreateStreamOnHGlobal ImageData(0), 0&, IStream
     
-    If Not IStream Is Nothing Then
+    Dim IStream As IUnknown
+    Set IStream = VB_Hacks.GetStreamFromVBArray(VarPtr(ImageData(0)), UBound(ImageData) - LBound(ImageData) + 1)
+    
+    If Not (IStream Is Nothing) Then
         
         'Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine
         If GdipLoadImageFromStream(IStream, hBitmap) = 0 Then
         
             'hBitmap now contains the PNG file as an hBitmap (obviously).  Now we need to convert it to icon format.
             If GdipCreateHICONFromBitmap(hBitmap, hIcon) = 0 Then
-                createIconFromResource = hIcon
+                CreateIconFromResource = hIcon
             Else
-                createIconFromResource = 0
+                CreateIconFromResource = 0
             End If
             
             GdipDisposeImage hBitmap
@@ -855,7 +854,7 @@ Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVa
     Dim resDIB As pdDIB
     Set resDIB = New pdDIB
                 
-    If loadResourceToDIB(resTitle, resDIB) Then
+    If LoadResourceToDIB(resTitle, resDIB) Then
     
         'If the user is running at non-96 DPI, we now need to perform DPI correction on the cursor.
         ' NOTE: this line will need to be revisited if high-DPI cursors are added to the resource file.  The reason
@@ -944,7 +943,7 @@ End Sub
 'Use any 32bpp PNG resource as a cursor (yes, it's amazing!).  When setting the mouse pointer of VB objects, please use
 ' setPNGCursorToObject, below.
 Public Sub setPNGCursorToHwnd(ByVal dstHwnd As Long, ByVal pngTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0)
-    SetClassLong dstHwnd, GCL_HCURSOR, requestCustomCursor(pngTitle, curHotspotX, curHotspotY)
+    SetClassLong dstHwnd, GCL_HCURSOR, RequestCustomCursor(pngTitle, curHotspotX, curHotspotY)
 End Sub
 
 'Use any 32bpp PNG resource as a cursor (yes, it's amazing!).  Use this function preferentially over the previous one, if
@@ -955,7 +954,7 @@ Public Sub setPNGCursorToObject(ByRef srcObject As Object, ByVal pngTitle As Str
     'Force VB to use a custom cursor
     srcObject.MousePointer = vbCustom
     
-    SetClassLong srcObject.hWnd, GCL_HCURSOR, requestCustomCursor(pngTitle, curHotspotX, curHotspotY)
+    SetClassLong srcObject.hWnd, GCL_HCURSOR, RequestCustomCursor(pngTitle, curHotspotX, curHotspotY)
     
 End Sub
 
@@ -1012,7 +1011,7 @@ End Sub
 
 'If a custom PNG cursor has not been loaded, this function will load the PNG, convert it to cursor format, then store
 ' the cursor resource for future reference (so the image doesn't have to be loaded again).
-Public Function requestCustomCursor(ByVal CursorName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0) As Long
+Public Function RequestCustomCursor(ByVal CursorName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0) As Long
 
     Dim i As Long
     Dim cursorLocation As Long
@@ -1038,7 +1037,7 @@ Public Function requestCustomCursor(ByVal CursorName As String, Optional ByVal c
     
     'If the cursor was not found, load it and add it to the list
     If cursorAlreadyLoaded Then
-        requestCustomCursor = customCursorHandles(cursorLocation)
+        RequestCustomCursor = customCursorHandles(cursorLocation)
     Else
         Dim tmpHandle As Long
         tmpHandle = createCursorFromResource(CursorName, cursorHotspotX, cursorHotspotY)
@@ -1051,21 +1050,27 @@ Public Function requestCustomCursor(ByVal CursorName As String, Optional ByVal c
         
         numOfCustomCursors = numOfCustomCursors + 1
         
-        requestCustomCursor = tmpHandle
+        RequestCustomCursor = tmpHandle
     End If
 
 End Function
 
 'Given an image in the .exe's resource section (typically a PNG image), load it to a pdDIB object.
 ' The calling function is responsible for deleting the DIB once they are done with it.
-Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDIB) As Boolean
-    
+Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDIB) As Boolean
+        
+    'Some functions may call this before GDI+ has loaded; exit if that happens
+    If Not g_GDIPlusAvailable Then
+        LoadResourceToDIB = False
+        Exit Function
+    End If
+        
     'Start by extracting the resource data (typically a PNG) into a bytestream
     Dim ImageData() As Byte
     ImageData() = LoadResData(resTitle, "CUSTOM")
     
     Dim IStream As IUnknown
-    CreateStreamOnHGlobal ImageData(0), 0&, IStream
+    Set IStream = VB_Hacks.GetStreamFromVBArray(VarPtr(ImageData(0)), UBound(ImageData) - LBound(ImageData) + 1)
     
     If Not (IStream Is Nothing) Then
         
@@ -1082,11 +1087,7 @@ Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
             GdipGetImagePixelFormat gdipBitmap, gdiPixelFormat
             
             'Create the DIB anew as necessary
-            If (dstDIB Is Nothing) Then
-                Set dstDIB = New pdDIB
-            Else
-                dstDIB.eraseDIB
-            End If
+            If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
             
             'If the image has an alpha channel, create a 32bpp DIB to receive it
             If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
@@ -1115,10 +1116,10 @@ Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
                 DeleteObject hBitmap
                 Drawing.FreeMemoryDC gdiDC
                 
-                loadResourceToDIB = True
+                LoadResourceToDIB = True
                 
             Else
-                loadResourceToDIB = False
+                LoadResourceToDIB = False
                 Debug.Print "GDI+ failed to create an HBITMAP for requested resource " & resTitle & " stream."
             End If
             
@@ -1126,15 +1127,15 @@ Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
             GdipDisposeImage gdipBitmap
                 
         Else
-            loadResourceToDIB = False
-            Debug.Print "GDI+ failed to load requested resource " & resTitle & " stream."
+            LoadResourceToDIB = False
+            Debug.Print "GDI+ failed to load requested resource " & resTitle & " from stream."
         End If
     
         'Free the memory stream
         Set IStream = Nothing
         
     Else
-        loadResourceToDIB = False
+        LoadResourceToDIB = False
         Debug.Print "Could not load requested resource " & resTitle & " from file."
     End If
     

@@ -1096,7 +1096,7 @@ Public Sub ToggleImageTabstripAlignment(ByVal newAlignment As AlignConstants, Op
         toolbar_ImageTabs.forceRedraw
     
         'Refresh the current image viewport (which may be positioned differently due to the tabstrip moving)
-        FormMain.refreshAllCanvases
+        FormMain.RefreshAllCanvases
         
     End If
     
@@ -1122,7 +1122,7 @@ Public Sub ToggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVa
     If Not suppressInterfaceSync Then
     
         'Refresh the current image viewport (which may be positioned differently due to the tabstrip moving)
-        FormMain.refreshAllCanvases
+        FormMain.RefreshAllCanvases
     
         'Synchronize the interface to match; note that this will handle showing/hiding the tabstrip based on the number of
         ' currently open images.
@@ -1169,7 +1169,7 @@ Public Sub ToggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
     End Select
     
     'Redraw the primary image viewport, as the available client area may have changed.
-    If g_NumOfImagesLoaded > 0 Then FormMain.refreshAllCanvases
+    If g_NumOfImagesLoaded > 0 Then FormMain.RefreshAllCanvases
     
 End Sub
 
@@ -1382,7 +1382,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     
     'FORM STEP 4: force a refresh to ensure our changes are immediately visible
     If dstForm.Name <> "FormMain" Then
-        'dstForm.Refresh
+        dstForm.Refresh
     Else
         'The main from is a bit different - if it has been translated or changed, it needs menu icons reassigned, because they are
         ' inadvertently dropped when the menu captions change.

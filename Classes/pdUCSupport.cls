@@ -61,6 +61,8 @@ Public Event DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shi
 Public Event KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
 Public Event KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
 
+Public Event AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
 'API technique for drawing a focus rectangle; used only for designer mode (see the GetBackBufferDC method for details)
 Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, ByRef lpRect As RECT) As Long
 
@@ -220,14 +222,14 @@ End Sub
 'After RegisterControl has been called (above), the caller can request additional support via this function.
 ' (Because not all user controls require things like captions or custom input events, this functionality is restricted to
 '  an "as-required" basis.)
-Public Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean = False, Optional ByVal customKeyEvents As Boolean = False)
+Public Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean = False, Optional ByVal customKeyEvents As Boolean = False, Optional ByVal appCommandEvents As Boolean = False)
     
     If m_hWnd <> 0 Then
     
         'Initialize special subclassers, as requested
         If customMouseEvents Then
             Set m_MouseEvents = New pdInputMouse
-            If g_IsProgramRunning Then m_MouseEvents.addInputTracker m_hWnd, True, True, False, True, True
+            If g_IsProgramRunning Then m_MouseEvents.addInputTracker m_hWnd, True, True, appCommandEvents, True, True
         End If
         
         If customKeyEvents Then
@@ -263,7 +265,7 @@ Public Sub SpecifyRequiredKeys(ParamArray listOfKeys() As Variant)
         
     Else
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  You can't request keypresses without first calling pdUCSupport.RequestExtraFunctionality()!"
+            If Not (pdDebug Is Nothing) Then pdDebug.LogAction "WARNING!  You can't request keypresses without first calling pdUCSupport.RequestExtraFunctionality()!"
         #End If
     End If
     
@@ -550,7 +552,7 @@ End Function
 Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
     
     'At compile-time, this event will likely be fired; because the back buffer doesn't exist, ignore the request
-    If m_BackBuffer Is Nothing Then Exit Sub
+    If (m_BackBuffer Is Nothing) Then Exit Sub
     
     'We only want to recreate the buffer when absolutely necessary, so start with a size check.
     Dim bufferWasResized As Boolean
@@ -611,8 +613,8 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
             With tmpRect
                 .Left = 0
                 .Top = 0
-                .Right = m_BackBuffer.getDIBWidth
-                .Bottom = m_BackBuffer.getDIBHeight
+                .Right = m_BackBuffer.getDIBWidth - 1
+                .Bottom = m_BackBuffer.getDIBHeight - 1
             End With
             
             DrawFocusRect m_BackBuffer.getDIBDC, tmpRect
@@ -645,6 +647,10 @@ End Sub
 
 Private Sub m_KeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
     RaiseEvent KeyUpCustom(Shift, vkCode, markEventHandled)
+End Sub
+
+Private Sub m_MouseEvents_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    RaiseEvent AppCommand(cmdID, Shift, x, y)
 End Sub
 
 Private Sub m_MouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -850,6 +856,10 @@ Public Sub RequestCursor_PNG(ByVal pngResourceName As String, Optional ByVal cur
     m_MouseEvents.setPNGCursor pngResourceName, cursorHotspotX, cursorHotspotY
 End Sub
 
+Public Sub RequestMousePosition(ByVal mouseX As Double, ByVal mouseY As Double)
+    m_MouseEvents.moveCursorToNewPosition mouseX, mouseY
+End Sub
+
 'Want a new control size?  No problem.  Request a resize here.  Missing width/height parameters will be set to match the
 ' current control width/height.
 Public Sub RequestNewSize(Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0, Optional ByVal alsoNotifyMeViaEvent As Boolean = False)
@@ -896,11 +906,11 @@ End Sub
 ' for the window to paint itself naturally.  If this is unacceptable, you can set raiseImmediateDrawEvent to TRUE, which
 ' forces the paint event to fire immediately.  (Because window invalidation does not occur, clipping may not be handled
 ' precisely, but that should be okay because the caller knows why a redraw is needed.)
-Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = False, Optional ByVal noDedicatedDC As Boolean = False)
+Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
     
     'When running, rely on the painter to paint the control for us
     If g_IsProgramRunning Then
-        m_Painter.RequestRepaint raiseImmediateDrawEvent, noDedicatedDC
+        m_Painter.RequestRepaint raiseImmediateDrawEvent
     Else
         'Inside the IDE, subclassing is disabled, so we must paint the control manually
         If Not (m_BackBuffer Is Nothing) Then
@@ -994,10 +1004,10 @@ Private Sub Class_Terminate()
     If Not (m_MouseEvents Is Nothing) Then Set m_MouseEvents = Nothing
     
     'Release default functionality next, also in reverse-order
-    Set m_MoveSize = Nothing
-    Set m_FocusDetector = Nothing
-    Set m_Painter = Nothing
-    Set m_ToolTipManager = Nothing
+    If Not (m_MoveSize Is Nothing) Then Set m_MoveSize = Nothing
+    If Not (m_FocusDetector Is Nothing) Then Set m_FocusDetector = Nothing
+    If Not (m_Painter Is Nothing) Then Set m_Painter = Nothing
+    If Not (m_ToolTipManager Is Nothing) Then Set m_ToolTipManager = Nothing
     
     'As a final step, release this class's internal subclasser
     m_Subclass.ssc_Terminate

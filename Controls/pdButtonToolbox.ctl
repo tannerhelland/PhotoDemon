@@ -550,7 +550,7 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
     End If
     
     'Paint the final result to the screen, as relevant
-    ucSupport.RequestRepaint raiseImmediateDrawEvent, raiseImmediateDrawEvent
+    ucSupport.RequestRepaint raiseImmediateDrawEvent
     
 End Sub
 

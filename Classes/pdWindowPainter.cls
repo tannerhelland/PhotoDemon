@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Flicker-Free Window Painter class
 'Copyright 2014-2016 by Tanner Helland
 'Created: 20/October/14  (but built from many parts existing earlier)
-'Last updated: 05/September/15
-'Last update: add option for "raise immediate draw event" in .requestRepaint()
+'Last updated: 17/February/16
+'Last update: rework immediate paint behavior of the .RequestRepaint() function
 '
 'Now that PD provides so many of its own user-controls, we have to do a lot of manual window painting.  Supporting the
 ' full spectrum of Windows versions (particularly XP), theme settings (including accessibility themes), window settings
@@ -110,7 +110,7 @@ End Sub
 ' Windows will acquire those updates with relatively little delay.  If, however, a window has no persistent DC, we need to forcibly
 ' generate an immediate UpdateWindow event.  Since we don't magically know the DC state of the caller, it's up to them to notify
 ' us of what they want.
-Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = False, Optional ByVal noDedicatedDC As Boolean = False)
+Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
     
     If (m_hWnd <> 0) Then
         
@@ -121,13 +121,9 @@ Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
         'If desired, the caller can ask us to immediately raise a paint event.  This is helpful when needing an immediate redraw,
         ' without waiting for WM_PAINT to fire, but you obviously need to be aware of the performance implications involved.
         If raiseImmediateDrawEvent Then
-            If noDedicatedDC Then
-                InvalidateRect m_hWnd, tmpRect, 0&
-                UpdateWindow m_hWnd
-            Else
-                RaiseEvent PaintWindow(tmpRect.Left, tmpRect.Top, tmpRect.Right - tmpRect.Left, tmpRect.Bottom - tmpRect.Top)
-            End If
-        
+            InvalidateRect m_hWnd, tmpRect, 0&
+            UpdateWindow m_hWnd
+            
         'Invalidate the client rect, which will automatically trigger the addition of a WM_PAINT message to the window queue.
         ' This way, the window can redraw at the leisure of the system.
         Else

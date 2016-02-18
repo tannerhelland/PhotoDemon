@@ -427,7 +427,6 @@ End Sub
 ' step must also be called if/when PD's visual theme settings change.
 Private Sub UpdateColorList()
     m_Colors.LoadThemeColor PDNI_Background, "Background", IDE_WHITE
-    Debug.Print m_Colors.RetrieveColor(PDNI_Background)
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,

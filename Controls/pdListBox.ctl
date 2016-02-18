@@ -152,8 +152,6 @@ Private Sub UserControl_Initialize()
     
     'Request some additional input functionality (custom mouse and key events)
     ucSupport.RequestExtraFunctionality True, True
-    
-    'Enable caption support, so we don't need an attached label
     ucSupport.RequestCaptionSupport
         
     'In design mode, initialize a base theming class, so our paint functions don't fail
