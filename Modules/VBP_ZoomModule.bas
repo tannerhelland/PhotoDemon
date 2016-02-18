@@ -69,11 +69,11 @@ Private m_TargetDC As Long
 Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional curPOI As Long = -1)
 
     'If no images have been loaded, clear the canvas and exit
-    If g_OpenImageCount = 0 Then
-        FormMain.mainCanvas(0).clearCanvas
+    If g_OpenImageCount <= 0 Then
+        FormMain.mainCanvas(0).ClearCanvas
         Exit Sub
     Else
-        FormMain.mainCanvas(0).setScrollVisibility PD_BOTH, True
+        FormMain.mainCanvas(0).SetScrollVisibility PD_BOTH, True
     End If
 
     'Make sure the canvas is valid
@@ -100,15 +100,15 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
         Case NAV_MOVE
         
             'If the user has requested visible layer borders, draw them now
-            If CBool(toolpanel_MoveSize.chkLayerBorder) Then Drawing.drawLayerBoundaries dstCanvas, srcImage, srcImage.getActiveLayer
+            If CBool(toolpanel_MoveSize.chkLayerBorder) Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.getActiveLayer
             
             'If the user has requested visible transformation nodes, draw them now.
             ' (TODO: cache these values in either public variables, or inside this module via some kind of setViewportProperties
             '        function - either way, that will let us access drawing settings much more quickly!)
-            If CBool(toolpanel_MoveSize.chkLayerNodes) Then Drawing.drawLayerCornerNodes dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
+            If CBool(toolpanel_MoveSize.chkLayerNodes) Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
             
             'Same as above, but for the current rotation node
-            If CBool(toolpanel_MoveSize.chkRotateNode) Then Drawing.drawLayerRotateNode dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
+            If CBool(toolpanel_MoveSize.chkRotateNode) Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
             
         'Selections are always rendered onto the canvas.  If a selection is active AND a selection tool is active, we can also
         ' draw transform nodes around the selection area.
@@ -128,9 +128,9 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
         Case VECTOR_TEXT, VECTOR_FANCYTEXT
             
             If pdImages(g_CurrentImage).getActiveLayer.isLayerText Then
-                Drawing.drawLayerBoundaries dstCanvas, srcImage, srcImage.getActiveLayer
-                Drawing.drawLayerCornerNodes dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
-                Drawing.drawLayerRotateNode dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
+                Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.getActiveLayer
+                Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
+                Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
             End If
             
     End Select
@@ -138,7 +138,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
     'FYI, in the future, any additional UI compositing can be handled here.
     
     'With all rendering complete, copy the form's image into the .Picture (e.g. render it on-screen) and refresh
-    dstCanvas.RequestBufferSync
+    dstCanvas.RequestViewportRedraw True
 
 End Sub
 
@@ -157,7 +157,7 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
 
     'If no images have been loaded, clear the canvas and exit
     If g_OpenImageCount = 0 Then
-        FormMain.mainCanvas(0).clearCanvas
+        FormMain.mainCanvas(0).ClearCanvas
         Exit Sub
     End If
 
@@ -232,8 +232,8 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
     Dim xScroll_Canvas As Single, xScroll_Image As Single, yScroll_Canvas As Single, yScroll_Image As Single
     
     'Scroll bar values always represent pixel measurements *in the image coordinate space*.
-    xScroll_Image = dstCanvas.getScrollValue(PD_HORIZONTAL)
-    yScroll_Image = dstCanvas.getScrollValue(PD_VERTICAL)
+    xScroll_Image = dstCanvas.GetScrollValue(PD_HORIZONTAL)
+    yScroll_Image = dstCanvas.GetScrollValue(PD_VERTICAL)
     
     'Next, let's calculate these *in the canvas coordinate space* (e.g. with zoom applied)
     If m_ZoomRatio = 0 Then m_ZoomRatio = g_Zoom.getZoomValue(srcImage.currentZoomValue)
@@ -275,7 +275,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
         
         'Start by mapping the (Top, Left) of this rect back onto the image.
         Dim srcLeft As Double, srcTop As Double
-        Drawing.convertCanvasCoordsToImageCoords dstCanvas, srcImage, viewportRect.Left, viewportRect.Top, srcLeft, srcTop, False
+        Drawing.ConvertCanvasCoordsToImageCoords dstCanvas, srcImage, viewportRect.Left, viewportRect.Top, srcLeft, srcTop, False
         
         'Width and height are easy - just the width/height of the viewport, divided by the current zoom!
         Dim srcWidth As Double, srcHeight As Double
@@ -467,7 +467,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     
     'Third, exit if no images have been loaded.  The canvas will take care of rendering a blank placeholder viewport.
     If g_OpenImageCount = 0 Then
-        FormMain.mainCanvas(0).clearCanvas
+        FormMain.mainCanvas(0).ClearCanvas
         Exit Sub
     End If
     
@@ -538,8 +538,8 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     With CanvasRect_ActualPixels
         .Left = 0
         .Top = 0
-        .Width = dstCanvas.getCanvasWidth()
-        .Height = dstCanvas.getCanvasHeight()
+        .Width = dstCanvas.GetCanvasWidth()
+        .Height = dstCanvas.GetCanvasHeight()
     End With
     
     'While here, we want to calculate a second rect for the canvas: its size, in image coordinates.
@@ -592,25 +592,25 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     
     'We now have scroll bar max/min values.  Forward them to the destination pdCanvas object.
     With dstCanvas
-        .setRedrawSuspension True
-        .setScrollMin PD_HORIZONTAL, hScrollMin
-        .setScrollMax PD_HORIZONTAL, hScrollMax
-        .setScrollMin PD_VERTICAL, vScrollMin
-        .setScrollMax PD_VERTICAL, vScrollMax
-        .setRedrawSuspension False
+        .SetRedrawSuspension True
+        .SetScrollMin PD_HORIZONTAL, hScrollMin
+        .SetScrollMax PD_HORIZONTAL, hScrollMax
+        .SetScrollMin PD_VERTICAL, vScrollMin
+        .SetScrollMax PD_VERTICAL, vScrollMax
+        .SetRedrawSuspension False
     End With
     
     'As a convenience to the user, we also make each scroll bar's LargeChange parameter proportional to the scroll bar's maximum value.
     If (hScrollMax > 15) And (g_Zoom.getZoomValue(srcImage.currentZoomValue) <= 1) Then
-        dstCanvas.setScrollLargeChange PD_HORIZONTAL, hScrollMax \ 16
+        dstCanvas.SetScrollLargeChange PD_HORIZONTAL, hScrollMax \ 16
     Else
-        dstCanvas.setScrollLargeChange PD_HORIZONTAL, 1
+        dstCanvas.SetScrollLargeChange PD_HORIZONTAL, 1
     End If
     
     If (vScrollMax > 15) And (g_Zoom.getZoomValue(srcImage.currentZoomValue) <= 1) Then
-        dstCanvas.setScrollLargeChange PD_VERTICAL, vScrollMax \ 16
+        dstCanvas.SetScrollLargeChange PD_VERTICAL, vScrollMax \ 16
     Else
-        dstCanvas.setScrollLargeChange PD_VERTICAL, 1
+        dstCanvas.SetScrollLargeChange PD_VERTICAL, 1
     End If
     
     'Scroll bars are now prepped and ready!
@@ -647,17 +647,17 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
         
         'Regardless of what type of scroll bar setting we're applying, we need to disable automatic viewport redraws.
         ' (Otherwise, changing the scroll bar value will trigger a viewport pipeline request, wreaking havoc)
-        dstCanvas.setRedrawSuspension True
+        dstCanvas.SetRedrawSuspension True
         
         'The first extra setting defines the type of scroll bar handling request
         Select Case specialRequestID
         
             Case VSR_ResetToZero
-                dstCanvas.setScrollValue PD_BOTH, 0
+                dstCanvas.SetScrollValue PD_BOTH, 0
                 
             Case VSR_ResetToCustom
-                dstCanvas.setScrollValue PD_HORIZONTAL, CLng(ExtraSettings(1))
-                dstCanvas.setScrollValue PD_VERTICAL, CLng(ExtraSettings(2))
+                dstCanvas.SetScrollValue PD_HORIZONTAL, CLng(ExtraSettings(1))
+                dstCanvas.SetScrollValue PD_VERTICAL, CLng(ExtraSettings(2))
             
             'If the user has a point they want us to preserve, they will have passed two sets of coordinates:
             ' 1) The literal (x, y) of the mouse on the current canvas (e.g. the coordinates returned by a mouse event)
@@ -687,16 +687,16 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
                 'With those values successfully set, we can now translate the target image coords into canvas coords, for the case of
                 ' h/v/scroll = 0.
                 Dim newXCanvas As Double, newYCanvas As Double
-                Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, targetXImage, targetYImage, newXCanvas, newYCanvas, False
+                Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, targetXImage, targetYImage, newXCanvas, newYCanvas, False
                 
                 'Use the difference between newCanvasX and oldCanvasX (while accounting for zoom) to determine new scroll bar values.
-                dstCanvas.setScrollValue PD_HORIZONTAL, (newXCanvas - oldXCanvas) / g_Zoom.getZoomValue(srcImage.currentZoomValue)
-                dstCanvas.setScrollValue PD_VERTICAL, (newYCanvas - oldYCanvas) / g_Zoom.getZoomValue(srcImage.currentZoomValue)
+                dstCanvas.SetScrollValue PD_HORIZONTAL, (newXCanvas - oldXCanvas) / g_Zoom.getZoomValue(srcImage.currentZoomValue)
+                dstCanvas.SetScrollValue PD_VERTICAL, (newYCanvas - oldYCanvas) / g_Zoom.getZoomValue(srcImage.currentZoomValue)
                 
         End Select
         
         'Restore scroll-bar-originating viewport redraw requests
-        dstCanvas.setRedrawSuspension False
+        dstCanvas.SetRedrawSuspension False
         
     End If
     
@@ -716,7 +716,7 @@ ViewportPipeline_Stage1_Error:
         Case 480
             PDMsgBox "There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.", vbExclamation + vbOKOnly, "Out of memory"
             SetProgBarVal 0
-            releaseProgressBar
+            ReleaseProgressBar
             Message "Operation halted."
             
         'Anything else.  (Never encountered; failsafe only.)

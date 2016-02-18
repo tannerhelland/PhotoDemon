@@ -33,7 +33,6 @@ Begin VB.Form FormPreferences
       Width           =   11505
       _ExtentX        =   20294
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdButtonStripVertical btsvCategory 
       Height          =   6675
@@ -1875,7 +1874,7 @@ Private Sub cmdBarMini_OKClick()
             g_UserPreferences.SetPref_Long "Transparency", "Alpha Check Size", cboAlphaCheckSize.ListIndex
             
             'Recreate the cached pattern for the alpha background
-            Drawing.createAlphaCheckerboardDIB g_CheckerboardPattern
+            Drawing.CreateAlphaCheckerboardDIB g_CheckerboardPattern
             
         'END alpha checkerboard size
     
@@ -1923,8 +1922,7 @@ Private Sub cmdBarMini_OKClick()
     'All user preferences have now been written out to file
     
     'Because some preferences affect the program's interface, redraw the active image.
-    FormMain.refreshAllCanvases
-    FormMain.mainCanvas(0).BackColor = g_CanvasBackground
+    FormMain.RefreshAllCanvases
         
     toolbar_ImageTabs.forceRedraw
     

@@ -26,6 +26,13 @@ Private Declare Sub SafeArrayLock Lib "oleaut32" (ByVal ptrToSA As Long)
 Private Declare Sub SafeArrayUnlock Lib "oleaut32" (ByVal ptrToSA As Long)
 Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
 Private Declare Function GetMem4 Lib "msvbvm60" (ByVal Addr As Long, ByRef dstValue As Long) As Long
+Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpvDestPtr As Long, ByVal lpvSourcePtr As Long, ByVal cbCopy As Long)
+Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any) As Long
+Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
+Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Const GMEM_FIXED As Long = &H0&
+Private Const GMEM_MOVEABLE As Long = &H2&
 
 'A system info class is used to retrieve ThunderMain's hWnd, if required
 Private m_SysInfo As pdSystemInfo
@@ -134,3 +141,55 @@ Public Function InControlArray(Ctl As Object) As Boolean
     InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
 End Function
 
+'Given a VB array, return an IStream containing the array's data.  We use this frequently in PD to move arrays into
+' streams that libraries like GDI+ can work with.  You can also pass a null pointer to generate an empty stream.
+' (Note that the returned stream is self-cleaning, so you do not have to worry about manually releasing it.)
+Public Function GetStreamFromVBArray(ByVal ptrToFirstArrayElement As Long, ByVal streamLength As Long, Optional ByVal createStreamForNullPointer As Boolean = False) As IUnknown
+
+    On Error GoTo StreamDied
+     
+    'Null pointers return an empty stream
+    If ptrToFirstArrayElement = 0 Then
+        If createStreamForNullPointer Then CreateStreamOnHGlobal 0&, 1&, GetStreamFromVBArray
+    Else
+        
+        'Make sure the length is valid
+        If streamLength <> 0 Then
+        
+            Dim hGlobalHandle As Long
+            hGlobalHandle = GlobalAlloc(GMEM_MOVEABLE, streamLength)
+            If hGlobalHandle <> 0 Then
+            
+                Dim ptrGlobal As Long
+                ptrGlobal = GlobalLock(hGlobalHandle)
+                If ptrGlobal <> 0 Then
+                    CopyMemoryStrict ptrGlobal, ptrToFirstArrayElement, streamLength
+                    GlobalUnlock ptrGlobal
+                    CreateStreamOnHGlobal hGlobalHandle, 1&, GetStreamFromVBArray
+                Else
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "WARNING!  GetStreamFromVBArray() failed to retrieve a pointer to its hGlobal data!"
+                    #End If
+                End If
+            
+            Else
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING!  GetStreamFromVBArray() failed to create a valid hGlobal!"
+                #End If
+            End If
+            
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  GetStreamFromVBArray() requires a valid stream length!"
+            #End If
+        End If
+        
+    End If
+    
+    Exit Function
+    
+StreamDied:
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  GetStreamFromVBArray() failed for unknown reasons.  Please investigate!"
+    #End If
+End Function

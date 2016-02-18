@@ -24,6 +24,7 @@
 			<BackgroundCanvas>#a0a0a0</BackgroundCanvas>
 			<BackgroundCommandBar>#dcdce1</BackgroundCommandBar>
 			<Black>#000000</Black>
+			<CanvasColor>#a0a0a0</CanvasColor>
 			<ErrorRed>#dc2824</ErrorRed>
 			<GrayDefault>#929292</GrayDefault>
 			<GrayDisabled>#b1bac2</GrayDisabled>
@@ -119,6 +120,10 @@
 				<Caption-active>TextInvert</Caption-active>
 				<Caption-hover>TextDefault</Caption-hover>
 			</PDButton>
+			
+			<PDCanvas>
+				<Background>CanvasColor</Background>
+			</PDCanvas>
 			
 			<PDCheckBox>
 				<Background>BackgroundDefault</Background>

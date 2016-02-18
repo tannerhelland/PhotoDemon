@@ -780,7 +780,7 @@ Public Property Let FontSize(ByVal newSize As Single)
         
         'Combo box sizes are set by the system, at creation time, so we don't have a choice but to recreate the box now
         If (m_ComboBoxHwnd <> 0) And g_IsProgramRunning Then
-            createComboBox
+            CreateComboBox
             m_DropDownSizeIsClean = False
         End If
                 
@@ -911,7 +911,7 @@ Private Sub UserControl_Show()
         'If we have not yet created the combo box, do so now.
         If m_ComboBoxHwnd = 0 Then
             
-            createComboBox
+            CreateComboBox
             
         'The combo box has already been created, so we just need to show it.  Note that we explicitly set flags to NOT activate
         ' the window, as we don't want it stealing focus.
@@ -958,40 +958,40 @@ Private Sub CreateComboBoxBrush()
 End Sub
 
 'After curFont has been created, this function can be used to return the "ideal" height of a string rendered via the current font.
-Private Function GetIdealStringHeight() As Long
+Private Function getIdealStringHeight() As Long
     
     If g_IsProgramRunning Then
-        GetIdealStringHeight = Font_Management.GetDefaultStringHeight(Me.FontSize)
+        getIdealStringHeight = Font_Management.GetDefaultStringHeight(Me.FontSize)
         
     'Return a dummy value in the IDE
     Else
-        GetIdealStringHeight = 20
+        getIdealStringHeight = 20
     End If
     
 End Function
 
 'Same idea as the above function, but for width
-Private Function GetIdealStringWidth(ByVal srcString As String) As Long
+Private Function getIdealStringWidth(ByVal srcString As String) As Long
     
     If g_IsProgramRunning Then
-        GetIdealStringWidth = Font_Management.GetDefaultStringWidth(srcString, Me.FontSize)
+        getIdealStringWidth = Font_Management.GetDefaultStringWidth(srcString, Me.FontSize)
         
     'Return a dummy value in the IDE
     Else
-        GetIdealStringWidth = 100
+        getIdealStringWidth = 100
     End If
     
 End Function
 
 'As the wrapped system combo box may need to be recreated when certain properties are changed, this function is used to
 ' automate the process of destroying an existing window (if any) and recreating it anew.
-Private Function createComboBox() As Boolean
+Private Function CreateComboBox() As Boolean
     
     'Cache the current listindex
     m_BackupListIndex = ListIndex
     
     'If the combo box already exists, kill it
-    destroyComboBox
+    DestroyComboBox
     
     'Create a brush for drawing the box background
     CreateComboBoxBrush
@@ -1010,7 +1010,7 @@ Private Function createComboBox() As Boolean
     ' using the current font as our guide.  We check for this here, prior to creating the combo box, as we can't easily
     ' access our font object once we assign it to the combo box.
     Dim idealHeight As Long
-    idealHeight = GetIdealStringHeight()
+    idealHeight = getIdealStringHeight()
     
     'Cache this value at module-level; we will need it for subsequent WM_MEASUREITEM requests sent to the parent
     m_ItemHeight = idealHeight
@@ -1129,12 +1129,12 @@ Private Function createComboBox() As Boolean
     syncUserControlSizeToComboSize
         
     'Return TRUE if successful
-    createComboBox = (m_ComboBoxHwnd <> 0)
+    CreateComboBox = (m_ComboBoxHwnd <> 0)
 
 End Function
 
 'If an edit box currently exists, this function will destroy it.
-Private Function destroyComboBox() As Boolean
+Private Function DestroyComboBox() As Boolean
 
     If m_ComboBoxHwnd <> 0 Then
         
@@ -1154,7 +1154,7 @@ Private Function destroyComboBox() As Boolean
         
     End If
     
-    destroyComboBox = True
+    DestroyComboBox = True
 
 End Function
 
@@ -1180,7 +1180,7 @@ Private Sub UserControl_Terminate()
     If m_FontHandleCopy <> 0 Then UserControl_Support.ReleaseSharedGDIFontByHandle m_FontHandleCopy
     
     'Destroy the edit box, as necessary
-    destroyComboBox
+    DestroyComboBox
     
     'Release any extra subclasser(s)
     If Not (cSubclass Is Nothing) Then cSubclass.ssc_Terminate
@@ -1249,7 +1249,7 @@ Public Sub UpdateAgainstCurrentTheme()
         RefreshFont
         
         'Recreate the combo box entirely
-        createComboBox
+        CreateComboBox
         
         'Force an immediate repaint
         cPainterBox.RequestRepaint
@@ -1526,7 +1526,7 @@ End Function
 
 'Due to some complexities with the way combo box sizes are handled, adjustments to height require recreating the combo box.  Adjustments to width,
 ' however, are no problem at all.  They can be requested via this function.
-Public Sub RequestNewWidth(Optional ByVal newWidth As Long = 100, Optional ByVal autoCalculateWidth As Boolean = False)
+Public Sub requestNewWidth(Optional ByVal newWidth As Long = 100, Optional ByVal autoCalculateWidth As Boolean = False)
 
     'Get the window rect of the current combo box
     Dim comboRect As RECTL
@@ -1544,7 +1544,7 @@ Public Sub RequestNewWidth(Optional ByVal newWidth As Long = 100, Optional ByVal
             For i = 0 To m_NumBackupEntries - 1
                 
                 'Calculate an ideal width for this string, using the current font
-                testWidth = GetIdealStringWidth(m_BackupEntries(i).entryStringTranslated)
+                testWidth = getIdealStringWidth(m_BackupEntries(i).entryStringTranslated)
                 
                 'Track the largest encountered width
                 If testWidth > maxTextWidth Then maxTextWidth = testWidth

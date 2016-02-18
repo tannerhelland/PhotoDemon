@@ -23,6 +23,15 @@ Begin VB.UserControl pdCanvas
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   886
    ToolboxBitmap   =   "pdCanvas.ctx":0000
+   Begin PhotoDemon.pdCanvasView CanvasView 
+      Height          =   4935
+      Left            =   360
+      TabIndex        =   11
+      Top             =   600
+      Width           =   4575
+      _ExtentX        =   8281
+      _ExtentY        =   8916
+   End
    Begin VB.PictureBox picProgressBar 
       Align           =   2  'Align Bottom
       Appearance      =   0  'Flat
@@ -33,7 +42,7 @@ Begin VB.UserControl pdCanvas
       ScaleHeight     =   17
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   886
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   7095
       Visible         =   0   'False
       Width           =   13290
@@ -41,53 +50,38 @@ Begin VB.UserControl pdCanvas
    Begin PhotoDemon.pdButtonToolbox cmdCenter 
       Height          =   255
       Left            =   5040
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   5640
+      Visible         =   0   'False
       Width           =   255
-      _extentx        =   450
-      _extenty        =   450
-      autotoggle      =   -1  'True
-      backcolor       =   -2147483626
-      usecustombackcolor=   -1  'True
+      _ExtentX        =   450
+      _ExtentY        =   450
+      AutoToggle      =   -1  'True
+      BackColor       =   -2147483626
+      UseCustomBackColor=   -1  'True
    End
    Begin PhotoDemon.pdScrollBar hScroll 
       Height          =   255
       Left            =   360
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   5640
+      Visible         =   0   'False
       Width           =   4575
-      _extentx        =   8070
-      _extenty        =   450
-      orientationhorizontal=   -1  'True
-      visualstyle     =   1
+      _ExtentX        =   8070
+      _ExtentY        =   450
+      OrientationHorizontal=   -1  'True
+      VisualStyle     =   1
    End
    Begin PhotoDemon.pdScrollBar vScroll 
       Height          =   4935
       Left            =   5040
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   600
+      Visible         =   0   'False
       Width           =   255
-      _extentx        =   450
-      _extenty        =   8705
-      visualstyle     =   1
-   End
-   Begin VB.PictureBox picCanvas 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000003&
-      BorderStyle     =   0  'None
-      ClipControls    =   0   'False
-      FillColor       =   &H00FFFFFF&
-      ForeColor       =   &H8000000D&
-      Height          =   4935
-      Left            =   360
-      OLEDropMode     =   1  'Manual
-      ScaleHeight     =   329
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   305
-      TabIndex        =   0
-      Top             =   600
-      Width           =   4575
+      _ExtentX        =   450
+      _ExtentY        =   8705
+      VisualStyle     =   1
    End
    Begin VB.PictureBox picStatusBar 
       Align           =   2  'Align Bottom
@@ -101,115 +95,115 @@ Begin VB.UserControl pdCanvas
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   886
-      TabIndex        =   1
+      TabIndex        =   0
       TabStop         =   0   'False
       Top             =   7350
       Width           =   13290
       Begin PhotoDemon.pdComboBox cmbSizeUnit 
          Height          =   315
          Left            =   3630
-         TabIndex        =   8
+         TabIndex        =   7
          Top             =   15
          Width           =   660
-         _extentx        =   1164
-         _extenty        =   556
-         fontsize        =   9
+         _ExtentX        =   1164
+         _ExtentY        =   556
+         FontSize        =   9
       End
       Begin PhotoDemon.pdComboBox cmbZoom 
          Height          =   360
          Left            =   840
-         TabIndex        =   7
+         TabIndex        =   6
          Top             =   15
          Width           =   1290
-         _extentx        =   2275
-         _extenty        =   635
-         fontsize        =   9
+         _ExtentX        =   2275
+         _ExtentY        =   635
+         FontSize        =   9
       End
       Begin PhotoDemon.pdLabel lblImgSize 
          Height          =   210
          Left            =   3240
          Top             =   60
          Width           =   345
-         _extentx        =   609
-         _extenty        =   370
-         backcolor       =   -2147483626
-         caption         =   "size:"
-         fontsize        =   9
-         layout          =   2
-         usecustombackcolor=   -1  'True
+         _ExtentX        =   609
+         _ExtentY        =   370
+         BackColor       =   -2147483626
+         Caption         =   "size:"
+         FontSize        =   9
+         Layout          =   2
+         UseCustomBackColor=   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomFit 
          Height          =   345
          Left            =   0
-         TabIndex        =   3
+         TabIndex        =   2
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         backcolor       =   -2147483626
-         usecustombackcolor=   -1  'True
+         _ExtentX        =   688
+         _ExtentY        =   609
+         BackColor       =   -2147483626
+         UseCustomBackColor=   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomOut 
          Height          =   345
          Left            =   390
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         autotoggle      =   -1  'True
-         backcolor       =   -2147483626
-         usecustombackcolor=   -1  'True
+         _ExtentX        =   688
+         _ExtentY        =   609
+         AutoToggle      =   -1  'True
+         BackColor       =   -2147483626
+         UseCustomBackColor=   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomIn 
          Height          =   345
          Left            =   2190
-         TabIndex        =   5
+         TabIndex        =   4
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         autotoggle      =   -1  'True
-         backcolor       =   -2147483626
-         usecustombackcolor=   -1  'True
+         _ExtentX        =   688
+         _ExtentY        =   609
+         AutoToggle      =   -1  'True
+         BackColor       =   -2147483626
+         UseCustomBackColor=   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdImgSize 
          Height          =   345
          Left            =   2790
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         autotoggle      =   -1  'True
-         backcolor       =   -2147483626
-         usecustombackcolor=   -1  'True
+         _ExtentX        =   688
+         _ExtentY        =   609
+         AutoToggle      =   -1  'True
+         BackColor       =   -2147483626
+         UseCustomBackColor=   -1  'True
       End
       Begin PhotoDemon.pdLabel lblCoordinates 
          Height          =   210
          Left            =   5160
          Top             =   60
          Width           =   345
-         _extentx        =   609
-         _extenty        =   370
-         backcolor       =   -2147483626
-         caption         =   "size:"
-         fontsize        =   9
-         layout          =   2
-         usecustombackcolor=   -1  'True
+         _ExtentX        =   609
+         _ExtentY        =   370
+         BackColor       =   -2147483626
+         Caption         =   "size:"
+         FontSize        =   9
+         Layout          =   2
+         UseCustomBackColor=   -1  'True
       End
       Begin PhotoDemon.pdLabel lblMessages 
          Height          =   210
          Left            =   6360
          Top             =   60
          Width           =   6825
-         _extentx        =   12039
-         _extenty        =   503
-         alignment       =   1
-         backcolor       =   -2147483626
-         caption         =   "(messages will appear here at run-time)"
-         fontsize        =   9
-         usecustombackcolor=   -1  'True
+         _ExtentX        =   12039
+         _ExtentY        =   503
+         Alignment       =   1
+         BackColor       =   -2147483626
+         Caption         =   "(messages will appear here at run-time)"
+         FontSize        =   9
+         UseCustomBackColor=   -1  'True
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -288,14 +282,12 @@ End Enum
 Private Const SM_CXVSCROLL As Long = 2
 Private Const SM_CYHSCROLL As Long = 3
 
-'These are used to track use of the Ctrl, Alt, and Shift keys
-Private ShiftDown As Boolean, CtrlDown As Boolean, AltDown As Boolean
+'Mouse interactions are complicated in this form, so we sometimes need to cache button values and process them elsewhere
+Private m_LMBDown As Boolean, m_RMBDown As Boolean
 
-'Track mouse button use on this canvas
-Private lMouseDown As Boolean, rMouseDown As Boolean
-
-'Track mouse movement on this canvas
-Private hasMouseMoved As Long
+'Every time a canvas MouseMove event occurs, this number is incremented by one.  If mouse events are coming in fast and furious,
+' we can delay renders between them to improve responsiveness.  (This number is reset to zero when the mouse is released.)
+Private m_NumOfMouseMovements As Long
 
 'If the mouse is currently over the canvas, this will be set to TRUE.
 Private m_IsMouseOverCanvas As Boolean
@@ -303,32 +295,19 @@ Private m_IsMouseOverCanvas As Boolean
 'Track initial mouse button locations
 Private m_InitMouseX As Double, m_InitMouseY As Double
 
-'In the future, it may be helpful to know if the user interacted with the canvas, or if the mouse simply passed over it
-' en route to something else.
-Private m_UserInteractedWithCanvas As Boolean
-
-'On the canvas's MouseDown event, mark the relevant point of interest index for this layer (if any).
+'On the canvas's MouseDown event, this control will mark the relevant point of interest index for the active layer (if any).
 ' If a point of interest has not been selected, this value will be reset to -1.
-Private m_curPointOfInterest As Long
+Private m_CurPointOfInterest As Long
 
 'As some POI interactions may cause the canvas to redraw, we also cache the *last* point of interest.  When this mismatches the
 ' current one, a UI-only viewport redraw is requested, and the last/current point values are synched.
-Private m_LastPointOfInterest
-
-'PD's custom input class completely replaces all mouse interfacing for this control
-Private WithEvents cMouseEvents As pdInputMouse
-Attribute cMouseEvents.VB_VarHelpID = -1
-Private WithEvents cKeyEvents As pdInputKeyboard
-Attribute cKeyEvents.VB_VarHelpID = -1
+Private m_LastPointOfInterest As Long
 
 'To improve performance, we can ask the canvas to not refresh itself until we say so.
 Private m_SuspendRedraws As Boolean
 
 'Icons rendered to the scroll bar.  Rather than constantly reloading them from file, we cache them at initialization.
-Dim sbIconSize As pdDIB, sbIconCoords As pdDIB, sbIconNetwork As pdDIB
-
-'When no images are loaded, we instruct the user to load an image.  This generic image icon is used as a placeholder.
-Dim iconLoadAnImage As pdDIB
+Private sbIconCoords As pdDIB, sbIconNetwork As pdDIB
 
 'Some tools support the ability to auto-activate a layer beneath the mouse.  If supported, during the MouseMove event,
 ' this value (m_LayerAutoActivateIndex) will be updated with the index of the layer that will be auto-activated if the
@@ -343,7 +322,7 @@ Private m_SelectionActiveBeforeMouseEvents As Boolean
 
 'External functions can notify the status bar of PD's network access.  When PD is downloading various update bits, a relevant icon
 ' will be displayed in the status bar.  As the canvas has no knowledge of network stuff, it's imperative that the caller notify
-' of both TRUE and FALSE states.
+' us of both TRUE and FALSE states.
 Private m_NetworkAccessActive As Boolean
 
 'External functions can tell us to enable or disable the status bar for various reasons (e.g. no images are loaded).  We track the
@@ -352,131 +331,47 @@ Private m_LastEnabledState As Boolean
 
 'External functions can call this to set the current network state (which in turn, draws a relevant icon to the status bar)
 Public Sub SetNetworkState(ByVal newNetworkState As Boolean)
-    
-    'When the state changes, update a module-level variable and redraw the icon.
     If newNetworkState <> m_NetworkAccessActive Then
         m_NetworkAccessActive = newNetworkState
         DrawStatusBarIcons m_LastEnabledState
     End If
-    
 End Sub
 
-'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
-' and/or retranslating all button captions against the current language.
-Public Sub UpdateAgainstCurrentTheme()
-    
-    'Suspend redraws until all theme updates are complete
-    m_SuspendRedraws = True
-    
-    'Rebuild all drop-down boxes (so that translations can be applied)
-    Dim backupZoomIndex As Long, backupSizeIndex As Long
-    backupZoomIndex = cmbZoom.ListIndex
-    backupSizeIndex = cmbSizeUnit.ListIndex
-    
-    'Repopulate zoom dropdown text
-    If Not (g_Zoom Is Nothing) Then g_Zoom.initializeViewportEngine
-    If Not (g_Zoom Is Nothing) Then g_Zoom.populateZoomComboBox cmbZoom, backupZoomIndex
-    Me.PopulateSizeUnits
-    
-    'Auto-size the newly populated combo boxes, according to the width of their longest entries
-    cmbZoom.requestNewWidth 0, True
-    cmbSizeUnit.requestNewWidth 0, True
-    
-    'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
-    cmdZoomFit.AssignTooltip "Fit the image on-screen"
-    cmdZoomIn.AssignTooltip "Zoom in"
-    cmdZoomOut.AssignTooltip "Zoom out"
-    cmdImgSize.AssignTooltip "Resize image"
-    cmbZoom.AssignTooltip "Change viewport zoom"
-    cmbSizeUnit.AssignTooltip "Change the image size unit displayed to the left of this box"
-    cmdCenter.AssignTooltip "Center the image inside the viewport"
-    If Not (g_Themer Is Nothing) Then cmdCenter.BackColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
-    
-    'Request visual updates from all supported controls
-    lblCoordinates.UpdateAgainstCurrentTheme
-    lblImgSize.UpdateAgainstCurrentTheme
-    lblMessages.UpdateAgainstCurrentTheme
-    
-    cmdZoomFit.UpdateAgainstCurrentTheme
-    cmdZoomIn.UpdateAgainstCurrentTheme
-    cmdZoomOut.UpdateAgainstCurrentTheme
-    cmdImgSize.UpdateAgainstCurrentTheme
-    cmbZoom.UpdateAgainstCurrentTheme
-    cmbSizeUnit.UpdateAgainstCurrentTheme
-    cmdCenter.UpdateAgainstCurrentTheme
-    
-    hScroll.UpdateAgainstCurrentTheme
-    vScroll.UpdateAgainstCurrentTheme
-    
-    'Fix combo box positioning (important on high-DPI displays, or if the active font has changed)
-    cmbZoom.Top = (picStatusBar.ScaleHeight - cmbZoom.Height) \ 2
-    cmbSizeUnit.Top = (picStatusBar.ScaleHeight - cmbSizeUnit.Height) \ 2
-    
-    'Restore zoom and size unit indices
-    cmbZoom.ListIndex = backupZoomIndex
-    cmbSizeUnit.ListIndex = backupSizeIndex
-    
-    'Reflow any dynamically positioned status bar elements
-    'DrawStatusBarIcons (g_OpenImageCount > 0)
-    
-    'Note that we don't actually move the last line status bar; that is handled by DisplayImageCoordinates itself
-    If g_OpenImageCount > 0 Then
-        DisplayImageSize pdImages(g_CurrentImage), False
-    Else
-        DisplayImageSize Nothing, True
-    End If
-    
-    DisplayCanvasCoordinates 0, 0, True
-    
-    'Restore redraw capabilities
-    m_SuspendRedraws = False
-        
-End Sub
+'Use these functions to forcibly prevent the canvas from redrawing itself.  REDRAWS WILL NOT HAPPEN AGAIN UNTIL YOU RESTORE ACCESS!
+' (Also note that this function relays state changes to the underlying pdCanvasView object; as such, do not set m_SuspendRedraws
+'  manually - only set it via this function, to ensure the canvas and underlying canvas view stay in sync.)
+Public Function GetRedrawSuspension() As Boolean
+    GetRedrawSuspension = m_SuspendRedraws Or CanvasView.GetRedrawSuspension()
+End Function
 
-'Use this function to forcibly prevent the canvas from redrawing itself.  REDRAWS WILL NOT HAPPEN AGAIN UNTIL YOU RESTORE ACCESS!
 Public Sub SetRedrawSuspension(ByVal newRedrawValue As Boolean)
+    CanvasView.SetRedrawSuspension newRedrawValue
     m_SuspendRedraws = newRedrawValue
 End Sub
 
-Public Property Get BackColor() As Long
-    BackColor = picCanvas.BackColor
-End Property
-
-Public Property Let BackColor(newBackColor As Long)
-    picCanvas.BackColor = newBackColor
-    picCanvas.Refresh
-End Property
-
+'Need to wipe the canvas?  Call this function, but please be careful - it will literally erase the canvas's back buffer.
 Public Sub ClearCanvas()
     
-    'If no images have been loaded, draw the "load image" placeholder.
-    If (g_OpenImageCount = 0) And (Not g_ProgramShuttingDown) Then
-        
-        FixChromeLayout
+    CanvasView.ClearCanvas
     
-    'Otherwise, simply clear the user control
+    If (g_OpenImageCount = 0) Then
+        SetScrollVisibility PD_HORIZONTAL, False
+        SetScrollVisibility PD_VERTICAL, False
+        
+        'This function is called several times at shutdown, and we can improve its performance by ignoring refresh requests
+        If (Not g_ProgramShuttingDown) Then FixChromeLayout
+    
+    'If any valid images are loaded, scroll bars are always made visible
     Else
-    
-        picCanvas.Picture = LoadPicture("")
-        picCanvas.Refresh
-        
-        'Show scrollbars if they aren't already
         SetScrollVisibility PD_HORIZONTAL, True
         SetScrollVisibility PD_VERTICAL, True
-    
     End If
     
 End Sub
 
 'Get/Set scroll bar value
 Public Function GetScrollValue(ByVal barType As PD_ORIENTATION) As Long
-
-    If barType = PD_HORIZONTAL Then
-        GetScrollValue = hScroll.Value
-    Else
-        GetScrollValue = vScroll.Value
-    End If
-
+    If barType = PD_HORIZONTAL Then GetScrollValue = hScroll.Value Else GetScrollValue = vScroll.Value
 End Function
 
 Public Sub SetScrollValue(ByVal barType As PD_ORIENTATION, ByVal newValue As Long)
@@ -496,60 +391,30 @@ Public Sub SetScrollValue(ByVal barType As PD_ORIENTATION, ByVal newValue As Lon
     End Select
     
     'If automatic redraws are suspended, the scroll bars change events won't fire, so we must manually notify external UI elements
-    If m_SuspendRedraws Then RelayViewportChanges
+    If Me.GetRedrawSuspension Then RelayViewportChanges
     
 End Sub
 
 'Get/Set scroll max/min
 Public Function GetScrollMax(ByVal barType As PD_ORIENTATION) As Long
-
-    If barType = PD_HORIZONTAL Then
-        GetScrollMax = hScroll.Max
-    Else
-        GetScrollMax = vScroll.Max
-    End If
-
+    If barType = PD_HORIZONTAL Then GetScrollMax = hScroll.Max Else GetScrollMax = vScroll.Max
 End Function
 
 Public Function GetScrollMin(ByVal barType As PD_ORIENTATION) As Long
-
-    If barType = PD_HORIZONTAL Then
-        GetScrollMin = hScroll.Min
-    Else
-        GetScrollMin = vScroll.Min
-    End If
-
+    If barType = PD_HORIZONTAL Then GetScrollMin = hScroll.Min Else GetScrollMin = vScroll.Min
 End Function
 
 Public Sub SetScrollMax(ByVal barType As PD_ORIENTATION, ByVal newMax As Long)
-    
-    If barType = PD_HORIZONTAL Then
-        hScroll.Max = newMax
-    Else
-        vScroll.Max = newMax
-    End If
-    
+    If barType = PD_HORIZONTAL Then hScroll.Max = newMax Else vScroll.Max = newMax
 End Sub
 
 Public Sub SetScrollMin(ByVal barType As PD_ORIENTATION, ByVal newMin As Long)
-    
-    If barType = PD_HORIZONTAL Then
-        hScroll.Min = newMin
-    Else
-        vScroll.Min = newMin
-    End If
-    
+    If barType = PD_HORIZONTAL Then hScroll.Min = newMin Else vScroll.Min = newMin
 End Sub
 
 'Set scroll bar LargeChange value
 Public Sub SetScrollLargeChange(ByVal barType As PD_ORIENTATION, ByVal newLargeChange As Long)
-        
-    If barType = PD_HORIZONTAL Then
-        hScroll.LargeChange = newLargeChange
-    Else
-        vScroll.LargeChange = newLargeChange
-    End If
-        
+    If barType = PD_HORIZONTAL Then hScroll.LargeChange = newLargeChange Else vScroll.LargeChange = newLargeChange
 End Sub
 
 'Set scrollbar visibility.  Note that visibility is only toggled as necessary, so this function is preferable to
@@ -587,7 +452,7 @@ Public Sub SetScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibil
     cmdCenter.Visible = CBool(hScroll.Visible And vScroll.Visible)
     
     'When scroll bar visibility is changed, we must move the main canvas picture box to match
-    If changesMade Then AlignCanvasPictureBox
+    If changesMade Then AlignCanvasView
     
 End Sub
 
@@ -655,10 +520,6 @@ Public Sub DisplayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, 
         lblCoordinates.Caption = "(" & xCoord & "," & yCoord & ")"
     End If
     
-    'Normally, the custom label control will not repaint until Windows requests it, but because we require its true size in order
-    ' to reflow the status bar, we must request an immediate update.
-    'lblCoordinates.UpdateAgainstCurrentTheme
-    
     'Align the right-hand line control with the newly captioned label
     lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.PixelWidth + FixDPI(10)
     lineStatusBar(2).x2 = lineStatusBar(2).x1
@@ -668,30 +529,17 @@ Public Sub DisplayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, 
         
 End Sub
 
-Public Sub RequestBufferSync()
-    picCanvas.Picture = picCanvas.Image
-    picCanvas.Refresh
+Public Sub RequestViewportRedraw(Optional ByVal refreshImmediately As Boolean = False)
+    CanvasView.RequestRedraw refreshImmediately
 End Sub
 
-'getMaxAvailableCanvasWidth/Height returns the largest width/height the canvas picture box can theoretically possess.  Note that it doesn't
-' include the size of canvas scrollbars; that's because the viewport pipeline (Viewport_Engine) is responsible for determining whether
-' scrollbars are needed, and sizing the picture box accordingly.  But before it can do that, it needs to know how much space it has to
-' work with.  (In the future, these values could be modified to account for the presence of rulers, among other things.)
-Public Function GetMaxAvailableCanvasWidth() As Long
-    GetMaxAvailableCanvasWidth = UserControl.ScaleWidth
-End Function
-
-Public Function GetMaxAvailableCanvasHeight() As Long
-    GetMaxAvailableCanvasHeight = UserControl.ScaleHeight - Me.GetStatusBarHeight()
-End Function
-
-'Return the current width/height of the canvas picture box
+'Return the current width/height of the underlying canvas view
 Public Function GetCanvasWidth() As Long
-    GetCanvasWidth = picCanvas.ScaleWidth
+    GetCanvasWidth = CanvasView.GetCanvasWidth
 End Function
 
 Public Function GetCanvasHeight() As Long
-    GetCanvasHeight = picCanvas.ScaleHeight
+    GetCanvasHeight = CanvasView.GetCanvasHeight
 End Function
 
 Public Function GetStatusBarHeight() As Long
@@ -717,8 +565,10 @@ Public Property Get hWnd()
     hWnd = UserControl.hWnd
 End Property
 
+'Note that this control does *not* return its own DC.  Instead, it returns the DC of the underlying CanvasView object.
+' This is by design.
 Public Property Get hDC()
-    hDC = picCanvas.hDC
+    hDC = CanvasView.hDC
 End Property
 
 Public Sub EnableZoomIn(ByVal isEnabled As Boolean)
@@ -738,11 +588,12 @@ Public Function GetZoomDropDownReference() As pdComboBox
     Set GetZoomDropDownReference = cmbZoom
 End Function
 
-'Key presses are handled by PhotoDemon's custom pdInputKeyboard class
-Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+'Various input events are bubbled up from the underlying CanvasView control.  It provides no handling over paint and
+' tool events, so we must reroute those events here.
+Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
 
     markEventHandled = False
-
+    
     'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
     If IsCanvasInteractionAllowed() Then
     
@@ -758,7 +609,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 canvasUpdateRequired = False
                 
                 'Suspend automatic redraws until all arrow keys have been processed
-                m_SuspendRedraws = True
+                Me.SetRedrawSuspension True
                 
                 'If scrollbars are visible, nudge the canvas in the direction of the arrows.
                 If vScroll.Enabled Then
@@ -774,7 +625,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 End If
                 
                 'Re-enable automatic redraws
-                m_SuspendRedraws = False
+                Me.SetRedrawSuspension False
                 
                 'Redraw the viewport if necessary
                 If canvasUpdateRequired Then
@@ -929,8 +780,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
 
 End Sub
 
-'Key presses are handled by PhotoDemon's custom pdInputKeyboard class
-Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+Private Sub CanvasView_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
     
     markEventHandled = False
 
@@ -985,7 +835,7 @@ Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
                             Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), newImageX, newImageY, newCanvasX, newCanvasY
                             
                             'Finally, convert the canvas coordinates to screen coordinates, and move the cursor accordingly
-                            SetCursorToCanvasPosition newCanvasX, newCanvasY
+                            CanvasView.SetCursorToCanvasPosition newCanvasX, newCanvasY
                             
                         End If
                         
@@ -1000,11 +850,6 @@ Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
         
     End If
     
-End Sub
-
-'Set the mouse cursor to a specified position on the canvas.  This function will automatically handle the translation to screen coordinates.
-Private Sub SetCursorToCanvasPosition(ByVal canvasX As Double, ByVal canvasY As Double)
-    cMouseEvents.moveCursorToNewPosition canvasX, canvasY
 End Sub
 
 Private Sub cmbSizeUnit_Click()
@@ -1080,7 +925,8 @@ Private Sub cmdZoomOut_Click()
 End Sub
 
 'At present, the only App Commands the canvas will handle are forward/back, which link to Undo/Redo
-Private Sub cMouseEvents_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+' RELAY (partially)
+Private Sub CanvasView_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     If IsCanvasInteractionAllowed() Then
     
@@ -1106,8 +952,9 @@ Private Sub cMouseEvents_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Sh
 
 End Sub
 
-Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-        
+'RELAY (partially)
+Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
     'Make sure interactions with this canvas are allowed
     If Not IsCanvasInteractionAllowed() Then Exit Sub
     
@@ -1115,9 +962,6 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     ' can behave unpredictably (for example, if the zoom box has focus, and the user clicks on the canvas, the canvas will not
     ' receive focus and arrow key presses will continue to interact with the zoom box instead of the viewport)
     ' (NOTE: this should be fixed as of 6.6, as a dedicated picture box is now used for rendering)
-    
-    'Note that the user has attempted to interact with the canvas.
-    m_UserInteractedWithCanvas = True
     
     'Note whether a selection is active when mouse interactions began
     m_SelectionActiveBeforeMouseEvents = (pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isLockedIn)
@@ -1143,8 +987,8 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     'Check mouse button use
     If Button = vbLeftButton Then
         
-        lMouseDown = True
-        hasMouseMoved = 0
+        m_LMBDown = True
+        m_NumOfMouseMovements = 0
             
         'Remember this location
         m_InitMouseX = x
@@ -1156,7 +1000,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         'Ask the current layer if these coordinates correspond to a point of interest.  We don't always use this return value,
         ' but a number of functions could potentially ask for it, so we cache it at MouseDown time and hang onto it until
         ' the mouse is released.
-        m_curPointOfInterest = pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
+        m_CurPointOfInterest = pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
         
         'Any further processing depends on which tool is currently active
         Select Case g_CurrentTool
@@ -1299,7 +1143,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 If pdImages(g_CurrentImage).getActiveLayer.isLayerText Then
                 
                     'Did the user click on a POI for this layer?  If they did, the user is editing the current text layer.
-                    If m_curPointOfInterest >= 0 Then
+                    If m_CurPointOfInterest >= 0 Then
                         userIsEditingCurrentTextLayer = True
                     Else
                         userIsEditingCurrentTextLayer = False
@@ -1349,7 +1193,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     
     ElseIf Button = vbRightButton Then
     
-        rMouseDown = True
+        m_RMBDown = True
         
         'TODO: right-button functionality
     
@@ -1357,35 +1201,24 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     
 End Sub
 
-'When the mouse enters the canvas, any floating toolbars must be automatically dimmed.
-Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-        
+Private Sub CanvasView_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_IsMouseOverCanvas = True
-        
-    'Note that the user has yet to interact with anything on the canvas.
-    m_UserInteractedWithCanvas = False
-    
-    'If no images have been loaded, reset the cursor
-    If g_OpenImageCount = 0 Then cMouseEvents.setSystemCursor IDC_ARROW
-
 End Sub
 
 'When the mouse leaves the window, if no buttons are down, clear the coordinate display.
 ' (We must check for button states because the user is allowed to do things like drag selection nodes outside the image.)
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
+' RELAY (partially)
+Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_IsMouseOverCanvas = False
-        
-    If (Not lMouseDown) And (Not rMouseDown) Then ClearImageCoordinatesDisplay
-
+    If (Not m_LMBDown) And (Not m_RMBDown) Then ClearImageCoordinatesDisplay
 End Sub
 
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-
+Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
     'Make sure interactions with this canvas are allowed
     If Not IsCanvasInteractionAllowed() Then Exit Sub
     
-    hasMouseMoved = hasMouseMoved + 1
+    m_NumOfMouseMovements = m_NumOfMouseMovements + 1
     
     'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
     Dim imgX As Double, imgY As Double
@@ -1401,7 +1234,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     Drawing.ConvertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, layerX, layerY
         
     'Check the left mouse button
-    If lMouseDown Then
+    If m_LMBDown Then
     
         Select Case g_CurrentTool
         
@@ -1430,7 +1263,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 End If
                 
                 'Force a redraw of the viewport
-                If hasMouseMoved > 1 Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
+                If m_NumOfMouseMovements > 1 Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
             
             'Lasso selections are handled specially, because mouse move events control the drawing of the lasso
             Case SELECT_LASSO
@@ -1452,7 +1285,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 #End If
                 
                 'Force a redraw of the viewport
-                If hasMouseMoved > 1 Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
+                If m_NumOfMouseMovements > 1 Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
             
             'Wand selections are easier than other selection types, because they don't support any special transforms
             Case SELECT_WAND
@@ -1529,7 +1362,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     
 End Sub
 
-Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     
     'Make sure interactions with this canvas are allowed
     If Not IsCanvasInteractionAllowed() Then Exit Sub
@@ -1549,7 +1382,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
     'Check mouse buttons
     If Button = vbLeftButton Then
     
-        lMouseDown = False
+        m_LMBDown = False
     
         Select Case g_CurrentTool
         
@@ -1560,7 +1393,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
             Case NAV_MOVE
             
                 'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation, among other things.
-                If (hasMouseMoved > 0) Then transformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask), True
+                If (m_NumOfMouseMovements > 0) Then transformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask), True
                 
                 'Reset the generic tool mouse tracking function
                 Tool_Support.terminateGenericToolTracking
@@ -1771,7 +1604,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     Tool_Support.setToolBusyState True
                     
                     'See if this was just a click (as it might be at creation time).
-                    If ClickEventAlsoFiring Or (hasMouseMoved <= 2) Or (pdImages(g_CurrentImage).getActiveLayer.getLayerWidth < 4) Or (pdImages(g_CurrentImage).getActiveLayer.getLayerHeight < 4) Then
+                    If ClickEventAlsoFiring Or (m_NumOfMouseMovements <= 2) Or (pdImages(g_CurrentImage).getActiveLayer.getLayerWidth < 4) Or (pdImages(g_CurrentImage).getActiveLayer.getLayerHeight < 4) Then
                         
                         'Update the layer's size.  At present, we simply make it fill the current viewport.
                         Dim curImageRectF As RECTF
@@ -1835,7 +1668,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                 Else
                     
                     'As a convenience to the user, ignore clicks that don't actually change layer settings
-                    If (hasMouseMoved > 0) Then transformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask), True
+                    If (m_NumOfMouseMovements > 0) Then transformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask), True
                     
                 End If
                 
@@ -1848,35 +1681,25 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                         
     End If
     
-    If Button = vbRightButton Then rMouseDown = False
+    If Button = vbRightButton Then m_RMBDown = False
     
     'Reset any tracked point of interest value for this layer
-    m_curPointOfInterest = -1
+    m_CurPointOfInterest = -1
         
     'Reset the mouse movement tracker
-    hasMouseMoved = 0
+    m_NumOfMouseMovements = 0
     
-
 End Sub
 
-Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-    
-    'Make sure interactions with this canvas are allowed
+Public Sub CanvasView_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     If Not IsCanvasInteractionAllowed() Then Exit Sub
-    
-    'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed BUT a ctrl
-    ' button has not been pressed.
-    If hScroll.Visible Then
-        hScroll.RelayMouseWheelEvent False, Button, Shift, x, y, scrollAmount
-    End If
-
+    If hScroll.Visible Then hScroll.RelayMouseWheelEvent False, Button, Shift, x, y, scrollAmount
 End Sub
 
 'Vertical mousewheel scrolling.  Note that Shift+Wheel and Ctrl+Wheel modifiers do NOT raise this event; pdInputMouse automatically
 ' reroutes them to MouseWheelHorizontal and MouseWheelZoom, respectively.
-Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Public Sub CanvasView_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     
-    'Make sure interactions with this canvas are allowed
     If Not IsCanvasInteractionAllowed() Then Exit Sub
     
     'PhotoDemon uses the standard photo editor convention of Ctrl+Wheel = zoom, Shift+Wheel = h_scroll, and Wheel = v_scroll.
@@ -1896,10 +1719,8 @@ Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstant
     
 End Sub
 
-'The pdInputMouse class now provides a dedicated zoom event for us - how nice!
-Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
-
-    'Make sure interactions with this canvas are allowed
+Public Sub CanvasView_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
+    
     If Not IsCanvasInteractionAllowed() Then Exit Sub
     
     'Before doing anything else, cache the current mouse coordinates (in both Canvas and Image coordinate spaces)
@@ -1921,7 +1742,7 @@ Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, B
         If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled And FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex <> g_Zoom.getZoomCount Then
             FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomOutIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
         End If
-           
+        
     End If
     
     'Re-enable automatic viewport redraws
@@ -1936,90 +1757,25 @@ Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, B
 
 End Sub
 
-'(This code is copied from FormMain's OLEDragDrop event - please mirror any changes there)
-Private Sub picCanvas_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
-
-    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
-    If Not g_AllowDragAndDrop Then Exit Sub
-    
-    'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
-    ' to load the OLE source.
-    g_Clipboard.LoadImageFromDragDrop Data, Effect, True
-    
-End Sub
-
-'(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub picCanvas_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
-
-    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
-    If Not g_AllowDragAndDrop Then Exit Sub
-
-    'Check to make sure the type of OLE object is files
-    If Data.GetFormat(vbCFFiles) Or Data.GetFormat(vbCFText) Or Data.GetFormat(vbCFBitmap) Then
-        'Inform the source that the files will be treated as "copied"
-        Effect = vbDropEffectCopy And Effect
-    Else
-        'If it's not files or text, don't allow a drop
-        Effect = vbDropEffectNone
-    End If
-    
-End Sub
-
 Private Sub UserControl_Initialize()
 
     If g_IsProgramRunning Then
         
-        'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
-        Set cMouseEvents = New pdInputMouse
-        cMouseEvents.addInputTracker picCanvas.hWnd, True, True, True, True
-        
-        'Enable key tracking as well
-        Set cKeyEvents = New pdInputKeyboard
-        cKeyEvents.CreateKeyboardTracker "pdCanvas", picCanvas.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_DELETE, VK_INSERT, VK_TAB, VK_SPACE, VK_ESCAPE, VK_BACK
-                
         'Allow the control to generate its own redraw requests
-        m_SuspendRedraws = False
+        Me.SetRedrawSuspension False
         
         'Set scroll bar size to match the current system default (which changes based on DPI, theming, and other factors)
         hScroll.Height = GetSystemMetrics(SM_CYHSCROLL)
         vScroll.Width = GetSystemMetrics(SM_CXVSCROLL)
         
         'Align the main picture box
-        AlignCanvasPictureBox
+        AlignCanvasView
         
         'Reset any POI trackers
-        m_curPointOfInterest = -1
+        m_CurPointOfInterest = -1
         m_LastPointOfInterest = -1
         
     End If
-    
-End Sub
-
-Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
-    
-    'Make sure interactions with this canvas are allowed
-    If Not IsCanvasInteractionAllowed() Then Exit Sub
-    
-    ShiftDown = (Shift And vbShiftMask) > 0
-    CtrlDown = (Shift And vbCtrlMask) > 0
-    AltDown = (Shift And vbAltMask) > 0
-    
-    'If a selection is active, notify it of any changes in the shift key (which is used to request 1:1 selections)
-    If pdImages(g_CurrentImage).selectionActive Then pdImages(g_CurrentImage).mainSelection.requestSquare ShiftDown
-    
-End Sub
-
-Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
-    
-    'Make sure interactions with this canvas are allowed
-    If Not IsCanvasInteractionAllowed() Then Exit Sub
-    
-    ShiftDown = (Shift And vbShiftMask) > 0
-    CtrlDown = (Shift And vbCtrlMask) > 0
-    AltDown = (Shift And vbAltMask) > 0
-    
-    'If a selection is active, notify it of any changes in the shift key (which is used to request 1:1 selections)
-    If pdImages(g_CurrentImage).selectionActive Then pdImages(g_CurrentImage).mainSelection.requestSquare ShiftDown
     
 End Sub
 
@@ -2030,7 +1786,7 @@ Private Sub HScroll_Scroll(ByVal eventIsCritical As Boolean)
         pdImages(g_CurrentImage).imgViewport.setHScrollValue hScroll.Value
     End If
     
-    If (Not m_SuspendRedraws) Then
+    If (Not Me.GetRedrawSuspension) Then
         
         'Request the scroll-specific viewport pipeline stage
         Viewport_Engine.Stage3_ExtractRelevantRegion pdImages(g_CurrentImage), Me
@@ -2049,15 +1805,16 @@ Private Sub UserControl_Resize()
     cmbSizeUnit.Top = (picStatusBar.ScaleHeight - cmbSizeUnit.Height) \ 2
 
     'Align the canvas picture box to fill the available area
-    AlignCanvasPictureBox
+    AlignCanvasView
     
     'If the control is resizing, the mouse cannot feasibly be over the image - so clear the coordinate box.  Note that this will
-    ' also realign all chrome elements, so we don't need a manual fixChromeLayout call here.
+    ' also realign all chrome elements, so we don't need a manual FixChromeLayout call here.
     DisplayCanvasCoordinates 0, 0, False
     
 End Sub
 
-Public Sub AlignCanvasPictureBox()
+'RELAY: (not really, but all these measurements need to be migrated to ucSupport)
+Public Sub AlignCanvasView()
     
     'As of version 7.0, scroll bars are always visible.  This matches the behavior of paint-centric software like Krita,
     ' and makes it much easier to enable scrolling past the edge of an image (without resorting to stupid click-hold
@@ -2070,30 +1827,24 @@ Public Sub AlignCanvasPictureBox()
     vScrollTop = 0
     
     'With scroll bar positions calculated, calculate width/height values for the main canvas picture box
-    Dim picTop As Long, picLeft As Long, picWidth As Long, picHeight As Long
-    picTop = 0
-    picLeft = 0
-    picWidth = vScrollLeft - picLeft
-    picHeight = hScrollTop - picTop
+    Dim cvTop As Long, cvLeft As Long, cvWidth As Long, cvHeight As Long
+    cvTop = 0
+    cvLeft = 0
+    cvWidth = vScrollLeft - cvLeft
+    cvHeight = hScrollTop - cvTop
     
-    'Failsafe for the IDE
-    'If picWidth < 1 Then picWidth = 1
-    'If picHeight < 1 Then picHeight = 1
-    
-    'Move the picture box into position first
-    If (picCanvas.Left <> picLeft) Or (picCanvas.Top <> picTop) Or (picCanvas.Width <> picWidth) Or (picCanvas.Height <> picHeight) Then
-        'Failsafe check for valid measurements
-        If picWidth > 0 And picHeight > 0 Then picCanvas.Move picLeft, picTop, picWidth, picHeight
-        'MoveWindow picCanvas.hWnd, picTop, picLeft, picWidth, picHeight, 1
+    'Move the CanvasView box into position first
+    If (CanvasView.GetLeft <> cvLeft) Or (CanvasView.GetTop <> cvTop) Or (CanvasView.GetWidth <> cvWidth) Or (CanvasView.GetHeight <> cvHeight) Then
+        If cvWidth > 0 And cvHeight > 0 Then CanvasView.SetPositionAndSize cvLeft, cvTop, cvWidth, cvHeight
     End If
     
     '...Followed by the scrollbars
-    If (hScroll.Left <> hScrollLeft) Or (hScroll.Top <> hScrollTop) Or (hScroll.Width <> picWidth) Then
-        If picWidth > 0 Then hScroll.Move hScrollLeft, hScrollTop, picWidth
+    If (hScroll.Left <> hScrollLeft) Or (hScroll.Top <> hScrollTop) Or (hScroll.Width <> cvWidth) Then
+        If cvWidth > 0 Then hScroll.Move hScrollLeft, hScrollTop, cvWidth
     End If
     
-    If (vScroll.Left <> vScrollLeft) Or (vScroll.Top <> vScrollTop) Or (vScroll.Height <> picHeight) Then
-        If picHeight > 0 Then vScroll.Move vScrollLeft, vScrollTop, vScroll.Width, picHeight
+    If (vScroll.Left <> vScrollLeft) Or (vScroll.Top <> vScrollTop) Or (vScroll.Height <> cvHeight) Then
+        If cvHeight > 0 Then vScroll.Move vScrollLeft, vScrollTop, vScroll.Width, cvHeight
     End If
     
     '...Followed by the "center" button (which sits between the scroll bars)
@@ -2113,32 +1864,28 @@ Private Sub UserControl_Show()
         cmdZoomOut.AssignImage "SB_ZOOM_OUT"
         cmdImgSize.AssignImage "SB_IMG_SIZE"
         cmdCenter.AssignImage "SB_ZOOM_CENTER"
-                
+        
         'Load various status bar icons from the resource file
-        Set sbIconSize = New pdDIB
         Set sbIconCoords = New pdDIB
         Set sbIconNetwork = New pdDIB
-        
-        loadResourceToDIB "SB_IMG_SIZE", sbIconSize
-        loadResourceToDIB "SB_MOUSE_POS", sbIconCoords
-        loadResourceToDIB "SB_NETWORK", sbIconNetwork
-        
-        Set iconLoadAnImage = New pdDIB
-        loadResourceToDIB "IMAGE_ETCH_256", iconLoadAnImage
+        LoadResourceToDIB "SB_MOUSE_POS", sbIconCoords
+        LoadResourceToDIB "SB_NETWORK", sbIconNetwork
         
         'XP users may not have Segoe UI available, which will cause the following lines to throw an error;
         ' it's not really a problem, as the labels will just keep their Tahoma font, but we must catch it anyway.
         On Error GoTo CanvasShowError
                 
-        'Now comes a bit of an odd case.  This control's _Show event happens very early in the load process due to it being
-        ' present on FormMain.  Because of that, the global interface font value may not be loaded yet.  To avoid problems
-        ' from this, we will just load Segoe UI by default, and if that fails (as it may on XP), the labels will retain
-        ' their default Tahoma label.
+        'TODO: see if this is still valid, since we've moved theming much earlier in the load process
+        'Now comes a bit of an odd case.  This control's _Show event happens relatively early in the load process due to it
+        ' being present on FormMain.  Because of that, the global interface font value may not be loaded yet.  To avoid
+        ' problems from this, we will just load Segoe UI by default, and if that fails (as it may on XP), the labels will
+        ' retain their default Tahoma label.
         
         'Convert all labels to the current interface font
         If Len(g_InterfaceFont) = 0 Then g_InterfaceFont = "Segoe UI"
         
         'Request an update against the current theme
+        ' TODO: do we really need to do this manually, or is PD's central theme function smart enough to do this on its own?
         Me.UpdateAgainstCurrentTheme
         
 CanvasShowError:
@@ -2163,7 +1910,7 @@ Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
         pdImages(g_CurrentImage).imgViewport.setVScrollValue vScroll.Value
     End If
         
-    If (Not m_SuspendRedraws) Then
+    If (Not Me.GetRedrawSuspension) Then
     
         'Request the scroll-specific viewport pipeline stage
         Viewport_Engine.Stage3_ExtractRelevantRegion pdImages(g_CurrentImage), Me
@@ -2195,80 +1942,11 @@ Public Sub FixChromeLayout()
         lblMessages.Visible = True
     End If
     
-    'If the canvas is currently disabled (e.g. no image is loaded), let the user know that they can drag/drop files onto
-    ' this space to begin editing
-    If (g_OpenImageCount = 0) And g_IsProgramRunning Then
-    
-        'Ignore redraws if the program is being closed; this improves program termination performance
-        If (Not g_ProgramShuttingDown) Then
-        
-            'Hide scrollbars if they aren't already
-            SetScrollVisibility PD_HORIZONTAL, False
-            SetScrollVisibility PD_VERTICAL, False
-                        
-            Dim tmpDIB As pdDIB
-            Set tmpDIB = New pdDIB
-            tmpDIB.createBlank picCanvas.ScaleWidth, picCanvas.ScaleHeight, 24, g_CanvasBackground
-            
-            Dim notifyFont As pdFont
-            Set notifyFont = New pdFont
-            notifyFont.SetFontFace g_InterfaceFont
-            
-            'Set the font size dynamically.  en-US gets a larger size; other languages, whose text may be longer, use a smaller one.
-            If Not (g_Language Is Nothing) Then
-            
-                If g_Language.translationActive Then
-                    notifyFont.SetFontSize 13
-                Else
-                    notifyFont.SetFontSize 14
-                End If
-                
-            Else
-                notifyFont.SetFontSize 14
-            End If
-            
-            notifyFont.SetFontBold False
-            notifyFont.SetFontColor RGB(41, 43, 54)
-            notifyFont.SetTextAlignment vbCenter
-            
-            'Create the font and attach it to our temporary DIB's DC
-            notifyFont.CreateFontObject
-            notifyFont.AttachToDC tmpDIB.getDIBDC
-            
-            If Not (iconLoadAnImage Is Nothing) Then
-            
-                Dim modifiedHeight As Long
-                modifiedHeight = tmpDIB.getDIBHeight + (iconLoadAnImage.getDIBHeight / 2) + FixDPI(24)
-                
-                Dim loadImageMessage As String
-                If Not (g_Language Is Nothing) Then
-                    loadImageMessage = g_Language.TranslateMessage("Drag an image onto this space to begin editing." & vbCrLf & vbCrLf & "You can also use the Open Image button on the left," & vbCrLf & "or the File > Open and File > Import menus.")
-                End If
-                notifyFont.DrawCenteredText loadImageMessage, tmpDIB.getDIBWidth, modifiedHeight
-                
-                'Just above the text instructions, add a generic image icon
-                iconLoadAnImage.alphaBlendToDC tmpDIB.getDIBDC, 192, (tmpDIB.getDIBWidth - iconLoadAnImage.getDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.getDIBHeight) - FixDPI(20)
-                
-            End If
-            
-            BitBlt picCanvas.hDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
-            RequestBufferSync
-            
-            notifyFont.ReleaseFromDC
-            notifyFont.DeleteCurrentFont
-            
-            tmpDIB.eraseDIB True
-            Set tmpDIB = Nothing
-            
-        End If
-        
-    End If
-
 End Sub
 
 'Dynamically render some icons onto the status bar.
 Public Sub DrawStatusBarIcons(ByVal enabledState As Boolean)
-        
+    
     'Note the enabled state at a module level, in case we need to internally refresh the status bar for some reason
     m_LastEnabledState = enabledState
         
@@ -2333,30 +2011,25 @@ Public Sub DrawStatusBarIcons(ByVal enabledState As Boolean)
                 
     End If
     
-    'Make our painting persistent
-    'picStatusBar.Picture = picStatusBar.Image
-    'picStatusBar.Refresh
-    
 End Sub
 
-'Fill the "size units" drop-down.  We must do this later in the load process, as we have to wait for the translation engine to load.
+'Fill the "size units" drop-down.  We must do this relatively late in the load process, as we have to wait for the translation
+' engine to initialize.
 Public Function PopulateSizeUnits()
-
-    'Add size units to the size unit drop-down box
     cmbSizeUnit.Clear
     cmbSizeUnit.AddItem "px", 0
     cmbSizeUnit.AddItem "in", 1
     cmbSizeUnit.AddItem "cm", 2
     cmbSizeUnit.ListIndex = 0
-
 End Function
 
 'Whenever the mouse cursor needs to be reset, use this function to do so.  Also, when a new tool is created or a new tool feature
 ' is added, make sure to visit this sub and make any necessary cursor changes!
 '
 'A lot of extra values are passed to this function.  Individual tools can use those at their leisure to customize their cursor requests.
+' RELAY: the actual cursor request needs to be passed to pdCanvasView, and we need to make sure its MouseEnter event also calls this.
 Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal x As Single, ByVal y As Single, ByVal imgX As Double, ByVal imgY As Double, ByVal layerX As Double, ByVal layerY As Double)
-
+    
     'Some cursor functions operate on a POI basis
     Dim curPOI As Long
 
@@ -2369,14 +2042,14 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             If IsMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
                 
                 If Button <> 0 Then
-                    cMouseEvents.setPNGCursor "HANDCLOSED", 0, 0
+                    CanvasView.RequestCursor_PNG "HANDCLOSED", 0, 0
                 Else
-                    cMouseEvents.setPNGCursor "HANDOPEN", 0, 0
+                    CanvasView.RequestCursor_PNG "HANDOPEN", 0, 0
                 End If
             
             'If the cursor is not over the image, change to an arrow cursor
             Else
-                cMouseEvents.setSystemCursor IDC_ARROW
+                CanvasView.RequestCursor_System IDC_ARROW
             End If
         
         Case NAV_MOVE
@@ -2388,27 +2061,27 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             
                 'Mouse is not over the current layer
                 Case -1
-                    cMouseEvents.setSystemCursor IDC_ARROW
+                    CanvasView.RequestCursor_System IDC_ARROW
                     
                 'Mouse is over the top-left corner
                 Case 0
-                    cMouseEvents.setSystemCursor IDC_SIZENWSE
+                    CanvasView.RequestCursor_System IDC_SIZENWSE
                     
                 'Mouse is over the top-right corner
                 Case 1
-                    cMouseEvents.setSystemCursor IDC_SIZENESW
+                    CanvasView.RequestCursor_System IDC_SIZENESW
                     
                 'Mouse is over the bottom-left corner
                 Case 2
-                    cMouseEvents.setSystemCursor IDC_SIZENESW
+                    CanvasView.RequestCursor_System IDC_SIZENESW
                     
                 'Mouse is over the bottom-right corner
                 Case 3
-                    cMouseEvents.setSystemCursor IDC_SIZENWSE
+                    CanvasView.RequestCursor_System IDC_SIZENWSE
                     
                 'Mouse is over a rotation handle
                 Case 4 To 7
-                    cMouseEvents.setSystemCursor IDC_SIZEALL
+                    CanvasView.RequestCursor_System IDC_SIZEALL
                     
                 'Mouse is within the layer, but not over a specific node
                 Case 8
@@ -2420,9 +2093,9 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     ' event, automatically factors the transparency check into its calculation.  Thus we don't have to
                     ' re-evaluate the setting here.)
                     If m_LayerAutoActivateIndex = pdImages(g_CurrentImage).getActiveLayerIndex Then
-                        cMouseEvents.setSystemCursor IDC_SIZEALL
+                        CanvasView.RequestCursor_System IDC_SIZEALL
                     Else
-                        cMouseEvents.setSystemCursor IDC_ARROW
+                        CanvasView.RequestCursor_System IDC_ARROW
                     End If
                     
             End Select
@@ -2452,25 +2125,25 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
             
                 Case -1
-                    cMouseEvents.setSystemCursor IDC_ARROW
+                    CanvasView.RequestCursor_System IDC_ARROW
                 Case 0
-                    cMouseEvents.setSystemCursor IDC_SIZENWSE
+                    CanvasView.RequestCursor_System IDC_SIZENWSE
                 Case 1
-                    cMouseEvents.setSystemCursor IDC_SIZENESW
+                    CanvasView.RequestCursor_System IDC_SIZENESW
                 Case 2
-                    cMouseEvents.setSystemCursor IDC_SIZENWSE
+                    CanvasView.RequestCursor_System IDC_SIZENWSE
                 Case 3
-                    cMouseEvents.setSystemCursor IDC_SIZENESW
+                    CanvasView.RequestCursor_System IDC_SIZENESW
                 Case 4
-                    cMouseEvents.setSystemCursor IDC_SIZENS
+                    CanvasView.RequestCursor_System IDC_SIZENS
                 Case 5
-                    cMouseEvents.setSystemCursor IDC_SIZEWE
+                    CanvasView.RequestCursor_System IDC_SIZEWE
                 Case 6
-                    cMouseEvents.setSystemCursor IDC_SIZENS
+                    CanvasView.RequestCursor_System IDC_SIZENS
                 Case 7
-                    cMouseEvents.setSystemCursor IDC_SIZEWE
+                    CanvasView.RequestCursor_System IDC_SIZEWE
                 Case 8
-                    cMouseEvents.setSystemCursor IDC_SIZEALL
+                    CanvasView.RequestCursor_System IDC_SIZEALL
             
             End Select
         
@@ -2485,11 +2158,11 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
             
                 Case -1
-                    cMouseEvents.setSystemCursor IDC_ARROW
+                    CanvasView.RequestCursor_System IDC_ARROW
                 Case 0
-                    cMouseEvents.setSystemCursor IDC_SIZEALL
+                    CanvasView.RequestCursor_System IDC_SIZEALL
                 Case 1
-                    cMouseEvents.setSystemCursor IDC_SIZEALL
+                    CanvasView.RequestCursor_System IDC_SIZEALL
             
             End Select
         
@@ -2499,19 +2172,19 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             
                 '-1: mouse is outside the lasso selection area
                 Case -1
-                    cMouseEvents.setSystemCursor IDC_ARROW
+                    CanvasView.RequestCursor_System IDC_ARROW
                 
                 'numOfPolygonPoints: mouse is inside the polygon, but not over a polygon node
                 Case pdImages(g_CurrentImage).mainSelection.getNumOfPolygonPoints
                     If pdImages(g_CurrentImage).mainSelection.isLockedIn Then
-                        cMouseEvents.setSystemCursor IDC_SIZEALL
+                        CanvasView.RequestCursor_System IDC_SIZEALL
                     Else
-                        cMouseEvents.setSystemCursor IDC_ARROW
+                        CanvasView.RequestCursor_System IDC_ARROW
                     End If
                     
                 'Everything else: mouse is over a polygon node
                 Case Else
-                    cMouseEvents.setSystemCursor IDC_SIZEALL
+                    CanvasView.RequestCursor_System IDC_SIZEALL
                     
             End Select
         
@@ -2521,15 +2194,15 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             
                 '-1: mouse is outside the lasso selection area
                 Case -1
-                    cMouseEvents.setSystemCursor IDC_ARROW
+                    CanvasView.RequestCursor_System IDC_ARROW
                 
                 '0: mouse is inside the lasso selection area.  As a convenience to the user, we don't update the cursor
                 '   if they're still in "drawing" mode - we only update it if the selection is complete.
                 Case 0
                     If pdImages(g_CurrentImage).mainSelection.isLockedIn Then
-                        cMouseEvents.setSystemCursor IDC_SIZEALL
+                        CanvasView.RequestCursor_System IDC_SIZEALL
                     Else
-                        cMouseEvents.setSystemCursor IDC_ARROW
+                        CanvasView.RequestCursor_System IDC_ARROW
                     End If
                     
             End Select
@@ -2540,12 +2213,12 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             
                 '-1: mouse is outside the lasso selection area
                 Case -1
-                    cMouseEvents.setSystemCursor IDC_ARROW
+                    CanvasView.RequestCursor_System IDC_ARROW
                 
                 '0: mouse is inside the lasso selection area.  As a convenience to the user, we don't update the cursor
                 '   if they're still in "drawing" mode - we only update it if the selection is complete.
                 Case Else
-                    cMouseEvents.setSystemCursor IDC_SIZEALL
+                    CanvasView.RequestCursor_System IDC_SIZEALL
                     
             End Select
         
@@ -2564,31 +2237,31 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
     
                     'Mouse is not over the current layer
                     Case -1
-                        cMouseEvents.setSystemCursor IDC_IBEAM
+                        CanvasView.RequestCursor_System IDC_IBEAM
     
                     'Mouse is over the top-left corner
                     Case 0
-                        cMouseEvents.setSystemCursor IDC_SIZENWSE
+                        CanvasView.RequestCursor_System IDC_SIZENWSE
                     
                     'Mouse is over the top-right corner
                     Case 1
-                        cMouseEvents.setSystemCursor IDC_SIZENESW
+                        CanvasView.RequestCursor_System IDC_SIZENESW
                     
                     'Mouse is over the bottom-left corner
                     Case 2
-                        cMouseEvents.setSystemCursor IDC_SIZENESW
+                        CanvasView.RequestCursor_System IDC_SIZENESW
                     
                     'Mouse is over the bottom-right corner
                     Case 3
-                        cMouseEvents.setSystemCursor IDC_SIZENWSE
+                        CanvasView.RequestCursor_System IDC_SIZENWSE
                         
                     'Mouse is over a rotation handle
                     Case 4 To 7
-                        cMouseEvents.setSystemCursor IDC_SIZEALL
+                        CanvasView.RequestCursor_System IDC_SIZEALL
                     
                     'Mouse is within the layer, but not over a specific node
                     Case 8
-                        cMouseEvents.setSystemCursor IDC_SIZEALL
+                        CanvasView.RequestCursor_System IDC_SIZEALL
                     
                 End Select
                 
@@ -2601,11 +2274,11 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 
             'If the current layer is *not* a text layer, clicking anywhere will create a new text layer
             Else
-                cMouseEvents.setSystemCursor IDC_IBEAM
+                CanvasView.RequestCursor_System IDC_IBEAM
             End If
         
         Case Else
-            cMouseEvents.setSystemCursor IDC_ARROW
+            CanvasView.RequestCursor_System IDC_ARROW
                     
     End Select
 
@@ -2613,46 +2286,84 @@ End Sub
 
 'Simple unified way to see if canvas interaction is allowed.
 Private Function IsCanvasInteractionAllowed() As Boolean
-
-    'By default, canvas interaction is allowed
-    IsCanvasInteractionAllowed = True
-    
-    'Now, check a bunch of states that might indicate canvas interactions should not be allowed
-    
-    'If the main form is disabled, exit
-    If Not FormMain.Enabled Then IsCanvasInteractionAllowed = False
-        
-    'If user input has been forcibly disabled, exit
-    If g_DisableUserInput Then IsCanvasInteractionAllowed = False
-    
-    'If no images have been loaded, exit
-    If g_OpenImageCount = 0 Then IsCanvasInteractionAllowed = False
-    
-    'If our own internal redraw suspension flag is set, exit
-    If m_SuspendRedraws Then IsCanvasInteractionAllowed = False
-    
-    'If canvas interactions are disallowed, exit immediately
-    If Not IsCanvasInteractionAllowed Then Exit Function
-    
-    'If the current image does not exist, exit
-    If pdImages(g_CurrentImage) Is Nothing Then
-        IsCanvasInteractionAllowed = False
-    Else
-        
-        'If an image has not yet been loaded, exit
-        If Not pdImages(g_CurrentImage).IsActive Then IsCanvasInteractionAllowed = False
-        If Not pdImages(g_CurrentImage).loadedSuccessfully Then IsCanvasInteractionAllowed = False
-        If pdImages(g_CurrentImage).getNumOfLayers = 0 Then IsCanvasInteractionAllowed = False
-        
-    End If
-    
-    'If the central processor is active, exit
-    If Processor.IsProgramBusy Then IsCanvasInteractionAllowed = False
-    
+    IsCanvasInteractionAllowed = CanvasView.IsCanvasInteractionAllowed
 End Function
 
-'If the viewport experiences changes to scroll or zoom values, this function will be automatically called.  Any relays to external functions
-' should be handled here.
+'If the viewport experiences changes to scroll or zoom values, this function will be automatically called.  Any relays to external
+' functions (functions that rely on viewport settings, obviously) should be handled here.
 Public Sub RelayViewportChanges()
     toolbar_Layers.NotifyViewportChange
+End Sub
+
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
+' and/or retranslating all button captions against the current language.
+Public Sub UpdateAgainstCurrentTheme()
+    
+    'Suspend redraws until all theme updates are complete
+    Me.SetRedrawSuspension True
+    
+    CanvasView.UpdateAgainstCurrentTheme
+    
+    'Rebuild all drop-down boxes (so that translations can be applied)
+    Dim backupZoomIndex As Long, backupSizeIndex As Long
+    backupZoomIndex = cmbZoom.ListIndex
+    backupSizeIndex = cmbSizeUnit.ListIndex
+    
+    'Repopulate zoom dropdown text
+    If Not (g_Zoom Is Nothing) Then g_Zoom.initializeViewportEngine
+    If Not (g_Zoom Is Nothing) Then g_Zoom.populateZoomComboBox cmbZoom, backupZoomIndex
+    Me.PopulateSizeUnits
+    
+    'Auto-size the newly populated combo boxes, according to the width of their longest entries
+    cmbZoom.requestNewWidth 0, True
+    cmbSizeUnit.requestNewWidth 0, True
+    
+    'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
+    cmdZoomFit.AssignTooltip "Fit the image on-screen"
+    cmdZoomIn.AssignTooltip "Zoom in"
+    cmdZoomOut.AssignTooltip "Zoom out"
+    cmdImgSize.AssignTooltip "Resize image"
+    cmbZoom.AssignTooltip "Change viewport zoom"
+    cmbSizeUnit.AssignTooltip "Change the image size unit displayed to the left of this box"
+    cmdCenter.AssignTooltip "Center the image inside the viewport"
+    If Not (g_Themer Is Nothing) Then cmdCenter.BackColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+        
+    'Request visual updates from all supported controls
+    lblCoordinates.UpdateAgainstCurrentTheme
+    lblImgSize.UpdateAgainstCurrentTheme
+    lblMessages.UpdateAgainstCurrentTheme
+    
+    cmdZoomFit.UpdateAgainstCurrentTheme
+    cmdZoomIn.UpdateAgainstCurrentTheme
+    cmdZoomOut.UpdateAgainstCurrentTheme
+    cmdImgSize.UpdateAgainstCurrentTheme
+    cmdCenter.UpdateAgainstCurrentTheme
+    '[DEBUG] We're still good here
+    cmbZoom.UpdateAgainstCurrentTheme
+    cmbSizeUnit.UpdateAgainstCurrentTheme
+    '[DEBUG] We are NOT good here
+    hScroll.UpdateAgainstCurrentTheme
+    vScroll.UpdateAgainstCurrentTheme
+    
+    'Fix combo box positioning (important on high-DPI displays, or if the active font has changed)
+    cmbZoom.Top = (picStatusBar.ScaleHeight - cmbZoom.Height) \ 2
+    cmbSizeUnit.Top = (picStatusBar.ScaleHeight - cmbSizeUnit.Height) \ 2
+    
+    'Restore zoom and size unit indices
+    cmbZoom.ListIndex = backupZoomIndex
+    cmbSizeUnit.ListIndex = backupSizeIndex
+    
+    'Note that we don't actually move the last line status bar; that is handled by DisplayImageCoordinates itself
+    If g_OpenImageCount > 0 Then
+        DisplayImageSize pdImages(g_CurrentImage), False
+    Else
+        DisplayImageSize Nothing, True
+    End If
+    
+    DisplayCanvasCoordinates 0, 0, True
+    FixChromeLayout
+    
+    'Restore redraw capabilities
+    Me.SetRedrawSuspension False
+        
 End Sub

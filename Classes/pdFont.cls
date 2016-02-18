@@ -628,12 +628,11 @@ Private Sub Class_Initialize()
         
 End Sub
 
+'Like most things, it's ideal if the caller frees resources when they no longer need them, but this class should successfully
+' release all attached GDI objects regardless of caller behavior.
 Private Sub Class_Terminate()
-
-    'Free any remaining font resources
     If curDC <> 0 Then ReleaseFromDC
     DeleteCurrentFont
-    
 End Sub
 
 Public Function HasFontBeenCreated() As Boolean

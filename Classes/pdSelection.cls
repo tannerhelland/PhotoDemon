@@ -2103,7 +2103,7 @@ Public Sub renderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
                 
         End Select
         
-        dstCanvas.RequestBufferSync
+        dstCanvas.RequestViewportRedraw
                 
     End If
     

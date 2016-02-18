@@ -1009,7 +1009,7 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
     'PD's new rendering method isn't very friendly to "instantaneous" refreshes, because it's asynchronous (by design).
     ' However, if it's absolutely necessary to apply an immediate refresh, we will attempt to do so.  (Note that this system
     ' requires the underlying UC to *not* have a dedicated DC.)
-    ucSupport.RequestRepaint Not refreshImmediately, Not refreshImmediately
+    ucSupport.RequestRepaint Not refreshImmediately
     
 End Sub
 

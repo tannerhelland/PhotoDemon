@@ -672,7 +672,7 @@ Private Sub zError(ByRef sRoutine As String, ByVal sMsg As String)
   'pdMsgBox sMsg & ".", vbExclamation + vbApplicationModal, "Error in " & TypeName(Me) & "." & sRoutine
   
   'Tanner's modification: do not display message boxes on errors.  Debug output is preferred.
-  Debug.Print ">> Subclasser returned the following message: " & sRoutine & ": " & sMsg
+  Debug.Print ">> Subclasser returned error: " & sRoutine & " - " & sMsg
 End Sub
 
 'Return the address of the specified DLL/procedure

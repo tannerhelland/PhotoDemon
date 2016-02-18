@@ -50,7 +50,6 @@ Private Declare Function LoadImage Lib "user32" Alias "LoadImageA" (ByVal hInst 
 Private Declare Function GetIconInfo Lib "user32" (ByVal hIcon As Long, ByRef piconinfo As ICONINFO) As Long
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
 Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
-Private Declare Sub CreateStreamOnHGlobal Lib "ole32" (ByRef hGlobal As Any, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any)
 Private Declare Function SetMenuItemInfo Lib "user32" Alias "SetMenuItemInfoA" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPosition As Long, lpmii As MENUITEMINFO) As Long
 Private Declare Function GetMenuItemInfo Lib "user32" Alias "GetMenuItemInfoA" (ByVal hMenu As Long, ByVal un As Long, ByVal b As Boolean, ByRef lpMenuItemInfo As MENUITEMINFO) As Long
 Private Declare Function GetMenu Lib "user32" (ByVal hWnd As Long) As Long
@@ -800,17 +799,9 @@ Private Function LoadImageFromStream(ByRef bvData() As Byte, ByRef hImage As Lon
     On Local Error GoTo LoadImageFromStream_Error
     
     Dim IStream As IUnknown
-    
-    Call CreateStreamOnHGlobal(bvData(0), 0&, IStream)
-   
-    If Not IStream Is Nothing Then
-        
-        If GdipLoadImageFromStream(IStream, hImage) = 0 Then
-            
-            LoadImageFromStream = True
-
-        End If
-            
+    Set IStream = VB_Hacks.GetStreamFromVBArray(VarPtr(bvData(0)), UBound(bvData) - LBound(bvData) + 1)
+    If Not (IStream Is Nothing) Then
+        If GdipLoadImageFromStream(IStream, hImage) = 0 Then LoadImageFromStream = True
     End If
 
     Set IStream = Nothing
