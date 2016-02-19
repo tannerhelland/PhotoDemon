@@ -1344,11 +1344,11 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         If (TypeOf eControl Is pdNavigator) Or (TypeOf eControl Is pdNavigatorInner) Then isPDControl = True
         If (TypeOf eControl Is pdCommandBar) Or (TypeOf eControl Is pdCommandBarMini) Then isPDControl = True
         If (TypeOf eControl Is pdResize) Then isPDControl = True
+        If (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is pdCanvasView) Then isPDControl = True
+        If (TypeOf eControl Is pdListBox) Or (TypeOf eControl Is pdListBoxView) Then isPDControl = True
         
-        'These controls currently support translations, but not theming.  (Theming support is actively being worked on, and I'm
-        ' migrating controls to the above "finished" list as they're completed.  Once all controls have been migrated, I'll look
-        ' at a better system for detecting internal PD controls.)
-        If (TypeOf eControl Is pdCanvas) Then isPDControl = True
+        'Combo boxes are hopelessly broken in their current incarnation.  They will shortly be rewritten, so please ignore
+        ' their problematic behavior at present.
         If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then isPDControl = True
         
         'Disabled controls will ignore any function calls, so we must manually enable disabled controls prior to theming them

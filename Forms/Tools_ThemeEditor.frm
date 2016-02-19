@@ -24,6 +24,25 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdButton cmdAddToList 
+      Height          =   495
+      Left            =   10560
+      TabIndex        =   23
+      Top             =   6360
+      Width           =   1215
+      _extentx        =   4683
+      _extenty        =   873
+      caption         =   "add to list"
+   End
+   Begin PhotoDemon.pdListBoxView lbTest 
+      Height          =   2535
+      Left            =   10560
+      TabIndex        =   22
+      Top             =   3720
+      Width           =   2655
+      _extentx        =   4683
+      _extenty        =   4471
+   End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   615
@@ -31,8 +50,8 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   21
       Top             =   9300
       Width           =   13260
-      _ExtentX        =   23389
-      _ExtentY        =   1085
+      _extentx        =   23389
+      _extenty        =   1085
    End
    Begin PhotoDemon.pdCheckBox chkTest 
       Height          =   315
@@ -111,7 +130,7 @@ Begin VB.Form FormThemeEditor
       min             =   1
       max             =   5
       value           =   3
-      orientationhorizontal=   -1
+      orientationhorizontal=   -1  'True
    End
    Begin PhotoDemon.pdButton pdButtonTest 
       Height          =   465
@@ -236,8 +255,8 @@ Begin VB.Form FormThemeEditor
       _extentx        =   7646
       _extenty        =   661
       caption         =   "I'm a hyperlink with weird formatting"
-      fontbold        =   -1
-      fontitalic      =   -1
+      fontbold        =   -1  'True
+      fontitalic      =   -1  'True
       fontsize        =   12
    End
    Begin PhotoDemon.pdButtonStrip btsColorTest 
@@ -272,7 +291,7 @@ Begin VB.Form FormThemeEditor
       _extenty        =   450
       max             =   20
       value           =   10
-      orientationhorizontal=   -1
+      orientationhorizontal=   -1  'True
       visualstyle     =   1
    End
    Begin PhotoDemon.pdScrollBar pdScrollTest 
@@ -286,7 +305,7 @@ Begin VB.Form FormThemeEditor
       _extenty        =   450
       max             =   1000
       value           =   500
-      orientationhorizontal=   -1
+      orientationhorizontal=   -1  'True
    End
    Begin PhotoDemon.pdTextBox pdTextTest 
       Height          =   735
@@ -297,7 +316,7 @@ Begin VB.Form FormThemeEditor
       Width           =   2775
       _extentx        =   4895
       _extenty        =   1296
-      multiline       =   -1
+      multiline       =   -1  'True
       text            =   "Sample text goes here"
    End
    Begin PhotoDemon.pdSlider pdSliderTest 
@@ -313,6 +332,16 @@ Begin VB.Form FormThemeEditor
       max             =   1000
       slidertrackstyle=   4
       notchvaluecustom=   250
+   End
+   Begin PhotoDemon.pdButton cmdRemoveFromList 
+      Height          =   495
+      Left            =   11880
+      TabIndex        =   24
+      Top             =   6360
+      Width           =   1215
+      _extentx        =   2143
+      _extenty        =   873
+      caption         =   "remove from list"
    End
 End
 Attribute VB_Name = "FormThemeEditor"
@@ -362,6 +391,14 @@ Private Sub LoadRelevantThemeFile()
     
     Interface.ApplyThemeAndTranslations Me
     
+End Sub
+
+Private Sub cmdAddToList_Click()
+    lbTest.AddItem Timer
+End Sub
+
+Private Sub cmdRemoveFromList_Click()
+    If lbTest.ListIndex <> -1 Then lbTest.RemoveItem lbTest.ListIndex
 End Sub
 
 Private Sub Form_Load()

@@ -206,6 +206,24 @@
 				<Caption-hover>TextHover</Caption-hover>
 			</PDHyperlink>
 			
+			<PDListBoxView>
+				<Background>BackgroundDefault</Background>
+				<Border>GrayDefault</Border>
+				<SelectedItemFill>AccentDefault</SelectedItemFill>
+				<SelectedItemBorder>AccentDark</SelectedItemBorder> 
+				<SelectedItemText>TextInvert</SelectedItemText> 
+				<UnselectedItemFill>BackgroundDefault</UnselectedItemFill>
+				<UnselectedItemBorder>BackgroundDefault</UnselectedItemBorder>
+				<UnselectedItemBorder-hover>AccentDefault</UnselectedItemBorder-hover>
+				<UnselectedItemText>TextDefault</UnselectedItemText>
+				<UnselectedItemText-hover>TextHyperlink</UnselectedItemText-hover>
+				<SelectedItemFill-disabled>GrayDisabled</SelectedItemFill-disabled>
+				<SelectedItemBorder-disabled>GrayDisabled</SelectedItemBorder-disabled> 
+				<UnselectedItemBorder-disabled>GrayDisabled</UnselectedItemBorder-disabled> 
+				<SelectedItemText-disabled>BackgroundDefault</SelectedItemText-disabled> 
+				<UnselectedItemText-disabled>GrayDisabled</UnselectedItemText-disabled>
+			</PDListBoxView>
+			
 			<PDNavigator>
 				<Background>BackgroundDefault</Background>
 			</PDNavigator>
