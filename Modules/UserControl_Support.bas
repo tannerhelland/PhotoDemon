@@ -16,6 +16,14 @@ Attribute VB_Name = "UserControl_Support"
 
 Option Explicit
 
+Public Type PD_LISTITEM
+    textEn As String
+    textTranslated As String
+    itemTop As Long
+    itemHeight As Long
+    isSeparator As Boolean
+End Type
+
 'The tab key presents a particular problem when intermixing API windows and VB controls.  VB (obviously) ignores the
 ' API windows entirely, and PD further complicates this by sometimes mixing API windows and VB controls on the same UC.
 ' To avoid this disaster, we manage our own tab key presses using an automated system that sorts controls from top-left
@@ -469,7 +477,7 @@ Public Function GetSharedGDIFont(ByVal requestedSize As Single) As Long
         'Update the cache entry with new stats (including the created font)
         m_SharedFonts(m_numOfSharedFonts).FontSize = requestedSize
         m_SharedFonts(m_numOfSharedFonts).numOfOwners = 1
-        If Not Font_Management.createGDIFont(tmpLogFont, m_SharedFonts(m_numOfSharedFonts).fontHandle) Then
+        If Not Font_Management.CreateGDIFont(tmpLogFont, m_SharedFonts(m_numOfSharedFonts).fontHandle) Then
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "WARNING!  UserControl_Support.GetSharedGDIFont() failed to create a new UI font handle."
             #End If
