@@ -15,6 +15,7 @@ Begin VB.UserControl pdCanvasView
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   OLEDropMode     =   1  'Manual
    ScaleHeight     =   240
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
