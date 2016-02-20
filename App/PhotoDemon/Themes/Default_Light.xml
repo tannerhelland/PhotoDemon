@@ -219,7 +219,7 @@
 				<UnselectedItemText-hover>TextHyperlink</UnselectedItemText-hover>
 				<SelectedItemFill-disabled>GrayDisabled</SelectedItemFill-disabled>
 				<SelectedItemBorder-disabled>GrayDisabled</SelectedItemBorder-disabled> 
-				<UnselectedItemBorder-disabled>GrayDisabled</UnselectedItemBorder-disabled> 
+				<UnselectedItemBorder-disabled>BackgroundDefault</UnselectedItemBorder-disabled> 
 				<SelectedItemText-disabled>BackgroundDefault</SelectedItemText-disabled> 
 				<UnselectedItemText-disabled>GrayDisabled</UnselectedItemText-disabled>
 			</PDListBoxView>

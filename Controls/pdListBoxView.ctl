@@ -47,6 +47,9 @@ Option Explicit
 'This control raises much fewer events than a standard ListBox, by design
 Public Event Click()
 
+'It also relays some events from the list box management class
+Public Event ScrollMaxChanged(ByVal newMax As Long)
+
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
@@ -61,8 +64,7 @@ Private Const LIST_PADDING_HORIZONTAL As Single = 4#
 Private Const LIST_PADDING_VERTICAL As Single = 2#
 
 'The rectangle where the list is actually rendered, and a boolean to track whether the mouse is inside that rect
-Private m_ListRect As RECTF, m_MouseInsideList As Boolean
-Private m_ListIndexHover As Long
+Private m_ListRect As RECTF
 
 'List box support class.  Handles data storage and coordinate math for rendering.
 Private WithEvents listSupport As pdListSupport
@@ -120,8 +122,8 @@ Public Property Let FontSize(ByVal newSize As Single)
     PropertyChanged "FontSize"
 End Property
 
-Public Property Get ContainerHWnd() As Long
-    ContainerHWnd = UserControl.ContainerHWnd
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 Public Property Get hWnd() As Long
@@ -172,42 +174,45 @@ Private Sub listSupport_RedrawNeeded()
     If ucSupport.AmIVisible Then RedrawBackBuffer
 End Sub
 
+Private Sub listSupport_ScrollMaxChanged()
+    RaiseEvent ScrollMaxChanged(listSupport.ScrollMax)
+End Sub
+
+Public Function GetScrollMax() As Long
+    GetScrollMax = listSupport.ScrollMax
+End Function
+
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
+    listSupport.NotifyMouseClick Button, Shift, x, y
     UpdateMousePosition x, y
-    
-    Dim tmpListIndex As Long
-    tmpListIndex = listSupport.ListIndexByPosition(x, y)
-    If tmpListIndex >= 0 Then listSupport.ListIndex = tmpListIndex
-    
 End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    listSupport.NotifyMouseEnter Button, Shift, x, y
     UpdateMousePosition x, y
-    RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    listSupport.NotifyMouseLeave Button, Shift, x, y
     UpdateMousePosition -100, -100
-    RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    listSupport.NotifyMouseMove Button, Shift, x, y
     UpdateMousePosition x, y
-    RedrawBackBuffer
 End Sub
 
 Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
-    m_MouseInsideList = Math_Functions.IsPointInRectF(mouseX, mouseY, m_ListRect)
-    m_ListIndexHover = listSupport.ListIndexByPosition(mouseX, mouseY)
-    If m_MouseInsideList Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
+    If listSupport.ListIndexHovered >= 0 Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
+    RedrawBackBuffer
     RaiseEvent GotFocusAPI
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
+    RedrawBackBuffer
     RaiseEvent LostFocusAPI
 End Sub
 
@@ -263,7 +268,7 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
 End Sub
 
 Public Function ScrollMax() As Long
-    ScrollMax = listSupport.ScrollMax(m_ListRect.Width, m_ListRect.Height)
+    ScrollMax = listSupport.ScrollMax
 End Function
 
 Public Property Get ScrollValue() As Long
@@ -347,7 +352,7 @@ Private Sub UpdateControlLayout()
     End With
     
     'Notify the list manager of our new size
-    listSupport.ScrollMax m_ListRect.Width, m_ListRect.Height
+    listSupport.NotifyParentRectF m_ListRect
             
 End Sub
 
@@ -357,12 +362,12 @@ Private Sub RedrawBackBuffer()
     Dim enabledState As Boolean
     enabledState = Me.Enabled
     
-    Dim backgroundColor As Long
-    backgroundColor = m_Colors.RetrieveColor(PDLB_Background, enabledState)
+    Dim BackgroundColor As Long
+    BackgroundColor = m_Colors.RetrieveColor(PDLB_Background, enabledState)
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long, bWidth As Long, bHeight As Long
-    bufferDC = ucSupport.GetBackBufferDC(True, backgroundColor)
+    bufferDC = ucSupport.GetBackBufferDC(True, BackgroundColor)
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
@@ -387,7 +392,7 @@ Private Sub RedrawBackBuffer()
     fontColorSelectedHover = m_Colors.RetrieveColor(PDLB_SelectedItemText, enabledState, False, True)
     fontColorUnselected = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, False)
     fontColorUnselectedHover = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, True)
-        
+    
     If g_IsProgramRunning Then
         
         'Start by retrieving basic rendering metrics from the support object
@@ -397,7 +402,7 @@ Private Sub RedrawBackBuffer()
         'If the list either 1) has keyboard focus, or 2) is actively being hovered by the mouse, we render
         ' it differently, using PD's standard hover behavior (accent colors and chunky border)
         Dim listHasFocus As Boolean
-        listHasFocus = ucSupport.DoIHaveFocus Or m_MouseInsideList
+        listHasFocus = ucSupport.DoIHaveFocus Or listSupport.IsMouseInsideListBox
         
         If Not listIsEmpty Then
             
@@ -418,7 +423,7 @@ Private Sub RedrawBackBuffer()
                 tmpRect.Width = m_ListRect.Width - 4
             Else
                 tmpRect.Left = m_ListRect.Left + 1
-                tmpRect.Width = m_ListRect.Width - 3
+                tmpRect.Width = m_ListRect.Width - 2
             End If
             
             Dim i As Long
@@ -430,7 +435,7 @@ Private Sub RedrawBackBuffer()
                 tmpRect.Height = tmpHeight - 1
                 
                 itemIsSelected = CBool(i = curListIndex)
-                itemIsHovered = CBool(i = m_ListIndexHover)
+                itemIsHovered = CBool(i = listSupport.ListIndexHovered)
                 
                 '...then render its fill...
                 If itemIsSelected Then
@@ -473,12 +478,12 @@ Private Sub RedrawBackBuffer()
         ' rendering that may have fallen outside the clipping area.
         Dim borderWidth As Single, borderColor As Long
         If listHasFocus Then borderWidth = 3# Else borderWidth = 1#
-        borderColor = m_Colors.RetrieveColor(PDLB_Border, enabledState, ucSupport.DoIHaveFocus Or m_MouseInsideList)
+        borderColor = m_Colors.RetrieveColor(PDLB_Border, enabledState, listHasFocus)
         
         GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ListRect, borderColor, , borderWidth, , LineJoinMiter
         
         If Not listHasFocus Then
-            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, backgroundColor, , , , LineJoinMiter
+            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, BackgroundColor, , , , LineJoinMiter
         End If
         
     End If
@@ -513,5 +518,5 @@ End Sub
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    ucSupport.AssignTooltip UserControl.ContainerHWnd, newTooltip, newTooltipTitle, newTooltipIcon
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

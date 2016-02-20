@@ -34,6 +34,7 @@ Option Explicit
 ' we'll raise a "RedrawNeeded" event, which the owner can then respond to at their leisure.  (Or ignore, if e.g. they're
 ' not visible at the moment.)
 Public Event RedrawNeeded()
+Public Event ScrollMaxChanged()
 
 'This class can calculate list box element offsets using three different systems:
 ' - Fixed size (all list elements are the same height)
@@ -69,7 +70,9 @@ Private m_ListIndex As Long
 
 'Scroll bar values.  This class doesn't do any actual rendering, but it will track things like scroll value to make life easier
 ' on the caller (and because we have sufficient data to do all those calculations anyway).
-Private m_ScrollMax As Long, m_ScrollValue As Long, m_ContainerHeight As Long, m_ContainerWidth As Long
+Private m_ScrollMax As Long, m_ScrollValue As Long
+Private m_ListIndexHover As Long, m_MouseInsideList As Boolean
+Private m_ListRectF As RECTF
 
 'Typically, adding an item to the list box requires us to redraw the list box.  This is a waste of time if the caller needs
 ' to add a bunch of items all in a row.  Instead of raising redraws automatically, the caller can choose to suspend redraws
@@ -90,6 +93,8 @@ Private Sub Class_Initialize()
     m_DefaultHeight = 0
     m_SizeMode = PDLH_FIXED
     m_RedrawAutomatically = True
+    m_MouseInsideList = False
+    m_ListIndexHover = -1
     Me.Clear
 End Sub
 
@@ -255,6 +260,10 @@ Public Property Let DefaultItemHeight(ByVal newHeight As Single)
     End If
 End Property
 
+Public Function IsMouseInsideListBox() As Boolean
+    IsMouseInsideListBox = m_MouseInsideList
+End Function
+
 'Retrieve a specified list item
 Public Function List(ByVal itemIndex As Long, Optional ByVal returnTranslatedText As Boolean = False) As String
     
@@ -329,32 +338,32 @@ Public Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, 
     
     'First, do a spot-check on srcX.  If it lies outside the list region, skip this whole step.
     If checkXAsWell Then
-        If (srcX < 0) Or (srcX > m_ContainerWidth) Then
+        If (srcX < m_ListRectF.Left) Or (srcX > m_ListRectF.Left + m_ListRectF.Width) Then
             ListIndexByPosition = -1
             Exit Function
         End If
     End If
     
     'Convert the y-position to an absolute value
-    srcY = srcY + m_ScrollValue
+    srcY = (srcY - m_ListRectF.Top) + m_ScrollValue
     
     'On a fixed-size list, this calculation can be automated.
     If m_SizeMode = PDLH_FIXED Then
         ListIndexByPosition = srcY \ m_DefaultHeight
-        If ListIndexByPosition > m_TotalHeight Then ListIndexByPosition = -1
+        If ListIndexByPosition >= m_NumOfItems Then ListIndexByPosition = -1
     
     'On a variable-size list, this calculation is more complicated
     Else
         
         Dim tmpRect As RECTF
-        tmpRect.Left = 0
-        tmpRect.Width = m_ContainerWidth
+        tmpRect.Left = m_ListRectF.Left
+        tmpRect.Width = m_ListRectF.Width
         
         'Because the (x, y) position may lie outside the visible container area, we need to perform a comprehensive hit search.
         Dim i As Long
         For i = 0 To m_NumOfItems - 1
             
-            tmpRect.Top = m_Items(i).itemTop
+            tmpRect.Top = m_Items(i).itemTop + m_ListRectF.Top
             tmpRect.Height = m_Items(i).itemHeight
             
             If checkXAsWell Then
@@ -373,6 +382,71 @@ Public Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, 
     End If
     
 End Function
+
+'This property exists purely for improving UI feedback.  It may or may not be identical to the default .ListIndex value.
+Public Property Get ListIndexHovered() As Long
+    ListIndexHovered = m_ListIndexHover
+End Property
+
+'While this class doesn't actually render anything (that's left to the parent), it has enough information to manage a lot
+' of the backend rendering details automatically.  This makes it much easier to construct custom list boxes, as things like
+' hit detection can be handled here - ensuring that all list boxes throughout the program, even custom ones, behave identically.
+Friend Sub NotifyParentRectF(ByRef srcListRectF As RECTF)
+    If (m_ListRectF.Width <> srcListRectF.Width) Or (m_ListRectF.Height <> srcListRectF.Height) Then
+        If (m_ListRectF.Left <> srcListRectF.Left) Or (m_ListRectF.Top <> srcListRectF.Top) Then
+            m_ListRectF = srcListRectF
+            If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
+        End If
+    End If
+End Sub
+
+Public Sub NotifyMouseClick(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    If (Button And pdLeftButton) <> 0 Then
+        Dim tmpListIndex As Long
+        tmpListIndex = Me.ListIndexByPosition(x, y)
+        If tmpListIndex >= 0 Then Me.ListIndex = tmpListIndex
+    End If
+End Sub
+
+Public Sub NotifyMouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    UpdateHoveredIndex x, y, True
+End Sub
+
+Public Sub NotifyMouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    UpdateHoveredIndex -100, -100, True
+End Sub
+
+Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+End Sub
+
+Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    UpdateHoveredIndex x, y
+End Sub
+
+Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+End Sub
+
+'When the mouse enters, leaves, or moves inside the underlying control, we will update the current hover index (provided our
+' parent relays those events to us, obviously).
+Private Sub UpdateHoveredIndex(ByVal x As Long, ByVal y As Long, Optional ByVal ensureRedrawEvent As Boolean = False)
+    
+    m_MouseInsideList = Math_Functions.IsPointInRectF(x, y, m_ListRectF)
+    
+    Dim tmpListIndex As Long
+    tmpListIndex = Me.ListIndexByPosition(x, y)
+    
+    If (tmpListIndex <> m_ListIndexHover) Or ensureRedrawEvent Then
+        m_ListIndexHover = tmpListIndex
+        If m_RedrawAutomatically Then
+            RaiseEvent RedrawNeeded
+        Else
+            m_RenderDataCorrect = False
+        End If
+    End If
+    
+End Sub
 
 'Remove an item from the combo box
 Public Sub RemoveItem(ByVal itemIndex As Long)
@@ -432,15 +506,16 @@ End Sub
 
 'While this class doesn't do any actual rendering, it does calculate all relevant scroll bar and positioning values.
 ' This makes life easier on the caller.
-Public Function ScrollMax(ByVal pxWidthOfList As Long, ByVal pxHeightOfList As Long) As Long
-    If (m_ContainerWidth <> pxWidthOfList) Or (m_ContainerHeight <> pxHeightOfList) Then
-        m_ContainerWidth = pxWidthOfList
-        m_ContainerHeight = pxHeightOfList
-        m_ScrollMax = m_TotalHeight - pxHeightOfList
-        If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
+
+'Obviously, these values may not be correct if the class has not been notified of the list box size and/or not all of
+' its contents have been loaded yet.
+Public Property Get ScrollMax() As Long
+    If m_RenderDataCorrect Then
         ScrollMax = m_ScrollMax
+    Else
+        m_ScrollMax = m_TotalHeight - m_ListRectF.Height
     End If
-End Function
+End Property
 
 Public Property Get ScrollValue() As Long
     ScrollValue = m_ScrollValue
@@ -463,7 +538,9 @@ End Property
 'The caller can suspend automatic redraws caused by things like adding an item to the list box.  Just make sure to enable redraws
 ' once you're ready, or you'll never get rendering requests!
 Public Sub SetAutomaticRedraws(ByVal newState As Boolean, Optional ByVal raiseRedrawImmediately As Boolean = False)
+    
     m_RedrawAutomatically = newState
+    
     If raiseRedrawImmediately Then
         If m_RenderDataCorrect Then
             RaiseEvent RedrawNeeded
@@ -471,6 +548,7 @@ Public Sub SetAutomaticRedraws(ByVal newState As Boolean, Optional ByVal raiseRe
             Me.CalculateRenderMetrics
         End If
     End If
+    
 End Sub
 
 'Call this sub to request a full redraw of the list.  This sub doesn't actually perform any drawing; instead, it raises a series of
@@ -481,7 +559,7 @@ Public Sub CalculateRenderMetrics()
     ' We'll cache these, so we don't have to calculate them again (until something changes, at least).
     Dim i As Long
     
-    If m_DefaultHeight = 0 Then Exit Sub
+    If (m_ListRectF.Height <= 0) Or (m_DefaultHeight <= 0) Then Exit Sub
     
     'Lists with uniform item sizes can skip a lot of messy handling.
     If m_SizeMode = PDLH_FIXED Then
@@ -499,7 +577,7 @@ Public Sub CalculateRenderMetrics()
             'If we're past the number of items in the list, exit immediately
             If i >= m_NumOfItems Then Exit Do
             
-        Loop While (i * m_DefaultHeight) < m_ScrollValue + m_ContainerHeight
+        Loop While (i * m_DefaultHeight) < m_ScrollValue + m_ListRectF.Height
         
         m_LastRenderIndex = i - 1
         
@@ -517,18 +595,8 @@ Public Sub CalculateRenderMetrics()
         'Hit detection is easily performed using rectangle intersection.
         ' (Note that the .Top parameter must always be set mathematically, later in this function.)
         Dim tmpRect As RECTF
-        tmpRect.Left = 0
-        tmpRect.Width = m_ContainerWidth
-        tmpRect.Height = m_DefaultHeight
-        
-        'Create a dummy rect at the size of the current viewport.  We'll use this for intersection testing.
-        Dim listRect As RECTF
-        With listRect
-            .Left = 0
-            .Width = m_ContainerWidth
-            .Top = m_ScrollValue
-            .Height = m_ContainerHeight
-        End With
+        tmpRect.Left = m_ListRectF.Left
+        tmpRect.Width = m_ListRectF.Width
         
         Dim intersectionRect As RECTF
         
@@ -538,11 +606,11 @@ Public Sub CalculateRenderMetrics()
             m_LastRenderIndex = -1 * LONG_MAX
             
             'Populate our temporary rect.
-            tmpRect.Top = m_Items(i).itemTop
+            tmpRect.Top = (m_Items(i).itemTop - m_ScrollValue) + m_ListRectF.Top
             tmpRect.Height = m_Items(i).itemHeight
             
             'If overlap is found, render the rect
-            If GDI_Plus.IntersectRectF(intersectionRect, tmpRect, listRect) Then
+            If GDI_Plus.IntersectRectF(intersectionRect, tmpRect, m_ListRectF) Then
                 
                 If i < m_FirstRenderIndex Then m_FirstRenderIndex = i
                 If i > m_LastRenderIndex Then m_LastRenderIndex = i
@@ -560,6 +628,12 @@ Public Sub CalculateRenderMetrics()
     
     'Note that our rendering data is up-to-date.  As long as this stays TRUE, we don't have to recalculate rendering data.
     m_RenderDataCorrect = True
+    
+    'Whenever list contents or container sizes change, we can cache a new scroll bar maximum value.
+    If (m_TotalHeight - m_ListRectF.Height) <> m_ScrollMax Then
+        m_ScrollMax = m_TotalHeight - m_ListRectF.Height
+        RaiseEvent ScrollMaxChanged
+    End If
     
     If m_RedrawAutomatically Then RaiseEvent RedrawNeeded
     
