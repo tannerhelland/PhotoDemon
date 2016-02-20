@@ -105,7 +105,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         Erase srcImageData
         
         SetProgBarVal 0
-        releaseProgressBar
+        ReleaseProgressBar
         
         Message "Image is all one color.  Autocrop unnecessary."
         Exit Sub
@@ -206,7 +206,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
     If (newTop = 0) And (newBottom = pdImages(g_CurrentImage).Height - 1) And (newLeft = 0) And (newRight = pdImages(g_CurrentImage).Width - 1) Then
         SetProgBarVal 0
-        releaseProgressBar
+        ReleaseProgressBar
         Message "Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)"
     Else
     
@@ -229,7 +229,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         
         Message "Finished. "
         SetProgBarVal 0
-        releaseProgressBar
+        ReleaseProgressBar
         
         'Redraw the image
         Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -365,7 +365,7 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
         SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers * imgWidth
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
         
         'Iterate through each layer, cropping them in turn
         For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
@@ -470,10 +470,11 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
     pdImages(g_CurrentImage).updateSize False, selectionWidth, selectionHeight
     DisplaySize pdImages(g_CurrentImage)
     Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Image_Canvas_Handler.CenterOnScreen
     
     'Reset the progress bar to zero
     SetProgBarVal 0
-    releaseProgressBar
+    ReleaseProgressBar
     
 End Sub
 
@@ -688,7 +689,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
     'Reset the progress bar to zero
     SetProgBarVal 0
-    releaseProgressBar
+    ReleaseProgressBar
     
 End Sub
 
@@ -844,7 +845,7 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
     'Reset the progress bar to zero
     SetProgBarVal 0
-    releaseProgressBar
+    ReleaseProgressBar
     
 End Sub
 
@@ -1108,7 +1109,7 @@ Public Sub TrimImage()
         Erase srcImageData
         
         SetProgBarVal 0
-        releaseProgressBar
+        ReleaseProgressBar
         
         Message "Image is fully transparent.  Trim abandoned."
         Exit Sub
@@ -1191,7 +1192,7 @@ Public Sub TrimImage()
     'We now know where to crop the image.  Apply the crop.
     If (newTop = 0) And (newBottom = pdImages(g_CurrentImage).Height - 1) And (newLeft = 0) And (newRight = pdImages(g_CurrentImage).Width - 1) Then
         SetProgBarVal 0
-        releaseProgressBar
+        ReleaseProgressBar
         Message "Image is already trimmed.  (No changes were made to the image.)"
     Else
     
@@ -1221,7 +1222,7 @@ Public Sub TrimImage()
         
         Message "Finished. "
         SetProgBarVal 0
-        releaseProgressBar
+        ReleaseProgressBar
         
         'Redraw the image
         Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)

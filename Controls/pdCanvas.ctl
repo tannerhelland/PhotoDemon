@@ -354,7 +354,7 @@ Public Sub ClearCanvas()
     
     CanvasView.ClearCanvas
     
-    If (g_OpenImageCount = 0) Then
+    If (g_OpenImageCount <= 0) Then
         SetScrollVisibility PD_HORIZONTAL, False
         SetScrollVisibility PD_VERTICAL, False
         
@@ -2005,6 +2005,9 @@ Public Sub DrawStatusBarIcons(ByVal enabledState As Boolean)
         lineStatusBar(0).Visible = False
         lineStatusBar(1).Visible = False
         lineStatusBar(2).Visible = False
+        
+        If hScroll.Visible Then hScroll.Visible = False
+        If vScroll.Visible Then vScroll.Visible = False
         
         'Render the network access icon as necessary
         If m_NetworkAccessActive Then sbIconNetwork.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(0).x1, FixDPI(4), FixDPI(sbIconNetwork.getDIBWidth), FixDPI(sbIconNetwork.getDIBHeight)

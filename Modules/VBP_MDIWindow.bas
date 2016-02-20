@@ -77,7 +77,7 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     
     'Update the main canvas zoom drop-down, and the pdImage container for this image (so that zoom is restored properly when
     ' the user switches between loaded images).
-    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = newZoomIndex
+    FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = newZoomIndex
     pdImages(g_CurrentImage).currentZoomValue = newZoomIndex
     
     'Re-enable scrolling
@@ -100,7 +100,7 @@ Public Sub FitOnScreen()
     g_AllowViewportRendering = False
     
     'Set zoom to the "fit whole" index
-    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoomFitAllIndex
+    FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getZoomFitAllIndex
     pdImages(g_CurrentImage).currentZoomValue = g_Zoom.getZoomFitAllIndex
     
     'Re-enable scrolling
@@ -115,22 +115,22 @@ Public Sub FitOnScreen()
 End Sub
 
 'Center the current image onscreen without changing zoom
-Public Sub CenterOnScreen()
+Public Sub CenterOnScreen(Optional ByVal suspendImmediateRedraw As Boolean = False)
     
     If g_OpenImageCount = 0 Then Exit Sub
         
     'Prevent the viewport from auto-updating on scroll bar events
-    FormMain.mainCanvas(0).setRedrawSuspension True
+    FormMain.mainCanvas(0).SetRedrawSuspension True
     
     'Set both canvas scrollbars to their midpoint
-    FormMain.mainCanvas(0).setScrollValue PD_HORIZONTAL, (FormMain.mainCanvas(0).getScrollMin(PD_HORIZONTAL) + FormMain.mainCanvas(0).getScrollMax(PD_HORIZONTAL)) / 2
-    FormMain.mainCanvas(0).setScrollValue PD_VERTICAL, (FormMain.mainCanvas(0).getScrollMin(PD_VERTICAL) + FormMain.mainCanvas(0).getScrollMax(PD_VERTICAL)) / 2
+    FormMain.mainCanvas(0).SetScrollValue PD_HORIZONTAL, (FormMain.mainCanvas(0).GetScrollMin(PD_HORIZONTAL) + FormMain.mainCanvas(0).GetScrollMax(PD_HORIZONTAL)) / 2
+    FormMain.mainCanvas(0).SetScrollValue PD_VERTICAL, (FormMain.mainCanvas(0).GetScrollMin(PD_VERTICAL) + FormMain.mainCanvas(0).GetScrollMax(PD_VERTICAL)) / 2
     
     'Re-enable scrolling
-    FormMain.mainCanvas(0).setRedrawSuspension False
+    FormMain.mainCanvas(0).SetRedrawSuspension False
         
     'Now fix scrollbars and everything
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If Not suspendImmediateRedraw Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Notify external UI elements of the change
     FormMain.mainCanvas(0).RelayViewportChanges
@@ -167,7 +167,7 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
             If g_OpenImageCount > 0 Then
                 Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.getHScrollValue, pdImages(g_CurrentImage).imgViewport.getVScrollValue
             Else
-                FormMain.mainCanvas(0).clearCanvas
+                FormMain.mainCanvas(0).ClearCanvas
             End If
             
         End If
@@ -389,7 +389,7 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
                 'TODO: fix this!
                 
                 'Reflow any image-window-specific chrome (status bar, rulers, etc)
-                FormMain.mainCanvas(0).fixChromeLayout
+                FormMain.mainCanvas(0).FixChromeLayout
             
                 'Notify the thumbnail bar that a new image has been selected
                 toolbar_ImageTabs.notifyNewActiveImage imageID

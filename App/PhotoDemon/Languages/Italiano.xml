@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.138</langversion>
+<langversion>6.7.139</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -3273,41 +3273,6 @@ Per favore inserisci un valore numerico.</translation>
 </phrase>
 
 <phrase>
-<original>Fit the image on-screen</original>
-<translation>Adatta l'immagine sullo schermo</translation>
-</phrase>
-
-<phrase>
-<original>Zoom in</original>
-<translation>Zoom avanti</translation>
-</phrase>
-
-<phrase>
-<original>Zoom out</original>
-<translation>Zoom indietro</translation>
-</phrase>
-
-<phrase>
-<original>Resize image</original>
-<translation>Ridimensiona l'immagine</translation>
-</phrase>
-
-<phrase>
-<original>Change viewport zoom</original>
-<translation>Cambia lo zoom sulla visualizzazione</translation>
-</phrase>
-
-<phrase>
-<original>Change the image size unit displayed to the left of this box</original>
-<translation>Modifica l'unità delle dimensioni nell'immagine visualizzata a sinistra di questo riquadro.</translation>
-</phrase>
-
-<phrase>
-<original>Center the image inside the viewport</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Delete layer</original>
 <translation>Elimina il livello</translation>
 </phrase>
@@ -3320,6 +3285,11 @@ Per favore inserisci un valore numerico.</translation>
 <phrase>
 <original>Erase selected area</original>
 <translation>Cancella l'area selezionata</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>Ridimensiona l'immagine</translation>
 </phrase>
 
 <phrase>
@@ -3373,17 +3343,6 @@ Per favore inserisci un valore numerico.</translation>
 </phrase>
 
 <phrase>
-<original>Drag an image onto this space to begin editing.
-
-You can also use the Open Image button on the left,
-or the File > Open and File > Import menus.</original>
-<translation>Trascina un'immagine su questo spazio per iniziare la modifica.
-
-Puoi anche utilizzare il pulsante Apri un'immagine a sinistra,
-o il menù File > Apri e File > Importa.</translation>
-</phrase>
-
-<phrase>
 <original>px</original>
 <translation>px</translation>
 </phrase>
@@ -3398,7 +3357,37 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>cm</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 55 phrases. 29 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<phrase>
+<original>Fit the image on-screen</original>
+<translation>Adatta l'immagine sullo schermo</translation>
+</phrase>
+
+<phrase>
+<original>Zoom in</original>
+<translation>Zoom avanti</translation>
+</phrase>
+
+<phrase>
+<original>Zoom out</original>
+<translation>Zoom indietro</translation>
+</phrase>
+
+<phrase>
+<original>Change viewport zoom</original>
+<translation>Cambia lo zoom sulla visualizzazione</translation>
+</phrase>
+
+<phrase>
+<original>Change the image size unit displayed to the left of this box</original>
+<translation>Modifica l'unità delle dimensioni nell'immagine visualizzata a sinistra di questo riquadro.</translation>
+</phrase>
+
+<phrase>
+<original>Center the image inside the viewport</original>
+<translation></translation>
+</phrase>
+
+<!-- pdCanvas.ctl contains 53 phrases. 28 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3735,6 +3724,26 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
+<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
+<translation>Mantieni proporzioni (a volte chiamato Mantieni proporzioni). Utilizzare questa opzione per ridimensionare l'immagine mantenendo la larghezza e l'altezza in sincronia.</translation>
+</phrase>
+
+<phrase>
+<original>Preserve aspect ratio</original>
+<translation>Mantieni proporzioni</translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used to resize the image.</original>
+<translation>Modificare l'unità di misura utilizzata per ridimensionare l'immagine.</translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used for image resolution (pixel density).</original>
+<translation>Modificare l'unità di misura utilizzata per la risoluzione dell'immagine (densità di pixel).</translation>
+</phrase>
+
+<phrase>
 <original>percent</original>
 <translation>percento</translation>
 </phrase>
@@ -3762,26 +3771,6 @@ o il menù File > Apri e File > Importa.</translation>
 <phrase>
 <original>pixels / centimeter (PPCM)</original>
 <translation>pixel/centimetro (PPCM)</translation>
-</phrase>
-
-<phrase>
-<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation>Mantieni proporzioni (a volte chiamato Mantieni proporzioni). Utilizzare questa opzione per ridimensionare l'immagine mantenendo la larghezza e l'altezza in sincronia.</translation>
-</phrase>
-
-<phrase>
-<original>Preserve aspect ratio</original>
-<translation>Mantieni proporzioni</translation>
-</phrase>
-
-<phrase>
-<original>Change the unit of measurement used to resize the image.</original>
-<translation>Modificare l'unità di misura utilizzata per ridimensionare l'immagine.</translation>
-</phrase>
-
-<phrase>
-<original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation>Modificare l'unità di misura utilizzata per la risoluzione dell'immagine (densità di pixel).</translation>
 </phrase>
 
 <phrase>
@@ -14716,6 +14705,29 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdCanvasView.ctl -->
+
+<phrase>
+<original>Drag an image onto this space to begin editing.
+
+You can also use the Open Image button on the left,
+or the File > Open and File > Import menus.</original>
+<translation>Trascina un'immagine su questo spazio per iniziare la modifica.
+
+Puoi anche utilizzare il pulsante Apri un'immagine a sinistra,
+o il menù File > Apri e File > Importa.</translation>
+</phrase>
+
+<!-- pdCanvasView.ctl contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<!-- END text for pdCanvasView.ctl-->
+
+<!-- BEGIN text for pdListBoxView.ctl -->
+
+<!-- pdListBoxView.ctl contains 0 phrases. -->
+
+<!-- END text for pdListBoxView.ctl-->
 
 <!-- Automatic text extraction complete. -->
 
