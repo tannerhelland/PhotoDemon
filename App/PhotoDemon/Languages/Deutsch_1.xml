@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.138</langversion>
+<langversion>6.7.139</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -3274,41 +3274,6 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 </phrase>
 
 <phrase>
-<original>Fit the image on-screen</original>
-<translation>Bild an Bildschirm anpassen</translation>
-</phrase>
-
-<phrase>
-<original>Zoom in</original>
-<translation>Ansicht vergrößern</translation>
-</phrase>
-
-<phrase>
-<original>Zoom out</original>
-<translation>Ansicht verkleinern</translation>
-</phrase>
-
-<phrase>
-<original>Resize image</original>
-<translation>Bildgröße ändern</translation>
-</phrase>
-
-<phrase>
-<original>Change viewport zoom</original>
-<translation>Ansicht vergrößern/verkleinern</translation>
-</phrase>
-
-<phrase>
-<original>Change the image size unit displayed to the left of this box</original>
-<translation>Maßeinheit ändern</translation>
-</phrase>
-
-<phrase>
-<original>Center the image inside the viewport</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Delete layer</original>
 <translation>Ebene löschen</translation>
 </phrase>
@@ -3321,6 +3286,11 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <phrase>
 <original>Erase selected area</original>
 <translation>Auswahl löschen</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>Bildgröße ändern</translation>
 </phrase>
 
 <phrase>
@@ -3374,17 +3344,6 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 </phrase>
 
 <phrase>
-<original>Drag an image onto this space to begin editing.
-
-You can also use the Open Image button on the left,
-or the File > Open and File > Import menus.</original>
-<translation>Ziehen Sie eine Bilddatei auf diese Fläche.
-
-Sie können aber auch den Button "Bild öffnen" oben links oder
-"Datei > Öffnen" bzw. "Datei > Importieren" aus dem Menü verwenden.</translation>
-</phrase>
-
-<phrase>
 <original>px</original>
 <translation>px</translation>
 </phrase>
@@ -3399,7 +3358,37 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <translation>cm</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 55 phrases. 29 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<phrase>
+<original>Fit the image on-screen</original>
+<translation>Bild an Bildschirm anpassen</translation>
+</phrase>
+
+<phrase>
+<original>Zoom in</original>
+<translation>Ansicht vergrößern</translation>
+</phrase>
+
+<phrase>
+<original>Zoom out</original>
+<translation>Ansicht verkleinern</translation>
+</phrase>
+
+<phrase>
+<original>Change viewport zoom</original>
+<translation>Ansicht vergrößern/verkleinern</translation>
+</phrase>
+
+<phrase>
+<original>Change the image size unit displayed to the left of this box</original>
+<translation>Maßeinheit ändern</translation>
+</phrase>
+
+<phrase>
+<original>Center the image inside the viewport</original>
+<translation></translation>
+</phrase>
+
+<!-- pdCanvas.ctl contains 53 phrases. 28 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3736,6 +3725,26 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
+<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
+<translation>Seitenverhältnis beibehalten (Proportionen bewahren). Bei dieser Einstellung können Sie gleichzeitig die Breite und Höhe eines Bilds - ohne Verzerrungseffekte - verändern.</translation>
+</phrase>
+
+<phrase>
+<original>Preserve aspect ratio</original>
+<translation>Seitenverhältnis beibehalten</translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used to resize the image.</original>
+<translation>Maßeinheit für die Bildgrößenänderung einstellen</translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used for image resolution (pixel density).</original>
+<translation>Maßeinheit für die Bildauflösung (Pixeldichte) einstellen.</translation>
+</phrase>
+
+<phrase>
 <original>percent</original>
 <translation>Prozent</translation>
 </phrase>
@@ -3763,26 +3772,6 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <phrase>
 <original>pixels / centimeter (PPCM)</original>
 <translation>Pixel/Zentimeter (px/cm)</translation>
-</phrase>
-
-<phrase>
-<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation>Seitenverhältnis beibehalten (Proportionen bewahren). Bei dieser Einstellung können Sie gleichzeitig die Breite und Höhe eines Bilds - ohne Verzerrungseffekte - verändern.</translation>
-</phrase>
-
-<phrase>
-<original>Preserve aspect ratio</original>
-<translation>Seitenverhältnis beibehalten</translation>
-</phrase>
-
-<phrase>
-<original>Change the unit of measurement used to resize the image.</original>
-<translation>Maßeinheit für die Bildgrößenänderung einstellen</translation>
-</phrase>
-
-<phrase>
-<original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation>Maßeinheit für die Bildauflösung (Pixeldichte) einstellen.</translation>
 </phrase>
 
 <phrase>
@@ -14717,6 +14706,29 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdCanvasView.ctl -->
+
+<phrase>
+<original>Drag an image onto this space to begin editing.
+
+You can also use the Open Image button on the left,
+or the File > Open and File > Import menus.</original>
+<translation>Ziehen Sie eine Bilddatei auf diese Fläche.
+
+Sie können aber auch den Button "Bild öffnen" oben links oder
+"Datei > Öffnen" bzw. "Datei > Importieren" aus dem Menü verwenden.</translation>
+</phrase>
+
+<!-- pdCanvasView.ctl contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<!-- END text for pdCanvasView.ctl-->
+
+<!-- BEGIN text for pdListBoxView.ctl -->
+
+<!-- pdListBoxView.ctl contains 0 phrases. -->
+
+<!-- END text for pdListBoxView.ctl-->
 
 <!-- Automatic text extraction complete. -->
 

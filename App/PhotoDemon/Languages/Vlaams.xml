@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.138</langversion>
+<langversion>6.7.139</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -3275,41 +3275,6 @@ Geef een numerieke waarde.</translation>
 </phrase>
 
 <phrase>
-<original>Fit the image on-screen</original>
-<translation>Pas de afbeelding op het scherm</translation>
-</phrase>
-
-<phrase>
-<original>Zoom in</original>
-<translation>Inzoomen</translation>
-</phrase>
-
-<phrase>
-<original>Zoom out</original>
-<translation>Uitzoomen</translation>
-</phrase>
-
-<phrase>
-<original>Resize image</original>
-<translation>Herschalen afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Change viewport zoom</original>
-<translation>Wijzig viewport zoom</translation>
-</phrase>
-
-<phrase>
-<original>Change the image size unit displayed to the left of this box</original>
-<translation>Wijzig de afbeeldingseenheid weergegeven aan de linkerkant van dit vierkant</translation>
-</phrase>
-
-<phrase>
-<original>Center the image inside the viewport</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Delete layer</original>
 <translation>Verwijder laag</translation>
 </phrase>
@@ -3322,6 +3287,11 @@ Geef een numerieke waarde.</translation>
 <phrase>
 <original>Erase selected area</original>
 <translation>Wis geselecteerd gebied</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>Herschalen afbeelding</translation>
 </phrase>
 
 <phrase>
@@ -3375,17 +3345,6 @@ Geef een numerieke waarde.</translation>
 </phrase>
 
 <phrase>
-<original>Drag an image onto this space to begin editing.
-
-You can also use the Open Image button on the left,
-or the File > Open and File > Import menus.</original>
-<translation>Sleep een afbeelding naar deze ruimte om te beginnen editeren.
-
-Je kan ook gebruik maken van de Open knop Afbeelding aan de linkerkant, 
-of de Bestand > Openen en Bestand > Import menu's.</translation>
-</phrase>
-
-<phrase>
 <original>px</original>
 <translation>px</translation>
 </phrase>
@@ -3400,7 +3359,37 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>cm</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 55 phrases. 29 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<phrase>
+<original>Fit the image on-screen</original>
+<translation>Pas de afbeelding op het scherm</translation>
+</phrase>
+
+<phrase>
+<original>Zoom in</original>
+<translation>Inzoomen</translation>
+</phrase>
+
+<phrase>
+<original>Zoom out</original>
+<translation>Uitzoomen</translation>
+</phrase>
+
+<phrase>
+<original>Change viewport zoom</original>
+<translation>Wijzig viewport zoom</translation>
+</phrase>
+
+<phrase>
+<original>Change the image size unit displayed to the left of this box</original>
+<translation>Wijzig de afbeeldingseenheid weergegeven aan de linkerkant van dit vierkant</translation>
+</phrase>
+
+<phrase>
+<original>Center the image inside the viewport</original>
+<translation></translation>
+</phrase>
+
+<!-- pdCanvas.ctl contains 53 phrases. 28 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3737,6 +3726,26 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
+<translation>Preserveer aspect ratio (ook wel Verhoudingengenoemd). Gebruik deze optie om een afbeelding te wijzigen terwijl de breedte en hoogte in sync blijven.</translation>
+</phrase>
+
+<phrase>
+<original>Preserve aspect ratio</original>
+<translation>Preserveer aspect ratio</translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used to resize the image.</original>
+<translation>Wijzig de meeteenheid gebruikt om het formaat te wijzigen.</translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used for image resolution (pixel density).</original>
+<translation>Verander de gebruikte meeteenheid voor de beeldresolutie (pixeldichtheid).</translation>
+</phrase>
+
+<phrase>
 <original>percent</original>
 <translation>procent</translation>
 </phrase>
@@ -3764,26 +3773,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <phrase>
 <original>pixels / centimeter (PPCM)</original>
 <translation>pixels / centimeter (PPCM)</translation>
-</phrase>
-
-<phrase>
-<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation>Preserveer aspect ratio (ook wel Verhoudingengenoemd). Gebruik deze optie om een afbeelding te wijzigen terwijl de breedte en hoogte in sync blijven.</translation>
-</phrase>
-
-<phrase>
-<original>Preserve aspect ratio</original>
-<translation>Preserveer aspect ratio</translation>
-</phrase>
-
-<phrase>
-<original>Change the unit of measurement used to resize the image.</original>
-<translation>Wijzig de meeteenheid gebruikt om het formaat te wijzigen.</translation>
-</phrase>
-
-<phrase>
-<original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation>Verander de gebruikte meeteenheid voor de beeldresolutie (pixeldichtheid).</translation>
 </phrase>
 
 <phrase>
@@ -14718,6 +14707,29 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdCanvasView.ctl -->
+
+<phrase>
+<original>Drag an image onto this space to begin editing.
+
+You can also use the Open Image button on the left,
+or the File > Open and File > Import menus.</original>
+<translation>Sleep een afbeelding naar deze ruimte om te beginnen editeren.
+
+Je kan ook gebruik maken van de Open knop Afbeelding aan de linkerkant, 
+of de Bestand > Openen en Bestand > Import menu's.</translation>
+</phrase>
+
+<!-- pdCanvasView.ctl contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<!-- END text for pdCanvasView.ctl-->
+
+<!-- BEGIN text for pdListBoxView.ctl -->
+
+<!-- pdListBoxView.ctl contains 0 phrases. -->
+
+<!-- END text for pdListBoxView.ctl-->
 
 <!-- Automatic text extraction complete. -->
 

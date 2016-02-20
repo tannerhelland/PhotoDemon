@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.138</langversion>
+<langversion>6.7.139</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -3276,41 +3276,6 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
-<original>Fit the image on-screen</original>
-<translation>Fit imej pada skrin</translation>
-</phrase>
-
-<phrase>
-<original>Zoom in</original>
-<translation>zum masuk</translation>
-</phrase>
-
-<phrase>
-<original>Zoom out</original>
-<translation>zum keluar</translation>
-</phrase>
-
-<phrase>
-<original>Resize image</original>
-<translation>Saiz semula imej</translation>
-</phrase>
-
-<phrase>
-<original>Change viewport zoom</original>
-<translation>Perubahan viewport zoom</translation>
-</phrase>
-
-<phrase>
-<original>Change the image size unit displayed to the left of this box</original>
-<translation>Tukar unit saiz imej dipaparkan di sebelah kiri kotak ini</translation>
-</phrase>
-
-<phrase>
-<original>Center the image inside the viewport</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Delete layer</original>
 <translation>Padam lapisan</translation>
 </phrase>
@@ -3323,6 +3288,11 @@ Please masukkan nilai berangka.</translation>
 <phrase>
 <original>Erase selected area</original>
 <translation>Memadam kawasan yang dipilih</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>Saiz semula imej</translation>
 </phrase>
 
 <phrase>
@@ -3376,17 +3346,6 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
-<original>Drag an image onto this space to begin editing.
-
-You can also use the Open Image button on the left,
-or the File > Open and File > Import menus.</original>
-<translation>Seret imej ke ruang ini untuk memulakan editing.
-
-You juga boleh menggunakan butang Imej Terbuka di sebelah kiri,
-or menu Fail > Import dan Fail > Buka.</translation>
-</phrase>
-
-<phrase>
 <original>px</original>
 <translation>px</translation>
 </phrase>
@@ -3401,7 +3360,37 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <translation>cm</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 55 phrases. 29 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<phrase>
+<original>Fit the image on-screen</original>
+<translation>Fit imej pada skrin</translation>
+</phrase>
+
+<phrase>
+<original>Zoom in</original>
+<translation>zum masuk</translation>
+</phrase>
+
+<phrase>
+<original>Zoom out</original>
+<translation>zum keluar</translation>
+</phrase>
+
+<phrase>
+<original>Change viewport zoom</original>
+<translation>Perubahan viewport zoom</translation>
+</phrase>
+
+<phrase>
+<original>Change the image size unit displayed to the left of this box</original>
+<translation>Tukar unit saiz imej dipaparkan di sebelah kiri kotak ini</translation>
+</phrase>
+
+<phrase>
+<original>Center the image inside the viewport</original>
+<translation></translation>
+</phrase>
+
+<!-- pdCanvas.ctl contains 53 phrases. 28 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3738,6 +3727,26 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
+<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
+<translation>Mengekalkan nisbah aspek (kadang-kadang dipanggil mengekang Kadaran). Gunakan opsyen ini untuk mengubah saiz imej sambil lebar dan ketinggian dalam penyegerakan.</translation>
+</phrase>
+
+<phrase>
+<original>Preserve aspect ratio</original>
+<translation>Mengekalkan nisbah aspek</translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used to resize the image.</original>
+<translation>Tukar unit ukuran yang digunakan untuk mengubah saiz imej.</translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used for image resolution (pixel density).</original>
+<translation>Tukar unit ukuran yang digunakan untuk resolusi imej (kepadatan piksel).</translation>
+</phrase>
+
+<phrase>
 <original>percent</original>
 <translation>peratus</translation>
 </phrase>
@@ -3765,26 +3774,6 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <phrase>
 <original>pixels / centimeter (PPCM)</original>
 <translation>piksel/sentimeter (PPCM)</translation>
-</phrase>
-
-<phrase>
-<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation>Mengekalkan nisbah aspek (kadang-kadang dipanggil mengekang Kadaran). Gunakan opsyen ini untuk mengubah saiz imej sambil lebar dan ketinggian dalam penyegerakan.</translation>
-</phrase>
-
-<phrase>
-<original>Preserve aspect ratio</original>
-<translation>Mengekalkan nisbah aspek</translation>
-</phrase>
-
-<phrase>
-<original>Change the unit of measurement used to resize the image.</original>
-<translation>Tukar unit ukuran yang digunakan untuk mengubah saiz imej.</translation>
-</phrase>
-
-<phrase>
-<original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation>Tukar unit ukuran yang digunakan untuk resolusi imej (kepadatan piksel).</translation>
 </phrase>
 
 <phrase>
@@ -14719,6 +14708,29 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdCanvasView.ctl -->
+
+<phrase>
+<original>Drag an image onto this space to begin editing.
+
+You can also use the Open Image button on the left,
+or the File > Open and File > Import menus.</original>
+<translation>Seret imej ke ruang ini untuk memulakan editing.
+
+You juga boleh menggunakan butang Imej Terbuka di sebelah kiri,
+or menu Fail > Import dan Fail > Buka.</translation>
+</phrase>
+
+<!-- pdCanvasView.ctl contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<!-- END text for pdCanvasView.ctl-->
+
+<!-- BEGIN text for pdListBoxView.ctl -->
+
+<!-- pdListBoxView.ctl contains 0 phrases. -->
+
+<!-- END text for pdListBoxView.ctl-->
 
 <!-- Automatic text extraction complete. -->
 

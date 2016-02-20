@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.850</langversion>
+<langversion>6.8.851</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ILoveVB</author>
@@ -3269,41 +3269,6 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Fit the image on-screen</original>
-<translation>适合图像到屏幕</translation>
-</phrase>
-
-<phrase>
-<original>Zoom in</original>
-<translation>放大</translation>
-</phrase>
-
-<phrase>
-<original>Zoom out</original>
-<translation>缩小</translation>
-</phrase>
-
-<phrase>
-<original>Resize image</original>
-<translation>调整图像大小</translation>
-</phrase>
-
-<phrase>
-<original>Change viewport zoom</original>
-<translation>改变视觉缩放</translation>
-</phrase>
-
-<phrase>
-<original>Change the image size unit displayed to the left of this box</original>
-<translation>将图像大小单位显示为左边框的值</translation>
-</phrase>
-
-<phrase>
-<original>Center the image inside the viewport</original>
-<translation>居中在图像视窗内</translation>
-</phrase>
-
-<phrase>
 <original>Delete layer</original>
 <translation>删除层</translation>
 </phrase>
@@ -3316,6 +3281,11 @@ Please enter a numeric value.</original>
 <phrase>
 <original>Erase selected area</original>
 <translation>删除选定区域</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>调整图像大小</translation>
 </phrase>
 
 <phrase>
@@ -3369,16 +3339,6 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Drag an image onto this space to begin editing.
-
-You can also use the Open Image button on the left,
-or the File > Open and File > Import menus.</original>
-<translation>拖动图片到这个位置开始编辑。
-你也可以使用左边的按钮打开图像，
-或文件>打开文件>导入菜单。</translation>
-</phrase>
-
-<phrase>
 <original>px</original>
 <translation>像素</translation>
 </phrase>
@@ -3393,7 +3353,37 @@ or the File > Open and File > Import menus.</original>
 <translation>厘米</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 55 phrases. 29 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<phrase>
+<original>Fit the image on-screen</original>
+<translation>适合图像到屏幕</translation>
+</phrase>
+
+<phrase>
+<original>Zoom in</original>
+<translation>放大</translation>
+</phrase>
+
+<phrase>
+<original>Zoom out</original>
+<translation>缩小</translation>
+</phrase>
+
+<phrase>
+<original>Change viewport zoom</original>
+<translation>改变视觉缩放</translation>
+</phrase>
+
+<phrase>
+<original>Change the image size unit displayed to the left of this box</original>
+<translation>将图像大小单位显示为左边框的值</translation>
+</phrase>
+
+<phrase>
+<original>Center the image inside the viewport</original>
+<translation>居中在图像视窗内</translation>
+</phrase>
+
+<!-- pdCanvas.ctl contains 53 phrases. 28 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3730,6 +3720,26 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
+<translation>保持纵横比（有时也称为约束比例）。使用此选项来调整图像的大小，同时保持同步的宽度和高度。</translation>
+</phrase>
+
+<phrase>
+<original>Preserve aspect ratio</original>
+<translation>保留长宽比</translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used to resize the image.</original>
+<translation>更改测量用来调整图像大小的单位。</translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used for image resolution (pixel density).</original>
+<translation>改变用于图像分辨率（像素密度）的测量单位。</translation>
+</phrase>
+
+<phrase>
 <original>percent</original>
 <translation>百分</translation>
 </phrase>
@@ -3757,26 +3767,6 @@ or the File > Open and File > Import menus.</original>
 <phrase>
 <original>pixels / centimeter (PPCM)</original>
 <translation>像素/厘米（PPCM）</translation>
-</phrase>
-
-<phrase>
-<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation>保持纵横比（有时也称为约束比例）。使用此选项来调整图像的大小，同时保持同步的宽度和高度。</translation>
-</phrase>
-
-<phrase>
-<original>Preserve aspect ratio</original>
-<translation>保留长宽比</translation>
-</phrase>
-
-<phrase>
-<original>Change the unit of measurement used to resize the image.</original>
-<translation>更改测量用来调整图像大小的单位。</translation>
-</phrase>
-
-<phrase>
-<original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation>改变用于图像分辨率（像素密度）的测量单位。</translation>
 </phrase>
 
 <phrase>
@@ -14707,6 +14697,28 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdCanvasView.ctl -->
+
+<phrase>
+<original>Drag an image onto this space to begin editing.
+
+You can also use the Open Image button on the left,
+or the File > Open and File > Import menus.</original>
+<translation>拖动图片到这个位置开始编辑。
+你也可以使用左边的按钮打开图像，
+或文件>打开文件>导入菜单。</translation>
+</phrase>
+
+<!-- pdCanvasView.ctl contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<!-- END text for pdCanvasView.ctl-->
+
+<!-- BEGIN text for pdListBoxView.ctl -->
+
+<!-- pdListBoxView.ctl contains 0 phrases. -->
+
+<!-- END text for pdListBoxView.ctl-->
 
 <!-- Automatic text extraction complete. -->
 

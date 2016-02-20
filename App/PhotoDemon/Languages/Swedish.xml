@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.138</langversion>
+<langversion>6.7.139</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -3276,41 +3276,6 @@ Please ange ett numeriskt värde.</translation>
 </phrase>
 
 <phrase>
-<original>Fit the image on-screen</original>
-<translation>Montera bilden på skärmen</translation>
-</phrase>
-
-<phrase>
-<original>Zoom in</original>
-<translation>zooma in</translation>
-</phrase>
-
-<phrase>
-<original>Zoom out</original>
-<translation>zooma ut</translation>
-</phrase>
-
-<phrase>
-<original>Resize image</original>
-<translation>Ändra storlek på bild</translation>
-</phrase>
-
-<phrase>
-<original>Change viewport zoom</original>
-<translation>Ändra visnings zoom</translation>
-</phrase>
-
-<phrase>
-<original>Change the image size unit displayed to the left of this box</original>
-<translation>Ändra bildstorlek enheten visas till vänster på denna ruta</translation>
-</phrase>
-
-<phrase>
-<original>Center the image inside the viewport</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Delete layer</original>
 <translation>Ta bort lager</translation>
 </phrase>
@@ -3323,6 +3288,11 @@ Please ange ett numeriskt värde.</translation>
 <phrase>
 <original>Erase selected area</original>
 <translation>Radera markerade området</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>Ändra storlek på bild</translation>
 </phrase>
 
 <phrase>
@@ -3376,17 +3346,6 @@ Please ange ett numeriskt värde.</translation>
 </phrase>
 
 <phrase>
-<original>Drag an image onto this space to begin editing.
-
-You can also use the Open Image button on the left,
-or the File > Open and File > Import menus.</original>
-<translation>Dra en bild på detta utrymme för att börja editing.
-
-You kan också använda Öppna bild knappen till vänster,
-or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
-</phrase>
-
-<phrase>
 <original>px</original>
 <translation>px</translation>
 </phrase>
@@ -3401,7 +3360,37 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <translation>cm</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 55 phrases. 29 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<phrase>
+<original>Fit the image on-screen</original>
+<translation>Montera bilden på skärmen</translation>
+</phrase>
+
+<phrase>
+<original>Zoom in</original>
+<translation>zooma in</translation>
+</phrase>
+
+<phrase>
+<original>Zoom out</original>
+<translation>zooma ut</translation>
+</phrase>
+
+<phrase>
+<original>Change viewport zoom</original>
+<translation>Ändra visnings zoom</translation>
+</phrase>
+
+<phrase>
+<original>Change the image size unit displayed to the left of this box</original>
+<translation>Ändra bildstorlek enheten visas till vänster på denna ruta</translation>
+</phrase>
+
+<phrase>
+<original>Center the image inside the viewport</original>
+<translation></translation>
+</phrase>
+
+<!-- pdCanvas.ctl contains 53 phrases. 28 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3738,6 +3727,26 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
+<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
+<translation>Bevara sidförhållande (kallas ibland Bibehåll proportioner). Använd detta alternativ för att ändra storlek på en bild samtidigt som bredden och höjden i synk.</translation>
+</phrase>
+
+<phrase>
+<original>Preserve aspect ratio</original>
+<translation>Bevara bildformat</translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used to resize the image.</original>
+<translation>Ändra måttenhet som används för att ändra storlek på bilden.</translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used for image resolution (pixel density).</original>
+<translation>Ändra måttenhet som används för bildupplösning (pixeltätheten).</translation>
+</phrase>
+
+<phrase>
 <original>percent</original>
 <translation>procent</translation>
 </phrase>
@@ -3765,26 +3774,6 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <phrase>
 <original>pixels / centimeter (PPCM)</original>
 <translation>pixlar/cm (ppcm)</translation>
-</phrase>
-
-<phrase>
-<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation>Bevara sidförhållande (kallas ibland Bibehåll proportioner). Använd detta alternativ för att ändra storlek på en bild samtidigt som bredden och höjden i synk.</translation>
-</phrase>
-
-<phrase>
-<original>Preserve aspect ratio</original>
-<translation>Bevara bildformat</translation>
-</phrase>
-
-<phrase>
-<original>Change the unit of measurement used to resize the image.</original>
-<translation>Ändra måttenhet som används för att ändra storlek på bilden.</translation>
-</phrase>
-
-<phrase>
-<original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation>Ändra måttenhet som används för bildupplösning (pixeltätheten).</translation>
 </phrase>
 
 <phrase>
@@ -14719,6 +14708,29 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdCanvasView.ctl -->
+
+<phrase>
+<original>Drag an image onto this space to begin editing.
+
+You can also use the Open Image button on the left,
+or the File > Open and File > Import menus.</original>
+<translation>Dra en bild på detta utrymme för att börja editing.
+
+You kan också använda Öppna bild knappen till vänster,
+or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
+</phrase>
+
+<!-- pdCanvasView.ctl contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<!-- END text for pdCanvasView.ctl-->
+
+<!-- BEGIN text for pdListBoxView.ctl -->
+
+<!-- pdListBoxView.ctl contains 0 phrases. -->
+
+<!-- END text for pdListBoxView.ctl-->
 
 <!-- Automatic text extraction complete. -->
 

@@ -180,6 +180,7 @@ Public Sub SyncInterfaceToCurrentImage()
         End If
         
         'Erase the main viewport's status bar
+        FormMain.mainCanvas(0).ClearCanvas
         FormMain.mainCanvas(0).DisplayImageSize Nothing, True
         FormMain.mainCanvas(0).DrawStatusBarIcons False
         
