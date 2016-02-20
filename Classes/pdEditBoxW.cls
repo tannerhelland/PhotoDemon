@@ -553,6 +553,7 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
                 End If
                 
                 'Activate mouse events
+                If (m_MouseEvents Is Nothing) Then Set m_MouseEvents = New pdInputMouse
                 m_MouseEvents.addInputTracker m_EditBoxHwnd, True, True, , True, , True
                 
             End If
