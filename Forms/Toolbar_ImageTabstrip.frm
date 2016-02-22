@@ -306,9 +306,9 @@ Public Sub notifyUpdatedImage(ByVal pdImagesIndex As Long)
             If Not (pdImages(pdImagesIndex) Is Nothing) Then
             
                 If verticalLayout Then
-                    pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, thumbHeight - (FixDPI(thumbBorder) * 2)
+                    pdImages(pdImagesIndex).RequestThumbnail imgThumbnails(i).thumbDIB, thumbHeight - (FixDPI(thumbBorder) * 2)
                 Else
-                    pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, thumbWidth - (FixDPI(thumbBorder) * 2)
+                    pdImages(pdImagesIndex).RequestThumbnail imgThumbnails(i).thumbDIB, thumbWidth - (FixDPI(thumbBorder) * 2)
                 End If
                 
             End If
@@ -330,9 +330,9 @@ Public Sub registerNewImage(ByVal pdImagesIndex As Long)
     Set imgThumbnails(numOfThumbnails).thumbDIB = New pdDIB
     
     If verticalLayout Then
-        pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbDIB, thumbHeight - (FixDPI(thumbBorder) * 2)
+        pdImages(pdImagesIndex).RequestThumbnail imgThumbnails(numOfThumbnails).thumbDIB, thumbHeight - (FixDPI(thumbBorder) * 2)
     Else
-        pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbDIB, thumbWidth - (FixDPI(thumbBorder) * 2)
+        pdImages(pdImagesIndex).RequestThumbnail imgThumbnails(numOfThumbnails).thumbDIB, thumbWidth - (FixDPI(thumbBorder) * 2)
     End If
     
     'Create a matching shadow DIB
@@ -885,14 +885,14 @@ Private Sub Form_Load()
     
     'Retrieve the unsaved image notification icon from the resource file
     Set unsavedChangesDIB = New pdDIB
-    loadResourceToDIB "NTFY_UNSAVED", unsavedChangesDIB
+    LoadResourceToDIB "NTFY_UNSAVED", unsavedChangesDIB
     
     'Retrieve all PNGs necessary to render the "close by hovering" X that appears
     Set m_CloseIconRed = New pdDIB
-    loadResourceToDIB "CLOSE_MINI_RED", m_CloseIconRed
+    LoadResourceToDIB "CLOSE_MINI_RED", m_CloseIconRed
     
     Set m_CloseIconGray = New pdDIB
-    loadResourceToDIB "CLOSE_MINI_GRAY", m_CloseIconGray
+    LoadResourceToDIB "CLOSE_MINI_GRAY", m_CloseIconGray
     
     'Update the drop-shadow blur radius to account for DPI
     shadowBlurRadius = FixDPI(2)
@@ -981,7 +981,7 @@ Private Sub Form_Resize()
     
         For i = 0 To numOfThumbnails - 1
             imgThumbnails(i).thumbDIB.eraseDIB
-            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbDIB, thumbHeight - (FixDPI(thumbBorder) * 2)
+            pdImages(imgThumbnails(i).indexInPDImages).RequestThumbnail imgThumbnails(i).thumbDIB, thumbHeight - (FixDPI(thumbBorder) * 2)
             If g_InterfacePerformance <> PD_PERF_FASTEST Then updateShadowDIB i
         Next i
     
@@ -994,7 +994,7 @@ Private Sub Form_Resize()
         
         For i = 0 To numOfThumbnails - 1
             imgThumbnails(i).thumbDIB.eraseDIB
-            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbDIB, thumbWidth - (FixDPI(thumbBorder) * 2)
+            pdImages(imgThumbnails(i).indexInPDImages).RequestThumbnail imgThumbnails(i).thumbDIB, thumbWidth - (FixDPI(thumbBorder) * 2)
             If g_InterfacePerformance <> PD_PERF_FASTEST Then updateShadowDIB i
         Next i
     
@@ -1247,7 +1247,7 @@ Private Sub mnuTabstripPopup_Click(Index As Integer)
             pdImages(imageToRevert).undoManager.revertToLastSavedState
                         
             'Also, redraw the current child form icon
-            createCustomFormIcon pdImages(imageToRevert)
+            CreateCustomFormIcons pdImages(imageToRevert)
             notifyUpdatedImage imageToRevert
         
         '(separator)

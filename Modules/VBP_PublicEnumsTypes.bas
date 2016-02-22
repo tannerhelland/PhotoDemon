@@ -300,7 +300,6 @@ Public Type UndoEntry
     undoType As PD_UNDO_TYPE        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
     undoLayerID As Long             'If the undoType is UNDO_LAYER, UNDO_LAYER_VECTORSAFE, or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
     relevantTool As Long            'If a tool was associated with this action, it can be set here.  This value is not currently used.
-    thumbnailSmall As pdDIB         'A small thumbnail associated with the current action.  In the future, this will be used by the Undo History window.
     thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
 End Type
 
@@ -486,7 +485,7 @@ End Type
 'Color definition.  If one of the non-BaseColor values is missing in the theme, it will be replaced by the
 ' BaseColor value.  (As such, the BaseColor value will always be present in a color definition.)
 Public Type PDThemeColor
-    BaseColor As Long
+    baseColor As Long
     DisabledColor As Long
     ActiveColor As Long
     HoverColor As Long

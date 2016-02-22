@@ -76,6 +76,7 @@ Public Property Get IsActive() As Boolean
 End Property
 
 Public Sub StartTimer()
+
     If m_TimerID <> 0 Then StopTimer
     
     If m_Interval > 0 Then
@@ -92,8 +93,17 @@ End Sub
 
 Public Sub StopTimer()
     If m_TimerID <> 0 Then
-        KillTimer m_OwnerHWnd, ObjPtr(Me)
+    
+        Dim timerReleaseCheck As Boolean
+        timerReleaseCheck = CBool(KillTimer(m_OwnerHWnd, ObjPtr(Me)) <> 0)
         m_TimerID = 0
+        
+        If Not timerReleaseCheck Then
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  pdTimer object was not released successfully."
+            #End If
+        End If
+        
     End If
 End Sub
 

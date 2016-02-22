@@ -2636,8 +2636,8 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     End If
     
     'Release both the destination graphics object and the source bitmap object
-    GdipDeleteGraphics iGraphics
     GdipDisposeImage tBitmap
+    GdipDeleteGraphics iGraphics
     
     'Uncomment the line below to receive timing reports
     'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")

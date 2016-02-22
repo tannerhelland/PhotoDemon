@@ -55,15 +55,15 @@ Private m_NumOfEntries As Long
 Private Const INIT_DICT_SIZE = 16
 
 'Number of entries in the current dictionary; 1-based
-Public Function getNumOfEntries() As Long
-    getNumOfEntries = m_NumOfEntries
+Public Function GetNumOfEntries() As Long
+    GetNumOfEntries = m_NumOfEntries
 End Function
 
 'Retrieve a particular entry by index.  Helpful when iterating the dictionary.
-Public Function getValueByIndex(ByVal entryIndex As Long) As Variant
+Public Function GetValueByIndex(ByVal entryIndex As Long) As Variant
     
     If (entryIndex >= 0) And (entryIndex < m_NumOfEntries) Then
-        getValueByIndex = m_DictEntries(entryIndex).dItem
+        GetValueByIndex = m_DictEntries(entryIndex).dItem
     Else
         Debug.Print "Invalid dictionary entry request!"
     End If
@@ -71,10 +71,10 @@ Public Function getValueByIndex(ByVal entryIndex As Long) As Variant
 End Function
 
 'Retrieve a particular entry key by index.  Helpful when iterating the dictionary.
-Public Function getKeyByIndex(ByVal entryIndex As Long) As String
+Public Function GetKeyByIndex(ByVal entryIndex As Long) As String
     
     If (entryIndex >= 0) And (entryIndex < m_NumOfEntries) Then
-        getKeyByIndex = m_DictEntries(entryIndex).dKey
+        GetKeyByIndex = m_DictEntries(entryIndex).dKey
     Else
         Debug.Print "Invalid dictionary entry request!"
     End If
@@ -163,7 +163,7 @@ End Function
 Public Function DeleteEntry(ByVal entryKey As String) As Boolean
     
     Dim keyIndex As Long
-    keyIndex = getIndexOfEntry(entryKey)
+    keyIndex = GetIndexOfEntry(entryKey)
     
     If keyIndex >= 0 Then
         m_DictEntries(keyIndex).wasDeleted = True
@@ -176,62 +176,62 @@ End Function
 
 'The following set of functions are used to retrieve type-specific copies of data in the dictionary.  If an entry cannot be
 ' located, the defaultValue param will be supplied instead.
-Public Function getEntry_Boolean(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As Boolean = False) As Boolean
+Public Function GetEntry_Boolean(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As Boolean = False) As Boolean
 
     Dim keyIndex As Long
-    keyIndex = getIndexOfEntry(entryKey)
+    keyIndex = GetIndexOfEntry(entryKey)
     
     If keyIndex >= 0 Then
-        getEntry_Boolean = CBool(m_DictEntries(keyIndex).dItem)
+        GetEntry_Boolean = CBool(m_DictEntries(keyIndex).dItem)
     Else
-        getEntry_Boolean = defaultValueIfMissing
+        GetEntry_Boolean = defaultValueIfMissing
     End If
     
 End Function
 
-Public Function getEntry_Byte(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As Byte = 0) As Byte
+Public Function GetEntry_Byte(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As Byte = 0) As Byte
 
     Dim keyIndex As Long
-    keyIndex = getIndexOfEntry(entryKey)
+    keyIndex = GetIndexOfEntry(entryKey)
     
     If keyIndex >= 0 Then
-        getEntry_Byte = CByte(m_DictEntries(keyIndex).dItem)
+        GetEntry_Byte = CByte(m_DictEntries(keyIndex).dItem)
     Else
-        getEntry_Byte = defaultValueIfMissing
+        GetEntry_Byte = defaultValueIfMissing
     End If
 
 End Function
 
-Public Function getEntry_Long(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As Long = 0) As Long
+Public Function GetEntry_Long(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As Long = 0) As Long
 
     Dim keyIndex As Long
-    keyIndex = getIndexOfEntry(entryKey)
+    keyIndex = GetIndexOfEntry(entryKey)
     
     If keyIndex >= 0 Then
-        getEntry_Long = CLng(m_DictEntries(keyIndex).dItem)
+        GetEntry_Long = CLng(m_DictEntries(keyIndex).dItem)
     Else
-        getEntry_Long = defaultValueIfMissing
+        GetEntry_Long = defaultValueIfMissing
     End If
     
 End Function
 
-Public Function getEntry_Double(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As Double = 0#) As Double
+Public Function GetEntry_Double(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As Double = 0#) As Double
 
     Dim keyIndex As Long
-    keyIndex = getIndexOfEntry(entryKey)
+    keyIndex = GetIndexOfEntry(entryKey)
     
     If keyIndex >= 0 Then
-        getEntry_Double = CDbl(m_DictEntries(keyIndex).dItem)
+        GetEntry_Double = CDbl(m_DictEntries(keyIndex).dItem)
     Else
-        getEntry_Double = defaultValueIfMissing
+        GetEntry_Double = defaultValueIfMissing
     End If
 
 End Function
 
-Public Function getEntry_String(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As String = "", Optional ByVal assumeLocaleInvariantNumber As Boolean = False) As String
+Public Function GetEntry_String(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As String = "", Optional ByVal assumeLocaleInvariantNumber As Boolean = False) As String
 
     Dim keyIndex As Long
-    keyIndex = getIndexOfEntry(entryKey)
+    keyIndex = GetIndexOfEntry(entryKey)
     
     If keyIndex >= 0 Then
         
@@ -248,47 +248,47 @@ Public Function getEntry_String(ByVal entryKey As String, Optional ByVal default
             testString = m_DictEntries(keyIndex).dItem
             
             If Text_Support.IsNumberLocaleUnaware(testString) Then
-                getEntry_String = Trim$(Str(Val(testString)))
+                GetEntry_String = Trim$(Str(Val(testString)))
             Else
-                getEntry_String = testString
+                GetEntry_String = testString
             End If
         
         Else
-            getEntry_String = m_DictEntries(keyIndex).dItem
+            GetEntry_String = m_DictEntries(keyIndex).dItem
         End If
     Else
-        getEntry_String = defaultValueIfMissing
+        GetEntry_String = defaultValueIfMissing
     End If
 
 End Function
 
-Public Function getEntry_Variant(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As Variant = 0) As Variant
+Public Function GetEntry_Variant(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As Variant = 0) As Variant
 
     Dim keyIndex As Long
-    keyIndex = getIndexOfEntry(entryKey)
+    keyIndex = GetIndexOfEntry(entryKey)
     
     If keyIndex >= 0 Then
-        getEntry_Variant = m_DictEntries(keyIndex).dItem
+        GetEntry_Variant = m_DictEntries(keyIndex).dItem
     Else
-        getEntry_Variant = defaultValueIfMissing
+        GetEntry_Variant = defaultValueIfMissing
     End If
 
 End Function
 
 'This function can be used to test for the existence of a given key in the dictionary.
-Public Function doesKeyExist(ByVal entryKey As String) As Boolean
+Public Function DoesKeyExist(ByVal entryKey As String) As Boolean
 
-    If getIndexOfEntry(entryKey) >= 0 Then
-        doesKeyExist = True
+    If GetIndexOfEntry(entryKey) >= 0 Then
+        DoesKeyExist = True
     Else
-        doesKeyExist = False
+        DoesKeyExist = False
     End If
 
 End Function
 
 'This helper function is used to retrieve dictionary indices, using the requested key.  If a key cannot be found,
 ' this function will return -1.
-Private Function getIndexOfEntry(ByRef entryKey As String) As Long
+Private Function GetIndexOfEntry(ByRef entryKey As String) As Long
 
     'Keys are treated as case-insensitive
     entryKey = LCase(entryKey)
@@ -301,7 +301,7 @@ Private Function getIndexOfEntry(ByRef entryKey As String) As Long
             
             'If we find a match, make sure this entry isn't scheduled for deletion
             If Not m_DictEntries(i).wasDeleted Then
-                getIndexOfEntry = i
+                GetIndexOfEntry = i
                 Exit Function
             End If
             
@@ -312,7 +312,7 @@ Private Function getIndexOfEntry(ByRef entryKey As String) As Long
     Next i
     
     'If we made it all the way here, the requested key was not found.  Return -1.
-    getIndexOfEntry = -1
+    GetIndexOfEntry = -1
 
 End Function
 

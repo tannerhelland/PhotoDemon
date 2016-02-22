@@ -1,4 +1,4 @@
-Attribute VB_Name = "Plugin_FreeImage_Interface"
+Attribute VB_Name = "Plugin_FreeImage"
 '***************************************************************************
 'FreeImage Interface (Advanced)
 'Copyright 2012-2016 by Tanner Helland
@@ -28,21 +28,21 @@ Private m_shoulderStrength As Double, m_linearStrength As Double, m_linearAngle 
 Private m_toeStrength As Double, m_toeNumerator As Double, m_toeDenominator As Double, m_toeAngle As Double
     
 'Is FreeImage available as a plugin?  (NOTE: this is now determined separately from FreeImageEnabled.)
-Public Function isFreeImageAvailable() As Boolean
+Public Function IsFreeImageAvailable() As Boolean
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If cFile.FileExist(g_PluginPath & "freeimage.dll") Then isFreeImageAvailable = True Else isFreeImageAvailable = False
+    If cFile.FileExist(g_PluginPath & "freeimage.dll") Then IsFreeImageAvailable = True Else IsFreeImageAvailable = False
     
 End Function
 
 'Initialize FreeImage.  Do not call this until you have verified FreeImage's existence (typically via isFreeImageAvailable(), above)
-Public Function initializeFreeImage() As Boolean
+Public Function InitializeFreeImage() As Boolean
     
     'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
     g_FreeImageHandle = LoadLibrary(g_PluginPath & "FreeImage.dll")
-    initializeFreeImage = CBool(g_FreeImageHandle <> 0)
+    InitializeFreeImage = CBool(g_FreeImageHandle <> 0)
     
 End Function
 
@@ -639,7 +639,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     '****************************************************************************
     
     Dim specialClipboardHandlingRequired As Boolean
-    Dim tmpClipboardInfo As PD_CLIPBOARD_INFO
+    Dim tmpClipboardInfo As PD_Clipboard_Info
     
     specialClipboardHandlingRequired = False
     
@@ -809,13 +809,13 @@ End Function
 'See if an image file is actually comprised of multiple files (e.g. animated GIFs, multipage TIFs).
 ' Input: file name to be checked
 ' Returns: 0 if only one image is found.  Page (or frame) count if multiple images are found.
-Public Function isMultiImage(ByVal srcFilename As String) As Long
+Public Function IsMultiImage(ByVal srcFilename As String) As Long
 
     On Error GoTo isMultiImage_Error
     
     'Double-check that FreeImage.dll was located at start-up
     If Not g_ImageFormats.FreeImageEnabled Then
-        isMultiImage = 0
+        IsMultiImage = 0
         Exit Function
     End If
         
@@ -826,7 +826,7 @@ Public Function isMultiImage(ByVal srcFilename As String) As Long
     
     'If FreeImage can't determine the file type, or if the filetype is not GIF or TIF, return False
     If (Not FreeImage_FIFSupportsReading(fileFIF)) Or ((fileFIF <> FIF_GIF) And (fileFIF <> FIF_TIFF) And (fileFIF <> FIF_ICO)) Then
-        isMultiImage = 0
+        IsMultiImage = 0
         Exit Function
     End If
     
@@ -847,13 +847,13 @@ Public Function isMultiImage(ByVal srcFilename As String) As Long
     FreeImage_CloseMultiBitmap fi_multi_hDIB
     
     'Return the page count (which will be zero if only a single page or frame is present)
-    isMultiImage = pageCheck
+    IsMultiImage = pageCheck
     
     Exit Function
     
 isMultiImage_Error:
 
-    isMultiImage = 0
+    IsMultiImage = 0
 
 End Function
 
@@ -929,7 +929,7 @@ End Function
 'ALSO NOTE!  The function returns zero for failure state; please check the return value before trying to use it!
 Public Function GetFIHandleFromPDDib_NoCopy(ByRef srcDIB As pdDIB) As Long
     With srcDIB
-        GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .getActualDIBBits, FIT_BITMAP, .getDIBWidth, .getDIBHeight, .getDIBArrayWidth, .getDIBColorDepth, , , , True)
+        GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .getActualDIBBits, FIT_BITMAP, .getDIBWidth, .getDIBHeight, .getDIBArrayWidth, .getDIBColorDepth, , , , Not srcDIB.IsDIBTopDown)
     End With
 End Function
 
@@ -961,7 +961,7 @@ Private Function RaiseToneMapDialog(ByVal fi_Handle As Long, ByRef dst_fiHandle 
     ' central tone-mapping handler and use its success/fail state for this function as well.
     Else
         
-        dst_fiHandle = applyToneMapping(fi_Handle, toneMapSettings)
+        dst_fiHandle = ApplyToneMapping(fi_Handle, toneMapSettings)
         
         If dst_fiHandle = 0 Then
             RaiseToneMapDialog = PD_FAILURE_GENERIC
@@ -982,7 +982,7 @@ End Function
 ' to ensure proper load behavior (e.g. loading can't continue after a failed conversion, because we've forcibly killed the image handle),
 ' and to reduce resource usage (as the source handle is likely enormous, and we don't want it sitting around any longer than is
 ' absolutely necessary).
-Public Function applyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings As String) As Long
+Public Function ApplyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings As String) As Long
     
     'Retrieve the source image's bit-depth and data type.  These are crucial to successful tone-mapping operations.
     Dim fi_BPP As Long
@@ -1025,7 +1025,7 @@ Public Function applyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
                 End If
                 
                 If rgbfHandle = 0 Then
-                    applyToneMapping = 0
+                    ApplyToneMapping = 0
                     Exit Function
                 End If
                 
@@ -1034,12 +1034,12 @@ Public Function applyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
             End If
             
             'At this point, fi_Handle now represents a 24bpp RGBF type FreeImage DIB.  Apply manual tone-mapping now.
-            newHandle = convertFreeImageRGBFTo24bppDIB(newHandle, cParams.GetLong(3), cParams.GetLong(4), cParams.GetDouble(2))
+            newHandle = ConvertFreeImageRGBFTo24bppDIB(newHandle, cParams.GetLong(3), cParams.GetLong(4), cParams.GetDouble(2))
             
             'Unload the intermediate RGBF handle as necessary
             If rgbfHandle <> 0 Then FreeImage_Unload rgbfHandle
             
-            applyToneMapping = newHandle
+            ApplyToneMapping = newHandle
             
         'Filmic tone-map; basically a nice S-curve with an emphasis on rich blacks
         Case PDTM_FILMIC
@@ -1059,7 +1059,7 @@ Public Function applyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
                 End If
                 
                 If rgbfHandle = 0 Then
-                    applyToneMapping = 0
+                    ApplyToneMapping = 0
                     Exit Function
                 End If
                 
@@ -1068,20 +1068,20 @@ Public Function applyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
             End If
             
             'At this point, fi_Handle now represents a 24bpp RGBF type FreeImage DIB.  Apply manual tone-mapping now.
-            newHandle = toneMapFilmic_RGBFTo24bppDIB(newHandle, cParams.GetDouble(2), cParams.GetDouble(3), , , , , , , cParams.GetDouble(4))
+            newHandle = ToneMapFilmic_RGBFTo24bppDIB(newHandle, cParams.GetDouble(2), cParams.GetDouble(3), , , , , , , cParams.GetDouble(4))
             
             'Unload the intermediate RGBF handle as necessary
             If rgbfHandle <> 0 Then FreeImage_Unload rgbfHandle
             
-            applyToneMapping = newHandle
+            ApplyToneMapping = newHandle
         
         'Adaptive logarithmic map
         Case PDTM_DRAGO
-            applyToneMapping = FreeImage_TmoDrago03(fi_Handle, cParams.GetDouble(2), cParams.GetDouble(3))
+            ApplyToneMapping = FreeImage_TmoDrago03(fi_Handle, cParams.GetDouble(2), cParams.GetDouble(3))
             
         'Photoreceptor map
         Case PDTM_REINHARD
-            applyToneMapping = FreeImage_TmoReinhard05Ex(fi_Handle, cParams.GetDouble(2), ByVal 0#, cParams.GetDouble(3), cParams.GetDouble(4))
+            ApplyToneMapping = FreeImage_TmoReinhard05Ex(fi_Handle, cParams.GetDouble(2), ByVal 0#, cParams.GetDouble(3), cParams.GetDouble(4))
         
     
     End Select
@@ -1099,7 +1099,7 @@ End Function
 '
 'OTHER IMPORTANT NOTE: it's probably obvious, but the 24bpp handle this function returns (if successful) must also be freed by the caller.
 ' Forget this, and the function will leak.
-Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optional ByVal toNormalize As PD_BOOL = PD_BOOL_AUTO, Optional ByVal ignoreNegative As Boolean = False, Optional ByVal newGamma As Double = 2.2) As Long
+Private Function ConvertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optional ByVal toNormalize As PD_BOOL = PD_BOOL_AUTO, Optional ByVal ignoreNegative As Boolean = False, Optional ByVal newGamma As Double = 2.2) As Long
     
     'Before doing anything, check the incoming fi_Handle.  For performance reasons, this function only handles RGBF and RGBAF formats.
     ' Other formats are invalid.
@@ -1108,7 +1108,7 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     
     If (fi_DataType <> FIT_RGBF) And (fi_DataType <> FIT_RGBAF) Then
         Debug.Print "Tone-mapping request invalid"
-        convertFreeImageRGBFTo24bppDIB = 0
+        ConvertFreeImageRGBFTo24bppDIB = 0
         Exit Function
     End If
     
@@ -1125,10 +1125,10 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     ' and normalization will only be enabled if values fall outside the [0, 1] range.  (Files written by PhotoDemon will always be normalized
     ' at write-time, so this technique works well when moving images into and out of PD.)
     If toNormalize = PD_BOOL_AUTO Then
-        mustNormalize = isNormalizeRequired(fi_Handle, minR, maxR, minG, maxG, minB, maxB)
+        mustNormalize = IsNormalizeRequired(fi_Handle, minR, maxR, minG, maxG, minB, maxB)
     Else
         mustNormalize = (toNormalize = PD_BOOL_TRUE)
-        If mustNormalize Then isNormalizeRequired fi_Handle, minR, maxR, minG, maxG, minB, maxB
+        If mustNormalize Then IsNormalizeRequired fi_Handle, minR, maxR, minG, maxG, minB, maxB
     End If
     
     'I have no idea if normalization is supposed to include negative numbers or not; each high-bit-depth format has its own quirks, and none are
@@ -1358,7 +1358,7 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     Set tmpDIB = Nothing
     
     'Success!
-    convertFreeImageRGBFTo24bppDIB = fi_DIB
+    ConvertFreeImageRGBFTo24bppDIB = fi_DIB
 
 End Function
 
@@ -1373,7 +1373,7 @@ End Function
 '
 'OTHER IMPORTANT NOTE: it's probably obvious, but the 24bpp handle this function returns (if successful) must also be freed by the caller.
 ' Forget this, and the function will leak.
-Private Function toneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional ByVal newGamma As Single = 2.2, Optional ByVal exposureCompensation As Single = 2#, Optional ByVal shoulderStrength As Single = 0.22, Optional ByVal linearStrength As Single = 0.3, Optional ByVal linearAngle As Single = 0.1, Optional ByVal toeStrength As Single = 0.2, Optional ByVal toeNumerator As Single = 0.01, Optional ByVal toeDenominator As Single = 0.3, Optional ByVal linearWhitePoint As Single = 11.2) As Long
+Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional ByVal newGamma As Single = 2.2, Optional ByVal exposureCompensation As Single = 2#, Optional ByVal shoulderStrength As Single = 0.22, Optional ByVal linearStrength As Single = 0.3, Optional ByVal linearAngle As Single = 0.1, Optional ByVal toeStrength As Single = 0.2, Optional ByVal toeNumerator As Single = 0.01, Optional ByVal toeDenominator As Single = 0.3, Optional ByVal linearWhitePoint As Single = 11.2) As Long
     
     'Before doing anything, check the incoming fi_Handle.  For performance reasons, this function only handles RGBF and RGBAF formats.
     ' Other formats are invalid.
@@ -1382,7 +1382,7 @@ Private Function toneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
     
     If (fi_DataType <> FIT_RGBF) And (fi_DataType <> FIT_RGBAF) Then
         Debug.Print "Tone-mapping request invalid"
-        toneMapFilmic_RGBFTo24bppDIB = 0
+        ToneMapFilmic_RGBFTo24bppDIB = 0
         Exit Function
     End If
     
@@ -1559,7 +1559,7 @@ Private Function toneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
     Set tmpDIB = Nothing
     
     'Success!
-    toneMapFilmic_RGBFTo24bppDIB = fi_DIB
+    ToneMapFilmic_RGBFTo24bppDIB = fi_DIB
 
 End Function
 
@@ -1584,7 +1584,7 @@ End Function
 'Returns TRUE if an RGBF format FreeImage DIB contains values outside the [0, 1] range (meaning normalization is required).
 ' If normalization is required, the various min and max parameters will be filled for each channel.  It is up to the caller to determine how
 ' these values are used; this function is only diagnostic.
-Private Function isNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As Double, ByRef dstMaxR As Double, ByRef dstMinG As Double, ByRef dstMaxG As Double, ByRef dstMinB As Double, ByRef dstMaxB As Double) As Boolean
+Private Function IsNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As Double, ByRef dstMaxR As Double, ByRef dstMinG As Double, ByRef dstMaxG As Double, ByRef dstMinB As Double, ByRef dstMaxB As Double) As Boolean
     
     'Before doing anything, check the incoming fi_Handle.  If alpha is present, pixel alignment calculations must be modified.
     Dim fi_DataType As FREE_IMAGE_TYPE
@@ -1670,9 +1670,9 @@ Private Function isNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As D
     
     'If the max or min lie outside the image, notify the caller that normalization is required on this image
     If (minR < 0) Or (maxR > 1) Or (minG < 0) Or (maxG > 1) Or (minB < 0) Or (maxB > 1) Then
-        isNormalizeRequired = True
+        IsNormalizeRequired = True
     Else
-        isNormalizeRequired = False
+        IsNormalizeRequired = False
     End If
     
 End Function
@@ -1704,7 +1704,7 @@ Public Function FreeImageResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, By
         
         'Create a FreeImage copy of the temporary DIB
         Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(tmpDIB)
         
         'Use that handle to request an image resize
         If fi_DIB <> 0 Then
@@ -1755,26 +1755,25 @@ Public Function FreeImageResizeDIBFast(ByRef dstDIB As pdDIB, ByVal dstX As Long
         
         'Create a FreeImage copy of the source DIB
         Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB)
         
         'Use that handle to request an image resize
         If fi_DIB <> 0 Then
             
             Dim returnDIB As Long
             returnDIB = FreeImage_RescaleByPixel(fi_DIB, dstWidth, dstHeight, True, interpolationType)
-                        
-            'Copy the bits from the FreeImage DIB to a temporary DIB
-            Dim tmpDIB As pdDIB
-            Set tmpDIB = New pdDIB
-            tmpDIB.createBlank dstWidth, dstHeight, 32, 0
-            SetDIBitsToDevice tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 0, 0, 0, dstHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
             
-            'If the destinationIsBlank flag is true, we can use BitBlt in place of AlphaBlend to copy the result
-            ' onto the destination DIB; this shaves off a tiny bit of time.
+            'If the destinationIsBlank flag is TRUE, we can copy the bits directly from the FreeImage bytes to the
+            ' destination bytes, skipping the need for an intermediary DIB.
             If destinationIsBlank Then
-                BitBlt dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+                SetDIBitsToDevice dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, 0, 0, 0, dstHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
             Else
+                Dim tmpDIB As pdDIB
+                Set tmpDIB = New pdDIB
+                tmpDIB.createBlank dstWidth, dstHeight, 32, 0
+                SetDIBitsToDevice tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 0, 0, 0, dstHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
                 AlphaBlend dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 255 * &H10000 Or &H1000000
+                Set tmpDIB = Nothing
             End If
             
             'With the transfer complete, release the FreeImage DIB and unload the library

@@ -76,7 +76,7 @@ Public Sub LoadTheProgram()
     
     'We need GDI+ to extract a JPEG from the resource file and convert it in-memory.  (Yes, there are other ways to do this.  No, I don't
     ' care about using them.)  Check its availability.
-    If isGDIPlusAvailable() Then
+    If IsGDIPlusAvailable() Then
     
         'Load FormSplash into memory, but don't make it visible.
         FormSplash.Visible = False
@@ -976,13 +976,13 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 If g_ImageFormats.FreeImageEnabled Then
                 
                     'Start by seeing if the image file contains multiple pages.  If it does, we will load each page as a separate layer.
-                    If isMultiImage(sFile(thisImage)) > 0 Then
+                    If IsMultiImage(sFile(thisImage)) > 0 Then
                         
                         'TODO: preferences or prompt for how to handle such files
                         
                         'Mark the image as having multiple pages
                         imageHasMultiplePages = True
-                        numOfPages = isMultiImage(sFile(thisImage))
+                        numOfPages = IsMultiImage(sFile(thisImage))
                         
                         'Start by loading just the first page
                         pageNumber = 0
@@ -1171,7 +1171,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             
             'Note that we now need to see if the ICC profile has already been applied.  For CMYK images, the ICC profile will be applied by
             ' the image load function.  If we don't do this, we'll be left with a 32bpp image that contains CMYK data instead of RGBA!
-            If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) And (Not targetImage.imgStorage.doesKeyExist("Tone-mapping")) Then
+            If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) And (Not targetImage.imgStorage.DoesKeyExist("Tone-mapping")) Then
                 
                 '32bpp images must be un-premultiplied before the transformation
                 If targetDIB.getDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication False
@@ -1430,7 +1430,7 @@ PDI_Load_Continuation:
         If isThisPrimaryImage Then
             
             'Create an icon-sized version of this image, which we will use as form's taskbar icon
-            If MacroStatus <> MacroBATCH Then createCustomFormIcon targetImage
+            If MacroStatus <> MacroBATCH Then CreateCustomFormIcons targetImage
             
             'Register this image with the image tab bar
             toolbar_ImageTabs.registerNewImage g_CurrentImage

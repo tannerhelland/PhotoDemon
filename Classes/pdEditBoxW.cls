@@ -45,6 +45,10 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'If a property change requires the creation of an API window (e.g. visible = true), but the control has not yet been created,
+' it will raise this sevent, notifying the parent to call the Create function immediately.
+Public Event CreateTextBoxNow()
+
 'By design, PD textboxes raises fewer events than standard text boxes
 Public Event Change()
 Public Event KeyPress(ByVal vKey As Long, ByRef preventFurtherHandling As Boolean)
@@ -356,12 +360,12 @@ Public Property Get FontSize() As Single
     FontSize = m_FontSize
 End Property
 
-'Edit box sizes and margins are typically enforced by the system, at creation time, so it's easiest to just recreate
-' the box from scratch if the font settings change.  (In other words, try to avoid font changes at run-time.)
+'Edit box sizes and margins are typically enforced by the system, at creation time, so I do not advise changing the font size of an
+' edit box *after* it's been created.
 Public Property Let FontSize(ByVal newSize As Single)
     If newSize <> m_FontSize Then
         m_FontSize = newSize
-        CreateEditBox m_ParentHWnd
+        CreateEditBoxGDIObjects True
     End If
 End Property
 
@@ -384,7 +388,7 @@ End Property
 Public Property Let Multiline(ByVal newState As Boolean)
     If newState <> m_Multiline Then
         m_Multiline = newState
-        CreateEditBox m_ParentHWnd
+        If m_EditBoxHwnd <> 0 Then CreateEditBox m_ParentHWnd
     End If
 End Property
 
@@ -480,12 +484,9 @@ End Property
 
 Public Property Let Visible(ByVal newVisibility As Boolean)
     m_Visible = newVisibility
-    If m_Visible Then
-        If m_EditBoxHwnd = 0 Then
-            CreateEditBox m_ParentHWnd
-        Else
-            ShowWindow m_EditBoxHwnd, SW_SHOWNA
-        End If
+    If m_Visible And g_IsProgramRunning Then
+        If (m_EditBoxHwnd = 0) Then RaiseEvent CreateTextBoxNow
+        ShowWindow m_EditBoxHwnd, SW_SHOWNA
     Else
         If m_EditBoxHwnd <> 0 Then ShowWindow m_EditBoxHwnd, SW_HIDE
     End If
@@ -538,6 +539,7 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
         
         'We need to subclass a number of different messages, both for the edit box window and for the parent control.
         If g_IsProgramRunning Then
+            If cSubclass Is Nothing Then Set cSubclass = New cSelfSubHookCallback
             If Not (cSubclass Is Nothing) Then
                 
                 'Subclass the edit box
@@ -560,7 +562,7 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
         End If
         
         'Pass an appropriate font handle to the edit box; GDI will use this font for text rendering.
-        If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(m_Visible, 1, 0)
+        If (m_EditBoxHwnd <> 0) And (m_EditBoxFont <> 0) Then SendMessage m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(m_Visible, 1, 0)
         
         'If the edit box had text before we killed it, restore that text now
         If Len(curText) <> 0 Then Text = curText
@@ -579,16 +581,18 @@ End Function
 'NOTE: this function does not destroy associated resources, like GDI brushes or fonts.  Those are shared among all
 '      pdEditBox instances, so the only way to free them is to free all pdEditBox instances throughout PD.
 Public Function DestroyEditBox() As Boolean
+        
+    ReleaseEditBoxGDIObjects
+        
     If m_EditBoxHwnd <> 0 Then
-        If Not (cSubclass Is Nothing) Then
-            cSubclass.ssc_UnSubclass m_EditBoxHwnd
-            cSubclass.shk_TerminateHooks
-        End If
+        If Not (cSubclass Is Nothing) Then cSubclass.ssc_UnSubclass m_EditBoxHwnd
         If Not (m_MouseEvents Is Nothing) Then Set m_MouseEvents = Nothing
         DestroyEditBox = CBool(DestroyWindow(m_EditBoxHwnd) <> 0)
+        m_EditBoxHwnd = 0
     Else
         DestroyEditBox = True
     End If
+    
 End Function
 
 Friend Function GetPositionRect(ByRef dstPositionRect As winRect) As Boolean
@@ -653,12 +657,29 @@ Private Sub CreateEditBoxGDIObjects(Optional ByVal forceSync As Boolean = False)
 
 End Sub
 
+'Call this function to release any created GDI edit boxes.  Note that this will be done automatically by the Create function, so you
+' only need to call this dedicated function when the edit box is destroyed.
+Private Sub ReleaseEditBoxGDIObjects()
+
+    'Release any GDI objects associated with the edit box
+    If m_EditBoxBrush <> 0 Then
+        UserControl_Support.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
+        m_EditBoxBrush = 0
+    End If
+    
+    If m_EditBoxFont <> 0 Then
+        UserControl_Support.ReleaseSharedGDIFontByHandle m_EditBoxFont
+        m_EditBoxFont = 0
+    End If
+    
+End Sub
+
 'Force the edit box to re-paint itself
 Private Sub RepaintEditBox()
     If m_EditBoxHwnd <> 0 Then
         Dim tmpRect As winRect
         GetWindowRect m_EditBoxHwnd, tmpRect
-        InvalidateRect m_EditBoxHwnd, tmpRect, 1
+        InvalidateRect m_EditBoxHwnd, tmpRect, 1&
         UpdateWindow m_EditBoxHwnd
     End If
 End Sub
@@ -706,17 +727,6 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-
-    'Release any GDI objects associated with the edit box
-    If m_EditBoxBrush <> 0 Then
-        UserControl_Support.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
-        m_EditBoxBrush = 0
-    End If
-    
-    If m_EditBoxFont <> 0 Then
-        UserControl_Support.ReleaseSharedGDIFontByHandle m_EditBoxFont
-        m_EditBoxFont = 0
-    End If
     
     'Destroy the edit box, as necessary
     DestroyEditBox
@@ -724,7 +734,7 @@ Private Sub Class_Terminate()
     'Release our extra subclasser(s)
     If Not (m_MouseEvents Is Nothing) Then Set m_MouseEvents = Nothing
     
-    If Not cSubclass Is Nothing Then
+    If Not (cSubclass Is Nothing) Then
         cSubclass.ssc_Terminate
         Set cSubclass = Nothing
     End If
@@ -816,6 +826,7 @@ End Sub
 ' release the hook as soon as the system allows.
 Private Sub SafelyRemoveKeyboardHook()
     If m_InHookNow Then
+        m_HookReleaseTimer.Interval = 16
         m_HookReleaseTimer.StartTimer
     Else
         RemoveKeyboardHook
@@ -1002,9 +1013,9 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
     ' Note that if we do not manually handle a keypress, this behavior allows the default keyhandler to deal with
     ' the pressed keys (and raise its own WM_CHAR events, etc).
     If (Not bHandled) Then
-        lReturn = CallNextHookEx(0, nCode, wParam, lParam)
+        lReturn = CallNextHookEx(0&, nCode, wParam, lParam)
     Else
-        lReturn = 1
+        lReturn = 1&
     End If
     
     m_InHookNow = False

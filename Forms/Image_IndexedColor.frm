@@ -32,7 +32,6 @@ Begin VB.Form FormReduceColors
       Width           =   12315
       _ExtentX        =   21722
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdRadioButton optQuant 
       Height          =   360
@@ -147,7 +146,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Render a preview
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -155,7 +154,7 @@ End Sub
 Private Sub Form_Load()
 
     'Suspend previews until the dialog has been fully initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
 
     'Only allow AutoReduction stuff if the FreeImage dll was found.
     If Not g_ImageFormats.FreeImageEnabled Then
@@ -251,13 +250,13 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
             
             'If this is a preview, copy the FreeImage data into the global workingDIB object.
             If toPreview Then
-                Plugin_FreeImage_Interface.GetPDDibFromFreeImageHandle returnDIB, workingDIB
+                Plugin_FreeImage.GetPDDibFromFreeImageHandle returnDIB, workingDIB
                 
             'This is not a preview.  Overwrite the current active layer with the quantized FreeImage data.
             Else
                 
                 SetProgBarVal 3
-                Plugin_FreeImage_Interface.GetPDDibFromFreeImageHandle returnDIB, pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB
+                Plugin_FreeImage.GetPDDibFromFreeImageHandle returnDIB, pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB
                 pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB.convertTo32bpp
                 
                 'Ask FreeImage for the size of the quantized image's palette
@@ -294,7 +293,7 @@ End Sub
 'Use this sub to update the on-screen preview
 Private Sub UpdatePreview()
     
-    If cmdBar.previewsAllowed Then
+    If cmdBar.PreviewsAllowed Then
         If optQuant(0).Value Then
             ReduceImageColors_Auto FIQ_WUQUANT, True, pdFxPreview
         Else

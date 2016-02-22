@@ -4439,8 +4439,6 @@ End Sub
 
 Private Sub MnuTest_Click()
     
-    
-    
 '    'Want to test a new dialog?  Call it here:
 '    showPDDialog vbModal, FormToTest
     

@@ -229,7 +229,7 @@ End Sub
 'Convert a width and height pair to a new max width and height, while preserving aspect ratio
 ' NOTE: by default, inclusive fitting is assumed, but the user can set that parameter to false.  That can be used to
 '        fit an image into a new size with no blank space, but cropping overhanging edges as necessary.)
-Public Sub convertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef newWidth As Long, ByRef newHeight As Long, Optional ByVal fitInclusive As Boolean = True)
+Public Sub ConvertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef newWidth As Long, ByRef newHeight As Long, Optional ByVal fitInclusive As Boolean = True)
     
     Dim srcAspect As Double, dstAspect As Double
     If (srcHeight > 0) And (dstHeight > 0) Then

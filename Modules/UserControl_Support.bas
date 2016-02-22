@@ -334,7 +334,7 @@ Public Function GetSharedGDIBrush(ByVal requestedColor As Long) As Long
     If m_numOfSharedBrushes > 0 Then
             
         For i = 0 To m_numOfSharedBrushes - 1
-            If m_SharedBrushes(i).brushColor = requestedColor Then
+            If (m_SharedBrushes(i).brushColor = requestedColor) And (m_SharedBrushes(i).brushHandle <> 0) Then
             
                 'As a failsafe for black brushes, make sure the owner count is valid too
                 If m_SharedBrushes(i).numOfOwners > 0 Then
@@ -394,6 +394,7 @@ Public Sub ReleaseSharedGDIBrushByColor(ByVal requestedColor As Long)
                 'Brushes with a count of 0 are immediately killed.
                 If m_SharedBrushes(i).numOfOwners = 0 Then
                     DeleteObject m_SharedBrushes(i).brushHandle
+                    m_SharedBrushes(i).brushHandle = 0
                     m_SharedBrushes(i).brushColor = 0
                 End If
                 
@@ -418,6 +419,7 @@ Public Sub ReleaseSharedGDIBrushByHandle(ByVal requestedHandle As Long)
                 m_SharedBrushes(i).numOfOwners = m_SharedBrushes(i).numOfOwners - 1
                 If m_SharedBrushes(i).numOfOwners = 0 Then
                     DeleteObject m_SharedBrushes(i).brushHandle
+                    m_SharedBrushes(i).brushHandle = 0
                     m_SharedBrushes(i).brushColor = 0
                 End If
                 Exit For
@@ -446,7 +448,7 @@ Public Function GetSharedGDIFont(ByVal requestedSize As Single) As Long
             If m_SharedFonts(i).FontSize = requestedSize Then
             
                 'As a failsafe, make sure the owner count is valid too
-                If m_SharedFonts(i).numOfOwners > 0 Then
+                If (m_SharedFonts(i).numOfOwners > 0) And (m_SharedFonts(i).fontHandle <> 0) Then
                     fontExists = True
                     fontIndex = i
                     Exit For
@@ -504,6 +506,7 @@ Public Sub ReleaseSharedGDIFontByHandle(ByVal requestedHandle As Long)
                 If m_SharedFonts(i).numOfOwners = 0 Then
                     Font_Management.DeleteGDIFont m_SharedFonts(i).fontHandle
                     m_SharedFonts(i).fontHandle = 0
+                    m_SharedFonts(i).FontSize = 0
                 End If
                 Exit For
             End If

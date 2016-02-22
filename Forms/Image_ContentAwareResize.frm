@@ -32,7 +32,6 @@ Begin VB.Form FormResizeContentAware
       Width           =   9705
       _ExtentX        =   17119
       _ExtentY        =   1323
-      BackColor       =   14802140
       AutoloadLastPreset=   -1  'True
    End
    Begin PhotoDemon.pdResize ucResize 
@@ -43,15 +42,6 @@ Begin VB.Form FormResizeContentAware
       Width           =   8775
       _ExtentX        =   15478
       _ExtentY        =   5027
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.pdLabel lblFlatten 
       Height          =   645
@@ -115,7 +105,7 @@ Public Property Let ResizeTarget(newTarget As PD_ACTION_TARGET)
 End Property
 
 Private Sub cmdBar_ExtraValidations()
-    If Not ucResize.IsValid(True) Then cmdBar.validationFailed
+    If Not ucResize.IsValid(True) Then cmdBar.ValidationFailed
 End Sub
 
 'OK button
@@ -124,10 +114,10 @@ Private Sub cmdBar_OKClick()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            Process "Content-aware image resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
+            Process "Content-aware image resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, ucResize.unitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
         
         Case PD_AT_SINGLELAYER
-            Process "Content-aware layer resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI, m_ResizeTarget), UNDO_LAYER
+            Process "Content-aware layer resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, ucResize.unitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_LAYER
     
     End Select
 
@@ -137,17 +127,17 @@ End Sub
 ' present, simply randomize the width/height to +/- the current image's width/height divided by two.
 Private Sub cmdBar_RandomizeClick()
     
-    ucResize.lockAspectRatio = False
+    ucResize.LockAspectRatio = False
     
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            ucResize.imgWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
-            ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+            ucResize.ImgWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
+            ucResize.ImgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
         
         Case PD_AT_SINGLELAYER
-            ucResize.imgWidthInPixels = (pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False) / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False))
-            ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False) / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False))
+            ucResize.ImgWidthInPixels = (pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False) / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False))
+            ucResize.ImgHeightInPixels = (pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False) / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False))
     
     End Select
     
@@ -161,14 +151,14 @@ Private Sub cmdBar_ResetClick()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
         
         Case PD_AT_SINGLELAYER
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
     
     End Select
 
-    ucResize.lockAspectRatio = True
+    ucResize.LockAspectRatio = True
     
 End Sub
 
@@ -191,17 +181,17 @@ Private Sub Form_Activate()
     Select Case m_ResizeTarget
         
         Case PD_AT_WHOLEIMAGE
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
         
     End Select
     
     'Warn about flattening if the entire image is being content-aware-resized
     lblFlatten.Visible = CBool(m_ResizeTarget = PD_AT_WHOLEIMAGE)
     
-    ucResize.lockAspectRatio = False
+    ucResize.LockAspectRatio = False
 
 End Sub
 
@@ -215,10 +205,10 @@ Private Sub Form_Load()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
         
     End Select
     
@@ -296,7 +286,7 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         pdImages(g_CurrentImage).undoManager.RestoreUndoData
                 
         'Also, redraw the current child form icon and the image tab-bar
-        createCustomFormIcon pdImages(g_CurrentImage)
+        CreateCustomFormIcons pdImages(g_CurrentImage)
         toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
     
     End If

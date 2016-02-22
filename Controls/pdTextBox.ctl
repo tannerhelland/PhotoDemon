@@ -260,7 +260,14 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
 End Sub
 
 Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
-    If Not (m_EditBox Is Nothing) Then m_EditBox.Visible = newVisibility
+    If Not (m_EditBox Is Nothing) Then
+        
+        'If we haven't created the edit box yet, now is a great time to do it!
+        If m_EditBox.hWnd = 0 Then CreateEditBoxAPIWindow
+        
+        m_EditBox.Visible = newVisibility
+        
+    End If
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
@@ -370,7 +377,7 @@ End Function
 'Generally speaking, the underlying API edit box management class recreates itself as needed, but we need to request its
 ' initial creation.  During this stage, we also auto-size ourself to match the edit box's suggested size (if it's a
 ' single-line instance; multiline boxes can be whatever vertical size we want).
-Private Sub CreateEditBox()
+Private Sub CreateEditBoxAPIWindow()
     
     If Not (m_EditBox Is Nothing) Then
         
@@ -457,10 +464,6 @@ End Sub
 
 Private Sub UserControl_Resize()
     If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
-End Sub
-
-Private Sub UserControl_Show()
-    If Not (m_EditBox Is Nothing) And g_IsProgramRunning Then CreateEditBox
 End Sub
 
 Private Sub UserControl_Terminate()

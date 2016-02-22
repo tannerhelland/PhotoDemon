@@ -176,12 +176,6 @@ Public Sub showDialog(ByRef ownerForm As Form)
     cmdAnswer(1).AssignTooltip "If you do not save this image, any changes you have made will be permanently lost."
     cmdAnswer(2).AssignTooltip "Canceling will return you to the main PhotoDemon window."
     
-    'Automatically draw a warning icon using the system icon set
-    Dim iconY As Long
-    iconY = FixDPI(24)
-    If g_UseFancyFonts Then iconY = iconY + FixDPI(2)
-    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, FixDPI(277), iconY
-    
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
         
@@ -228,7 +222,15 @@ Public Sub showDialog(ByRef ownerForm As Form)
     
     'Apply any custom styles to the form
     ApplyThemeAndTranslations Me
-        
+    
+    'Draw a warning icon using the system icon set.  (Note that we must do this *after* theming is applied, or it will
+    ' be erased by the theming function.)
+    Dim iconY As Long
+    iconY = FixDPI(24)
+    If g_UseFancyFonts Then iconY = iconY + FixDPI(2)
+    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, FixDPI(277), iconY
+    Me.Picture = Me.Image
+    
     'Display the form
     ShowPDDialog vbModal, Me, True
 

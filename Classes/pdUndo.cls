@@ -95,11 +95,10 @@ Private redoState As Boolean
 '     undoType As PD_UNDO_TYPE        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
 '     undoLayerID As Long             'If the undoType is UNDO_LAYER, UNDO_LAYER_VECTORSAFE, or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
 '     relevantTool As Long            'If a tool was associated with this action, it can be set here.  This value is not currently used.
-'     thumbnailSmall As pdDIB         'A small thumbnail associated with the current action.  In the future, this will be used by the Undo History window.
 '     thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
 ' End Type
 
-Private undoStack() As undoEntry
+Private undoStack() As UndoEntry
 
 'If the user performs 10 actions, then presses Undo 5 times and saves the image, we need to disable the Save button
 ' at that Undo point, because it was the last point at which the image was saved.  Thus we must track the last point
@@ -168,7 +167,7 @@ End Function
 '     previous Undo entry with this new one, if the layer ID and processID match.  The caller must have *explicit* knowledge
 '     that this behavior is appropriate, as there is no way to retrieve the overwritten Undo entry.  (PD uses this for
 '     non-destructive changes to a layer, if the non-destructive type doesn't change between Undo requests.)
-Public Sub createUndoData(ByVal processID As String, ByVal pParamString As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal targetLayerID As Long = -1, Optional ByVal curTool As Long = -1, Optional ByVal coalescenceAllowed As Boolean = False)
+Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal targetLayerID As Long = -1, Optional ByVal curTool As Long = -1, Optional ByVal coalescenceAllowed As Boolean = False)
     
     'If the caller is okay with us coalescing this into the previous entry, test for coalescence acceptability
     If coalescenceAllowed And (undoNum > 0) Then
@@ -195,7 +194,7 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
     'Debug.Print "Saved " & getCurrentUndoFilename() & " as Undo file #" & undoNum & "."
     
     'Store all relevant information about this Undo action, so we can access it in the future if necessary
-    If undoNum <> UBound(undoStack) Then ReDim Preserve undoStack(0 To undoNum) As undoEntry
+    If undoNum <> UBound(undoStack) Then ReDim Preserve undoStack(0 To undoNum) As UndoEntry
     With undoStack(undoNum)
         .processID = processID
         .processParamString = pParamString
@@ -213,38 +212,33 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
     'Next, we will store a copy of the current image thumbnail in two sizes: 256x256, and 48x48
     
     'First, obtain a large copy of the thumbnail.  The source of the thumbnail changes depending on the undo type.
-    Set undoStack(undoNum).thumbnailLarge = New pdDIB
+    Dim largeThumbSize As Long: largeThumbSize = FixDPI(UNDO_THUMB_LARGE)
+    If undoStack(undoNum).thumbnailLarge Is Nothing Then Set undoStack(undoNum).thumbnailLarge = New pdDIB
     
     Select Case processType
     
         Case UNDO_NOTHING
-            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, FixDPI(UNDO_THUMB_LARGE)
+            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
         
         Case UNDO_EVERYTHING
-            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, FixDPI(UNDO_THUMB_LARGE)
+            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
             
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
-            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, FixDPI(UNDO_THUMB_LARGE)
+            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
         
         Case UNDO_IMAGEHEADER
-            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, FixDPI(UNDO_THUMB_LARGE)
+            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
         
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
-            parentPDImage.getLayerByID(targetLayerID).requestThumbnail undoStack(undoNum).thumbnailLarge, FixDPI(UNDO_THUMB_LARGE)
+            parentPDImage.getLayerByID(targetLayerID).requestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
         
         Case UNDO_LAYERHEADER
-            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, FixDPI(UNDO_THUMB_LARGE)
+            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
         
         Case UNDO_SELECTION
-            parentPDImage.mainSelection.requestThumbnail undoStack(undoNum).thumbnailLarge, FixDPI(UNDO_THUMB_LARGE)
+            parentPDImage.mainSelection.requestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
             
     End Select
-    
-    'Next, create a smaller copy of the thumbnail using FreeImage resize.  (This is much faster than regenerating
-    ' the thumbnail from scratch, especially if an image has many layers.)
-    Set undoStack(undoNum).thumbnailSmall = New pdDIB
-    undoStack(undoNum).thumbnailSmall.createBlank FixDPI(UNDO_THUMB_SMALL), FixDPI(UNDO_THUMB_SMALL), 32, 0
-    FreeImageResizeDIBFast undoStack(undoNum).thumbnailSmall, 0, 0, undoStack(undoNum).thumbnailSmall.getDIBWidth, undoStack(undoNum).thumbnailSmall.getDIBHeight, undoStack(undoNum).thumbnailLarge, FILTER_BILINEAR, True
     
     'Increase our Undo count
     undoNum = undoNum + 1
@@ -984,7 +978,7 @@ End Sub
 Private Sub Class_Initialize()
     
     'Initialize all relevant undo/redo tracking variables
-    ReDim undoStack(0) As undoEntry
+    ReDim undoStack(0) As UndoEntry
     
     undoNum = 0
     undoMax = 0
@@ -1088,7 +1082,7 @@ Public Function reconstructStackFromExternalSource(ByRef srcXMLString As String)
             undoNumAtLastSave_PDI = xmlEngine.getUniqueTag_Long("UndoNumAtLastSave_PDI")
             
             'Next, we must reconstruct the Undo stack itself.  Start by preparing the stack array.
-            ReDim undoStack(0 To undoTotal) As undoEntry
+            ReDim undoStack(0 To undoTotal) As UndoEntry
             
             'Start retrieving individual stack entries from the file
             Dim i As Long
@@ -1111,8 +1105,7 @@ Public Function reconstructStackFromExternalSource(ByRef srcXMLString As String)
                         
                     End With
                     
-                    'Initialize the two thumbnail DIBs, even though they won't contain anything useful.
-                    Set undoStack(i).thumbnailSmall = New pdDIB
+                    'Initialize the thumbnail DIB, even though it won't contain anything useful.
                     Set undoStack(i).thumbnailLarge = New pdDIB
                 
                 End If
@@ -1137,12 +1130,12 @@ End Function
 ' 1) Number of Undo entries
 ' 2) Current Undo entry
 ' 3) Array of type undoEntry, to receive the full contents of the stack
-Friend Sub copyUndoStack(ByRef numOfUndos As Long, ByRef curUndoNumber As Long, ByRef stackList() As undoEntry)
+Friend Sub CopyUndoStack(ByRef numOfUndos As Long, ByRef curUndoNumber As Long, ByRef stackList() As UndoEntry)
 
     numOfUndos = undoMax
     curUndoNumber = undoNum
     
-    ReDim stackList(0 To undoMax) As undoEntry
+    ReDim stackList(0 To undoMax) As UndoEntry
     
     Dim i As Long
     For i = 0 To undoMax - 1
@@ -1157,9 +1150,6 @@ Friend Sub copyUndoStack(ByRef numOfUndos As Long, ByRef curUndoNumber As Long, 
             
             Set .thumbnailLarge = New pdDIB
             .thumbnailLarge.createFromExistingDIB undoStack(i).thumbnailLarge
-            
-            Set .thumbnailSmall = New pdDIB
-            .thumbnailSmall.createFromExistingDIB undoStack(i).thumbnailSmall
             
         End With
         

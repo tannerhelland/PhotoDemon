@@ -690,15 +690,15 @@ End Sub
 '
 'FreeImage is currently required for this function, because it provides a simple way to move between DIBs and DDBs.  I could rewrite
 ' the function without FreeImage's help, but frankly don't consider it worth the trouble.
-Public Function getIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long = 0) As Long
+Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long = 0) As Long
 
     If Not g_ImageFormats.FreeImageEnabled Then
-        getIconFromDIB = 0
+        GetIconFromDIB = 0
         Exit Function
     End If
     
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+    fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB)
     
     'If the iconSize parameter is 0, use the current DIB's dimensions.  Otherwise, resize it as requested.
     If iconSize = 0 Then
@@ -712,7 +712,7 @@ Public Function getIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long 
         'Icon generation has a number of quirks.  One is that even if you want a 32bpp icon, you still must supply a blank
         ' monochrome mask for the icon, even though the API just discards it.  Prepare such a mask now.
         Dim monoBmp As Long
-        monoBmp = CreateBitmap(iconSize, iconSize, 1, 1, ByVal 0&)
+        monoBmp = CreateBitmap(iconSize, iconSize, 1&, 1&, ByVal 0&)
         
         'Create a header for the icon we desire, then use CreateIconIndirect to create it.
         Dim icoInfo As ICONINFO
@@ -724,61 +724,59 @@ Public Function getIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long 
             .hbmColor = FreeImage_GetBitmapForDevice(fi_DIB)
         End With
         
-        getIconFromDIB = CreateIconIndirect(icoInfo)
+        GetIconFromDIB = CreateIconIndirect(icoInfo)
         
         'Delete the temporary monochrome mask and DDB
         DeleteObject monoBmp
         DeleteObject icoInfo.hbmColor
     
     Else
-        getIconFromDIB = 0
+        GetIconFromDIB = 0
     End If
     
     'Release FreeImage's copy of the source DIB
-    FreeImage_UnloadEx fi_DIB
+    If fi_DIB <> 0 Then FreeImage_UnloadEx fi_DIB
     
 End Function
 
 'Create a custom form icon for an MDI child form (using the image stored in the back buffer of imgForm)
 ' Note that this function currently requires the FreeImage plugin to be present on the system.
-Public Sub createCustomFormIcon(ByRef srcImage As pdImage)
+Public Sub CreateCustomFormIcons(ByRef srcImage As pdImage)
 
     If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
     If Not g_ImageFormats.FreeImageEnabled Then Exit Sub
     If srcImage Is Nothing Then Exit Sub
-
-    'Taskbar icons are generally 32x32.  Form titlebar icons are generally 16x16.
-    Dim hIcon32 As Long, hIcon16 As Long
-
+    
     Dim thumbDIB As pdDIB
-    Set thumbDIB = New pdDIB
-
+    
     'Request a 32x32 thumbnail version of the current image
-    If srcImage.requestThumbnail(thumbDIB, 32) Then
+    If srcImage.RequestThumbnail(thumbDIB, 32) Then
 
-        'Request an icon-format version of the generated thumbnail
-        hIcon32 = getIconFromDIB(thumbDIB)
-
-        'Assign the new icon to the taskbar
-        'setNewTaskbarIcon hIcon32, imgForm.hWnd
-
-        '...and remember it in our current icon collection
-        AddIconToList hIcon32
-
-        '...and the current form
+        'Request two icon-format versions of the generated thumbnail.
+        ' (Taskbar icons are generally 32x32.  Form titlebar icons are generally 16x16.)
+        Dim hIcon32 As Long, hIcon16 As Long
+        hIcon32 = GetIconFromDIB(thumbDIB)
+        hIcon16 = GetIconFromDIB(thumbDIB, 16)
+        
+        'Each pdImage instance stores its custom icon handles, which simplifies the process of synchronizing PD's icons
+        ' to any given image if the user is working with multiple images at once.  Retrieve the old handles now, so we
+        ' can free them after we set the new ones.
+        Dim oldIcon32 As Long, oldIcon16 As Long
+        oldIcon32 = srcImage.curFormIcon32
+        oldIcon16 = srcImage.curFormIcon16
+        
+        'Set the new icons, then free the old ones
         srcImage.curFormIcon32 = hIcon32
-
-        'Now repeat the same steps, but for a 16x16 icon to be used in the form's title bar.
-        hIcon16 = getIconFromDIB(thumbDIB, 16)
-        AddIconToList hIcon16
         srcImage.curFormIcon16 = hIcon16
+        If oldIcon32 <> 0 Then DestroyIcon oldIcon32
+        If oldIcon16 <> 0 Then DestroyIcon oldIcon16
         
     End If
 
 End Sub
 
 'Needs to be run only once, at the start of the program
-Public Sub initializeIconHandler()
+Public Sub InitializeIconHandler()
     m_numOfIcons = 0
     ReDim m_iconHandles(0 To INITIAL_ICON_CACHE_SIZE - 1) As Long
 End Sub
@@ -805,7 +803,7 @@ Public Sub DestroyAllIcons()
     Next i
     
     'Reinitialize the icon handler, which will also reset the icon count and handle array
-    initializeIconHandler
+    InitializeIconHandler
 
 End Sub
 

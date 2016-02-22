@@ -503,7 +503,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 pdImages(g_CurrentImage).undoManager.revertToLastSavedState
                 
                 'Also, redraw the current child form icon and the image tab-bar
-                createCustomFormIcon pdImages(g_CurrentImage)
+                CreateCustomFormIcons pdImages(g_CurrentImage)
                 toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
             End If
             
@@ -568,7 +568,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 pdImages(g_CurrentImage).undoManager.RestoreUndoData
                 
                 'Also, redraw the current child form icon and the image tab-bar
-                createCustomFormIcon pdImages(g_CurrentImage)
+                CreateCustomFormIcons pdImages(g_CurrentImage)
                 toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
             End If
             
@@ -577,7 +577,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 pdImages(g_CurrentImage).undoManager.RestoreRedoData
                 
                 'Also, redraw the current child form icon and the image tab-bar
-                createCustomFormIcon pdImages(g_CurrentImage)
+                CreateCustomFormIcons pdImages(g_CurrentImage)
                 toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
             End If
             
@@ -1940,7 +1940,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
     If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
-        createCustomFormIcon pdImages(g_CurrentImage)
+        CreateCustomFormIcons pdImages(g_CurrentImage)
         toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
     End If
     
@@ -1948,7 +1948,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     If cancelCurrentAction Then
         
         'Reset any interface elements that may still be in "processing" mode.
-        releaseProgressBar
+        ReleaseProgressBar
         Message "Action canceled."
     
         'Reset the cancel trigger; if this is not done, the user will not be able to cancel subsequent actions.
@@ -2276,7 +2276,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional showDialog 
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
     If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
-        createCustomFormIcon pdImages(g_CurrentImage)
+        CreateCustomFormIcons pdImages(g_CurrentImage)
         toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
         
         'TODO: notify the layer toolbox of the change, so it can generate a new thumbnail

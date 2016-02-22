@@ -238,7 +238,7 @@ Private Function initializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         
         Case CCP_FreeImage
             'FreeImage maintains a program-wide handle for the life of the program, which we attempt to generate now.
-            initializationSuccessful = Plugin_FreeImage_Interface.initializeFreeImage()
+            initializationSuccessful = Plugin_FreeImage.InitializeFreeImage()
             
         Case CCP_PNGQuant
             'The ezTwain module provides a function called "isPNGQuantAvailable()", but all it does is check if the PNGquant exe exists.
