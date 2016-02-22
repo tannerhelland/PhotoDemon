@@ -686,7 +686,7 @@ End Sub
 
 'Convert a DIB - any DIB! - to an icon via CreateIconIndirect.  Transparency will be preserved, and by default, the icon will be created
 ' at the current image's size (though you can specify a custom size if you wish).  Ideally, the passed DIB will have been created using
-' the pdImage function "requestThumbnail".
+' the pdImage function "RequestThumbnail".
 '
 'FreeImage is currently required for this function, because it provides a simple way to move between DIBs and DDBs.  I could rewrite
 ' the function without FreeImage's help, but frankly don't consider it worth the trouble.

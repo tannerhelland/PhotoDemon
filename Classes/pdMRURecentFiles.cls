@@ -142,9 +142,9 @@ Private Sub saveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
     Dim mruThumb As pdDIB
     Set mruThumb = New pdDIB
     If g_IsVistaOrLater Then
-        tImage.requestThumbnail mruThumb, 64
+        tImage.RequestThumbnail mruThumb, 64
     Else
-        tImage.requestThumbnail mruThumb, 16
+        tImage.RequestThumbnail mruThumb, 16
     End If
     
     'Write the PNG file.  (FreeImage and GDI+ are both supported by this function, FYI)
