@@ -375,7 +375,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' If the image is high bit-depth (e.g. > 8 bits per channel), downsample it to a standard 24 or 32bpp image.
     '****************************************************************************
     
-    If fi_DataType <> FIT_BITMAP Then
+    If fi_DataType <> FIT_Bitmap Then
     
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "HDR image identified.  Raising tone-map dialog..."
@@ -927,9 +927,9 @@ End Function
 'ALSO NOTE!  This function does not affect alpha premultiplication.  It's assumed that the caller sets that value in advance.
 'ALSO NOTE!  This function does not free the outgoing FreeImage handle, by design.  Make sure to free it manually!
 'ALSO NOTE!  The function returns zero for failure state; please check the return value before trying to use it!
-Public Function GetFIHandleFromPDDib_NoCopy(ByRef srcDIB As pdDIB) As Long
+Public Function GetFIHandleFromPDDib_NoCopy(ByRef srcDIB As pdDIB, Optional ByVal howToHandleTopDown As Boolean = False) As Long
     With srcDIB
-        GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .getActualDIBBits, FIT_BITMAP, .getDIBWidth, .getDIBHeight, .getDIBArrayWidth, .getDIBColorDepth, , , , Not srcDIB.IsDIBTopDown)
+        GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .getActualDIBBits, FIT_Bitmap, .getDIBWidth, .getDIBHeight, .getDIBArrayWidth, .getDIBColorDepth, , , , howToHandleTopDown)
     End With
 End Function
 

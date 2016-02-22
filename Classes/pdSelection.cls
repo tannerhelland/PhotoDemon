@@ -206,19 +206,19 @@ End Enum
 'Selection properties can be retrieved via these functions.  Note that the default function returns a STRING; this is because properties are
 ' frequently passed around via param string.  To retrieve a numeric value, use the _Long or _Double function variants.
 Public Function getSelectionProperty(ByVal PropertyName As PD_SELECTION_PROPERTY) As String
-    getSelectionProperty = m_PropertyDict.getEntry_String(PropertyName, "", True)
+    getSelectionProperty = m_PropertyDict.GetEntry_String(PropertyName, "", True)
 End Function
 
 Public Function getSelectionProperty_Long(ByVal PropertyName As PD_SELECTION_PROPERTY, Optional ByVal defaultValueIfMissing As Long = 0) As Long
-    getSelectionProperty_Long = m_PropertyDict.getEntry_Long(PropertyName, defaultValueIfMissing)
+    getSelectionProperty_Long = m_PropertyDict.GetEntry_Long(PropertyName, defaultValueIfMissing)
 End Function
 
 Public Function getSelectionProperty_Double(ByVal PropertyName As PD_SELECTION_PROPERTY, Optional ByVal defaultValueIfMissing As Double = 0#) As Double
-    getSelectionProperty_Double = m_PropertyDict.getEntry_Double(PropertyName, defaultValueIfMissing)
+    getSelectionProperty_Double = m_PropertyDict.GetEntry_Double(PropertyName, defaultValueIfMissing)
 End Function
 
 Public Function getSelectionProperty_Boolean(ByVal PropertyName As PD_SELECTION_PROPERTY, Optional ByVal defaultValueIfMissing As Boolean = False) As Boolean
-    getSelectionProperty_Boolean = m_PropertyDict.getEntry_Boolean(PropertyName, defaultValueIfMissing)
+    getSelectionProperty_Boolean = m_PropertyDict.GetEntry_Boolean(PropertyName, defaultValueIfMissing)
 End Function
 
 'Selection properties can be set via this function
@@ -228,7 +228,7 @@ Public Sub setSelectionProperty(ByVal PropertyName As PD_SELECTION_PROPERTY, ByV
     If m_PropertyDict.doesKeyExist(PropertyName) Then
     
         'If the values are the same, we don't need to actually add it
-        If m_PropertyDict.getEntry_Variant(PropertyName) = propertyValue Then Exit Sub
+        If m_PropertyDict.GetEntry_Variant(PropertyName) = propertyValue Then Exit Sub
         
     End If
     
@@ -2948,10 +2948,10 @@ Public Function findNewBoundsManually(Optional ByVal overrideRasterState As Bool
 End Function
 
 'External functions can use this function to request a thumbnail version of the selection mask.
-Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
+Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
     
     If selMask Is Nothing Then
-        requestThumbnail = False
+        RequestThumbnail = False
         Exit Function
     End If
     
@@ -2963,7 +2963,7 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     Dim tIcoWidth As Long, tIcoHeight As Long, tX As Double, tY As Double
     
     'Start by determining proper dimensions for the resized thumbnail image.
-    convertAspectRatio selMask.getDIBWidth, selMask.getDIBHeight, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
+    ConvertAspectRatio selMask.getDIBWidth, selMask.getDIBHeight, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
     
     'If the form is wider than it is tall, center the thumbnail vertically
     If tIcoWidth > tIcoHeight Then
@@ -2982,12 +2982,12 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     'Note that the user's thumbnail performance setting affects the quality used here.
     If g_ThumbnailPerformance = PD_PERF_FASTEST Then
         If g_ImageFormats.FreeImageEnabled Then
-            requestThumbnail = FreeImageResizeDIBFast(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, FILTER_BILINEAR, True)
+            RequestThumbnail = FreeImageResizeDIBFast(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, FILTER_BILINEAR, True)
         Else
-            requestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.getDIBWidth, selMask.getDIBHeight, InterpolationModeNearestNeighbor)
+            RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.getDIBWidth, selMask.getDIBHeight, InterpolationModeNearestNeighbor)
         End If
     Else
-        requestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.getDIBWidth, selMask.getDIBHeight, InterpolationModeHighQualityBicubic)
+        RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.getDIBWidth, selMask.getDIBHeight, InterpolationModeHighQualityBicubic)
     End If
     
 End Function

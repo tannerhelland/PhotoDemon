@@ -50,7 +50,6 @@ Begin VB.Form FormResize
       Width           =   9630
       _ExtentX        =   16986
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdResize ucResize 
       Height          =   2850
@@ -60,15 +59,6 @@ Begin VB.Form FormResize
       Width           =   8775
       _ExtentX        =   15478
       _ExtentY        =   5027
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.pdCheckBox chkNames 
       Height          =   300
@@ -300,7 +290,7 @@ Private Sub cmbFit_Click()
 End Sub
 
 Private Sub cmdBar_ExtraValidations()
-    If Not ucResize.IsValid(True) Then cmdBar.validationFailed
+    If Not ucResize.IsValid(True) Then cmdBar.ValidationFailed
 End Sub
 
 'OK button
@@ -318,10 +308,10 @@ Private Sub cmdBar_OKClick()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            Process "Resize image", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
+            Process "Resize image", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
         
         Case PD_AT_SINGLELAYER
-            Process "Resize layer", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI, m_ResizeTarget), UNDO_LAYER
+            Process "Resize layer", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_LAYER
     
     End Select
     
@@ -331,9 +321,9 @@ End Sub
 ' present, simply randomize the width/height to +/- the current image's width/height divided by two.
 Private Sub cmdBar_RandomizeClick()
 
-    ucResize.lockAspectRatio = False
-    ucResize.imgWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
-    ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+    ucResize.LockAspectRatio = False
+    ucResize.ImgWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
+    ucResize.ImgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
 
 End Sub
 
@@ -345,14 +335,14 @@ Private Sub cmdBar_ResetClick()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
         
     End Select
     
-    ucResize.lockAspectRatio = True
+    ucResize.LockAspectRatio = True
     
     'Use friendly resample names by default
     cboResampleTechnical.ListIndex = 0
@@ -386,14 +376,14 @@ Private Sub Form_Activate()
     Select Case m_ResizeTarget
         
         Case PD_AT_WHOLEIMAGE
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
         
     End Select
     
-    ucResize.lockAspectRatio = True
+    ucResize.LockAspectRatio = True
 
 End Sub
 
@@ -421,10 +411,10 @@ Private Sub Form_Load()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
         
     End Select
     
@@ -453,11 +443,11 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
     If g_ImageFormats.FreeImageEnabled Then
         
         'If the original image is 32bpp, remove premultiplication now
-        If srcDIB.getDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication
+        If srcDIB.getDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication False
         
         'Convert the current image to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB, True)
         
         'Use that handle to request an image resize
         If fi_DIB <> 0 Then
@@ -466,7 +456,13 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
             returnDIB = FreeImage_RescaleByPixel(fi_DIB, iWidth, iHeight, True, interpolationMethod)
             
             'Resize the destination DIB in preparation for the transfer
-            dstDIB.createBlank iWidth, iHeight, srcDIB.getDIBColorDepth
+            If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+            If (dstDIB.getDIBWidth <> iWidth) Or (dstDIB.getDIBHeight <> iHeight) Then
+                dstDIB.createBlank iWidth, iHeight, srcDIB.getDIBColorDepth
+            Else
+                dstDIB.resetDIB 0
+            End If
+            dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
             
             'Copy the bits from the FreeImage DIB to our DIB
             SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, iWidth, iHeight, 0, 0, 0, iHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
@@ -477,7 +473,7 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
         End If
         
         'If the original image is 32bpp, add back in premultiplication now
-        If srcDIB.getDIBColorDepth = 32 Then dstDIB.SetAlphaPremultiplication True
+        If (srcDIB.getDIBColorDepth = 32) And (Not dstDIB.getAlphaPremultiplication) Then dstDIB.SetAlphaPremultiplication True
         
     End If
     
@@ -520,12 +516,12 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
         Case 1
             
             'We have an existing function for this purpose.  (It's used when rendering preview images, for example.)
-            convertAspectRatio srcWidth, srcHeight, iWidth, iHeight, fitWidth, fitHeight
+            ConvertAspectRatio srcWidth, srcHeight, iWidth, iHeight, fitWidth, fitHeight
             
         'Fit exclusively.  Fit the image's smallest dimension.  Cropping will occur, but no blank space will be present.
         Case 2
         
-            convertAspectRatio srcWidth, srcHeight, iWidth, iHeight, fitWidth, fitHeight, False
+            ConvertAspectRatio srcWidth, srcHeight, iWidth, iHeight, fitWidth, fitHeight, False
         
     End Select
     
@@ -616,7 +612,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
                 'If FreeImage is not enabled, use GDI+ instead.
                 Else
                 
-                    tmpDIB.createBlank fitWidth, fitHeight, 32, 0
+                    If tmpDIB.getDIBWidth <> fitWidth Or tmpDIB.getDIBHeight <> fitHeight Then tmpDIB.createBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.resetDIB 0
                     GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), InterpolationModeHighQualityBilinear
                     
                 End If
@@ -631,7 +627,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
                 'If FreeImage is not enabled, use GDI+ instead.
                 Else
                 
-                    tmpDIB.createBlank fitWidth, fitHeight, 32, 0
+                    If tmpDIB.getDIBWidth <> fitWidth Or tmpDIB.getDIBHeight <> fitHeight Then tmpDIB.createBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.resetDIB 0
                     GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), InterpolationModeHighQualityBicubic
                     
                 End If
@@ -681,6 +677,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
                 End If
                 
                 BitBlt tmpLayerRef.layerDIB.getDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+                tmpLayerRef.layerDIB.setInitialAlphaPremultiplicationState tmpDIB.getAlphaPremultiplication
             
             'Fit exclusively.  This fits the image's smallest dimension into the destination image, which means no
             ' blank space - but parts of the image may get cropped out.
@@ -699,7 +696,8 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
                 End If
                 
                 BitBlt tmpLayerRef.layerDIB.getDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
-            
+                tmpLayerRef.layerDIB.setInitialAlphaPremultiplicationState tmpDIB.getAlphaPremultiplication
+                
         End Select
         
         'With the layer now successfully resized, we can remove any null-padding that may still exist

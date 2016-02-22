@@ -1990,6 +1990,7 @@ Public Function cropNullPaddedLayer() As Boolean
             tmpCropDIB.createBlank newRight - newLeft + 1, newBottom - newTop + 1, 32, 0
             Debug.Print "Crop rect: (" & newLeft & "," & newTop & ") - (" & newRight & "," & newBottom & ")"
             BitBlt tmpCropDIB.getDIBDC, 0, 0, newRight - newLeft + 1, newBottom - newTop + 1, layerDIB.getDIBDC, newLeft, newTop, vbSrcCopy
+            tmpCropDIB.setInitialAlphaPremultiplicationState layerDIB.getAlphaPremultiplication
             
             'Replace the current layer DIB with our temporary DIB
             layerDIB.createFromExistingDIB tmpCropDIB
@@ -2049,8 +2050,9 @@ Public Sub convertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
         BitBlt tmpPaddingDIB.getDIBDC, myLayerData.l_OffsetX, myLayerData.l_OffsetY, layerDIB.getDIBWidth, layerDIB.getDIBHeight, layerDIB.getDIBDC, 0, 0, vbSrcCopy
     
         'Replace our current layer DIB with the temporary DIB
+        Dim alphaPremultiplicationState As Boolean: alphaPremultiplicationState = layerDIB.getAlphaPremultiplication
         Set Me.layerDIB = tmpPaddingDIB
-        Me.layerDIB.setInitialAlphaPremultiplicationState True
+        Me.layerDIB.setInitialAlphaPremultiplicationState alphaPremultiplicationState
     
         'Reset layer offset values
         myLayerData.l_OffsetX = 0
