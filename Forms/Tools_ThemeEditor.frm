@@ -130,7 +130,7 @@ Begin VB.Form FormThemeEditor
       min             =   1
       max             =   5
       value           =   3
-      orientationhorizontal=   -1  'True
+      orientationhorizontal=   -1
    End
    Begin PhotoDemon.pdButton pdButtonTest 
       Height          =   465
@@ -255,8 +255,8 @@ Begin VB.Form FormThemeEditor
       _extentx        =   7646
       _extenty        =   661
       caption         =   "I'm a hyperlink with weird formatting"
-      fontbold        =   -1  'True
-      fontitalic      =   -1  'True
+      fontbold        =   -1
+      fontitalic      =   -1
       fontsize        =   12
    End
    Begin PhotoDemon.pdButtonStrip btsColorTest 
@@ -291,7 +291,7 @@ Begin VB.Form FormThemeEditor
       _extenty        =   450
       max             =   20
       value           =   10
-      orientationhorizontal=   -1  'True
+      orientationhorizontal=   -1
       visualstyle     =   1
    End
    Begin PhotoDemon.pdScrollBar pdScrollTest 
@@ -305,7 +305,7 @@ Begin VB.Form FormThemeEditor
       _extenty        =   450
       max             =   1000
       value           =   500
-      orientationhorizontal=   -1  'True
+      orientationhorizontal=   -1
    End
    Begin PhotoDemon.pdTextBox pdTextTest 
       Height          =   735
@@ -316,7 +316,7 @@ Begin VB.Form FormThemeEditor
       Width           =   2775
       _extentx        =   4895
       _extenty        =   1296
-      multiline       =   -1  'True
+      multiline       =   -1
       text            =   "Sample text goes here"
    End
    Begin PhotoDemon.pdSlider pdSliderTest 
@@ -342,6 +342,16 @@ Begin VB.Form FormThemeEditor
       _extentx        =   2143
       _extenty        =   873
       caption         =   "remove from list"
+   End
+   Begin PhotoDemon.pdButton cmdTestLastListIndex 
+      Height          =   255
+      Left            =   10560
+      TabIndex        =   25
+      Top             =   6960
+      Width           =   2535
+      _ExtentX        =   4471
+      _ExtentY        =   450
+      Caption         =   "set random ListIndex"
    End
 End
 Attribute VB_Name = "FormThemeEditor"
@@ -399,6 +409,16 @@ End Sub
 
 Private Sub cmdRemoveFromList_Click()
     If lbTest.ListIndex <> -1 Then lbTest.RemoveItem lbTest.ListIndex
+End Sub
+
+Private Sub cmdTestLastListIndex_Click()
+    If lbTest.ListCount > 0 Then
+        Dim cRnd As pdRandomize
+        Set cRnd = New pdRandomize
+        cRnd.setSeed_AutomaticAndRandom
+        cRnd.setRndIntegerBounds 0, lbTest.ListCount - 1
+        lbTest.ListIndex = cRnd.getRandomInt_WH
+    End If
 End Sub
 
 Private Sub Form_Load()

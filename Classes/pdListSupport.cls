@@ -35,6 +35,7 @@ Option Explicit
 ' not visible at the moment.)
 Public Event RedrawNeeded()
 Public Event ScrollMaxChanged()
+Public Event ScrollValueChanged()
 
 'This class can calculate list box element offsets using three different systems:
 ' - Fixed size (all list elements are the same height)
@@ -73,6 +74,8 @@ Private m_ListIndex As Long
 Private m_ScrollMax As Long, m_ScrollValue As Long
 Private m_ListIndexHover As Long, m_MouseInsideList As Boolean
 Private m_ListRectF As RECTF
+Private m_InitMouseX As Single, m_InitMouseY As Single, m_InitScroll As Single
+Private m_LMBDown As Boolean
 
 'Typically, adding an item to the list box requires us to redraw the list box.  This is a waste of time if the caller needs
 ' to add a bunch of items all in a row.  Instead of raising redraws automatically, the caller can choose to suspend redraws
@@ -291,17 +294,60 @@ Public Property Let ListIndex(ByVal newIndex As Long)
     If (newIndex >= 0) And (newIndex < m_NumOfItems) Then
         m_ListIndex = newIndex
         
-        'TODO: if the listindex lies outside the current rendering area, raise a request for a new scroll value
-        If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
+        'Changing the list index may require us to shift the scrollbar value, so that the newly selected item fits on-screen.
+        If MakeSureListIndexFitsOnscreen Then
+            RaiseEvent ScrollValueChanged
+            If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
+        Else
+            If m_RedrawAutomatically Then RaiseEvent RedrawNeeded
+        End If
         
     End If
 End Property
 
-'As a convenience, this class also lets the caller set a ListIndex by string.  (If a match cannot be found,
-' the list index will not be changed.)
-'The optional ReadValueOnly parameter can be used to simply RETURN the value of the discovered ListIndex, without actually
-' changing the ListIndex property.
-Public Function ListIndexByString(ByRef srcString As String, Optional ByVal compareMode As VbCompareMethod = vbBinaryCompare, Optional ByVal ReadValueOnly As Boolean = False) As Long
+'When a new ListIndex value is set, PD makes sure that item appears on-screen.  This function will return TRUE if the current
+' scroll value was changed to bring the item on-screen.
+Private Function MakeSureListIndexFitsOnscreen() As Boolean
+
+    MakeSureListIndexFitsOnscreen = False
+    
+    'If the item's current top and bottom values fit with the listview's container area, we don't need to change anything.
+    If (m_ListIndex >= 0) And (m_ListIndex < m_NumOfItems) Then
+        
+        Dim liTop As Single, liBottom As Single
+        liTop = m_Items(m_ListIndex).itemTop
+        liBottom = liTop + m_Items(m_ListIndex).itemHeight
+        
+        Dim liContainerTop As Single, liContainerBottom As Single
+        liContainerTop = m_ScrollValue
+        liContainerBottom = liContainerTop + m_ListRectF.Height
+        
+        'If either the top or bottom of the item rect lies outside the container rect, calculate new scroll values
+        If (liTop < liContainerTop) Or (liBottom > liContainerBottom) Then
+        
+            MakeSureListIndexFitsOnscreen = True
+            
+            'If the item lies *above* the viewport rect, scroll down to compensate.
+            If liTop < liContainerTop Then
+                m_ScrollValue = liTop
+                
+            'If the item lies *below* the viewport rect, scroll up to compensate.
+            Else
+                m_ScrollValue = (liTop - (m_ListRectF.Height - m_Items(m_ListIndex).itemHeight)) - 1
+            End If
+            
+            If m_ScrollValue > m_ScrollMax Then m_ScrollValue = m_ScrollMax
+            If m_ScrollValue < 0 Then m_ScrollValue = 0
+        
+        End If
+        
+    End If
+
+End Function
+
+'As a convenience, this function lets the caller retrieve a given ListIndex by associated string contents.
+' IMPORTANT NOTE: this function doesn't *change* the ListIndex; it only returns a hypothetical one matching the input string.
+Public Function ListIndexByString(ByRef srcString As String, Optional ByVal compareMode As VbCompareMethod = vbBinaryCompare) As Long
     
     ListIndexByString = -1
     
@@ -318,20 +364,14 @@ Public Function ListIndexByString(ByRef srcString As String, Optional ByVal comp
             End If
         Next i
         
-        'If a match was found, change the list index now
-        If (newIndex >= 0) And (newIndex <> m_ListIndex) Then
-            If Not ReadValueOnly Then m_ListIndex = newIndex
-            ListIndexByString = newIndex
-        End If
+        If (newIndex >= 0) And (newIndex <> m_ListIndex) Then ListIndexByString = newIndex
         
     End If
     
 End Function
 
-'As a convenience, this class also lets the caller set a ListIndex by mouse position within the container.  (If a match cannot
-' be found, the list index will not be changed.)
-'The optional ReadValueOnly parameter can be used to simply RETURN the value of the discovered ListIndex, without actually
-' changing the ListIndex property.
+'As a convenience, this function lets the caller retrieve a given ListIndex by mouse position within the container.
+' IMPORTANT NOTE: this function doesn't *change* the ListIndex; it only returns a hypothetical one from position (x, y).
 Public Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, Optional ByVal checkXAsWell As Boolean = True) As Long
     
     ListIndexByPosition = -1
@@ -392,11 +432,9 @@ End Property
 ' of the backend rendering details automatically.  This makes it much easier to construct custom list boxes, as things like
 ' hit detection can be handled here - ensuring that all list boxes throughout the program, even custom ones, behave identically.
 Friend Sub NotifyParentRectF(ByRef srcListRectF As RECTF)
-    If (m_ListRectF.Width <> srcListRectF.Width) Or (m_ListRectF.Height <> srcListRectF.Height) Then
-        If (m_ListRectF.Left <> srcListRectF.Left) Or (m_ListRectF.Top <> srcListRectF.Top) Then
-            m_ListRectF = srcListRectF
-            If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
-        End If
+    If (m_ListRectF.Width <> srcListRectF.Width) Or (m_ListRectF.Height <> srcListRectF.Height) Or (m_ListRectF.Top <> srcListRectF.Top) Or (m_ListRectF.Left <> srcListRectF.Left) Then
+        m_ListRectF = srcListRectF
+        If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
     End If
 End Sub
 
@@ -417,15 +455,36 @@ Public Sub NotifyMouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift 
 End Sub
 
 Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-
+    m_InitMouseX = x
+    m_InitMouseY = y
+    m_InitScroll = m_ScrollValue
+    If ((Button And pdLeftButton) <> 0) Then m_LMBDown = True
 End Sub
 
 Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    UpdateHoveredIndex x, y
+    If m_LMBDown Then
+        ScrollListByDrag x, y
+    Else
+        UpdateHoveredIndex x, y
+    End If
 End Sub
 
-Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+    If ((Button And pdLeftButton) <> 0) And m_LMBDown Then
+        m_LMBDown = False
+        If (Not ClickEventAlsoFiring) Then ScrollListByDrag x, y
+    End If
+End Sub
 
+'All PD lists aim to support scroll-by-drag behavior
+Private Sub ScrollListByDrag(ByVal newX As Single, ByVal newY As Single)
+    If m_ScrollMax > 0 Then
+        Dim tmpScrollValue As Long
+        tmpScrollValue = m_InitScroll + (m_InitMouseY - newY)
+        If tmpScrollValue < 0 Then tmpScrollValue = 0
+        If tmpScrollValue > m_ScrollMax Then tmpScrollValue = m_ScrollMax
+        ScrollValue = tmpScrollValue
+    End If
 End Sub
 
 'When the mouse enters, leaves, or moves inside the underlying control, we will update the current hover index (provided our
@@ -513,7 +572,12 @@ Public Property Get ScrollMax() As Long
     If m_RenderDataCorrect Then
         ScrollMax = m_ScrollMax
     Else
-        m_ScrollMax = m_TotalHeight - m_ListRectF.Height
+        If m_RedrawAutomatically Then
+            CalculateRenderMetrics
+        Else
+            m_ScrollMax = m_TotalHeight - m_ListRectF.Height
+            If m_ScrollMax < 0 Then m_ScrollMax = 0
+        End If
     End If
 End Property
 
@@ -630,8 +694,12 @@ Public Sub CalculateRenderMetrics()
     m_RenderDataCorrect = True
     
     'Whenever list contents or container sizes change, we can cache a new scroll bar maximum value.
-    If (m_TotalHeight - m_ListRectF.Height) <> m_ScrollMax Then
-        m_ScrollMax = m_TotalHeight - m_ListRectF.Height
+    Dim newScrollMax As Long
+    newScrollMax = m_TotalHeight - m_ListRectF.Height
+    If newScrollMax < 0 Then newScrollMax = 0
+    
+    If newScrollMax <> m_ScrollMax Then
+        m_ScrollMax = newScrollMax
         RaiseEvent ScrollMaxChanged
     End If
     
