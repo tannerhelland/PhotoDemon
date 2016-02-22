@@ -163,7 +163,7 @@ Option Explicit
 '+ : added
 '
 'October 1, 2012 - 2.17
-'- [Carsten Klein] removed temporary workaround for 16-bit standard type bitmaps introduced in version 2.15, which temporarily stored RGB masks directly after the BITMAPINFO structure, when creating a HBITMAP.
+'- [Carsten Klein] removed temporary workaround for 16-bit standard type bitmaps introduced in version 2.15, which temporarily stored RGB masks directly after the BitmapINFO structure, when creating a HBitmap.
 '* [Carsten Klein] fixed a potential overflow bug in both pNormalizeRational and pNormalizeSRational: these now do nothing if any of numerator and denominator is either 1 or 0 (zero).
 '+ [Carsten Klein] added load flag JPEG_GREYSCALE as well as the enum constant FILO_JPEG_GREYSCALE.
 '! [Carsten Klein] changed constant FREEIMAGE_RELEASE_SERIAL to 4 to match current version 3.15.4
@@ -265,7 +265,7 @@ Private Type PictDesc
    yExt As Long
 End Type
 
-Private Type BITMAP_API
+Private Type Bitmap_API
    bmType As Long
    bmWidth As Long
    bmHeight As Long
@@ -371,7 +371,7 @@ Private Declare Function GetCurrentObject Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
     ByVal uObjectType As Long) As Long
 
-Private Const OBJ_BITMAP As Long = 7
+Private Const OBJ_Bitmap As Long = 7
     
 Private Const COLORONCOLOR As Long = 3
 
@@ -832,7 +832,7 @@ End Enum
 
 Public Enum FREE_IMAGE_TYPE
    FIT_UNKNOWN = 0           ' unknown type
-   FIT_BITMAP = 1            ' standard image           : 1-, 4-, 8-, 16-, 24-, 32-bit
+   FIT_Bitmap = 1            ' standard image           : 1-, 4-, 8-, 16-, 24-, 32-bit
    FIT_UINT16 = 2            ' array of unsigned short  : unsigned 16-bit
    FIT_INT16 = 3             ' array of short           : signed 16-bit
    FIT_UINT32 = 4            ' array of unsigned long   : unsigned 32-bit
@@ -847,7 +847,7 @@ Public Enum FREE_IMAGE_TYPE
 End Enum
 #If False Then
    Const FIT_UNKNOWN = 0
-   Const FIT_BITMAP = 1
+   Const FIT_Bitmap = 1
    Const FIT_UINT16 = 2
    Const FIT_INT16 = 3
    Const FIT_UINT32 = 4
@@ -4637,7 +4637,7 @@ End Function
 
 
 '--------------------------------------------------------------------------------el a
-' HBITMAP conversion functions
+' HBitmap conversion functions
 '--------------------------------------------------------------------------------
 
 Public Function FreeImage_GetBitmap(ByVal Bitmap As Long, _
@@ -4647,7 +4647,7 @@ Public Function FreeImage_GetBitmap(ByVal Bitmap As Long, _
 Dim bReleaseDC As Boolean
 Dim ppvBits As Long
    
-   ' This function returns an HBITMAP created by the CreateDIBSection() function which
+   ' This function returns an HBitmap created by the CreateDIBSection() function which
    ' in turn has the same color depth as the original DIB. A reference DC may be provided
    ' through the 'hDC' parameter. The desktop DC will be used, if no reference DC is
    ' specified.
@@ -4688,7 +4688,7 @@ Public Function FreeImage_GetBitmapForDevice(ByVal Bitmap As Long, _
                                     
 Dim bReleaseDC As Boolean
 
-   ' This function returns an HBITMAP created by the CreateDIBitmap() function which
+   ' This function returns an HBitmap created by the CreateDIBitmap() function which
    ' in turn has always the same color depth as the reference DC, which may be provided
    ' through the 'hDC' parameter. The desktop DC will be used, if no reference DC is
    ' specified.
@@ -4786,7 +4786,7 @@ End Function
 Public Function FreeImage_CreateFromOlePicture(ByRef Picture As IPicture) As Long
 
 Dim hBitmap As Long
-Dim tBM As BITMAP_API
+Dim tBM As Bitmap_API
 Dim hDIB As Long
 Dim hDC As Long
 Dim lResult As Long
@@ -4807,7 +4807,7 @@ Dim lpInfo As Long
                                       tBM.bmHeight, _
                                       tBM.bmBitsPixel)
             If (hDIB) Then
-               ' The GetDIBits function clears the biClrUsed and biClrImportant BITMAPINFO
+               ' The GetDIBits function clears the biClrUsed and biClrImportant BitmapINFO
                ' members (dont't know why). So we save these infos below.
                ' This is needed for palletized images only.
                nColors = FreeImage_GetColorsUsed(hDIB)
@@ -4821,7 +4821,7 @@ Dim lpInfo As Long
                If (lResult) Then
                   FreeImage_CreateFromOlePicture = hDIB
                   If (nColors) Then
-                     ' restore BITMAPINFO members
+                     ' restore BitmapINFO members
                      ' FreeImage_GetInfo(Bitmap)->biClrUsed = nColors;
                      ' FreeImage_GetInfo(Bitmap)->biClrImportant = nColors;
                      lpInfo = FreeImage_GetInfo(hDIB)
@@ -4842,7 +4842,7 @@ End Function
 Public Function FreeImage_CreateFromDC(ByVal hDC As Long, _
                               Optional ByRef hBitmap As Long) As Long
 
-Dim tBM As BITMAP_API
+Dim tBM As Bitmap_API
 Dim hDIB As Long
 Dim lResult As Long
 Dim nColors As Long
@@ -4851,7 +4851,7 @@ Dim lpInfo As Long
    ' Creates a FreeImage DIB from a Device Context/Compatible Bitmap. This
    ' function returns a pointer to the DIB as, for instance, 'FreeImage_Load()'
    ' does. So, this could be a real replacement for FreeImage_Load() or
-   ' 'FreeImage_CreateFromOlePicture()' when working with DCs and BITMAPs directly
+   ' 'FreeImage_CreateFromOlePicture()' when working with DCs and Bitmaps directly
    
    ' The 'hDC' parameter specifies a window device context (DC), the optional
    ' parameter 'hBitmap' may specify a handle to a memory bitmap. When 'hBitmap' is
@@ -4865,13 +4865,13 @@ Dim lpInfo As Long
    ' The DIB returned by this function is a copy of the image specified by 'hBitmap' or
    ' the DC's current bitmap when 'hBitmap' is missing. The 'hDC' and also the 'hBitmap'
    ' remain untouched in this function, there will be no objects destroyed or freed.
-   ' The caller is responsible to destroy or free the DC and BITMAP if necessary.
+   ' The caller is responsible to destroy or free the DC and Bitmap if necessary.
    
    ' first, check whether we got a hBitmap or not
    If (hBitmap = 0) Then
       ' if not, the parameter may be missing or is NULL so get the
       ' DC's current bitmap
-      hBitmap = GetCurrentObject(hDC, OBJ_BITMAP)
+      hBitmap = GetCurrentObject(hDC, OBJ_Bitmap)
    End If
 
    lResult = GetObjectAPI(hBitmap, Len(tBM), tBM)
@@ -4880,7 +4880,7 @@ Dim lpInfo As Long
                                 tBM.bmHeight, _
                                 tBM.bmBitsPixel)
       If (hDIB) Then
-         ' The GetDIBits function clears the biClrUsed and biClrImportant BITMAPINFO
+         ' The GetDIBits function clears the biClrUsed and biClrImportant BitmapINFO
          ' members (dont't know why). So we save these infos below.
          ' This is needed for palletized images only.
          nColors = FreeImage_GetColorsUsed(hDIB)
@@ -4894,7 +4894,7 @@ Dim lpInfo As Long
          If (lResult) Then
             FreeImage_CreateFromDC = hDIB
             If (nColors) Then
-               ' restore BITMAPINFO members
+               ' restore BitmapINFO members
                ' FreeImage_GetInfo(Bitmap)->biClrUsed = nColors;
                ' FreeImage_GetInfo(Bitmap)->biClrImportant = nColors;
                lpInfo = FreeImage_GetInfo(hDIB)
@@ -5081,7 +5081,7 @@ Dim strExtension As String
       End If
       If (Format <> FIF_UNKNOWN) Then
          If ((FreeImage_FIFSupportsWriting(Format)) And _
-             (FreeImage_FIFSupportsExportType(Format, FIT_BITMAP))) Then
+             (FreeImage_FIFSupportsExportType(Format, FIT_Bitmap))) Then
             
             If (Not FreeImage_IsFilenameValidForFIF(Format, FileName)) Then
                'Edit by Tanner: don't prevent me from writing whatever file extensions I damn well please!  ;)
@@ -5877,10 +5877,10 @@ Dim lpArrayPtr As Long
    ' FreeImage_SaveToMemoryEx2()        with FreeImage_DestroyLockedArray()
    ' FreeImage_AcquireMemoryEx()        with FreeImage_DestroyLockedArray()
    ' FreeImage_GetScanLineEx()          with FreeImage_DestroyLockedArray()
-   ' FreeImage_GetScanLineBITMAP8()     with FreeImage_DestroyLockedArray()
-   ' FreeImage_GetScanLineBITMAP16()    with FreeImage_DestroyLockedArray()
-   ' FreeImage_GetScanLineBITMAP24()    with FreeImage_DestroyLockedArrayRGBTRIPLE()
-   ' FreeImage_GetScanLineBITMAP32()    with FreeImage_DestroyLockedArrayRGBQUAD()
+   ' FreeImage_GetScanLineBitmap8()     with FreeImage_DestroyLockedArray()
+   ' FreeImage_GetScanLineBitmap16()    with FreeImage_DestroyLockedArray()
+   ' FreeImage_GetScanLineBitmap24()    with FreeImage_DestroyLockedArrayRGBTRIPLE()
+   ' FreeImage_GetScanLineBitmap32()    with FreeImage_DestroyLockedArrayRGBQUAD()
    ' FreeImage_GetScanLineINT16()       with FreeImage_DestroyLockedArray()
    ' FreeImage_GetScanLineINT32()       with FreeImage_DestroyLockedArray()
    ' FreeImage_GetScanLineFLOAT()       with FreeImage_DestroyLockedArray()

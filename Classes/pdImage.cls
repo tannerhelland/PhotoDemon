@@ -590,7 +590,7 @@ Public Function writeExternalData(ByRef dstFilename As String, Optional ByVal fi
     xmlEngine.writeTag "curLayer", m_curLayer
     
     'Next comes conditional data, which may not exist in the scripting dictionary.  If it's available, we'll write it out.
-    If imgStorage.doesKeyExist("pngBackgroundColor") Then xmlEngine.writeTag "pngBackgroundColor", imgStorage.getEntry_Long("pngBackgroundColor")
+    If imgStorage.DoesKeyExist("pngBackgroundColor") Then xmlEngine.writeTag "pngBackgroundColor", imgStorage.GetEntry_Long("pngBackgroundColor")
     
     xmlEngine.writeBlankLine
     
@@ -770,7 +770,7 @@ End Function
 
 'External functions can use this function to request a thumbnail version of the contained image.  Note that the full
 ' image must be re-composited on every request, so please do not call this function unless absolutely necessary!
-Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
+Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
     
     'Uncomment the two lines below (and another at the end of the function) to profile different thumbnail resize strategies
     'Dim startTime As Double
@@ -784,7 +784,7 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     Dim tIcoWidth As Long, tIcoHeight As Long, tX As Double, tY As Double
     
     'Start by determining proper dimensions for the resized thumbnail image.
-    Math_Functions.convertAspectRatio Me.Width, Me.Height, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
+    Math_Functions.ConvertAspectRatio Me.Width, Me.Height, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
     
     'If the form is wider than it is tall, center the thumbnail vertically
     If tIcoWidth > tIcoHeight Then
@@ -802,28 +802,18 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     Set compositeImage = New pdDIB
     compositeImage.createBlank tIcoWidth, tIcoHeight, 32, 0
     
-    'Note that the user's thumbnail performance setting affects the quality used here.
-    If g_ThumbnailPerformance = PD_PERF_FASTEST Then
-        Me.getCompositedRect compositeImage, 0, 0, tIcoWidth, tIcoHeight, 0, 0, Me.Width, Me.Height, InterpolationModeNearestNeighbor, , CLC_Thumbnail
-    Else
-        Me.getCompositedRect compositeImage, 0, 0, tIcoWidth, tIcoHeight, 0, 0, Me.Width, Me.Height, InterpolationModeHighQualityBicubic, , CLC_Thumbnail
-    End If
-    
     'Prepare the destination DIB
-    If dstThumbnailDIB Is Nothing Then Set dstThumbnailDIB = New pdDIB
+    If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
     If (dstThumbnailDIB.getDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.getDIBHeight <> thumbnailSize) Then
         dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
     Else
         dstThumbnailDIB.resetDIB 0
     End If
     
-    'There are two possible ways to create a thumbnail image.  If FreeImage is available, we prefer to use it, as it
-    ' provides superior results with better performance, but if it is not available, GDI+ will suffice.
-    If g_ImageFormats.FreeImageEnabled Then
-        requestThumbnail = FreeImageResizeDIBFast(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, compositeImage, FILTER_BILINEAR, True)
-    Else
-        requestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, compositeImage, 0, 0, compositeImage.getDIBWidth, compositeImage.getDIBHeight, InterpolationModeHighQualityBicubic)
-    End If
+    'Note that the user's thumbnail performance setting affects the quality used here.
+    Dim intMode As InterpolationMode
+    If g_ThumbnailPerformance = PD_PERF_FASTEST Then intMode = InterpolationModeNearestNeighbor Else intMode = InterpolationModeHighQualityBicubic
+    Me.getCompositedRect dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, 0, 0, Me.Width, Me.Height, intMode, , CLC_Thumbnail
     
     'Uncomment the line below to profile different thumbnail resize strategies
     'Debug.Print "Time taken for image thumbnail generation: " & CStr((Timer - startTime) * 1000) & " ms"

@@ -131,7 +131,7 @@ Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal
 Private m_IsClipboardOpen As Boolean
 
 'If external functions want to know more about the current clipboard operation, they can retrieve a copy of this struct.
-Private m_ClipboardInfo As PD_CLIPBOARD_INFO
+Private m_ClipboardInfo As PD_Clipboard_Info
 
 'Lots of clipboard actions require a temporary DIB
 Private m_ClipboardDIB As pdDIB
@@ -148,7 +148,7 @@ Public Function IsClipboardOpen() As Boolean
     IsClipboardOpen = m_IsClipboardOpen
 End Function
 
-Friend Function GetClipboardInfo() As PD_CLIPBOARD_INFO
+Friend Function GetClipboardInfo() As PD_Clipboard_Info
     GetClipboardInfo = m_ClipboardInfo
 End Function
 
@@ -1391,7 +1391,7 @@ Private Sub RenderClipboard_PNG()
         
         'Convert our current DIB to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage_Interface.GetFIHandleFromPDDib_NoCopy(m_ClipboardDIB)
+        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(m_ClipboardDIB)
         
         'Convert the bitmap to PNG format, save it to an array, and release the original bitmap from memory
         If fi_DIB <> 0 Then

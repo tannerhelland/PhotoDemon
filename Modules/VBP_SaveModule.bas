@@ -1202,9 +1202,9 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         If pngPreserveBKGD And srcPDImage.imgStorage.doesKeyExist("pngBackgroundColor") Then
             
             Dim rQuad As RGBQUAD
-            rQuad.Red = ExtractR(srcPDImage.imgStorage.getEntry_Long("pngBackgroundColor"))
-            rQuad.Green = ExtractG(srcPDImage.imgStorage.getEntry_Long("pngBackgroundColor"))
-            rQuad.Blue = ExtractB(srcPDImage.imgStorage.getEntry_Long("pngBackgroundColor"))
+            rQuad.Red = ExtractR(srcPDImage.imgStorage.GetEntry_Long("pngBackgroundColor"))
+            rQuad.Green = ExtractG(srcPDImage.imgStorage.GetEntry_Long("pngBackgroundColor"))
+            rQuad.Blue = ExtractB(srcPDImage.imgStorage.GetEntry_Long("pngBackgroundColor"))
             FreeImage_SetBackgroundColor fi_DIB, rQuad
         
         End If
@@ -1588,7 +1588,7 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
             
                 'Find new dimensions
                 Dim newWidth As Long, newHeight As Long
-                convertAspectRatio testDIB.getDIBWidth, testDIB.getDIBHeight, 1024, 1024, newWidth, newHeight
+                ConvertAspectRatio testDIB.getDIBWidth, testDIB.getDIBHeight, 1024, 1024, newWidth, newHeight
                 
                 'Create a temporary source image (resizing requires separate source and destination images)
                 Dim tmpSourceDIB As pdDIB

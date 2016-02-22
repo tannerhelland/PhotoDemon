@@ -33,8 +33,7 @@ Begin VB.Form dialog_ToneMapping
       Width           =   11655
       _ExtentX        =   20558
       _ExtentY        =   1323
-      BackColor       =   14802140
-      dontAutoUnloadParent=   -1  'True
+      DontAutoUnloadParent=   -1  'True
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -425,7 +424,7 @@ End Property
 Public Sub showDialog()
     
     'Prevent preview images from rendering until all initialization has finished
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
@@ -449,7 +448,7 @@ Public Sub showDialog()
     End If
     
     'Render a preview of the current settings, if any
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
         
     Message "Waiting for tone mapping instructions..."
@@ -466,7 +465,7 @@ End Sub
 Private Sub UpdatePreview()
     
     'Ignore redraws while the dialog is not visible or disabled
-    If (Not Me.Enabled) Or (Not Me.Visible) Or (Not cmdBar.previewsAllowed) Then Exit Sub
+    If (Not Me.Enabled) Or (Not Me.Visible) Or (Not cmdBar.PreviewsAllowed) Then Exit Sub
     
     'As a failsafe against rapid clicking by the user, disable the form prior to applying any tone-mapping operations
     Me.Enabled = False
@@ -475,7 +474,7 @@ Private Sub UpdatePreview()
     
     'Retrieve a tone-mapped image, using the master tone-map function
     If mini_FIHandle <> 0 Then
-        tmp_FIHandle = Plugin_FreeImage_Interface.applyToneMapping(mini_FIHandle, getToneMapParamString())
+        tmp_FIHandle = Plugin_FreeImage.applyToneMapping(mini_FIHandle, getToneMapParamString())
     End If
     
     'If successful, create a pdDIB copy, render it to the screen, then kill our temporary FreeImage handle
@@ -483,7 +482,7 @@ Private Sub UpdatePreview()
     
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
-        If Plugin_FreeImage_Interface.GetPDDibFromFreeImageHandle(tmp_FIHandle, tmpDIB) Then
+        If Plugin_FreeImage.GetPDDibFromFreeImageHandle(tmp_FIHandle, tmpDIB) Then
             
             'Premultiply as necessary
             If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.SetAlphaPremultiplication True
@@ -559,7 +558,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     btsMethod.ListIndex = 0
     sltGamma(0) = 2.2
     sltGamma(1) = 1#        'FreeImage documentation is unclear on the correct behavior for Drago gamma.  2.2 is recommended as
@@ -569,7 +568,7 @@ Private Sub cmdBar_ResetClick()
     sltExposure(1) = 2#
     sltWhitepoint = 11.2
     chkRemember.Value = vbUnchecked
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     
     UpdatePreview
     

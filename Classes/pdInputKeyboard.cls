@@ -115,6 +115,15 @@ Private m_HasFocus As Boolean
 ' This is done via a non-optional Name parameter supplied in the initial hook request.
 Private m_HookedControlName As String
 
+'While inside the hook event, this will be set to TRUE.  Because we raise events directly from the hook, we sometimes need to postpone
+' crucial actions (like releasing the hook) until the hook proc has exited.
+Private m_InHookNow As Boolean
+
+'If something forces us to release our keyboard hook while in the midst of a hook, we want to delay the request until
+' the hook exits.  If we don't do this, PD will crash.
+Private WithEvents m_HookReleaseTimer As pdTimer
+Attribute m_HookReleaseTimer.VB_VarHelpID = -1
+
 Private Sub Class_Initialize()
     
     'Reset all input tracking variables
@@ -248,21 +257,66 @@ Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
     IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
 End Function
 
-Private Function GetHiWord(ByVal lParam As Long) As Integer
+Private Function getHiWord(ByVal lParam As Long) As Integer
     If lParam And &H80000000 Then
-        GetHiWord = (lParam \ 65535) - 1
+        getHiWord = (lParam \ 65535) - 1
     Else
-        GetHiWord = lParam \ 65535
+        getHiWord = lParam \ 65535
     End If
 End Function
 
-Private Function GetLoWord(ByVal lParam As Long) As Integer
+Private Function getLoWord(ByVal lParam As Long) As Integer
     If lParam And &H8000& Then
-        GetLoWord = &H8000 Or (lParam And &H7FFF&)
+        getLoWord = &H8000 Or (lParam And &H7FFF&)
     Else
-        GetLoWord = lParam And &HFFFF&
+        getLoWord = lParam And &HFFFF&
     End If
 End Function
+
+'If a hook is active, this timer will repeatedly try to kill it.  Do not enable it until you are certain the hook
+' needs to be released.  (This is used as a failsafe if we cannot immediately release the hook when focus is lost,
+' for example if we are currently inside an external event, as happens in the Layer toolbox, which hides the active
+' text box inside the KeyPress event.)
+Private Sub m_HookReleaseTimer_Timer()
+    If (Not m_InHookNow) Then
+        RemoveKeyboardHook
+        m_HookReleaseTimer.StopTimer
+    End If
+End Sub
+
+'Install a keyboard hook in our window
+Private Sub InstallKeyboardHook()
+
+    'Check for an existing hook
+    If Not m_HasFocus Then
+    
+        'Note that this window is now active
+        m_HasFocus = True
+        
+        'Install a new hook for this window
+        Debug.Print "Installing keyboard hook for " & m_HookedControlName & " due to WM_SETFOCUS"
+        If Not (cSubclass Is Nothing) Then cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_targetHwnd, 2, Me
+        
+    End If
+
+End Sub
+
+'If a hook exists, uninstall it.  DO NOT CALL THIS FUNCTION if the class is currently inside the hook proc.
+Private Sub RemoveKeyboardHook()
+    Debug.Print "Uninstalling keyboard hook for " & m_HookedControlName & " due to WM_KILLFOCUS"
+    If Not (cSubclass Is Nothing) Then cSubclass.shk_UnHook WH_KEYBOARD
+End Sub
+
+'Release the edit box's keyboard hook.  In some circumstances, we can't do this immediately, so we set a timer that will
+' release the hook as soon as the system allows.
+Private Sub SafelyRemoveKeyboardHook()
+    If m_InHookNow Then
+        m_HookReleaseTimer.Interval = 16
+        m_HookReleaseTimer.StartTimer
+    Else
+        RemoveKeyboardHook
+    End If
+End Sub
 
 'This routine MUST BE KEPT as the next-to-last routine for this form. Its ordinal position determines its ability to hook properly.
 Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal lHookType As eHookType, ByRef lParamUser As Long)
@@ -279,10 +333,10 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
 '* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
 '*************************************************************************************************
     
+    m_InHookNow = True
+    bHandled = False
     
-    If lHookType = WH_KEYBOARD Then
-    
-        bHandled = False
+    If (lHookType = WH_KEYBOARD) And m_HasFocus Then
         
         'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
         Dim retShiftConstants As ShiftConstants
@@ -333,15 +387,17 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
         'Else
         '    Debug.Print "pdInput is NOT handling keypress: " & bHandled & ", " & nCode
         'End If
-                
-        'Per MSDN, return the value of CallNextHookEx
-        If (Not bHandled) Then
-            lReturn = CallNextHookEx(0, nCode, wParam, lParam)
-        Else
-            lReturn = 1
-        End If
-            
+        
     End If
+    
+    'Per MSDN, return the value of CallNextHookEx
+    If (Not bHandled) Then
+        lReturn = CallNextHookEx(0&, nCode, wParam, lParam)
+    Else
+        lReturn = 1&
+    End If
+    
+    m_InHookNow = False
     
 End Sub
 
@@ -430,32 +486,23 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'Docked toolbox windows and standard controls will raise WM_SETFOCUS instead of WM_ACTIVATE
             Case WM_SETFOCUS
                 
-                'Check for an existing hook
+                'Start hooking keypresses so we can grab Unicode chars before VB eats 'em.  Not that this function actually sets
+                ' the m_HasFocus value to TRUE.
                 If Not m_HasFocus Then
-                
-                    'No hook exists.  Hook the control now.
-                    Debug.Print "Installing keyboard hook for " & m_HookedControlName & " due to WM_SETFOCUS"
-                    cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_targetHwnd, 2, Me
-                    
-                    'Note that this window is now active
-                    m_HasFocus = True
-                    
+                    InstallKeyboardHook
                 Else
                     Debug.Print m_HookedControlName & " just gained focus, but a keyboard hook is already installed??"
                 End If
                 
             Case WM_KILLFOCUS
                 
-                'Check for an existing hook
+                'Release our hook.  In some circumstances, we can't do this immediately, so we set a timer that will release the hook
+                ' as soon as the system allows.
+                SafelyRemoveKeyboardHook
+                
+                'Immediately mark the control-wide focus state, even though the hook has not yet been removed
                 If m_HasFocus Then
-                    
-                    'A hook exists.  Uninstall it now.
-                    Debug.Print "Uninstalling keyboard hook for " & m_HookedControlName & " due to WM_KILLFOCUS"
-                    cSubclass.shk_UnHook WH_KEYBOARD
-                        
-                    'Note that this window is now considered inactive
                     m_HasFocus = False
-                    
                 Else
                     Debug.Print m_HookedControlName & " just lost focus, but no keyboard hook was ever installed??"
                 End If

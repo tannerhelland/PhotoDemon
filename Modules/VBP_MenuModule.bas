@@ -203,19 +203,19 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
         ' If it is, the user needs to be prompted at least once for those settings.
         
         'JPEG
-        If (pdImages(imageID).currentFileFormat = FIF_JPEG) And (Not pdImages(imageID).imgStorage.getEntry_Boolean("hasSeenJPEGPrompt")) Then
+        If (pdImages(imageID).currentFileFormat = FIF_JPEG) And (Not pdImages(imageID).imgStorage.GetEntry_Boolean("hasSeenJPEGPrompt")) Then
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
         
         'JPEG-2000
-        ElseIf (pdImages(imageID).currentFileFormat = FIF_JP2) And (Not pdImages(imageID).imgStorage.getEntry_Boolean("hasSeenJP2Prompt")) Then
+        ElseIf (pdImages(imageID).currentFileFormat = FIF_JP2) And (Not pdImages(imageID).imgStorage.GetEntry_Boolean("hasSeenJP2Prompt")) Then
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
             
         'WebP
-        ElseIf (pdImages(imageID).currentFileFormat = FIF_WEBP) And (Not pdImages(imageID).imgStorage.getEntry_Boolean("hasSeenWebPPrompt")) Then
+        ElseIf (pdImages(imageID).currentFileFormat = FIF_WEBP) And (Not pdImages(imageID).imgStorage.GetEntry_Boolean("hasSeenWebPPrompt")) Then
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
         
         'JXR
-        ElseIf (pdImages(imageID).currentFileFormat = FIF_WEBP) And (Not pdImages(imageID).imgStorage.getEntry_Boolean("hasSeenJXRPrompt")) Then
+        ElseIf (pdImages(imageID).currentFileFormat = FIF_WEBP) And (Not pdImages(imageID).imgStorage.GetEntry_Boolean("hasSeenJXRPrompt")) Then
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
         
         'All other formats
@@ -435,7 +435,7 @@ Public Sub MenuCloseAll()
 End Sub
 
 'Create a new, blank image from scratch
-Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal imgDPI As Long, ByVal defaultBackground As Long, ByVal backgroundColor As Long)
+Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal imgDPI As Long, ByVal defaultBackground As Long, ByVal BackgroundColor As Long)
 
     'Display a busy cursor
     If Screen.MousePointer <> vbHourglass Then Screen.MousePointer = vbHourglass
@@ -472,7 +472,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
         
         'Custom color
         Case 3
-            tmpDIB.createBlank imgWidth, imgHeight, 32, backgroundColor, 255
+            tmpDIB.createBlank imgWidth, imgHeight, 32, BackgroundColor, 255
     
     End Select
     
@@ -490,7 +490,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     
     'Disable viewport rendering, then reset the main viewport
     g_AllowViewportRendering = False
-    FormMain.mainCanvas(0).setScrollValue PD_BOTH, 0
+    FormMain.mainCanvas(0).SetScrollValue PD_BOTH, 0
     
     'By default, set this image to use the program's default metadata setting (settable from Tools -> Options).
     ' The user may override this setting later, but by default we always start with the user's program-wide setting.
@@ -509,7 +509,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     pdImages(g_CurrentImage).setSaveState False, pdSE_AnySave
     
     'Create an icon-sized version of this image, which we will use as form's taskbar icon
-    createCustomFormIcon pdImages(g_CurrentImage)
+    CreateCustomFormIcons pdImages(g_CurrentImage)
     
     'Register this image with the image tab bar
     toolbar_ImageTabs.registerNewImage g_CurrentImage
@@ -523,14 +523,14 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
     ' update the zoom combo box to match the zoom assigned by the window-fit function.
     g_AllowViewportRendering = False
-    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = pdImages(g_CurrentImage).currentZoomValue
+    FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = pdImages(g_CurrentImage).currentZoomValue
 
     'Now that the image's window has been fully sized and moved around, use Viewport_Engine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
     g_AllowViewportRendering = True
     Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
     
     'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
-    FormMain.mainCanvas(0).fixChromeLayout
+    FormMain.mainCanvas(0).FixChromeLayout
     
     'Force an immediate Undo/Redo write to file.  This serves multiple purposes: it is our baseline for calculating future
     ' Undo/Redo diffs, and it can be used to recover the original file if something goes wrong before the user performs a

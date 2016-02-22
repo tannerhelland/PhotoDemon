@@ -1770,7 +1770,7 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
     myLayerType = srcLayer.getLayerType
     
     With myLayerData
-        .l_Name = incrementTrailingNumber(srcLayer.getLayerName)
+        .l_Name = IncrementTrailingNumber(srcLayer.getLayerName)
         .l_GroupID = srcLayer.getLayerGroup
         .l_Opacity = srcLayer.getLayerOpacity
         .l_BlendMode = srcLayer.getLayerBlendMode
@@ -2082,7 +2082,7 @@ Private Sub updateInternalThumbnail()
     Dim tIcoWidth As Long, tIcoHeight As Long, tX As Double, tY As Double
     
     'Start by determining proper dimensions for the resized thumbnail image.
-    convertAspectRatio layerDIB.getDIBWidth, layerDIB.getDIBHeight, LAYER_THUMB_SIZE, LAYER_THUMB_SIZE, tIcoWidth, tIcoHeight
+    ConvertAspectRatio layerDIB.getDIBWidth, layerDIB.getDIBHeight, LAYER_THUMB_SIZE, LAYER_THUMB_SIZE, tIcoWidth, tIcoHeight
     
     'If the form is wider than it is tall, center the thumbnail vertically
     If tIcoWidth > tIcoHeight Then
@@ -2096,7 +2096,11 @@ Private Sub updateInternalThumbnail()
     End If
     
     'Prepare the destination DIB
-    layerThumbnail.createBlank LAYER_THUMB_SIZE, LAYER_THUMB_SIZE, 32, 0
+    If (layerThumbnail.getDIBWidth <> LAYER_THUMB_SIZE) Or (layerThumbnail.getDIBHeight <> LAYER_THUMB_SIZE) Then
+        layerThumbnail.createBlank LAYER_THUMB_SIZE, LAYER_THUMB_SIZE, 32, 0
+    Else
+        layerThumbnail.resetDIB 0
+    End If
     
     'There are two possible ways to create a thumbnail image.  If FreeImage is available, we prefer to use it, as it
     ' is faster (I've actually profiled it!), but if FreeImage is not available, GDI+ will suffice.
@@ -2115,7 +2119,7 @@ Private Sub updateInternalThumbnail()
 End Sub
 
 'External functions can use this function to request a thumbnail version of the layer contents.
-Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
+Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
     
     'Is the current thumbnail dirty?  If so, regenerate it.
     If Not m_IsThumbClean Then updateInternalThumbnail
@@ -2144,7 +2148,7 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
         dstThumbnailDIB.createFromExistingDIB layerThumbnail
     End If
     
-    requestThumbnail = True
+    RequestThumbnail = True
     
 End Function
 

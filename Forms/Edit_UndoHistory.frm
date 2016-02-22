@@ -135,7 +135,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'This array will contain the contents of the current Undo stack, as copied from the pdUndo class
-Dim undoEntries() As undoEntry
+Dim undoEntries() As UndoEntry
 
 'Total number of Undo entries, and index of the current Undo entry.
 Dim numOfUndos As Long, curUndoIndex As Long
@@ -150,18 +150,21 @@ Private WithEvents cKeyEvents As pdInputKeyboard
 Attribute cKeyEvents.VB_VarHelpID = -1
 
 'Extra variables for custom list rendering
-Dim bufferDIB As pdDIB
-Dim m_BufferWidth As Long, m_BufferHeight As Long
+Private bufferDIB As pdDIB
+Private m_BufferWidth As Long, m_BufferHeight As Long
 
 'Two font objects; one for names and one for descriptions.  (Two are needed because they have different sizes and colors,
 ' and it is faster to cache these values rather than constantly recreating them on a single pdFont object.)
-Dim firstFont As pdFont, secondFont As pdFont
+Private firstFont As pdFont, secondFont As pdFont
 
 'A primary and secondary color for font rendering
-Dim primaryColor As Long, secondaryColor As Long
+Private primaryColor As Long, secondaryColor As Long
 
 'The currently selected and currently hovered undo entry
-Dim curBlock As Long, curBlockHover As Long
+Private curBlock As Long, curBlockHover As Long
+
+'The size at which we render the thumbnail images
+Private Const UNDO_THUMB_SMALL As Long = 48
 
 'Redraw the current list of undo entries
 Private Sub redrawUndoList()
@@ -231,9 +234,9 @@ Private Sub renderUndoBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByV
         
         'Render the thumbnail for this entry onto its block
         Dim thumbWidth As Long
-        thumbWidth = offsetX + FixDPI(4) + undoEntries(blockIndex).thumbnailSmall.getDIBWidth
-        undoEntries(blockIndex).thumbnailSmall.alphaBlendToDC bufferDIB.getDIBDC, 255, offsetX + FixDPI(4), offsetY + ((FixDPI(BLOCKHEIGHT) - undoEntries(blockIndex).thumbnailSmall.getDIBHeight) \ 2)
-            
+        thumbWidth = offsetX + FixDPI(4) + FixDPI(UNDO_THUMB_SMALL)
+        GDI_Plus.GDIPlus_StretchBlt bufferDIB, offsetX + FixDPI(4), offsetY + (FixDPI(BLOCKHEIGHT) - FixDPI(UNDO_THUMB_SMALL)) \ 2, FixDPI(UNDO_THUMB_SMALL), FixDPI(UNDO_THUMB_SMALL), undoEntries(blockIndex).thumbnailLarge, 0, 0, undoEntries(blockIndex).thumbnailLarge.getDIBWidth, undoEntries(blockIndex).thumbnailLarge.getDIBHeight
+        
         'Render the index and name fields
         firstFont.AttachToDC bufferDIB.getDIBDC
         firstFont.FastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4), drawString
@@ -407,7 +410,7 @@ Private Sub Form_Load()
     secondFont.SetTextAlignment vbLeftJustify
     
     'Retrieve a copy of all Undo data from the current image's undo manager
-    pdImages(g_CurrentImage).undoManager.copyUndoStack numOfUndos, curUndoIndex, undoEntries
+    pdImages(g_CurrentImage).undoManager.CopyUndoStack numOfUndos, curUndoIndex, undoEntries
     
     'Select the current undo state by default
     curBlock = curUndoIndex - 1

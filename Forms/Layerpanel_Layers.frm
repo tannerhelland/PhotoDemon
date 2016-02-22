@@ -308,7 +308,7 @@ Private m_PreviousTooltip As String
 
 'External functions can force a full redraw by calling this sub.  (This is necessary whenever layers are added, deleted,
 ' re-ordered, etc.)
-Public Sub ForceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
+Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
     
     If refreshThumbnailCache Then cacheLayerThumbnails
     
@@ -649,7 +649,6 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
         txtLayerName.Visible = True
         
         'Disable hotkeys until editing is finished
-        FormMain.pdHotkeys.DeactivateHook
         m_LayerNameEditMode = True
         
         'Fill the text box with the current layer name, and select it
@@ -658,7 +657,6 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
         'Set an Undo/Redo marker for the existing layer name
         Processor.flagInitialNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).getLayerByIndex(GetLayerAtPosition(x, y)).getLayerName, pdImages(g_CurrentImage).getLayerByIndex(GetLayerAtPosition(x, y)).getLayerID
         
-        txtLayerName.SelectAll
         txtLayerName.SetFocus
         
     Else
@@ -753,7 +751,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             setActiveLayerByIndex layerIndexUnderMouse, False
             
             'Redraw the layer box, and note that thumbnails need to be re-cached
-            Me.ForceRedraw True
+            Me.forceRedraw True
             
             'Redraw the viewport
             Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -862,7 +860,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                 setActiveLayerByIndex layerIndexUnderMouse, False
                 
                 'Redraw the layer box, and note that thumbnails need to be re-cached
-                Me.ForceRedraw True
+                Me.forceRedraw True
                 
                 'Redraw the viewport
                 Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -1016,7 +1014,7 @@ Private Sub initializeUIDib(ByRef dstDIB As pdDIB, ByRef resString As String)
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
 
-    loadResourceToDIB resString, tmpDIB
+    LoadResourceToDIB resString, tmpDIB
     
     Set dstDIB = New pdDIB
     
@@ -1131,8 +1129,12 @@ Private Sub RedrawLayerBox()
     scrollOffset = vsLayer.Value
     
     'Erase the current DIB
-    If bufferDIB Is Nothing Then Set bufferDIB = New pdDIB
-    bufferDIB.createBlank m_BufferWidth, m_BufferHeight, 24
+    If (bufferDIB Is Nothing) Then Set bufferDIB = New pdDIB
+    If (bufferDIB.getDIBWidth <> m_BufferWidth) Or (bufferDIB.getDIBHeight <> m_BufferHeight) Then
+        bufferDIB.createBlank m_BufferWidth, m_BufferHeight, 24
+    Else
+        bufferDIB.resetDIB 255
+    End If
     
     'If the image has one or more layers, render them to the list.
     If (Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0) Then
@@ -1152,8 +1154,7 @@ Private Sub RedrawLayerBox()
     'Copy the buffer to its container picture box
     BitBlt picLayers.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferDIB.getDIBDC, 0, 0, vbSrcCopy
     picLayers.Picture = picLayers.Image
-    'picLayers.Refresh
-
+    
 End Sub
 
 'Render an individual "block" for a given layer (including name, thumbnail, and a few button toggles)
@@ -1445,7 +1446,6 @@ Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As 
         If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).getActiveLayer.getLayerName
         
         'Re-enable hotkeys now that editing is finished
-        FormMain.pdHotkeys.ActivateHook
         m_LayerNameEditMode = False
         
         'Redraw the layer box with the new name

@@ -801,7 +801,7 @@ Private Sub zUnThunk(ByVal thunkID As Long, ByVal vType As eThunkType, Optional 
                 ' when zTerminate is called this thunk's memory will be released
                 
                 'ADDED BY TANNER: let the debugger know that the hook is still technically active!
-                Debug.Print "cSelfSubHookCallback couldn't release hook immediately, as another hook is stil active.  Will retry on next _Terminate event."
+                Debug.Print "cSelfSubHookCallback couldn't release hook immediately, as another hook is still active.  Upgrade to a safe unhooking solution!"
                 
             End If
         Else
