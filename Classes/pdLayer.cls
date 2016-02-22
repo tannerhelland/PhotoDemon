@@ -1831,7 +1831,7 @@ End Sub
 '                 an intended use-case, so don't attempt it!
 '
 'Returns TRUE if layer was trimmed successfully, FALSE if it was not.  (False occurs if the entire layer is transparent.)
-Public Function cropNullPaddedLayer() As Boolean
+Public Function CropNullPaddedLayer() As Boolean
     
     'Make sure the source DIB isn't empty; (this should never happen, but I'm trying to be better about catching
     ' edge error conditions).
@@ -1861,7 +1861,7 @@ Public Function cropNullPaddedLayer() As Boolean
             'Release our array pointer.  (This MUST be done for all function exits, or VB will crash.)
             CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
             Debug.Print "Quick check of layer corners shows no trimmable areas; premature exit initialized."
-            cropNullPaddedLayer = False
+            CropNullPaddedLayer = False
             Exit Function
         
         End If
@@ -1901,7 +1901,7 @@ Public Function cropNullPaddedLayer() As Boolean
         If Not pixelFails Then
             CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
             Debug.Print "Request for layer null padding trim denied - entire layer is transparent, so crop is impossible!"
-            cropNullPaddedLayer = False
+            CropNullPaddedLayer = False
             Exit Function
         
         'Next, check for case (2)
@@ -1981,7 +1981,7 @@ Public Function cropNullPaddedLayer() As Boolean
         ' extend to the full size of the image, so we can't trim it.
         If (newLeft = 0) And (newTop = 0) And (newRight = 0) And (newBottom = 0) Then
             Debug.Print "Layer null padding scan completed successfully, but no trimmable edges were found."
-            cropNullPaddedLayer = False
+            CropNullPaddedLayer = False
         Else
         
             'Trimmable borders were found.  Use the calculated values to crop the image to its smallest relevant size.
@@ -2000,13 +2000,13 @@ Public Function cropNullPaddedLayer() As Boolean
             myLayerData.l_OffsetY = newTop
         
             'Return TRUE, so that the calling function knows to redraw the screen with the new size and offsets
-            cropNullPaddedLayer = True
+            CropNullPaddedLayer = True
             
         End If
         
     Else
         Debug.Print "Request for layer null padding trim denied - layer DIB does not currently exist!"
-        cropNullPaddedLayer = False
+        CropNullPaddedLayer = False
     End If
     
 End Function
@@ -2015,7 +2015,7 @@ End Function
 ' must be explicitly passed, because layers do not maintain a link to their parent.
 ' TODO: determine if off-image layer cropping is an acceptable solution in all scenarios.  (It really isn't, but there are some egregious performance
 '       considerations with layers that lie off-canvas, so a solution needs to be carefully planned.)
-Public Sub convertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parentImageHeight As Long, Optional ByVal applyCanvasTransformsFirst As Boolean = True)
+Public Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parentImageHeight As Long, Optional ByVal applyCanvasTransformsFirst As Boolean = True)
 
     'If this layer has transforms applied to it, we have to make them permanent before proceeding.  Otherwise, the resulting image may
     ' not look right.
@@ -2067,14 +2067,15 @@ End Sub
 
 'Update the internal thumbnail.  Only call this function if the current thumbnail has been marked as DIRTY; otherwise, just use the
 ' existing thumbnail as-is.
-Private Sub updateInternalThumbnail()
+Private Sub UpdateInternalThumbnail()
     
     'Uncomment the two lines below (and another at the end of the function) to profile different thumbnail resize strategies
     'Dim startTime As Double
     'startTime = Timer
     
     'If the layer has not been instantiated properly, reject the thumbnail request
-    If (layerDIB Is Nothing) Or (layerDIB.getDIBWidth = 0) Or (layerDIB.getDIBHeight = 0) Then Exit Sub
+    If (layerDIB Is Nothing) Then Exit Sub
+    If (layerDIB.getDIBWidth = 0) Or (layerDIB.getDIBHeight = 0) Then Exit Sub
     
     'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
     ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
@@ -2124,7 +2125,7 @@ End Sub
 Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
     
     'Is the current thumbnail dirty?  If so, regenerate it.
-    If Not m_IsThumbClean Then updateInternalThumbnail
+    If Not m_IsThumbClean Then UpdateInternalThumbnail
     
     'Clear the destination thumbnail
     If dstThumbnailDIB Is Nothing Then Set dstThumbnailDIB = New pdDIB

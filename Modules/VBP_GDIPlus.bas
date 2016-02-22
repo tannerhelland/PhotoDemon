@@ -682,17 +682,17 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     GDIPlusResizeDIB = True
 
     'Create a GDI+ graphics object that points to the destination DIB's DC
-    Dim iGraphics As Long, tBitmap As Long
-    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    Dim hGdipGraphics As Long, hGdipBitmap As Long
+    GdipCreateFromHDC dstDIB.getDIBDC, hGdipGraphics
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
-    getGdipBitmapHandleFromDIB tBitmap, srcDIB
+    getGdipBitmapHandleFromDIB hGdipBitmap, srcDIB
     
-    'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
+    'hGdipGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
     'Request the smoothing mode we were passed
-    If GdipSetInterpolationMode(iGraphics, interpolationType) = 0 Then
+    If GdipSetInterpolationMode(hGdipGraphics, interpolationType) = 0 Then
     
         'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
         ' algorithm from drawing semi-transparent lines randomly around image borders.
@@ -700,16 +700,11 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
         Dim imgAttributesHandle As Long
         GdipCreateImageAttributes imgAttributesHandle
         GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0&, 0&
+        GdipSetCompositingQuality hGdipGraphics, CompositingQualityHighSpeed
+        GdipSetPixelOffsetMode hGdipGraphics, PixelOffsetModeHighSpeed
         
-        'To improve performance, explicitly request high-speed alpha compositing operation
-        GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
-        
-        'PixelOffsetMode doesn't seem to affect rendering speed more than < 5%, but I did notice a slight
-        ' improvement from explicitly requesting HighQuality mode - so why not leave it?
-        GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality
-    
         'Perform the resize
-        If GdipDrawImageRectRectI(iGraphics, tBitmap, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, UnitPixel, imgAttributesHandle) <> 0 Then
+        If GdipDrawImageRectRectI(hGdipGraphics, hGdipBitmap, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, UnitPixel, imgAttributesHandle) <> 0 Then
             GDIPlusResizeDIB = False
         End If
         
@@ -721,10 +716,10 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     End If
     
     'Release both the destination graphics object and the source bitmap object
-    GdipDeleteGraphics iGraphics
-    GdipDisposeImage tBitmap
+    GdipDeleteGraphics hGdipGraphics
+    GdipDisposeImage hGdipBitmap
     
-    'If alpha is present, copy the alpha parameters between DIBs, as it will not have changed
+    'GDI+ draw functions always result in a premultiplied image
     dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
     
     'Uncomment the line below to receive timing reports
@@ -1002,7 +997,7 @@ Public Function GDIPlusDrawArcCircular(ByVal dstDC As Long, ByVal centerX As Sin
     
     'Create a pen, which will be used to stroke the arc
     Dim hPen As Long
-    GdipCreatePen1 fillQuadWithVBRGB(arcColor, arcTransparency), drawRadius, UnitPixel, hPen
+    GdipCreatePen1 FillQuadWithVBRGB(arcColor, arcTransparency), drawRadius, UnitPixel, hPen
     
     'GDI+ arcs use bounding boxes to describe their placement.  As such, we must convert the incoming centerX/Y and radius values
     ' to bounding box coordinates.
@@ -1036,7 +1031,7 @@ Public Function GetGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransp
 
     'Create the requested pen
     Dim iPen As Long
-    GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
+    GdipCreatePen1 FillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
     
     'If a custom line cap or join was specified, apply it now
     If customLineCap <> LineCapFlat Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
@@ -1077,7 +1072,7 @@ Public Function getGDIPlusSolidBrushHandle(ByVal eColor As Long, Optional ByVal 
 
     'Create the requested brush
     Dim iBrush As Long
-    GdipCreateSolidFill fillQuadWithVBRGB(eColor, cOpacity), iBrush
+    GdipCreateSolidFill FillQuadWithVBRGB(eColor, cOpacity), iBrush
     
     'Return the handle
     getGDIPlusSolidBrushHandle = iBrush
@@ -1088,7 +1083,7 @@ Public Function getGDIPlusPatternBrushHandle(ByVal hatchPatternID As Long, ByVal
 
     'Create the requested brush
     Dim iBrush As Long
-    GdipCreateHatchBrush hatchPatternID, fillQuadWithVBRGB(bFirstColor, bFirstColorOpacity), fillQuadWithVBRGB(bSecondColor, bSecondColorOpacity), iBrush
+    GdipCreateHatchBrush hatchPatternID, FillQuadWithVBRGB(bFirstColor, bFirstColorOpacity), FillQuadWithVBRGB(bSecondColor, bSecondColorOpacity), iBrush
     
     'Return the handle
     getGDIPlusPatternBrushHandle = iBrush
@@ -1119,7 +1114,7 @@ Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
     
     'Create a pen, which will be used to stroke the line
     Dim iPen As Long
-    GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
+    GdipCreatePen1 FillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
     
     'If a custom line cap was specified, apply it now
     If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
@@ -1151,7 +1146,7 @@ Public Function GDIPlusDrawGradientLineToDC(ByVal dstDC As Long, ByVal x1 As Sin
     pt2.y = y2
     
     Dim srcBrush As Long
-    gdipReturn = GdipCreateLineBrush(pt1, pt2, fillQuadWithVBRGB(firstColor, firstTransparency), fillQuadWithVBRGB(secondColor, secondTransparency), WrapModeTileFlipXY, srcBrush)
+    gdipReturn = GdipCreateLineBrush(pt1, pt2, FillQuadWithVBRGB(firstColor, firstTransparency), FillQuadWithVBRGB(secondColor, secondTransparency), WrapModeTileFlipXY, srcBrush)
     If gdipReturn = 0 Then
     
         '"Convert" that brush into a pen, which is what's actually used to stroke the line
@@ -1197,7 +1192,7 @@ Public Function GDIPlusDrawFilledShapeToDC(ByVal dstDC As Long, ByVal numOfPoint
     
     'Create a solid fill brush
     Dim iBrush As Long
-    GdipCreateSolidFill fillQuadWithVBRGB(eColor, cTransparency), iBrush
+    GdipCreateSolidFill FillQuadWithVBRGB(eColor, cTransparency), iBrush
     
     'We have a few different options for drawing the shape, based on the passed parameters.
     If useCurveAlgorithm Then
@@ -1222,7 +1217,7 @@ Public Function GDIPlusStrokePathToDC(ByVal dstDC As Long, ByVal numOfPoints As 
     
     'Create a pen, which will be used to stroke the line
     Dim iPen As Long
-    GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), strokeWidth, UnitPixel, iPen
+    GdipCreatePen1 FillQuadWithVBRGB(eColor, cTransparency), strokeWidth, UnitPixel, iPen
     
     'If a custom line cap was specified, apply it now
     If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
@@ -1263,7 +1258,7 @@ Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft A
     
     'Create a pen, which will be used to stroke the line
     Dim iPen As Long
-    GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
+    GdipCreatePen1 FillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
     
     'Apply any other custom settings now
     If customLinejoin > 0 Then GdipSetPenLineJoin iPen, customLinejoin
@@ -1296,7 +1291,7 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
     
     'Create a pen, which will be used to stroke the circle
     Dim iPen As Long
-    GdipCreatePen1 fillQuadWithVBRGB(edgeColor, cTransparency), drawRadius, UnitPixel, iPen
+    GdipCreatePen1 FillQuadWithVBRGB(edgeColor, cTransparency), drawRadius, UnitPixel, iPen
     
     'Render the circle
     GdipDrawEllipse iGraphics, iPen, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2
@@ -1341,7 +1336,7 @@ Public Function GDIPlusFillRectToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
     
     'Create a solid fill brush using the specified color
     Dim hBrush As Long
-    GdipCreateSolidFill fillQuadWithVBRGB(eColor, eTransparency), hBrush
+    GdipCreateSolidFill FillQuadWithVBRGB(eColor, eTransparency), hBrush
     
     'Apply the brush
     GdipFillRectangle hGraphics, hBrush, x1, y1, xWidth, yHeight
@@ -1368,7 +1363,7 @@ Public Function GDIPlusFillRectLToDC(ByVal dstDC As Long, ByRef srcRect As RECTL
     
     'Create a solid fill brush using the specified color
     Dim hBrush As Long
-    GdipCreateSolidFill fillQuadWithVBRGB(eColor, eTransparency), hBrush
+    GdipCreateSolidFill FillQuadWithVBRGB(eColor, eTransparency), hBrush
     
     'Apply the brush
     GdipFillRectangle hGraphics, hBrush, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top
@@ -1394,7 +1389,7 @@ Public Function GDIPlusFillRectFToDC(ByVal dstDC As Long, ByRef srcRect As RECTF
     
     'Create a solid fill brush using the specified color
     Dim hBrush As Long
-    GdipCreateSolidFill fillQuadWithVBRGB(eColor, eTransparency), hBrush
+    GdipCreateSolidFill FillQuadWithVBRGB(eColor, eTransparency), hBrush
     
     'Apply the brush
     GdipFillRectangle hGraphics, hBrush, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height
@@ -1457,7 +1452,7 @@ Public Function GDIPlusFillEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, 
     
     'Create a solid fill brush
     Dim iBrush As Long
-    GdipCreateSolidFill fillQuadWithVBRGB(eColor, eTransparency), iBrush
+    GdipCreateSolidFill FillQuadWithVBRGB(eColor, eTransparency), iBrush
     
     'Fill the ellipse
     GdipFillEllipseI iGraphics, iBrush, x1, y1, xWidth, yHeight
@@ -1480,7 +1475,7 @@ Public Function GDIPlusStrokeEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single
         
     'Create a pen with matching attributes
     Dim hPen As Long
-    GdipCreatePen1 fillQuadWithVBRGB(eColor, eTransparency), strokeWidth, UnitPixel, hPen
+    GdipCreatePen1 FillQuadWithVBRGB(eColor, eTransparency), strokeWidth, UnitPixel, hPen
     
     'Render the ellipse
     GdipDrawEllipse iGraphics, hPen, x1, y1, xWidth, yHeight
@@ -1528,14 +1523,14 @@ Public Function GDIPlusDrawRoundRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, 
     
     'Create a solid fill brush
     Dim iBrush As Long
-    GdipCreateSolidFill fillQuadWithVBRGB(eColor, 255), iBrush
+    GdipCreateSolidFill FillQuadWithVBRGB(eColor, 255), iBrush
     
     'Fill the path
     If FillRect Then GdipFillPath iGraphics, iBrush, rrPath
     
     'Stroke the path as well (to fill the 1px exterior border)
     Dim iPen As Long
-    GdipCreatePen1 fillQuadWithVBRGB(eColor, 255), 1, UnitPixel, iPen
+    GdipCreatePen1 FillQuadWithVBRGB(eColor, 255), 1, UnitPixel, iPen
     GdipDrawPath iGraphics, iPen, rrPath
     
     'Release all created objects
@@ -1564,7 +1559,7 @@ Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, By
     
     'Create a solid fill brush from the source image
     Dim iBrush As Long
-    GdipCreateSolidFill fillQuadWithVBRGB(eColor, eTransparency), iBrush
+    GdipCreateSolidFill FillQuadWithVBRGB(eColor, eTransparency), iBrush
     
     'Apply the brush
     GdipFillRectangle iGraphics, iBrush, x1, y1, xWidth, yHeight
@@ -1657,21 +1652,21 @@ End Function
 
 'GDI+ requires RGBQUAD colors with alpha in the 4th byte.  This function returns an RGBQUAD (long-type) from a standard RGB()
 ' long and supplied alpha.  It's not a very efficient conversion, but I need it so infrequently that I don't really care.
-Public Function fillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte) As Long
+Public Function FillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte) As Long
     
     'The vbRGB constant may be an OLE color constant; if that happens, we want to convert it to a normal RGB quad.
     vbRGB = TranslateColor(vbRGB)
     
     Dim dstQuad As RGBQUAD
-    dstQuad.Red = ExtractR(vbRGB)
-    dstQuad.Green = ExtractG(vbRGB)
-    dstQuad.Blue = ExtractB(vbRGB)
+    dstQuad.Red = Colors.ExtractR(vbRGB)
+    dstQuad.Green = Colors.ExtractG(vbRGB)
+    dstQuad.Blue = Colors.ExtractB(vbRGB)
     dstQuad.Alpha = alphaValue
     
     Dim placeHolder As tmpLong
     LSet placeHolder = dstQuad
     
-    fillQuadWithVBRGB = placeHolder.lngResult
+    FillQuadWithVBRGB = placeHolder.lngResult
     
 End Function
 
@@ -2340,37 +2335,10 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
 
     On Error GoTo GDIPlusQuickSaveError
     
-    'Begin by creating a generic bitmap header for the current DIB
-    Dim imgHeader As BITMAPINFO
-    
-    With imgHeader.Header
-        .Size = Len(imgHeader.Header)
-        .Planes = 1
-        .BitCount = srcDIB.getDIBColorDepth
-        .Width = srcDIB.getDIBWidth
-        .Height = -srcDIB.getDIBHeight
-    End With
-
     'Use GDI+ to create a GDI+-compatible bitmap
     Dim GDIPlusReturn As Long
-    Dim hImage As Long
-        
-    'Different GDI+ calls are required for different color depths. GdipCreateBitmapFromGdiDib leads to a blank
-    ' alpha channel for 32bpp images, so use GdipCreateBitmapFromScan0 in that case.
-    If srcDIB.getDIBColorDepth = 32 Then
-        
-        'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
-        GDIPlusReturn = GdipCreateBitmapFromScan0(srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBWidth * 4, PixelFormat32bppARGB, ByVal srcDIB.getActualDIBBits, hImage)
-    
-    Else
-        GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal srcDIB.getActualDIBBits, hImage)
-    End If
-    
-    If (GDIPlusReturn <> [OK]) Then
-        GdipDisposeImage hImage
-        GDIPlusQuickSavePNG = False
-        Exit Function
-    End If
+    Dim hGdipBitmap As Long
+    getGdipBitmapHandleFromDIB hGdipBitmap, srcDIB
         
     'Request a PNG encoder from GDI+
     Dim uEncCLSID As CLSID
@@ -2400,16 +2368,16 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
     If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename
     
     'Perform the encode and save
-    GDIPlusReturn = GdipSaveImageToFile(hImage, StrConv(dstFilename, vbUnicode), uEncCLSID, aEncParams(1))
+    GDIPlusReturn = GdipSaveImageToFile(hGdipBitmap, StrConv(dstFilename, vbUnicode), uEncCLSID, aEncParams(1))
     
     If (GDIPlusReturn <> [OK]) Then
-        GdipDisposeImage hImage
+        GdipDisposeImage hGdipBitmap
         GDIPlusQuickSavePNG = False
         Exit Function
     End If
     
     'Release the GDI+ copy of the image
-    GDIPlusReturn = GdipDisposeImage(hImage)
+    GDIPlusReturn = GdipDisposeImage(hGdipBitmap)
     
     GDIPlusQuickSavePNG = True
     Exit Function
@@ -2488,7 +2456,7 @@ Public Function getGDIPlusBoundingRectFromPoints(ByVal numOfPoints As Long, ByVa
     'Create a pen object with width and linecaps matching the passed params; these are important in the bounds calculation, as a wider pen
     ' means a wider region.
     Dim iPen As Long
-    GdipCreatePen1 fillQuadWithVBRGB(0, 255), penWidth, UnitPixel, iPen
+    GdipCreatePen1 FillQuadWithVBRGB(0, 255), penWidth, UnitPixel, iPen
     
     'If a custom line cap was specified, apply it now
     If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
@@ -2592,7 +2560,6 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     Else
         GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
     End If
-        
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.

@@ -187,6 +187,10 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     UpdateMousePosition x, y
 End Sub
 
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    listSupport.NotifyMouseDown Button, Shift, x, y
+End Sub
+
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     listSupport.NotifyMouseEnter Button, Shift, x, y
     UpdateMousePosition x, y
@@ -200,6 +204,10 @@ End Sub
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     listSupport.NotifyMouseMove Button, Shift, x, y
     UpdateMousePosition x, y
+End Sub
+
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+    listSupport.NotifyMouseUp Button, Shift, x, y, ClickEventAlsoFiring
 End Sub
 
 Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
@@ -255,8 +263,8 @@ Public Property Let ListIndex(ByVal newIndex As Long)
     listSupport.ListIndex = newIndex
 End Property
 
-Public Function ListIndexByString(ByRef srcString As String, Optional ByVal compareMode As VbCompareMethod = vbBinaryCompare, Optional ByVal ReadValueOnly As Boolean = False) As Long
-    ListIndexByString = listSupport.ListIndexByString(srcString, compareMode, ReadValueOnly)
+Public Function ListIndexByString(ByRef srcString As String, Optional ByVal compareMode As VbCompareMethod = vbBinaryCompare) As Long
+    ListIndexByString = listSupport.ListIndexByString(srcString, compareMode)
 End Function
 
 Public Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, Optional ByVal checkXAsWell As Boolean = True) As Long
