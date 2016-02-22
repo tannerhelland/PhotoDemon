@@ -2793,9 +2793,18 @@ Public Function QuickSaveDIBAsPNG(ByVal dstFilename As String, ByRef srcDIB As p
     'If FreeImage is available, use it to save the PNG; otherwise, fall back to GDI+
     If g_ImageFormats.FreeImageEnabled Then
         
+        'PD exclusively uses premultiplied alpha for internal DIBs (unless image processing math dictates otherwise).
+        ' Saved files always use non-premultiplied alpha.  If the source image is premultiplied, we want to create a
+        ' temporary non-premultiplied copy.
+        Dim alphaWasChanged As Boolean
+        If srcDIB.getAlphaPremultiplication Then
+            srcDIB.SetAlphaPremultiplication False
+            alphaWasChanged = True
+        End If
+        
         'Convert the temporary DIB to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB, True)
     
         'Use that handle to save the image to PNG format
         If fi_DIB <> 0 Then
@@ -2816,6 +2825,8 @@ Public Function QuickSaveDIBAsPNG(ByVal dstFilename As String, ByRef srcDIB As p
         Else
             Message "Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
         End If
+        
+        If alphaWasChanged Then srcDIB.SetAlphaPremultiplication True
         
     'FreeImage is not available; try to use GDI+ to save a PNG thumbnail
     Else
