@@ -533,6 +533,26 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
     End If
 End Sub
 
+Public Sub NotifyMouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    
+    If (m_ScrollMax > 0) And (scrollAmount <> 0) Then
+        
+        Dim newScrollValue As Long: newScrollValue = m_ScrollValue
+        
+        If scrollAmount > 0 Then
+            newScrollValue = newScrollValue - Me.DefaultItemHeight
+        Else
+            newScrollValue = newScrollValue + Me.DefaultItemHeight
+        End If
+        
+        If newScrollValue < 0 Then newScrollValue = 0
+        If newScrollValue > m_ScrollMax Then newScrollValue = m_ScrollMax
+        Me.ScrollValue = newScrollValue
+        
+    End If
+    
+End Sub
+
 'All PD lists aim to support scroll-by-drag behavior
 Private Sub ScrollListByDrag(ByVal newX As Single, ByVal newY As Single)
     If m_ScrollMax > 0 Then

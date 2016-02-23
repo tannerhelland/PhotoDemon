@@ -229,14 +229,18 @@ Private Sub lbView_Click()
 End Sub
 
 Private Sub lbView_ScrollMaxChanged(ByVal newMax As Long)
+    
     Dim changeInVisibility As Boolean: changeInVisibility = False
     If vScroll.Visible <> lbView.ShouldScrollBarBeVisible Then
         vScroll.Visible = lbView.ShouldScrollBarBeVisible
         changeInVisibility = True
     End If
+    
     If newMax >= 0 Then vScroll.Max = newMax
+    vScroll.LargeChange = lbView.GetDefaultItemHeight
     
     If changeInVisibility Then UpdateControlLayout
+    
 End Sub
 
 Private Sub lbView_ScrollValueChanged(ByVal newValue As Long)
@@ -260,7 +264,7 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
     UpdateControlLayout
 End Sub
 
-Private Sub vScroll_Scroll(ByVal eventIsCritical As Boolean)
+Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
     If lbView.ScrollValue <> vScroll.Value Then lbView.ScrollValue = vScroll.Value
 End Sub
 
@@ -349,7 +353,7 @@ Private Sub UpdateControlLayout()
     'If the scrollbar is visible, we'll position it first.
     If vScroll.Visible Then
         vScroll.SetPositionAndSize (m_InteractiveRect.Width - vScroll.GetWidth), m_InteractiveRect.Top + 1, vScroll.GetWidth, m_InteractiveRect.Height - 2
-        lbView.SetPositionAndSize m_InteractiveRect.Left, m_InteractiveRect.Top, vScroll.GetLeft, m_InteractiveRect.Height
+        lbView.SetPositionAndSize m_InteractiveRect.Left, m_InteractiveRect.Top, vScroll.GetLeft - m_InteractiveRect.Left, m_InteractiveRect.Height
     Else
         lbView.SetPositionAndSize m_InteractiveRect.Left, m_InteractiveRect.Top, m_InteractiveRect.Width, m_InteractiveRect.Height
     End If
