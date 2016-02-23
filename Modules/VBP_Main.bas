@@ -92,6 +92,25 @@ Public Sub finalShutdown()
     
     Set FormMain = Nothing
     
+    g_IsProgramRunning = False
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Manually unloading all remaining public class instances..."
+    #End If
+    
+    Set g_RecentFiles = Nothing
+    Set g_RecentMacros = Nothing
+    Set g_Themer = Nothing
+    Set g_Displays = Nothing
+    Set g_CheckerboardPattern = Nothing
+    Set g_Zoom = Nothing
+    Set g_WindowManager = Nothing
+    
+    Dim i As Long
+    For i = LBound(pdImages) To UBound(pdImages)
+        Set pdImages(i) = Nothing
+    Next i
+    
     'Release FreeImage (if available)
     If g_FreeImageHandle <> 0 Then
     
@@ -126,25 +145,6 @@ Public Sub finalShutdown()
     
     End If
     
-    g_IsProgramRunning = False
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Manually unloading all remaining public class instances..."
-    #End If
-    
-    Set g_RecentFiles = Nothing
-    Set g_RecentMacros = Nothing
-    Set g_Themer = Nothing
-    Set g_Displays = Nothing
-    Set g_CheckerboardPattern = Nothing
-    Set g_Zoom = Nothing
-    Set g_WindowManager = Nothing
-    
-    Dim i As Long
-    For i = LBound(pdImages) To UBound(pdImages)
-        Set pdImages(i) = Nothing
-    Next i
-    
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Everything we can physically unload has been forcibly unloaded.  Releasing final library reference..."
     #End If
@@ -161,6 +161,6 @@ Public Sub finalShutdown()
     'We have now terminated everything we can physically terminate.
     
     'Suppress any crashes caused by VB herself (which are possible, unfortunately), then let the program go...
-    SetErrorMode SEM_NOGPFAULTERRORBOX
+    'SetErrorMode SEM_NOGPFAULTERRORBOX
     
 End Sub
