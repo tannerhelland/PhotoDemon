@@ -19,9 +19,14 @@ Attribute VB_Exposed = False
 'Last update: continued integration with pdListBoxView
 '
 'PD makes use of a lot of custom-drawn list boxes.  To simplify these, I've tried to move a bunch of list-box-agnostic
-' code elements into this class, elements that can then be reused by individual boxes.
+' code elements into this class, elements that can then be reused by individual boxes.  This can be somewhat confusing,
+' because this class does not do any actual UI rendering (that's left to the parent class), but it *does* manage a lot
+' of rendering-related data, like scroll bar offsets.
 '
-'TODO: support standard height mode that is NOT based on text (e.g. the owner can specify their own custom height)
+'For a good understanding of how this class works, I recommend looking through the pdListBoxView usercontrol.  That UC
+' uses this class to implement a generic, text-only list box, and it does so with very little custom code (basically just
+' enough to bubble up certain input events to this class, then rendering list item text when this class raises a
+' RedrawNeeded() event.)
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit http://photodemon.org/about/license/
@@ -290,8 +295,11 @@ Public Property Get ListIndex() As Long
     ListIndex = m_ListIndex
 End Property
 
+'You can set the ListIndex to -1 to indicate "nothing is selected", but this is stupid for a whole bunch of reasons, so please
+' don't do it.  (I mention this because this function rejects invalid ListIndex requests, with that sole exception.)
 Public Property Let ListIndex(ByVal newIndex As Long)
-    If (newIndex >= 0) And (newIndex < m_NumOfItems) Then
+    If (newIndex >= -1) And (newIndex < m_NumOfItems) Then
+    
         m_ListIndex = newIndex
         
         'Changing the list index may require us to shift the scrollbar value, so that the newly selected item fits on-screen.
@@ -438,6 +446,55 @@ Friend Sub NotifyParentRectF(ByRef srcListRectF As RECTF)
     End If
 End Sub
 
+'Key events primarily affect the current .ListIndex property.  Note that some shortcuts (like PAGEDOWN/PAGEUP) require
+' up-to-date rendering information, as we need to know which item lies on the next "page" of the listview - information that
+' directly correlates to the on-screen size of the listbox's constraining rect.
+Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    
+    'All these keys set a new .ListIndex property.  We'll calculate a theoretical new ListIndex, then apply a universal
+    ' bounds-check at the end.
+    Dim newListIndex As Long
+    newListIndex = m_ListIndex
+    
+    Select Case vkCode
+        
+        Case VK_DOWN
+            newListIndex = newListIndex + 1
+            
+        Case VK_UP
+            newListIndex = newListIndex - 1
+            
+        Case VK_PAGEDOWN
+            newListIndex = m_LastRenderIndex + 1
+            
+        Case VK_PAGEUP
+            newListIndex = newListIndex - (m_LastRenderIndex - m_FirstRenderIndex + 1)
+            
+        Case VK_HOME
+            newListIndex = 0
+            
+        Case VK_END
+            newListIndex = m_NumOfItems - 1
+        
+    End Select
+    
+    If m_NumOfItems = 0 Then
+        newListIndex = -1
+    Else
+        If newListIndex < 0 Then newListIndex = 0
+        If newListIndex > m_NumOfItems - 1 Then newListIndex = m_NumOfItems - 1
+    End If
+    
+    Me.ListIndex = newListIndex
+    
+End Sub
+
+Public Sub NotifyKeyUp(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+
+End Sub
+
+'Mouse events control a whole bunch of possible things: hover state, .ListIndex, scroll.  As such, their handling is
+' fairly involved, despite this class not doing any actual UI rendering.
 Public Sub NotifyMouseClick(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     If (Button And pdLeftButton) <> 0 Then
         Dim tmpListIndex As Long
