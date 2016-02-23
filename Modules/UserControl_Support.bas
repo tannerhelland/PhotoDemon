@@ -83,6 +83,12 @@ Private Const INIT_SIZE_OF_FONT_CACHE As Long = 4&
 'Sometimes controls need unique ID values.  This module will provide a non-zero unique ID via the GetUniqueControlID() function.
 Private m_UniqueIDTracker As Long
 
+'As part of broad optimization efforts in the 7.0 release, this module now tracks how many custom PD controls we're managing at
+' any given time.  Use this for leak-detection and resource counting.  For example: each ucSupport-managed PD control uses two
+' GDI objects: one DIB and one persistent DC for the control's backbuffer (all controls are double-buffered).  Use this to
+' figure out how many of the program's GDI objects are being used by UCs, and how many are being created and used elsewhere.
+Private m_PDControlCount As Long
+
 'Iterate through all sibling controls in our container, and if one is capable of receiving focus, activate it.  I had *really* hoped
 ' to bypass this kind of manual handling by using WM_NEXTDLGCTL, but I failed to get it working reliably with all types of VB windows.
 ' I'm honestly not sure whether VB even uses that message, or whether it uses some internal mechanism for focus tracking; the latter
@@ -526,4 +532,18 @@ Public Function GetUniqueControlID() As Long
     
     GetUniqueControlID = m_UniqueIDTracker
     
+End Function
+
+'Whenever a ucSupport instance is registered by a custom PD usercontrol, this function is called, and our running UC count
+' is incremented.
+Public Sub IncrementPDControlCount()
+    m_PDControlCount = m_PDControlCount + 1
+End Sub
+
+Public Sub DecrementPDControlCount()
+    m_PDControlCount = m_PDControlCount - 1
+End Sub
+
+Public Function GetPDControlCount() As Long
+    GetPDControlCount = m_PDControlCount
 End Function

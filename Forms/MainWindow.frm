@@ -2887,7 +2887,7 @@ Private Sub Form_Load()
     ' detect this state and offer to download the plugins for the user.
     ' (NOTE: this check is superceded by the update check - since a full program update will include the missing plugins -
     '        so we ignore this request if the user was already notified of a program update.)
-    If (Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not isFreeImageAvailable) Or (Not isPngQuantAvailable) Or (Not isExifToolAvailable) Then
+    If (Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not IsFreeImageAvailable) Or (Not isPngQuantAvailable) Or (Not isExifToolAvailable) Then
     
         'TODO: rework this to scan for missing plugins in the current application folder.  Some .zip clients - e.g. WinZip - may not
         '      preserve folders during extraction.  PD should automatically detect and repair this situation.
@@ -2908,8 +2908,12 @@ Private Sub Form_Load()
     
     
     '*************************************************************************************************************************************
-    ' For developers only, display an IDE avoidance warning (if it hasn't been dismissed before).
+    ' For developers only, calculate some debug counts and show an IDE avoidance warning (if it hasn't been dismissed before).
     '*************************************************************************************************************************************
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Current PD custom control count: " & UserControl_Support.GetPDControlCount
+    #End If
     
     'Because people may be using this code in the IDE, warn them about the consequences of doing so
     If (Not g_IsProgramCompiled) And (g_UserPreferences.GetPref_Boolean("Core", "Display IDE Warning", True)) Then displayIDEWarning
