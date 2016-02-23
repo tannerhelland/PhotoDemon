@@ -49,6 +49,7 @@ Public Event Click()
 
 'It also relays some events from the list box management class
 Public Event ScrollMaxChanged(ByVal newMax As Long)
+Public Event ScrollValueChanged(ByVal newValue As Long)
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
@@ -178,9 +179,9 @@ Private Sub listSupport_ScrollMaxChanged()
     RaiseEvent ScrollMaxChanged(listSupport.ScrollMax)
 End Sub
 
-Public Function GetScrollMax() As Long
-    GetScrollMax = listSupport.ScrollMax
-End Function
+Private Sub listSupport_ScrollValueChanged()
+    RaiseEvent ScrollValueChanged(Me.ScrollValue)
+End Sub
 
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     listSupport.NotifyMouseClick Button, Shift, x, y

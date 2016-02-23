@@ -1036,8 +1036,7 @@ Private Function CreateComboBox() As Boolean
             'Subclass the parent user control.
             If Not m_ParentHasBeenSubclassed Then
                 cSubclass.ssc_Subclass UserControl.hWnd, 0, 1, Me, True, True, False
-                cSubclass.ssc_AddMsg UserControl.hWnd, MSG_BEFORE, WM_CTLCOLOREDIT, WM_MEASUREITEM, WM_DRAWITEM
-                cSubclass.ssc_AddMsg UserControl.hWnd, MSG_BEFORE, WM_COMMAND
+                cSubclass.ssc_AddMsg UserControl.hWnd, MSG_BEFORE, WM_CTLCOLOREDIT, WM_MEASUREITEM, WM_DRAWITEM, WM_COMMAND
                 m_ParentHasBeenSubclassed = True
             End If
             
@@ -1077,32 +1076,23 @@ Private Function CreateComboBox() As Boolean
         
     'Assign a subclasser to enable proper tab and arrow key support
     If g_IsProgramRunning Then
-    
+        
+        'Subclass the combo box
         If Not (cSubclass Is Nothing) Then
-            
-            'Subclass the combo box
-            cSubclass.ssc_Subclass m_ComboBoxHwnd, 0, 1, Me, True, True, True
+            cSubclass.ssc_Subclass m_ComboBoxHwnd, 0, 1, Me, True, True, False  'Setting this to True causes crashes; cause unknown
             cSubclass.ssc_AddMsg m_ComboBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_MOUSEACTIVATE, WM_CTLCOLORLISTBOX
             cSubclass.ssc_AddMsg m_ComboBoxHwnd, MSG_AFTER, WM_SIZE
-            
-            'Subclass the user control as well.  This is necessary for handling update messages from the edit box
-            If Not m_ParentHasBeenSubclassed Then
-                cSubclass.ssc_Subclass UserControl.hWnd, 0, 1, Me, True, True, False
-                cSubclass.ssc_AddMsg UserControl.hWnd, MSG_BEFORE, WM_CTLCOLOREDIT, WM_COMMAND
-                m_ParentHasBeenSubclassed = True
-            End If
-            
         End If
         
         'Assign a second subclasser for the window painter
         If Not (cPainterBox Is Nothing) Then
-            cPainterBox.StartPainter m_ComboBoxHwnd
+            cPainterBox.StartPainter m_ComboBoxHwnd, False    'Setting this to True causes crashes; cause unknown
             cPainterBox.RequestRepaint
         End If
         
         '...and a third subclasser for mouse events
         Set cMouseEvents = New pdInputMouse
-        cMouseEvents.addInputTracker m_ComboBoxHwnd, True, , , True, True
+        cMouseEvents.addInputTracker m_ComboBoxHwnd, True, , , True, True, False    'Setting this to True causes crashes; cause unknown
         cMouseEvents.setSystemCursor IDC_HAND
         cMouseEvents.setCaptureOverride True
         
@@ -1138,13 +1128,15 @@ Private Function DestroyComboBox() As Boolean
 
     If m_ComboBoxHwnd <> 0 Then
         
-        If Not cSubclass Is Nothing Then
+        If Not (cSubclass Is Nothing) Then
             cSubclass.ssc_UnSubclass m_ComboBoxHwnd
             cSubclass.shk_TerminateHooks
         End If
         
         'If a tooltip is active, forcibly kill its window now.
         If Len(m_ToolString) > 0 Then toolTipManager.KillTooltip m_ComboBoxHwnd
+        
+        If Not (cMouseEvents Is Nothing) Then Set cMouseEvents = Nothing
         
         'Destroy the actual combo box last
         DestroyWindow m_ComboBoxHwnd
@@ -1153,6 +1145,8 @@ Private Function DestroyComboBox() As Boolean
         m_ComboBoxHwnd = 0
         
     End If
+    
+    If m_ComboBoxBrush <> 0 Then DeleteObject m_ComboBoxBrush
     
     DestroyComboBox = True
 
@@ -1169,7 +1163,7 @@ Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTi
     m_ToolTipIcon = newTooltipIcon
     
     'Assign the tooltip immediately, if we can; if we can't, the assignment will happen when the relevant hWnd is obtained.
-    If (m_ComboBoxHwnd) <> 0 Then toolTipManager.SetTooltip m_ComboBoxHwnd, Me.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    If (m_ComboBoxHwnd <> 0) Then toolTipManager.SetTooltip m_ComboBoxHwnd, Me.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
     
 End Sub
 

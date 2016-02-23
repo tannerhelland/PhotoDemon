@@ -15,10 +15,30 @@ Begin VB.UserControl pdListBox
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    ScaleHeight     =   240
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
    ToolboxBitmap   =   "pdListBox.ctx":0000
+   Begin PhotoDemon.pdScrollBar vScroll 
+      Height          =   1575
+      Left            =   2040
+      TabIndex        =   1
+      Top             =   360
+      Visible         =   0   'False
+      Width           =   255
+      _ExtentX        =   450
+      _ExtentY        =   2778
+   End
+   Begin PhotoDemon.pdListBoxView lbView 
+      Height          =   1575
+      Left            =   360
+      TabIndex        =   0
+      Top             =   360
+      Width           =   1575
+      _ExtentX        =   2778
+      _ExtentY        =   2778
+   End
 End
 Attribute VB_Name = "pdListBox"
 Attribute VB_GlobalNameSpace = False
@@ -32,8 +52,9 @@ Attribute VB_Exposed = False
 'Last updated: 28/December/15
 'Last update: continued work on initial build
 '
-'Unicode-compatible list box replacement.  Refer to the pdListSuppor class for additional details; it handles most
-' the heavy lifting for this control.
+'Unicode-compatible list box replacement.  Refer to the pdListSupport class and pdListView sub-control for
+' additional details; they handle most the heavy lifting for this control.  (This control instance's only job is
+' synchronizing the listview and the scrollbar, as necessary.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -51,17 +72,14 @@ Public Event Click()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
-'The rectangle where the list is actually rendered, and a boolean to track whether the mouse is inside that rect
-Private m_ListRect As RECTF, m_MouseInsideList As Boolean
-
-'List box support class.  Handles data storage and coordinate math for rendering.
-Private WithEvents listSupport As pdListSupport
-Attribute listSupport.VB_VarHelpID = -1
-
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
+
+'Because this control supports captions, the main interaction area (list + scrollbar) may be shifted slightly downward.
+' The usable space of both objects is defined by this rect.
+Private m_InteractiveRect As RECTF
 
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
@@ -71,16 +89,8 @@ Attribute ucSupport.VB_VarHelpID = -1
 Private Enum PDLISTBOX_COLOR_LIST
     [_First] = 0
     PDLB_Background = 0
-    PDLB_Border = 1
-    PDLB_SelectedItemFill = 2
-    PDLB_SelectedItemBorder = 3
-    PDLB_SelectedItemText = 4
-    PDLB_UnselectedItemFill = 5
-    PDLB_UnselectedItemBorder = 6
-    PDLB_UnselectedItemText = 7
-    PDLB_SeparatorLine = 8
-    [_Last] = 8
-    [_Count] = 9
+    [_Last] = 0
+    [_Count] = 1
 End Enum
 
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
@@ -92,6 +102,7 @@ Private m_Colors As pdThemeColors
 ' IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
 '                  but I can revisit in the future if it ever becomes relevant.
 Public Property Get Caption() As String
+Attribute Caption.VB_UserMemId = -518
     Caption = ucSupport.GetCaptionText()
 End Property
 
@@ -102,10 +113,13 @@ End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
+    lbView.Enabled = newValue
+    vScroll.Enabled = newValue
     UserControl.Enabled = newValue
     RedrawBackBuffer
     PropertyChanged "Enabled"
@@ -113,19 +127,30 @@ End Property
 
 'Font settings other than size are not supported.  If you want specialized per-item rendering, use an owner-drawn list box
 Public Property Get FontSize() As Single
-    FontSize = ucSupport.GetCaptionFontSize()
+    FontSize = lbView.FontSize
 End Property
 
 Public Property Let FontSize(ByVal newSize As Single)
-    ucSupport.SetCaptionFontSize newSize
+    lbView.FontSize = newSize
     PropertyChanged "FontSize"
 End Property
 
-Public Property Get ContainerHWnd() As Long
-    ContainerHWnd = UserControl.ContainerHWnd
+'Font settings other than size are not supported.  If you want specialized per-item rendering, use an owner-drawn list box
+Public Property Get FontSizeCaption() As Single
+    FontSizeCaption = ucSupport.GetCaptionFontSize()
+End Property
+
+Public Property Let FontSizeCaption(ByVal newSize As Single)
+    ucSupport.SetCaptionFontSize newSize
+    PropertyChanged "FontSizeCaption"
+End Property
+
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 Public Property Get hWnd() As Long
+Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 
@@ -165,31 +190,57 @@ End Sub
 Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
-
-Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    UpdateMousePosition x, y
-    'TODO: raise click events
-    'If m_MouseInsideList Then RaiseBrushDialog
+'Listbox-specific functions and subs.  Most of these simply relay the request to the listSupport object, and it will
+' raise redraw requests as relevant.
+Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional ByVal itemIndex As Long = -1, Optional ByVal hasTrailingSeparator As Boolean = False, Optional ByVal itemHeight As Long = -1)
+    lbView.AddItem srcItemText, itemIndex, hasTrailingSeparator, itemHeight
 End Sub
 
-Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    UpdateMousePosition x, y
-    RedrawBackBuffer
+Public Sub Clear()
+    lbView.Clear
 End Sub
 
-Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    UpdateMousePosition -100, -100
-    RedrawBackBuffer
+Public Function List(ByVal itemIndex As Long, Optional ByVal returnTranslatedText As Boolean = False) As String
+    List = lbView.List(itemIndex, returnTranslatedText)
+End Function
+
+Public Function ListCount() As Long
+    ListCount = lbView.ListCount
+End Function
+
+Public Property Get ListIndex() As Long
+    ListIndex = lbView.ListIndex
+End Property
+
+Public Property Let ListIndex(ByVal newIndex As Long)
+    lbView.ListIndex = newIndex
+End Property
+
+Public Function ListIndexByString(ByRef srcString As String, Optional ByVal compareMode As VbCompareMethod = vbBinaryCompare) As Long
+    ListIndexByString = lbView.ListIndexByString(srcString, compareMode)
+End Function
+
+Public Sub RemoveItem(ByVal itemIndex As Long)
+    lbView.RemoveItem itemIndex
 End Sub
 
-Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
-    m_MouseInsideList = Math_Functions.IsPointInRectF(mouseX, mouseY, m_ListRect)
-    If m_MouseInsideList Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
+Private Sub lbView_Click()
+    RaiseEvent Click
 End Sub
 
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    UpdateMousePosition x, y
-    RedrawBackBuffer
+Private Sub lbView_ScrollMaxChanged(ByVal newMax As Long)
+    Dim changeInVisibility As Boolean: changeInVisibility = False
+    If vScroll.Visible <> lbView.ShouldScrollBarBeVisible Then
+        vScroll.Visible = lbView.ShouldScrollBarBeVisible
+        changeInVisibility = True
+    End If
+    If newMax >= 0 Then vScroll.Max = newMax
+    
+    If changeInVisibility Then UpdateControlLayout
+End Sub
+
+Private Sub lbView_ScrollValueChanged(ByVal newValue As Long)
+    If vScroll.Visible Then vScroll.Value = newValue
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
@@ -209,22 +260,22 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
     UpdateControlLayout
 End Sub
 
+Private Sub vScroll_Scroll(ByVal eventIsCritical As Boolean)
+    If lbView.ScrollValue <> vScroll.Value Then lbView.ScrollValue = vScroll.Value
+End Sub
+
 Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
-    ucSupport.RequestExtraFunctionality True, True
     ucSupport.RequestCaptionSupport False
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDLISTBOX_COLOR_LIST: colorCount = [_Count]
-    m_Colors.InitializeColorList "PDBrushSelector", colorCount
+    m_Colors.InitializeColorList "PDListBox", colorCount
     If Not g_IsProgramRunning Then UpdateColorList
-    
-    'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
-    Set listSupport = New pdListSupport
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -234,6 +285,7 @@ End Sub
 Private Sub UserControl_InitProperties()
     Caption = ""
     FontSize = 10
+    FontSizeCaption = 12
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -245,6 +297,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         Caption = .ReadProperty("Caption", "")
         FontSize = .ReadProperty("FontSize", 10)
+        FontSizeCaption = .ReadProperty("FontSizeCaption", 12)
     End With
 End Sub
 
@@ -255,7 +308,8 @@ End Sub
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Caption", ucSupport.GetCaptionText, ""
-        .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 10
+        .WriteProperty "FontSize", lbView.FontSize, 10
+        .WriteProperty "FontSizeCaption", ucSupport.GetCaptionFontSize, 12
     End With
 End Sub
 
@@ -273,23 +327,31 @@ Private Sub UpdateControlLayout()
     If ucSupport.IsCaptionActive Then
         
         'The list area is placed relative to the caption
-        With m_ListRect
+        With m_InteractiveRect
             .Left = FixDPI(8)
             .Top = ucSupport.GetCaptionBottom + 2
-            .Width = (bWidth - 2) - .Left
-            .Height = (bHeight - 2) - .Top
+            .Width = (bWidth - 1) - .Left
+            .Height = (bHeight - 1) - .Top
         End With
         
     'If there's no caption, allow the clickable portion to fill the entire control
     Else
         
-        With m_ListRect
-            .Left = 1
-            .Top = 1
-            .Width = (bWidth - 2) - .Left
-            .Height = (bHeight - 2) - .Top
+        With m_InteractiveRect
+            .Left = 0
+            .Top = 0
+            .Width = (bWidth - 1) - .Left
+            .Height = (bHeight - 1) - .Top
         End With
         
+    End If
+    
+    'If the scrollbar is visible, we'll position it first.
+    If vScroll.Visible Then
+        vScroll.SetPositionAndSize (m_InteractiveRect.Width - vScroll.GetWidth), m_InteractiveRect.Top + 1, vScroll.GetWidth, m_InteractiveRect.Height - 2
+        lbView.SetPositionAndSize m_InteractiveRect.Left, m_InteractiveRect.Top, vScroll.GetLeft, m_InteractiveRect.Height
+    Else
+        lbView.SetPositionAndSize m_InteractiveRect.Left, m_InteractiveRect.Top, m_InteractiveRect.Width, m_InteractiveRect.Height
     End If
             
 End Sub
@@ -301,38 +363,6 @@ Private Sub RedrawBackBuffer()
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True)
     
-    'NOTE: if a caption exists, it has already been drawn.  We just need to draw the list portion.
-    If g_IsProgramRunning Then
-        
-'        'Render the brush first
-'        m_Filler.setBoundaryRect m_ListRect
-'        m_Filler.createBrushFromString Me.Brush
-'
-'        Dim tmpBrush As Long
-'        tmpBrush = m_Filler.getBrushHandle
-'
-'        With m_ListRect
-'            GDI_Plus.GDIPlusFillPatternToDC bufferDC, .Left, .Top, .Width, .Height, g_CheckerboardPattern
-'            GDI_Plus.GDIPlusFillDC_Brush bufferDC, tmpBrush, .Left, .Top, .Width, .Height
-'        End With
-'
-'        m_Filler.releaseBrushHandle tmpBrush
-'
-'        'Draw borders around the brush results.
-'        Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long
-'
-'        If g_IsProgramRunning And m_MouseInsideList Then
-'            outlineColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-'            outlineWidth = 3
-'        Else
-'            outlineColor = vbBlack
-'            outlineWidth = 1
-'        End If
-'
-'        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ListRect, outlineColor, , outlineWidth, False, LineJoinMiter
-        
-    End If
-    
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint
     
@@ -343,14 +373,6 @@ End Sub
 Private Sub UpdateColorList()
     With m_Colors
         .LoadThemeColor PDLB_Background, "Background", IDE_WHITE
-        .LoadThemeColor PDLB_Border, "Border", IDE_GRAY
-        .LoadThemeColor PDLB_SelectedItemFill, "SelectedItemFill", IDE_BLUE
-        .LoadThemeColor PDLB_SelectedItemBorder, "SelectedItemBorder", IDE_BLUE
-        .LoadThemeColor PDLB_SelectedItemText, "SelectedItemText", IDE_WHITE
-        .LoadThemeColor PDLB_UnselectedItemFill, "UnselectedItemFill", IDE_WHITE
-        .LoadThemeColor PDLB_UnselectedItemBorder, "UnselectedItemBorder", IDE_WHITE
-        .LoadThemeColor PDLB_UnselectedItemText, "UnselectedItemText", IDE_BLACK
-        .LoadThemeColor PDLB_SeparatorLine, "SeparatorLine", IDE_BLUE
     End With
 End Sub
 
@@ -358,10 +380,12 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     UpdateColorList
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+    lbView.UpdateAgainstCurrentTheme
+    vScroll.UpdateAgainstCurrentTheme
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    ucSupport.AssignTooltip UserControl.ContainerHWnd, newTooltip, newTooltipTitle, newTooltipIcon
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

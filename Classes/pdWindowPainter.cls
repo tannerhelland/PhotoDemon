@@ -74,19 +74,19 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-    If m_hWnd <> 0 Then
-        cSubclass.ssc_UnSubclass m_hWnd
+    If Not (cSubclass Is Nothing) Then
+        If m_hWnd <> 0 Then cSubclass.ssc_UnSubclass m_hWnd
         cSubclass.ssc_Terminate
     End If
 End Sub
 
 'This function must be called in the UserControl's Initialize event.  For best results, check for the IDE and do not
 ' load this class.
-Public Sub StartPainter(ByVal srcHwnd As Long)
+Public Sub StartPainter(ByVal srcHwnd As Long, Optional ByVal isAPIWindow As Boolean = False)
     
     'Release the existing subclasser, if any
-    If Not (cSubclass Is Nothing) And (m_hWnd <> 0) Then
-        cSubclass.ssc_UnSubclass m_hWnd
+    If Not (cSubclass Is Nothing) Then
+        If (m_hWnd <> 0) Then cSubclass.ssc_UnSubclass m_hWnd
         cSubclass.ssc_Terminate
     End If
     
@@ -94,8 +94,8 @@ Public Sub StartPainter(ByVal srcHwnd As Long)
     
     'Subclass all necessary messages for proper window painting
     If (m_hWnd <> 0) Then
-        Set cSubclass = New cSelfSubHookCallback
-        cSubclass.ssc_Subclass m_hWnd, , , Me
+        If (cSubclass Is Nothing) Then Set cSubclass = New cSelfSubHookCallback
+        cSubclass.ssc_Subclass m_hWnd, , 1, Me, , , isAPIWindow
         cSubclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_PAINT, WM_ERASEBKGND
     End If
     

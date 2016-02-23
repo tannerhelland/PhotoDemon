@@ -174,7 +174,9 @@ Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
     m_hDC = hDC_Control
     
     If (m_hWnd <> 0) Then
-    
+        
+        UserControl_Support.IncrementPDControlCount
+        
         'Subclass the user control immediately
         If g_IsProgramRunning Then
             m_Subclass.ssc_Subclass m_hWnd, , 1, Me, True, True
@@ -995,6 +997,8 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
+    
+    UserControl_Support.DecrementPDControlCount
     
     'Release all subclassing now.  Note that the order in which we do this is important - don't change it!
     
