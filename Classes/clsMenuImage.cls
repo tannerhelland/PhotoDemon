@@ -289,7 +289,6 @@ Public Event MenuMessages(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam A
 
 Private m_hWnd As Long
 
-Private GdipToken As Long
 Private m_lWidth As Long
 Private m_lHeight As Long
 Private mDIB() As MemoDIB
@@ -673,7 +672,7 @@ Public Function AddImageFromFile(ByVal FileName As String, Optional bGhosted As 
         
         If hIcon <> 0 Then
             If IsAlphaIcon(hIcon) Then
-               hImage = AlphaIconToBmp(hIcon, hBmp)
+                hImage = AlphaIconToBmp(hIcon, hBmp)
             Else
                 GdipCreateBitmapFromHICON hIcon, hImage
             End If
@@ -866,7 +865,7 @@ End Function
 
 Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Long, Optional ByVal bRaiseEvent As Boolean = False) As Boolean
 
-    If GdipToken Then
+    If g_GDIPlusAvailable Then
     
         m_lWidth = imgWidth
         m_lHeight = imgHeight
@@ -876,7 +875,7 @@ Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Lo
            Me.Clear
         End If
         
-        If Not IsWinVistaOrLater Or bRaiseEvent Then
+        If (Not IsWinVistaOrLater) Or bRaiseEvent Then
             If hWnd <> 0 Then
                 Call StopSubclassing
                 Init = SetSubclassing(hWnd)
@@ -936,31 +935,15 @@ Private Sub Class_Initialize()
     End If
     
     ReDim mDIB(0)
-
-    InitGDI
-
+    
     'Tanner's fix: initialize an IDE-safe subclasser
     Set cSubclass = New cSelfSubHookCallback
     
 End Sub
 
-
 Private Sub Class_Terminate()
-
     cSubclass.ssc_Terminate
     Clear
-    TerminateGDI
-    
-End Sub
-
-Private Sub InitGDI()
-    Dim GdipStartupInput As GdiplusStartupInput
-    GdipStartupInput.GdiplusVersion = GdiplusVersion
-    Call GdiplusStartup(GdipToken, GdipStartupInput, ByVal 0&)
-End Sub
- 
-Private Sub TerminateGDI()
-    If GdipToken <> 0 Then Call GdiplusShutdown(GdipToken)
 End Sub
 
 Private Function IsArrayDim(ByVal lpArray As Long) As Boolean
