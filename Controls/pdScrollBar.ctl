@@ -961,7 +961,7 @@ Private Sub UpdateControlLayout()
         With trackRect
             .Left = upLeftRect.Right + 1
             .Top = 0
-            .Right = downRightRect.Left
+            .Right = downRightRect.Left - 1
             .Bottom = bHeight
         End With
     Else
@@ -969,7 +969,7 @@ Private Sub UpdateControlLayout()
             .Left = 0
             .Top = upLeftRect.Bottom + 1
             .Right = bWidth
-            .Bottom = downRightRect.Top
+            .Bottom = downRightRect.Top - 1
         End With
     End If
     
