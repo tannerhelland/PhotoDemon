@@ -19,6 +19,7 @@ Begin VB.UserControl pdCanvasView
    ScaleHeight     =   240
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
+   ToolboxBitmap   =   "pdCanvasView.ctx":0000
 End
 Attribute VB_Name = "pdCanvasView"
 Attribute VB_GlobalNameSpace = False

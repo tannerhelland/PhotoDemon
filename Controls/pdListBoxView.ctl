@@ -19,6 +19,7 @@ Begin VB.UserControl pdListBoxView
    ScaleHeight     =   240
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
+   ToolboxBitmap   =   "pdListBoxView.ctx":0000
 End
 Attribute VB_Name = "pdListBoxView"
 Attribute VB_GlobalNameSpace = False
@@ -233,6 +234,10 @@ Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
 
+Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    listSupport.NotifyMouseWheelVertical Button, Shift, x, y, scrollAmount
+End Sub
+
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout
     RedrawBackBuffer
@@ -255,6 +260,10 @@ End Sub
 Public Sub Clear()
     listSupport.Clear
 End Sub
+
+Public Function GetDefaultItemHeight() As Long
+    GetDefaultItemHeight = listSupport.DefaultItemHeight
+End Function
 
 Public Function List(ByVal itemIndex As Long, Optional ByVal returnTranslatedText As Boolean = False) As String
     List = listSupport.List(itemIndex, returnTranslatedText)
