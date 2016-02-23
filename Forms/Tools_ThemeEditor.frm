@@ -24,24 +24,24 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdListBox lbTest 
+      Height          =   2535
+      Left            =   10560
+      TabIndex        =   25
+      Top             =   3720
+      Width           =   2535
+      _ExtentX        =   4471
+      _ExtentY        =   4471
+   End
    Begin PhotoDemon.pdButton cmdAddToList 
       Height          =   495
       Left            =   10560
-      TabIndex        =   23
+      TabIndex        =   22
       Top             =   6360
       Width           =   1215
       _extentx        =   4683
       _extenty        =   873
       caption         =   "add to list"
-   End
-   Begin PhotoDemon.pdListBoxView lbTest 
-      Height          =   2535
-      Left            =   10560
-      TabIndex        =   22
-      Top             =   3720
-      Width           =   2655
-      _extentx        =   4683
-      _extenty        =   4471
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -336,7 +336,7 @@ Begin VB.Form FormThemeEditor
    Begin PhotoDemon.pdButton cmdRemoveFromList 
       Height          =   495
       Left            =   11880
-      TabIndex        =   24
+      TabIndex        =   23
       Top             =   6360
       Width           =   1215
       _extentx        =   2143
@@ -346,12 +346,12 @@ Begin VB.Form FormThemeEditor
    Begin PhotoDemon.pdButton cmdTestLastListIndex 
       Height          =   255
       Left            =   10560
-      TabIndex        =   25
+      TabIndex        =   24
       Top             =   6960
       Width           =   2535
-      _ExtentX        =   4471
-      _ExtentY        =   450
-      Caption         =   "set random ListIndex"
+      _extentx        =   4471
+      _extenty        =   450
+      caption         =   "set random ListIndex"
    End
 End
 Attribute VB_Name = "FormThemeEditor"

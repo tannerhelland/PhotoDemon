@@ -653,6 +653,7 @@ Public Property Let ScrollValue(ByRef newValue As Long)
     
     'Changing the scroll value changes the on-screen position of list elements, so we need to recalculate rendering data.
     If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
+    RaiseEvent ScrollValueChanged
     
 End Property
 

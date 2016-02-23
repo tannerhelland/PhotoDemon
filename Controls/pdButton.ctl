@@ -222,7 +222,7 @@ Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
-'To support high-DPI settings properly, we expose some specialized move+size functions
+'To support high-DPI settings properly, we expose specialized move+size functions
 Public Function GetLeft() As Long
     GetLeft = ucSupport.GetControlLeft
 End Function
@@ -364,7 +364,7 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
     'Load the requested resource DIB, as necessary
     If (Len(resName) <> 0) Or Not (srcDIB Is Nothing) Then
     
-        If Len(resName) <> 0 Then loadResourceToDIB resName, srcDIB
+        If Len(resName) <> 0 Then LoadResourceToDIB resName, srcDIB
         
         'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
         ' (We also check for these != 0 to verify that an image was successfully loaded.)

@@ -206,6 +206,10 @@
 				<Caption-hover>TextHover</Caption-hover>
 			</PDHyperlink>
 			
+			<PDListBox>
+				<Background>BackgroundDefault</Background>
+			</PDListBox>
+			
 			<PDListBoxView>
 				<Background>BackgroundDefault</Background>
 				<Border>GrayDefault</Border>
@@ -277,8 +281,8 @@
 				<ButtonArrow-hover>AccentDefault</ButtonArrow-hover>
 				<ThumbBorder>GrayLight</ThumbBorder>
 				<ThumbFill>Graylight</ThumbFill>
-				<ThumbBorder-disabled>GrayDark</ThumbBorder-disabled>
-				<ThumbFill-disabled>GrayDark</ThumbFill-disabled>
+				<ThumbBorder-disabled>GrayDefault</ThumbBorder-disabled>
+				<ThumbFill-disabled>GrayDefault</ThumbFill-disabled>
 				<ThumbBorder-active>AccentDefault</ThumbBorder-active>
 				<ThumbFill-active>AccentLight</ThumbFill-active>
 				<ThumbBorder-hover>AccentLight</ThumbBorder-hover>
