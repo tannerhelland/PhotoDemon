@@ -161,6 +161,7 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
             End If
             
         'If the user specifies a height, assume it's correct.  Any positioning issues are theirs to deal with.
+        ' (NOT IMPLEMENTED YET!)
         Else
             .itemHeight = m_DefaultHeight
         End If
@@ -626,16 +627,18 @@ End Sub
 
 'Need to render a specific list item?  Call this to retrieve a full copy of a given list item's data, plus
 ' rendering-specific information like the item's literal position in the current list box.
-Friend Sub GetRenderingItem(ByVal srcListIndex As Long, ByRef dstListItem As PD_LISTITEM, ByRef dstItemTop As Long, ByRef dstItemHeight As Long)
+Friend Sub GetRenderingItem(ByVal srcListIndex As Long, ByRef dstListItem As PD_LISTITEM, ByRef dstItemTop As Long, ByRef dstItemHeight As Long, ByRef dstItemHeightWithoutSeparator As Long)
     
     dstListItem = m_Items(srcListIndex)
     
     If m_SizeMode = PDLH_FIXED Then
         dstItemTop = (srcListIndex * m_DefaultHeight) - m_ScrollValue
         dstItemHeight = m_DefaultHeight
+        dstItemHeightWithoutSeparator = m_DefaultHeight
     Else
-        dstItemTop = m_Items(srcListIndex).itemTop
+        dstItemTop = m_Items(srcListIndex).itemTop - m_ScrollValue
         dstItemHeight = m_Items(srcListIndex).itemHeight
+        dstItemHeightWithoutSeparator = m_DefaultHeight
     End If
     
 End Sub
@@ -734,32 +737,26 @@ Public Sub CalculateRenderMetrics()
         Dim oneItemFound As Boolean
         oneItemFound = False
         
-        'Hit detection is easily performed using rectangle intersection.
-        ' (Note that the .Top parameter must always be set mathematically, later in this function.)
-        Dim tmpRect As RECTF
-        tmpRect.Left = m_ListRectF.Left
-        tmpRect.Width = m_ListRectF.Width
-        
-        Dim intersectionRect As RECTF
+        Dim itemTop As Single, itemBottom As Single
+        m_FirstRenderIndex = LONG_MAX
+        m_LastRenderIndex = -1 * LONG_MAX
         
         For i = 0 To m_NumOfItems - 1
             
-            m_FirstRenderIndex = LONG_MAX
-            m_LastRenderIndex = -1 * LONG_MAX
-            
-            'Populate our temporary rect.
-            tmpRect.Top = (m_Items(i).itemTop - m_ScrollValue) + m_ListRectF.Top
-            tmpRect.Height = m_Items(i).itemHeight
+            'Calculate top and bottom values *relative to the viewport* (e.g. with scrolling factored in)
+            itemTop = (m_Items(i).itemTop - m_ScrollValue)
+            itemBottom = itemTop + m_Items(i).itemHeight
             
             'If overlap is found, render the rect
-            If GDI_Plus.IntersectRectF(intersectionRect, tmpRect, m_ListRectF) Then
+            If ((itemTop >= 0) And (itemTop <= m_ListRectF.Height)) Or ((itemBottom >= 0) And (itemBottom <= m_ListRectF.Height)) Then
                 
                 If i < m_FirstRenderIndex Then m_FirstRenderIndex = i
                 If i > m_LastRenderIndex Then m_LastRenderIndex = i
                 
                 oneItemFound = True
             
-            'If no overlap is found, but overlap was found for a PREVIOUS entry, exit immediately
+            'If no overlap is found, but overlap was found for a PREVIOUS entry, exit immediately, because no further hits
+            ' will be detected.
             Else
                 If oneItemFound Then Exit For
             End If

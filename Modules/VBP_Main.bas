@@ -6,8 +6,8 @@ Attribute VB_Name = "modMain"
 
 Option Explicit
 
-Private Declare Function InitCommonControlsEx Lib "comctl32.dll" (iccex As InitCommonControlsExStruct) As Boolean
-Private Declare Sub InitCommonControls Lib "comctl32.dll" ()
+Private Declare Function InitCommonControlsEx Lib "comctl32" (iccex As InitCommonControlsExStruct) As Boolean
+Private Declare Sub InitCommonControls Lib "comctl32" ()
 
 Private Type InitCommonControlsExStruct
     lngSize As Long

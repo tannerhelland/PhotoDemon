@@ -405,7 +405,14 @@ Private Sub LoadRelevantThemeFile()
 End Sub
 
 Private Sub cmdAddToList_Click()
-    lbTest.AddItem Timer
+
+    Dim cRnd As pdRandomize
+    Set cRnd = New pdRandomize
+    cRnd.setSeed_AutomaticAndRandom
+    cRnd.setRndIntegerBounds 0, (LONG_MAX - 1)
+    
+    lbTest.AddItem CStr(cRnd.getRandomInt_WH), , CBool(cRnd.getRandomInt_WH Mod 3 = 0)
+    
 End Sub
 
 Private Sub cmdRemoveFromList_Click()
