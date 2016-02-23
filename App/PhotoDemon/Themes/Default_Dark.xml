@@ -227,6 +227,7 @@
 				<UnselectedItemBorder-disabled>BackgroundDefault</UnselectedItemBorder-disabled> 
 				<SelectedItemText-disabled>BackgroundDefault</SelectedItemText-disabled> 
 				<UnselectedItemText-disabled>GrayDisabled</UnselectedItemText-disabled>
+				<SeparatorLine>GrayLight</SeparatorLine>
 			</PDListBoxView>
 			
 			<PDNavigator>

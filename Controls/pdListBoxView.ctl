@@ -409,6 +409,7 @@ Private Sub RedrawBackBuffer()
     Dim itemColorUnselectedBorderHover As Long, itemColorUnselectedFillHover As Long
     Dim fontColorSelected As Long, fontColorSelectedHover As Long
     Dim fontColorUnselected As Long, fontColorUnselectedHover As Long
+    Dim separatorColor As Long
     
     itemColorUnselectedBorder = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, False)
     itemColorUnselectedBorderHover = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, True)
@@ -424,6 +425,8 @@ Private Sub RedrawBackBuffer()
     fontColorUnselected = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, False)
     fontColorUnselectedHover = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, True)
     
+    separatorColor = m_Colors.RetrieveColor(PDLB_SeparatorLine, enabledState, False, False)
+    
     If g_IsProgramRunning Then
         
         'Start by retrieving basic rendering metrics from the support object
@@ -437,8 +440,10 @@ Private Sub RedrawBackBuffer()
         
         If Not listIsEmpty Then
             
-            Dim curListIndex As Long, curColor As Long, itemIsSelected As Boolean, itemIsHovered As Boolean
+            Dim curListIndex As Long, curColor As Long
             curListIndex = listSupport.ListIndex
+            
+            Dim itemIsSelected As Boolean, itemIsHovered As Boolean, itemHasSeparator As Boolean
             
             'This control doesn't maintain its own fonts; instead, it borrows it from the public PD UI font cache, as necessary
             Dim tmpFont As pdFont, textPadding As Single
@@ -446,7 +451,9 @@ Private Sub RedrawBackBuffer()
             textPadding = LIST_PADDING_HORIZONTAL
             If listHasFocus Then textPadding = textPadding - 1
             
-            Dim tmpListItem As PD_LISTITEM, tmpTop As Long, tmpHeight As Long, tmpRect As RECTF
+            Dim tmpTop As Long, tmpHeight As Long, tmpHeightWithoutSeparator As Long
+            Dim lineY As Single
+            Dim tmpListItem As PD_LISTITEM, tmpRect As RECTF
             
             'Left and Width are the same for all list entries
             If listHasFocus Then
@@ -461,9 +468,15 @@ Private Sub RedrawBackBuffer()
             For i = firstItemIndex To lastItemIndex
                 
                 'For each list item, we follow a pretty standard formula: retrieve the item's data...
-                listSupport.GetRenderingItem i, tmpListItem, tmpTop, tmpHeight
+                listSupport.GetRenderingItem i, tmpListItem, tmpTop, tmpHeight, tmpHeightWithoutSeparator
+                itemHasSeparator = tmpListItem.isSeparator
                 tmpRect.Top = tmpTop
-                tmpRect.Height = tmpHeight - 1
+                
+                If itemHasSeparator Then
+                    tmpRect.Height = tmpHeightWithoutSeparator - 1
+                Else
+                    tmpRect.Height = tmpHeight - 1
+                End If
                 
                 itemIsSelected = CBool(i = curListIndex)
                 itemIsHovered = CBool(i = listSupport.ListIndexHovered)
@@ -497,6 +510,12 @@ Private Sub RedrawBackBuffer()
                 tmpFont.SetTextAlignment vbLeftJustify
                 tmpFont.FastRenderTextWithClipping tmpRect.Left + textPadding, tmpRect.Top + LIST_PADDING_VERTICAL, tmpRect.Width - LIST_PADDING_HORIZONTAL, tmpRect.Height - LIST_PADDING_VERTICAL, tmpListItem.textTranslated, True, True
                 tmpFont.ReleaseFromDC
+                
+                'Separators are drawn separately, external to the other items
+                If itemHasSeparator Then
+                    lineY = tmpRect.Top + tmpHeightWithoutSeparator + (tmpHeight - tmpHeightWithoutSeparator) / 2
+                    GDI_Plus.GDIPlusDrawLineToDC bufferDC, m_ListRect.Left + FixDPI(12), lineY, m_ListRect.Left + m_ListRect.Width - FixDPI(12), lineY, separatorColor, 255
+                End If
                 
             Next i
             
