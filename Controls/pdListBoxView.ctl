@@ -187,6 +187,14 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     UpdateMousePosition x, y
 End Sub
 
+Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    listSupport.NotifyKeyDown Shift, vkCode, markEventHandled
+End Sub
+
+Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    listSupport.NotifyKeyUp Shift, vkCode, markEventHandled
+End Sub
+
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     listSupport.NotifyMouseDown Button, Shift, x, y
 End Sub
@@ -275,6 +283,10 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
     listSupport.RemoveItem itemIndex
 End Sub
 
+Public Function ShouldScrollBarBeVisible() As Boolean
+    ShouldScrollBarBeVisible = CBool(ScrollMax > 0)
+End Function
+
 Public Function ScrollMax() As Long
     ScrollMax = listSupport.ScrollMax
 End Function
@@ -297,6 +309,7 @@ Private Sub UserControl_Initialize()
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
     ucSupport.RequestExtraFunctionality True, True
+    ucSupport.SpecifyRequiredKeys VK_DOWN, VK_UP, VK_PAGEDOWN, VK_PAGEUP, VK_HOME, VK_END
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
