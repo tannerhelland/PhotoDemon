@@ -38,9 +38,14 @@ Option Explicit
 'This control raises a few helper events, mostly related to rendering.  If our owner does something that requires a redraw,
 ' we'll raise a "RedrawNeeded" event, which the owner can then respond to at their leisure.  (Or ignore, if e.g. they're
 ' not visible at the moment.)
+'
+'As far as rendering is concerned, please note that some events are always synonymous with a redraw (e.g. Click() always
+' means the .ListIndex has changed, which in turn means a redraw is required).  You *do not* have to render content from
+' within the Click() event - you will always get a corresponding RedrawNeeded() event to match.
 Public Event RedrawNeeded()
 Public Event ScrollMaxChanged()
 Public Event ScrollValueChanged()
+Public Event Click()
 
 'This class can calculate list box element offsets using three different systems:
 ' - Fixed size (all list elements are the same height)
@@ -48,6 +53,9 @@ Public Event ScrollValueChanged()
 ' - Custom size (the owner controls each element height independently)
 'By default, fixed size is assumed.
 Private m_SizeMode As PD_LISTBOX_HEIGHT
+
+'This class can also adjust how it responds to certain input events
+Private m_ListMode As PD_LISTSUPPORT_MODE
 
 'If custom sizes are in use, PD needs to store each listbox item position independently, since we can't infer it.
 ' Note that this struct (and the corresponding position array) may or may not be in use - or certain parts of it
@@ -98,12 +106,17 @@ Private m_FirstRenderIndex As Long, m_LastRenderIndex As Long
 Private m_RenderDataCorrect As Boolean
 
 Private Sub Class_Initialize()
-    m_DefaultHeight = 0
+    
+    m_ListMode = PDLM_LISTBOX
     m_SizeMode = PDLH_FIXED
+    
+    m_DefaultHeight = 0
     m_RedrawAutomatically = True
     m_MouseInsideList = False
     m_ListIndexHover = -1
+    
     Me.Clear
+    
 End Sub
 
 'Add an item to the list.  Note that all parameters are optional; if the owner is managing a list with custom data, for example,
@@ -197,11 +210,14 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
         
     End With
     
-    'If this item is beneath the list index, bump up the list index by one
-    If itemIndex < m_ListIndex Then m_ListIndex = m_ListIndex + 1
-    
     'Increment the number of list entries
     m_NumOfItems = m_NumOfItems + 1
+    
+    'If this item is beneath the list index, bump up the list index by one
+    If itemIndex < m_ListIndex Then
+        m_ListIndex = m_ListIndex + 1
+        RaiseEvent Click
+    End If
     
     If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
     
@@ -213,7 +229,7 @@ Public Sub Clear(Optional ByVal newListSize As Long = INITIAL_LIST_SIZE)
     On Error GoTo FailsafeReset
     
     'Reset some obvious things (that don't require special handling)
-    m_ListIndex = 0
+    m_ListIndex = -1
     m_NumOfItems = 0
     m_TotalHeight = 0
     
@@ -299,9 +315,11 @@ End Property
 'You can set the ListIndex to -1 to indicate "nothing is selected", but this is stupid for a whole bunch of reasons, so please
 ' don't do it.  (I mention this because this function rejects invalid ListIndex requests, with that sole exception.)
 Public Property Let ListIndex(ByVal newIndex As Long)
+
     If (newIndex >= -1) And (newIndex < m_NumOfItems) Then
     
         m_ListIndex = newIndex
+        RaiseEvent Click
         
         'Changing the list index may require us to shift the scrollbar value, so that the newly selected item fits on-screen.
         If MakeSureListIndexFitsOnscreen Then
@@ -312,47 +330,8 @@ Public Property Let ListIndex(ByVal newIndex As Long)
         End If
         
     End If
-End Property
-
-'When a new ListIndex value is set, PD makes sure that item appears on-screen.  This function will return TRUE if the current
-' scroll value was changed to bring the item on-screen.
-Private Function MakeSureListIndexFitsOnscreen() As Boolean
-
-    MakeSureListIndexFitsOnscreen = False
     
-    'If the item's current top and bottom values fit with the listview's container area, we don't need to change anything.
-    If (m_ListIndex >= 0) And (m_ListIndex < m_NumOfItems) Then
-        
-        Dim liTop As Single, liBottom As Single
-        liTop = m_Items(m_ListIndex).itemTop
-        liBottom = liTop + m_Items(m_ListIndex).itemHeight
-        
-        Dim liContainerTop As Single, liContainerBottom As Single
-        liContainerTop = m_ScrollValue
-        liContainerBottom = liContainerTop + m_ListRectF.Height
-        
-        'If either the top or bottom of the item rect lies outside the container rect, calculate new scroll values
-        If (liTop < liContainerTop) Or (liBottom > liContainerBottom) Then
-        
-            MakeSureListIndexFitsOnscreen = True
-            
-            'If the item lies *above* the viewport rect, scroll down to compensate.
-            If liTop < liContainerTop Then
-                m_ScrollValue = liTop
-                
-            'If the item lies *below* the viewport rect, scroll up to compensate.
-            Else
-                m_ScrollValue = (liTop - (m_ListRectF.Height - m_Items(m_ListIndex).itemHeight)) - 1
-            End If
-            
-            If m_ScrollValue > m_ScrollMax Then m_ScrollValue = m_ScrollMax
-            If m_ScrollValue < 0 Then m_ScrollValue = 0
-        
-        End If
-        
-    End If
-
-End Function
+End Property
 
 'As a convenience, this function lets the caller retrieve a given ListIndex by associated string contents.
 ' IMPORTANT NOTE: this function doesn't *change* the ListIndex; it only returns a hypothetical one matching the input string.
@@ -437,6 +416,14 @@ Public Property Get ListIndexHovered() As Long
     ListIndexHovered = m_ListIndexHover
 End Property
 
+Public Property Get ListSupportMode() As PD_LISTSUPPORT_MODE
+    ListSupportMode = m_ListMode
+End Property
+
+Public Property Let ListSupportMode(ByVal newMode As PD_LISTSUPPORT_MODE)
+    m_ListMode = newMode
+End Property
+
 'While this class doesn't actually render anything (that's left to the parent), it has enough information to manage a lot
 ' of the backend rendering details automatically.  This makes it much easier to construct custom list boxes, as things like
 ' hit detection can be handled here - ensuring that all list boxes throughout the program, even custom ones, behave identically.
@@ -466,10 +453,18 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             newListIndex = newListIndex - 1
             
         Case VK_PAGEDOWN
-            newListIndex = m_LastRenderIndex + 1
+            If m_ListMode = PDLM_LISTBOX Then
+                newListIndex = m_LastRenderIndex + 1
+            Else
+                newListIndex = newListIndex + 1
+            End If
             
         Case VK_PAGEUP
-            newListIndex = newListIndex - (m_LastRenderIndex - m_FirstRenderIndex + 1)
+            If m_ListMode = PDLM_LISTBOX Then
+                newListIndex = newListIndex - (m_LastRenderIndex - m_FirstRenderIndex + 1)
+            Else
+                newListIndex = newListIndex - 1
+            End If
             
         Case VK_HOME
             newListIndex = 0
@@ -536,23 +531,83 @@ End Sub
 
 Public Sub NotifyMouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     
-    If (m_ScrollMax > 0) And (scrollAmount <> 0) Then
+    'The behavior of the mousewheel varies by the current "listmode", e.g. if our parent is a scrollable listview, we behave
+    ' differently than if our parent is a closed dropdown box.
+    If m_ListMode = PDLM_LISTBOX Then
         
-        Dim newScrollValue As Long: newScrollValue = m_ScrollValue
+        If (m_ScrollMax > 0) And (scrollAmount <> 0) Then
         
-        If scrollAmount > 0 Then
-            newScrollValue = newScrollValue - Me.DefaultItemHeight
-        Else
-            newScrollValue = newScrollValue + Me.DefaultItemHeight
+            Dim newScrollValue As Long: newScrollValue = m_ScrollValue
+            
+            If scrollAmount > 0 Then
+                newScrollValue = newScrollValue - Me.DefaultItemHeight
+            Else
+                newScrollValue = newScrollValue + Me.DefaultItemHeight
+            End If
+            
+            If newScrollValue < 0 Then newScrollValue = 0
+            If newScrollValue > m_ScrollMax Then newScrollValue = m_ScrollMax
+            Me.ScrollValue = newScrollValue
+            
         End If
         
-        If newScrollValue < 0 Then newScrollValue = 0
-        If newScrollValue > m_ScrollMax Then newScrollValue = m_ScrollMax
-        Me.ScrollValue = newScrollValue
-        
+    'Dropdown mode
+    Else
+            
+        If m_NumOfItems > 1 Then
+            
+            Dim newListIndex As Long: newListIndex = Me.ListIndex
+            If scrollAmount > 0 Then newListIndex = newListIndex - 1 Else newListIndex = newListIndex + 1
+            
+            If newListIndex < 0 Then newListIndex = 0
+            If newListIndex > m_NumOfItems - 1 Then newListIndex = m_NumOfItems - 1
+            Me.ListIndex = newListIndex
+            
+        End If
+    
     End If
     
 End Sub
+
+'When a new ListIndex value is set, PD makes sure that item appears on-screen.  This function will return TRUE if the current
+' scroll value was changed to bring the item on-screen.
+Private Function MakeSureListIndexFitsOnscreen() As Boolean
+
+    MakeSureListIndexFitsOnscreen = False
+    
+    'If the item's current top and bottom values fit with the listview's container area, we don't need to change anything.
+    If (m_ListIndex >= 0) And (m_ListIndex < m_NumOfItems) And (m_ListMode = PDLM_LISTBOX) Then
+        
+        Dim liTop As Single, liBottom As Single
+        liTop = m_Items(m_ListIndex).itemTop
+        liBottom = liTop + m_Items(m_ListIndex).itemHeight
+        
+        Dim liContainerTop As Single, liContainerBottom As Single
+        liContainerTop = m_ScrollValue
+        liContainerBottom = liContainerTop + m_ListRectF.Height
+        
+        'If either the top or bottom of the item rect lies outside the container rect, calculate new scroll values
+        If (liTop < liContainerTop) Or (liBottom > liContainerBottom) Then
+        
+            MakeSureListIndexFitsOnscreen = True
+            
+            'If the item lies *above* the viewport rect, scroll down to compensate.
+            If liTop < liContainerTop Then
+                m_ScrollValue = liTop
+                
+            'If the item lies *below* the viewport rect, scroll up to compensate.
+            Else
+                m_ScrollValue = (liTop - (m_ListRectF.Height - m_Items(m_ListIndex).itemHeight)) - 1
+            End If
+            
+            If m_ScrollValue > m_ScrollMax Then m_ScrollValue = m_ScrollMax
+            If m_ScrollValue < 0 Then m_ScrollValue = 0
+        
+        End If
+        
+    End If
+
+End Function
 
 'All PD lists aim to support scroll-by-drag behavior
 Private Sub ScrollListByDrag(ByVal newX As Single, ByVal newY As Single)
@@ -609,8 +664,11 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
         m_NumOfItems = m_NumOfItems - 1
         
         'If the removal affected the current ListIndex, update it to match
-        If itemIndex <= m_ListIndex Then m_ListIndex = m_ListIndex - 1
-        If m_ListIndex < 0 Then m_ListIndex = 0
+        If itemIndex <= m_ListIndex Then
+            m_ListIndex = m_ListIndex - 1
+            If m_ListIndex < 0 Then m_ListIndex = 0
+            RaiseEvent Click
+        End If
         
         If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
         

@@ -470,6 +470,18 @@ End Enum
     Private Const PDLH_FIXED = 0, PDLH_SEPARATORS = 1, PDLH_CUSTOM = 2
 #End If
 
+'PD's central list support class can also adjust its behavior automatically, depending on whether its being used by
+' an underlying list box or a combo box.  (This primarily affects how the support class interprets things like
+' mouse and key events; e.g. MouseWheel has a different meaning for a scrollable list vs a closed dropdown.)
+Public Enum PD_LISTSUPPORT_MODE
+    PDLM_LISTBOX = 0
+    PDLM_COMBOBOX = 1
+End Enum
+
+#If False Then
+    Private Const PDLM_LISTBOX = 0, PDLM_COMBOBOX = 1
+#End If
+
 Public Type PD_Dynamic_Region
     RegionID As Integer
     RegionValid As Boolean

@@ -170,6 +170,10 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
 
+Private Sub listSupport_Click()
+    RaiseEvent Click
+End Sub
+
 'When the list manager detects that an action requires the list to be redrawn (like adding a new item), it will raise
 ' this event.  Whether or not we respond depends on whether the user control is currently visible.
 Private Sub listSupport_RedrawNeeded()
@@ -330,6 +334,7 @@ Private Sub UserControl_Initialize()
     'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
     Set listSupport = New pdListSupport
     listSupport.SetAutomaticRedraws False
+    listSupport.ListSupportMode = PDLM_LISTBOX
     
     'Update the control size parameters at least once
     UpdateControlLayout

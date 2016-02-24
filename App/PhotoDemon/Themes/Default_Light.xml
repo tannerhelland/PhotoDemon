@@ -176,17 +176,15 @@
 				<ComboBorder>GrayDefault</ComboBorder>
 				<ComboBorder-hover>AccentDefault</ComboBorder-hover>
 				<ComboBorder-active>AccentDark</ComboBorder-active>
-				<ComboBorder-disabled>GrayDisabled</ComboBorder-disabled>
+				<ComboBorder-disabled>GrayDefault</ComboBorder-disabled>
 				<ComboFill>BackgroundDefault</ComboFill>
-				<ComboFill-active>AccentLight</ComboFill-active>
-				<ComboFill-hover>AccentUltralight</ComboFill-hover>
 				<ComboFill-disabled>GrayLight</ComboFill-disabled>
 				<Caption>TextDark</Caption>
 				<Caption-disabled>TextDark</Caption-disabled>
 				<Caption-active>TextInvert</Caption-active>
 				<Caption-hover>TextDefault</Caption-hover>
 				<DropArrow>GrayDefault</DropArrow>
-				<DropArrow-disabled>GrayLight</DropArrow-disabled>
+				<DropArrow-disabled>GrayDark</DropArrow-disabled>
 				<DropArrow-active>TextInvert</DropArrow-active>
 				<DropArrow-hover>AccentDefault</DropArrow-hover>
 			</PDDropDown>

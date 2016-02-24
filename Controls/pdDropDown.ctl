@@ -234,12 +234,15 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
     listSupport.RemoveItem itemIndex
 End Sub
 
+Private Sub listSupport_Click()
+    RaiseEvent Click
+End Sub
+
 'When the list manager detects that an action requires the list to be redrawn (like adding a new item), it will raise
 ' this event.  Whether or not we respond depends on several factors, like whether the user control is currently visible,
 ' or whether the update actually changed the ListIndex (which is the only thing this front-facing portion of the
 ' dropdown cares about).
 Private Sub listSupport_RedrawNeeded()
-    Debug.Print "listSupport requested redraw"
     If ucSupport.AmIVisible Then RedrawBackBuffer True
 End Sub
 
@@ -260,6 +263,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
 End Sub
 
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    Debug.Print "key received"
     listSupport.NotifyKeyDown Shift, vkCode, markEventHandled
 End Sub
 
@@ -301,6 +305,12 @@ Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
     
 End Sub
 
+'Unlike a regular listview, where the mousewheel results in pixel-level content scrolling, a closed dropdown scrolls actual
+' list values one-at-a-time on each wheel motion.
+Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    listSupport.NotifyMouseWheelVertical Button, Shift, x, y, scrollAmount
+End Sub
+
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout
     RedrawBackBuffer
@@ -322,6 +332,7 @@ Private Sub UserControl_Initialize()
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
+    ucSupport.RequestCaptionSupport False
     ucSupport.RequestExtraFunctionality True, True
     ucSupport.SpecifyRequiredKeys VK_DOWN, VK_UP, VK_PAGEDOWN, VK_PAGEUP, VK_HOME, VK_END
     
@@ -334,6 +345,7 @@ Private Sub UserControl_Initialize()
     'Initialize a helper list class; it manages the actual list data, and a bunch of rendering and layout decisions
     Set listSupport = New pdListSupport
     listSupport.SetAutomaticRedraws False
+    listSupport.ListSupportMode = PDLM_COMBOBOX
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -382,7 +394,7 @@ Private Sub UpdateControlLayout()
     ' constants at the top of this module.
     Dim desiredControlHeight As Long
     If ucSupport.IsCaptionActive Then desiredControlHeight = ucSupport.GetCaptionBottom + 2 Else desiredControlHeight = 0
-    desiredControlHeight = desiredControlHeight + 2 + listSupport.DefaultItemHeight + COMBO_PADDING_VERTICAL * 2
+    desiredControlHeight = desiredControlHeight + listSupport.DefaultItemHeight + COMBO_PADDING_VERTICAL * 2
     
     'Apply the new height to this UC instance, as necessary
     If ucSupport.GetControlHeight <> desiredControlHeight Then
@@ -419,6 +431,11 @@ Private Sub UpdateControlLayout()
         
     End If
     
+    'Notify the list manager of our new size.  (Note that this isn't necessary from a rendering standpoint, as we don't
+    ' render a normal list-type UI to the dropdown - but the listSupport class won't raise Redraw events if it has an
+    ' invalid rendering rect.)
+    listSupport.NotifyParentRectF m_ComboRect
+    
     'With all size metrics handled, we can now paint the back buffer
     RedrawBackBuffer True
             
@@ -427,84 +444,78 @@ End Sub
 'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
 Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False)
     
-    'If (Me.ListIndex <> m_ListIndexAtLastRedraw) Or redrawImmediately Then
+    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDDD_Background, Me.Enabled))
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
     
-    If True Then
+    'Thanks to the v7.0 theming overhaul, it's completely safe to retrieve colors in the IDE, so we no longer
+    ' need to handle these specially.
+    Dim ddColorBorder As Long, ddColorFill As Long, ddColorText As Long, ddColorArrow As Long
+    ddColorBorder = m_Colors.RetrieveColor(PDDD_ComboBorder, Me.Enabled, False, m_MouseInComboRect Or m_FocusRectActive)
+    ddColorFill = m_Colors.RetrieveColor(PDDD_ComboFill, Me.Enabled, False, m_MouseInComboRect Or m_FocusRectActive)
+    ddColorText = m_Colors.RetrieveColor(PDDD_Caption, Me.Enabled, False, m_MouseInComboRect Or m_FocusRectActive)
+    ddColorArrow = m_Colors.RetrieveColor(PDDD_DropArrow, Me.Enabled, False, m_MouseInComboRect Or m_FocusRectActive)
     
-        'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-        Dim bufferDC As Long, bWidth As Long, bHeight As Long
-        bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDDD_Background, Me.Enabled))
-        bWidth = ucSupport.GetBackBufferWidth
-        bHeight = ucSupport.GetBackBufferHeight
+    If g_IsProgramRunning Then
         
-        'Thanks to the v7.0 theming overhaul, it's completely safe to retrieve colors in the IDE, so we no longer
-        ' need to handle these specially.
-        Dim ddColorBorder As Long, ddColorFill As Long, ddColorText As Long, ddColorArrow As Long
-        ddColorBorder = m_Colors.RetrieveColor(PDDD_ComboBorder, Me.Enabled, False, m_MouseInComboRect Or m_FocusRectActive)
-        ddColorFill = m_Colors.RetrieveColor(PDDD_ComboFill, Me.Enabled, False, m_MouseInComboRect Or m_FocusRectActive)
-        ddColorText = m_Colors.RetrieveColor(PDDD_Caption, Me.Enabled, False, m_MouseInComboRect Or m_FocusRectActive)
-        ddColorArrow = m_Colors.RetrieveColor(PDDD_DropArrow, Me.Enabled, False, m_MouseInComboRect Or m_FocusRectActive)
+        'First, fill the combo area interior with the established fill color
+        GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_ComboRect, ddColorFill, 255
         
-        If g_IsProgramRunning Then
+        'A border is always drawn around the control; its size and color vary by hover state, however.
+        Dim borderWidth As Single
+        If m_MouseInComboRect Or m_FocusRectActive Then borderWidth = 3 Else borderWidth = 1
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ComboRect, ddColorBorder, 255, borderWidth, False, LineJoinMiter
+        
+        'Next, the right-aligned arrow.  (We need its measurements to know where to restrict the caption's length.)
+        Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
+        buttonPt1.x = m_ComboRect.Left + m_ComboRect.Width - FixDPIFloat(16)
+        buttonPt1.y = m_ComboRect.Top + (m_ComboRect.Height / 2) - FixDPIFloat(1)
+        
+        buttonPt3.x = m_ComboRect.Left + m_ComboRect.Width - FixDPIFloat(8)
+        buttonPt3.y = buttonPt1.y
+        
+        buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
+        buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
+        
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, ddColorArrow, 255, 2, True, LineCapRound
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, ddColorArrow, 255, 2, True, LineCapRound
+        
+        Dim arrowLeftLimit As Single
+        arrowLeftLimit = buttonPt1.x - FixDPI(2)
+        
+        'For an OSX-type look, we can mirror the arrow across the control's center line, then draw it again; I personally prefer
+        ' this behavior (as the list box may extend up or down), but I'm not sold on implementing it just yet, because it's out of place
+        ' next to regular Windows drop-downs...
+        'buttonPt1.y = fullWinRect.Bottom - buttonPt1.y
+        'buttonPt2.y = fullWinRect.Bottom - buttonPt2.y
+        'buttonPt3.y = fullWinRect.Bottom - buttonPt3.y
+        '
+        'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, LineCapRound
+        'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, LineCapRound
+        
+        'Finally, paint the caption, and restrict its length to the available dropdown space
+        If Me.ListIndex <> -1 Then
+        
+            Dim tmpFont As pdFont
+            Set tmpFont = Font_Management.GetMatchingUIFont(Me.FontSize)
+            tmpFont.SetFontColor ddColorText
+            tmpFont.SetTextAlignment vbLeftJustify
+            tmpFont.AttachToDC bufferDC
             
-            'First, fill the combo area interior with the established fill color
-            GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_ComboRect, ddColorFill, 255
+            With m_ComboRect
+                tmpFont.FastRenderTextWithClipping .Left + COMBO_PADDING_HORIZONTAL, .Top + COMBO_PADDING_VERTICAL, arrowLeftLimit, .Height, listSupport.List(Me.ListIndex, True), True, True
+            End With
             
-            'A border is always drawn around the control; its size and color vary by hover state, however.
-            Dim borderWidth As Single
-            If m_MouseInComboRect Or m_FocusRectActive Then borderWidth = 3 Else borderWidth = 1
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ComboRect, ddColorBorder, 255, borderWidth, False, LineJoinMiter
-            
-            'Next, the right-aligned arrow.  (We need its measurements to know where to restrict the caption's length.)
-            Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
-            buttonPt1.x = m_ComboRect.Left + m_ComboRect.Width - FixDPIFloat(16)
-            buttonPt1.y = m_ComboRect.Top + (m_ComboRect.Width / 2) - FixDPIFloat(1)
-            
-            buttonPt3.x = m_ComboRect.Left + m_ComboRect.Width - FixDPIFloat(8)
-            buttonPt3.y = buttonPt1.y
-            
-            buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
-            buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
-            
-            GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, ddColorArrow, 255, 2, True, LineCapRound
-            GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, ddColorArrow, 255, 2, True, LineCapRound
-            
-            Dim arrowLeftLimit As Single
-            arrowLeftLimit = buttonPt1.x - FixDPI(2)
-            
-            'For an OSX-type look, we can mirror the arrow across the control's center line, then draw it again; I personally prefer
-            ' this behavior (as the list box may extend up or down), but I'm not sold on implementing it just yet, because it's out of place
-            ' next to regular Windows drop-downs...
-            'buttonPt1.y = fullWinRect.Bottom - buttonPt1.y
-            'buttonPt2.y = fullWinRect.Bottom - buttonPt2.y
-            'buttonPt3.y = fullWinRect.Bottom - buttonPt3.y
-            '
-            'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, LineCapRound
-            'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, LineCapRound
-            
-            'Finally, paint the caption, and restrict its length to the available dropdown space
-            If Me.ListIndex <> -1 Then
-            
-                Dim tmpFont As pdFont
-                Set tmpFont = Font_Management.GetMatchingUIFont(Me.FontSize)
-                tmpFont.SetFontColor ddColorText
-                tmpFont.SetTextAlignment vbLeftJustify
-                tmpFont.AttachToDC bufferDC
-                
-                With m_ComboRect
-                    tmpFont.FastRenderTextWithClipping .Left + COMBO_PADDING_HORIZONTAL, .Top + COMBO_PADDING_VERTICAL, arrowLeftLimit, .Height, listSupport.List(Me.ListIndex, True), True, True
-                End With
-                
-                tmpFont.ReleaseFromDC
-                Set tmpFont = Nothing
-                
-            End If
+            tmpFont.ReleaseFromDC
+            Set tmpFont = Nothing
             
         End If
         
-        m_ListIndexAtLastRedraw = Me.ListIndex
-        
     End If
+    
+    m_ListIndexAtLastRedraw = Me.ListIndex
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint redrawImmediately
