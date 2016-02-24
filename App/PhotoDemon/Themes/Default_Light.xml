@@ -171,7 +171,7 @@
 				<Background>#dcdce1</Background>
 			</PDCommandBar>
 			
-			<PDDropDown>	
+			<PDDropDown>
 				<Background></Background>
 				<ComboBorder>GrayDefault</ComboBorder>
 				<ComboBorder-hover>AccentDefault</ComboBorder-hover>
