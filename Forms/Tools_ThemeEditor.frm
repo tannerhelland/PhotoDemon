@@ -433,8 +433,8 @@ Private Sub cmdAddToList_Click()
     cRnd.setRndIntegerBounds 0, (LONG_MAX - 1)
     
     lbTest.AddItem CStr(cRnd.getRandomInt_WH), , CBool(cRnd.getRandomInt_WH Mod 3 = 0)
-    ddTest(0).AddItem CStr(cRnd.getRandomInt_WH), , CBool(cRnd.getRandomInt_WH Mod 3 = 0)
-    ddTest(1).AddItem CStr(cRnd.getRandomInt_WH), , CBool(cRnd.getRandomInt_WH Mod 3 = 0)
+    ddTest(0).AddItem ddTest(0).ListCount + 1   ', , CBool(cRnd.getRandomInt_WH Mod 3 = 0)
+    ddTest(1).AddItem ddTest(1).ListCount + 1    ', , CBool(cRnd.getRandomInt_WH Mod 3 = 0)
     
 End Sub
 
@@ -445,13 +445,26 @@ Private Sub cmdRemoveFromList_Click()
 End Sub
 
 Private Sub cmdTestLastListIndex_Click()
+    
+    Dim cRnd As pdRandomize
+    Set cRnd = New pdRandomize
+    cRnd.setSeed_AutomaticAndRandom
+    
     If lbTest.ListCount > 0 Then
-        Dim cRnd As pdRandomize
-        Set cRnd = New pdRandomize
-        cRnd.setSeed_AutomaticAndRandom
         cRnd.setRndIntegerBounds 0, lbTest.ListCount - 1
         lbTest.ListIndex = cRnd.getRandomInt_WH
     End If
+    
+    If ddTest(0).ListCount > 0 Then
+        cRnd.setRndIntegerBounds 0, ddTest(0).ListCount - 1
+        ddTest(0).ListIndex = cRnd.getRandomInt_WH
+    End If
+    
+    If ddTest(1).ListCount > 0 Then
+        cRnd.setRndIntegerBounds 0, ddTest(1).ListCount - 1
+        ddTest(1).ListIndex = cRnd.getRandomInt_WH
+    End If
+    
 End Sub
 
 Private Sub Form_Load()
