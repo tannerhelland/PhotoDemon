@@ -311,6 +311,7 @@ End Sub
 ' release the hook as soon as the system allows.
 Private Sub SafelyRemoveKeyboardHook()
     If m_InHookNow Then
+        If (m_HookReleaseTimer Is Nothing) Then Set m_HookReleaseTimer = New pdTimer
         m_HookReleaseTimer.Interval = 16
         m_HookReleaseTimer.StartTimer
     Else
