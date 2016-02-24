@@ -608,13 +608,17 @@ Private Sub RedrawBackBuffer()
         btnColorFill = m_Colors.RetrieveColor(PDB_ButtonFill, Me.Enabled, m_ButtonStateDown, m_MouseInsideUC)
     End If
     
-    'First, we fill the button interior with the established fill color
-    GDI_Plus.GDIPlusFillRectToDC bufferDC, 1, 1, bWidth - 2, bHeight - 2, btnColorFill, 255
+    If g_IsProgramRunning Then
     
-    'A border is always drawn around the control; its size varies by hover state.  (This is standard Win 10 behavior.)
-    Dim borderWidth As Single
-    If m_MouseInsideUC Or m_FocusRectActive Then borderWidth = 3 Else borderWidth = 1
-    GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 1, 1, bWidth - 2, bHeight - 2, btnColorBorder, 255, borderWidth, False, LineJoinMiter
+        'First, we fill the button interior with the established fill color
+        GDI_Plus.GDIPlusFillRectToDC bufferDC, 1, 1, bWidth - 2, bHeight - 2, btnColorFill, 255
+        
+        'A border is always drawn around the control; its size varies by hover state.  (This is standard Win 10 behavior.)
+        Dim borderWidth As Single
+        If m_MouseInsideUC Or m_FocusRectActive Then borderWidth = 3 Else borderWidth = 1
+        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 1, 1, bWidth - 2, bHeight - 2, btnColorBorder, 255, borderWidth, False, LineJoinMiter
+    
+    End If
     
     'Paint the image, if any
     If Not (m_Images Is Nothing) Then
