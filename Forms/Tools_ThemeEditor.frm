@@ -24,6 +24,17 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdDropDown ddTest 
+      Height          =   735
+      Index           =   0
+      Left            =   3600
+      TabIndex        =   26
+      Top             =   6360
+      Width           =   4815
+      _ExtentX        =   8493
+      _ExtentY        =   1296
+      Caption         =   "dropdown test (w/ caption)"
+   End
    Begin PhotoDemon.pdListBox lbTest 
       Height          =   2535
       Left            =   10560
@@ -250,9 +261,9 @@ Begin VB.Form FormThemeEditor
    Begin PhotoDemon.pdHyperlink pdhlTest 
       Height          =   375
       Index           =   1
-      Left            =   2400
-      Top             =   6360
-      Width           =   4335
+      Left            =   120
+      Top             =   6840
+      Width           =   2895
       _ExtentX        =   7646
       _ExtentY        =   661
       Caption         =   "I'm a hyperlink with weird formatting"
@@ -354,6 +365,16 @@ Begin VB.Form FormThemeEditor
       _ExtentY        =   661
       Caption         =   "set random ListIndex"
    End
+   Begin PhotoDemon.pdDropDown ddTest 
+      Height          =   375
+      Index           =   1
+      Left            =   3600
+      TabIndex        =   27
+      Top             =   7320
+      Width           =   4815
+      _ExtentX        =   8493
+      _ExtentY        =   661
+   End
 End
 Attribute VB_Name = "FormThemeEditor"
 Attribute VB_GlobalNameSpace = False
@@ -412,11 +433,15 @@ Private Sub cmdAddToList_Click()
     cRnd.setRndIntegerBounds 0, (LONG_MAX - 1)
     
     lbTest.AddItem CStr(cRnd.getRandomInt_WH), , CBool(cRnd.getRandomInt_WH Mod 3 = 0)
+    ddTest(0).AddItem CStr(cRnd.getRandomInt_WH), , CBool(cRnd.getRandomInt_WH Mod 3 = 0)
+    ddTest(1).AddItem CStr(cRnd.getRandomInt_WH), , CBool(cRnd.getRandomInt_WH Mod 3 = 0)
     
 End Sub
 
 Private Sub cmdRemoveFromList_Click()
     If lbTest.ListIndex <> -1 Then lbTest.RemoveItem lbTest.ListIndex
+    If ddTest(0).ListIndex <> -1 Then ddTest(0).RemoveItem ddTest(0).ListIndex
+    If ddTest(1).ListIndex <> -1 Then ddTest(1).RemoveItem ddTest(1).ListIndex
 End Sub
 
 Private Sub cmdTestLastListIndex_Click()

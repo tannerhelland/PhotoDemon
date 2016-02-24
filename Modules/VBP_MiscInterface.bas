@@ -1347,6 +1347,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         If (TypeOf eControl Is pdResize) Then isPDControl = True
         If (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is pdCanvasView) Then isPDControl = True
         If (TypeOf eControl Is pdListBox) Or (TypeOf eControl Is pdListBoxView) Then isPDControl = True
+        If (TypeOf eControl Is pdDropDown) Then isPDControl = True
         
         'Combo boxes are hopelessly broken in their current incarnation.  They will shortly be rewritten, so please ignore
         ' their problematic behavior at present.
