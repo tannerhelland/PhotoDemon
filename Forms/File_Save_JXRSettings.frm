@@ -54,7 +54,7 @@ Begin VB.Form dialog_ExportJXR
       _ExtentY        =   582
       Caption         =   "use progressive encoding"
    End
-   Begin PhotoDemon.pdComboBox cboSaveQuality 
+   Begin PhotoDemon.pdDropDown cboSaveQuality 
       Height          =   375
       Left            =   6240
       TabIndex        =   3
@@ -302,6 +302,7 @@ Private Sub UpdatePreview()
     End If
 
 End Sub
+
 
 
 

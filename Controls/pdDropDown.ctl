@@ -20,13 +20,14 @@ Begin VB.UserControl pdDropDown
    ScaleHeight     =   26
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   374
+   ToolboxBitmap   =   "pdDropDown.ctx":0000
    Begin PhotoDemon.pdListBox lbPrimary 
       Height          =   375
-      Left            =   3720
+      Left            =   0
       TabIndex        =   0
       Top             =   0
       Visible         =   0   'False
-      Width           =   1455
+      Width           =   4935
       _ExtentX        =   2566
       _ExtentY        =   661
    End
@@ -218,6 +219,31 @@ End Function
 
 Public Sub SetWidth(ByVal newWidth As Long)
     ucSupport.RequestNewSize newWidth, , True
+End Sub
+
+'Use this helper function to automatically set the dropdown control's width, according to the width of its longest text entry.
+Public Sub SetWidthAutomatically()
+
+    Dim newWidth As Long, testWidth As Long
+    newWidth = 0
+    
+    If listSupport.ListCount > 0 Then
+    
+        Dim i As Long
+        For i = 0 To listSupport.ListCount - 1
+            testWidth = Font_Management.GetDefaultStringWidth(listSupport.List(i, True), m_FontSize)
+            If testWidth > newWidth Then newWidth = testWidth
+        Next i
+    
+    Else
+        newWidth = FixDPI(100)
+    End If
+    
+    'The drop-down arrow's size is fixed
+    newWidth = newWidth + FixDPI(24)
+    
+    ucSupport.RequestNewSize newWidth, , True
+    
 End Sub
 
 Public Function GetHeight() As Long

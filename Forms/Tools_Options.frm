@@ -68,7 +68,7 @@ Begin VB.Form FormPreferences
          _ExtentY        =   661
          Caption         =   "..."
       End
-      Begin PhotoDemon.pdComboBox cboAlphaCheckSize 
+      Begin PhotoDemon.pdDropDown cboAlphaCheckSize 
          Height          =   330
          Left            =   240
          TabIndex        =   11
@@ -77,7 +77,7 @@ Begin VB.Form FormPreferences
          _ExtentX        =   10398
          _ExtentY        =   582
       End
-      Begin PhotoDemon.pdComboBox cboAlphaCheck 
+      Begin PhotoDemon.pdDropDown cboAlphaCheck 
          Height          =   330
          Left            =   240
          TabIndex        =   12
@@ -86,7 +86,7 @@ Begin VB.Form FormPreferences
          _ExtentX        =   10398
          _ExtentY        =   582
       End
-      Begin PhotoDemon.pdComboBox cboMonitors 
+      Begin PhotoDemon.pdDropDown cboMonitors 
          Height          =   330
          Left            =   780
          TabIndex        =   14
@@ -242,7 +242,7 @@ Begin VB.Form FormPreferences
       TabIndex        =   22
       Top             =   120
       Width           =   8295
-      Begin PhotoDemon.pdComboBox cboFiletype 
+      Begin PhotoDemon.pdDropDown cboFiletype 
          Height          =   330
          Left            =   600
          TabIndex        =   20
@@ -299,7 +299,7 @@ Begin VB.Form FormPreferences
          TabIndex        =   37
          Top             =   1680
          Width           =   7935
-         Begin PhotoDemon.pdComboBox cboTiffCompression 
+         Begin PhotoDemon.pdDropDown cboTiffCompression 
             Height          =   330
             Left            =   360
             TabIndex        =   23
@@ -356,7 +356,7 @@ Begin VB.Form FormPreferences
          TabIndex        =   35
          Top             =   1680
          Width           =   7935
-         Begin PhotoDemon.pdComboBox cboPPMFormat 
+         Begin PhotoDemon.pdDropDown cboPPMFormat 
             Height          =   330
             Left            =   480
             TabIndex        =   24
@@ -577,7 +577,7 @@ Begin VB.Form FormPreferences
       TabIndex        =   21
       Top             =   120
       Width           =   8295
-      Begin PhotoDemon.pdComboBox cboExportColorDepth 
+      Begin PhotoDemon.pdDropDown cboExportColorDepth 
          Height          =   330
          Left            =   240
          TabIndex        =   27
@@ -596,7 +596,7 @@ Begin VB.Form FormPreferences
          _ExtentY        =   582
          Caption         =   "when closing images, warn me me about unsaved changes"
       End
-      Begin PhotoDemon.pdComboBox cboDefaultSaveFormat 
+      Begin PhotoDemon.pdDropDown cboDefaultSaveFormat 
          Height          =   330
          Left            =   240
          TabIndex        =   29
@@ -605,7 +605,7 @@ Begin VB.Form FormPreferences
          _ExtentX        =   14076
          _ExtentY        =   582
       End
-      Begin PhotoDemon.pdComboBox cboMetadata 
+      Begin PhotoDemon.pdDropDown cboMetadata 
          Height          =   330
          Left            =   240
          TabIndex        =   30
@@ -614,7 +614,7 @@ Begin VB.Form FormPreferences
          _ExtentX        =   14076
          _ExtentY        =   582
       End
-      Begin PhotoDemon.pdComboBox cboSaveBehavior 
+      Begin PhotoDemon.pdDropDown cboSaveBehavior 
          Height          =   330
          Left            =   240
          TabIndex        =   31
@@ -773,7 +773,7 @@ Begin VB.Form FormPreferences
          _ExtentY        =   582
          Caption         =   "obey auto-rotate instructions inside image files"
       End
-      Begin PhotoDemon.pdComboBox cboLargeImages 
+      Begin PhotoDemon.pdDropDown cboLargeImages 
          Height          =   330
          Left            =   240
          TabIndex        =   36
@@ -879,7 +879,7 @@ Begin VB.Form FormPreferences
          SliderTrackStyle=   1
          NotchPosition   =   2
       End
-      Begin PhotoDemon.pdComboBox cboPerformance 
+      Begin PhotoDemon.pdDropDown cboPerformance 
          Height          =   330
          Index           =   0
          Left            =   180
@@ -889,7 +889,7 @@ Begin VB.Form FormPreferences
          _ExtentX        =   14076
          _ExtentY        =   582
       End
-      Begin PhotoDemon.pdComboBox cboPerformance 
+      Begin PhotoDemon.pdDropDown cboPerformance 
          Height          =   330
          Index           =   1
          Left            =   180
@@ -899,7 +899,7 @@ Begin VB.Form FormPreferences
          _ExtentX        =   14076
          _ExtentY        =   582
       End
-      Begin PhotoDemon.pdComboBox cboPerformance 
+      Begin PhotoDemon.pdDropDown cboPerformance 
          Height          =   330
          Index           =   2
          Left            =   180
@@ -909,7 +909,7 @@ Begin VB.Form FormPreferences
          _ExtentX        =   14076
          _ExtentY        =   582
       End
-      Begin PhotoDemon.pdComboBox cboPerformance 
+      Begin PhotoDemon.pdDropDown cboPerformance 
          Height          =   330
          Index           =   3
          Left            =   180
@@ -1259,7 +1259,7 @@ Begin VB.Form FormPreferences
          _ExtentY        =   503
          Caption         =   "automatically check for updates:"
       End
-      Begin PhotoDemon.pdComboBox cboUpdates 
+      Begin PhotoDemon.pdDropDown cboUpdates 
          Height          =   375
          Index           =   0
          Left            =   240
@@ -1280,7 +1280,7 @@ Begin VB.Form FormPreferences
          _ExtentY        =   582
          Caption         =   "update plugins independently"
       End
-      Begin PhotoDemon.pdComboBox cboUpdates 
+      Begin PhotoDemon.pdDropDown cboUpdates 
          Height          =   375
          Index           =   1
          Left            =   240
@@ -1339,7 +1339,7 @@ Begin VB.Form FormPreferences
       TabIndex        =   0
       Top             =   120
       Width           =   8295
-      Begin PhotoDemon.pdComboBox cboMRUCaption 
+      Begin PhotoDemon.pdDropDown cboMRUCaption 
          Height          =   330
          Left            =   240
          TabIndex        =   1
@@ -1348,7 +1348,7 @@ Begin VB.Form FormPreferences
          _ExtentX        =   14208
          _ExtentY        =   635
       End
-      Begin PhotoDemon.pdComboBox cboImageCaption 
+      Begin PhotoDemon.pdDropDown cboImageCaption 
          Height          =   330
          Left            =   240
          TabIndex        =   2
@@ -1357,7 +1357,7 @@ Begin VB.Form FormPreferences
          _ExtentX        =   14208
          _ExtentY        =   529
       End
-      Begin PhotoDemon.pdComboBox cboCanvas 
+      Begin PhotoDemon.pdDropDown cboCanvas 
          Height          =   330
          Left            =   240
          TabIndex        =   4
@@ -2677,6 +2677,7 @@ Private Sub TxtTempPath_Change()
     End If
     
 End Sub
+
 
 
 

@@ -97,7 +97,7 @@ Begin VB.Form FormLanguageEditor
       TabStop         =   0   'False
       Top             =   720
       Width           =   11775
-      Begin PhotoDemon.pdComboBox cboPhraseFilter 
+      Begin PhotoDemon.pdDropDown cboPhraseFilter 
          Height          =   375
          Left            =   240
          TabIndex        =   26
@@ -1536,6 +1536,7 @@ Private Sub populateAvailableLanguages()
     lstLanguages.ListIndex = -1
     
 End Sub
+
 
 
 

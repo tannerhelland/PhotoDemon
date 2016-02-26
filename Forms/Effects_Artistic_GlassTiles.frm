@@ -100,7 +100,7 @@ Begin VB.Form FormGlassTiles
       NotchPosition   =   2
       NotchValueCustom=   2
    End
-   Begin PhotoDemon.pdComboBox cboEdges 
+   Begin PhotoDemon.pdDropDown cboEdges 
       Height          =   375
       Left            =   6240
       TabIndex        =   5
@@ -413,6 +413,7 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
 
 
 

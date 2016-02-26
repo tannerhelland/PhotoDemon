@@ -23,7 +23,7 @@ Begin VB.Form FormFadeLast
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   821
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdComboBox cboBlendMode 
+   Begin PhotoDemon.pdDropDown cboBlendMode 
       Height          =   375
       Left            =   6240
       TabIndex        =   1
@@ -265,6 +265,7 @@ End Sub
 Private Sub sltOpacity_Change()
     UpdatePreview
 End Sub
+
 
 
 

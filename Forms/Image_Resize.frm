@@ -23,7 +23,7 @@ Begin VB.Form FormResize
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   642
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdComboBox cmbFit 
+   Begin PhotoDemon.pdDropDown cmbFit 
       Height          =   375
       Left            =   840
       TabIndex        =   3
@@ -32,7 +32,7 @@ Begin VB.Form FormResize
       _ExtentX        =   13996
       _ExtentY        =   635
    End
-   Begin PhotoDemon.pdComboBox cboResampleFriendly 
+   Begin PhotoDemon.pdDropDown cboResampleFriendly 
       Height          =   375
       Left            =   840
       TabIndex        =   6
@@ -81,7 +81,7 @@ Begin VB.Form FormResize
       _ExtentX        =   13996
       _ExtentY        =   873
    End
-   Begin PhotoDemon.pdComboBox cboResampleTechnical 
+   Begin PhotoDemon.pdDropDown cboResampleTechnical 
       Height          =   375
       Left            =   840
       TabIndex        =   4
@@ -729,6 +729,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     Message "Finished."
     
 End Sub
+
 
 
 

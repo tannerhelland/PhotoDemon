@@ -25,7 +25,7 @@ Begin VB.Form FormNewLayer
    ScaleWidth      =   642
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
-   Begin PhotoDemon.pdComboBox cboPosition 
+   Begin PhotoDemon.pdDropDown cboPosition 
       Height          =   375
       Left            =   480
       TabIndex        =   8
@@ -225,6 +225,7 @@ Private Sub Form_Load()
     cboPosition.ListIndex = 0
 
 End Sub
+
 
 
 

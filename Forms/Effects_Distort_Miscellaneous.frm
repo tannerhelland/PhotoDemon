@@ -76,7 +76,7 @@ Begin VB.Form FormMiscDistorts
       NotchPosition   =   2
       NotchValueCustom=   2
    End
-   Begin PhotoDemon.pdComboBox cboEdges 
+   Begin PhotoDemon.pdDropDown cboEdges 
       Height          =   375
       Left            =   6240
       TabIndex        =   3
@@ -492,6 +492,7 @@ End Sub
 Private Sub sltQuality_Change()
     UpdatePreview
 End Sub
+
 
 
 

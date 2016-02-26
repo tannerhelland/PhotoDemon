@@ -44,7 +44,7 @@ Begin VB.Form dialog_ExportWebP
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.pdComboBox cboSaveQuality 
+   Begin PhotoDemon.pdDropDown cboSaveQuality 
       Height          =   375
       Left            =   6240
       TabIndex        =   2
@@ -289,6 +289,7 @@ Private Sub UpdatePreview()
     End If
 
 End Sub
+
 
 
 

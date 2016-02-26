@@ -25,7 +25,7 @@ Begin VB.Form dialog_OutlineSettings
    ScaleWidth      =   844
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin PhotoDemon.pdComboBox cboCorner 
+   Begin PhotoDemon.pdDropDown cboCorner 
       Height          =   390
       Left            =   6480
       TabIndex        =   6
@@ -147,7 +147,7 @@ Begin VB.Form dialog_OutlineSettings
       Caption         =   "line cap shape"
       FontSize        =   12
    End
-   Begin PhotoDemon.pdComboBox cboLineCap 
+   Begin PhotoDemon.pdDropDown cboLineCap 
       Height          =   390
       Left            =   6480
       TabIndex        =   7
@@ -479,6 +479,7 @@ End Sub
 Private Sub sltOutlineWidth_Change()
     UpdatePreview
 End Sub
+
 
 
 

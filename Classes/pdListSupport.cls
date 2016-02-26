@@ -230,11 +230,6 @@ Public Sub Clear(Optional ByVal newListSize As Long = INITIAL_LIST_SIZE)
     
     On Error GoTo FailsafeReset
     
-    'Reset some obvious things (that don't require special handling)
-    m_ListIndex = -1
-    m_NumOfItems = 0
-    m_TotalHeight = 0
-    
     'Failsafe bounds check
     If newListSize <= 0 Then newListSize = INITIAL_LIST_SIZE
     
@@ -258,7 +253,10 @@ Public Sub Clear(Optional ByVal newListSize As Long = INITIAL_LIST_SIZE)
         End If
     End If
     
+    'Reset some obvious things (that don't require special handling)
+    m_ListIndex = -1
     m_NumOfItems = 0
+    m_TotalHeight = 0
     
     If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
     

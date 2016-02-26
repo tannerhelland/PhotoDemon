@@ -86,7 +86,7 @@ Begin VB.Form FormSquish
       NotchPosition   =   2
       NotchValueCustom=   2
    End
-   Begin PhotoDemon.pdComboBox cboEdges 
+   Begin PhotoDemon.pdDropDown cboEdges 
       Height          =   375
       Left            =   6240
       TabIndex        =   2
@@ -423,6 +423,7 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
 
 
 

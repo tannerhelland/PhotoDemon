@@ -186,7 +186,7 @@ Begin VB.Form toolpanel_Text
       Caption         =   "font style:"
       ForeColor       =   0
    End
-   Begin PhotoDemon.pdComboBox cboTextRenderingHint 
+   Begin PhotoDemon.pdDropDown cboTextRenderingHint 
       Height          =   375
       Left            =   11880
       TabIndex        =   3
@@ -792,6 +792,7 @@ Public Sub UpdateAgainstCurrentTheme()
     ApplyThemeAndTranslations Me
 
 End Sub
+
 
 
 

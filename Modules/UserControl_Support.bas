@@ -373,7 +373,7 @@ Public Function GetSharedGDIBrush(ByVal requestedColor As Long) As Long
         'Return the newly created brush handle, increment the brush count, and exit
         GetSharedGDIBrush = m_SharedBrushes(m_numOfSharedBrushes).brushHandle
         m_numOfSharedBrushes = m_numOfSharedBrushes + 1
-    
+        
     End If
     
 End Function

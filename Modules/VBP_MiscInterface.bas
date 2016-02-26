@@ -1351,7 +1351,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         
         'Combo boxes are hopelessly broken in their current incarnation.  They will shortly be rewritten, so please ignore
         ' their problematic behavior at present.
-        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then isPDControl = True
+        If (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then isPDControl = True
         
         'Disabled controls will ignore any function calls, so we must manually enable disabled controls prior to theming them
         If isPDControl Then
@@ -1670,7 +1670,7 @@ Public Sub ClearImageCoordinatesDisplay()
 End Sub
 
 'Populate the passed combo box with options related to distort filter edge-handle options.  Also, select the specified method by default.
-Public Sub PopDistortEdgeBox(ByRef cboEdges As pdComboBox, Optional ByVal defaultEdgeMethod As EDGE_OPERATOR)
+Public Sub PopDistortEdgeBox(ByRef cboEdges As pdDropDown, Optional ByVal defaultEdgeMethod As EDGE_OPERATOR)
 
     cboEdges.Clear
     cboEdges.AddItem " clamp them to the nearest available pixel"
@@ -1719,7 +1719,7 @@ Public Sub EnableUserInput()
 End Sub
 
 'Given a combo box, populate it with all currently supported blend modes
-Public Sub PopulateBlendModeComboBox(ByRef dstCombo As pdComboBox, Optional ByVal blendIndex As LAYER_BLENDMODE = BL_NORMAL)
+Public Sub PopulateBlendModeComboBox(ByRef dstCombo As pdDropDown, Optional ByVal blendIndex As LAYER_BLENDMODE = BL_NORMAL)
     
     dstCombo.Clear
     

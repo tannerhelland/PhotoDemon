@@ -141,7 +141,7 @@ Begin VB.Form FormDonut
       TabIndex        =   7
       Top             =   120
       Width           =   6135
-      Begin PhotoDemon.pdComboBox cboEdges 
+      Begin PhotoDemon.pdDropDown cboEdges 
          Height          =   375
          Left            =   240
          TabIndex        =   12
@@ -594,6 +594,7 @@ End Sub
 Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
+
 
 
 

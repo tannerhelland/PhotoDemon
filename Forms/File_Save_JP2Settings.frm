@@ -23,7 +23,7 @@ Begin VB.Form dialog_ExportJP2
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   809
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdComboBox cboSaveQuality 
+   Begin PhotoDemon.pdDropDown cboSaveQuality 
       Height          =   375
       Left            =   6240
       TabIndex        =   3
@@ -285,6 +285,7 @@ Private Sub UpdatePreview()
     End If
 
 End Sub
+
 
 
 

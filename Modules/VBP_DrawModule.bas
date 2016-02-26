@@ -59,6 +59,7 @@ Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As L
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function SetBrushOrgEx Lib "gdi32" (ByVal targetDC As Long, ByVal nXOrg As Long, ByVal nYOrg As Long, ByVal refToPeviousPoint As Long) As Long
 Private Declare Function SetROP2 Lib "gdi32" (ByVal hDC As Long, ByVal nDrawMode As Long) As Long
+Private Declare Function GdiFlush Lib "gdi32" () As Long
 
 'DC API functions
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -130,7 +131,7 @@ End Sub
 
 'Basic wrapper to line-drawing via GDI
 Public Sub DrawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
-
+    
     'Create a pen with the specified color
     Dim newPen As Long
     newPen = CreatePen(PS_SOLID, 1, crColor)
@@ -801,4 +802,8 @@ Public Sub FreeMemoryDC(ByVal srcDC As Long)
         #End If
     End If
     
+End Sub
+
+Public Sub ForceGDIFlush()
+    GdiFlush
 End Sub

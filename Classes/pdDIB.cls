@@ -1030,7 +1030,7 @@ Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
     If dstHeight > 0 Then dstAspect = dstWidth / dstHeight Else dstAspect = 1
         
     Dim dWidth As Long, dHeight As Long, previewX As Long, previewY As Long
-    convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, dWidth, dHeight
+    ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, dWidth, dHeight
     
     If fitPrevented Then
         previewX = (dstPicture.ScaleWidth - srcWidth) / 2

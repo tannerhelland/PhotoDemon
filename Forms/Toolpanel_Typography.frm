@@ -354,7 +354,7 @@ Begin VB.Form toolpanel_FancyText
          Caption         =   "line wrap:"
          ForeColor       =   0
       End
-      Begin PhotoDemon.pdComboBox cboWordWrap 
+      Begin PhotoDemon.pdDropDown cboWordWrap 
          Height          =   375
          Left            =   1320
          TabIndex        =   8
@@ -494,7 +494,7 @@ Begin VB.Form toolpanel_FancyText
             Caption         =   "remap:"
             ForeColor       =   0
          End
-         Begin PhotoDemon.pdComboBox cboCharCase 
+         Begin PhotoDemon.pdDropDown cboCharCase 
             Height          =   375
             Left            =   1320
             TabIndex        =   29
@@ -577,7 +577,7 @@ Begin VB.Form toolpanel_FancyText
             Caption         =   "mirror:"
             ForeColor       =   0
          End
-         Begin PhotoDemon.pdComboBox cboCharMirror 
+         Begin PhotoDemon.pdDropDown cboCharMirror 
             Height          =   375
             Left            =   5280
             TabIndex        =   32
@@ -728,7 +728,7 @@ Begin VB.Form toolpanel_FancyText
             Caption         =   "hinting"
             Value           =   0
          End
-         Begin PhotoDemon.pdComboBox cboTextRenderingHint 
+         Begin PhotoDemon.pdDropDown cboTextRenderingHint 
             Height          =   375
             Left            =   5400
             TabIndex        =   25
@@ -1879,6 +1879,7 @@ Public Sub UpdateAgainstCurrentTheme()
     ApplyThemeAndTranslations Me
 
 End Sub
+
 
 
 

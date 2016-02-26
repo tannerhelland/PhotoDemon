@@ -97,7 +97,7 @@ Begin VB.Form FormRotateDistort
       NotchPosition   =   2
       NotchValueCustom=   0.5
    End
-   Begin PhotoDemon.pdComboBox cboEdges 
+   Begin PhotoDemon.pdDropDown cboEdges 
       Height          =   375
       Left            =   6120
       TabIndex        =   5
@@ -295,6 +295,7 @@ End Sub
 Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
+
 
 
 

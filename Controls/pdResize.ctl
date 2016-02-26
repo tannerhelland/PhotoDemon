@@ -32,7 +32,7 @@ Begin VB.UserControl pdResize
       DontHighlightDownState=   -1  'True
       StickyToggle    =   -1  'True
    End
-   Begin PhotoDemon.pdComboBox cmbResolution 
+   Begin PhotoDemon.pdDropDown cmbResolution 
       Height          =   360
       Left            =   3450
       TabIndex        =   6
@@ -42,7 +42,7 @@ Begin VB.UserControl pdResize
       _ExtentY        =   635
       FontSize        =   11
    End
-   Begin PhotoDemon.pdComboBox cmbHeightUnit 
+   Begin PhotoDemon.pdDropDown cmbHeightUnit 
       Height          =   360
       Left            =   3450
       TabIndex        =   3
@@ -52,7 +52,7 @@ Begin VB.UserControl pdResize
       _ExtentY        =   635
       FontSize        =   11
    End
-   Begin PhotoDemon.pdComboBox cmbWidthUnit 
+   Begin PhotoDemon.pdDropDown cmbWidthUnit 
       Height          =   360
       Left            =   3450
       TabIndex        =   4
@@ -1034,5 +1034,6 @@ Public Sub UpdateAgainstCurrentTheme()
     cmbResolution.UpdateAgainstCurrentTheme
     
 End Sub
+
 
 

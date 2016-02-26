@@ -60,9 +60,9 @@ Begin VB.Form layerpanel_Layers
          TabIndex        =   4
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   900
-         autotoggle      =   -1  'True
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
@@ -71,9 +71,9 @@ Begin VB.Form layerpanel_Layers
          TabIndex        =   5
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   900
-         autotoggle      =   -1  'True
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
@@ -82,9 +82,9 @@ Begin VB.Form layerpanel_Layers
          TabIndex        =   6
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   900
-         autotoggle      =   -1  'True
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
@@ -93,9 +93,9 @@ Begin VB.Form layerpanel_Layers
          TabIndex        =   7
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   900
-         autotoggle      =   -1  'True
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
       End
    End
    Begin VB.VScrollBar vsLayer 
@@ -107,14 +107,14 @@ Begin VB.Form layerpanel_Layers
       Top             =   1320
       Width           =   285
    End
-   Begin PhotoDemon.pdComboBox cboBlendMode 
+   Begin PhotoDemon.pdDropDown cboBlendMode 
       Height          =   360
       Left            =   945
       TabIndex        =   0
       Top             =   480
       Width           =   2775
-      _extentx        =   4895
-      _extenty        =   635
+      _ExtentX        =   4895
+      _ExtentY        =   635
    End
    Begin PhotoDemon.pdTextBox txtLayerName 
       Height          =   315
@@ -123,8 +123,8 @@ Begin VB.Form layerpanel_Layers
       Top             =   6240
       Visible         =   0   'False
       Width           =   3255
-      _extentx        =   5741
-      _extenty        =   556
+      _ExtentX        =   5741
+      _ExtentY        =   556
    End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
@@ -132,10 +132,10 @@ Begin VB.Form layerpanel_Layers
       Left            =   0
       Top             =   120
       Width           =   675
-      _extentx        =   1191
-      _extenty        =   423
-      caption         =   "opacity:"
-      layout          =   2
+      _ExtentX        =   1191
+      _ExtentY        =   423
+      Caption         =   "opacity:"
+      Layout          =   2
    End
    Begin PhotoDemon.pdSlider sltLayerOpacity 
       CausesValidation=   0   'False
@@ -144,11 +144,11 @@ Begin VB.Form layerpanel_Layers
       TabIndex        =   9
       Top             =   30
       Width           =   2760
-      _extentx        =   4868
-      _extenty        =   53
-      max             =   100
-      notchposition   =   2
-      notchvaluecustom=   100
+      _ExtentX        =   4868
+      _ExtentY        =   53
+      Max             =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
@@ -156,10 +156,10 @@ Begin VB.Form layerpanel_Layers
       Left            =   0
       Top             =   540
       Width           =   540
-      _extentx        =   953
-      _extenty        =   423
-      caption         =   "blend:"
-      layout          =   2
+      _ExtentX        =   953
+      _ExtentY        =   423
+      Caption         =   "blend:"
+      Layout          =   2
    End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
@@ -167,19 +167,19 @@ Begin VB.Form layerpanel_Layers
       Left            =   0
       Top             =   960
       Width           =   540
-      _extentx        =   953
-      _extenty        =   423
-      caption         =   "alpha:"
-      layout          =   2
+      _ExtentX        =   953
+      _ExtentY        =   423
+      Caption         =   "alpha:"
+      Layout          =   2
    End
-   Begin PhotoDemon.pdComboBox cboAlphaMode 
+   Begin PhotoDemon.pdDropDown cboAlphaMode 
       Height          =   360
       Left            =   960
       TabIndex        =   10
       Top             =   900
       Width           =   2775
-      _extentx        =   4895
-      _extenty        =   635
+      _ExtentX        =   4895
+      _ExtentY        =   635
    End
 End
 Attribute VB_Name = "layerpanel_Layers"
@@ -1074,7 +1074,7 @@ Private Sub cacheLayerThumbnails()
                         layerThumbnails(i).canonicalLayerID = pdImages(g_CurrentImage).getLayerByIndex(i).getLayerID
                         
                         Set layerThumbnails(i).thumbDIB = New pdDIB
-                        pdImages(g_CurrentImage).getLayerByIndex(i).requestThumbnail layerThumbnails(i).thumbDIB, thumbHeight - (FixDPI(thumbBorder) * 2)
+                        pdImages(g_CurrentImage).getLayerByIndex(i).RequestThumbnail layerThumbnails(i).thumbDIB, thumbHeight - (FixDPI(thumbBorder) * 2)
                         
                     End If
                     
@@ -1537,8 +1537,8 @@ Private Sub ReflowInterface()
     
     'Horizontally stretch the opacity, blend, and alpha mode UI inputs
     sltLayerOpacity.Width = Me.ScaleWidth - (sltLayerOpacity.Left + FixDPI(5))
-    cboBlendMode.requestNewWidth Me.ScaleWidth - (cboBlendMode.Left + FixDPI(7))
-    cboAlphaMode.requestNewWidth Me.ScaleWidth - (cboAlphaMode.Left + FixDPI(7))
+    cboBlendMode.SetWidth Me.ScaleWidth - (cboBlendMode.GetLeft + FixDPI(7))
+    cboAlphaMode.SetWidth Me.ScaleWidth - (cboAlphaMode.GetLeft + FixDPI(7))
     
     'Resize the layer box and associated scrollbar
     vsLayer.Left = Me.ScaleWidth - vsLayer.Width - FixDPI(7)
@@ -1587,5 +1587,6 @@ Public Sub UpdateAgainstCurrentTheme()
     ReflowInterface
     
 End Sub
+
 
 
