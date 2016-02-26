@@ -5,6 +5,7 @@ Begin VB.UserControl pdSpinner
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   1125
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25

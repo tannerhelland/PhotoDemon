@@ -6,6 +6,7 @@ Begin VB.UserControl pdTitle
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3930
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75

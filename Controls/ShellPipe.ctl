@@ -9,6 +9,7 @@ Begin VB.UserControl ShellPipe
    ClientWidth     =   360
    ClipBehavior    =   0  'None
    ClipControls    =   0   'False
+   DrawStyle       =   5  'Transparent
    HitBehavior     =   0  'None
    InvisibleAtRuntime=   -1  'True
    PaletteMode     =   4  'None

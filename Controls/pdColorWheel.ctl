@@ -6,6 +6,7 @@ Begin VB.UserControl pdColorWheel
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   2070
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -762,12 +763,12 @@ Private Sub RedrawBackBuffer()
             pcPath.addTriangle wWidth, wHeight, wWidth - pcLength, wHeight, wWidth, wHeight - pcLength
             
             Dim pcBrush As Long, pcPen As Long
-            pcBrush = GDI_Plus.getGDIPlusSolidBrushHandle(proposedColor)
+            pcBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(proposedColor)
             pcPen = GDI_Plus.GetGDIPlusPenHandle(colorPreviewBorder, 192, , LineCapRound, LineJoinRound)
             pcPath.fillPathToDIB_BareBrush pcBrush, , bufferDC
             pcPath.StrokePath_BarePen pcPen, bufferDC
             GDI_Plus.ReleaseGDIPlusPen pcPen
-            GDI_Plus.releaseGDIPlusBrush pcBrush
+            GDI_Plus.ReleaseGDIPlusBrush pcBrush
             Set pcPath = Nothing
             
         End If

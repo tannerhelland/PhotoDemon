@@ -7,6 +7,7 @@ Begin VB.UserControl pdButton
    ClientTop       =   0
    ClientWidth     =   4800
    ClipBehavior    =   0  'None
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -190,6 +191,7 @@ End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
@@ -214,6 +216,7 @@ End Property
 
 'hWnds aren't exposed by default
 Public Property Get hWnd() As Long
+Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 

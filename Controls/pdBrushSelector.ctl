@@ -7,6 +7,7 @@ Begin VB.UserControl pdBrushSelector
    ClientTop       =   0
    ClientWidth     =   4680
    ClipControls    =   0   'False
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25

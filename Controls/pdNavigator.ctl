@@ -5,6 +5,7 @@ Begin VB.UserControl pdNavigator
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   1545
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25

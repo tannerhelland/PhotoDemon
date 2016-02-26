@@ -8,6 +8,7 @@ Begin VB.UserControl pdRadioButton
    ClientWidth     =   3735
    ClipBehavior    =   0  'None
    ClipControls    =   0   'False
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   12

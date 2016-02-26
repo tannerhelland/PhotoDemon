@@ -37,7 +37,6 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'This class raises many events.  Some *must* be responded to.  Others are optional.
-' (These are poorly documented at present - sorry!)
 Public Event CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef bHandled As Boolean, ByRef lReturn As Long)
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()

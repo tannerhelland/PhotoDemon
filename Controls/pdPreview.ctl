@@ -6,6 +6,7 @@ Begin VB.UserControl pdPreview
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   4800
+   DrawStyle       =   5  'Transparent
    ScaleHeight     =   240
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
@@ -438,7 +439,7 @@ Private Sub GetDIBXYFromMouseXY(ByVal mouseX As Single, ByVal mouseY As Single, 
         
     Dim finalWidth As Long, finalHeight As Long
     If (dstWidth <= srcWidth) Or (dstHeight <= srcHeight) Or Me.ViewportFitFullImage Then
-        convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, finalWidth, finalHeight
+        ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, finalWidth, finalHeight
     Else
         finalWidth = srcWidth
         finalHeight = srcHeight
@@ -667,7 +668,7 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
             
         Dim finalWidth As Long, finalHeight As Long
         If (dstWidth <= srcWidth) Or (dstHeight <= srcHeight) Or Me.ViewportFitFullImage Then
-            convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, finalWidth, finalHeight
+            ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, finalWidth, finalHeight
         Else
             finalWidth = srcWidth
             finalHeight = srcHeight

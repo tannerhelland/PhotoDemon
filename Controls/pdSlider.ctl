@@ -6,6 +6,7 @@ Begin VB.UserControl pdSlider
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   6000
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25

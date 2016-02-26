@@ -7,6 +7,7 @@ Begin VB.UserControl pdCanvas
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   13290
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25

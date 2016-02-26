@@ -6,6 +6,7 @@ Begin VB.UserControl pdCheckBox
    ClientTop       =   0
    ClientWidth     =   2520
    ClipControls    =   0   'False
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
