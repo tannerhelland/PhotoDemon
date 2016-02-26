@@ -7,6 +7,7 @@ Begin VB.UserControl pdButtonToolbox
    ClientTop       =   0
    ClientWidth     =   4800
    ClipBehavior    =   0  'None
+   DrawStyle       =   5  'Transparent
    HasDC           =   0   'False
    HitBehavior     =   0  'None
    PaletteMode     =   4  'None

@@ -6,6 +6,7 @@ Begin VB.UserControl pdGradientSelector
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   4800
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -181,7 +182,7 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
 End Sub
 
 Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
-    m_MouseInsideGradientRect = Math_Functions.isPointInRectF(mouseX, mouseY, m_GradientRect)
+    m_MouseInsideGradientRect = Math_Functions.IsPointInRectF(mouseX, mouseY, m_GradientRect)
     If m_MouseInsideGradientRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
 End Sub
 

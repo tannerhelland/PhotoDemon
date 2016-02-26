@@ -6,6 +6,7 @@ Begin VB.UserControl pdColorVariants
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   2385
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -675,9 +676,9 @@ Private Sub RedrawBackBuffer()
         Dim i As Long, regionBrush As Long
         For i = CV_Primary To CV_RedDown
             
-            regionBrush = GDI_Plus.getGDIPlusSolidBrushHandle(m_ColorList(i), 255)
+            regionBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(m_ColorList(i), 255)
             m_ColorRegions(i).fillPathToDIB_BareBrush regionBrush, , bufferDC
-            GDI_Plus.releaseGDIPlusBrush regionBrush
+            GDI_Plus.ReleaseGDIPlusBrush regionBrush
             
             m_ColorRegions(i).StrokePath_BarePen borderPen, bufferDC
             
