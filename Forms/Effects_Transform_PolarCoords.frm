@@ -80,7 +80,7 @@ Begin VB.Form FormPolar
       NotchPosition   =   2
       NotchValueCustom=   100
    End
-   Begin PhotoDemon.pdComboBox cboEdges 
+   Begin PhotoDemon.pdDropDown cboEdges 
       Height          =   375
       Left            =   6120
       TabIndex        =   2
@@ -89,7 +89,7 @@ Begin VB.Form FormPolar
       _ExtentX        =   9975
       _ExtentY        =   661
    End
-   Begin PhotoDemon.pdComboBox cboConvert 
+   Begin PhotoDemon.pdDropDown cboConvert 
       Height          =   375
       Left            =   6120
       TabIndex        =   4
@@ -264,6 +264,7 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
 
 
 

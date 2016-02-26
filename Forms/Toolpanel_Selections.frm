@@ -38,7 +38,7 @@ Begin VB.Form toolpanel_Selections
       TabIndex        =   13
       Top             =   0
       Width           =   9975
-      Begin PhotoDemon.pdComboBox cboWandCompare 
+      Begin PhotoDemon.pdDropDown cboWandCompare 
          Height          =   375
          Left            =   3270
          TabIndex        =   14
@@ -98,7 +98,7 @@ Begin VB.Form toolpanel_Selections
       TabIndex        =   5
       Top             =   0
       Width           =   9975
-      Begin PhotoDemon.pdComboBox cboSelArea 
+      Begin PhotoDemon.pdDropDown cboSelArea 
          Height          =   375
          Index           =   0
          Left            =   120
@@ -222,7 +222,7 @@ Begin VB.Form toolpanel_Selections
          Caption         =   "area"
       End
    End
-   Begin PhotoDemon.pdComboBox cboSelSmoothing 
+   Begin PhotoDemon.pdDropDown cboSelSmoothing 
       Height          =   375
       Left            =   2760
       TabIndex        =   1
@@ -231,7 +231,7 @@ Begin VB.Form toolpanel_Selections
       _ExtentX        =   4260
       _ExtentY        =   635
    End
-   Begin PhotoDemon.pdComboBox cboSelRender 
+   Begin PhotoDemon.pdDropDown cboSelRender 
       Height          =   375
       Left            =   120
       TabIndex        =   2
@@ -295,7 +295,7 @@ Begin VB.Form toolpanel_Selections
       TabIndex        =   34
       Top             =   0
       Width           =   9975
-      Begin PhotoDemon.pdComboBox cboSelArea 
+      Begin PhotoDemon.pdDropDown cboSelArea 
          Height          =   375
          Index           =   1
          Left            =   120
@@ -412,7 +412,7 @@ Begin VB.Form toolpanel_Selections
       TabIndex        =   26
       Top             =   0
       Width           =   9975
-      Begin PhotoDemon.pdComboBox cboSelArea 
+      Begin PhotoDemon.pdDropDown cboSelArea 
          Height          =   375
          Index           =   2
          Left            =   120
@@ -552,7 +552,7 @@ Begin VB.Form toolpanel_Selections
       TabIndex        =   22
       Top             =   0
       Width           =   9975
-      Begin PhotoDemon.pdComboBox cboSelArea 
+      Begin PhotoDemon.pdDropDown cboSelArea 
          Height          =   375
          Index           =   3
          Left            =   120
@@ -623,7 +623,7 @@ Begin VB.Form toolpanel_Selections
       TabIndex        =   18
       Top             =   0
       Width           =   9975
-      Begin PhotoDemon.pdComboBox cboSelArea 
+      Begin PhotoDemon.pdDropDown cboSelArea 
          Height          =   375
          Index           =   4
          Left            =   120
@@ -1020,6 +1020,7 @@ Public Sub UpdateAgainstCurrentTheme()
     cboWandCompare.AssignTooltip "This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection."
 
 End Sub
+
 
 
 

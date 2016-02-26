@@ -24,7 +24,7 @@ Begin VB.Form FormGrayscale
    ScaleWidth      =   793
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdComboBox cboDithering 
+   Begin PhotoDemon.pdDropDown cboDithering 
       Height          =   375
       Left            =   6240
       TabIndex        =   1
@@ -153,7 +153,7 @@ Begin VB.Form FormGrayscale
          Caption         =   "blue"
       End
    End
-   Begin PhotoDemon.pdComboBox cboMethod 
+   Begin PhotoDemon.pdDropDown cboMethod 
       Height          =   375
       Left            =   6240
       TabIndex        =   11
@@ -1285,6 +1285,7 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
 
 
 

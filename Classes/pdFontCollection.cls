@@ -75,7 +75,6 @@ Public Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Singl
     ' IMPORTANT NOTE: the matching criteria used by DoesFontExist defaults to fontname matches only.
     '                  Call SetCacheMode() if you want to match fonts by alternate criteria.
     If fontIndex >= 0 Then
-    
         AddFontToCache = fontIndex
         
     Else
@@ -127,7 +126,7 @@ Private Function DoesFontExist(ByRef fontName As String, Optional ByVal FontSize
     Dim i As Long
     For i = 0 To m_CacheSize - 1
     
-        If Not m_FontCollection(i) Is Nothing Then
+        If Not (m_FontCollection(i) Is Nothing) Then
             
             With m_FontCollection(i)
             

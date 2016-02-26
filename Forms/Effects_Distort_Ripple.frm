@@ -97,7 +97,7 @@ Begin VB.Form FormRipple
          Caption         =   "time (phase)"
          Max             =   360
       End
-      Begin PhotoDemon.pdComboBox cboEdges 
+      Begin PhotoDemon.pdDropDown cboEdges 
          Height          =   375
          Left            =   360
          TabIndex        =   12
@@ -606,6 +606,7 @@ End Sub
 Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
+
 
 
 

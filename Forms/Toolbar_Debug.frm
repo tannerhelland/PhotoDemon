@@ -139,6 +139,8 @@ Private Sub Form_Load()
         tmrDebug.Enabled = False
     #End If
     
+    Interface.ApplyThemeAndTranslations Me
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

@@ -369,7 +369,7 @@ End Function
 Public Function GetMatchingUIFont(ByVal FontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As pdFont
     
     'Inside the designer, we need to make sure the font collection exists
-    If m_ProgramFontCollection Is Nothing Then InitProgramFontCollection
+    If (m_ProgramFontCollection Is Nothing) Then InitProgramFontCollection
     
     'Add this font size+style combination to the collection, as necessary
     Dim fontIndex As Long
@@ -392,6 +392,7 @@ Public Function GetDefaultStringHeight(ByVal FontSize As Single, Optional ByVal 
     Dim tmpFont As pdFont
     Set tmpFont = Font_Management.GetMatchingUIFont(FontSize, isBold, isItalic, isUnderline)
     GetDefaultStringHeight = tmpFont.GetHeightOfString("FfAaBbCctbpqjy1234567890")
+    Set tmpFont = Nothing
 End Function
 
 'If the caller just wants to measure string width, it's better to use this function.  That spares them from having to
@@ -400,6 +401,7 @@ Public Function GetDefaultStringWidth(ByRef srcString As String, ByVal FontSize 
     Dim tmpFont As pdFont
     Set tmpFont = Font_Management.GetMatchingUIFont(FontSize, isBold, isItalic, isUnderline)
     GetDefaultStringWidth = tmpFont.GetWidthOfString(srcString)
+    Set tmpFont = Nothing
 End Function
 
 'Build a system font cache.  Note that this is an expensive operation, and should never be called more than once.

@@ -66,8 +66,8 @@ Public Function getZoomValue(ByVal zoomIndex As Long) As Double
             
             'Retrieve the current viewport's width and height
             Dim viewportWidth As Double, viewportHeight As Double
-            viewportWidth = FormMain.mainCanvas(0).getCanvasWidth
-            viewportHeight = FormMain.mainCanvas(0).getCanvasHeight
+            viewportWidth = FormMain.mainCanvas(0).GetCanvasWidth
+            viewportHeight = FormMain.mainCanvas(0).GetCanvasHeight
             
             'Calculate a width and height ratio in advance
             Dim horizontalRatio As Double, verticalRatio As Double
@@ -304,7 +304,7 @@ Public Sub initializeViewportEngine()
 End Sub
 
 'Populate an arbitrary combo box with the current list of handled zoom values
-Public Sub populateZoomComboBox(ByRef dstComboBox As pdComboBox, Optional ByVal initialListIndex As Long = -1)
+Public Sub populateZoomComboBox(ByRef dstComboBox As pdDropDown, Optional ByVal initialListIndex As Long = -1)
 
     dstComboBox.Clear
     

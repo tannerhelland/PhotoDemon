@@ -42,7 +42,7 @@ Begin VB.UserControl pdCommandBar
       _ExtentY        =   1005
       AutoToggle      =   -1  'True
    End
-   Begin PhotoDemon.pdComboBox cboPreset 
+   Begin PhotoDemon.pdDropDown cboPreset 
       Height          =   345
       Left            =   1560
       TabIndex        =   4
@@ -404,7 +404,7 @@ Private Sub RandomizeSettings()
                 eControl.ListIndex = Int(Rnd * eControl.ListCount)
                 
             'List boxes and combo boxes are assigned a random ListIndex
-            Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font", "pdComboBox_Hatch"
+            Case "ListBox", "ComboBox", "pdComboBox_Font", "pdComboBox_Hatch", "pdDropDown"
             
                 'Make sure the combo box is not the preset box on this control!
                 If (eControl.hWnd <> cboPreset.hWnd) Then
@@ -632,7 +632,7 @@ Private Sub ResetSettings()
                 If eControl.Min <= 0 Then eControl.Value = 0 Else eControl.Value = eControl.Min
                 
             'List boxes and combo boxes are set to their first entry
-            Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Hatch"
+            Case "ListBox", "ComboBox", "pdComboBox_Hatch", "pdDropDown"
             
                 'Make sure the combo box is not the preset box on this control!
                 If (eControl.hWnd <> cboPreset.hWnd) Then
@@ -879,7 +879,7 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
                 controlValue = Str(eControl.Value)
             
             'Listboxes and Combo Boxes return a .ListIndex property
-            Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font", "pdComboBox_Hatch"
+            Case "ListBox", "ComboBox", "pdComboBox_Font", "pdComboBox_Hatch", "pdDropDown"
             
                 'Note that we don't store presets for the preset combo box itself!
                 If (eControl.hWnd <> cboPreset.hWnd) Then controlValue = Str(eControl.ListIndex)
@@ -895,7 +895,7 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
             'PhotoDemon's resize UC is a special case.  Because it uses multiple properties (despite being
             ' a single control), we must combine its various values into a single string.
             Case "pdResize"
-                controlValue = buildParams(eControl.imgWidth, eControl.imgHeight, eControl.lockAspectRatio, eControl.unitOfMeasurement, eControl.imgDPI, eControl.unitOfResolution)
+                controlValue = buildParams(eControl.imgWidth, eControl.imgHeight, eControl.LockAspectRatio, eControl.unitOfMeasurement, eControl.imgDPI, eControl.UnitOfResolution)
                 
         End Select
         
@@ -1066,7 +1066,7 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
                         eControl.Value = CLng(controlValue)
                     
                     'List boxes, combo boxes, and pdComboBox all use a Long-type .ListIndex property
-                    Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font", "pdComboBox_Hatch"
+                    Case "ListBox", "ComboBox", "pdComboBox_Font", "pdComboBox_Hatch", "pdDropDown"
                     
                         'Validate range before setting
                         If CLng(controlValue) < eControl.ListCount Then
@@ -1094,11 +1094,11 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
                         'Kind of funny, but we must always set the lockAspectRatio to FALSE in order to apply a new size
                         ' to the image.  (If we don't do this, the new sizes will be clamped to the current image's
                         ' aspect ratio!)
-                        eControl.lockAspectRatio = False
+                        eControl.LockAspectRatio = False
                         
                         'Retrieve units for the combo boxes
                         eControl.unitOfMeasurement = cParam.GetLong(4, MU_PIXELS)
-                        eControl.unitOfResolution = cParam.GetLong(6, RU_PPI)
+                        eControl.UnitOfResolution = cParam.GetLong(6, RU_PPI)
                         
                         'Retrieve any numeric values for the control
                         eControl.imgDPI = cParam.GetLong(5, 96)
@@ -1266,3 +1266,4 @@ Public Sub UpdateAgainstCurrentTheme()
     cboPreset.UpdateAgainstCurrentTheme
     
 End Sub
+

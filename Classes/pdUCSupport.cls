@@ -212,7 +212,7 @@ Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         
         'Initialize the backbuffer and sync it to the current control size
         SyncBackBufferSize True
-    
+        
     Else
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  pdUCSupport.RegisterControl was called with hWnd = 0."

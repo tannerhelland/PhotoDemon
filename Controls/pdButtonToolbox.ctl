@@ -7,15 +7,6 @@ Begin VB.UserControl pdButtonToolbox
    ClientTop       =   0
    ClientWidth     =   4800
    ClipBehavior    =   0  'None
-   BeginProperty Font 
-      Name            =   "Tahoma"
-      Size            =   9.75
-      Charset         =   0
-      Weight          =   400
-      Underline       =   0   'False
-      Italic          =   0   'False
-      Strikethrough   =   0   'False
-   EndProperty
    HasDC           =   0   'False
    HitBehavior     =   0  'None
    PaletteMode     =   4  'None
@@ -234,7 +225,7 @@ End Property
 Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0)
     
     'Load the requested resource DIB, as necessary.  (I say "as necessary" because the caller can supply the DIB as-is, too.)
-    If Len(resName) <> 0 Then loadResourceToDIB resName, srcDIB
+    If Len(resName) <> 0 Then LoadResourceToDIB resName, srcDIB
     
     'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
     ' (We also check for these != 0 to verify that an image was successfully loaded.)
@@ -292,7 +283,7 @@ End Sub
 Public Sub AssignImage_Pressed(Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0)
     
     'Load the requested resource DIB, as necessary
-    If Len(resName) <> 0 Then loadResourceToDIB resName, srcDIB
+    If Len(resName) <> 0 Then LoadResourceToDIB resName, srcDIB
     
     'Start by making a copy of the source DIB
     Set btImage_Pressed = New pdDIB

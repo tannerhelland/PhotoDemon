@@ -99,7 +99,7 @@ Begin VB.UserControl pdCanvas
       TabStop         =   0   'False
       Top             =   7350
       Width           =   13290
-      Begin PhotoDemon.pdComboBox cmbSizeUnit 
+      Begin PhotoDemon.pdDropDown cmbSizeUnit 
          Height          =   315
          Left            =   3630
          TabIndex        =   7
@@ -109,7 +109,7 @@ Begin VB.UserControl pdCanvas
          _ExtentY        =   556
          FontSize        =   9
       End
-      Begin PhotoDemon.pdComboBox cmbZoom 
+      Begin PhotoDemon.pdDropDown cmbZoom 
          Height          =   360
          Left            =   840
          TabIndex        =   6
@@ -584,7 +584,7 @@ Public Sub EnableZoomFit(ByVal isEnabled As Boolean)
     cmdZoomFit.Value = (cmbZoom.ListIndex = g_Zoom.getZoomFitAllIndex)
 End Sub
 
-Public Function GetZoomDropDownReference() As pdComboBox
+Public Function GetZoomDropDownReference() As pdDropDown
     Set GetZoomDropDownReference = cmbZoom
 End Function
 
@@ -2318,8 +2318,8 @@ Public Sub UpdateAgainstCurrentTheme()
     Me.PopulateSizeUnits
     
     'Auto-size the newly populated combo boxes, according to the width of their longest entries
-    cmbZoom.requestNewWidth 0, True
-    cmbSizeUnit.requestNewWidth 0, True
+    cmbZoom.SetWidthAutomatically
+    cmbSizeUnit.SetWidthAutomatically
     
     'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
     cmdZoomFit.AssignTooltip "Fit the image on-screen"
@@ -2341,10 +2341,10 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdZoomOut.UpdateAgainstCurrentTheme
     cmdImgSize.UpdateAgainstCurrentTheme
     cmdCenter.UpdateAgainstCurrentTheme
-    '[DEBUG] We're still good here
+    
     cmbZoom.UpdateAgainstCurrentTheme
     cmbSizeUnit.UpdateAgainstCurrentTheme
-    '[DEBUG] We are NOT good here
+    
     hScroll.UpdateAgainstCurrentTheme
     vScroll.UpdateAgainstCurrentTheme
     
@@ -2370,3 +2370,4 @@ Public Sub UpdateAgainstCurrentTheme()
     Me.SetRedrawSuspension False
         
 End Sub
+

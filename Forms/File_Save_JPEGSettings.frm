@@ -68,7 +68,7 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   10
       Top             =   1080
       Width           =   7215
-      Begin PhotoDemon.pdComboBox cboMetadata 
+      Begin PhotoDemon.pdDropDown cboMetadata 
          Height          =   375
          Left            =   360
          TabIndex        =   12
@@ -147,7 +147,7 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   3
       Top             =   1080
       Width           =   7215
-      Begin PhotoDemon.pdComboBox cboSaveQuality 
+      Begin PhotoDemon.pdDropDown cboSaveQuality 
          Height          =   375
          Left            =   120
          TabIndex        =   14
@@ -156,7 +156,7 @@ Begin VB.Form dialog_ExportJPEG
          _ExtentX        =   4815
          _ExtentY        =   661
       End
-      Begin PhotoDemon.pdComboBox cboSubsample 
+      Begin PhotoDemon.pdDropDown cboSubsample 
          Height          =   375
          Left            =   720
          TabIndex        =   13
@@ -717,6 +717,7 @@ Private Function getSubsampleConstantFromComboBox() As Long
     End Select
     
 End Function
+
 
 
 

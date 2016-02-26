@@ -997,7 +997,7 @@ Public Function GDIPlusDrawArcCircular(ByVal dstDC As Long, ByVal centerX As Sin
     
     'Create a pen, which will be used to stroke the arc
     Dim hPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(arcColor, arcTransparency), drawRadius, UnitPixel, hPen
+    GdipCreatePen1 fillQuadWithVBRGB(arcColor, arcTransparency), drawRadius, UnitPixel, hPen
     
     'GDI+ arcs use bounding boxes to describe their placement.  As such, we must convert the incoming centerX/Y and radius values
     ' to bounding box coordinates.
@@ -1031,7 +1031,7 @@ Public Function GetGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransp
 
     'Create the requested pen
     Dim iPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
+    GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
     
     'If a custom line cap or join was specified, apply it now
     If customLineCap <> LineCapFlat Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
@@ -1068,30 +1068,34 @@ End Sub
 
 'Return a persistent handle to various types of GDI+ brushes.  This can be useful if many drawing operations are going to be applied
 ' with the same brush.
-Public Function getGDIPlusSolidBrushHandle(ByVal eColor As Long, Optional ByVal cOpacity As Byte = 255) As Long
-
-    'Create the requested brush
-    Dim iBrush As Long
-    GdipCreateSolidFill FillQuadWithVBRGB(eColor, cOpacity), iBrush
-    
-    'Return the handle
-    getGDIPlusSolidBrushHandle = iBrush
-
+Public Function GetGDIPlusSolidBrushHandle(ByVal eColor As Long, Optional ByVal cOpacity As Byte = 255) As Long
+    If g_GDIPlusAvailable Then
+        GdipCreateSolidFill fillQuadWithVBRGB(eColor, cOpacity), GetGDIPlusSolidBrushHandle
+    Else
+        GetGDIPlusSolidBrushHandle = 0
+    End If
 End Function
 
-Public Function getGDIPlusPatternBrushHandle(ByVal hatchPatternID As Long, ByVal bFirstColor As Long, ByVal bFirstColorOpacity As Byte, ByVal bSecondColor As Long, ByVal bSecondColorOpacity As Byte) As Long
-
-    'Create the requested brush
-    Dim iBrush As Long
-    GdipCreateHatchBrush hatchPatternID, FillQuadWithVBRGB(bFirstColor, bFirstColorOpacity), FillQuadWithVBRGB(bSecondColor, bSecondColorOpacity), iBrush
-    
-    'Return the handle
-    getGDIPlusPatternBrushHandle = iBrush
-
+Public Function GetGDIPlusPatternBrushHandle(ByVal hatchPatternID As Long, ByVal bFirstColor As Long, ByVal bFirstColorOpacity As Byte, ByVal bSecondColor As Long, ByVal bSecondColorOpacity As Byte) As Long
+    GdipCreateHatchBrush hatchPatternID, fillQuadWithVBRGB(bFirstColor, bFirstColorOpacity), fillQuadWithVBRGB(bSecondColor, bSecondColorOpacity), GetGDIPlusPatternBrushHandle
 End Function
 
-Public Sub releaseGDIPlusBrush(ByVal srcBrush As Long)
-    GdipDeleteBrush srcBrush
+Public Sub ReleaseGDIPlusBrush(ByVal srcBrush As Long)
+    
+    If srcBrush <> 0 Then
+        
+        #If DEBUGMODE = 1 Then
+            Dim gdipCheck As Long
+            gdipCheck = GdipDeleteBrush(srcBrush)
+            If gdipCheck <> 0 Then
+                pdDebug.LogAction "WARNING!  ReleaseGDIPlusBrush failed with code #" & gdipCheck
+            End If
+        #Else
+            GdipDeleteBrush srcBrush
+        #End If
+        
+    End If
+    
 End Sub
 
 'Assuming the client has already obtained a GDI+ graphics handle and a GDI+ pen handle, they can use this function to quickly draw a line using
@@ -1114,7 +1118,7 @@ Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
     
     'Create a pen, which will be used to stroke the line
     Dim iPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
+    GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
     
     'If a custom line cap was specified, apply it now
     If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
@@ -1146,7 +1150,7 @@ Public Function GDIPlusDrawGradientLineToDC(ByVal dstDC As Long, ByVal x1 As Sin
     pt2.y = y2
     
     Dim srcBrush As Long
-    gdipReturn = GdipCreateLineBrush(pt1, pt2, FillQuadWithVBRGB(firstColor, firstTransparency), FillQuadWithVBRGB(secondColor, secondTransparency), WrapModeTileFlipXY, srcBrush)
+    gdipReturn = GdipCreateLineBrush(pt1, pt2, fillQuadWithVBRGB(firstColor, firstTransparency), fillQuadWithVBRGB(secondColor, secondTransparency), WrapModeTileFlipXY, srcBrush)
     If gdipReturn = 0 Then
     
         '"Convert" that brush into a pen, which is what's actually used to stroke the line
@@ -1170,7 +1174,7 @@ Public Function GDIPlusDrawGradientLineToDC(ByVal dstDC As Long, ByVal x1 As Sin
         End If
         
         'Release the reference brush
-        GdipDeleteBrush srcBrush
+        ReleaseGDIPlusBrush srcBrush
         
     Else
         #If DEBUGMODE = 1 Then
@@ -1191,18 +1195,22 @@ Public Function GDIPlusDrawFilledShapeToDC(ByVal dstDC As Long, ByVal numOfPoint
     If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
     
     'Create a solid fill brush
-    Dim iBrush As Long
-    GdipCreateSolidFill FillQuadWithVBRGB(eColor, cTransparency), iBrush
+    Dim hBrush As Long
+    hBrush = GetGDIPlusSolidBrushHandle(eColor, cTransparency)
     
-    'We have a few different options for drawing the shape, based on the passed parameters.
-    If useCurveAlgorithm Then
-        GdipFillClosedCurve2 iGraphics, iBrush, ptrToFloatArray, numOfPoints, curvatureTension, useFillMode
-    Else
-        GdipFillPolygon iGraphics, iBrush, ptrToFloatArray, numOfPoints, useFillMode
+    If hBrush <> 0 Then
+    
+        'We have a few different options for drawing the shape, based on the passed parameters.
+        If useCurveAlgorithm Then
+            GdipFillClosedCurve2 iGraphics, hBrush, ptrToFloatArray, numOfPoints, curvatureTension, useFillMode
+        Else
+            GdipFillPolygon iGraphics, hBrush, ptrToFloatArray, numOfPoints, useFillMode
+        End If
+        
+        ReleaseGDIPlusBrush hBrush
+        
     End If
     
-    'Release all created objects
-    GdipDeleteBrush iBrush
     GdipDeleteGraphics iGraphics
 
 End Function
@@ -1217,7 +1225,7 @@ Public Function GDIPlusStrokePathToDC(ByVal dstDC As Long, ByVal numOfPoints As 
     
     'Create a pen, which will be used to stroke the line
     Dim iPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(eColor, cTransparency), strokeWidth, UnitPixel, iPen
+    GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), strokeWidth, UnitPixel, iPen
     
     'If a custom line cap was specified, apply it now
     If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
@@ -1258,7 +1266,7 @@ Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft A
     
     'Create a pen, which will be used to stroke the line
     Dim iPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
+    GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
     
     'Apply any other custom settings now
     If customLinejoin > 0 Then GdipSetPenLineJoin iPen, customLinejoin
@@ -1291,7 +1299,7 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
     
     'Create a pen, which will be used to stroke the circle
     Dim iPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(edgeColor, cTransparency), drawRadius, UnitPixel, iPen
+    GdipCreatePen1 fillQuadWithVBRGB(edgeColor, cTransparency), drawRadius, UnitPixel, iPen
     
     'Render the circle
     GdipDrawEllipse iGraphics, iPen, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2
@@ -1312,13 +1320,13 @@ Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
     
     'Create a brush, which will be used to stroke the circle
     Dim hBrush As Long
-    hBrush = GDI_Plus.getGDIPlusSolidBrushHandle(fillColor, cTransparency)
+    hBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(fillColor, cTransparency)
     
-    'Render the circle
-    GDIPlusFillCircleToDC = CBool(GdipFillEllipse(iGraphics, hBrush, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2) = 0)
+    If hBrush <> 0 Then
+        GDIPlusFillCircleToDC = CBool(GdipFillEllipse(iGraphics, hBrush, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2) = 0)
+        GDI_Plus.ReleaseGDIPlusBrush hBrush
+    End If
     
-    'Release all created objects
-    GDI_Plus.releaseGDIPlusBrush hBrush
     GdipDeleteGraphics iGraphics
 
 End Function
@@ -1336,13 +1344,13 @@ Public Function GDIPlusFillRectToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
     
     'Create a solid fill brush using the specified color
     Dim hBrush As Long
-    GdipCreateSolidFill FillQuadWithVBRGB(eColor, eTransparency), hBrush
+    hBrush = GetGDIPlusSolidBrushHandle(eColor, eTransparency)
     
-    'Apply the brush
-    GdipFillRectangle hGraphics, hBrush, x1, y1, xWidth, yHeight
+    If hBrush <> 0 Then
+        GdipFillRectangle hGraphics, hBrush, x1, y1, xWidth, yHeight
+        ReleaseGDIPlusBrush hBrush
+    End If
     
-    'Release all created objects
-    GdipDeleteBrush hBrush
     GdipDeleteGraphics hGraphics
     
     GDIPlusFillRectToDC = True
@@ -1363,13 +1371,13 @@ Public Function GDIPlusFillRectLToDC(ByVal dstDC As Long, ByRef srcRect As RECTL
     
     'Create a solid fill brush using the specified color
     Dim hBrush As Long
-    GdipCreateSolidFill FillQuadWithVBRGB(eColor, eTransparency), hBrush
+    hBrush = GetGDIPlusSolidBrushHandle(eColor, eTransparency)
     
-    'Apply the brush
-    GdipFillRectangle hGraphics, hBrush, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top
+    If hBrush <> 0 Then
+        GdipFillRectangle hGraphics, hBrush, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top
+        ReleaseGDIPlusBrush hBrush
+    End If
     
-    'Release all created objects
-    GdipDeleteBrush hBrush
     GdipDeleteGraphics hGraphics
     
     GDIPlusFillRectLToDC = True
@@ -1389,13 +1397,13 @@ Public Function GDIPlusFillRectFToDC(ByVal dstDC As Long, ByRef srcRect As RECTF
     
     'Create a solid fill brush using the specified color
     Dim hBrush As Long
-    GdipCreateSolidFill FillQuadWithVBRGB(eColor, eTransparency), hBrush
+    hBrush = GetGDIPlusSolidBrushHandle(eColor, eTransparency)
     
-    'Apply the brush
-    GdipFillRectangle hGraphics, hBrush, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height
+    If hBrush <> 0 Then
+        GdipFillRectangle hGraphics, hBrush, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height
+        ReleaseGDIPlusBrush hBrush
+    End If
     
-    'Release all created objects
-    GdipDeleteBrush hBrush
     GdipDeleteGraphics hGraphics
     
     GDIPlusFillRectFToDC = True
@@ -1433,7 +1441,7 @@ Public Function GDIPlusFillPatternToDC(ByVal dstDC As Long, ByVal x1 As Single, 
     GdipFillRectangle hGraphics, hBrush, x1, y1, xWidth, yHeight
     
     'Release all created objects
-    GdipDeleteBrush hBrush
+    ReleaseGDIPlusBrush hBrush
     GdipDisposeImage srcBitmap
     GdipDeleteGraphics hGraphics
     
@@ -1451,14 +1459,14 @@ Public Function GDIPlusFillEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, 
     If hqOffsets Then GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality Else GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighSpeed
     
     'Create a solid fill brush
-    Dim iBrush As Long
-    GdipCreateSolidFill FillQuadWithVBRGB(eColor, eTransparency), iBrush
+    Dim hBrush As Long
+    hBrush = GetGDIPlusSolidBrushHandle(eColor, eTransparency)
     
-    'Fill the ellipse
-    GdipFillEllipseI iGraphics, iBrush, x1, y1, xWidth, yHeight
+    If hBrush <> 0 Then
+        GdipFillEllipseI iGraphics, hBrush, x1, y1, xWidth, yHeight
+        ReleaseGDIPlusBrush hBrush
+    End If
     
-    'Release all created objects
-    GdipDeleteBrush iBrush
     GdipDeleteGraphics iGraphics
     
     GDIPlusFillEllipseToDC = True
@@ -1475,7 +1483,7 @@ Public Function GDIPlusStrokeEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single
         
     'Create a pen with matching attributes
     Dim hPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(eColor, eTransparency), strokeWidth, UnitPixel, hPen
+    GdipCreatePen1 fillQuadWithVBRGB(eColor, eTransparency), strokeWidth, UnitPixel, hPen
     
     'Render the ellipse
     GdipDrawEllipse iGraphics, hPen, x1, y1, xWidth, yHeight
@@ -1522,21 +1530,22 @@ Public Function GDIPlusDrawRoundRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, 
     GdipClosePathFigure rrPath
     
     'Create a solid fill brush
-    Dim iBrush As Long
-    GdipCreateSolidFill FillQuadWithVBRGB(eColor, 255), iBrush
+    Dim hBrush As Long
+    hBrush = GetGDIPlusSolidBrushHandle(eColor, 255)
     
-    'Fill the path
-    If FillRect Then GdipFillPath iGraphics, iBrush, rrPath
+    If hBrush <> 0 Then
+        If FillRect Then GdipFillPath iGraphics, hBrush, rrPath
+        ReleaseGDIPlusBrush hBrush
+    End If
     
     'Stroke the path as well (to fill the 1px exterior border)
     Dim iPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(eColor, 255), 1, UnitPixel, iPen
+    GdipCreatePen1 fillQuadWithVBRGB(eColor, 255), 1, UnitPixel, iPen
     GdipDrawPath iGraphics, iPen, rrPath
     
     'Release all created objects
     GdipDeletePen iPen
     GdipDeletePath rrPath
-    GdipDeleteBrush iBrush
     GdipDeleteGraphics iGraphics
 
 End Function
@@ -1558,14 +1567,14 @@ Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, By
     GdipSetCompositingMode iGraphics, dstFillMode
     
     'Create a solid fill brush from the source image
-    Dim iBrush As Long
-    GdipCreateSolidFill FillQuadWithVBRGB(eColor, eTransparency), iBrush
+    Dim hBrush As Long
+    hBrush = GetGDIPlusSolidBrushHandle(eColor, eTransparency)
     
-    'Apply the brush
-    GdipFillRectangle iGraphics, iBrush, x1, y1, xWidth, yHeight
+    If hBrush <> 0 Then
+        GdipFillRectangle iGraphics, hBrush, x1, y1, xWidth, yHeight
+        ReleaseGDIPlusBrush hBrush
+    End If
     
-    'Release all created objects
-    GdipDeleteBrush iBrush
     GdipDeleteGraphics iGraphics
     
     GDIPlusFillDIBRect = True
@@ -1617,7 +1626,7 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
     GdipFillRectangle iGraphics, iBrush, x1, y1, bltWidth, bltHeight
     
     'Release all created objects
-    GdipDeleteBrush iBrush
+    ReleaseGDIPlusBrush iBrush
     GdipDisposeImage srcBitmap
     GdipDeleteGraphics iGraphics
     
@@ -1652,7 +1661,7 @@ End Function
 
 'GDI+ requires RGBQUAD colors with alpha in the 4th byte.  This function returns an RGBQUAD (long-type) from a standard RGB()
 ' long and supplied alpha.  It's not a very efficient conversion, but I need it so infrequently that I don't really care.
-Public Function FillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte) As Long
+Public Function fillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte) As Long
     
     'The vbRGB constant may be an OLE color constant; if that happens, we want to convert it to a normal RGB quad.
     vbRGB = TranslateColor(vbRGB)
@@ -1666,7 +1675,7 @@ Public Function FillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte)
     Dim placeHolder As tmpLong
     LSet placeHolder = dstQuad
     
-    FillQuadWithVBRGB = placeHolder.lngResult
+    fillQuadWithVBRGB = placeHolder.lngResult
     
 End Function
 
@@ -2456,7 +2465,7 @@ Public Function getGDIPlusBoundingRectFromPoints(ByVal numOfPoints As Long, ByVa
     'Create a pen object with width and linecaps matching the passed params; these are important in the bounds calculation, as a wider pen
     ' means a wider region.
     Dim iPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(0, 255), penWidth, UnitPixel, iPen
+    GdipCreatePen1 fillQuadWithVBRGB(0, 255), penWidth, UnitPixel, iPen
     
     'If a custom line cap was specified, apply it now
     If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&

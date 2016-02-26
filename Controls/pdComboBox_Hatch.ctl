@@ -1478,7 +1478,7 @@ End Function
 
 'Due to some complexities with the way combo box sizes are handled, adjustments to height require recreating the combo box.  Adjustments to width,
 ' however, are no problem at all.  They can be requested via this function.
-Public Sub requestNewWidth(Optional ByVal newWidth As Long = 100)
+Public Sub SetWidthAutomatically(Optional ByVal newWidth As Long = 100)
 
     'Get the window rect of the current combo box
     Dim comboRect As RECTL

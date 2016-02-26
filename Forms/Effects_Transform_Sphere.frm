@@ -109,7 +109,7 @@ Begin VB.Form FormSpherize
       _ExtentY        =   1905
       Caption         =   "area outside sphere"
    End
-   Begin PhotoDemon.pdComboBox cboEdges 
+   Begin PhotoDemon.pdDropDown cboEdges 
       Height          =   375
       Left            =   6120
       TabIndex        =   6
@@ -520,6 +520,7 @@ End Sub
 Private Sub sltQuality_Change()
     UpdatePreview
 End Sub
+
 
 
 

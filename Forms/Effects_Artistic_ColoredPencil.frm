@@ -23,7 +23,7 @@ Begin VB.Form FormPencil
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdComboBox cboStyle 
+   Begin PhotoDemon.pdDropDown cboStyle 
       Height          =   375
       Left            =   6000
       TabIndex        =   4
@@ -436,6 +436,7 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
 
 
 

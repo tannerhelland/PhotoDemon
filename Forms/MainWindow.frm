@@ -2754,7 +2754,7 @@ Private Sub Form_Load()
                 
                     'listOfFilesToSave contains the list of Autosave files the user wants restored.
                     ' Hand them off to the autosave handler, which will load and restore each file in turn.
-                    Autosave_Handler.loadTheseAutosaveFiles listOfFilesToSave
+                    Autosave_Handler.LoadTheseAutosaveFiles listOfFilesToSave
                     
                     'Synchronize the interface to the restored files
                     SyncInterfaceToCurrentImage

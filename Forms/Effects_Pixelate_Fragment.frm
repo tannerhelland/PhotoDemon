@@ -106,7 +106,7 @@ Begin VB.Form FormFragment
       _ExtentY        =   582
       Caption         =   "speed"
    End
-   Begin PhotoDemon.pdComboBox cboEdges 
+   Begin PhotoDemon.pdDropDown cboEdges 
       Height          =   375
       Left            =   6120
       TabIndex        =   7
@@ -393,6 +393,7 @@ End Sub
 Private Sub sltFragments_Change()
     UpdatePreview
 End Sub
+
 
 
 

@@ -24,7 +24,7 @@ Begin VB.Form FormStainedGlass
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdComboBox cboDistance 
+   Begin PhotoDemon.pdDropDown cboDistance 
       Height          =   375
       Left            =   6120
       TabIndex        =   4
@@ -33,7 +33,7 @@ Begin VB.Form FormStainedGlass
       _ExtentX        =   10186
       _ExtentY        =   661
    End
-   Begin PhotoDemon.pdComboBox cboColorSampling 
+   Begin PhotoDemon.pdDropDown cboColorSampling 
       Height          =   375
       Left            =   6120
       TabIndex        =   5
@@ -585,6 +585,7 @@ End Sub
 Private Sub sltTurbulence_Change()
     UpdatePreview
 End Sub
+
 
 
 

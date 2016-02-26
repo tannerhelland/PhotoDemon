@@ -255,7 +255,7 @@ Begin VB.Form toolpanel_MoveSize
       TabIndex        =   1
       Top             =   0
       Width           =   14055
-      Begin PhotoDemon.pdComboBox cboLayerResizeQuality 
+      Begin PhotoDemon.pdDropDown cboLayerResizeQuality 
          Height          =   300
          Left            =   5190
          TabIndex        =   2
@@ -725,6 +725,7 @@ Public Sub UpdateAgainstCurrentTheme()
     ApplyThemeAndTranslations Me
 
 End Sub
+
 
 
 

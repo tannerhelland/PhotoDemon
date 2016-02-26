@@ -23,7 +23,7 @@ Begin VB.Form FormMonochrome
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   810
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdComboBox cboDither 
+   Begin PhotoDemon.pdDropDown cboDither 
       Height          =   375
       Left            =   6120
       TabIndex        =   6
@@ -896,6 +896,7 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
 
 
 
