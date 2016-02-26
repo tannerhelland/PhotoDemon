@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormThemeEditor 
-   AutoRedraw      =   -1  'True
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Theme editor"
@@ -433,8 +433,8 @@ Private Sub cmdAddToList_Click()
     cRnd.setRndIntegerBounds 0, (LONG_MAX - 1)
     
     lbTest.AddItem CStr(cRnd.getRandomInt_WH), , CBool(cRnd.getRandomInt_WH Mod 3 = 0)
-    ddTest(0).AddItem ddTest(0).ListCount + 1   ', , CBool(cRnd.getRandomInt_WH Mod 3 = 0)
-    ddTest(1).AddItem ddTest(1).ListCount + 1    ', , CBool(cRnd.getRandomInt_WH Mod 3 = 0)
+    ddTest(0).AddItem ddTest(0).ListCount + 1, , CBool(cRnd.getRandomInt_WH Mod 3 = 0)
+    ddTest(1).AddItem ddTest(1).ListCount + 1, , CBool(cRnd.getRandomInt_WH Mod 3 = 0)
     
 End Sub
 

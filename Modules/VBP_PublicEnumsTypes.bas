@@ -476,10 +476,11 @@ End Enum
 Public Enum PD_LISTSUPPORT_MODE
     PDLM_LISTBOX = 0
     PDLM_COMBOBOX = 1
+    PDLM_LB_INSIDE_CB = 2
 End Enum
 
 #If False Then
-    Private Const PDLM_LISTBOX = 0, PDLM_COMBOBOX = 1
+    Private Const PDLM_LISTBOX = 0, PDLM_COMBOBOX = 1, PDLM_LB_INSIDE_CB = 2
 #End If
 
 Public Type PD_Dynamic_Region

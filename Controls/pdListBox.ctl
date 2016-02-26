@@ -154,6 +154,10 @@ Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 
+Public Sub CloneExternalListSupport(ByRef srcListSupport As pdListSupport, Optional ByVal desiredListIndexTop As Long = 0, Optional ByVal newListSupportMode As PD_LISTSUPPORT_MODE = PDLM_LB_INSIDE_CB)
+    lbView.CloneExternalListSupport srcListSupport, desiredListIndexTop, newListSupportMode
+End Sub
+
 'To support high-DPI settings properly, we expose some specialized move+size functions
 Public Function GetLeft() As Long
     GetLeft = ucSupport.GetControlLeft
@@ -189,6 +193,10 @@ End Sub
 
 Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
+End Sub
+
+Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    lbView.NotifyKeyDown Shift, vkCode, markEventHandled
 End Sub
 
 'Listbox-specific functions and subs.  Most of these simply relay the request to the listSupport object, and it will
@@ -231,16 +239,15 @@ End Sub
 
 Private Sub lbView_ScrollMaxChanged(ByVal newMax As Long)
     
-    Dim changeInVisibility As Boolean: changeInVisibility = False
     If vScroll.Visible <> lbView.ShouldScrollBarBeVisible Then
         vScroll.Visible = lbView.ShouldScrollBarBeVisible
-        changeInVisibility = True
     End If
     
     If newMax >= 0 Then vScroll.Max = newMax
     vScroll.LargeChange = lbView.GetDefaultItemHeight
+    vScroll.Value = lbView.ScrollValue
     
-    If changeInVisibility Then UpdateControlLayout
+    UpdateControlLayout
     
 End Sub
 
@@ -259,6 +266,10 @@ End Sub
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout
     RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
+    If newVisibility Then UpdateControlLayout
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
@@ -324,8 +335,8 @@ Private Sub UpdateControlLayout()
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
-    bWidth = ucSupport.GetBackBufferWidth
-    bHeight = ucSupport.GetBackBufferHeight
+    bWidth = ucSupport.GetControlWidth
+    bHeight = ucSupport.GetControlHeight
     
     'Next, determine the positioning of the caption, if present.  (ucSupport.GetCaptionBottom tells us where the
     ' caption text ends vertically.)
@@ -351,12 +362,35 @@ Private Sub UpdateControlLayout()
         
     End If
     
-    'If the scrollbar is visible, we'll position it first.
-    If vScroll.Visible Then
-        vScroll.SetPositionAndSize (m_InteractiveRect.Width - vScroll.GetWidth), m_InteractiveRect.Top + 1, vScroll.GetWidth, m_InteractiveRect.Height - 2
-        lbView.SetPositionAndSize m_InteractiveRect.Left, m_InteractiveRect.Top, vScroll.GetLeft - m_InteractiveRect.Left, m_InteractiveRect.Height
+    'If the scrollbar is visible, we'll calculate its left-most position first.
+    Dim lbRightPosition As Long, initScrollVisibility As Boolean
+    
+    initScrollVisibility = vScroll.Visible
+    If lbView.ShouldScrollBarBeVisible Then
+        lbRightPosition = (m_InteractiveRect.Width - vScroll.GetWidth)
+    Else
+        lbRightPosition = m_InteractiveRect.Left + m_InteractiveRect.Width
+    End If
+    
+    'Move the listbox into position
+    lbView.SetPositionAndSize m_InteractiveRect.Left, m_InteractiveRect.Top, lbRightPosition - m_InteractiveRect.Left, m_InteractiveRect.Height
+    
+    'Because the listbox is in a new position, it may or may not still need a scrollbar
+    Dim scrollShouldBeVisible As Boolean
+    scrollShouldBeVisible = lbView.ShouldScrollBarBeVisible
+    
+    vScroll.Visible = scrollShouldBeVisible
+    If scrollShouldBeVisible Then
+        vScroll.SetPositionAndSize lbRightPosition, m_InteractiveRect.Top + 1, vScroll.GetWidth, m_InteractiveRect.Height - 2
+        lbView.SetPositionAndSize m_InteractiveRect.Left, m_InteractiveRect.Top, lbRightPosition - m_InteractiveRect.Left, m_InteractiveRect.Height
     Else
         lbView.SetPositionAndSize m_InteractiveRect.Left, m_InteractiveRect.Top, m_InteractiveRect.Width, m_InteractiveRect.Height
+    End If
+    
+    'As a failsafe, synchronize scroll bar values if the scrollbar is visible
+    If scrollShouldBeVisible Then
+        vScroll.Max = lbView.ScrollMax
+        vScroll.Value = lbView.ScrollValue
     End If
             
 End Sub
@@ -382,11 +416,15 @@ Private Sub UpdateColorList()
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub UpdateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal forceLayoutUpdate As Boolean = False)
+    
+    If forceLayoutUpdate Then UpdateControlLayout
+    
     UpdateColorList
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
     lbView.UpdateAgainstCurrentTheme
     vScroll.UpdateAgainstCurrentTheme
+    
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
