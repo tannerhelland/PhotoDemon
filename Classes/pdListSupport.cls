@@ -47,6 +47,8 @@ Public Event ScrollMaxChanged()
 Public Event ScrollValueChanged()
 Public Event Click()
 
+Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
+
 'This class can calculate list box element offsets using three different systems:
 ' - Fixed size (all list elements are the same height)
 ' - Separators (all list elements are the same height, but some have divider lines after them)
@@ -268,6 +270,81 @@ FailsafeReset:
     
 End Sub
 
+'Want to clone some other list instance?  This function handles it in one fell swoop, including initializing our internal
+' rendering parameters.
+Friend Sub CloneExternalListSupport(ByRef srcListSupport As pdListSupport, Optional ByVal desiredListIndexTop As Long = 0, Optional ByVal newListSupportMode As PD_LISTSUPPORT_MODE = PDLM_LB_INSIDE_CB)
+    
+    'The order in which we copy data from the target list support is crucial; copying in the wrong order will cause crashes,
+    ' especially because we are copying the data using direct pointer manipulation.
+    
+    'Basically, I'm saying: don't mess with this function.
+    
+    'Start by grabbing the raw m_Items array
+    m_NumOfItems = srcListSupport.ListCount
+    If m_NumOfItems > 0 Then
+        
+        ReDim m_Items(0 To srcListSupport.GetSizeOfInternalListStruct) As PD_LISTITEM
+        
+        Dim i As Long
+        For i = 0 To m_NumOfItems - 1
+            m_Items(i) = srcListSupport.GetDirectListItem(i)
+        Next i
+    
+    Else
+        Me.Clear
+    End If
+    
+    'We do not clone all elements of the source pdListSupport class.  Things like font size (and corresponding height values)
+    ' are specific to *our* parent object, so they remain in place.
+    
+    'Clone the list index and a few cumbersome-to-recreate internal trackers
+    m_ListIndex = srcListSupport.ListIndex
+    m_TotalHeight = srcListSupport.GetHeightOfAllListItems
+    m_SizeMode = srcListSupport.GetInternalSizeMode
+    m_ListMode = newListSupportMode
+    
+    'With those main trackers in place, we now need to totally recalculate all rendering metrics, as they're specific to
+    ' our owner's dimensions, fontsize, etc.
+    CalculateRenderMetrics
+    
+    'Normally, we calculate a new scrollbar maximum during the CalculateRenderMetrics step, but during a clone, we want to
+    ' set it early so we can position the scroll bar perfectly, according to our parent control's requested position.
+    If desiredListIndexTop <> 0 Then
+        
+        Dim newScrollValue As Single
+        newScrollValue = (m_Items(m_ListIndex).itemTop - desiredListIndexTop)
+        If newScrollValue < 0 Then newScrollValue = 0
+        If newScrollValue > m_ScrollMax Then newScrollValue = m_ScrollMax
+        Me.ScrollValue = newScrollValue
+    
+    Else
+        Me.ScrollValue = 0
+    End If
+    
+End Sub
+
+'Need to render a specific list item?  Call this to retrieve a full copy of a given list item's data, plus
+' rendering-specific information like the item's literal position in the current list box.
+Friend Function GetDirectListItem(ByVal srcListIndex As Long) As PD_LISTITEM
+    GetDirectListItem = m_Items(srcListIndex)
+End Function
+
+Friend Function GetHeightOfAllListItems() As Long
+    GetHeightOfAllListItems = m_TotalHeight
+End Function
+
+Friend Function GetInternalSizeMode() As PD_LISTBOX_HEIGHT
+    GetInternalSizeMode = m_SizeMode
+End Function
+
+Friend Function GetPointerToInternalListStruct() As Long
+    GetPointerToInternalListStruct = VarPtr(m_Items(0))
+End Function
+
+Friend Function GetSizeOfInternalListStruct() As Long
+    GetSizeOfInternalListStruct = UBound(m_Items)
+End Function
+
 'Font size controls the default height of each list item.  When the font size changes, we need to recalculate a number of
 ' internal size metrics, so it's advisable to set this UP FRONT before doing anything else.
 Public Property Get DefaultItemHeight() As Single
@@ -453,14 +530,14 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             newListIndex = newListIndex - 1
             
         Case VK_PAGEDOWN
-            If m_ListMode = PDLM_LISTBOX Then
+            If (m_ListMode = PDLM_LISTBOX) Or (m_ListMode = PDLM_LB_INSIDE_CB) Then
                 newListIndex = m_LastRenderIndex + 1
             Else
                 newListIndex = newListIndex + 1
             End If
             
         Case VK_PAGEUP
-            If m_ListMode = PDLM_LISTBOX Then
+            If (m_ListMode = PDLM_LISTBOX) Or (m_ListMode = PDLM_LB_INSIDE_CB) Then
                 newListIndex = newListIndex - (m_LastRenderIndex - m_FirstRenderIndex + 1)
             Else
                 newListIndex = newListIndex - 1
@@ -471,7 +548,23 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             
         Case VK_END
             newListIndex = m_NumOfItems - 1
-        
+            
+        'Return only matters for listboxes embedded inside combo boxes.
+        Case VK_RETURN, VK_SPACE
+            If m_ListMode = PDLM_LB_INSIDE_CB Then
+                RaiseEvent Click
+                Exit Sub
+            Else
+                markEventHandled = False
+            End If
+            
+        'For listboxes embedded inside combo boxes, the escape key can clear the combo box.  Raise a Click() event to mimic this.
+        Case VK_ESCAPE
+            If m_ListMode = PDLM_LB_INSIDE_CB Then
+                RaiseEvent Click
+                Exit Sub
+            End If
+            
     End Select
     
     If m_NumOfItems = 0 Then
@@ -481,7 +574,22 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
         If newListIndex > m_NumOfItems - 1 Then newListIndex = m_NumOfItems - 1
     End If
     
-    Me.ListIndex = newListIndex
+    'Listboxes dynamically raised by combo boxes should not raise Click() events on keypresses.  This will erroneously cause
+    ' the list box to close.  Instead, they simply reassign their .ListIndex and redraw themselves immediately.
+    If m_ListMode = PDLM_LB_INSIDE_CB Then
+        
+        m_ListIndex = newListIndex
+        
+        If MakeSureListIndexFitsOnscreen Then
+            RaiseEvent ScrollValueChanged
+            If m_RedrawAutomatically Then CalculateRenderMetrics Else m_RenderDataCorrect = False
+        Else
+            If m_RedrawAutomatically Then RaiseEvent RedrawNeeded
+        End If
+        
+    Else
+        Me.ListIndex = newListIndex
+    End If
     
 End Sub
 
@@ -533,7 +641,7 @@ Public Sub NotifyMouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVa
     
     'The behavior of the mousewheel varies by the current "listmode", e.g. if our parent is a scrollable listview, we behave
     ' differently than if our parent is a closed dropdown box.
-    If m_ListMode = PDLM_LISTBOX Then
+    If (m_ListMode = PDLM_LISTBOX) Or (m_ListMode = PDLM_LB_INSIDE_CB) Then
         
         If (m_ScrollMax > 0) And (scrollAmount <> 0) Then
         
@@ -576,7 +684,7 @@ Private Function MakeSureListIndexFitsOnscreen() As Boolean
     MakeSureListIndexFitsOnscreen = False
     
     'If the item's current top and bottom values fit with the listview's container area, we don't need to change anything.
-    If (m_ListIndex >= 0) And (m_ListIndex < m_NumOfItems) And (m_ListMode = PDLM_LISTBOX) Then
+    If (m_ListIndex >= 0) And (m_ListIndex < m_NumOfItems) And (m_ListMode <> PDLM_COMBOBOX) Then
         
         Dim liTop As Single, liBottom As Single
         liTop = m_Items(m_ListIndex).itemTop
@@ -738,6 +846,19 @@ Public Property Let ScrollValue(ByRef newValue As Long)
     
 End Property
 
+Private Sub CalculateNewScrollMax()
+    
+    Dim newScrollMax As Long
+    newScrollMax = m_TotalHeight - m_ListRectF.Height
+    If newScrollMax < 0 Then newScrollMax = 0
+    
+    If newScrollMax <> m_ScrollMax Then
+        m_ScrollMax = newScrollMax
+        RaiseEvent ScrollMaxChanged
+    End If
+    
+End Sub
+
 'The caller can suspend automatic redraws caused by things like adding an item to the list box.  Just make sure to enable redraws
 ' once you're ready, or you'll never get rendering requests!
 Public Sub SetAutomaticRedraws(ByVal newState As Boolean, Optional ByVal raiseRedrawImmediately As Boolean = False)
@@ -827,14 +948,7 @@ Public Sub CalculateRenderMetrics()
     m_RenderDataCorrect = True
     
     'Whenever list contents or container sizes change, we can cache a new scroll bar maximum value.
-    Dim newScrollMax As Long
-    newScrollMax = m_TotalHeight - m_ListRectF.Height
-    If newScrollMax < 0 Then newScrollMax = 0
-    
-    If newScrollMax <> m_ScrollMax Then
-        m_ScrollMax = newScrollMax
-        RaiseEvent ScrollMaxChanged
-    End If
+    CalculateNewScrollMax
     
     If m_RedrawAutomatically Then RaiseEvent RedrawNeeded
     

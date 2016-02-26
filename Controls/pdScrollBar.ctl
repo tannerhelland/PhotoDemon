@@ -1082,7 +1082,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     End If
     
     'Paint the final result to the screen, as relevant
-    ucSupport.RequestRepaint redrawImmediately
+    ucSupport.RequestRepaint 'redrawImmediately
     
 End Sub
 

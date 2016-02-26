@@ -133,6 +133,10 @@ Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 
+Public Sub CloneExternalListSupport(ByRef srcListSupport As pdListSupport, Optional ByVal desiredListIndexTop As Long = 0, Optional ByVal newListSupportMode As PD_LISTSUPPORT_MODE = PDLM_LB_INSIDE_CB)
+    listSupport.CloneExternalListSupport srcListSupport, desiredListIndexTop, newListSupportMode
+End Sub
+
 'To support high-DPI settings properly, we expose some specialized move+size functions
 Public Function GetLeft() As Long
     GetLeft = ucSupport.GetControlLeft
@@ -186,6 +190,10 @@ End Sub
 
 Private Sub listSupport_ScrollValueChanged()
     RaiseEvent ScrollValueChanged(Me.ScrollValue)
+End Sub
+
+Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    listSupport.NotifyKeyDown Shift, vkCode, markEventHandled
 End Sub
 
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -323,7 +331,7 @@ Private Sub UserControl_Initialize()
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
     ucSupport.RequestExtraFunctionality True, True
-    ucSupport.SpecifyRequiredKeys VK_DOWN, VK_UP, VK_PAGEDOWN, VK_PAGEUP, VK_HOME, VK_END
+    ucSupport.SpecifyRequiredKeys VK_DOWN, VK_UP, VK_PAGEDOWN, VK_PAGEUP, VK_HOME, VK_END, VK_RETURN, VK_SPACE
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -544,7 +552,7 @@ Private Sub RedrawBackBuffer()
     End If
     
     'Paint the final result to the screen, as relevant
-    ucSupport.RequestRepaint True
+    ucSupport.RequestRepaint 'True
     
 End Sub
 

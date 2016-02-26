@@ -325,7 +325,7 @@ End Sub
 
 'If the user opts to restore one (or more) autosave entries, PD's main form will pass the list of XML files
 ' to this function.  It is our job to then load those files.
-Public Sub loadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
+Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
 
     Dim i As Long, newImageID As Long, oldImageID As Long
     Dim autosaveFile(0) As String

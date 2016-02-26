@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.81</langversion>
+<langversion>6.6.82</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -3399,6 +3399,23 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for pdCanvas.ctl-->
 
+<!-- BEGIN text for pdCanvasView.ctl -->
+
+<phrase>
+<original>Drag an image onto this space to begin editing.
+
+You can also use the Open Image button on the left,
+or the File > Open and File > Import menus.</original>
+<translation>Seret gambar ke ruang ini untuk memulaikan editing.
+
+anda juga boleh menggunakan tombol buka gambar di sebelah kiri,
+atau menu berkas >buka dan berkas > menu impor.</translation>
+</phrase>
+
+<!-- pdCanvasView.ctl contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<!-- END text for pdCanvasView.ctl-->
+
 <!-- BEGIN text for pdCheckBox.ctl -->
 
 <phrase>
@@ -3683,6 +3700,12 @@ Please masukkan nilai berangka.</translation>
 <!-- pdListBox.ctl contains 0 phrases. -->
 
 <!-- END text for pdListBox.ctl-->
+
+<!-- BEGIN text for pdListBoxView.ctl -->
+
+<!-- pdListBoxView.ctl contains 0 phrases. -->
+
+<!-- END text for pdListBoxView.ctl-->
 
 <!-- BEGIN text for pdNavigator.ctl -->
 
@@ -14714,28 +14737,11 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdCanvasView.ctl -->
+<!-- BEGIN text for pdDropDown.ctl -->
 
-<phrase>
-<original>Drag an image onto this space to begin editing.
+<!-- pdDropDown.ctl contains 0 phrases. -->
 
-You can also use the Open Image button on the left,
-or the File > Open and File > Import menus.</original>
-<translation>Seret gambar ke ruang ini untuk memulaikan editing.
-
-anda juga boleh menggunakan tombol buka gambar di sebelah kiri,
-atau menu berkas >buka dan berkas > menu impor.</translation>
-</phrase>
-
-<!-- pdCanvasView.ctl contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<!-- END text for pdCanvasView.ctl-->
-
-<!-- BEGIN text for pdListBoxView.ctl -->
-
-<!-- pdListBoxView.ctl contains 0 phrases. -->
-
-<!-- END text for pdListBoxView.ctl-->
+<!-- END text for pdDropDown.ctl-->
 
 <!-- Automatic text extraction complete. -->
 

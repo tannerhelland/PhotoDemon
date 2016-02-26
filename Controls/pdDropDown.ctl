@@ -6,6 +6,7 @@ Begin VB.UserControl pdDropDown
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   5610
+   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -19,6 +20,16 @@ Begin VB.UserControl pdDropDown
    ScaleHeight     =   26
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   374
+   Begin PhotoDemon.pdListBox lbPrimary 
+      Height          =   375
+      Left            =   3720
+      TabIndex        =   0
+      Top             =   0
+      Visible         =   0   'False
+      Width           =   1455
+      _ExtentX        =   2566
+      _ExtentY        =   661
+   End
 End
 Attribute VB_Name = "pdDropDown"
 Attribute VB_GlobalNameSpace = False
@@ -51,6 +62,27 @@ Public Event Click()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
+'Positioning the dynamically raised listview window is a bit hairy; we use APIs so we can position things correctly
+' in the screen's coordinate space (even on high-DPI displays)
+Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RECTL) As Boolean
+Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Const GWL_EXSTYLE As Long = -20
+Private Const WS_EX_TOOLWINDOW As Long = &H80&
+
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Const SWP_SHOWWINDOW As Long = &H40
+Private Const SWP_NOACTIVATE As Long = &H10
+
+'When the popup listbox is raised, we subclass the parent control.  If it is moved or sized or clicked, we automatically
+' unload the dropdown listview.  (This workaround is necessary for modal dialogs, among other things.)
+Private m_Subclass As cSelfSubHookCallback
+Private Const WM_ENTERSIZEMOVE As Long = &H231
+Private Const WM_LBUTTONDOWN As Long = &H201
+Private Const WM_RBUTTONDOWN As Long = &H204
+Private Const WM_MBUTTONDOWN As Long = &H207
+
 'Font size of the dropdown (and corresponding listview).  This controls all rendering metrics, so please don't change
 ' it at run-time.  Also, note that the optional caption fontsize is a totally different property that can (and should)
 ' be set independently.
@@ -71,6 +103,9 @@ Private m_ListIndexAtLastRedraw As Long
 
 'When the control receives focus via keyboard (e.g. NOT by mouse events), we draw a focus rect to help orient the user.
 Private m_FocusRectActive As Boolean
+
+'When the popup listbox is visible, this is set to TRUE, and its
+Private m_PopUpVisible As Boolean
 
 'List box support class.  Handles data storage and coordinate math for rendering, but for this control, we primarily
 ' use the data storage aspect.  (Note that when the combo box is clicked and the corresponding listbox window is raised,
@@ -137,6 +172,7 @@ End Property
 Public Property Let FontSize(ByVal newSize As Single)
     m_FontSize = newSize
     listSupport.DefaultItemHeight = Font_Management.GetDefaultStringHeight(m_FontSize) + COMBO_PADDING_VERTICAL * 2
+    lbPrimary.FontSize = newSize
     PropertyChanged "FontSize"
 End Property
 
@@ -234,6 +270,11 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
     listSupport.RemoveItem itemIndex
 End Sub
 
+Private Sub lbPrimary_Click()
+    Me.ListIndex = lbPrimary.ListIndex
+    HideListBox
+End Sub
+
 Private Sub listSupport_Click()
     RaiseEvent Click
 End Sub
@@ -252,19 +293,22 @@ Private Sub ucSupport_GotFocusAPI()
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
+    If m_PopUpVisible Then HideListBox
     RedrawBackBuffer
     RaiseEvent LostFocusAPI
 End Sub
 
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     UpdateMousePosition x, y
-    'TODO: raise list box "dialog"
-    'If m_MouseInComboRect Then RaiseListBox
+    If m_MouseInComboRect And (Me.ListCount > 0) Then RaiseListBox
 End Sub
 
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-    Debug.Print "key received"
-    listSupport.NotifyKeyDown Shift, vkCode, markEventHandled
+    If m_PopUpVisible Then
+        lbPrimary.NotifyKeyDown Shift, vkCode, markEventHandled
+    Else
+        listSupport.NotifyKeyDown Shift, vkCode, markEventHandled
+    End If
 End Sub
 
 Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
@@ -317,7 +361,11 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
 End Sub
 
 Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
-    If newVisibility Then listSupport.SetAutomaticRedraws True, True
+    If newVisibility Then
+        listSupport.SetAutomaticRedraws True, True
+    Else
+        If m_PopUpVisible Then HideListBox
+    End If
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
@@ -334,7 +382,7 @@ Private Sub UserControl_Initialize()
     ucSupport.RegisterControl UserControl.hWnd
     ucSupport.RequestCaptionSupport False
     ucSupport.RequestExtraFunctionality True, True
-    ucSupport.SpecifyRequiredKeys VK_DOWN, VK_UP, VK_PAGEDOWN, VK_PAGEUP, VK_HOME, VK_END
+    ucSupport.SpecifyRequiredKeys VK_DOWN, VK_UP, VK_PAGEDOWN, VK_PAGEUP, VK_HOME, VK_END, VK_RETURN, VK_SPACE, VK_ESCAPE
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -384,6 +432,163 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "FontSize", Me.FontSize, 10
         .WriteProperty "FontSizeCaption", ucSupport.GetCaptionFontSize, 12
     End With
+End Sub
+
+Private Sub RaiseListBox()
+
+    'We first want to retrieve this control instance's window coordinates *in the screen's coordinate space*.
+    ' (We need this to know how to position the listbox element.)
+    Dim myRect As RECTL
+    GetWindowRect Me.hWnd, myRect
+    
+    'We now want to figure out the idealized coordinates for the pop-up rect.  I prefer an OSX / Windows 10 approach to
+    ' positioning, where the currently selected item (.ListIndex) is positioned directly over the underlying combo box,
+    ' with neighboring entries positioned above and/or below, as relevant.
+    Dim popupRect As RECTF, topOfListIndex As Single
+    
+    'To construct this rect, we start by calculating the position of the .ListIndex item itself
+    With popupRect
+        If ucSupport.IsCaptionActive Then
+            .Left = myRect.Left + FixDPI(8)
+            .Top = myRect.Top + (ucSupport.GetCaptionBottom + 2)
+        Else
+            .Left = myRect.Left
+            .Top = myRect.Top
+        End If
+        .Width = myRect.Right - .Left
+        .Height = myRect.Bottom - .Top
+    End With
+    
+    topOfListIndex = popupRect.Top
+    
+    Const NUM_ITEMS_VISIBLE As Long = 10
+    
+    'Next, we want to determine how many preceding and trailing entries are in the list.  (We keep a running tally of how
+    ' many items theoretically appear in the current list, because we want to make sure that at least a certain amount are
+    ' visible in the dropdown, if possible.)  These are purposefully declared as singles, as you'll see in subsequent steps.
+    Dim amtPreceding As Single, amtTrailing As Single
+    If Me.ListIndex >= 0 Then amtPreceding = Me.ListIndex Else amtPreceding = 0
+    If (Me.ListIndex >= Me.ListCount) Then
+        amtTrailing = 0
+    ElseIf Me.ListIndex <= 0 Then
+        amtTrailing = Me.ListCount - 1
+    Else
+        amtTrailing = (Me.ListCount - 1) - Me.ListIndex
+    End If
+    
+    'If the *total* possible amount of items is larger than the previously set NUM_ITEMS_VISIBLE constant, reduce the
+    ' numbers proportionally.
+    Dim amtToReduceList As Long
+    If amtPreceding + amtTrailing > NUM_ITEMS_VISIBLE Then
+    
+        amtToReduceList = (amtPreceding + amtTrailing) - NUM_ITEMS_VISIBLE
+        
+        'This step may look weird, but conceptually, it's very simple.  We want to repeatedly reduce the size of the
+        ' largest group of dropdown items - either the preceding or trailing group - until one of two things happens:
+        ' 1) the two groups are equal in size, or
+        ' 2) we reach our "amount to reduce list" target
+        ' If (1) is reached before (2), we switch to reducing both groups by one element on each iteration
+        Do
+        
+            If amtPreceding > amtTrailing Then
+                amtPreceding = amtPreceding - 1
+                amtToReduceList = amtToReduceList - 1
+            ElseIf amtTrailing > amtPreceding Then
+                amtTrailing = amtTrailing - 1
+                amtToReduceList = amtToReduceList - 1
+            Else
+                amtPreceding = amtPreceding - 1
+                amtTrailing = amtTrailing - 1
+                amtToReduceList = amtToReduceList - 2
+            End If
+        
+        Loop While amtToReduceList > 0
+        
+        'We now know exactly how many items we can display above and below the current entry, with a maximum of
+        ' NUM_ITEMS_VISIBLE if possible.
+        
+    End If
+    
+    'Convert the preceding and trailing list item counts into pixel measurements, and add them to our target rect.
+    Dim sizeChange As Single
+    If amtPreceding > 0 Then
+        sizeChange = amtPreceding * listSupport.DefaultItemHeight
+        popupRect.Top = popupRect.Top - sizeChange
+        popupRect.Height = popupRect.Height + sizeChange
+    End If
+    
+    If amtTrailing > 0 Then
+        sizeChange = amtTrailing * listSupport.DefaultItemHeight
+        popupRect.Height = popupRect.Height + sizeChange
+    End If
+    
+    'We now want to make sure the popup box doesn't lie off-screen.  Check each dimension in turn, and note that changing
+    ' the vertical position of the listbox also changes the pixel-based position of the active .ListIndex within the box.
+    If popupRect.Top < g_Displays.GetDesktopTop Then
+        sizeChange = g_Displays.GetDesktopTop - popupRect.Top
+        popupRect.Top = g_Displays.GetDesktopTop
+        topOfListIndex = topOfListIndex + sizeChange
+    ElseIf popupRect.Top + popupRect.Height > g_Displays.GetDesktopTop + g_Displays.GetDesktopHeight Then
+        sizeChange = (popupRect.Top + popupRect.Height) - (g_Displays.GetDesktopTop + g_Displays.GetDesktopHeight)
+        popupRect.Top = popupRect.Top - sizeChange
+        topOfListIndex = topOfListIndex - sizeChange
+    End If
+    
+    If popupRect.Left < g_Displays.GetDesktopLeft Then
+        sizeChange = g_Displays.GetDesktopLeft - popupRect.Left
+        popupRect.Left = g_Displays.GetDesktopLeft
+    ElseIf popupRect.Left + popupRect.Width > g_Displays.GetDesktopLeft + g_Displays.GetDesktopWidth Then
+        sizeChange = (popupRect.Left + popupRect.Width) - (g_Displays.GetDesktopLeft + g_Displays.GetDesktopWidth)
+        popupRect.Left = popupRect.Left - sizeChange
+    End If
+    
+    'We now have an idealized position rect for the list.  Because listbox scrollbars work in pixel increments, we can now
+    ' convert the position of the active .ListIndex item from screen coords into relative coords.
+    topOfListIndex = topOfListIndex - popupRect.Top
+    
+    'With the list box's style successfully displayed, we can now initialize it with the contents of our list
+    lbPrimary.CloneExternalListSupport listSupport, topOfListIndex, PDLM_LB_INSIDE_CB
+    lbPrimary.UpdateAgainstCurrentTheme True
+    
+    'The list box is now ready to go.  Before displaying it, we want to convert the listbox to a floating toolbox window
+    ' and a bare child of the desktop (hWnd = 0).  This allows the listbox to be positioned outside our boundary rect.
+    SetParent lbPrimary.hWnd, 0&
+    SetWindowLong lbPrimary.hWnd, GWL_EXSTYLE, GetWindowLong(lbPrimary.hWnd, GWL_EXSTYLE) Or WS_EX_TOOLWINDOW
+    
+    'Move the listbox into position and display it
+    With popupRect
+        SetWindowPos lbPrimary.hWnd, 0&, .Left, .Top, .Width, .Height, SWP_SHOWWINDOW
+    End With
+    
+    'One last thing: because this is a (fairly?  mostly?  extremely?) hackish way to emulate a combo box, we need to cover the
+    ' case where the user selects outside the raised list box, but *not* on an object that can receive focus (e.g. an exposed
+    ' section of an underlying form).  Focusable objects are taken care of automatically, because a LostFocus event will fire,
+    ' but non-focusable clicks are problematic.  To solve this, we subclass our parent control and watch for mouse events.
+    ' Also, since we're subclassing the control anyway, we'll also hide the ListBox if the parent window is moved.
+    If (m_Subclass Is Nothing) Then Set m_Subclass = New cSelfSubHookCallback
+    m_Subclass.ssc_Subclass UserControl.Parent.hWnd, 0, 1, Me
+    m_Subclass.ssc_AddMsg UserControl.Parent.hWnd, MSG_BEFORE, WM_ENTERSIZEMOVE, WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN
+    
+    m_PopUpVisible = True
+    
+End Sub
+
+Private Sub HideListBox()
+    If m_PopUpVisible Then
+    
+        m_PopUpVisible = False
+        lbPrimary.Visible = False
+        SetParent lbPrimary.hWnd, Me.hWnd
+        
+        If Not (m_Subclass Is Nothing) Then
+            m_Subclass.ssc_UnSubclass UserControl.Parent.hWnd
+        End If
+        
+        'Restoring window styles proves unnecessary (and in fact, it can fuck things up - so just leave the style bits as
+        ' we set them previously!)
+        'SetWindowLong lbPrimary.hWnd, GWL_EXSTYLE, GetWindowLong(lbPrimary.hWnd, GWL_EXSTYLE) And CLng(Not WS_EX_TOOLWINDOW)
+        
+    End If
 End Sub
 
 'Whenever a control property changes that affects control size or layout (including internal changes, like caption adjustments),
@@ -545,3 +750,46 @@ End Sub
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
+
+
+'All messages subclassed by m_Subclass are handled here.
+Private Sub myWndProc(ByVal bBefore As Boolean, _
+                      ByRef bHandled As Boolean, _
+                      ByRef lReturn As Long, _
+                      ByVal lng_hWnd As Long, _
+                      ByVal uMsg As Long, _
+                      ByVal wParam As Long, _
+                      ByVal lParam As Long, _
+                      ByRef lParamUser As Long)
+'*************************************************************************************************
+'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
+'*              you will know unless the callback for the uMsg value is specified as
+'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
+'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
+'*              message being passed to the original WndProc and (if set to do so) the after
+'*              original WndProc callback.
+'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
+'*              and/or, in an after the original WndProc callback, act on the return value as set
+'*              by the original WndProc.
+'* lng_hWnd   - Window handle.
+'* uMsg       - Message value.
+'* wParam     - Message related data.
+'* lParam     - Message related data.
+'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
+'*************************************************************************************************
+    
+    'We don't actually care about parsing out individual messages here.  This function will only be called by subclassed messages
+    ' that result in the listbox being closed.
+    If m_PopUpVisible Then HideListBox
+    
+    bHandled = False
+
+' *************************************************************
+' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
+' -------------------------------------------------------------
+' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
+'   add this warning banner to the last routine in your class
+' *************************************************************
+End Sub
+
+
