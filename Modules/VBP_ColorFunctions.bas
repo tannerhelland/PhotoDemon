@@ -96,13 +96,13 @@ End Function
 '             (This reference will be used to provide live updates as the user plays with the color dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function showColorDialog(ByRef colorReceive As Long, Optional ByVal initialColor As Long = vbWhite, Optional ByRef callingControl As pdColorSelector) As Boolean
+Public Function ShowColorDialog(ByRef colorReceive As Long, Optional ByVal initialColor As Long = vbWhite, Optional ByRef callingControl As pdColorSelector) As Boolean
     
     'As of November 2014, PhotoDemon has its own color selector!
-    If choosePDColor(initialColor, colorReceive, callingControl) = vbOK Then
-        showColorDialog = True
+    If ChoosePDColor(initialColor, colorReceive, callingControl) = vbOK Then
+        ShowColorDialog = True
     Else
-        showColorDialog = False
+        ShowColorDialog = False
     End If
     
 End Function

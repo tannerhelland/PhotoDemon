@@ -30,6 +30,7 @@ Begin VB.UserControl pdCommandBar
       Width           =   1365
       _ExtentX        =   2408
       _ExtentY        =   900
+      UseCustomBackgroundColor=   -1  'True
       Caption         =   "&OK"
    End
    Begin PhotoDemon.pdButtonToolbox cmdAction 
@@ -42,15 +43,17 @@ Begin VB.UserControl pdCommandBar
       _ExtentX        =   1111
       _ExtentY        =   1005
       AutoToggle      =   -1  'True
+      UseCustomBackColor=   -1  'True
    End
    Begin PhotoDemon.pdDropDown cboPreset 
       Height          =   345
       Left            =   1560
       TabIndex        =   4
-      Top             =   195
+      Top             =   210
       Width           =   3135
       _ExtentX        =   5530
       _ExtentY        =   609
+      UseCustomBackgroundColor=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdAction 
       Height          =   570
@@ -62,6 +65,7 @@ Begin VB.UserControl pdCommandBar
       _ExtentX        =   1111
       _ExtentY        =   1005
       AutoToggle      =   -1  'True
+      UseCustomBackColor=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdAction 
       Height          =   570
@@ -73,6 +77,7 @@ Begin VB.UserControl pdCommandBar
       _ExtentX        =   1111
       _ExtentY        =   1005
       AutoToggle      =   -1  'True
+      UseCustomBackColor=   -1  'True
    End
    Begin PhotoDemon.pdButton cmdCancel 
       Height          =   510
@@ -82,6 +87,7 @@ Begin VB.UserControl pdCommandBar
       Width           =   1365
       _ExtentX        =   2408
       _ExtentY        =   900
+      UseCustomBackgroundColor=   -1  'True
       Caption         =   "&Cancel"
    End
 End
@@ -1252,19 +1258,17 @@ Public Sub UpdateAgainstCurrentTheme()
     'Synchronize the background color of individual controls against the command bar's backcolor
     cmdOK.BackgroundColor = cbBackgroundColor
     cmdCancel.BackgroundColor = cbBackgroundColor
-    cmdOK.UseCustomBackgroundColor = True
-    cmdCancel.UseCustomBackgroundColor = True
     cmdOK.UpdateAgainstCurrentTheme
     cmdCancel.UpdateAgainstCurrentTheme
+    
+    cboPreset.BackgroundColor = cbBackgroundColor
+    cboPreset.UpdateAgainstCurrentTheme
     
     Dim i As Long
     For i = cmdAction.lBound To cmdAction.UBound
         cmdAction(i).BackColor = cbBackgroundColor
-        cmdAction(i).UseCustomBackColor = True
         cmdAction(i).UpdateAgainstCurrentTheme
     Next i
-    
-    cboPreset.UpdateAgainstCurrentTheme
     
 End Sub
 

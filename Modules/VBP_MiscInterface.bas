@@ -98,7 +98,7 @@ Private hadToChangeSmoothing As Long
 
 'PhotoDemon is designed against pixels at an expected screen resolution of 96 DPI.  Other DPI settings mess up our calculations.
 ' To remedy this, we dynamically modify all pixels measurements at run-time, using the current screen resolution as our guide.
-Private dpiRatio As Double
+Private m_DPIRatio As Double
 
 'When a modal dialog is displayed, a reference to it is saved in this variable.  If subsequent modal dialogs are displayed (for example,
 ' if a tool dialog displays a color selection dialog), the previous modal dialog is given ownership over the new dialog.
@@ -983,7 +983,7 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     MoveWindow dialogHwnd, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
     
     'Use VB to actually display the dialog.  Note that the sub will pause here until the form is closed.
-    dialogForm.Show dialogModality, FormMain    'getModalOwner()
+    dialogForm.Show dialogModality, FormMain
     
     'Release our reference to this dialog
     If isSecondaryDialog Then
@@ -1010,8 +1010,8 @@ showPDDialogError:
 
 End Sub
 
-'When a modal dialog needs to be raised, we want to set its ownership to the top-most (relevant) window in the program, which may or may
-' not be the main form.  This function should be called to determine the proper owner of any modal dialog box.
+'When raising a modal dialog, we want to set the window ownership to the top-most (relevant) window in the program, which may
+' or may not be the main program window.  This function can called to determine the proper owner of an arbitrary modal dialog box.
 '
 'If the caller knows in advance that a modal dialog is owned by another modal dialog (for example, a tool dialog displaying a color
 ' selection dialog), it can explicitly mark the assumeSecondaryDialog function as TRUE.
@@ -1176,37 +1176,37 @@ End Sub
 
 Public Function FixDPI(ByVal pxMeasurement As Long) As Long
 
-    'The first time this function is called, dpiRatio will be 0.  Calculate it.
-    If dpiRatio = 0# Then
+    'The first time this function is called, m_DPIRatio will be 0.  Calculate it.
+    If m_DPIRatio = 0# Then
     
         'There are 1440 twips in one inch.  (Twips are resolution-independent.)  Use that knowledge to calculate DPI.
-        dpiRatio = 1440 / TwipsPerPixelXFix
+        m_DPIRatio = 1440 / TwipsPerPixelXFix
         
         'FYI: if the screen resolution is 96 dpi, this function will return the original pixel measurement, due to
         ' this calculation.
-        dpiRatio = dpiRatio / 96
+        m_DPIRatio = m_DPIRatio / 96
     
     End If
     
-    FixDPI = CLng(dpiRatio * CDbl(pxMeasurement))
+    FixDPI = CLng(m_DPIRatio * CDbl(pxMeasurement))
     
 End Function
 
 Public Function FixDPIFloat(ByVal pxMeasurement As Long) As Double
 
-    'The first time this function is called, dpiRatio will be 0.  Calculate it.
-    If dpiRatio = 0# Then
+    'The first time this function is called, m_DPIRatio will be 0.  Calculate it.
+    If m_DPIRatio = 0# Then
     
         'There are 1440 twips in one inch.  (Twips are resolution-independent.)  Use that knowledge to calculate DPI.
-        dpiRatio = 1440 / TwipsPerPixelXFix
+        m_DPIRatio = 1440 / TwipsPerPixelXFix
         
         'FYI: if the screen resolution is 96 dpi, this function will return the original pixel measurement, due to
         ' this calculation.
-        dpiRatio = dpiRatio / 96
+        m_DPIRatio = m_DPIRatio / 96
     
     End If
     
-    FixDPIFloat = dpiRatio * CDbl(pxMeasurement)
+    FixDPIFloat = m_DPIRatio * CDbl(pxMeasurement)
     
 End Function
 
