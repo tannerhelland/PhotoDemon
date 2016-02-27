@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.140</langversion>
+<langversion>6.7.141</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -3620,12 +3620,6 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 
 <!-- END text for pdCommandBarMini.ctl-->
 
-<!-- BEGIN text for pdComboBox.ctl -->
-
-<!-- pdComboBox.ctl contains 0 phrases. -->
-
-<!-- END text for pdComboBox.ctl-->
-
 <!-- BEGIN text for pdComboBox_Font.ctl -->
 
 <!-- pdComboBox_Font.ctl contains 0 phrases. -->
@@ -3643,6 +3637,12 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <!-- pdDownload.ctl contains 0 phrases. -->
 
 <!-- END text for pdDownload.ctl-->
+
+<!-- BEGIN text for pdDropDown.ctl -->
+
+<!-- pdDropDown.ctl contains 0 phrases. -->
+
+<!-- END text for pdDropDown.ctl-->
 
 <!-- BEGIN text for pdFxPreview.ctl -->
 
@@ -14729,12 +14729,6 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for pdDropDown.ctl -->
-
-<!-- pdDropDown.ctl contains 0 phrases. -->
-
-<!-- END text for pdDropDown.ctl-->
 
 <!-- Automatic text extraction complete. -->
 

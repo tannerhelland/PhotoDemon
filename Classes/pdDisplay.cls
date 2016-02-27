@@ -55,47 +55,47 @@ Private m_EDIDSerialNumber As String
 Private m_EDIDNativeResH As Long
 Private m_EDIDNativeResV As Long
 
-Public Function getHandle() As Long
-    getHandle = m_hMonitor
+Public Function GetHandle() As Long
+    GetHandle = m_hMonitor
 End Function
 
-Public Sub setHandle(ByVal newHandle As Long)
+Public Sub SetHandle(ByVal newHandle As Long)
     m_hMonitor = newHandle
 End Sub
 
-Public Function getAdapterName() As String
-    getAdapterName = m_AdapterName
+Public Function GetAdapterName() As String
+    GetAdapterName = m_AdapterName
 End Function
 
-Public Sub setAdapterName(ByRef newName As String)
+Public Sub SetAdapterName(ByRef newName As String)
     m_AdapterName = newName
 End Sub
 
-Public Function getFriendlyName() As String
-    getFriendlyName = m_FriendlyName
+Public Function GetFriendlyName() As String
+    GetFriendlyName = m_FriendlyName
 End Function
 
-Public Sub setFriendlyName(ByRef newName As String)
+Public Sub SetFriendlyName(ByRef newName As String)
     m_FriendlyName = newName
 End Sub
 
-Public Function getDescription() As String
-    getDescription = m_Description
+Public Function GetDescription() As String
+    GetDescription = m_Description
 End Function
 
-Public Sub setDescription(ByRef newDescription As String)
+Public Sub SetDescription(ByRef newDescription As String)
     m_Description = newDescription
 End Sub
 
-Public Function getDeviceID() As String
-    getDeviceID = m_DeviceID
+Public Function GetDeviceID() As String
+    GetDeviceID = m_DeviceID
 End Function
 
-Public Sub setDeviceID(ByRef newDeviceID As String)
+Public Sub SetDeviceID(ByRef newDeviceID As String)
     m_DeviceID = newDeviceID
 End Sub
 
-Friend Sub getRect(ByRef dstRect As RECTL)
+Friend Sub GetRect(ByRef dstRect As RECTL)
     dstRect = m_MonitorRect
 End Sub
 
@@ -103,63 +103,63 @@ Friend Sub SetRect(ByRef srcRect As RECTL)
     m_MonitorRect = srcRect
 End Sub
 
-Friend Sub getWorkingRect(ByRef dstRect As RECTL)
+Friend Sub GetWorkingRect(ByRef dstRect As RECTL)
     dstRect = m_WorkingRect
 End Sub
 
-Friend Sub setWorkingRect(ByRef srcRect As RECTL)
+Friend Sub SetWorkingRect(ByRef srcRect As RECTL)
     m_WorkingRect = srcRect
 End Sub
 
-Public Property Get isPrimary() As Boolean
-    isPrimary = m_Primary
+Public Property Get IsPrimary() As Boolean
+    IsPrimary = m_Primary
 End Property
 
-Public Property Let isPrimary(lPrimary As Boolean)
+Public Property Let IsPrimary(lPrimary As Boolean)
     m_Primary = lPrimary
 End Property
 
 'Retrieve the best available name for this monitor.  If available, an EDID model name will be used.  If that doesn't
 ' exist, we'll use the Windows fallback (which is often something dumb like "Generic PnP Monitor").
-Public Function getBestMonitorName() As String
+Public Function GetBestMonitorName() As String
     
     If Len(m_EDIDModelName) <> 0 Then
-        getBestMonitorName = m_EDIDModelName
+        GetBestMonitorName = m_EDIDModelName
     Else
-        getBestMonitorName = m_FriendlyName
+        GetBestMonitorName = m_FriendlyName
     End If
     
 End Function
 
 'Retrieve the monitor's size, as a string (useful for displaying to the user)
-Public Function getMonitorSizeAsString() As String
+Public Function GetMonitorSizeAsString() As String
 
     If m_hasEDID Then
-        getMonitorSizeAsString = Format$(m_EDIDDiagonalInches, "#0.0") & """"
+        GetMonitorSizeAsString = Format$(m_EDIDDiagonalInches, "#0.0") & """"
     Else
-        getMonitorSizeAsString = ""
+        GetMonitorSizeAsString = ""
     End If
 
 End Function
 
 'Retrieve the monitor's native resolution, as a string (useful for displaying to the user)
-Public Function getMonitorResolutionAsString() As String
+Public Function GetMonitorResolutionAsString() As String
 
     If m_hasEDID Then
-        getMonitorResolutionAsString = CStr(m_EDIDNativeResH) & "x" & CStr(m_EDIDNativeResV)
+        GetMonitorResolutionAsString = CStr(m_EDIDNativeResH) & "x" & CStr(m_EDIDNativeResV)
     Else
-        getMonitorResolutionAsString = CStr(m_MonitorRect.Right - m_MonitorRect.Left) & "x" & CStr(m_MonitorRect.Bottom - m_MonitorRect.Top)
+        GetMonitorResolutionAsString = CStr(m_MonitorRect.Right - m_MonitorRect.Left) & "x" & CStr(m_MonitorRect.Bottom - m_MonitorRect.Top)
     End If
 
 End Function
 
-Public Function hasEDID() As Boolean
-    hasEDID = m_hasEDID
+Public Function HasEDID() As Boolean
+    HasEDID = m_hasEDID
 End Function
 
 'At creation time, the clsMonitors class will attempt to retrieve an EDID for this monitor.  Regardless of success
 ' or failure, it will call this function.
-Public Sub setEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing As Boolean = False)
+Public Sub SetEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing As Boolean = False)
 
     'If we already have an EDID, exit.  (This shouldn't be possible, but oh well.)
     If m_hasEDID Then Exit Sub
