@@ -222,16 +222,6 @@ Public Property Let Layout(ByVal newLayout As PD_LABEL_LAYOUT)
     UpdateControlLayout
 End Property
 
-'Because there can be a delay between window resize events and VB processing the related message (and updating its internal properties),
-' owner windows may wish to access these read-only properties, which will return the actual control size at any given time.
-Public Property Get PixelWidth() As Long
-    PixelWidth = ucSupport.GetBackBufferWidth
-End Property
-
-Public Property Get PixelHeight() As Long
-    PixelHeight = ucSupport.GetBackBufferHeight
-End Property
-
 Public Property Get UseCustomBackColor() As Boolean
     UseCustomBackColor = m_UseCustomBackColor
 End Property
@@ -305,6 +295,10 @@ End Function
 
 Public Sub SetHeight(ByVal newHeight As Long)
     ucSupport.RequestNewSize , newHeight, True
+End Sub
+
+Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
+    ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
 
 'INITIALIZE control

@@ -304,6 +304,43 @@ Public Sub AssignImage_Pressed(Optional ByVal resName As String = "", Optional B
 
 End Sub
 
+'To support high-DPI settings properly, we expose specialized move+size functions
+Public Function GetLeft() As Long
+    GetLeft = ucSupport.GetControlLeft
+End Function
+
+Public Sub SetLeft(ByVal newLeft As Long)
+    ucSupport.RequestNewPosition newLeft, , True
+End Sub
+
+Public Function GetTop() As Long
+    GetTop = ucSupport.GetControlTop
+End Function
+
+Public Sub SetTop(ByVal newTop As Long)
+    ucSupport.RequestNewPosition , newTop, True
+End Sub
+
+Public Function GetWidth() As Long
+    GetWidth = ucSupport.GetControlWidth
+End Function
+
+Public Sub SetWidth(ByVal newWidth As Long)
+    ucSupport.RequestNewSize newWidth, , True
+End Sub
+
+Public Function GetHeight() As Long
+    GetHeight = ucSupport.GetControlHeight
+End Function
+
+Public Sub SetHeight(ByVal newHeight As Long)
+    ucSupport.RequestNewSize , newHeight, True
+End Sub
+
+Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
+    ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
+End Sub
+
 'A few key events are also handled
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
         

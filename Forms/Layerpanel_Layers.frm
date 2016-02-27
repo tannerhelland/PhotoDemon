@@ -22,6 +22,17 @@ Begin VB.Form layerpanel_Layers
    ScaleWidth      =   259
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdScrollBar vsLayer 
+      Height          =   4695
+      Left            =   3360
+      TabIndex        =   10
+      Top             =   1320
+      Width           =   255
+      _ExtentX        =   238
+      _ExtentY        =   8070
+      Max             =   100
+      LargeChange     =   32
+   End
    Begin VB.PictureBox picLayers 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -34,7 +45,7 @@ Begin VB.Form layerpanel_Layers
       ScaleHeight     =   311
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   215
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   1320
       Width           =   3255
    End
@@ -49,7 +60,7 @@ Begin VB.Form layerpanel_Layers
       ScaleHeight     =   35
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   249
-      TabIndex        =   3
+      TabIndex        =   2
       TabStop         =   0   'False
       Top             =   6600
       Width           =   3735
@@ -57,7 +68,7 @@ Begin VB.Form layerpanel_Layers
          Height          =   510
          Index           =   0
          Left            =   0
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   0
          Width           =   540
          _ExtentX        =   953
@@ -68,7 +79,7 @@ Begin VB.Form layerpanel_Layers
          Height          =   510
          Index           =   1
          Left            =   720
-         TabIndex        =   5
+         TabIndex        =   4
          Top             =   0
          Width           =   540
          _ExtentX        =   953
@@ -79,7 +90,7 @@ Begin VB.Form layerpanel_Layers
          Height          =   510
          Index           =   2
          Left            =   1440
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   0
          Width           =   540
          _ExtentX        =   953
@@ -90,22 +101,13 @@ Begin VB.Form layerpanel_Layers
          Height          =   510
          Index           =   3
          Left            =   2160
-         TabIndex        =   7
+         TabIndex        =   6
          Top             =   0
          Width           =   540
          _ExtentX        =   953
          _ExtentY        =   900
          AutoToggle      =   -1  'True
       End
-   End
-   Begin VB.VScrollBar vsLayer 
-      Height          =   4665
-      LargeChange     =   32
-      Left            =   3345
-      Max             =   100
-      TabIndex        =   2
-      Top             =   1320
-      Width           =   285
    End
    Begin PhotoDemon.pdDropDown cboBlendMode 
       Height          =   360
@@ -141,7 +143,7 @@ Begin VB.Form layerpanel_Layers
       CausesValidation=   0   'False
       Height          =   405
       Left            =   960
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   30
       Width           =   2760
       _ExtentX        =   4868
@@ -175,7 +177,7 @@ Begin VB.Form layerpanel_Layers
    Begin PhotoDemon.pdDropDown cboAlphaMode 
       Height          =   360
       Left            =   960
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   900
       Width           =   2775
       _ExtentX        =   4895
@@ -1106,7 +1108,7 @@ Private Sub updateLayerScrollbarVisibility()
         vsLayer.Value = 0
         
         'Extend the layer box to be the full size of the form
-        picLayers.Width = (vsLayer.Left + vsLayer.Width) - picLayers.Left
+        picLayers.Width = (vsLayer.GetLeft + vsLayer.GetWidth) - picLayers.Left
         
     Else
         
@@ -1115,7 +1117,7 @@ Private Sub updateLayerScrollbarVisibility()
         vsLayer.Max = maxLayerBoxSize - picLayers.ScaleHeight
         
         'Shrink the layer box so that it does not cover the vertical scroll bar
-        picLayers.Width = (vsLayer.Left - picLayers.Left)
+        picLayers.Width = (vsLayer.GetLeft - picLayers.Left)
         
     End If
 
@@ -1470,11 +1472,7 @@ Private Sub txtLayerName_LostFocus()
 
 End Sub
 
-Private Sub vsLayer_Change()
-    RedrawLayerBox
-End Sub
-
-Private Sub vsLayer_Scroll()
+Private Sub vsLayer_Scroll(ByVal eventIsCritical As Boolean)
     RedrawLayerBox
 End Sub
 
@@ -1526,22 +1524,22 @@ Private Sub ReflowInterface()
     If sizeCheck > 0 Then picLayers.Height = (picLayerButtons.Top - picLayers.Top) - FixDPI(7) Else Exit Sub
     
     'Make the toolbar the same height as the layer box
-    vsLayer.Height = picLayers.Height
+    vsLayer.SetHeight picLayers.Height
     
     'Vertical resizing has now been covered successfully.  Time to handle horizontal resizing.
     
     'Left-align the opacity, blend and alpha mode controls against their respective labels.
-    sltLayerOpacity.Left = lblLayerSettings(0).Left + lblLayerSettings(0).PixelWidth + FixDPI(4)
-    cboBlendMode.Left = lblLayerSettings(1).Left + lblLayerSettings(1).PixelWidth + FixDPI(12)
-    cboAlphaMode.Left = lblLayerSettings(2).Left + lblLayerSettings(2).PixelWidth + FixDPI(12)
+    sltLayerOpacity.SetLeft lblLayerSettings(0).GetLeft + lblLayerSettings(0).GetWidth + FixDPI(4)
+    cboBlendMode.SetLeft lblLayerSettings(1).GetLeft + lblLayerSettings(1).GetWidth + FixDPI(12)
+    cboAlphaMode.SetLeft lblLayerSettings(2).GetLeft + lblLayerSettings(2).GetWidth + FixDPI(12)
     
     'Horizontally stretch the opacity, blend, and alpha mode UI inputs
-    sltLayerOpacity.Width = Me.ScaleWidth - (sltLayerOpacity.Left + FixDPI(5))
+    sltLayerOpacity.SetWidth Me.ScaleWidth - (sltLayerOpacity.GetLeft + FixDPI(5))
     cboBlendMode.SetWidth Me.ScaleWidth - (cboBlendMode.GetLeft + FixDPI(7))
     cboAlphaMode.SetWidth Me.ScaleWidth - (cboAlphaMode.GetLeft + FixDPI(7))
     
     'Resize the layer box and associated scrollbar
-    vsLayer.Left = Me.ScaleWidth - vsLayer.Width - FixDPI(7)
+    vsLayer.SetLeft Me.ScaleWidth - vsLayer.GetWidth - FixDPI(7)
     updateLayerScrollbarVisibility
     
     'Reflow the bottom button box; this is inevitably more complicated, owing to the spacing requirements of the buttons
@@ -1556,7 +1554,7 @@ Private Sub ReflowInterface()
     
     Dim i As Long
     For i = 0 To cmdLayerAction.Count - 1
-        cmdLayerAction(i).Left = buttonAreaLeft + (i * FixDPIFloat(44))
+        cmdLayerAction(i).SetLeft buttonAreaLeft + (i * FixDPIFloat(44))
     Next i
     
     'Redraw the internal layer UI DIB
@@ -1587,6 +1585,3 @@ Public Sub UpdateAgainstCurrentTheme()
     ReflowInterface
     
 End Sub
-
-
-

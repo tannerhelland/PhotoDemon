@@ -1846,8 +1846,8 @@ Public Sub UpdateAgainstCurrentLayer()
                 Me.picConvertLayer.Move 0, 0, Me.ScaleWidth, Me.ScaleHeight
                 
                 'Center all labels on the panel
-                Me.lblConvertLayer.Left = (Me.ScaleWidth - lblConvertLayer.PixelWidth) / 2
-                Me.lblConvertLayerConfirm.Left = (Me.ScaleWidth - lblConvertLayerConfirm.PixelWidth) / 2
+                Me.lblConvertLayer.SetLeft (Me.ScaleWidth - lblConvertLayer.GetWidth) / 2
+                Me.lblConvertLayerConfirm.SetLeft (Me.ScaleWidth - lblConvertLayerConfirm.GetWidth) / 2
                 
                 'Display the panel
                 Me.picConvertLayer.Visible = True
