@@ -143,7 +143,37 @@ Private m_StashFile As String
 Private WithEvents m_Clipboard As pdClipboard
 Attribute m_Clipboard.VB_VarHelpID = -1
 
-'IMPORTANT NOTE: at present, this value is only updated during paste steps.  I still need to convert cut/copy operations to use pdClipboard.
+'Next comes all the helper functions for Unicode-enabled drag/drop behavior.
+' (Thank you to LaVolpe for these functions, c/o http://cyberactivex.com/UnicodeTutorialVb.htm#Filenames_via_DragDrop_or_Paste
+Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As VbVarType, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
+Private Declare Function lstrlenW Lib "kernel32" (ByRef lpString As Any) As Long
+Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
+
+Private Const TYMED_HGLOBAL As Long = 1
+Private Const DVASPECT_CONTENT As Long = 1
+Private Const IDataObjVTable_GetData As Long = 12   '12 is an offset to the GetData function (e.g. the 4th VTable entry)
+Private Const CC_STDCALL As Long = 4&
+
+Private Type FORMATETC
+    cfFormat As Long
+    pDVTARGETDEVICE As Long
+    dwAspect As Long
+    lIndex As Long
+    TYMED As Long
+End Type
+Private Type DROPFILES
+    pFiles As Long
+    ptX As Long
+    ptY As Long
+    fNC As Long
+    fWide As Long
+End Type
+Private Type STGMEDIUM
+    TYMED As Long
+    Data As Long
+    pUnkForRelease As IUnknown
+End Type
+
 Public Function IsClipboardOpen() As Boolean
     IsClipboardOpen = m_IsClipboardOpen
 End Function
@@ -1003,41 +1033,48 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     'Verify that the object being dragged is some sort of file or file list
     If Data.GetFormat(vbCFFiles) Then
         
-        'Copy the filenames into an array
-        ReDim sFile(0 To Data.Files.Count) As String
+        'Start by bypassing VB's innate Unicode-to-ANSI conversion
+        If GetDroppedFileNamesW(Data) Then
         
-        Dim oleFilename
-        
-        Dim countFiles As Long
-        countFiles = 0
+            'With the Unicode filenames successfully generated, we now want to parse the list and validate each filename in turn.
+            Dim countFiles As Long
+            countFiles = 0
+            
+            Dim oleFilename As Variant
+            ReDim sFile(0 To Data.Files.Count) As String
+            
+            For Each oleFilename In Data.Files
+                tmpString = oleFilename
+                If (Len(tmpString) <> 0) Then
+                    If cFile.FileExist(tmpString) Then
+                        sFile(countFiles) = tmpString
+                        countFiles = countFiles + 1
+                    End If
+                End If
+            Next oleFilename
+            
+            'Make sure at least one valid file was found
+            If countFiles > 0 Then
+            
+                'Because the OLE drop may include blank strings, verify the size of the array against countFiles
+                ReDim Preserve sFile(0 To countFiles - 1) As String
                 
-        For Each oleFilename In Data.Files
-            tmpString = oleFilename
-            If (Len(tmpString) <> 0) And cFile.FileExist(tmpString) Then
-                sFile(countFiles) = tmpString
-                countFiles = countFiles + 1
+                'Load the images as either layers or new files, depending on where the files were dropped
+                If (g_OpenImageCount > 0) And intendedTargetIsLayer Then
+                    
+                    Dim i As Long
+                    For i = 0 To UBound(sFile)
+                        Layer_Handler.LoadImageAsNewLayer False, sFile(i)
+                    Next i
+                    
+                Else
+                    LoadFileAsNewImage sFile
+                End If
+                
+                LoadImageFromDragDrop = True
+                Exit Function
+                
             End If
-        Next oleFilename
-        
-        'Make sure at least one valid, existant file was found
-        If countFiles > 0 Then
-        
-            'Because the OLE drop may include blank strings, verify the size of the array against countFiles
-            ReDim Preserve sFile(0 To countFiles - 1) As String
-            
-            'If an open image exists, pass the list of filenames to LoadImageAsNewLayer, which will load the images one-at-a-time
-            Dim i As Long
-            
-            If (g_OpenImageCount > 0) And intendedTargetIsLayer Then
-                For i = 0 To UBound(sFile)
-                    Layer_Handler.LoadImageAsNewLayer False, sFile(i)
-                Next i
-            Else
-                LoadFileAsNewImage sFile
-            End If
-            
-            LoadImageFromDragDrop = True
-            Exit Function
             
         End If
     
@@ -1131,6 +1168,122 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     'If we made it all the way here, something went horribly wrong
     LoadImageFromDragDrop = False
     Exit Function
+
+End Function
+
+'This Unicode-friendly drag/drop interpreter comes courtesy LaVolpe, c/o
+' http://cyberactivex.com/UnicodeTutorialVb.htm#Filenames_via_DragDrop_or_Paste (retrieved on 27/Feb/2016).
+' IMPORTANT NOTE: this function has been modified for use inside PD.  If using it in your own project, I strongly recommend
+' downloading the original version, as it includes additional helper code and explanations.
+'
+'Returns: TRUE if at least one file is contained in the passed OLEDragDrop_DataObject
+Private Function GetDroppedFileNamesW(ByRef OLEDragDrop_DataObject As DataObject) As Boolean
+    
+    GetDroppedFileNamesW = False
+    
+    'Note that PD will validate the data object before passing it, but better safe than sorry
+    If (OLEDragDrop_DataObject Is Nothing) Then Exit Function
+    If Not OLEDragDrop_DataObject.GetFormat(vbCFFiles) Then Exit Function
+    
+    'This function basically handles the task of hacking around the DataObject's VTable, and manually retrieving pointers
+    ' to the original, unmodified Unicode filenames in the Data object.  We then overwrite the OUT filename strings with
+    ' new Unicode-enabled pointers, so our receiving function can proceed identically regardless of the presence of
+    ' non-ANSI chars.
+    Dim fmtEtc As FORMATETC
+    With fmtEtc
+        .cfFormat = vbCFFiles
+        .lIndex = -1                  ' -1 means "we want everything"
+        .TYMED = TYMED_HGLOBAL        ' TYMED_HGLOBAL means we want to use "hGlobal" as the transfer medium
+        .dwAspect = DVASPECT_CONTENT  ' dwAspect is used to request extra metadata (like an icon representation) - we want the actual data
+    End With
+
+    'The IDataObject pointer appears 16 bytes past VBs DataObject
+    Dim IID_IDataObject As Long
+    CopyMemory IID_IDataObject, ByVal ObjPtr(OLEDragDrop_DataObject) + 16&, 4&
+    
+    'The objPtr of the IDataObject interface also tells us where the interface's VTable begins.  Since we know the
+    ' VTable address and we know which function index we want, we can call it directly using the DispCallFunc.
+    ' (You could also do this using a TLB, obviously.)  In particular, we want the GetData function which is #4 in
+    ' the VTable, per http://msdn2.microsoft.com/en-us/library/ms688421.aspx
+    
+    'Next, we need to populate the input values required by the OLE API (http://msdn2.microsoft.com/en-us/library/ms221473.aspx)
+    Dim pVartypes(0 To 1) As Integer, Vars(0 To 1) As Variant, pVars(0 To 1) As Long
+    pVartypes(0) = vbLong: Vars(0) = VarPtr(fmtEtc): pVars(0) = VarPtr(Vars(0))
+    
+    Dim pMedium As STGMEDIUM
+    pVartypes(1) = vbLong: Vars(1) = VarPtr(pMedium): pVars(1) = VarPtr(Vars(1))
+    
+    'Manually invoke the desired interface
+    Dim varRtn As Variant
+    If DispCallFunc(IID_IDataObject, IDataObjVTable_GetData, CC_STDCALL, vbLong, 2, pVartypes(0), pVars(0), varRtn) = 0 Then
+        
+        'Make sure we received a non-null hGlobal pointer (nothing needs to be freed at this point, FYI)
+        If pMedium.Data = 0 Then Exit Function
+        
+        'Remember that this data object doesn't point directly at the files themselves, but to a 20-byte DROPFILES structure
+        Dim hDrop As Long
+        CopyMemory hDrop, ByVal pMedium.Data, 4&
+        
+        'Technically we should never retrieve have received a null-pointer, but again, better safe than sorry
+        If hDrop <> 0 Then
+            
+            'Convert the hDrop into a usable DROPFILES struct
+            Dim dFiles As DROPFILES
+            CopyMemory dFiles, ByVal hDrop, 20&
+            
+            'To my knowledge, you'll never get an ANSI listing from this (convoluted) approach, at least not on XP or later,
+            ' but if for some reason we do, we can immediately free our pointer and exit (since the original object is sufficent).
+            If dFiles.fWide = 0 Then
+                GlobalFree pMedium.Data
+            
+            'Far more likely, the filenames will use wide chars
+            Else
+            
+                'Use the pFiles member to track the filename's offsets
+                dFiles.pFiles = dFiles.pFiles + hDrop
+                
+                'Not particularly efficient, but since we're not expecting thousands of files, we can just store our strings
+                ' inside a generic string array.
+                Dim sFiles() As String
+                ReDim sFiles(1 To OLEDragDrop_DataObject.Files.Count)
+                
+                Dim lLen As Long, ptrChar As Long
+                Dim bIsUnicode As Boolean
+                
+                'Now we're going to iterate through each of the original files, and copy the C-style strings into BSTRs
+                Dim iCount As Long
+                For iCount = 1 To UBound(sFiles)
+                
+                    'Retrieve this filename's length, prep a buffer, then copy over the w-char bytes
+                    lLen = lstrlenW(ByVal dFiles.pFiles) * 2
+                    sFiles(iCount) = String$(lLen \ 2, 0&)
+                    CopyMemory ByVal StrPtr(sFiles(iCount)), ByVal dFiles.pFiles, lLen
+                    
+                    'Manually move the pointer to the next file, and note that we add two extra bytes because of the
+                    ' double-null delimiter between filenames
+                    dFiles.pFiles = dFiles.pFiles + lLen + 2
+                    
+                Next
+                
+                'We've got what we need from the hGlobal pointer, so go ahead and free it
+                GlobalFree pMedium.Data
+                
+                'Now, it's as simple as copying our Unicode strings back into the original DataObject
+                With OLEDragDrop_DataObject.Files
+                    .Clear
+                    For iCount = 1 To iCount - 1
+                        .Add sFiles(iCount), iCount
+                    Next
+                End With
+                
+            End If
+            
+            GetDroppedFileNamesW = True
+        
+        End If
+
+    End If
+    
 
 End Function
 
