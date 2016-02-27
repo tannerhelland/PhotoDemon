@@ -32,9 +32,8 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   2
       Top             =   5295
       Width           =   11535
-      _ExtentX        =   20346
-      _ExtentY        =   1323
-      BackColor       =   14802140
+      _extentx        =   20346
+      _extenty        =   1323
    End
    Begin PhotoDemon.pdButtonToolbox cmdCapture 
       Height          =   600
@@ -43,9 +42,9 @@ Begin VB.Form dialog_ColorSelector
       Top             =   3720
       Visible         =   0   'False
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   1058
-      AutoToggle      =   -1  'True
+      _extentx        =   1931
+      _extenty        =   1058
+      autotoggle      =   -1  'True
    End
    Begin PhotoDemon.pdTextBox txtHex 
       Height          =   315
@@ -53,9 +52,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   6
       Top             =   3735
       Width           =   1455
-      _ExtentX        =   2566
-      _ExtentY        =   556
-      Text            =   "abcdef"
+      _extentx        =   2566
+      _extenty        =   556
+      text            =   "abcdef"
    End
    Begin VB.PictureBox picRecColor 
       Appearance      =   0  'Flat
@@ -330,9 +329,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   12
       Top             =   1905
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   255
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   255
    End
    Begin PhotoDemon.pdSpinner tudRGB 
       Height          =   345
@@ -341,9 +340,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   14
       Top             =   2505
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   255
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   255
    End
    Begin PhotoDemon.pdSpinner tudRGB 
       Height          =   345
@@ -352,9 +351,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   16
       Top             =   3105
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   255
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   255
    End
    Begin PhotoDemon.pdSpinner tudHSV 
       Height          =   345
@@ -363,9 +362,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   19
       Top             =   105
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   359
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   359
    End
    Begin PhotoDemon.pdSpinner tudHSV 
       Height          =   345
@@ -374,9 +373,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   21
       Top             =   705
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   100
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   100
    End
    Begin PhotoDemon.pdSpinner tudHSV 
       Height          =   345
@@ -385,9 +384,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   23
       Top             =   1305
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   100
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   100
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   600
@@ -395,12 +394,12 @@ Begin VB.Form dialog_ColorSelector
       Left            =   5085
       Top             =   4680
       Width           =   1305
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Alignment       =   1
-      Caption         =   "recent colors:"
-      ForeColor       =   0
-      Layout          =   1
+      _extentx        =   0
+      _extenty        =   0
+      alignment       =   1
+      caption         =   "recent colors:"
+      forecolor       =   0
+      layout          =   1
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   720
@@ -408,12 +407,12 @@ Begin VB.Form dialog_ColorSelector
       Left            =   5070
       Top             =   3765
       Width           =   1350
-      _ExtentX        =   2381
-      _ExtentY        =   1270
-      Alignment       =   1
-      Caption         =   "HTML / CSS:"
-      ForeColor       =   0
-      Layout          =   1
+      _extentx        =   2381
+      _extenty        =   1270
+      alignment       =   1
+      caption         =   "HTML / CSS:"
+      forecolor       =   0
+      layout          =   1
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   240
@@ -421,11 +420,11 @@ Begin VB.Form dialog_ColorSelector
       Left            =   5130
       Top             =   3180
       Width           =   1275
-      _ExtentX        =   2249
-      _ExtentY        =   423
-      Alignment       =   1
-      Caption         =   "blue:"
-      ForeColor       =   0
+      _extentx        =   2249
+      _extenty        =   423
+      alignment       =   1
+      caption         =   "blue:"
+      forecolor       =   0
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   240
@@ -433,11 +432,11 @@ Begin VB.Form dialog_ColorSelector
       Left            =   5115
       Top             =   2580
       Width           =   1290
-      _ExtentX        =   2275
-      _ExtentY        =   423
-      Alignment       =   1
-      Caption         =   "green:"
-      ForeColor       =   0
+      _extentx        =   2275
+      _extenty        =   423
+      alignment       =   1
+      caption         =   "green:"
+      forecolor       =   0
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   240
@@ -445,11 +444,11 @@ Begin VB.Form dialog_ColorSelector
       Left            =   5085
       Top             =   1980
       Width           =   1320
-      _ExtentX        =   2328
-      _ExtentY        =   423
-      Alignment       =   1
-      Caption         =   "red:"
-      ForeColor       =   0
+      _extentx        =   2328
+      _extenty        =   423
+      alignment       =   1
+      caption         =   "red:"
+      forecolor       =   0
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   240
@@ -457,11 +456,11 @@ Begin VB.Form dialog_ColorSelector
       Left            =   5040
       Top             =   1380
       Width           =   1365
-      _ExtentX        =   2408
-      _ExtentY        =   423
-      Alignment       =   1
-      Caption         =   "value:"
-      ForeColor       =   0
+      _extentx        =   2408
+      _extenty        =   423
+      alignment       =   1
+      caption         =   "value:"
+      forecolor       =   0
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   240
@@ -469,11 +468,11 @@ Begin VB.Form dialog_ColorSelector
       Left            =   5115
       Top             =   780
       Width           =   1290
-      _ExtentX        =   2275
-      _ExtentY        =   423
-      Alignment       =   1
-      Caption         =   "saturation:"
-      ForeColor       =   0
+      _extentx        =   2275
+      _extenty        =   423
+      alignment       =   1
+      caption         =   "saturation:"
+      forecolor       =   0
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   240
@@ -481,11 +480,11 @@ Begin VB.Form dialog_ColorSelector
       Left            =   5055
       Top             =   180
       Width           =   1350
-      _ExtentX        =   2381
-      _ExtentY        =   423
-      Alignment       =   1
-      Caption         =   "hue:"
-      ForeColor       =   0
+      _extentx        =   2381
+      _extenty        =   423
+      alignment       =   1
+      caption         =   "hue:"
+      forecolor       =   0
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   525
@@ -493,13 +492,13 @@ Begin VB.Form dialog_ColorSelector
       Left            =   30
       Top             =   4650
       Width           =   1125
-      _ExtentX        =   1984
-      _ExtentY        =   926
-      Alignment       =   1
-      Caption         =   "original:"
-      FontSize        =   11
-      ForeColor       =   0
-      Layout          =   1
+      _extentx        =   1984
+      _extenty        =   926
+      alignment       =   1
+      caption         =   "original:"
+      fontsize        =   11
+      forecolor       =   0
+      layout          =   1
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   405
@@ -507,13 +506,13 @@ Begin VB.Form dialog_ColorSelector
       Left            =   75
       Top             =   4170
       Width           =   1080
-      _ExtentX        =   1905
-      _ExtentY        =   714
-      Alignment       =   1
-      Caption         =   "current:"
-      FontSize        =   11
-      ForeColor       =   0
-      Layout          =   1
+      _extentx        =   1905
+      _extenty        =   714
+      alignment       =   1
+      caption         =   "current:"
+      fontsize        =   11
+      forecolor       =   0
+      layout          =   1
    End
 End
 Attribute VB_Name = "dialog_ColorSelector"
@@ -703,7 +702,7 @@ Private Sub toggleCaptureMode(ByVal toActivate As Boolean)
         mouse_event MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0
         
         'Assign a color dropper cursor to the screen
-        prevCursorHandle = SetCursor(requestCustomCursor("C_PIPETTE", 0, 0))
+        prevCursorHandle = SetCursor(RequestCustomCursor("C_PIPETTE", 0, 0))
         
         'Start subclassing relevant mouse event messages
         Set cSubclass = New cSelfSubHookCallback
@@ -768,7 +767,7 @@ Private Sub cmdCapture_Click()
 End Sub
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog(ByVal initialColor As Long, Optional ByRef callingControl As pdColorSelector = Nothing)
+Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl As pdColorSelector = Nothing)
 
     'Store a reference to the calling control (if any)
     Set parentColorControl = callingControl
@@ -781,9 +780,9 @@ Public Sub showDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     Set rightSideArrow = New pdDIB
     Set upArrow = New pdDIB
     
-    loadResourceToDIB "CLR_ARROW_L", leftSideArrow
-    loadResourceToDIB "CLR_ARROW_R", rightSideArrow
-    loadResourceToDIB "CLR_ARROW_U", upArrow
+    LoadResourceToDIB "CLR_ARROW_L", leftSideArrow
+    LoadResourceToDIB "CLR_ARROW_R", rightSideArrow
+    LoadResourceToDIB "CLR_ARROW_U", upArrow
     
     'The passed color may be an OLE constant rather than an actual RGB triplet, so convert it now.
     initialColor = ConvertSystemColor(initialColor)
@@ -1068,7 +1067,7 @@ Private Sub drawHueBox()
         HSVtoRGB hVal, 1, 1, r, g, b
         
         'Draw the color
-        Drawing.drawLineToDC hueBox.getDIBDC, 0, y, picHue.ScaleWidth, y, RGB(r, g, b)
+        Drawing.DrawLineToDC hueBox.getDIBDC, 0, y, picHue.ScaleWidth, y, RGB(r, g, b)
         
     Next y
     
@@ -1358,7 +1357,7 @@ Private Sub renderSampleDIB(ByRef dstDIB As pdDIB, ByVal dibColorType As colorCh
         End If
         
         'Draw the color
-        Drawing.drawLineToDC dstDIB.getDIBDC, x, 0, x, dstDIB.getDIBHeight, RGB(r, g, b)
+        Drawing.DrawLineToDC dstDIB.getDIBDC, x, 0, x, dstDIB.getDIBHeight, RGB(r, g, b)
         
     Next x
     

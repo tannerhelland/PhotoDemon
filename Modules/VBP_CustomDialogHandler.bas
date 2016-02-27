@@ -24,13 +24,13 @@ Attribute VB_Name = "Dialog_Handler"
 Option Explicit
 
 'Display a custom color selection dialog
-Public Function choosePDColor(ByVal oldColor As Long, ByRef newColor As Long, Optional ByRef callingControl As pdColorSelector) As VbMsgBoxResult
+Public Function ChoosePDColor(ByVal oldColor As Long, ByRef newColor As Long, Optional ByRef callingControl As pdColorSelector) As VbMsgBoxResult
 
     Load dialog_ColorSelector
     dialog_ColorSelector.showDialog oldColor, callingControl
     
-    choosePDColor = dialog_ColorSelector.DialogResult
-    If choosePDColor = vbOK Then newColor = dialog_ColorSelector.newColor
+    ChoosePDColor = dialog_ColorSelector.DialogResult
+    If ChoosePDColor = vbOK Then newColor = dialog_ColorSelector.newColor
     
     Unload dialog_ColorSelector
     Set dialog_ColorSelector = Nothing
@@ -38,14 +38,14 @@ Public Function choosePDColor(ByVal oldColor As Long, ByRef newColor As Long, Op
 End Function
 
 'Present a dialog box to confirm the closing of an unsaved image
-Public Function confirmClose(ByVal formID As Long) As VbMsgBoxResult
+Public Function ConfirmClose(ByVal formID As Long) As VbMsgBoxResult
 
     Load dialog_UnsavedChanges
     
     dialog_UnsavedChanges.formID = formID
     dialog_UnsavedChanges.showDialog FormMain
     
-    confirmClose = dialog_UnsavedChanges.DialogResult
+    ConfirmClose = dialog_UnsavedChanges.DialogResult
     
     Unload dialog_UnsavedChanges
     Set dialog_UnsavedChanges = Nothing
@@ -53,12 +53,12 @@ Public Function confirmClose(ByVal formID As Long) As VbMsgBoxResult
 End Function
 
 'Present a dialog box to ask the user how they want to deal with a multipage image.
-Public Function promptMultiImage(ByVal srcFilename As String, ByVal numOfPages As Long) As VbMsgBoxResult
+Public Function PromptMultiImage(ByVal srcFilename As String, ByVal numOfPages As Long) As VbMsgBoxResult
 
     Load dialog_MultiImage
     dialog_MultiImage.showDialog srcFilename, numOfPages
     
-    promptMultiImage = dialog_MultiImage.DialogResult
+    PromptMultiImage = dialog_MultiImage.DialogResult
     
     Unload dialog_MultiImage
     Set dialog_MultiImage = Nothing
@@ -66,13 +66,13 @@ Public Function promptMultiImage(ByVal srcFilename As String, ByVal numOfPages A
 End Function
 
 'Present a dialog box to ask the user for various JPEG export settings
-Public Function promptJPEGSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
+Public Function PromptJPEGSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
 
     Load dialog_ExportJPEG
     Set dialog_ExportJPEG.imageBeingExported = srcImage
     dialog_ExportJPEG.showDialog
 
-    promptJPEGSettings = dialog_ExportJPEG.DialogResult
+    PromptJPEGSettings = dialog_ExportJPEG.DialogResult
     
     Set dialog_ExportJPEG.imageBeingExported = Nothing
     
@@ -82,13 +82,13 @@ Public Function promptJPEGSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
 End Function
 
 'Present a dialog box to ask the user for various JPEG-2000 (JP2) export settings
-Public Function promptJP2Settings(ByRef srcImage As pdImage) As VbMsgBoxResult
+Public Function PromptJP2Settings(ByRef srcImage As pdImage) As VbMsgBoxResult
 
     Load dialog_ExportJP2
     Set dialog_ExportJP2.imageBeingExported = srcImage
     dialog_ExportJP2.showDialog
 
-    promptJP2Settings = dialog_ExportJP2.DialogResult
+    PromptJP2Settings = dialog_ExportJP2.DialogResult
     
     Set dialog_ExportJP2.imageBeingExported = Nothing
     
@@ -98,13 +98,13 @@ Public Function promptJP2Settings(ByRef srcImage As pdImage) As VbMsgBoxResult
 End Function
 
 'Present a dialog box to ask the user for various WebP export settings
-Public Function promptWebPSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
+Public Function PromptWebPSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
 
     Load dialog_ExportWebP
     Set dialog_ExportWebP.imageBeingExported = srcImage
     dialog_ExportWebP.showDialog
 
-    promptWebPSettings = dialog_ExportWebP.DialogResult
+    PromptWebPSettings = dialog_ExportWebP.DialogResult
     
     Set dialog_ExportWebP.imageBeingExported = Nothing
     
@@ -114,13 +114,13 @@ Public Function promptWebPSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
 End Function
 
 'Present a dialog box to ask the user for various JPEG XR export settings
-Public Function promptJXRSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
+Public Function PromptJXRSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
 
     Load dialog_ExportJXR
     Set dialog_ExportJXR.imageBeingExported = srcImage
     dialog_ExportJXR.showDialog
 
-    promptJXRSettings = dialog_ExportJXR.DialogResult
+    PromptJXRSettings = dialog_ExportJXR.DialogResult
     
     Set dialog_ExportJXR.imageBeingExported = Nothing
     
@@ -130,13 +130,13 @@ Public Function promptJXRSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
 End Function
 
 'Present a dialog box to ask the user for desired output color depth
-Public Function promptColorDepth(ByVal outputFormat As Long) As VbMsgBoxResult
+Public Function PromptColorDepth(ByVal outputFormat As Long) As VbMsgBoxResult
 
     Load dialog_ExportColorDepth
     dialog_ExportColorDepth.imageFormat = outputFormat
     dialog_ExportColorDepth.showDialog
 
-    promptColorDepth = dialog_ExportColorDepth.DialogResult
+    PromptColorDepth = dialog_ExportColorDepth.DialogResult
     
     Unload dialog_ExportColorDepth
     Set dialog_ExportColorDepth = Nothing
@@ -145,13 +145,13 @@ End Function
 
 'Present a dialog box to ask the user for an alpha-cutoff value.  This is used when reducing a complex (32bpp)
 ' alpha channel to a simple (8bpp) one.
-Public Function promptAlphaCutoff(ByRef srcDIB As pdDIB) As VbMsgBoxResult
+Public Function PromptAlphaCutoff(ByRef srcDIB As pdDIB) As VbMsgBoxResult
 
     Load dialog_AlphaCutoff
     dialog_AlphaCutoff.refDIB = srcDIB
     dialog_AlphaCutoff.showDialog
 
-    promptAlphaCutoff = dialog_AlphaCutoff.DialogResult
+    PromptAlphaCutoff = dialog_AlphaCutoff.DialogResult
     
     Unload dialog_AlphaCutoff
     Set dialog_AlphaCutoff = Nothing
@@ -159,12 +159,12 @@ Public Function promptAlphaCutoff(ByRef srcDIB As pdDIB) As VbMsgBoxResult
 End Function
 
 'If the user is running in the IDE, warn them of the consequences of doing so
-Public Function displayIDEWarning() As VbMsgBoxResult
+Public Function DisplayIDEWarning() As VbMsgBoxResult
 
     Load dialog_IDEWarning
     dialog_IDEWarning.showDialog
 
-    displayIDEWarning = dialog_IDEWarning.DialogResult
+    DisplayIDEWarning = dialog_IDEWarning.DialogResult
     
     Unload dialog_IDEWarning
     Set dialog_IDEWarning = Nothing
@@ -172,12 +172,12 @@ Public Function displayIDEWarning() As VbMsgBoxResult
 End Function
 
 'If an unclean shutdown + old Autosave data is found, offer to restore it for the user.
-Public Function displayAutosaveWarning(ByRef dstArray() As AutosaveXML) As VbMsgBoxResult
+Public Function DisplayAutosaveWarning(ByRef dstArray() As AutosaveXML) As VbMsgBoxResult
 
     Load dialog_AutosaveWarning
     dialog_AutosaveWarning.showDialog
     
-    displayAutosaveWarning = dialog_AutosaveWarning.DialogResult
+    DisplayAutosaveWarning = dialog_AutosaveWarning.DialogResult
     
     'It's a bit unorthodox, but we must also populate dstArray() from this function, rather than relying on the
     ' dialog itself to do it (as VB makes it difficult to pass module-level array references).
@@ -189,7 +189,7 @@ Public Function displayAutosaveWarning(ByRef dstArray() As AutosaveXML) As VbMsg
 End Function
 
 'A thin wrapper to showPDDialog, customized for generic resizing.
-Public Sub showResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
+Public Sub ShowResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
 
     'Notify the resize dialog of the intended target
     FormResize.ResizeTarget = ResizeTarget
@@ -200,7 +200,7 @@ Public Sub showResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
 End Sub
 
 'A thin wrapper to showPDDialog, customized for content-aware resizing.
-Public Sub showContentAwareResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
+Public Sub ShowContentAwareResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
 
     'Notify the resize dialog of the intended target
     FormResizeContentAware.ResizeTarget = ResizeTarget
@@ -211,7 +211,7 @@ Public Sub showContentAwareResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
 End Sub
 
 'A thin wrapper to showPDDialog, customized for arbitrary rotation.
-Public Sub showRotateDialog(ByVal RotateTarget As PD_ACTION_TARGET)
+Public Sub ShowRotateDialog(ByVal RotateTarget As PD_ACTION_TARGET)
 
     'Notify the resize dialog of the intended target
     FormRotate.RotateTarget = RotateTarget
@@ -222,7 +222,7 @@ Public Sub showRotateDialog(ByVal RotateTarget As PD_ACTION_TARGET)
 End Sub
 
 'A thin wrapper to showPDDialog, customized for arbitrary rotation.
-Public Sub showStraightenDialog(ByVal StraightenTarget As PD_ACTION_TARGET)
+Public Sub ShowStraightenDialog(ByVal StraightenTarget As PD_ACTION_TARGET)
 
     'Notify the resize dialog of the intended target
     FormStraighten.StraightenTarget = StraightenTarget
@@ -234,7 +234,7 @@ End Sub
 
 'Present a dialog box to ask the user how they want to tone map an incoming high bit-depth image.  Unlike other dialog
 ' requests, this one returns a pdParamString.  This is necessary because the return may have multiple parameters.
-Public Function promptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParamString As String) As VbMsgBoxResult
+Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParamString As String) As VbMsgBoxResult
     
     'Before displaying the dialog, see if the user has requested that we automatically display previously specified settings
     If g_UserPreferences.GetPref_Boolean("Loading", "Tone Mapping Prompt", True) Then
@@ -247,9 +247,9 @@ Public Function promptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
         dialog_ToneMapping.showDialog
         
         'This function will return the actual dialog result (OK vs Cancel)...
-        promptToneMapSettings = dialog_ToneMapping.DialogResult
+        PromptToneMapSettings = dialog_ToneMapping.DialogResult
         
-        If promptToneMapSettings = vbOK Then
+        If PromptToneMapSettings = vbOK Then
         
             '...but we also need to return a copy of the parameter string, which FreeImage will use to actually render
             ' any requested tone-mapping operations.
@@ -281,19 +281,19 @@ Public Function promptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
         End If
         
         'Return "OK"
-        promptToneMapSettings = vbOK
+        PromptToneMapSettings = vbOK
     
     End If
 
 End Function
 
 'Present an "add new preset" dialog box to the user.
-Public Function promptNewPreset(ByRef srcPresetManager As pdToolPreset, ByRef parentForm As Form, ByRef dstPresetName As String) As VbMsgBoxResult
+Public Function PromptNewPreset(ByRef srcPresetManager As pdToolPreset, ByRef parentForm As Form, ByRef dstPresetName As String) As VbMsgBoxResult
 
     Load dialog_AddPreset
     dialog_AddPreset.showDialog srcPresetManager, parentForm
 
-    promptNewPreset = dialog_AddPreset.DialogResult
+    PromptNewPreset = dialog_AddPreset.DialogResult
     
     dstPresetName = dialog_AddPreset.newPresetName
     
@@ -316,7 +316,7 @@ End Function
 ' retrieve the previous choice and silently return it.
 '
 'Returns a VbMsgBoxResult constant, with YES, NO, or CANCEL specified.
-Public Function promptGenericYesNoDialog(ByVal questionID As String, ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal rememberCheckBoxText As String, ByVal dialogTitleText As String, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False) As VbMsgBoxResult
+Public Function PromptGenericYesNoDialog(ByVal questionID As String, ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal rememberCheckBoxText As String, ByVal dialogTitleText As String, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False) As VbMsgBoxResult
 
     'Convert the questionID to its XML-safe equivalent
     Dim xmlEngine As pdXML
@@ -327,7 +327,7 @@ Public Function promptGenericYesNoDialog(ByVal questionID As String, ByVal quest
     If g_UserPreferences.doesValueExist("Dialogs", questionID) Then
         
         'The user has already answered this question and saved their answer.  Retrieve the previous answer and exit.
-        promptGenericYesNoDialog = g_UserPreferences.GetPref_Long("Dialogs", questionID, defaultAnswer)
+        PromptGenericYesNoDialog = g_UserPreferences.GetPref_Long("Dialogs", questionID, defaultAnswer)
         
     'The user has not saved a previous answer.  Display the full dialog.
     Else
@@ -335,11 +335,11 @@ Public Function promptGenericYesNoDialog(ByVal questionID As String, ByVal quest
         dialog_GenericMemory.showDialog questionText, yesButtonText, noButtonText, cancelButtonText, rememberCheckBoxText, dialogTitleText, icon, defaultAnswer, defaultRemember
         
         'Retrieve the user's answer
-        promptGenericYesNoDialog = dialog_GenericMemory.DialogResult
+        PromptGenericYesNoDialog = dialog_GenericMemory.DialogResult
         
         'If the user wants us to permanently remember this action, save their preference now.
         If dialog_GenericMemory.getRememberAnswerState Then
-            g_UserPreferences.WritePreference "Dialogs", questionID, Trim$(Str(promptGenericYesNoDialog))
+            g_UserPreferences.WritePreference "Dialogs", questionID, Trim$(Str(PromptGenericYesNoDialog))
         End If
         
         'Release the dialog form
@@ -353,7 +353,7 @@ End Function
 'Identical to promptGenericYesNoDialog(), above, with the caveat that only ONE possible outcome can be remembered.  This is relevant for
 ' Yes/No/Cancel situations where No and Cancel prevent a workflow from proceeding.  If we allowed those values to be stored, the user
 ' could never proceed with an operation in the future!
-Public Function promptGenericYesNoDialog_SingleOutcome(ByVal questionID As String, ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal rememberCheckBoxText As String, ByVal dialogTitleText As String, Optional ByVal choiceAllowedToRemember As VbMsgBoxResult = vbYes, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False) As VbMsgBoxResult
+Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As String, ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal rememberCheckBoxText As String, ByVal dialogTitleText As String, Optional ByVal choiceAllowedToRemember As VbMsgBoxResult = vbYes, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False) As VbMsgBoxResult
 
     'Convert the questionID to its XML-safe equivalent
     Dim xmlEngine As pdXML
@@ -364,7 +364,7 @@ Public Function promptGenericYesNoDialog_SingleOutcome(ByVal questionID As Strin
     If g_UserPreferences.doesValueExist("Dialogs", questionID) Then
         
         'The user has already answered this question and saved their answer.  Retrieve the previous answer and exit.
-        promptGenericYesNoDialog_SingleOutcome = g_UserPreferences.GetPref_Long("Dialogs", questionID, defaultAnswer)
+        PromptGenericYesNoDialog_SingleOutcome = g_UserPreferences.GetPref_Long("Dialogs", questionID, defaultAnswer)
         
     'The user has not saved a previous answer.  Display the full dialog.
     Else
@@ -372,7 +372,7 @@ Public Function promptGenericYesNoDialog_SingleOutcome(ByVal questionID As Strin
         dialog_GenericMemory.showDialog questionText, yesButtonText, noButtonText, cancelButtonText, rememberCheckBoxText, dialogTitleText, icon, defaultAnswer, defaultRemember
         
         'Retrieve the user's answer
-        promptGenericYesNoDialog_SingleOutcome = dialog_GenericMemory.DialogResult
+        PromptGenericYesNoDialog_SingleOutcome = dialog_GenericMemory.DialogResult
         
         'If the user wants us to permanently remember this action, save their preference now.
         If dialog_GenericMemory.getRememberAnswerState Then
@@ -394,24 +394,24 @@ End Function
 '             (This reference will be used to provide live updates as the user plays with the brush dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function showBrushDialog(ByRef newBrush As String, Optional ByVal initialBrush As String = "", Optional ByRef callingControl As pdBrushSelector) As Boolean
+Public Function ShowBrushDialog(ByRef newBrush As String, Optional ByVal initialBrush As String = "", Optional ByRef callingControl As pdBrushSelector) As Boolean
     
-    If choosePDBrush(initialBrush, newBrush, callingControl) = vbOK Then
-        showBrushDialog = True
+    If ChoosePDBrush(initialBrush, newBrush, callingControl) = vbOK Then
+        ShowBrushDialog = True
     Else
-        showBrushDialog = False
+        ShowBrushDialog = False
     End If
     
 End Function
 
 'Display a custom brush selection dialog
-Public Function choosePDBrush(ByRef oldBrush As String, ByRef newBrush As String, Optional ByRef callingControl As pdBrushSelector) As VbMsgBoxResult
+Public Function ChoosePDBrush(ByRef oldBrush As String, ByRef newBrush As String, Optional ByRef callingControl As pdBrushSelector) As VbMsgBoxResult
 
     Load dialog_FillSettings
     dialog_FillSettings.showDialog oldBrush, callingControl
     
-    choosePDBrush = dialog_FillSettings.DialogResult
-    If choosePDBrush = vbOK Then newBrush = dialog_FillSettings.newBrush
+    ChoosePDBrush = dialog_FillSettings.DialogResult
+    If ChoosePDBrush = vbOK Then newBrush = dialog_FillSettings.newBrush
     
     Unload dialog_FillSettings
     Set dialog_FillSettings = Nothing
@@ -425,24 +425,24 @@ End Function
 '             (This reference will be used to provide live updates as the user plays with the pen dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function showPenDialog(ByRef newPen As String, Optional ByVal initialPen As String = "", Optional ByRef callingControl As pdPenSelector) As Boolean
+Public Function ShowPenDialog(ByRef newPen As String, Optional ByVal initialPen As String = "", Optional ByRef callingControl As pdPenSelector) As Boolean
     
-    If choosePDPen(initialPen, newPen, callingControl) = vbOK Then
-        showPenDialog = True
+    If ChoosePDPen(initialPen, newPen, callingControl) = vbOK Then
+        ShowPenDialog = True
     Else
-        showPenDialog = False
+        ShowPenDialog = False
     End If
     
 End Function
 
 'Display a custom pen selection dialog
-Public Function choosePDPen(ByRef oldPen As String, ByRef newPen As String, Optional ByRef callingControl As pdPenSelector) As VbMsgBoxResult
+Public Function ChoosePDPen(ByRef oldPen As String, ByRef newPen As String, Optional ByRef callingControl As pdPenSelector) As VbMsgBoxResult
 
     Load dialog_OutlineSettings
     dialog_OutlineSettings.showDialog oldPen, callingControl
     
-    choosePDPen = dialog_OutlineSettings.DialogResult
-    If choosePDPen = vbOK Then newPen = dialog_OutlineSettings.newPen
+    ChoosePDPen = dialog_OutlineSettings.DialogResult
+    If ChoosePDPen = vbOK Then newPen = dialog_OutlineSettings.newPen
     
     Unload dialog_OutlineSettings
     Set dialog_OutlineSettings = Nothing
@@ -456,32 +456,28 @@ End Function
 '             (This reference will be used to provide live updates as the user plays with the dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function showGradientDialog(ByRef newGradient As String, Optional ByVal initialGradient As String = "", Optional ByRef callingControl As pdGradientSelector) As Boolean
+Public Function ShowGradientDialog(ByRef newGradient As String, Optional ByVal initialGradient As String = "", Optional ByRef callingControl As pdGradientSelector) As Boolean
     
-    If choosePDGradient(initialGradient, newGradient, callingControl) = vbOK Then
-        showGradientDialog = True
+    If ChoosePDGradient(initialGradient, newGradient, callingControl) = vbOK Then
+        ShowGradientDialog = True
     Else
-        showGradientDialog = False
+        ShowGradientDialog = False
     End If
     
 End Function
 
 'Display a custom gradient selection dialog
 ' RETURNS: MsgBoxResult from the dialog itself.  For easier interactions, I recommend using the showGradientDialog function, above.
-Public Function choosePDGradient(ByRef oldGradient As String, ByRef newGradient As String, Optional ByRef callingControl As pdGradientSelector) As VbMsgBoxResult
+Public Function ChoosePDGradient(ByRef oldGradient As String, ByRef newGradient As String, Optional ByRef callingControl As pdGradientSelector) As VbMsgBoxResult
 
     Load dialog_GradientEditor
     dialog_GradientEditor.showDialog oldGradient, callingControl
     
-    choosePDGradient = dialog_GradientEditor.DialogResult
-    If choosePDGradient = vbOK Then newGradient = dialog_GradientEditor.newGradient
+    ChoosePDGradient = dialog_GradientEditor.DialogResult
+    If ChoosePDGradient = vbOK Then newGradient = dialog_GradientEditor.newGradient
     
     Unload dialog_GradientEditor
     Set dialog_GradientEditor = Nothing
 
 End Function
-
-
-
-
 
