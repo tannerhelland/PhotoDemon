@@ -102,16 +102,15 @@ Private Const NUM_ITEMS_VISIBLE As Long = 16
 'The rectangle where the combo portion of the control is actually rendered
 Private m_ComboRect As RECTF, m_MouseInComboRect As Boolean
 
-'Unlike a regular list - which needs to redraw itself during all kinds of events, like adding items, scrolling, etc,
-' the front-facing portion of the dropdown only needs to redraw when the ListIndex changes.  To simplify this process,
-' we track the .ListIndex at last redraw, and only redraw when it changes.
-Private m_ListIndexAtLastRedraw As Long
-
 'When the control receives focus via keyboard (e.g. NOT by mouse events), we draw a focus rect to help orient the user.
 Private m_FocusRectActive As Boolean
 
 'When the popup listbox is visible, this is set to TRUE, and its
 Private m_PopUpVisible As Boolean
+
+'Current background color; (background color is used for the 1px border around the button, and it should always match
+' our parent control).
+Private m_UseCustomBackgroundColor As Boolean, m_BackgroundColor As OLE_COLOR
 
 'List box support class.  Handles data storage and coordinate math for rendering, but for this control, we primarily
 ' use the data storage aspect.  (Note that when the combo box is clicked and the corresponding listbox window is raised,
@@ -143,6 +142,30 @@ End Enum
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
+
+'BackgroundColor and BackColor are different properties.  BackgroundColor should always match the color of the parent control,
+' while BackColor controls the actual button fill (and can be anything you want).
+Public Property Get BackgroundColor() As OLE_COLOR
+    BackgroundColor = m_BackgroundColor
+End Property
+
+Public Property Let BackgroundColor(ByVal newColor As OLE_COLOR)
+    If m_BackgroundColor <> newColor Then
+        m_BackgroundColor = newColor
+        RedrawBackBuffer
+    End If
+End Property
+
+Public Property Get UseCustomBackgroundColor() As Boolean
+    UseCustomBackgroundColor = m_UseCustomBackgroundColor
+End Property
+
+Public Property Let UseCustomBackgroundColor(ByVal newSetting As Boolean)
+    If newSetting <> m_UseCustomBackgroundColor Then
+        m_UseCustomBackgroundColor = newSetting
+        RedrawBackBuffer
+    End If
+End Property
 
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
@@ -404,9 +427,6 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
 End Sub
 
 Private Sub UserControl_Initialize()
-
-    'To ensure at least one redraw, set the .ListIndex tracker to a value that's impossible to arrive at naturally
-    m_ListIndexAtLastRedraw = -100
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
@@ -432,6 +452,8 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Private Sub UserControl_InitProperties()
+    BackgroundColor = vbWhite
+    UseCustomBackgroundColor = False
     Caption = ""
     Enabled = True
     FontSize = 10
@@ -445,6 +467,8 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
+        BackgroundColor = .ReadProperty("BackgroundColor", vbWhite)
+        UseCustomBackgroundColor = .ReadProperty("UseCustomBackgroundColor", False)
         Caption = .ReadProperty("Caption", "")
         Enabled = .ReadProperty("Enabled", True)
         FontSize = .ReadProperty("FontSize", 10)
@@ -458,6 +482,8 @@ End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
+        .WriteProperty "BackgroundColor", m_BackgroundColor, vbWhite
+        .WriteProperty "UseCustomBackgroundColor", m_UseCustomBackgroundColor, False
         .WriteProperty "Caption", Me.Caption, ""
         .WriteProperty "Enabled", Me.Enabled, True
         .WriteProperty "FontSize", Me.FontSize, 10
@@ -706,9 +732,19 @@ End Sub
 'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
 Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False)
     
+    'We can improve shutdown performance by ignoring redraw requests when the program is going down
+    If g_ProgramShuttingDown Then
+        If (g_Themer Is Nothing) Then Exit Sub
+    End If
+    
+    'Figure out which background color to use.  This is normally determined by theme, but individual buttons also allow
+    ' a custom .BackColor property (important if this instance lies atop a non-standard background, like a command bar).
+    Dim BackgroundColor As Long
+    If m_UseCustomBackgroundColor Then BackgroundColor = m_BackgroundColor Else BackgroundColor = m_Colors.RetrieveColor(PDDD_Background, Me.Enabled)
+    
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long, bWidth As Long, bHeight As Long
-    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDDD_Background, Me.Enabled))
+    bufferDC = ucSupport.GetBackBufferDC(True, BackgroundColor)
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
@@ -776,8 +812,6 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         End If
         
     End If
-    
-    m_ListIndexAtLastRedraw = Me.ListIndex
     
     'Paint the final result to the screen, as relevant
     ucSupport.RequestRepaint redrawImmediately

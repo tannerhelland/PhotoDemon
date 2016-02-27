@@ -347,8 +347,8 @@ Private Sub UpdateControlLayout()
         With m_InteractiveRect
             .Left = FixDPI(8)
             .Top = ucSupport.GetCaptionBottom + 2
-            .Width = (bWidth - 1) - .Left
-            .Height = (bHeight - 1) - .Top
+            .Width = bWidth - .Left
+            .Height = bHeight - .Top
         End With
         
     'If there's no caption, allow the clickable portion to fill the entire control
@@ -357,8 +357,8 @@ Private Sub UpdateControlLayout()
         With m_InteractiveRect
             .Left = 0
             .Top = 0
-            .Width = (bWidth - 1) - .Left
-            .Height = (bHeight - 1) - .Top
+            .Width = bWidth - .Left
+            .Height = bHeight - .Top
         End With
         
     End If
