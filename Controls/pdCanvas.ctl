@@ -108,6 +108,7 @@ Begin VB.UserControl pdCanvas
          Width           =   660
          _ExtentX        =   1164
          _ExtentY        =   635
+         UseCustomBackgroundColor=   -1  'True
          FontSize        =   9
       End
       Begin PhotoDemon.pdDropDown cmbZoom 
@@ -118,6 +119,7 @@ Begin VB.UserControl pdCanvas
          Width           =   1290
          _ExtentX        =   2275
          _ExtentY        =   635
+         UseCustomBackgroundColor=   -1  'True
          FontSize        =   9
       End
       Begin PhotoDemon.pdLabel lblImgSize 
@@ -329,6 +331,23 @@ Private m_NetworkAccessActive As Boolean
 'External functions can tell us to enable or disable the status bar for various reasons (e.g. no images are loaded).  We track the
 ' last requested state internally, in case we need to internally refresh the status bar for some reason.
 Private m_LastEnabledState As Boolean
+
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDCANVAS_COLOR_LIST
+    [_First] = 0
+    PDC_Background = 0
+    PDC_StatusBar = 1
+    [_Last] = 1
+    [_Count] = 2
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
 
 'External functions can call this to set the current network state (which in turn, draws a relevant icon to the status bar)
 Public Sub SetNetworkState(ByVal newNetworkState As Boolean)
@@ -1759,7 +1778,13 @@ Public Sub CanvasView_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByV
 End Sub
 
 Private Sub UserControl_Initialize()
-
+    
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDCANVAS_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDCanvas", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
+    
     If g_IsProgramRunning Then
         
         'Allow the control to generate its own redraw requests
@@ -2299,6 +2324,13 @@ Public Sub RelayViewportChanges()
     toolbar_Layers.NotifyViewportChange
 End Sub
 
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    m_Colors.LoadThemeColor PDC_Background, "Background", IDE_GRAY
+    m_Colors.LoadThemeColor PDC_StatusBar, "StatusBar", IDE_GRAY
+End Sub
+
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
 ' and/or retranslating all button captions against the current language.
 Public Sub UpdateAgainstCurrentTheme()
@@ -2306,6 +2338,7 @@ Public Sub UpdateAgainstCurrentTheme()
     'Suspend redraws until all theme updates are complete
     Me.SetRedrawSuspension True
     
+    UpdateColorList
     CanvasView.UpdateAgainstCurrentTheme
     
     'Rebuild all drop-down boxes (so that translations can be applied)
@@ -2348,6 +2381,24 @@ Public Sub UpdateAgainstCurrentTheme()
     
     hScroll.UpdateAgainstCurrentTheme
     vScroll.UpdateAgainstCurrentTheme
+    
+    'Any controls that utilize a custom background color must now be updated to match *our* background color.
+    Dim sbBackColor As Long
+    sbBackColor = m_Colors.RetrieveColor(PDC_StatusBar, Me.Enabled)
+    picStatusBar.BackColor = sbBackColor
+    
+    lblCoordinates.BackColor = sbBackColor
+    lblImgSize.BackColor = sbBackColor
+    lblMessages.BackColor = sbBackColor
+    
+    cmdZoomFit.BackColor = sbBackColor
+    cmdZoomIn.BackColor = sbBackColor
+    cmdZoomOut.BackColor = sbBackColor
+    cmdImgSize.BackColor = sbBackColor
+    cmdCenter.BackColor = sbBackColor
+    
+    cmbZoom.BackgroundColor = sbBackColor
+    cmbSizeUnit.BackgroundColor = sbBackColor
     
     'Fix combo box positioning (important on high-DPI displays, or if the active font has changed)
     cmbZoom.Top = (picStatusBar.ScaleHeight - cmbZoom.Height) \ 2

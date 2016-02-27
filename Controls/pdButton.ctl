@@ -110,8 +110,8 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
-'BackColor is an important property for this control, as it may sit on other controls whose backcolor is not guaranteed in advance.
-' So we can't rely on theming alone to determine this value.
+'BackgroundColor and BackColor are different properties.  BackgroundColor should always match the color of the parent control,
+' while BackColor controls the actual button fill (and can be anything you want).
 Public Property Get BackgroundColor() As OLE_COLOR
     BackgroundColor = m_BackgroundColor
 End Property
@@ -148,7 +148,7 @@ Public Property Let UseCustomBackColor(ByVal newSetting As Boolean)
 End Property
 
 Public Property Get UseCustomBackgroundColor() As Boolean
-    UseCustomBackColor = m_UseCustomBackColor
+    UseCustomBackgroundColor = m_UseCustomBackgroundColor
 End Property
 
 Public Property Let UseCustomBackgroundColor(ByVal newSetting As Boolean)
@@ -583,8 +583,8 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    'Figure out which back color to use.  This is normally determined by theme, but individual buttons also allow a custom
-    ' .BackColor property.
+    'Figure out which background color to use.  This is normally determined by theme, but individual buttons also allow
+    ' a custom .BackColor property (important if this instance lies atop a non-standard background, like a command bar).
     Dim targetColor As Long
     If m_UseCustomBackgroundColor Then
         targetColor = m_BackgroundColor

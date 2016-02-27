@@ -30,6 +30,7 @@
 			<GrayDisabled>#b1bac2</GrayDisabled>
 			<GrayDark>#5b5b5b</GrayDark>
 			<GrayLight>#bababa</GrayLight>
+			<GrayUltralight>#ebebeb</GrayUltralight>
 			<GrayNeutral>#7f7f7f</GrayNeutral>
 			<TextDefault>#404040</TextDefault>
 			<TextDark>#212121</TextDark>
@@ -123,6 +124,7 @@
 			
 			<PDCanvas>
 				<Background>CanvasColor</Background>
+				<StatusBar>GrayUltralight</StatusBar>
 			</PDCanvas>
 			
 			<PDCheckBox>
