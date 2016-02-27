@@ -101,13 +101,13 @@ Begin VB.UserControl pdCanvas
       Top             =   7350
       Width           =   13290
       Begin PhotoDemon.pdDropDown cmbSizeUnit 
-         Height          =   315
+         Height          =   360
          Left            =   3630
          TabIndex        =   7
          Top             =   15
          Width           =   660
          _ExtentX        =   1164
-         _ExtentY        =   556
+         _ExtentY        =   635
          FontSize        =   9
       End
       Begin PhotoDemon.pdDropDown cmbZoom 
@@ -522,7 +522,7 @@ Public Sub DisplayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, 
     End If
     
     'Align the right-hand line control with the newly captioned label
-    lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.PixelWidth + FixDPI(10)
+    lineStatusBar(2).x1 = lblCoordinates.GetLeft + lblCoordinates.GetWidth + FixDPI(10)
     lineStatusBar(2).x2 = lineStatusBar(2).x1
     
     'Make the message area shrink to match the new coordinate display size
@@ -1957,42 +1957,42 @@ Public Sub DrawStatusBarIcons(ByVal enabledState As Boolean)
     'Some elements must always be reflowed dynamically
     
     'The zoom drop-down can now change width if a translation is active.  Make sure the zoom-in button is positioned accordingly.
-    cmdZoomIn.Left = cmbZoom.Left + cmbZoom.Width + FixDPI(3)
+    cmdZoomIn.SetLeft cmbZoom.GetLeft + cmbZoom.GetWidth + FixDPI(3)
     
     'Move the left-most line into position.  (This must be done dynamically, or it will be mispositioned
     ' on high-DPI displays)
     lineStatusBar(0).Visible = True
-    lineStatusBar(0).x1 = (cmdZoomIn.Left + cmdZoomIn.Width) + FixDPI(6)
+    lineStatusBar(0).x1 = (cmdZoomIn.GetLeft + cmdZoomIn.GetWidth) + FixDPI(6)
     lineStatusBar(0).x2 = lineStatusBar(0).x1
     
     'We will only draw subsequent interface elements if at least one image is currently loaded.
     If enabledState Then
         
         'Start with the "image size" button
-        cmdImgSize.Left = lineStatusBar(0).x1 + FixDPI(4)
+        cmdImgSize.SetLeft lineStatusBar(0).x1 + FixDPI(4)
         If (Not cmdImgSize.Visible) Then cmdImgSize.Visible = True
         
         'After the "image size" icon comes the actual image size label.  Its position is determined by the image resize button width,
         ' plus a 4px buffer on either size (contingent on DPI)
-        lblImgSize.Left = cmdImgSize.Left + cmdImgSize.Width + FixDPI(4)
+        lblImgSize.SetLeft cmdImgSize.GetLeft + cmdImgSize.GetWidth + FixDPI(4)
         
         'The image size label is autosized.  Move the "size unit" combo box next to it, and the next vertical line
         ' separator just past it.
         If (Not cmbSizeUnit.Visible) Then cmbSizeUnit.Visible = True
-        cmbSizeUnit.Left = lblImgSize.Left + lblImgSize.PixelWidth + FixDPI(10)
+        cmbSizeUnit.SetLeft lblImgSize.GetLeft + lblImgSize.GetWidth + FixDPI(10)
         
         If (Not lineStatusBar(1).Visible) Then lineStatusBar(1).Visible = True
-        lineStatusBar(1).x1 = cmbSizeUnit.Left + cmbSizeUnit.Width + FixDPI(10)
+        lineStatusBar(1).x1 = cmbSizeUnit.GetLeft + cmbSizeUnit.GetWidth + FixDPI(10)
         lineStatusBar(1).x2 = lineStatusBar(1).x1
         
         'After the "image size" panel and separator comes mouse coordinates.  The basic steps from above are repeated.
         If Not sbIconCoords Is Nothing Then
             sbIconCoords.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(1).x1 + FixDPI(8), FixDPI(4), FixDPI(sbIconCoords.getDIBWidth), FixDPI(sbIconCoords.getDIBHeight)
         End If
-        lblCoordinates.Left = lineStatusBar(1).x1 + FixDPI(14) + FixDPI(16)
+        lblCoordinates.SetLeft lineStatusBar(1).x1 + FixDPI(14) + FixDPI(16)
         
         If (Not lineStatusBar(2).Visible) Then lineStatusBar(2).Visible = True
-        lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.PixelWidth + FixDPI(10)
+        lineStatusBar(2).x1 = lblCoordinates.GetLeft + lblCoordinates.GetWidth + FixDPI(10)
         lineStatusBar(2).x2 = lineStatusBar(2).x1
         
         'Render the network access icon as necessary

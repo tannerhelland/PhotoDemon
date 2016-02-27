@@ -2086,7 +2086,7 @@ Private Sub LoadAllPreferences()
         
         'START Recent file max count
             lblRecentFileCount.Caption = g_Language.TranslateMessage("maximum number of recent file entries: ")
-            tudRecentFiles.Left = lblRecentFileCount.Left + lblRecentFileCount.PixelWidth + FixDPI(6)
+            tudRecentFiles.SetLeft lblRecentFileCount.GetLeft + lblRecentFileCount.GetWidth + FixDPI(6)
             tudRecentFiles.Value = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
         'END
         
