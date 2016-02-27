@@ -311,10 +311,11 @@ Friend Sub CloneExternalListSupport(ByRef srcListSupport As pdListSupport, Optio
         
         Dim newScrollValue As Single
         newScrollValue = (m_Items(m_ListIndex).itemTop - desiredListIndexTop)
+        
         If newScrollValue < 0 Then newScrollValue = 0
         If newScrollValue > m_ScrollMax Then newScrollValue = m_ScrollMax
         Me.ScrollValue = newScrollValue
-    
+        
     Else
         Me.ScrollValue = 0
     End If
@@ -359,6 +360,16 @@ Public Property Let DefaultItemHeight(ByVal newHeight As Single)
         
     End If
 End Property
+
+Public Function GetSeparatorHeight() As Single
+    GetSeparatorHeight = (m_DefaultHeight * SEPARATOR_LINE_HEIGHT)
+End Function
+
+Public Function DoesItemHaveSeparator(ByVal itemIndex As Long) As Boolean
+    If (itemIndex >= 0) And (itemIndex < m_NumOfItems) Then
+        DoesItemHaveSeparator = m_Items(itemIndex).isSeparator
+    End If
+End Function
 
 Public Function IsMouseInsideListBox() As Boolean
     IsMouseInsideListBox = m_MouseInsideList

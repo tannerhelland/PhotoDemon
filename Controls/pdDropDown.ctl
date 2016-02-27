@@ -95,6 +95,10 @@ Private m_FontSize As Single
 Private Const COMBO_PADDING_HORIZONTAL As Single = 4#
 Private Const COMBO_PADDING_VERTICAL As Single = 2#
 
+'Change this value to control the maximum number of visible items in the dropped box.  (Note that it's technically
+' this value + 1, with the +1 representing the currently selected item.)
+Private Const NUM_ITEMS_VISIBLE As Long = 16
+
 'The rectangle where the combo portion of the control is actually rendered
 Private m_ComboRect As RECTF, m_MouseInComboRect As Boolean
 
@@ -240,9 +244,9 @@ Public Sub SetWidthAutomatically()
         newWidth = FixDPI(100)
     End If
     
-    'The drop-down arrow's size is fixed
-    newWidth = newWidth + FixDPI(24)
-    
+    'The drop-down arrow's size is fixed, and we also add in the width of the scrollbar (which may be relevant for
+    ' some lists)
+    newWidth = newWidth + FixDPI(36)
     ucSupport.RequestNewSize newWidth, , True
     
 End Sub
@@ -327,7 +331,7 @@ End Sub
 
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     UpdateMousePosition x, y
-    If m_MouseInComboRect And (Me.ListCount > 0) Then RaiseListBox
+    If m_MouseInComboRect And (Me.ListCount > 1) Then RaiseListBox
 End Sub
 
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
@@ -488,16 +492,15 @@ Private Sub RaiseListBox()
     
     topOfListIndex = popupRect.Top
     
-    Const NUM_ITEMS_VISIBLE As Long = 10
-    
     'Next, we want to determine how many preceding and trailing entries are in the list.  (We keep a running tally of how
     ' many items theoretically appear in the current list, because we want to make sure that at least a certain amount are
     ' visible in the dropdown, if possible.)  These are purposefully declared as singles, as you'll see in subsequent steps.
     Dim amtPreceding As Single, amtTrailing As Single
-    If Me.ListIndex >= 0 Then amtPreceding = Me.ListIndex Else amtPreceding = 0
-    If (Me.ListIndex >= Me.ListCount) Then
+    If Me.ListIndex > 0 Then amtPreceding = Me.ListIndex Else amtPreceding = 0
+    
+    If Me.ListIndex >= (Me.ListCount - 1) Then
         amtTrailing = 0
-    ElseIf Me.ListIndex <= 0 Then
+    ElseIf Me.ListIndex < 0 Then
         amtTrailing = Me.ListCount - 1
     Else
         amtTrailing = (Me.ListCount - 1) - Me.ListIndex
@@ -537,15 +540,30 @@ Private Sub RaiseListBox()
     End If
     
     'Convert the preceding and trailing list item counts into pixel measurements, and add them to our target rect.
-    Dim sizeChange As Single
+    Dim sizeChange As Single, i As Long
     If amtPreceding > 0 Then
         sizeChange = amtPreceding * listSupport.DefaultItemHeight
+        
+        'If separators are active, add any separator sizes to our total
+        If listSupport.GetInternalSizeMode = PDLH_SEPARATORS Then
+            For i = (Me.ListIndex - amtPreceding) To (Me.ListIndex - 1)
+                If listSupport.DoesItemHaveSeparator(i) Then sizeChange = sizeChange + listSupport.GetSeparatorHeight
+            Next i
+        End If
+        
         popupRect.Top = popupRect.Top - sizeChange
         popupRect.Height = popupRect.Height + sizeChange
     End If
     
     If amtTrailing > 0 Then
         sizeChange = amtTrailing * listSupport.DefaultItemHeight
+        
+        If listSupport.GetInternalSizeMode = PDLH_SEPARATORS Then
+            For i = Me.ListIndex To (Me.ListIndex + amtTrailing)
+                If listSupport.DoesItemHaveSeparator(i) Then sizeChange = sizeChange + listSupport.GetSeparatorHeight
+            Next i
+        End If
+        
         popupRect.Height = popupRect.Height + sizeChange
     End If
     
@@ -555,12 +573,19 @@ Private Sub RaiseListBox()
         sizeChange = g_Displays.GetDesktopTop - popupRect.Top
         popupRect.Top = g_Displays.GetDesktopTop
         topOfListIndex = topOfListIndex + sizeChange
-    ElseIf popupRect.Top + popupRect.Height > g_Displays.GetDesktopTop + g_Displays.GetDesktopHeight Then
-        sizeChange = (popupRect.Top + popupRect.Height) - (g_Displays.GetDesktopTop + g_Displays.GetDesktopHeight)
-        popupRect.Top = popupRect.Top - sizeChange
-        topOfListIndex = topOfListIndex - sizeChange
+    Else
+        
+        Dim estimatedDesktopBottom As Long
+        estimatedDesktopBottom = (g_Displays.GetDesktopTop + g_Displays.GetDesktopHeight) - g_Displays.GetTaskbarHeight
+        
+        If popupRect.Top + popupRect.Height > estimatedDesktopBottom Then
+            sizeChange = (popupRect.Top + popupRect.Height) - estimatedDesktopBottom
+            popupRect.Top = popupRect.Top - sizeChange
+            topOfListIndex = topOfListIndex - sizeChange
+        End If
+        
     End If
-    
+
     If popupRect.Left < g_Displays.GetDesktopLeft Then
         sizeChange = g_Displays.GetDesktopLeft - popupRect.Left
         popupRect.Left = g_Displays.GetDesktopLeft
@@ -573,16 +598,21 @@ Private Sub RaiseListBox()
     ' convert the position of the active .ListIndex item from screen coords into relative coords.
     topOfListIndex = topOfListIndex - popupRect.Top
     
-    'With the list box's style successfully displayed, we can now initialize it with the contents of our list
-    lbPrimary.CloneExternalListSupport listSupport, topOfListIndex, PDLM_LB_INSIDE_CB
-    lbPrimary.UpdateAgainstCurrentTheme True
-    
     'The list box is now ready to go.  Before displaying it, we want to convert the listbox to a floating toolbox window
     ' and a bare child of the desktop (hWnd = 0).  This allows the listbox to be positioned outside our boundary rect.
     SetParent lbPrimary.hWnd, 0&
     SetWindowLong lbPrimary.hWnd, GWL_EXSTYLE, GetWindowLong(lbPrimary.hWnd, GWL_EXSTYLE) Or WS_EX_TOOLWINDOW
     
-    'Move the listbox into position and display it
+    'Move the listbox into position *but do not display it*
+    With popupRect
+        SetWindowPos lbPrimary.hWnd, 0&, .Left, .Top, .Width, .Height, SWP_NOACTIVATE 'SWP_SHOWWINDOW
+    End With
+    
+    'Clone our list's contents; note that we cannot do this until *after* the list size has been established, as the
+    ' scroll bar's maximum value is contingent on the available pixel size of the dropdown.
+    lbPrimary.CloneExternalListSupport listSupport, topOfListIndex, PDLM_LB_INSIDE_CB
+    
+    'Now we can show the window
     With popupRect
         SetWindowPos lbPrimary.hWnd, 0&, .Left, .Top, .Width, .Height, SWP_SHOWWINDOW
     End With
@@ -770,6 +800,7 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     UpdateColorList
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+    lbPrimary.UpdateAgainstCurrentTheme
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.

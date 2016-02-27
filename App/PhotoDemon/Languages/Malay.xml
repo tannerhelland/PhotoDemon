@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.140</langversion>
+<langversion>6.7.141</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -3622,12 +3622,6 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- END text for pdCommandBarMini.ctl-->
 
-<!-- BEGIN text for pdComboBox.ctl -->
-
-<!-- pdComboBox.ctl contains 0 phrases. -->
-
-<!-- END text for pdComboBox.ctl-->
-
 <!-- BEGIN text for pdComboBox_Font.ctl -->
 
 <!-- pdComboBox_Font.ctl contains 0 phrases. -->
@@ -3645,6 +3639,12 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <!-- pdDownload.ctl contains 0 phrases. -->
 
 <!-- END text for pdDownload.ctl-->
+
+<!-- BEGIN text for pdDropDown.ctl -->
+
+<!-- pdDropDown.ctl contains 0 phrases. -->
+
+<!-- END text for pdDropDown.ctl-->
 
 <!-- BEGIN text for pdFxPreview.ctl -->
 
@@ -14731,12 +14731,6 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for pdDropDown.ctl -->
-
-<!-- pdDropDown.ctl contains 0 phrases. -->
-
-<!-- END text for pdDropDown.ctl-->
 
 <!-- Automatic text extraction complete. -->
 

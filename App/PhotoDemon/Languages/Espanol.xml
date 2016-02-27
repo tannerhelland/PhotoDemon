@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.143</langversion>
+<langversion>6.7.144</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -3622,12 +3622,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- END text for pdCommandBarMini.ctl-->
 
-<!-- BEGIN text for pdComboBox.ctl -->
-
-<!-- pdComboBox.ctl contains 0 phrases. -->
-
-<!-- END text for pdComboBox.ctl-->
-
 <!-- BEGIN text for pdComboBox_Font.ctl -->
 
 <!-- pdComboBox_Font.ctl contains 0 phrases. -->
@@ -3645,6 +3639,12 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- pdDownload.ctl contains 0 phrases. -->
 
 <!-- END text for pdDownload.ctl-->
+
+<!-- BEGIN text for pdDropDown.ctl -->
+
+<!-- pdDropDown.ctl contains 0 phrases. -->
+
+<!-- END text for pdDropDown.ctl-->
 
 <!-- BEGIN text for pdFxPreview.ctl -->
 
@@ -14731,12 +14731,6 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for pdDropDown.ctl -->
-
-<!-- pdDropDown.ctl contains 0 phrases. -->
-
-<!-- END text for pdDropDown.ctl-->
 
 <!-- Automatic text extraction complete. -->
 

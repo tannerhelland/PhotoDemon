@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.140</langversion>
+<langversion>6.7.141</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -3619,12 +3619,6 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- END text for pdCommandBarMini.ctl-->
 
-<!-- BEGIN text for pdComboBox.ctl -->
-
-<!-- pdComboBox.ctl contains 0 phrases. -->
-
-<!-- END text for pdComboBox.ctl-->
-
 <!-- BEGIN text for pdComboBox_Font.ctl -->
 
 <!-- pdComboBox_Font.ctl contains 0 phrases. -->
@@ -3642,6 +3636,12 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- pdDownload.ctl contains 0 phrases. -->
 
 <!-- END text for pdDownload.ctl-->
+
+<!-- BEGIN text for pdDropDown.ctl -->
+
+<!-- pdDropDown.ctl contains 0 phrases. -->
+
+<!-- END text for pdDropDown.ctl-->
 
 <!-- BEGIN text for pdFxPreview.ctl -->
 
@@ -14728,12 +14728,6 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for pdDropDown.ctl -->
-
-<!-- pdDropDown.ctl contains 0 phrases. -->
-
-<!-- END text for pdDropDown.ctl-->
 
 <!-- Automatic text extraction complete. -->
 
