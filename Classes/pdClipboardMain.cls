@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Clipboard Interface
 'Copyright 2001-2016 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 20/November/15
-'Last update: implement Cut/Copy support for DIB and DIBv5 formats
+'Last updated: 28/February/16
+'Last update: add Unicode support for drag/drop routines, lots o' refactoring to accommodate this
 '
 'Module for handling all Windows clipboard routines.  Most clipboard APIs are not located here, but in the separate pdClipboard
 ' object, which includes a ton of specialized helper functions.  Look there for details.
@@ -671,10 +671,10 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean)
             If (StrComp(UCase$(Left$(testURL, 4)), "HTTP", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(testURL, 3)), "FTP", vbBinaryCompare) = 0) Then
             
                 #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Possible image URL found on clipboard.  Attempting to retrieve data..."
+                    pdDebug.LogAction "Possible image URL found.  Attempting to retrieve data..."
                 #End If
                 
-                Message "Image URL found on clipboard.  Attempting to download..."
+                Message "Image URL found.  Attempting to download..."
                 
                 ClipboardPaste_TextSource = ClipboardPaste_WellFormedURL(testURL, srcIsMeantAsLayer)
                 
@@ -729,7 +729,7 @@ End Function
 Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcIsMeantAsLayer As Boolean) As Boolean
     
     'This function assumes the source URL is both absolute and well-formed
-    Message "Image URL found on clipboard.  Attempting to download..."
+    Message "Image URL found.  Attempting to download..."
                     
     Dim tmpDownloadFile As String
     tmpDownloadFile = FormInternetImport.downloadURLToTempFile(srcURL)
@@ -751,7 +751,7 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcI
         tmpFilename = cFile.GetFilename(tmpDownloadFile, True)
         
         'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-        If srcIsMeantAsLayer Then
+        If (g_OpenImageCount > 0) And srcIsMeantAsLayer Then
             Layer_Handler.LoadImageAsNewLayer False, sFile(0), True
         Else
             LoadFileAsNewImage sFile, False, tmpFilename, tmpFilename, , , , , , True
@@ -760,7 +760,7 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcI
         'Delete the temporary file
         cFile.KillFile tmpDownloadFile
         
-        Message "Clipboard data imported successfully "
+        Message "Image imported successfully "
             
         'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
         ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
@@ -776,7 +776,7 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcI
     
     'If the download failed, let the user know that hey, at least we tried.
     Else
-        Message "Image download failed.  Please copy a valid image URL to the clipboard and try again."
+        Message "Image download failed.  Please copy a valid image URL and try again."
     End If
     
 End Function
@@ -1029,96 +1029,20 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     
     'Verify that the object being dragged is some sort of file or file list
     If Data.GetFormat(vbCFFiles) And (Not dragWasSuccessful) Then
-        dragWasSuccessful = DragDropFileList(Data, intendedTargetIsLayer)
+        dragWasSuccessful = DragDrop_FileList(Data, intendedTargetIsLayer)
     End If
     
     'If the data is not a file list, see if it's a bitmap
     If Data.GetFormat(vbCFBitmap) And (Not dragWasSuccessful) Then
-    
-        'Copy the image into an StdPicture object
-        Dim tmpPicture As StdPicture
-        Set tmpPicture = Data.GetData(vbCFBitmap)
-        
-        'Create a temporary DIB and copy the temporary StdPicture object into it
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        tmpDIB.CreateFromPicture tmpPicture
-        
-        'Ask the DIB to write its contents to file in BMP format
-        tmpString = g_UserPreferences.GetTempPath & "PD_DragDrop.tmp"
-        tmpDIB.WriteToBitmapFile tmpString
-        
-        'Now that the image is saved on the hard drive, we can delete our temporary objects
-        Set tmpPicture = Nothing
-        tmpDIB.eraseDIB
-        Set tmpDIB = Nothing
-        
-        'Use the standard image load routine to import the temporary file
-        Dim sTitle As String, sFilename As String
-        ReDim sFile(0) As String
-        sFile(0) = tmpString
-        sTitle = g_Language.TranslateMessage("Imported Image")
-        sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
-        
-        'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-        If (g_OpenImageCount > 0) And intendedTargetIsLayer Then
-            Layer_Handler.LoadImageAsNewLayer False, sFile(0), sTitle
-        Else
-            LoadFileAsNewImage sFile, False, sTitle, sFilename
-        End If
-            
-        'Be polite and remove the temporary file
-        If cFile.FileExist(tmpString) Then cFile.KillFile tmpString
-            
-        Message "Image imported successfully "
-        
-        LoadImageFromDragDrop = True
-        Exit Function
-    
+        dragWasSuccessful = DragDrop_BitmapData(Data, intendedTargetIsLayer)
     End If
     
-    'If the data is not a file list, see if it's a URL.
+    'If the data is not a file list, see if it's a text fragment that contains a valid file path or URL.
     If Data.GetFormat(vbCFText) And (Not dragWasSuccessful) Then
-    
-        Dim tmpDownloadFile As String
-        tmpDownloadFile = Trim$(Data.GetData(vbCFText))
-        
-        If (StrComp(UCase$(Left$(tmpDownloadFile, 7)), "HTTP://", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(tmpDownloadFile, 8)), "HTTPS://", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(tmpDownloadFile, 6)), "FTP://", vbBinaryCompare) = 0) Then
-        
-            Message "Image URL found on clipboard.  Attempting to download..."
-            
-            tmpDownloadFile = FormInternetImport.downloadURLToTempFile(tmpDownloadFile)
-            
-            'If the download was successful, we can now use the standard image load routine to import the temporary file
-            If Len(tmpDownloadFile) <> 0 Then
-                
-                'Depending on the number of open images, load the clipboard data as a new image or as a new layer in the current image
-                If (g_OpenImageCount > 0) And intendedTargetIsLayer Then
-                    Layer_Handler.LoadImageAsNewLayer False, tmpDownloadFile
-                Else
-                    ReDim sFile(0) As String
-                    sFile(0) = tmpDownloadFile
-                    LoadFileAsNewImage sFile, False, , GetFilename(tmpDownloadFile)
-                End If
-                
-                'Delete the temporary file
-                If cFile.FileExist(tmpDownloadFile) Then cFile.KillFile tmpDownloadFile
-                
-                'Exit!
-                LoadImageFromDragDrop = True
-                Exit Function
-            
-            Else
-            
-                'If the download failed, let the user know that hey, at least we tried.
-                Message "Image download failed.  Please supply a valid image URL and try again."
-                
-            End If
-            
-        End If
-    
+        dragWasSuccessful = DragDrop_TextData(Data, intendedTargetIsLayer)
     End If
     
+    'If any of the supported formats worked, treat the drag/drop operation as successful
     LoadImageFromDragDrop = dragWasSuccessful
     
 End Function
@@ -1129,11 +1053,11 @@ End Function
 ' downloading the original version, as it includes additional helper code and explanations.
 '
 'Returns: TRUE if at least one file is contained in the passed OLEDragDrop_DataObject
-Private Function DragDropFileList(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False) As Boolean
+Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False) As Boolean
     
     On Error GoTo DragDropFilesFailed
     
-    DragDropFileList = False
+    DragDrop_FileList = False
     
     'Note that PD will validate the data object before passing it, but better safe than sorry
     If (OLEDragDrop_DataObject Is Nothing) Then Exit Function
@@ -1228,7 +1152,7 @@ Private Function DragDropFileList(ByRef OLEDragDrop_DataObject As DataObject, Op
                 'The cFiles string stack now contains all the valid filenames from the dropped list.
                 If cFiles.GetNumOfStrings > 0 Then
                     
-                    DragDropFileList = True
+                    DragDrop_FileList = True
                     
                     If loadAsLayers Then
                         For i = 0 To cFiles.GetNumOfStrings - 1
@@ -1242,8 +1166,6 @@ Private Function DragDropFileList(ByRef OLEDragDrop_DataObject As DataObject, Op
                     
                 End If
                 
-                DragDropFileList = True
-                 
             '/End failsafe check for wchar strings
             End If
             
@@ -1257,7 +1179,147 @@ Private Function DragDropFileList(ByRef OLEDragDrop_DataObject As DataObject, Op
     
 DragDropFilesFailed:
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  pdClipboardMain.DragDropFileList() experienced error #" & Err.Number & ": " & Err.Description
+        pdDebug.LogAction "WARNING!  pdClipboardMain.DragDrop_FileList() experienced error #" & Err.Number & ": " & Err.Description
+    #End If
+End Function
+
+'Load dragged BMP data as a new image and/or layer.
+Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False) As Boolean
+    
+    On Error GoTo DragDropBMPFailed
+    
+    DragDrop_BitmapData = False
+    
+    'Note that PD will validate the data object before passing it, but better safe than sorry
+    If (OLEDragDrop_DataObject Is Nothing) Then Exit Function
+    If Not OLEDragDrop_DataObject.GetFormat(vbCFBitmap) Then Exit Function
+        
+    'It's hackish, but frankly the easiest way to grab the data is to simply copy it into a VB StdPicture container.
+    Dim tmpPicture As StdPicture: Set tmpPicture = OLEDragDrop_DataObject.GetData(vbCFBitmap)
+    
+    'In the event that the bitmap contains alpha data, let's migrate it from that picture container to a pdDIB object
+    Dim tmpDIB As pdDIB: Set tmpDIB = New pdDIB
+    tmpDIB.CreateFromPicture tmpPicture
+    Set tmpPicture = Nothing
+    
+    'Ask the DIB to write its contents to file in BMP format
+    Dim tmpDragDropFile As String
+    tmpDragDropFile = g_UserPreferences.GetTempPath & "PDDragDrop.tmp"
+    tmpDIB.WriteToBitmapFile tmpDragDropFile
+    Set tmpDIB = Nothing
+    
+    'We can now use PD's standard image load routine to import the temporary file.  Because we don't want the
+    ' load function to use the temporary file name as the image name, we manually supply a filename to suggest
+    ' if the user eventually tries to save the file.
+    Dim sFile() As String, sTitle As String, sFilename As String
+    ReDim sFile(0) As String
+    sFile(0) = tmpDragDropFile
+    sTitle = g_Language.TranslateMessage("Imported Image")
+    sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+    
+    'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
+    If (g_OpenImageCount > 0) And loadAsLayers Then
+        Layer_Handler.LoadImageAsNewLayer False, sFile(0), sTitle, True
+    Else
+        LoadFileAsNewImage sFile, False, sTitle, sFilename
+    End If
+        
+    'Be polite and remove the temporary file
+    Dim cFile As pdFSO: Set cFile = New pdFSO
+    If cFile.FileExist(tmpDragDropFile) Then cFile.KillFile tmpDragDropFile
+    
+    'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
+    ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
+    ' and subsequently unloads images in an arbitrary order - but given the rarity of this situation, I'm content
+    ' to temporarily use this technique for predicting failure.)
+    '
+    'TODO: rewrite PD's central image load functions to return pass/fail status.
+    If g_CurrentImage <= UBound(pdImages) Then
+        If Not pdImages(g_CurrentImage) Is Nothing Then
+            If pdImages(g_CurrentImage).IsActive Then
+                Message "Image imported successfully "
+                DragDrop_BitmapData = True
+            End If
+        End If
+    End If
+    
+    Exit Function
+    
+DragDropBMPFailed:
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  pdClipboardMain.DragDrop_BitmapData() experienced error #" & Err.Number & ": " & Err.Description
+    #End If
+End Function
+
+'Load dragged text data as a new image and/or layer.  The text will be analyzed for valid file paths or URLs.
+Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False) As Boolean
+    
+    'On Error GoTo DragDropTextFailed
+    
+    DragDrop_TextData = False
+    
+    'Note that PD will validate the data object before passing it, but better safe than sorry
+    If (OLEDragDrop_DataObject Is Nothing) Then Exit Function
+    If Not OLEDragDrop_DataObject.GetFormat(vbCFText) Then Exit Function
+    
+    Dim dragText As String
+    dragText = OLEDragDrop_DataObject.GetData(vbCFText)
+    
+    If Len(dragText) <> 0 Then
+    
+        'First, test the text for URL-like indicators
+        Dim testURL As String
+        testURL = Trim$(dragText)
+    
+        If (StrComp(UCase$(Left$(testURL, 4)), "HTTP", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(testURL, 3)), "FTP", vbBinaryCompare) = 0) Then
+        
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Possible image URL found in dragged text contents.  Attempting to retrieve data..."
+            #End If
+            
+            Message "Image URL found.  Attempting to download..."
+            
+            'The clipboard function isn't actually specific to the clipboard, so we can freely us it here.
+            DragDrop_TextData = ClipboardPaste_WellFormedURL(testURL, loadAsLayers)
+            
+        'If this doesn't look like a URL, see if it's a file path instead
+        Else
+            
+            Dim targetFile As String
+            targetFile = ""
+            
+            Dim cFile As pdFSO: Set cFile = New pdFSO
+            If cFile.FileExist(dragText) Then
+                targetFile = dragText
+            ElseIf cFile.FileExist(Trim$(dragText)) Then
+                targetFile = Trim$(dragText)
+            End If
+            
+            'If the text (or a trimmed version of the text) matches a local file, try to load it.
+            If Len(targetFile) <> 0 Then
+            
+                If (g_OpenImageCount > 0) And loadAsLayers Then
+                    Layer_Handler.LoadImageAsNewLayer False, targetFile, , True
+                Else
+                    Dim tmpFiles() As String
+                    ReDim tmpFiles(0) As String
+                    tmpFiles(0) = targetFile
+                    LoadFileAsNewImage tmpFiles
+                End If
+                
+                DragDrop_TextData = True
+            
+            End If
+            
+        End If
+    
+    End If
+    
+    Exit Function
+    
+DragDropTextFailed:
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  pdClipboardMain.DragDrop_TextData() experienced error #" & Err.Number & ": " & Err.Description
     #End If
 End Function
 
