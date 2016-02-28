@@ -480,6 +480,11 @@ Private Sub UserControl_Resize()
     If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
 End Sub
 
+Private Sub UserControl_Terminate()
+    'As a failsafe, immediately release the popup box.  (If we don't do this, PD will crash.)
+    If m_PopUpVisible Then HideListBox
+End Sub
+
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "BackgroundColor", m_BackgroundColor, vbWhite
@@ -658,12 +663,15 @@ End Sub
 
 Private Sub HideListBox()
     If m_PopUpVisible Then
-    
+        
         m_PopUpVisible = False
         lbPrimary.Visible = False
         SetParent lbPrimary.hWnd, Me.hWnd
         
+        'Note that termination may result in the client site not being available.  If this happens, we simply want
+        ' to continue; the subclasser will handle clean-up automatically.
         If Not (m_Subclass Is Nothing) Then
+            On Error GoTo UnsubclassUnnecessary
             m_Subclass.ssc_UnSubclass UserControl.Parent.hWnd
         End If
         
@@ -672,6 +680,9 @@ Private Sub HideListBox()
         'SetWindowLong lbPrimary.hWnd, GWL_EXSTYLE, GetWindowLong(lbPrimary.hWnd, GWL_EXSTYLE) And CLng(Not WS_EX_TOOLWINDOW)
         
     End If
+    
+UnsubclassUnnecessary:
+
 End Sub
 
 'Whenever a control property changes that affects control size or layout (including internal changes, like caption adjustments),
