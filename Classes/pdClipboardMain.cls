@@ -282,9 +282,8 @@ Public Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As
     
 End Sub
 
-'Empty the clipboard (TODO: move this to pdClipboard)
 Public Sub ClipboardEmpty()
-    Clipboard.Clear
+    m_Clipboard.ClearClipboard
 End Sub
 
 'Paste an image (e.g. create new image data based on whatever is in the clipboard).
@@ -293,11 +292,6 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     
     Dim pasteWasSuccessful As Boolean
     pasteWasSuccessful = False
-    
-    'Prep a bunch of generic clipboard handling variables
-    Dim tmpClipboardFile As String, tmpDownloadFile As String
-    Dim sFile(0) As String
-    Dim sTitle As String, sFilename As String
     
     'Also, note that all file interactions occur through pdFSO, so we can support Unicode filenames/paths.
     Dim cFile As pdFSO
@@ -1023,7 +1017,10 @@ End Function
 ' Data and Effect are passed as-is from the calling function, while intendedTargetIsLayer controls whether the image file(s)
 ' (if valid) should be loaded as new layers or new images.
 Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As Long, ByVal intendedTargetIsLayer As Boolean) As Boolean
-
+    
+    Dim dragWasSuccessful As Boolean
+    dragWasSuccessful = False
+    
     Dim sFile() As String
     Dim tmpString As String
     
@@ -1031,57 +1028,12 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     Set cFile = New pdFSO
     
     'Verify that the object being dragged is some sort of file or file list
-    If Data.GetFormat(vbCFFiles) Then
-        
-        'Start by bypassing VB's innate Unicode-to-ANSI conversion
-        If GetDroppedFileNamesW(Data) Then
-        
-            'With the Unicode filenames successfully generated, we now want to parse the list and validate each filename in turn.
-            Dim countFiles As Long
-            countFiles = 0
-            
-            Dim oleFilename As Variant
-            ReDim sFile(0 To Data.Files.Count) As String
-            
-            For Each oleFilename In Data.Files
-                tmpString = oleFilename
-                If (Len(tmpString) <> 0) Then
-                    If cFile.FileExist(tmpString) Then
-                        sFile(countFiles) = tmpString
-                        countFiles = countFiles + 1
-                    End If
-                End If
-            Next oleFilename
-            
-            'Make sure at least one valid file was found
-            If countFiles > 0 Then
-            
-                'Because the OLE drop may include blank strings, verify the size of the array against countFiles
-                ReDim Preserve sFile(0 To countFiles - 1) As String
-                
-                'Load the images as either layers or new files, depending on where the files were dropped
-                If (g_OpenImageCount > 0) And intendedTargetIsLayer Then
-                    
-                    Dim i As Long
-                    For i = 0 To UBound(sFile)
-                        Layer_Handler.LoadImageAsNewLayer False, sFile(i)
-                    Next i
-                    
-                Else
-                    LoadFileAsNewImage sFile
-                End If
-                
-                LoadImageFromDragDrop = True
-                Exit Function
-                
-            End If
-            
-        End If
-    
+    If Data.GetFormat(vbCFFiles) And (Not dragWasSuccessful) Then
+        dragWasSuccessful = DragDropFileList(Data, intendedTargetIsLayer)
     End If
     
     'If the data is not a file list, see if it's a bitmap
-    If Data.GetFormat(vbCFBitmap) Then
+    If Data.GetFormat(vbCFBitmap) And (Not dragWasSuccessful) Then
     
         'Copy the image into an StdPicture object
         Dim tmpPicture As StdPicture
@@ -1123,8 +1075,10 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
         LoadImageFromDragDrop = True
         Exit Function
     
+    End If
+    
     'If the data is not a file list, see if it's a URL.
-    ElseIf Data.GetFormat(vbCFText) Then
+    If Data.GetFormat(vbCFText) And (Not dragWasSuccessful) Then
     
         Dim tmpDownloadFile As String
         tmpDownloadFile = Trim$(Data.GetData(vbCFText))
@@ -1165,10 +1119,8 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     
     End If
     
-    'If we made it all the way here, something went horribly wrong
-    LoadImageFromDragDrop = False
-    Exit Function
-
+    LoadImageFromDragDrop = dragWasSuccessful
+    
 End Function
 
 'This Unicode-friendly drag/drop interpreter comes courtesy LaVolpe, c/o
@@ -1177,9 +1129,11 @@ End Function
 ' downloading the original version, as it includes additional helper code and explanations.
 '
 'Returns: TRUE if at least one file is contained in the passed OLEDragDrop_DataObject
-Private Function GetDroppedFileNamesW(ByRef OLEDragDrop_DataObject As DataObject) As Boolean
+Private Function DragDropFileList(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False) As Boolean
     
-    GetDroppedFileNamesW = False
+    On Error GoTo DragDropFilesFailed
+    
+    DragDropFileList = False
     
     'Note that PD will validate the data object before passing it, but better safe than sorry
     If (OLEDragDrop_DataObject Is Nothing) Then Exit Function
@@ -1231,60 +1185,80 @@ Private Function GetDroppedFileNamesW(ByRef OLEDragDrop_DataObject As DataObject
             Dim dFiles As DROPFILES
             CopyMemory dFiles, ByVal hDrop, 20&
             
-            'To my knowledge, you'll never get an ANSI listing from this (convoluted) approach, at least not on XP or later,
-            ' but if for some reason we do, we can immediately free our pointer and exit (since the original object is sufficent).
-            If dFiles.fWide = 0 Then
-                GlobalFree pMedium.Data
-            
-            'Far more likely, the filenames will use wide chars
-            Else
-            
+            'To my knowledge, you'll never get an ANSI listing from this (convoluted) approach, at least not on XP or later.
+            ' (But just in case, check - otherwise we'll get gibberish string results.)
+            If dFiles.fWide <> 0 Then
+                
                 'Use the pFiles member to track the filename's offsets
                 dFiles.pFiles = dFiles.pFiles + hDrop
                 
-                'Not particularly efficient, but since we're not expecting thousands of files, we can just store our strings
-                ' inside a generic string array.
-                Dim sFiles() As String
-                ReDim sFiles(1 To OLEDragDrop_DataObject.Files.Count)
+                'Prep a string stack.  Some of the passed files may not be valid, so we want to validate them in turn before
+                ' sending them off to the "load image" function(s)
+                Dim cFiles As pdStringStack: Set cFiles = New pdStringStack
                 
-                Dim lLen As Long, ptrChar As Long
-                Dim bIsUnicode As Boolean
+                'Also prep an FSO.  It will handle file validation.
+                Dim cFile As pdFSO: Set cFile = New pdFSO
+                Dim lLen As Long, tmpString As String
                 
                 'Now we're going to iterate through each of the original files, and copy the C-style strings into BSTRs
-                Dim iCount As Long
-                For iCount = 1 To UBound(sFiles)
+                Dim i As Long
+                For i = 0 To OLEDragDrop_DataObject.Files.Count - 1
                 
                     'Retrieve this filename's length, prep a buffer, then copy over the w-char bytes
                     lLen = lstrlenW(ByVal dFiles.pFiles) * 2
-                    sFiles(iCount) = String$(lLen \ 2, 0&)
-                    CopyMemory ByVal StrPtr(sFiles(iCount)), ByVal dFiles.pFiles, lLen
                     
+                    If lLen <> 0 Then
+                        tmpString = String$(lLen \ 2, 0&)
+                        CopyMemory ByVal StrPtr(tmpString), ByVal dFiles.pFiles, lLen
+                    
+                        'Any valid files get added to the collection.  (Note that we only validate file existence; validating the
+                        ' actual image data is handled by the load image function.)
+                        If cFile.FileExist(tmpString) Then cFiles.AddString tmpString
+                    End If
+                        
                     'Manually move the pointer to the next file, and note that we add two extra bytes because of the
                     ' double-null delimiter between filenames
                     dFiles.pFiles = dFiles.pFiles + lLen + 2
                     
-                Next
+                Next i
                 
                 'We've got what we need from the hGlobal pointer, so go ahead and free it
                 GlobalFree pMedium.Data
                 
-                'Now, it's as simple as copying our Unicode strings back into the original DataObject
-                With OLEDragDrop_DataObject.Files
-                    .Clear
-                    For iCount = 1 To iCount - 1
-                        .Add sFiles(iCount), iCount
-                    Next
-                End With
+                'The cFiles string stack now contains all the valid filenames from the dropped list.
+                If cFiles.GetNumOfStrings > 0 Then
+                    
+                    DragDropFileList = True
+                    
+                    If loadAsLayers Then
+                        For i = 0 To cFiles.GetNumOfStrings - 1
+                            Layer_Handler.LoadImageAsNewLayer False, cFiles.GetString(i)
+                        Next i
+                    Else
+                        Dim sFiles() As String
+                        cFiles.GetCopyOfStringArray sFiles
+                        LoadFileAsNewImage sFiles
+                    End If
+                    
+                End If
                 
+                DragDropFileList = True
+                 
+            '/End failsafe check for wchar strings
             End If
             
-            GetDroppedFileNamesW = True
-        
+        '/End non-zero hDrop
         End If
 
+    '/End DispCallFunc success
     End If
     
-
+    Exit Function
+    
+DragDropFilesFailed:
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  pdClipboardMain.DragDropFileList() experienced error #" & Err.Number & ": " & Err.Description
+    #End If
 End Function
 
 'When a Copy or Paste event is initiated, PD doesn't actually copy anything to the clipboard.  Instead, it "stashes" a copy of the

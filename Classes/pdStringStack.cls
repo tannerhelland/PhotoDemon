@@ -77,12 +77,12 @@ Public Function PopString(ByRef dstString As String) As Boolean
 End Function
 
 'Return the size of the stack
-Public Function getNumOfStrings() As Long
-    getNumOfStrings = m_NumOfStrings
+Public Function GetNumOfStrings() As Long
+    GetNumOfStrings = m_NumOfStrings
 End Function
 
 'Trim the stack to its exact size.  IMPORTANT NOTE!  Don't do this any more than you have to, as it's not performance-friendly.
-Public Sub trimStack()
+Public Sub TrimStack()
     ReDim Preserve m_Strings(0 To m_NumOfStrings - 1) As String
 End Sub
 
@@ -470,14 +470,22 @@ End Sub
 Public Sub CloneStack(ByRef stackToClone As pdStringStack)
     
     'Initialize this stack to the size of the target
-    Me.ResetStack stackToClone.getNumOfStrings
+    Me.ResetStack stackToClone.GetNumOfStrings
     
     'Copy all strings
     Dim i As Long
-    For i = 0 To stackToClone.getNumOfStrings - 1
+    For i = 0 To stackToClone.GetNumOfStrings - 1
         Me.AddString stackToClone.GetString(i)
     Next i
     
+End Sub
+
+Public Sub GetCopyOfStringArray(ByRef dstStringArray() As String)
+    ReDim dstStringArray(0 To m_NumOfStrings - 1) As String
+    Dim i As Long
+    For i = 0 To m_NumOfStrings - 1
+        dstStringArray(i) = m_Strings(i)
+    Next i
 End Sub
 
 'Clear the current stack.  An optional stack size can be passed; if it is not passed, it will default to INIT_STACK_SIZE
