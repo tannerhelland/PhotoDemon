@@ -27,10 +27,12 @@ Private Declare Sub SafeArrayUnlock Lib "oleaut32" (ByVal ptrToSA As Long)
 Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
 Private Declare Function GetMem4 Lib "msvbvm60" (ByVal Addr As Long, ByRef dstValue As Long) As Long
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpvDestPtr As Long, ByVal lpvSourcePtr As Long, ByVal cbCopy As Long)
+Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal ppstm As Long, ByRef hGlobal As Long) As Long
 Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any) As Long
 Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
 Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Const GMEM_FIXED As Long = &H0&
 Private Const GMEM_MOVEABLE As Long = &H2&
 
@@ -191,5 +193,52 @@ Public Function GetStreamFromVBArray(ByVal ptrToFirstArrayElement As Long, ByVal
 StreamDied:
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "WARNING!  GetStreamFromVBArray() failed for unknown reasons.  Please investigate!"
+    #End If
+End Function
+
+'Given an IStream, return its contents as a VB array.  (This implementation is pretty darn similar to its partner function, above.)
+Public Function GetVBArrayFromStream(ByVal ptrSrcStream As Long, ByRef dstArray() As Byte) As Boolean
+
+    On Error GoTo StreamConversionFailed
+    
+    GetVBArrayFromStream = False
+    
+    'Null streams are pointless; ignore them completely!
+    If (ptrSrcStream <> 0) Then
+        
+        'Get an hGlobal that points to the stream's data
+        Dim hGlobalHandle As Long
+        If GetHGlobalFromStream(ptrSrcStream, hGlobalHandle) = 0 Then
+            
+            'Make sure the stream contains at least one usable byte
+            Dim streamSize As Long
+            streamSize = GlobalSize(hGlobalHandle)
+            If streamSize > 0 Then
+                
+                'Get a raw pointer to the data
+                Dim ptrGlobal As Long
+                ptrGlobal = GlobalLock(hGlobalHandle)
+                If ptrGlobal <> 0 Then
+                    
+                    'Copy the data, free the hGlobal, then bail
+                    ReDim arrayBytes(0 To streamSize - 1) As Byte
+                    CopyMemoryStrict VarPtr(arrayBytes(0)), ptrGlobal, streamSize
+                    
+                    GlobalUnlock hGlobalHandle
+                    GetVBArrayFromStream = True
+                    
+                End If
+                
+            End If
+            
+        End If
+        
+    End If
+    
+    Exit Function
+    
+StreamConversionFailed:
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  GetVBArrayFromStream() failed for unknown reasons.  Please investigate!"
     #End If
 End Function
