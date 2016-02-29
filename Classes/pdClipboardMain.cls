@@ -21,6 +21,11 @@ Attribute VB_Exposed = False
 'Module for handling all Windows clipboard routines.  Most clipboard APIs are not located here, but in the separate pdClipboard
 ' object, which includes a ton of specialized helper functions.  Look there for details.
 '
+'Special thanks go out to LaVolpe for his very helpful work in coercing VB into accepting Unicode-friendly drag/drop targets.
+' In particular, these two references were invaluable:
+' http://www.vbforums.com/showthread.php?637335-RESOLVED-Drag-amp-Drop-file-from-compressed-folder&p=3943417&viewfull=1#post3943417
+' http://cyberactivex.com/UnicodeTutorialVb.htm#Filenames_via_DragDrop_or_Paste
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
@@ -39,6 +44,9 @@ Private Const PD_CB_ALLOW_FILE_PASTE As Boolean = True
 Private Const PD_CB_ALLOW_GENERIC_TEXT_PASTE As Boolean = True
 Private Const PD_CB_ALLOW_BMP_DIB_PASTE As Boolean = True
 '**************************************************************************
+
+'Some format constants are not inherently defined by VB; we cache these at load-time
+Private CF_FILECONTENTS As Integer, CF_FILEGROUPDESCRIPTORW As Integer
 
 'Some specialized structs are required for parsing various clipboard bitmap formats
 Private Type BITMAPFILEHEADER
@@ -146,13 +154,18 @@ Attribute m_Clipboard.VB_VarHelpID = -1
 'Next comes all the helper functions for Unicode-enabled drag/drop behavior.
 ' (Thank you to LaVolpe for these functions, c/o http://cyberactivex.com/UnicodeTutorialVb.htm#Filenames_via_DragDrop_or_Paste
 Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As VbVarType, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
-Private Declare Function lstrlenW Lib "kernel32" (ByRef lpString As Any) As Long
+Private Declare Function lstrlenW Lib "kernel32" (ByVal ptrToFirstChar As Long) As Long
 Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Sub ReleaseStgMedium Lib "ole32" (ByVal ptrToStgMedium As Long)
 
 Private Const TYMED_HGLOBAL As Long = 1
+Private Const TYMED_ISTREAM As Long = 4
 Private Const DVASPECT_CONTENT As Long = 1
 Private Const IDataObjVTable_GetData As Long = 12   '12 is an offset to the GetData function (e.g. the 4th VTable entry)
-Private Const CC_STDCALL As Long = 4&
+Private Const CC_STDCALL As Long = 4
 
 Private Type FORMATETC
     cfFormat As Long
@@ -161,6 +174,7 @@ Private Type FORMATETC
     lIndex As Long
     TYMED As Long
 End Type
+
 Private Type DROPFILES
     pFiles As Long
     ptX As Long
@@ -168,10 +182,38 @@ Private Type DROPFILES
     fNC As Long
     fWide As Long
 End Type
+
 Private Type STGMEDIUM
     TYMED As Long
     Data As Long
-    pUnkForRelease As IUnknown
+    pUnkForRelease As Long
+End Type
+
+Private Type FILETIME
+    dwLowDateTime As Long
+    dwHighDateTime As Long
+End Type
+Private Type SIZEL
+    cx As Long
+    cy As Long
+End Type
+Private Type POINTL
+    x As Long
+    y As Long
+End Type
+
+Private Type FILEDESCRIPTOR
+    dwFlags As Long
+    clsid(0 To 3) As Long
+    cSize As SIZEL
+    cPoint As POINTL
+    dwFileAttributes As Long
+    ftCreationTime As FILETIME
+    ftLastAccessTime As FILETIME
+    ftLastWriteTime As FILETIME
+    nFileSizeHigh As Long
+    nFileSizeLow As Long
+    cFileName(0 To 519) As Byte   'MAXPATH wchars
 End Type
 
 Public Function IsClipboardOpen() As Boolean
@@ -1013,6 +1055,24 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
     
 End Function
 
+'Any droppable surface in the program can pass this function its DataObject to see if the dragged object can be successfully handled
+' by PD.  Note that this function only returns whether the format is parseable by PD - an actual drop will need to occur before
+' full validation is handled.  (This is necessary for things like URLs, which may take some time to validate.)
+Public Function IsObjectDragDroppable(ByRef Data As DataObject) As Boolean
+    
+    IsObjectDragDroppable = False
+    
+    'Make sure PD hasn't disabled program-wide drag/drop behavior (e.g. a modal form hasn't stolen focus, processing isn't occurring, etc)
+    If g_AllowDragAndDrop Then
+        If Data.GetFormat(vbCFFiles) Then IsObjectDragDroppable = True
+        If Data.GetFormat(vbCFText) Then IsObjectDragDroppable = True
+        If Data.GetFormat(vbCFBitmap) Then IsObjectDragDroppable = True
+        If Data.GetFormat(CF_FILECONTENTS) Then IsObjectDragDroppable = True
+        If Data.GetFormat(CF_FILEGROUPDESCRIPTORW) Then IsObjectDragDroppable = True
+    End If
+    
+End Function
+
 'Because OLE drag/drop is so similar to clipboard functionality, I have included that functionality here.
 ' Data and Effect are passed as-is from the calling function, while intendedTargetIsLayer controls whether the image file(s)
 ' (if valid) should be loaded as new layers or new images.
@@ -1032,14 +1092,19 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
         dragWasSuccessful = DragDrop_FileList(Data, intendedTargetIsLayer)
     End If
     
-    'If the data is not a file list, see if it's a bitmap
-    If Data.GetFormat(vbCFBitmap) And (Not dragWasSuccessful) Then
-        dragWasSuccessful = DragDrop_BitmapData(Data, intendedTargetIsLayer)
+    'Next, look for a file content or descriptor flag.  These are received when dragging from .zip files.
+    If Data.GetFormat(CF_FILECONTENTS) Or Data.GetFormat(CF_FILEGROUPDESCRIPTORW) And (Not dragWasSuccessful) Then
+        dragWasSuccessful = DragDrop_ZippedFileList(Data, intendedTargetIsLayer)
     End If
     
     'If the data is not a file list, see if it's a text fragment that contains a valid file path or URL.
     If Data.GetFormat(vbCFText) And (Not dragWasSuccessful) Then
         dragWasSuccessful = DragDrop_TextData(Data, intendedTargetIsLayer)
+    End If
+    
+    'If the data is not a file list, see if it's a bitmap
+    If Data.GetFormat(vbCFBitmap) And (Not dragWasSuccessful) Then
+        dragWasSuccessful = DragDrop_BitmapData(Data, intendedTargetIsLayer)
     End If
     
     'If any of the supported formats worked, treat the drag/drop operation as successful
@@ -1129,7 +1194,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
                 For i = 0 To OLEDragDrop_DataObject.Files.Count - 1
                 
                     'Retrieve this filename's length, prep a buffer, then copy over the w-char bytes
-                    lLen = lstrlenW(ByVal dFiles.pFiles) * 2
+                    lLen = lstrlenW(dFiles.pFiles) * 2
                     
                     If lLen <> 0 Then
                         tmpString = String$(lLen \ 2, 0&)
@@ -1146,17 +1211,18 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
                     
                 Next i
                 
-                'We've got what we need from the hGlobal pointer, so go ahead and free it
-                GlobalFree pMedium.Data
+                'We've got what we need from the hGlobal pointer, so go ahead and free it (if we're responsible for the drop -
+                ' note that a NULL value for pUnkForRelease means that we must free the data; non-NULL means the caller will do it.)
+                If (pMedium.pUnkForRelease = 0) Then ReleaseStgMedium VarPtr(pMedium)
                 
                 'The cFiles string stack now contains all the valid filenames from the dropped list.
                 If cFiles.GetNumOfStrings > 0 Then
                     
                     DragDrop_FileList = True
                     
-                    If loadAsLayers Then
+                    If (g_OpenImageCount > 0) And loadAsLayers Then
                         For i = 0 To cFiles.GetNumOfStrings - 1
-                            Layer_Handler.LoadImageAsNewLayer False, cFiles.GetString(i)
+                            Layer_Handler.LoadImageAsNewLayer False, cFiles.GetString(i), , True
                         Next i
                     Else
                         Dim sFiles() As String
@@ -1180,6 +1246,189 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
 DragDropFilesFailed:
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "WARNING!  pdClipboardMain.DragDrop_FileList() experienced error #" & Err.Number & ": " & Err.Description
+    #End If
+End Function
+
+'This Unicode-friendly drag/drop interpreter comes courtesy LaVolpe, c/o
+' http://www.vbforums.com/showthread.php?637335-RESOLVED-Drag-amp-Drop-file-from-compressed-folder&p=3943417&viewfull=1#post3943417
+' IMPORTANT NOTE: this function has been modified for use inside PD.  If using it in your own project, I strongly recommend
+' downloading the original version, as it includes additional helper code and explanations.
+'
+'Returns: TRUE if at least one file is contained in the passed OLEDragDrop_DataObject
+Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False) As Boolean
+    
+    On Error GoTo DragDropZippedFilesFailed
+    
+    DragDrop_ZippedFileList = False
+    
+    'Note that PD will validate the data object before passing it, but better safe than sorry
+    If (OLEDragDrop_DataObject Is Nothing) Then Exit Function
+    If (Not OLEDragDrop_DataObject.GetFormat(CF_FILECONTENTS)) And (Not OLEDragDrop_DataObject.GetFormat(CF_FILEGROUPDESCRIPTORW)) Then Exit Function
+    
+    'This function basically handles the task of hacking around the DataObject's VTable, and manually retrieving pointers
+    ' to the original, unmodified Unicode filenames in the Data object.  We then overwrite the OUT filename strings with
+    ' new Unicode-enabled pointers, so our receiving function can proceed identically regardless of the presence of
+    ' non-ANSI chars.
+    Dim fmtEtc As FORMATETC
+    With fmtEtc
+        .cfFormat = CF_FILEGROUPDESCRIPTORW
+        .lIndex = -1                  ' -1 means "we want everything"
+        .TYMED = TYMED_HGLOBAL        ' TYMED_HGLOBAL means we want to use "hGlobal" as the transfer medium
+        .dwAspect = DVASPECT_CONTENT  ' dwAspect is used to request extra metadata (like an icon representation) - we want the actual data
+    End With
+
+    'The IDataObject pointer appears 16 bytes past VB's DataObject
+    Dim IID_IDataObject As Long
+    CopyMemory IID_IDataObject, ByVal ObjPtr(OLEDragDrop_DataObject) + 16&, 4&
+    
+    'The objPtr of the IDataObject interface also tells us where the interface's VTable begins.  Since we know the
+    ' VTable address and we know which function index we want, we can call it directly using the DispCallFunc.
+    ' (You could also do this using a TLB, obviously.)  In particular, we want the GetData function which is #4 in
+    ' the VTable, per http://msdn2.microsoft.com/en-us/library/ms688421.aspx
+    
+    'Next, we need to populate the input values required by the OLE API (http://msdn2.microsoft.com/en-us/library/ms221473.aspx)
+    Dim pVartypes(0 To 3) As Integer, Vars(0 To 3) As Variant, pVars(0 To 3) As Long
+    pVartypes(0) = vbLong: Vars(0) = VarPtr(fmtEtc): pVars(0) = VarPtr(Vars(0))
+    
+    Dim pMedium As STGMEDIUM, fMedium As STGMEDIUM
+    pVartypes(1) = vbLong: Vars(1) = VarPtr(pMedium): pVars(1) = VarPtr(Vars(1))
+    
+    'Manually invoke the desired interface
+    Dim varRtn As Variant
+    If DispCallFunc(IID_IDataObject, IDataObjVTable_GetData, CC_STDCALL, vbLong, 2, pVartypes(0), pVars(0), varRtn) = 0 Then
+        
+        'Make sure we received a non-null hGlobal pointer (nothing needs to be freed at this point, FYI)
+        If pMedium.Data = 0 Then Exit Function
+        
+        'pMedium.Data is an hGlobal handle that we can immediately lock and use
+        Dim hGlobalPtr As Long
+        hGlobalPtr = GlobalLock(pMedium.Data)
+        
+        'Technically we should never retrieve have received a null-pointer, but again, better safe than sorry
+        If hGlobalPtr <> 0 Then
+            
+            'Retrieve the number of entries (files and/or folders) in the drag
+            Dim numOfFiles As Long
+            CopyMemoryStrict VarPtr(numOfFiles), hGlobalPtr, 4&
+            
+            'We've been handed a list of file descriptors.  For each valid descriptor, we want to retrieve a matching
+            ' file content object.  We'l request these as IStreams to simplify the creation of temporary files.
+            fmtEtc.cfFormat = CF_FILECONTENTS
+            fmtEtc.TYMED = TYMED_HGLOBAL
+            Vars(1) = VarPtr(fMedium)
+            
+            'After the file+folder count comes the first file descriptor.
+            hGlobalPtr = hGlobalPtr + 4&
+            
+            Dim fileDesc As FILEDESCRIPTOR
+            Dim lLen As Long, fileHGlobalPtr As Long, tmpFilename As String, tmpBytes() As Byte
+            Dim cFile As pdFSO: Set cFile = New pdFSO
+            Dim listOfFiles As pdStringStack: Set listOfFiles = New pdStringStack
+            
+            'We're now going to loop through each descriptor in turn, copying them out to temp files as we go
+            Dim i As Long
+            For i = 0 To numOfFiles - 1
+            
+                'Start by grabbing the file descriptor
+                CopyMemoryStrict VarPtr(fileDesc), hGlobalPtr, LenB(fileDesc)
+                
+                'Pull out the filename
+                lLen = lstrlenW(VarPtr(fileDesc.cFileName(0))) ' get length of filename
+                If (lLen > 0) Then
+                    tmpFilename = String$(lLen, 0)
+                    CopyMemoryStrict StrPtr(tmpFilename), VarPtr(fileDesc.cFileName(0)), lLen * 2
+                End If
+                
+                'In the future, it might be nice/clever to handle folders, so I've left this here, but for now, we ignore them
+                If (fileDesc.dwFileAttributes And vbDirectory) = vbDirectory Then
+                    'Create the folder here, potentially?
+                Else
+                    
+                    'We're now going to raise a new GetData request, this time for the file's actual contents.
+                    fmtEtc.lIndex = i
+                    If DispCallFunc(IID_IDataObject, IDataObjVTable_GetData, CC_STDCALL, vbLong, 2&, pVartypes(0), pVars(0), varRtn) = 0 Then
+                        
+                        'See if our request for an hGlobal pointer was honored
+                        If fMedium.TYMED = TYMED_HGLOBAL Then
+                            
+                            'Save the file's contents to a temporary file, and note the filename (if successful)
+                            fileHGlobalPtr = GlobalLock(fMedium.Data)
+                            If cFile.SavePtrToFile(fileHGlobalPtr, GlobalSize(fMedium.Data), g_UserPreferences.GetTempPath & tmpFilename, True, True) Then
+                                listOfFiles.AddString g_UserPreferences.GetTempPath & tmpFilename
+                            End If
+                            
+                            GlobalUnlock fMedium.Data
+                            
+                        'Depending on the size of the file, our request may get ignored and we'll be handed an IStream instead.
+                        ' We can work with this if we have to.
+                        ElseIf fMedium.TYMED = TYMED_ISTREAM Then
+                            
+                            'Save the file's contents to a temporary file, and note the filename (if successful)
+                            VB_Hacks.ReadIStreamIntoVBArray fMedium.Data, tmpBytes, fileDesc.nFileSizeLow
+                            If cFile.SaveByteArrayToFile(tmpBytes, g_UserPreferences.GetTempPath & tmpFilename, True, True) Then
+                                listOfFiles.AddString g_UserPreferences.GetTempPath & tmpFilename
+                            End If
+                        
+                        Else
+                            Debug.Print "WARNING!  DragDrop_ZippedFileList received " & fMedium.TYMED & " instead of an hGlobal or IStream; I can't handle that format."
+                        End If
+                        
+                        'Conditionally release the stream (whether we do this or the caller does this is decided by
+                        ' the caller, not us).
+                        If (fMedium.pUnkForRelease = 0) Then ReleaseStgMedium VarPtr(fMedium)
+                        
+                    End If
+                    
+                End If
+                
+                'Advance to the next file descriptor
+                hGlobalPtr = hGlobalPtr + LenB(fileDesc)
+            
+            Next i
+            
+            'We've got what we need from the hGlobal pointer, so go ahead and free it (if we're responsible for the drop -
+            ' note that a NULL value for pUnkForRelease means that we must free the data; non-NULL means the caller will do it.)
+            GlobalUnlock pMedium.Data
+            If (pMedium.pUnkForRelease = 0) Then ReleaseStgMedium VarPtr(pMedium)
+                
+            'The listOfFiles string stack now contains all the valid filenames from the dropped data object.
+            If listOfFiles.GetNumOfStrings > 0 Then
+                
+                DragDrop_ZippedFileList = True
+                
+                If (g_OpenImageCount > 0) And loadAsLayers Then
+                    For i = 0 To listOfFiles.GetNumOfStrings - 1
+                        Layer_Handler.LoadImageAsNewLayer False, listOfFiles.GetString(i), cFile.GetFilename(listOfFiles.GetString(i), True), True
+                        If cFile.FileExist(listOfFiles.GetString(i)) Then cFile.KillFile listOfFiles.GetString(i)
+                    Next i
+                Else
+                    
+                    Dim sFile() As String, sTitle As String, sFilename As String
+                    ReDim sFile(0) As String
+                    
+                    Do While listOfFiles.PopString(tmpFilename)
+                        sFile(0) = tmpFilename
+                        sTitle = cFile.GetFilename(tmpFilename, True)
+                        sFilename = cFile.GetFilename(tmpFilename, True)
+                        LoadFileAsNewImage sFile, False, sTitle, sFilename
+                        If cFile.FileExist(tmpFilename) Then cFile.KillFile tmpFilename
+                    Loop
+                    
+                End If
+                
+            End If
+            
+        '/End non-zero hGlobal
+        End If
+
+    '/End DispCallFunc success
+    End If
+    
+    Exit Function
+    
+DragDropZippedFilesFailed:
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  pdClipboardMain.DragDrop_ZippedFileList() experienced error #" & Err.Number & ": " & Err.Description
     #End If
 End Function
 
@@ -1878,7 +2127,15 @@ RenderClipboardDIB_Failure:
 End Sub
 
 Private Sub Class_Initialize()
+
     Set m_Clipboard = New pdClipboard
+    
+    'While it's not exactly time-consuming to retrieve custom clipboard formats, we may as well cache a few common ones.
+    ' (This is made cumbersome by a lack of an unsigned Int format; as such, we have to jiggle the values around to prevent
+    '  VB from throwing "out of range" errors inside the IDE.)
+    CF_FILECONTENTS = m_Clipboard.AddClipboardFormat("FileContents") And &H7FFF& Or &H8000
+    CF_FILEGROUPDESCRIPTORW = m_Clipboard.AddClipboardFormat("FileGroupDescriptorW") And &H7FFF& Or &H8000
+    
 End Sub
 
 Private Sub Class_Terminate()

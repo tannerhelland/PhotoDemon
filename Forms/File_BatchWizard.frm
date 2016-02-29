@@ -246,15 +246,6 @@ Begin VB.Form FormBatchWizard
          Width           =   8775
          _ExtentX        =   15478
          _ExtentY        =   5027
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          UnknownSizeMode =   -1  'True
       End
       Begin PhotoDemon.pdLabel lblExplanation 
@@ -1646,15 +1637,15 @@ Private Sub cmbResizeFit_Click()
     
         'Stretch
         Case 0
-            loadResourceToDIB "RSZ_STRETCH", tmpDIB
+            LoadResourceToDIB "RSZ_STRETCH", tmpDIB
         
         'Fit inclusive
         Case 1
-            loadResourceToDIB "RSZ_FITIN", tmpDIB
+            LoadResourceToDIB "RSZ_FITIN", tmpDIB
         
         'Fit exclusive
         Case 2
-            loadResourceToDIB "RSZ_FITEX", tmpDIB
+            LoadResourceToDIB "RSZ_FITEX", tmpDIB
     
     End Select
     
@@ -1873,7 +1864,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                 'If the user wants us to apply a macro, ensure that the macro text box has a macro file specified
                 If CBool(chkActions(2)) And ((txtMacro.Text = "no macro selected") Or (Len(txtMacro.Text) = 0)) Then
                     PDMsgBox "You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.", vbExclamation + vbOKOnly + vbApplicationModal, "No macro file selected"
-                    txtMacro.selectAll
+                    txtMacro.SelectAll
                     Exit Sub
                 End If
                 
@@ -1994,7 +1985,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                 
                 If Not cFile.CreateFolder(txtOutputPath) Then
                     PDMsgBox "PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.", vbExclamation + vbOKOnly + vbApplicationModal, "Folder access unavailable"
-                    txtOutputPath.selectAll
+                    txtOutputPath.SelectAll
                     Exit Sub
                 End If
                 
@@ -2342,7 +2333,7 @@ Private Sub Form_Load()
             cmbResizeFit.ListIndex = 0
         
         'For convenience, change the default resize width and height to the current screen resolution
-            ucResize.setInitialDimensions Screen.Width / TwipsPerPixelXFix, Screen.Height / TwipsPerPixelYFix
+            ucResize.SetInitialDimensions Screen.Width / TwipsPerPixelXFix, Screen.Height / TwipsPerPixelYFix
             
         'By default, select "apply no photo editing actions"
             For i = 0 To chkActions.Count - 1
@@ -2970,7 +2961,7 @@ Private Sub prepareForBatchConversion()
             'Check to see if the image file is a multipage file
             Dim howManyPages As Long
             
-            howManyPages = isMultiImage(tmpFilename)
+            howManyPages = IsMultiImage(tmpFilename)
             
             'TODO: integrate this with future support for exporting multipage files.  At present, to avoid complications,
             ' PD will only load the first page/frame of a multipage file during conversion.  (This is why the code below
@@ -3006,7 +2997,7 @@ Private Sub prepareForBatchConversion()
                     
                         'If the user has requested an image resize, apply it now
                         If CBool(chkActions(1)) Then
-                            Process "Resize image", , buildParams(ucResize.imgWidth, ucResize.imgHeight, RESIZE_LANCZOS, cmbResizeFit.ListIndex, RGB(255, 255, 255), ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI, PD_AT_WHOLEIMAGE)
+                            Process "Resize image", , buildParams(ucResize.imgWidth, ucResize.imgHeight, RESIZE_LANCZOS, cmbResizeFit.ListIndex, RGB(255, 255, 255), ucResize.unitOfMeasurement, ucResize.ImgDPIAsPPI, PD_AT_WHOLEIMAGE)
                         End If
                         
                         'If the user has requested a macro, play it now

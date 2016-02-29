@@ -417,15 +417,11 @@ End Sub
 ' and write a universal drag/drop handler!)
 Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
-    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
-    If Not g_AllowDragAndDrop Then Exit Sub
-
-    'Check to make sure the type of OLE object is files
-    If Data.GetFormat(vbCFFiles) Or Data.GetFormat(vbCFText) Or Data.GetFormat(vbCFBitmap) Then
-        'Inform the source that the files will be treated as "copied"
+    'PD supports a lot of potential drop sources these days.  These values are defined and addressed by the main
+    ' clipboard handler, as Drag/Drop and clipboard actions share a ton of similar code.
+    If g_Clipboard.IsObjectDragDroppable(Data) Then
         Effect = vbDropEffectCopy And Effect
     Else
-        'If it's not files or text, don't allow a drop
         Effect = vbDropEffectNone
     End If
     
