@@ -26,6 +26,7 @@ Private Declare Sub SafeArrayLock Lib "oleaut32" (ByVal ptrToSA As Long)
 Private Declare Sub SafeArrayUnlock Lib "oleaut32" (ByVal ptrToSA As Long)
 Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
 Private Declare Function GetMem4 Lib "msvbvm60" (ByVal Addr As Long, ByRef dstValue As Long) As Long
+Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As VbVarType, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpvDestPtr As Long, ByVal lpvSourcePtr As Long, ByVal cbCopy As Long)
 Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal ppstm As Long, ByRef hGlobal As Long) As Long
 Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any) As Long
@@ -196,49 +197,51 @@ StreamDied:
     #End If
 End Function
 
-'Given an IStream, return its contents as a VB array.  (This implementation is pretty darn similar to its partner function, above.)
-Public Function GetVBArrayFromStream(ByVal ptrSrcStream As Long, ByRef dstArray() As Byte) As Boolean
+'Given an IStream, use its native functionality to write its contents into a VB array.  This should work regardless of
+' the IStream's original source (hGlobal, mapped file, whatever).
+'
+'Note that this function requires you to know the write length in advance.  We could dynamically request a size from
+' the IStream itself, but the manual use of DispCallFunc makes this tedious and time-consuming, and PD typically knows
+' the size in advance anyway - so please provide that length in advance!
+Public Function ReadIStreamIntoVBArray(ByVal ptrSrcStream As Long, ByRef dstArray() As Byte, ByVal dstLength As Long) As Boolean
 
     On Error GoTo StreamConversionFailed
     
-    GetVBArrayFromStream = False
+    ReadIStreamIntoVBArray = False
     
     'Null streams are pointless; ignore them completely!
     If (ptrSrcStream <> 0) Then
         
-        'Get an hGlobal that points to the stream's data
-        Dim hGlobalHandle As Long
-        If GetHGlobalFromStream(ptrSrcStream, hGlobalHandle) = 0 Then
-            
-            'Make sure the stream contains at least one usable byte
-            Dim streamSize As Long
-            streamSize = GlobalSize(hGlobalHandle)
-            If streamSize > 0 Then
-                
-                'Get a raw pointer to the data
-                Dim ptrGlobal As Long
-                ptrGlobal = GlobalLock(hGlobalHandle)
-                If ptrGlobal <> 0 Then
-                    
-                    'Copy the data, free the hGlobal, then bail
-                    ReDim arrayBytes(0 To streamSize - 1) As Byte
-                    CopyMemoryStrict VarPtr(arrayBytes(0)), ptrGlobal, streamSize
-                    
-                    GlobalUnlock hGlobalHandle
-                    GetVBArrayFromStream = True
-                    
-                End If
-                
-            End If
-            
+        ReDim dstArray(0 To dstLength - 1) As Byte
+        
+        'Prep a manual DispCallFunc invocation
+        Dim lRead As Long, varRtn As Variant
+        Dim Vars(0 To 3) As Variant, pVars(0 To 3) As Long, pVartypes(0 To 3) As Integer
+        pVartypes(0) = vbLong: pVartypes(1) = vbLong: pVartypes(2) = vbLong
+        Vars(0) = VarPtr(dstArray(0)): Vars(1) = dstLength: Vars(2) = VarPtr(lRead)
+        pVars(0) = VarPtr(Vars(0)): pVars(1) = VarPtr(Vars(1)): pVars(2) = VarPtr(Vars(2))
+        
+        Const ISTREAM_READ As Long = 12
+        Const CC_STDCALL As Long = 4
+        
+        If DispCallFunc(ptrSrcStream, ISTREAM_READ, CC_STDCALL, vbLong, 3&, pVartypes(0), pVars(0), varRtn) = 0 Then
+            ReadIStreamIntoVBArray = True
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() failed to initiate a successful DispCallFunc-based IStream read."
+            #End If
         End If
         
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() was passed a null stream pointer!"
+        #End If
     End If
     
     Exit Function
     
 StreamConversionFailed:
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  GetVBArrayFromStream() failed for unknown reasons.  Please investigate!"
+        pdDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() failed for unknown reasons.  Please investigate!"
     #End If
 End Function

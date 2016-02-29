@@ -27,8 +27,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   4440
-      _ExtentX        =   661
-      _ExtentY        =   661
+      _extentx        =   661
+      _extenty        =   661
    End
    Begin VB.Timer tmrMetadata 
       Enabled         =   0   'False
@@ -49,22 +49,22 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   2520
-      _ExtentX        =   635
-      _ExtentY        =   635
-      ErrAsOut        =   0   'False
-      PollInterval    =   5
+      _extentx        =   635
+      _extenty        =   635
+      errasout        =   0
+      pollinterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -2747,7 +2747,7 @@ Private Sub Form_Load()
                 Dim userWantsAutosaves As VbMsgBoxResult
                 Dim listOfFilesToSave() As AutosaveXML
                 
-                userWantsAutosaves = displayAutosaveWarning(listOfFilesToSave)
+                userWantsAutosaves = DisplayAutosaveWarning(listOfFilesToSave)
                 
                 'If the user wants to restore old Autosave data, do so now.
                 If (userWantsAutosaves = vbYes) Then
@@ -2916,7 +2916,7 @@ Private Sub Form_Load()
     #End If
     
     'Because people may be using this code in the IDE, warn them about the consequences of doing so
-    If (Not g_IsProgramCompiled) And (g_UserPreferences.GetPref_Boolean("Core", "Display IDE Warning", True)) Then displayIDEWarning
+    If (Not g_IsProgramCompiled) And (g_UserPreferences.GetPref_Boolean("Core", "Display IDE Warning", True)) Then DisplayIDEWarning
     
     'In debug mode, note that we are about to turn control over to the user
     #If DEBUGMODE = 1 Then
@@ -2950,16 +2950,12 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
 End Sub
 
 Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
-
-    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
-    If Not g_AllowDragAndDrop Then Exit Sub
-
-    'Check to make sure the type of OLE object is files
-    If Data.GetFormat(vbCFFiles) Or Data.GetFormat(vbCFText) Then
-        'Inform the source that the files will be treated as "copied"
+    
+    'PD supports a lot of potential drop sources these days.  These values are defined and addressed by the main
+    ' clipboard handler, as Drag/Drop and clipboard actions share a ton of similar code.
+    If g_Clipboard.IsObjectDragDroppable(Data) Then
         Effect = vbDropEffectCopy And Effect
     Else
-        'If it's not files or text, don't allow a drop
         Effect = vbDropEffectNone
     End If
 

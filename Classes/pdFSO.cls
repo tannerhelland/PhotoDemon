@@ -541,7 +541,7 @@ Public Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
     ' If at least one file was found, return TRUE. (Note that this value might be incorrect if the user sent us an already-populated
     ' string stack, but that's okay - the assumption is that they'll be processing the stack as one continuous list, so this return
     ' value won't be relevant anyway.)
-    If dstFiles.getNumOfStrings > 0 Then
+    If dstFiles.GetNumOfStrings > 0 Then
         RetrieveAllFiles = True
     Else
         RetrieveAllFiles = False
@@ -626,7 +626,7 @@ Public Function RetrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders A
     'dstFolders now contains a full collection of subfolders for the given base folder.  If subfolders were found, return TRUE.
     ' (Note that this value might be incorrect if the user sent us an already-populated string stack, but that's okay - the assumption is that
     ' they'll be processing the stack as one continuous list, so individual returns don't matter.)
-    If dstFolders.getNumOfStrings > 0 Then
+    If dstFolders.GetNumOfStrings > 0 Then
         RetrieveAllFolders = True
     Else
         RetrieveAllFolders = False
@@ -1308,12 +1308,27 @@ Public Function SaveByteArrayToFile(ByRef srcArray() As Byte, ByVal pathToFile A
     
     On Error GoTo SaveByteArrayToFile_Failure
     
+    SaveByteArrayToFile = SavePtrToFile(VarPtr(srcArray(LBound(srcArray))), UBound(srcArray) - LBound(srcArray) + 1, pathToFile, overwriteExistingIfPresent, fileIsTempFile)
+    
+    Exit Function
+    
+SaveByteArrayToFile_Failure:
+
+    Debug.Print "WARNING! Unspecified error occurred in SaveByteArrayToFile().  Write abandoned."
+    SaveByteArrayToFile = False
+    
+End Function
+
+Public Function SavePtrToFile(ByVal ptrSrc As Long, ByVal dataLength As Long, ByVal pathToFile As String, Optional ByVal overwriteExistingIfPresent As Boolean = True, Optional ByVal fileIsTempFile As Boolean = False) As Boolean
+    
+    On Error GoTo SavePtrToFile_Failure
+    
     'See if the file exists, and delete as necessary
     If FileExist(pathToFile) Then
     
         If (Not overwriteExistingIfPresent) Then
-            SaveByteArrayToFile = False
-            Debug.Print "WARNING!  File passed to SaveByteArrayToFile() already exists, and overwrites not allowed.  Write abandoned."
+            SavePtrToFile = False
+            Debug.Print "WARNING!  File passed to SavePtrToFile() already exists, and overwrites not allowed.  Write abandoned."
             Exit Function
         Else
             KillFile pathToFile
@@ -1331,20 +1346,19 @@ Public Function SaveByteArrayToFile(ByRef srcArray() As Byte, ByVal pathToFile A
     End If
     
     'Write the array
-    SaveByteArrayToFile = WriteDataToFile(hFile, VarPtr(srcArray(LBound(srcArray))), UBound(srcArray) - LBound(srcArray) + 1)
+    SavePtrToFile = WriteDataToFile(hFile, ptrSrc, dataLength)
     
     'Release our handle
     CloseHandle hFile
     
     Exit Function
     
-SaveByteArrayToFile_Failure:
+SavePtrToFile_Failure:
 
     Debug.Print "WARNING! Unspecified error occurred in SaveByteArrayToFile().  Write abandoned."
-    SaveByteArrayToFile = False
+    SavePtrToFile = False
     
 End Function
-
 
 'Load a text file into a VB string.  Any valid encoding is supported.  Heuristics are used for "best-guess" encoding detection when
 ' BOM and other markers are unclear.
