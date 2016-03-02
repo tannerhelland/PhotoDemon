@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.853</langversion>
+<langversion>6.8.854</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ILoveVB</author>
@@ -2488,18 +2488,8 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Image URL found on clipboard.  Attempting to download</original>
-<translation>在剪贴板上发现的图片网址。试图下载</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
-<translation>图像下载失败。请复制一个有效的图像的URL到剪贴板并再试一次。</translation>
-</phrase>
-
-<phrase>
-<original>Imported Image</original>
-<translation>导入的图像</translation>
+<original>Image URL found.  Attempting to download</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2508,11 +2498,16 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Image download failed.  Please supply a valid image URL and try again.</original>
-<translation>图片下载失败。请提供一个有效的图像链接，并再次尝试。</translation>
+<original>Image download failed.  Please copy a valid image URL and try again.</original>
+<translation></translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<phrase>
+<original>Imported Image</original>
+<translation>导入的图像</translation>
+</phrase>
+
+<!-- pdClipboardMain.cls contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdClipboardMain.cls-->
 
@@ -14722,10 +14717,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2523</phrasecount>
+<phrasecount>2522</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4327 phrases. -->
-<!-- 1804 are duplicates, so only 2523 unique phrases have been written to file. -->
-<!-- These 2523 phrases contain approximately 13469 total words. -->
+<!-- As of this build, PhotoDemon contains 4326 phrases. -->
+<!-- 1804 are duplicates, so only 2522 unique phrases have been written to file. -->
+<!-- These 2522 phrases contain approximately 13451 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.141</langversion>
+<langversion>6.7.142</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -2495,18 +2495,8 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
-<original>Image URL found on clipboard.  Attempting to download</original>
-<translation>URL didapati di papan klip. Cuba untuk memuat turun</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
-<translation>Imej turun gagal. Sila salin URL imej yang sah ke clipboard dan cuba lagi.</translation>
-</phrase>
-
-<phrase>
-<original>Imported Image</original>
-<translation>Imej yang diimport</translation>
+<original>Image URL found.  Attempting to download</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2515,11 +2505,16 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
-<original>Image download failed.  Please supply a valid image URL and try again.</original>
-<translation>Imej turun gagal. Sila berikan URL imej yang sah dan cuba lagi.</translation>
+<original>Image download failed.  Please copy a valid image URL and try again.</original>
+<translation></translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<phrase>
+<original>Imported Image</original>
+<translation>Imej yang diimport</translation>
+</phrase>
+
+<!-- pdClipboardMain.cls contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdClipboardMain.cls-->
 
@@ -14734,10 +14729,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2523</phrasecount>
+<phrasecount>2522</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4327 phrases. -->
-<!-- 1804 are duplicates, so only 2523 unique phrases have been written to file. -->
-<!-- These 2523 phrases contain approximately 13469 total words. -->
+<!-- As of this build, PhotoDemon contains 4326 phrases. -->
+<!-- 1804 are duplicates, so only 2522 unique phrases have been written to file. -->
+<!-- These 2522 phrases contain approximately 13451 total words. -->
 
 </pdData>

@@ -382,6 +382,60 @@ Private insideMinimizeMode As Boolean
 Private m_CurrentToolPanelHwnd As Long
 Private m_ToolPanelDictionary As pdDictionary
 
+'***********************************************************************************************
+'  GENERIC HELPER FUNCTIONS: VB-friendly wrappers to window-related APIs
+'***********************************************************************************************
+
+'The VB-specific "Form.Caption = <string>" statement isn't Unicode-compatible.  It also has the quirk of causing a docked child form
+' to un-dock.  Thus, all caption requests must be passed through the window manager, who will then use the API to change caption text.
+Public Sub SetWindowCaptionW(ByRef targetHwnd As Long, ByRef newCaption As String)
+    DefWindowProcW targetHwnd, WM_SETTEXT, 0&, ByVal StrPtr(newCaption)
+End Sub
+
+Public Sub SetVisibilityOfAnyWindowByHwnd(ByVal srcHwnd As Long, ByVal visibilityState As Boolean, Optional ByVal activateWindowToo As Boolean = False)
+    If visibilityState Then
+        If activateWindowToo Then ShowWindow srcHwnd, SW_RESTORE Else ShowWindow srcHwnd, SW_SHOWNA
+    Else
+        ShowWindow srcHwnd, SW_HIDE
+    End If
+End Sub
+
+Public Function GetClientWidth(ByVal targetHwnd As Long) As Long
+    Dim tmpRect As winRect
+    GetClientRect targetHwnd, tmpRect
+    GetClientWidth = tmpRect.x2
+End Function
+
+Public Function GetClientHeight(ByVal targetHwnd As Long) As Long
+    Dim tmpRect As winRect
+    GetClientRect targetHwnd, tmpRect
+    GetClientHeight = tmpRect.y2
+End Function
+
+Private Function GetWindowWidth(ByVal targetHwnd As Long) As Long
+    Dim tmpRect As winRect
+    GetWindowRect targetHwnd, tmpRect
+    GetWindowWidth = tmpRect.x2 - tmpRect.x1
+End Function
+
+Private Function GetWindowHeight(ByVal targetHwnd As Long) As Long
+    Dim tmpRect As winRect
+    GetWindowRect targetHwnd, tmpRect
+    GetWindowHeight = tmpRect.y2 - tmpRect.y1
+End Function
+
+Public Function GetFocusAPI() As Long
+    GetFocusAPI = GetFocus()
+End Function
+
+Public Sub SetFocusAPI(ByVal hWndToReceiveFocus As Long)
+    SetFocus hWndToReceiveFocus
+End Sub
+
+'***********************************************************************************************
+'  (/End GENERIC HELPER FUNCTIONS)
+'***********************************************************************************************
+
 'Activate a new tool options panel
 Public Sub ActivateToolPanel(ByVal formHwndToActivate As Long)
     
@@ -425,11 +479,7 @@ Public Sub ActivateToolPanel(ByVal formHwndToActivate As Long)
         SetWindowPos m_CurrentToolPanelHwnd, HWND_TOP, 0, 1, optionsPanelRect.x2 - optionsPanelRect.x1, optionsPanelRect.y2 - optionsPanelRect.y1, SWP_NOACTIVATE Or SWP_NOOWNERZORDER Or SWP_NOZORDER
         
         'Finally, set visibility according to the parent window
-        If toolbar_Options.Visible Then
-            ShowWindow m_CurrentToolPanelHwnd, SW_SHOWNA
-        Else
-            ShowWindow m_CurrentToolPanelHwnd, SW_HIDE
-        End If
+        Me.SetVisibilityOfAnyWindowByHwnd m_CurrentToolPanelHwnd, toolbar_Options.Visible, False
         
     End If
     
@@ -454,13 +504,13 @@ Public Sub DeactivateToolPanel(ByVal programIsGoingDown As Boolean, Optional ByV
                 'This is a dirty cheat, but basically, this function restores the initial WindowLong GWL_STYLE flags the window had
                 ' when it was first passed to the window manager.  This lets us reset the window state to whatever VB's defaults are,
                 ' which reduces the risk for error as we shut the program down.
-                SetWindowLong targetHwnd, GWL_STYLE, m_ToolPanelDictionary.getEntry_Long(targetHwnd, GetWindowLong(targetHwnd, GWL_STYLE))
+                SetWindowLong targetHwnd, GWL_STYLE, m_ToolPanelDictionary.GetEntry_Long(targetHwnd, GetWindowLong(targetHwnd, GWL_STYLE))
                 
             End If
             
         End If
         
-        ShowWindow targetHwnd, SW_HIDE
+        Me.SetVisibilityOfAnyWindowByHwnd targetHwnd, False
         
     End If
     
@@ -560,17 +610,6 @@ Public Sub SetImageTabstripAlignment(ByVal newAlignment As AlignConstants)
 
 End Sub
 
-'If external functions want to know if PD has focus or not, they can use this function.  It will return TRUE if PhotoDemon is the active window.
-Public Function DoesProgramHaveFocus() As Boolean
-    DoesProgramHaveFocus = Not isPDDeactivated
-End Function
-
-'The VB-specific "Form.Caption = <string>" statement isn't Unicode-compatible.  It also has the quirk of causing a docked child form
-' to un-dock.  Thus, all caption requests must be passed through the window manager, who will then use the API to change caption text.
-Public Sub SetWindowCaptionW(ByRef targetHwnd As Long, ByRef newCaption As String)
-    DefWindowProcW targetHwnd, WM_SETTEXT, 0&, ByVal StrPtr(newCaption)
-End Sub
-
 'Toolbox windows can be hidden (but not unloaded!) via this sub.  It's important to note that toolbox windows should *not* be
 ' unloaded, because many aspects of PD interact with the toolboxes - for example, en/disabling buttons on the file toolbar as
 ' necessary - and if the toolbox is unloaded, those statements will cause errors.
@@ -597,11 +636,7 @@ Public Sub SetWindowVisibility(ByVal winHwnd As Long, ByVal newVisibility As Boo
     Next i
     
     'Use the ShowWindow API to show or hide the window
-    If newVisibility Then
-        ShowWindow winHwnd, SW_RESTORE
-    Else
-        ShowWindow winHwnd, SW_HIDE
-    End If
+    Me.SetVisibilityOfAnyWindowByHwnd winHwnd, newVisibility, True
     
     'The available client area for the main form may have changed.  Refresh all relevant windows.
     If Not suppressImageRedraws Then
@@ -613,20 +648,8 @@ Public Sub SetWindowVisibility(ByVal winHwnd As Long, ByVal newVisibility As Boo
     End If
      
     'Because the main image canvas area may be modified due to window visibility, redraw it now
-    FormMain.refreshAllCanvases
+    FormMain.RefreshAllCanvases
     
-End Sub
-
-'Convenience function; sometimes it's easier for PD to set window visibility by hWnd, and this function helps with that
-Public Sub SetVisibilityOfAnyWindowByHwnd(ByVal srcHwnd As Long, ByVal visibilityState As Boolean)
-
-    'Use the ShowWindow API to show or hide the window
-    If visibilityState Then
-        ShowWindow srcHwnd, SW_RESTORE
-    Else
-        ShowWindow srcHwnd, SW_HIDE
-    End If
-
 End Sub
 
 'If external (or internal) functions move windows around on their own, they can manually request resyncing the window's offset.
@@ -905,32 +928,6 @@ Private Sub FixDockedToolbarSize(ByVal winIndex As Long)
     
 End Sub
 
-'Given a window, return its horizontal (or vertical) client size, in pixels.
-Public Function GetClientWidth(ByVal targetHwnd As Long) As Long
-    Dim tmpRect As winRect
-    GetClientRect targetHwnd, tmpRect
-    GetClientWidth = tmpRect.x2
-End Function
-
-Public Function GetClientHeight(ByVal targetHwnd As Long) As Long
-    Dim tmpRect As winRect
-    GetClientRect targetHwnd, tmpRect
-    GetClientHeight = tmpRect.y2
-End Function
-
-'Given a window, return its horizontal (or vertical) size, in pixels.
-Private Function GetWindowWidth(ByVal targetHwnd As Long) As Long
-    Dim tmpRect As winRect
-    GetWindowRect targetHwnd, tmpRect
-    GetWindowWidth = tmpRect.x2 - tmpRect.x1
-End Function
-
-Private Function GetWindowHeight(ByVal targetHwnd As Long) As Long
-    Dim tmpRect As winRect
-    GetWindowRect targetHwnd, tmpRect
-    GetWindowHeight = tmpRect.y2 - tmpRect.y1
-End Function
-
 'Force a full window refresh (invalidate + update)
 Private Sub ForceFullWindowRefresh(ByVal winIndex As Long)
     InvalidateRect pdWindows(winIndex).hWnd, ByVal 0&, 0
@@ -1074,7 +1071,7 @@ Public Sub SetFirstRunMainWindowPosition()
     
     Dim pWorkingRect As RECTL
     If Not (PrimaryDisplay Is Nothing) Then
-        PrimaryDisplay.getWorkingRect pWorkingRect
+        PrimaryDisplay.GetWorkingRect pWorkingRect
     Else
         With pWorkingRect
             .Left = 0
@@ -1287,12 +1284,10 @@ End Function
 
 'Reset the XML engine.  Note that the XML object SHOULD ALREADY BE INSTANTIATED before calling this function.
 Private Function resetXMLData()
-
     xmlEngine.prepareNewXML "Window locations"
     xmlEngine.writeBlankLine
     xmlEngine.writeComment "Everything past this point is window location data for various PhotoDemon dialogs."
     xmlEngine.writeBlankLine
-    
 End Function
 
 'This class provides some helper functions to intelligently position child windows, typically only used if toolbars are in float
@@ -1419,7 +1414,7 @@ Public Sub UpdateMinimumDimensions(ByVal srcHwnd As Long, Optional ByVal minWidt
                 'If the window is too small, fix it now
                 If GetWindowWidth(srcHwnd) < minWidth Then
                     pdWindows(i).formReference.Move pdWindows(i).formReference.Left, pdWindows(i).formReference.Top, minWidth * Screen.TwipsPerPixelX
-                    FormMain.refreshAllCanvases
+                    FormMain.RefreshAllCanvases
                 End If
                 
             End If
@@ -1433,7 +1428,7 @@ Public Sub UpdateMinimumDimensions(ByVal srcHwnd As Long, Optional ByVal minWidt
                 'If the window is too small, fix it now
                 If GetWindowHeight(srcHwnd) < minHeight Then
                     pdWindows(i).formReference.Move pdWindows(i).formReference.Left, pdWindows(i).formReference.Top, , minHeight * Screen.TwipsPerPixelY
-                    FormMain.refreshAllCanvases
+                    FormMain.RefreshAllCanvases
                 End If
                 
             End If
@@ -1542,15 +1537,6 @@ Public Sub UnregisterForm(ByRef srcForm As Form)
 
 End Sub
 
-'VB makes getting and setting focus an error-prone pain, so I prefer to use the API and deal strictly with hWnds.
-Public Function GetFocusAPI() As Long
-    GetFocusAPI = GetFocus()
-End Function
-
-Public Sub SetFocusAPI(ByVal hWndToReceiveFocus As Long)
-    SetFocus hWndToReceiveFocus
-End Sub
-
 Private Sub Class_Initialize()
 
     'Reset all tracking variables
@@ -1589,14 +1575,7 @@ End Sub
 
 'When the user has resized the image tabstrip, we need to redraw all image windows to match (but toolbars are okay).
 Public Sub NotifyImageTabStripResized()
-    
-    If Not mainFormTriggeredChange Then
-    
-        'Ask the main form's canvas to redraw itself
-        FormMain.refreshAllCanvases
-        
-    End If
-    
+    If Not mainFormTriggeredChange Then FormMain.RefreshAllCanvases
 End Sub
 
 'When the user has manually resized one of the toolboxes, we need to adjust other toolboxes to match.
@@ -1611,7 +1590,7 @@ Public Sub NotifyToolboxResized(Optional ByVal hWndOfResizeSource As Long = 0, O
     If pdWindows(imageTabstripIndex).isVisible Then RequestWindowRedraw imageTabstripIndex, curWinRect
     
     'Ask the main form's canvas to redraw itself, per the passed parameter
-    If refreshCanvasToo Then FormMain.refreshAllCanvases
+    If refreshCanvasToo Then FormMain.RefreshAllCanvases
     
 End Sub
 

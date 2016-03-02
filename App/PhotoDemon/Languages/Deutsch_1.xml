@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.141</langversion>
+<langversion>6.7.142</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -2493,18 +2493,8 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 </phrase>
 
 <phrase>
-<original>Image URL found on clipboard.  Attempting to download</original>
-<translation>URL in der Zwischenablage gefunden - Download wird versucht</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
-<translation>Bild-Download fehlgeschlagen. Bitte kopieren Sie eine gültige Bild-URL in die Zwischenablage und versuchen Sie es erneut.</translation>
-</phrase>
-
-<phrase>
-<original>Imported Image</original>
-<translation>Importiertes Bild</translation>
+<original>Image URL found.  Attempting to download</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2513,11 +2503,16 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 </phrase>
 
 <phrase>
-<original>Image download failed.  Please supply a valid image URL and try again.</original>
-<translation>Das Bild konnte nicht heruntergeladen werden. Bitte geben Sie eine gültige Bild-URL an und versuchen Sie es noch mal.</translation>
+<original>Image download failed.  Please copy a valid image URL and try again.</original>
+<translation></translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<phrase>
+<original>Imported Image</original>
+<translation>Importiertes Bild</translation>
+</phrase>
+
+<!-- pdClipboardMain.cls contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdClipboardMain.cls-->
 
@@ -14732,10 +14727,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2523</phrasecount>
+<phrasecount>2522</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4327 phrases. -->
-<!-- 1804 are duplicates, so only 2523 unique phrases have been written to file. -->
-<!-- These 2523 phrases contain approximately 13469 total words. -->
+<!-- As of this build, PhotoDemon contains 4326 phrases. -->
+<!-- 1804 are duplicates, so only 2522 unique phrases have been written to file. -->
+<!-- These 2522 phrases contain approximately 13451 total words. -->
 
 </pdData>
