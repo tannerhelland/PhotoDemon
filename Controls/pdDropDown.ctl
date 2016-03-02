@@ -636,7 +636,7 @@ Private Sub RaiseListBox()
     
     'Move the listbox into position *but do not display it*
     With popupRect
-        SetWindowPos lbPrimary.hWnd, 0&, .Left, .Top, .Width, .Height, SWP_NOACTIVATE 'SWP_SHOWWINDOW
+        SetWindowPos lbPrimary.hWnd, 0&, .Left, .Top, .Width, .Height, SWP_NOACTIVATE
     End With
     
     'Clone our list's contents; note that we cannot do this until *after* the list size has been established, as the

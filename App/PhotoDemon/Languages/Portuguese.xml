@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.141</langversion>
+<langversion>6.7.142</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -2495,18 +2495,8 @@ Please válidos inserir um valor numérico.</translation>
 </phrase>
 
 <phrase>
-<original>Image URL found on clipboard.  Attempting to download</original>
-<translation>Imagem URL encontrada na prancheta. Preparando para baixar</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
-<translation>Baixe a imagem falhou. Por favor, copie a URL da imagem válida para a área e tente novamente.</translation>
-</phrase>
-
-<phrase>
-<original>Imported Image</original>
-<translation>imagem importada</translation>
+<original>Image URL found.  Attempting to download</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2515,11 +2505,16 @@ Please válidos inserir um valor numérico.</translation>
 </phrase>
 
 <phrase>
-<original>Image download failed.  Please supply a valid image URL and try again.</original>
-<translation>Baixe a imagem falhou. Por favor, forneça um URL de imagem válido e tente novamente.</translation>
+<original>Image download failed.  Please copy a valid image URL and try again.</original>
+<translation></translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<phrase>
+<original>Imported Image</original>
+<translation>imagem importada</translation>
+</phrase>
+
+<!-- pdClipboardMain.cls contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdClipboardMain.cls-->
 
@@ -14734,10 +14729,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2523</phrasecount>
+<phrasecount>2522</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4327 phrases. -->
-<!-- 1804 are duplicates, so only 2523 unique phrases have been written to file. -->
-<!-- These 2523 phrases contain approximately 13469 total words. -->
+<!-- As of this build, PhotoDemon contains 4326 phrases. -->
+<!-- 1804 are duplicates, so only 2522 unique phrases have been written to file. -->
+<!-- These 2522 phrases contain approximately 13451 total words. -->
 
 </pdData>
