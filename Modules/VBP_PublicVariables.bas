@@ -200,10 +200,6 @@ Public g_Themer As pdVisualThemes
 Public g_RecentFiles As pdMRUManager
 Public g_RecentMacros As pdMRUManager
 
-'To improve mousewheel handling, we dynamically track the position of the mouse.  If it is over the image tabstrip,
-' the main form will forward mousewheel events there; otherwise, the image window gets them.
-Public g_MouseOverImageTabstrip As Boolean
-
 'Global color management setting.  If the user has requested use of custom profiles, this will be set to FALSE.
 Public g_UseSystemColorProfile As Boolean
 

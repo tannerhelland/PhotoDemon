@@ -459,7 +459,6 @@ Private Sub UserControl_Initialize()
                 
 End Sub
 
-'Set default properties
 Private Sub UserControl_InitProperties()
     BackColor = vbWhite
     BackgroundColor = vbWhite
@@ -472,11 +471,10 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    ucSupport.RequestIDERepaint UserControl.hDC
+    If Not g_IsProgramRunning Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-
     With PropBag
         BackColor = .ReadProperty("BackColor", vbWhite)
         BackgroundColor = .ReadProperty("BackgroundColor", vbWhite)
@@ -486,7 +484,6 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         Enabled = .ReadProperty("Enabled", True)
         FontSize = .ReadProperty("FontSize", 10)
     End With
-
 End Sub
 
 Private Sub UserControl_Resize()
@@ -494,8 +491,6 @@ Private Sub UserControl_Resize()
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-
-    'Store all associated properties
     With PropBag
         .WriteProperty "BackColor", m_BackColor, vbWhite
         .WriteProperty "BackgroundColor", m_BackgroundColor, vbWhite
@@ -505,7 +500,6 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Enabled", Me.Enabled, True
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 10
     End With
-    
 End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number

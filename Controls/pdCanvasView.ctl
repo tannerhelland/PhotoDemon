@@ -279,7 +279,7 @@ End Sub
 ' TODO: decide if we should expose the "repaint immediately" functionality... I have mixed feelings about this, and if
 ' we can avoid it, so much the better.
 Public Sub RequestRedraw(Optional ByVal repaintImmediately As Boolean = False)
-    If Not g_ProgramShuttingDown Then ucSupport.RequestRepaint repaintImmediately
+    If (Not g_ProgramShuttingDown) Then ucSupport.RequestRepaint repaintImmediately
 End Sub
 
 'For some tool actions, it may be helpful to move the cursor for the user.  Call this function to forcibly set a cursor position.
