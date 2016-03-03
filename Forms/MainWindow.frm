@@ -1826,8 +1826,7 @@ Public Sub RefreshAllCanvases()
     'API is used instead of .Move as it produces smoother movement
     MoveWindow mainCanvas(0).hWnd, mainRect.x1, mainRect.y1, mainRect.x2 - mainRect.x1, mainRect.y2 - mainRect.y1, 1
     'TODO 7.0: fix this mess
-    mainCanvas(0).AlignCanvasView
-    mainCanvas(0).FixChromeLayout
+    mainCanvas(0).UpdateCanvasLayout
     mainCanvas(0).UpdateAgainstCurrentTheme
     
     'Refresh any current windows

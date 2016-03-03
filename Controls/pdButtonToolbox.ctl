@@ -228,6 +228,8 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
     'Load the requested resource DIB, as necessary.  (I say "as necessary" because the caller can supply the DIB as-is, too.)
     If Len(resName) <> 0 Then LoadResourceToDIB resName, srcDIB
     
+    If (srcDIB Is Nothing) Then Exit Sub
+    
     'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
     ' (We also check for these != 0 to verify that an image was successfully loaded.)
     m_ButtonWidth = srcDIB.getDIBWidth

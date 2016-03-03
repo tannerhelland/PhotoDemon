@@ -29,7 +29,7 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon standalone Slider custom control
+'PhotoDemon standalone slider custom control
 'Copyright 2013-2016 by Tanner Helland
 'Created: 19/April/13
 'Last updated: 12/February/16

@@ -61,7 +61,7 @@ Public Sub SetProgBarMax(ByVal pbVal As Long)
             Set curProgBar = New cProgressBarOfficial
             
             'Assign the progress bar control to its container picture box on the primary canvas, then display it.
-            With FormMain.mainCanvas(0).getProgBarReference()
+            With FormMain.mainCanvas(0).GetProgBarReference()
                 curProgBar.CreateProgressBar .hWnd, 0, 0, .ScaleWidth, .ScaleHeight, True, False, False, True
                 .Visible = True
             End With
@@ -141,7 +141,7 @@ Public Sub ReleaseProgressBar()
         curProgBar.Refresh
     
         'Release the progress bar and container picture box
-        FormMain.mainCanvas(0).getProgBarReference.Visible = False
+        FormMain.mainCanvas(0).GetProgBarReference.Visible = False
         Set curProgBar = Nothing
         
     End If

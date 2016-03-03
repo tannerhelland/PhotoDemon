@@ -47,11 +47,11 @@ Private zoomCountFixed As Long
 Private zoomCountDynamic As Long
 
 'This set of functions are simply wrappers that external code can use to access individual zoom entries
-Public Function getZoomValue(ByVal zoomIndex As Long) As Double
+Public Function GetZoomValue(ByVal zoomIndex As Long) As Double
     
     'If the zoom value is a fixed entry, our work is easy - simply return the fixed zoom value at that index
     If zoomIndex <= zoomCountFixed Then
-        getZoomValue = zoomValues(zoomIndex)
+        GetZoomValue = zoomValues(zoomIndex)
         
     'If the zoom value is a dynamic entry, we need to calculate a specific zoom value at run-time
     Else
@@ -82,9 +82,9 @@ Public Function getZoomValue(ByVal zoomIndex As Long) As Double
                     'Check to see if the calculated zoom value will require a vertical scroll bar (since we are only fitting width).
                     ' If it will, we must subtract the scroll bar's width from our calculation.
                     If imgHeight * horizontalRatio > viewportHeight Then
-                        getZoomValue = viewportWidth / imgWidth
+                        GetZoomValue = viewportWidth / imgWidth
                     Else
-                        getZoomValue = horizontalRatio
+                        GetZoomValue = horizontalRatio
                     End If
                     
                 'Fit height
@@ -93,23 +93,23 @@ Public Function getZoomValue(ByVal zoomIndex As Long) As Double
                     'Check to see if the calculated zoom value will require a horizontal scroll bar (since we are only fitting height).
                     ' If it will, we must subtract the scroll bar's height from our calculation.
                     If imgWidth * verticalRatio > viewportWidth Then
-                        getZoomValue = viewportHeight / imgHeight
+                        GetZoomValue = viewportHeight / imgHeight
                     Else
-                        getZoomValue = verticalRatio
+                        GetZoomValue = verticalRatio
                     End If
                     
                 'Fit everything
                 Case zoomCountFixed + 3
                     If horizontalRatio < verticalRatio Then
-                        getZoomValue = horizontalRatio
+                        GetZoomValue = horizontalRatio
                     Else
-                        getZoomValue = verticalRatio
+                        GetZoomValue = verticalRatio
                     End If
             
             End Select
             
         Else
-            getZoomValue = 1
+            GetZoomValue = 1
         End If
         
     
@@ -117,22 +117,22 @@ Public Function getZoomValue(ByVal zoomIndex As Long) As Double
     
 End Function
 
-Public Function getZoomOffsetFactor(ByVal zoomIndex As Long) As Double
+Public Function GetZoomOffsetFactor(ByVal zoomIndex As Long) As Double
     
     'If the zoom value is a fixed entry, our work is easy - simply return the fixed zoom offset at that index
     If zoomIndex <= zoomCountFixed Then
-        getZoomOffsetFactor = zoomOffsetFactors(zoomIndex)
+        GetZoomOffsetFactor = zoomOffsetFactors(zoomIndex)
     
     'If the zoom value is a dynamic entry, we need to calculate a specific zoom offset at run-time
     Else
     
         Dim curZoomValue As Double
-        curZoomValue = getZoomValue(zoomIndex)
+        curZoomValue = GetZoomValue(zoomIndex)
         
         If curZoomValue >= 1 Then
-            getZoomOffsetFactor = curZoomValue
+            GetZoomOffsetFactor = curZoomValue
         Else
-            getZoomOffsetFactor = 1 / curZoomValue
+            GetZoomOffsetFactor = 1 / curZoomValue
         End If
     
     End If
@@ -141,29 +141,29 @@ End Function
 
 'To minimize the possibility of program-wide changes if I ever decide to fiddle with PD's fixed zoom values, these functions are used
 ' externally to retrieve specific zoom indices.
-Public Function getZoom100Index() As Long
-    getZoom100Index = ZOOM_100_PERCENT
+Public Function GetZoom100Index() As Long
+    GetZoom100Index = ZOOM_100_PERCENT
 End Function
 
-Public Function getZoomFitWidthIndex() As Long
-    getZoomFitWidthIndex = zoomCountFixed + 1
+Public Function GetZoomFitWidthIndex() As Long
+    GetZoomFitWidthIndex = zoomCountFixed + 1
 End Function
 
-Public Function getZoomFitHeightIndex() As Long
-    getZoomFitHeightIndex = zoomCountFixed + 2
+Public Function GetZoomFitHeightIndex() As Long
+    GetZoomFitHeightIndex = zoomCountFixed + 2
 End Function
 
-Public Function getZoomFitAllIndex() As Long
-    getZoomFitAllIndex = zoomCountFixed + 3
+Public Function GetZoomFitAllIndex() As Long
+    GetZoomFitAllIndex = zoomCountFixed + 3
 End Function
 
-Public Function getZoomCount() As Long
-    getZoomCount = zoomCountFixed
+Public Function GetZoomCount() As Long
+    GetZoomCount = zoomCountFixed
 End Function
 
 'Whenever one of these classes is created, remember to call this initialization function.  It will manually prepare a
 ' list of zoom values relevant to the program.
-Public Sub initializeViewportEngine()
+Public Sub InitializeViewportEngine()
 
     'This list of zoom values is (effectively) arbitrary.  I've based this list off similar lists (Paint.NET, GIMP)
     ' while including a few extra values for convenience's sake
@@ -304,7 +304,7 @@ Public Sub initializeViewportEngine()
 End Sub
 
 'Populate an arbitrary combo box with the current list of handled zoom values
-Public Sub populateZoomComboBox(ByRef dstComboBox As pdDropDown, Optional ByVal initialListIndex As Long = -1)
+Public Sub PopulateZoomComboBox(ByRef dstComboBox As pdDropDown, Optional ByVal initialListIndex As Long = -1)
 
     dstComboBox.Clear
     
@@ -333,27 +333,27 @@ Public Sub populateZoomComboBox(ByRef dstComboBox As pdDropDown, Optional ByVal 
 End Sub
 
 'Given a current zoom index, find the nearest relevant "zoom in" index.  This requires special handling in the case of "fit image on screen".
-Public Function getNearestZoomInIndex(ByVal curIndex As Long) As Long
+Public Function GetNearestZoomInIndex(ByVal curIndex As Long) As Long
 
     'This function is split into two cases.  If the current zoom index is a fixed value (e.g. "100%"), finding
     ' the nearest zoom-in index is easy.
     If curIndex <= zoomCountFixed Then
         
-        getNearestZoomInIndex = curIndex - 1
-        If getNearestZoomInIndex < 0 Then getNearestZoomInIndex = 0
+        GetNearestZoomInIndex = curIndex - 1
+        If GetNearestZoomInIndex < 0 Then GetNearestZoomInIndex = 0
     
     'If the current zoom index is one of the "fit" options, this is more complicated.  We want to set the first fixed index we
     ' find that is larger than the current dynamic value being used.
     Else
     
         Dim curZoomValue As Double
-        curZoomValue = getZoomValue(curIndex)
+        curZoomValue = GetZoomValue(curIndex)
         
         'Start searching the zoom array for the nearest value that is larger than the current zoom value.
         Dim i As Long
         For i = zoomCountFixed To 0 Step -1
             If zoomValues(i) > curZoomValue Then
-                getNearestZoomInIndex = i
+                GetNearestZoomInIndex = i
                 Exit For
             End If
         Next i
@@ -363,27 +363,27 @@ Public Function getNearestZoomInIndex(ByVal curIndex As Long) As Long
 End Function
 
 'Given a current zoom index, find the nearest relevant "zoom out" index.  This requires special handling in the case of "fit image on screen".
-Public Function getNearestZoomOutIndex(ByVal curIndex As Long) As Long
+Public Function GetNearestZoomOutIndex(ByVal curIndex As Long) As Long
 
     'This function is split into two cases.  If the current zoom index is a fixed value (e.g. "100%"), finding
     ' the nearest zoom-out index is easy.
     If curIndex <= zoomCountFixed Then
         
-        getNearestZoomOutIndex = curIndex + 1
-        If getNearestZoomOutIndex > zoomCountFixed Then getNearestZoomOutIndex = zoomCountFixed
+        GetNearestZoomOutIndex = curIndex + 1
+        If GetNearestZoomOutIndex > zoomCountFixed Then GetNearestZoomOutIndex = zoomCountFixed
     
     'If the current zoom index is one of the "fit" options, this is more complicated.  We want to set the first fixed index we
     ' find that is smaller than the current dynamic value being used.
     Else
     
         Dim curZoomValue As Double
-        curZoomValue = getZoomValue(curIndex)
+        curZoomValue = GetZoomValue(curIndex)
         
         'Start searching the zoom array for the nearest value that is larger than the current zoom value.
         Dim i As Long
         For i = 0 To zoomCountFixed
             If zoomValues(i) < curZoomValue Then
-                getNearestZoomOutIndex = i
+                GetNearestZoomOutIndex = i
                 Exit For
             End If
         Next i

@@ -237,7 +237,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                 'Show the "do you want to save this image?" dialog. On that form, the number of unsaved images will be
                 ' displayed and the user will be given an option to apply their choice to all unsaved images.
                 Dim confirmReturn As VbMsgBoxResult
-                confirmReturn = confirmClose(imageID)
+                confirmReturn = ConfirmClose(imageID)
                 
             Else
                 confirmReturn = g_HowToDealWithAllUnsavedImages
@@ -389,10 +389,10 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
                 'TODO: fix this!
                 
                 'Reflow any image-window-specific chrome (status bar, rulers, etc)
-                FormMain.mainCanvas(0).FixChromeLayout
+                FormMain.mainCanvas(0).AlignCanvasView
             
                 'Notify the thumbnail bar that a new image has been selected
-                toolbar_ImageTabs.notifyNewActiveImage imageID
+                toolbar_ImageTabs.NotifyNewActiveImage imageID
             
                 'Synchronize various interface elements to match values stored in this image.
                 SyncInterfaceToCurrentImage

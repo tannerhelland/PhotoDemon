@@ -481,7 +481,7 @@ Public Sub LoadTheProgram()
     End If
     
     'PhotoDemon renders many of its own icons dynamically.  Initialize that engine now.
-    initializeIconHandler
+    InitializeIconHandler
     
     'Prepare a checkerboard pattern, which will be used behind any transparent objects.  Caching this is much more efficient.
     ' than re-creating it every time it's needed.
@@ -1171,7 +1171,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             
             'Note that we now need to see if the ICC profile has already been applied.  For CMYK images, the ICC profile will be applied by
             ' the image load function.  If we don't do this, we'll be left with a 32bpp image that contains CMYK data instead of RGBA!
-            If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) And (Not targetImage.imgStorage.DoesKeyExist("Tone-mapping")) Then
+            If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) And (Not targetImage.imgStorage.doesKeyExist("Tone-mapping")) Then
                 
                 '32bpp images must be un-premultiplied before the transformation
                 If targetDIB.getDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication False
@@ -1433,7 +1433,7 @@ PDI_Load_Continuation:
             If MacroStatus <> MacroBATCH Then CreateCustomFormIcons targetImage
             
             'Register this image with the image tab bar
-            toolbar_ImageTabs.registerNewImage g_CurrentImage
+            toolbar_ImageTabs.RegisterNewImage g_CurrentImage
             
             'Just to be safe, update the color management profile of the current monitor
             CheckParentMonitor True
@@ -1454,7 +1454,7 @@ PDI_Load_Continuation:
             If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then g_RecentFiles.MRU_AddNewFile sFile(thisImage), targetImage
             
             'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
-            FormMain.mainCanvas(0).FixChromeLayout
+            FormMain.mainCanvas(0).AlignCanvasView
             
             'Because ExifTool is sending us data in the background, we periodically yield for metadata piping.
             If targetImage.originalFileFormat <> FIF_PDI Then DoEvents
@@ -1623,7 +1623,7 @@ PDI_Load_Continuation:
                 pdDebug.LogAction "Creating initial auto-save entry (this may take a moment)..."
             #End If
             
-            targetImage.undoManager.createUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
+            targetImage.undoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
             
         End If
         

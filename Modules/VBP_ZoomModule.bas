@@ -236,7 +236,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
     yScroll_Image = dstCanvas.GetScrollValue(PD_VERTICAL)
     
     'Next, let's calculate these *in the canvas coordinate space* (e.g. with zoom applied)
-    If m_ZoomRatio = 0 Then m_ZoomRatio = g_Zoom.getZoomValue(srcImage.currentZoomValue)
+    If m_ZoomRatio = 0 Then m_ZoomRatio = g_Zoom.GetZoomValue(srcImage.currentZoomValue)
     xScroll_Canvas = xScroll_Image * m_ZoomRatio
     yScroll_Canvas = yScroll_Image * m_ZoomRatio
     
@@ -486,9 +486,9 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     'The fundamental problem this first pipeline stage must solve is: how much screen real-estate do we have to work with, and how
     ' will we fit the image into that real-estate.
     
-    'Potentially problematic is future feature additions, like rulers, which may interfere with our available viewport real-estate (e.g. rulers).
-    ' To try and preempt changes from such such features, you'll notice various calls into the main pdCanvas object.  The idea is to have pdCanvas
-    ' calculate the positioning of such features, so only minimal changes are required here.
+    'Potentially problematic is future feature additions, like rulers, which may interfere with our available viewport real-estate
+    ' (e.g. rulers).  To try and preempt changes from such such features, you'll notice various calls into the main pdCanvas object.
+    ' The goal is to have pdCanvas calculate the positioning of such features, so only minimal changes are required here.
     
     'Finally, an important clarification is use of the terms "viewport" and "canvas".
     
@@ -497,7 +497,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     '           or scrolled past the edge of the image)
     
     'Sometimes the viewport and canvas rects will be identical.  Sometimes they will not.  If the canvas rect is larger than
-    ' the viewport rect, the viewport rect will automatically be centered within the viewport area.
+    ' the viewport rect, the viewport rect will typically be centered within the viewport area.
     
     'The caller can request special behavior via the ExtraSettings param array.  In most cases, we don't deal with these results until
     ' the end of the function, but for the "preserve center point" request, we need to determine the current image+viewport center points
@@ -517,7 +517,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     'This crucial value is the mathematical ratio of the current zoom value: 1 for 100%, 0.5 for 50%, 2 for 200%, etc.
     ' We can't generate this automatically, because specialty zoom values (like "fit to window") must be externally generated
     ' by PD's zoom handler.
-    m_ZoomRatio = g_Zoom.getZoomValue(srcImage.currentZoomValue)
+    m_ZoomRatio = g_Zoom.GetZoomValue(srcImage.currentZoomValue)
     
     'Next, we're going to calculate a bunch of rects in various coordinate spaces.  Because PD 7.0 added the ability to scroll past the
     ' edge of the image (at any zoom), these rects are crucial for figuring out the overlap between the zoomed image, and the available
@@ -601,13 +601,13 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     End With
     
     'As a convenience to the user, we also make each scroll bar's LargeChange parameter proportional to the scroll bar's maximum value.
-    If (hScrollMax > 15) And (g_Zoom.getZoomValue(srcImage.currentZoomValue) <= 1) Then
+    If (hScrollMax > 15) And (g_Zoom.GetZoomValue(srcImage.currentZoomValue) <= 1) Then
         dstCanvas.SetScrollLargeChange PD_HORIZONTAL, hScrollMax \ 16
     Else
         dstCanvas.SetScrollLargeChange PD_HORIZONTAL, 1
     End If
     
-    If (vScrollMax > 15) And (g_Zoom.getZoomValue(srcImage.currentZoomValue) <= 1) Then
+    If (vScrollMax > 15) And (g_Zoom.GetZoomValue(srcImage.currentZoomValue) <= 1) Then
         dstCanvas.SetScrollLargeChange PD_VERTICAL, vScrollMax \ 16
     Else
         dstCanvas.SetScrollLargeChange PD_VERTICAL, 1
@@ -690,8 +690,8 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
                 Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, targetXImage, targetYImage, newXCanvas, newYCanvas, False
                 
                 'Use the difference between newCanvasX and oldCanvasX (while accounting for zoom) to determine new scroll bar values.
-                dstCanvas.SetScrollValue PD_HORIZONTAL, (newXCanvas - oldXCanvas) / g_Zoom.getZoomValue(srcImage.currentZoomValue)
-                dstCanvas.SetScrollValue PD_VERTICAL, (newYCanvas - oldYCanvas) / g_Zoom.getZoomValue(srcImage.currentZoomValue)
+                dstCanvas.SetScrollValue PD_HORIZONTAL, (newXCanvas - oldXCanvas) / g_Zoom.GetZoomValue(srcImage.currentZoomValue)
+                dstCanvas.SetScrollValue PD_VERTICAL, (newYCanvas - oldYCanvas) / g_Zoom.GetZoomValue(srcImage.currentZoomValue)
                 
         End Select
         
