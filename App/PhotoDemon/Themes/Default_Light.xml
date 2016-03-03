@@ -212,6 +212,19 @@
 				<Border-hover></Border-hover>
 			</PDGradientSelector>
 			
+			<PDImageStrip>
+				<Background>CanvasColor</Background>
+				<SelectedFill>GrayUltralight</SelectedFill>
+				<SelectedFill-hover></SelectedFill-hover>
+				<SelectedBorder>GrayUltralight</SelectedBorder>
+				<SelectedBorder-hover>AccentDefault</SelectedBorder-hover>
+				<UnselectedFill>CanvasColor</UnselectedFill>
+				<UnselectedFill-hover></UnselectedFill-hover>
+				<UnselectedBorder>CanvasColor</UnselectedBorder>
+				<UnselectedBorder-hover>AccentDefault</UnselectedBorder-hover>
+				<Separator>GrayUltralight</Separator>
+			</PDImageStrip>
+			
 			<PDPenSelector>
 				<Border></Border>
 				<Border-active></Border-active>

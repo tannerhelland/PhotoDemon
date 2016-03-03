@@ -27,8 +27,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   4440
-      _extentx        =   661
-      _extenty        =   661
+      _ExtentX        =   661
+      _ExtentY        =   661
    End
    Begin VB.Timer tmrMetadata 
       Enabled         =   0   'False
@@ -49,22 +49,22 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _extentx        =   873
-      _extenty        =   873
+      _ExtentX        =   873
+      _ExtentY        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   2520
-      _extentx        =   635
-      _extenty        =   635
-      errasout        =   0
-      pollinterval    =   5
+      _ExtentX        =   635
+      _ExtentY        =   635
+      ErrAsOut        =   0   'False
+      PollInterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1764,24 +1764,10 @@ Private Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConst
     Dim newX As Long, newY As Long
     
     If g_OpenImageCount > 0 Then
-    
-        'Mouse is over the tabstrip
-        If g_MouseOverImageTabstrip Then
-            
-            'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-            Drawing.ConvertCoordsBetweenHwnds Me.hWnd, toolbar_ImageTabs.hWnd, x, y, newX, newY
-            toolbar_ImageTabs.cMouseEvents_MouseWheelHorizontal Button, Shift, newX, newY, scrollAmount
-        
-        'Assume mouse is over the canvas
-        Else
-        
-            'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-            'TODO 7.0: fix mousewheel events when the main form has focus!
-            Drawing.ConvertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
-            'FormMain.mainCanvas(0).cMouseEvents_MouseWheelHorizontal Button, Shift, newX, newY, scrollAmount
-            
-        End If
-        
+        'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
+        'TODO 7.0: fix mousewheel events when the main form has focus!
+        Drawing.ConvertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
+        'FormMain.mainCanvas(0).cMouseEvents_MouseWheelHorizontal Button, Shift, newX, newY, scrollAmount
     End If
 
 End Sub
@@ -1794,22 +1780,10 @@ Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstan
 
     If g_OpenImageCount > 0 Then
         
-        'Mouse is over the image tabstrip
-        If g_MouseOverImageTabstrip Then
-            
-            'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-            Drawing.ConvertCoordsBetweenHwnds Me.hWnd, toolbar_ImageTabs.hWnd, x, y, newX, newY
-            toolbar_ImageTabs.cMouseEvents_MouseWheelVertical Button, Shift, newX, newY, scrollAmount
-        
-        'Assume mouse is over the main canvas
-        Else
-            
-            'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-            Drawing.ConvertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
-            'TODO 7.0: clean up this mess
-            'FormMain.mainCanvas(0).cMouseEvents_MouseWheelVertical Button, Shift, newX, newY, scrollAmount
-            
-        End If
+        'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
+        Drawing.ConvertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
+        'TODO 7.0: clean up this mess
+        'FormMain.mainCanvas(0).cMouseEvents_MouseWheelVertical Button, Shift, newX, newY, scrollAmount
         
     End If
 
