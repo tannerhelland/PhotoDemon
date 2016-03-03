@@ -512,7 +512,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     CreateCustomFormIcons pdImages(g_CurrentImage)
     
     'Register this image with the image tab bar
-    toolbar_ImageTabs.registerNewImage g_CurrentImage
+    toolbar_ImageTabs.RegisterNewImage g_CurrentImage
     
     'Just to be safe, update the color management profile of the current monitor
     CheckParentMonitor True
@@ -530,12 +530,12 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
     
     'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
-    FormMain.mainCanvas(0).FixChromeLayout
+    FormMain.mainCanvas(0).UpdateCanvasLayout
     
     'Force an immediate Undo/Redo write to file.  This serves multiple purposes: it is our baseline for calculating future
     ' Undo/Redo diffs, and it can be used to recover the original file if something goes wrong before the user performs a
     ' manual save (e.g. AutoSave).
-    pdImages(g_CurrentImage).undoManager.createUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
+    pdImages(g_CurrentImage).undoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
     
     'Re-enable the main form
     FormMain.Enabled = True

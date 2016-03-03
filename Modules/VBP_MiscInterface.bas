@@ -147,7 +147,6 @@ Public Sub SyncInterfaceToCurrentImage()
         MetaToggle tImageOps, False
         MetaToggle tSelection, False
         MetaToggle tMacro, False
-        MetaToggle tZoom, False
         MetaToggle tLayerTools, False
         MetaToggle tNonDestructiveFX, False
         
@@ -179,10 +178,7 @@ Public Sub SyncInterfaceToCurrentImage()
             FormMain.Caption = GetPhotoDemonNameAndVersion()
         End If
         
-        'Erase the main viewport's status bar
         FormMain.mainCanvas(0).ClearCanvas
-        FormMain.mainCanvas(0).DisplayImageSize Nothing, True
-        FormMain.mainCanvas(0).DrawStatusBarIcons False
         
         'Because dynamic icons are enabled, restore the main program icon and clear the custom image icon cache
         setNewTaskbarIcon origIcon32, FormMain.hWnd
@@ -222,9 +218,7 @@ Public Sub SyncInterfaceToCurrentImage()
             MetaToggle tSaveAs, True
             MetaToggle tClose, True
             MetaToggle tCopy, True
-            
             MetaToggle tView, True
-            MetaToggle tZoom, True
             MetaToggle tImageOps, True
             MetaToggle tMacro, True
             MetaToggle tLayerTools, True
@@ -240,7 +234,8 @@ Public Sub SyncInterfaceToCurrentImage()
             End If
             
             'Draw icons onto the main viewport's status bar
-            FormMain.mainCanvas(0).DrawStatusBarIcons True
+            'TODO: FIX THIS!
+            'FormMain.mainCanvas(0).DrawStatusBarIcons True
             
             'Next, attempt to enable controls whose state depends on the current image - e.g. "Save", which is only enabled if
             ' the image has not already been saved in its current state.
@@ -276,6 +271,8 @@ Public Sub SyncInterfaceToCurrentImage()
             Else
                 setNewTaskbarIcon origIcon32, FormMain.hWnd
             End If
+                        
+            FormMain.mainCanvas(0).AlignCanvasView
                         
             'Check the image's color depth, and check/uncheck the matching Image Mode setting
             'If Not (pdImages(g_CurrentImage).getActiveLayer() Is Nothing) Then

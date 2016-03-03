@@ -212,6 +212,13 @@
 				<Border-disabled></Border-disabled>
 				<Border-hover></Border-hover>
 			</PDGradientSelector>
+						
+			<PDHyperlink>
+				<Background>BackgroundDefault</Background>
+				<Caption>TextHyperlink</Caption>
+				<Caption-disabled>GrayDisabled</Caption-disabled>
+				<Caption-hover>TextHover</Caption-hover>
+			</PDHyperlink>
 			
 			<PDImageStrip>
 				<Background>CanvasColor</Background>
@@ -225,20 +232,6 @@
 				<UnselectedBorder-hover>AccentDefault</UnselectedBorder-hover>
 				<Separator>GrayUltralight</Separator>
 			</PDImageStrip>
-			
-			<PDPenSelector>
-				<Border></Border>
-				<Border-active></Border-active>
-				<Border-disabled></Border-disabled>
-				<Border-hover></Border-hover>
-			</PDPenSelector>
-			
-			<PDHyperlink>
-				<Background>BackgroundDefault</Background>
-				<Caption>TextHyperlink</Caption>
-				<Caption-disabled>GrayDisabled</Caption-disabled>
-				<Caption-hover>TextHover</Caption-hover>
-			</PDHyperlink>
 			
 			<PDListBox>
 				<Background>BackgroundDefault</Background>
@@ -270,6 +263,13 @@
 			<PDNavInner>
 				<Background>BackgroundDefault</Background>
 			</PDNavInner>
+			
+			<PDPenSelector>
+				<Border></Border>
+				<Border-active></Border-active>
+				<Border-disabled></Border-disabled>
+				<Border-hover></Border-hover>
+			</PDPenSelector>
 			
 			<PDPreview>
 				<Background>BackgroundDefault</Background>
@@ -382,6 +382,11 @@
 				<ButtonFill-hover>BackgroundDefault</ButtonFill-hover>
 				<ErrorBorder>ErrorRed</ErrorBorder>
 			</PDSpinner>
+			
+			<PDStatusBar>
+				<Background>GrayUltralight</Background>
+				<Separator>GrayDark</Separator>
+			</PDStatusBar>
 			
 			<PDTitle>
 				<Background>BackgroundDefault</Background>

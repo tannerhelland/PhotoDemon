@@ -24,10 +24,20 @@ Begin VB.UserControl pdCanvas
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   886
    ToolboxBitmap   =   "pdCanvas.ctx":0000
+   Begin PhotoDemon.pdStatusBar StatusBar 
+      Align           =   2  'Align Bottom
+      Height          =   345
+      Left            =   0
+      TabIndex        =   5
+      Top             =   7350
+      Width           =   13290
+      _ExtentX        =   23442
+      _ExtentY        =   609
+   End
    Begin PhotoDemon.pdCanvasView CanvasView 
       Height          =   4935
       Left            =   360
-      TabIndex        =   11
+      TabIndex        =   4
       Top             =   600
       Width           =   4575
       _ExtentX        =   8281
@@ -43,7 +53,7 @@ Begin VB.UserControl pdCanvas
       ScaleHeight     =   17
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   886
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   7095
       Visible         =   0   'False
       Width           =   13290
@@ -51,7 +61,7 @@ Begin VB.UserControl pdCanvas
    Begin PhotoDemon.pdButtonToolbox cmdCenter 
       Height          =   255
       Left            =   5040
-      TabIndex        =   10
+      TabIndex        =   3
       Top             =   5640
       Visible         =   0   'False
       Width           =   255
@@ -64,7 +74,7 @@ Begin VB.UserControl pdCanvas
    Begin PhotoDemon.pdScrollBar hScroll 
       Height          =   255
       Left            =   360
-      TabIndex        =   9
+      TabIndex        =   2
       Top             =   5640
       Visible         =   0   'False
       Width           =   4575
@@ -76,162 +86,13 @@ Begin VB.UserControl pdCanvas
    Begin PhotoDemon.pdScrollBar vScroll 
       Height          =   4935
       Left            =   5040
-      TabIndex        =   8
+      TabIndex        =   1
       Top             =   600
       Visible         =   0   'False
       Width           =   255
       _ExtentX        =   450
       _ExtentY        =   8705
       VisualStyle     =   1
-   End
-   Begin VB.PictureBox picStatusBar 
-      Align           =   2  'Align Bottom
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000016&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H00808080&
-      Height          =   345
-      Left            =   0
-      ScaleHeight     =   23
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   886
-      TabIndex        =   0
-      TabStop         =   0   'False
-      Top             =   7350
-      Width           =   13290
-      Begin PhotoDemon.pdDropDown cmbSizeUnit 
-         Height          =   360
-         Left            =   3630
-         TabIndex        =   7
-         Top             =   15
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   635
-         UseCustomBackgroundColor=   -1  'True
-         FontSize        =   9
-      End
-      Begin PhotoDemon.pdDropDown cmbZoom 
-         Height          =   360
-         Left            =   840
-         TabIndex        =   6
-         Top             =   15
-         Width           =   1290
-         _ExtentX        =   2275
-         _ExtentY        =   635
-         UseCustomBackgroundColor=   -1  'True
-         FontSize        =   9
-      End
-      Begin PhotoDemon.pdLabel lblImgSize 
-         Height          =   210
-         Left            =   3240
-         Top             =   60
-         Width           =   345
-         _ExtentX        =   609
-         _ExtentY        =   370
-         BackColor       =   -2147483626
-         Caption         =   "size:"
-         FontSize        =   9
-         Layout          =   2
-         UseCustomBackColor=   -1  'True
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdZoomFit 
-         Height          =   345
-         Left            =   0
-         TabIndex        =   2
-         Top             =   0
-         Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         BackColor       =   -2147483626
-         UseCustomBackColor=   -1  'True
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdZoomOut 
-         Height          =   345
-         Left            =   390
-         TabIndex        =   3
-         Top             =   0
-         Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         AutoToggle      =   -1  'True
-         BackColor       =   -2147483626
-         UseCustomBackColor=   -1  'True
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdZoomIn 
-         Height          =   345
-         Left            =   2190
-         TabIndex        =   4
-         Top             =   0
-         Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         AutoToggle      =   -1  'True
-         BackColor       =   -2147483626
-         UseCustomBackColor=   -1  'True
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdImgSize 
-         Height          =   345
-         Left            =   2790
-         TabIndex        =   5
-         Top             =   0
-         Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         AutoToggle      =   -1  'True
-         BackColor       =   -2147483626
-         UseCustomBackColor=   -1  'True
-      End
-      Begin PhotoDemon.pdLabel lblCoordinates 
-         Height          =   210
-         Left            =   5160
-         Top             =   60
-         Width           =   345
-         _ExtentX        =   609
-         _ExtentY        =   370
-         BackColor       =   -2147483626
-         Caption         =   "size:"
-         FontSize        =   9
-         Layout          =   2
-         UseCustomBackColor=   -1  'True
-      End
-      Begin PhotoDemon.pdLabel lblMessages 
-         Height          =   210
-         Left            =   6360
-         Top             =   60
-         Width           =   6825
-         _ExtentX        =   12039
-         _ExtentY        =   503
-         Alignment       =   1
-         BackColor       =   -2147483626
-         Caption         =   "(messages will appear here at run-time)"
-         FontSize        =   9
-         UseCustomBackColor=   -1  'True
-      End
-      Begin VB.Line lineStatusBar 
-         BorderColor     =   &H00808080&
-         Index           =   0
-         X1              =   184
-         X2              =   184
-         Y1              =   1
-         Y2              =   22
-      End
-      Begin VB.Line lineStatusBar 
-         BorderColor     =   &H00808080&
-         Index           =   1
-         X1              =   314
-         X2              =   314
-         Y1              =   1
-         Y2              =   22
-      End
-      Begin VB.Line lineStatusBar 
-         BorderColor     =   &H00808080&
-         Index           =   2
-         X1              =   402
-         X2              =   402
-         Y1              =   1
-         Y2              =   22
-      End
    End
 End
 Attribute VB_Name = "pdCanvas"
@@ -242,9 +103,9 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Canvas User Control (previously a standalone form)
 'Copyright 2002-2016 by Tanner Helland
-'Created: 11/29/02
-'Last updated: 12/December/14
-'Last update: performance optimizations
+'Created: 29/November/02
+'Last updated: 03/March/16
+'Last update: migrate status bar into its own dedicated control
 '
 'In 2013, PD's canvas was rebuilt as a dedicated user control, and instead of each image maintaining its own canvas inside
 ' separate, dedicated windows (which required a *ton* of code to keep in sync with the main PD window), a single canvas was
@@ -309,9 +170,6 @@ Private m_LastPointOfInterest As Long
 'To improve performance, we can ask the canvas to not refresh itself until we say so.
 Private m_SuspendRedraws As Boolean
 
-'Icons rendered to the scroll bar.  Rather than constantly reloading them from file, we cache them at initialization.
-Private sbIconCoords As pdDIB, sbIconNetwork As pdDIB
-
 'Some tools support the ability to auto-activate a layer beneath the mouse.  If supported, during the MouseMove event,
 ' this value (m_LayerAutoActivateIndex) will be updated with the index of the layer that will be auto-activated if the
 ' user presses the mouse button.  This can be used to modify things like cursor behavior, to make sure the user receives
@@ -322,15 +180,6 @@ Private m_LayerAutoActivateIndex As Long
 ' will add "Remove Selection" to the Undo/Redo chain; however, if no selection was active, the working selection will simply
 ' be erased.
 Private m_SelectionActiveBeforeMouseEvents As Boolean
-
-'External functions can notify the status bar of PD's network access.  When PD is downloading various update bits, a relevant icon
-' will be displayed in the status bar.  As the canvas has no knowledge of network stuff, it's imperative that the caller notify
-' us of both TRUE and FALSE states.
-Private m_NetworkAccessActive As Boolean
-
-'External functions can tell us to enable or disable the status bar for various reasons (e.g. no images are loaded).  We track the
-' last requested state internally, in case we need to internally refresh the status bar for some reason.
-Private m_LastEnabledState As Boolean
 
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
@@ -351,10 +200,7 @@ Private m_Colors As pdThemeColors
 
 'External functions can call this to set the current network state (which in turn, draws a relevant icon to the status bar)
 Public Sub SetNetworkState(ByVal newNetworkState As Boolean)
-    If newNetworkState <> m_NetworkAccessActive Then
-        m_NetworkAccessActive = newNetworkState
-        DrawStatusBarIcons m_LastEnabledState
-    End If
+    StatusBar.SetNetworkState newNetworkState
 End Sub
 
 'Use these functions to forcibly prevent the canvas from redrawing itself.  REDRAWS WILL NOT HAPPEN AGAIN UNTIL YOU RESTORE ACCESS!
@@ -373,19 +219,19 @@ End Sub
 Public Sub ClearCanvas()
     
     CanvasView.ClearCanvas
+    StatusBar.ClearCanvas
     
     If (g_OpenImageCount <= 0) Then
         SetScrollVisibility PD_HORIZONTAL, False
         SetScrollVisibility PD_VERTICAL, False
-        
-        'This function is called several times at shutdown, and we can improve its performance by ignoring refresh requests
-        If (Not g_ProgramShuttingDown) Then FixChromeLayout
     
     'If any valid images are loaded, scroll bars are always made visible
     Else
         SetScrollVisibility PD_HORIZONTAL, True
         SetScrollVisibility PD_VERTICAL, True
     End If
+    
+    Me.AlignCanvasView
     
 End Sub
 
@@ -477,76 +323,15 @@ Public Sub SetScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibil
 End Sub
 
 Public Sub DisplayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize As Boolean = False)
-    
-    'If the source image is irrelevant, forcibly specify a ClearSize operation
-    If (srcImage Is Nothing) Then clearSize = True
-    
-    'The size display is cleared whenever the user has no images loaded
-    If clearSize Then
-    
-        lblImgSize.Caption = ""
-        
-        'Also, clear the back of the canvas
-        FixChromeLayout
-        
-    'When size IS displayed, we must also refresh the status bar (now that it dynamically aligns its contents)
-    Else
-        
-        Dim iWidth As Double, iHeight As Double
-        Dim sizeString As String
-        
-        'Convert the image size (in pixels) to whatever unit the user has currently selected from the drop-down
-        Select Case cmbSizeUnit.ListIndex
-            
-            'Pixels
-            Case 0
-                sizeString = srcImage.Width & " x " & srcImage.Height
-                
-            'Inches
-            Case 1
-                iWidth = convertPixelToOtherUnit(MU_INCHES, srcImage.Width, srcImage.getDPI(), srcImage.Width)
-                iHeight = convertPixelToOtherUnit(MU_INCHES, srcImage.Height, srcImage.getDPI(), srcImage.Height)
-                sizeString = Format(iWidth, "0.0##") & " x " & Format(iHeight, "0.0##")
-            
-            'CM
-            Case 2
-                iWidth = convertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Width, srcImage.getDPI(), srcImage.Width)
-                iHeight = convertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Height, srcImage.getDPI(), srcImage.Height)
-                sizeString = Format(iWidth, "0.0#") & " x " & Format(iHeight, "0.0#")
-            
-        End Select
-        
-        lblImgSize.Caption = sizeString
-        lblImgSize.UpdateAgainstCurrentTheme
-        DrawStatusBarIcons True
-        
-    End If
-        
+    StatusBar.DisplayImageSize srcImage, clearSize
 End Sub
 
 Public Sub DisplayCanvasMessage(ByRef cMessage As String)
-    lblMessages.Caption = cMessage
-    lblMessages.RequestRefresh
+    StatusBar.DisplayCanvasMessage cMessage
 End Sub
 
-'Display the current mouse coordinates
 Public Sub DisplayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, Optional ByVal clearCoords As Boolean = False)
-    
-    If clearCoords Then
-        lblCoordinates.Caption = ""
-    
-    'When coordinates are displayed, we must also refresh the status bar (now that it dynamically aligns its contents)
-    Else
-        lblCoordinates.Caption = "(" & xCoord & "," & yCoord & ")"
-    End If
-    
-    'Align the right-hand line control with the newly captioned label
-    lineStatusBar(2).x1 = lblCoordinates.GetLeft + lblCoordinates.GetWidth + FixDPI(10)
-    lineStatusBar(2).x2 = lineStatusBar(2).x1
-    
-    'Make the message area shrink to match the new coordinate display size
-    FixChromeLayout
-        
+    StatusBar.DisplayCanvasCoordinates xCoord, yCoord, clearCoords
 End Sub
 
 Public Sub RequestViewportRedraw(Optional ByVal refreshImmediately As Boolean = False)
@@ -563,7 +348,7 @@ Public Function GetCanvasHeight() As Long
 End Function
 
 Public Function GetStatusBarHeight() As Long
-    GetStatusBarHeight = picStatusBar.ScaleHeight
+    GetStatusBarHeight = StatusBar.GetHeight
 End Function
 
 Public Function GetProgBarReference() As PictureBox
@@ -591,21 +376,22 @@ Public Property Get hDC()
     hDC = CanvasView.hDC
 End Property
 
+'TODO: why is this exposed externally?
 Public Sub EnableZoomIn(ByVal isEnabled As Boolean)
-    cmdZoomIn.Enabled = isEnabled
+    'cmdZoomIn.Enabled = isEnabled
 End Sub
 
 Public Sub EnableZoomOut(ByVal isEnabled As Boolean)
-    cmdZoomOut.Enabled = isEnabled
+    'cmdZoomOut.Enabled = isEnabled
 End Sub
 
 Public Sub EnableZoomFit(ByVal isEnabled As Boolean)
-    cmdZoomFit.Enabled = isEnabled
-    cmdZoomFit.Value = (cmbZoom.ListIndex = g_Zoom.getZoomFitAllIndex)
+    'cmdZoomFit.Enabled = isEnabled
+    'cmdZoomFit.Value = (cmbZoom.ListIndex = g_Zoom.getZoomFitAllIndex)
 End Sub
 
 Public Function GetZoomDropDownReference() As pdDropDown
-    Set GetZoomDropDownReference = cmbZoom
+    Set GetZoomDropDownReference = StatusBar.GetZoomDropDownReference
 End Function
 
 'Various input events are bubbled up from the underlying CanvasView control.  It provides no handling over paint and
@@ -872,80 +658,11 @@ Private Sub CanvasView_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
     
 End Sub
 
-Private Sub cmbSizeUnit_Click()
-    If g_OpenImageCount > 0 Then DisplayImageSize pdImages(g_CurrentImage)
-End Sub
-
-Private Sub CmbZoom_Click()
-
-    'Only process zoom changes if an image has been loaded
-    If IsCanvasInteractionAllowed() Then
-        
-        'Before updating the current image, we need to retrieve two sets of points: the current center point
-        ' of the canvas, in canvas coordinate space, and the current center point of the canvas *in image
-        ' coordinate space*.  When zoom is changed, we preserve the current center of the image relative to
-        ' the center of teh canvas, to make the zoom operation feel more natural.
-        Dim centerXCanvas As Double, centerYCanvas As Double, centerXImage As Double, centerYImage As Double
-        centerXCanvas = FormMain.mainCanvas(0).GetCanvasWidth / 2
-        centerYCanvas = FormMain.mainCanvas(0).GetCanvasHeight / 2
-        Drawing.ConvertCanvasCoordsToImageCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), centerXCanvas, centerYCanvas, centerXImage, centerYImage, False
-        
-        'With those coordinates safely cached, update the currently stored zoom value in the active pdImage object
-        pdImages(g_CurrentImage).currentZoomValue = cmbZoom.ListIndex
-        
-        'Disable the zoom in/out buttons when they reach the end of the available zoom levels
-        If cmbZoom.ListIndex = 0 Then
-            cmdZoomIn.Enabled = False
-        Else
-            If Not cmdZoomIn.Enabled Then cmdZoomIn.Enabled = True
-        End If
-        
-        If cmbZoom.ListIndex = g_Zoom.getZoomCount Then
-            cmdZoomOut.Enabled = False
-        Else
-            If Not cmdZoomOut.Enabled Then cmdZoomOut.Enabled = True
-        End If
-        
-        'Highlight the "zoom fit" button while fit mode is active
-        cmdZoomFit.Value = (cmbZoom.ListIndex = g_Zoom.getZoomFitAllIndex)
-        
-        'Redraw the viewport (if allowed; some functions will prevent us from doing this, as they plan to request their own
-        ' refresh after additional processing occurs)
-        If g_AllowViewportRendering Then
-            
-            Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_PreservePointPosition, centerXCanvas, centerYCanvas, centerXImage, centerYImage
-        
-            'Notify any other relevant UI elements
-            RelayViewportChanges
-            
-        End If
-        
-    End If
-
-End Sub
-
 Private Sub cmdCenter_Click()
     Image_Canvas_Handler.CenterOnScreen
 End Sub
 
-Private Sub cmdImgSize_Click()
-    If IsCanvasInteractionAllowed() Then Process "Resize image", True
-End Sub
-
-Private Sub cmdZoomFit_Click()
-    Image_Canvas_Handler.FitOnScreen
-End Sub
-
-Private Sub cmdZoomIn_Click()
-    FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomInIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
-End Sub
-
-Private Sub cmdZoomOut_Click()
-    FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomOutIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
-End Sub
-
 'At present, the only App Commands the canvas will handle are forward/back, which link to Undo/Redo
-' RELAY (partially)
 Private Sub CanvasView_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     If IsCanvasInteractionAllowed() Then
@@ -1754,13 +1471,13 @@ Public Sub CanvasView_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByV
     If zoomAmount > 0 Then
         
         If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled And FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex > 0 Then
-            FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomInIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
+            FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetNearestZoomInIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
         End If
            
     ElseIf zoomAmount < 0 Then
         
-        If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled And FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex <> g_Zoom.getZoomCount Then
-            FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomOutIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
+        If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled And FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex <> g_Zoom.GetZoomCount Then
+            FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetNearestZoomOutIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
         End If
         
     End If
@@ -1826,30 +1543,32 @@ End Sub
 
 Private Sub UserControl_Resize()
 
-    'Center all combo boxes vertically (this is necessary for high-DPI displays)
-    cmbZoom.Top = (picStatusBar.ScaleHeight - cmbZoom.Height) \ 2
-    cmbSizeUnit.Top = (picStatusBar.ScaleHeight - cmbSizeUnit.Height) \ 2
-
     'Align the canvas picture box to fill the available area
     AlignCanvasView
     
-    'If the control is resizing, the mouse cannot feasibly be over the image - so clear the coordinate box.  Note that this will
-    ' also realign all chrome elements, so we don't need a manual FixChromeLayout call here.
-    DisplayCanvasCoordinates 0, 0, False
-    
+End Sub
+
+Public Sub UpdateCanvasLayout()
+    If g_OpenImageCount = 0 Then Me.ClearCanvas Else Me.AlignCanvasView
+    StatusBar.ReflowStatusBar (g_OpenImageCount > 0)
 End Sub
 
 'RELAY: (not really, but all these measurements need to be migrated to ucSupport)
 Public Sub AlignCanvasView()
+    
+    'Retrieve DPI-aware control dimensions from the support class
+    Dim bWidth As Long, bHeight As Long
+    bWidth = UserControl.ScaleWidth
+    bHeight = UserControl.ScaleHeight
     
     'As of version 7.0, scroll bars are always visible.  This matches the behavior of paint-centric software like Krita,
     ' and makes it much easier to enable scrolling past the edge of an image (without resorting to stupid click-hold
     ' scroll behavior like GIMP).
     Dim hScrollTop As Long, hScrollLeft As Long, vScrollTop As Long, vScrollLeft As Long
     hScrollLeft = 0
-    hScrollTop = UserControl.ScaleHeight - (Me.GetStatusBarHeight + hScroll.Height)
+    hScrollTop = bHeight - (Me.GetStatusBarHeight + hScroll.GetHeight)
     
-    vScrollLeft = UserControl.ScaleWidth - vScroll.Width
+    vScrollLeft = bWidth - vScroll.GetWidth
     vScrollTop = 0
     
     'With scroll bar positions calculated, calculate width/height values for the main canvas picture box
@@ -1866,16 +1585,17 @@ Public Sub AlignCanvasView()
     
     '...Followed by the scrollbars
     If (hScroll.Left <> hScrollLeft) Or (hScroll.Top <> hScrollTop) Or (hScroll.Width <> cvWidth) Then
-        If cvWidth > 0 Then hScroll.Move hScrollLeft, hScrollTop, cvWidth
+        If cvWidth > 0 Then hScroll.SetPositionAndSize hScrollLeft, hScrollTop, cvWidth, hScroll.GetHeight
     End If
     
     If (vScroll.Left <> vScrollLeft) Or (vScroll.Top <> vScrollTop) Or (vScroll.Height <> cvHeight) Then
-        If cvHeight > 0 Then vScroll.Move vScrollLeft, vScrollTop, vScroll.Width, cvHeight
+        If cvHeight > 0 Then vScroll.SetPositionAndSize vScrollLeft, vScrollTop, vScroll.GetWidth, cvHeight
     End If
     
     '...Followed by the "center" button (which sits between the scroll bars)
-    If (cmdCenter.Left <> vScrollLeft) Or (cmdCenter.Top <> hScrollTop) Then
-        cmdCenter.Move vScrollLeft, hScrollTop
+    If (cmdCenter.GetLeft <> vScrollLeft) Or (cmdCenter.GetTop <> hScrollTop) Then
+        cmdCenter.SetLeft vScrollLeft
+        cmdCenter.SetTop hScrollTop
     End If
     
 End Sub
@@ -1885,17 +1605,7 @@ Private Sub UserControl_Show()
     If g_IsProgramRunning Then
         
         'Prep the command buttons
-        cmdZoomFit.AssignImage "SB_ZOOM_FIT"
-        cmdZoomIn.AssignImage "SB_ZOOM_IN"
-        cmdZoomOut.AssignImage "SB_ZOOM_OUT"
-        cmdImgSize.AssignImage "SB_IMG_SIZE"
         cmdCenter.AssignImage "SB_ZOOM_CENTER"
-        
-        'Load various status bar icons from the resource file
-        Set sbIconCoords = New pdDIB
-        Set sbIconNetwork = New pdDIB
-        LoadResourceToDIB "SB_MOUSE_POS", sbIconCoords
-        LoadResourceToDIB "SB_NETWORK", sbIconNetwork
         
         'XP users may not have Segoe UI available, which will cause the following lines to throw an error;
         ' it's not really a problem, as the labels will just keep their Tahoma font, but we must catch it anyway.
@@ -1915,13 +1625,6 @@ Private Sub UserControl_Show()
         Me.UpdateAgainstCurrentTheme
         
 CanvasShowError:
-        
-        'Make all status bar lines a proper height (again, necessary on high-DPI displays)
-        Dim i As Long
-        For i = 0 To lineStatusBar.Count - 1
-            lineStatusBar(i).y1 = FixDPI(1)
-            lineStatusBar(i).y2 = picStatusBar.ScaleHeight - FixDPI(1)
-        Next i
         
     End If
     
@@ -1948,108 +1651,8 @@ Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
     
 End Sub
 
-'Whenever this window changes size, we may need to re-align various bits of internal chrome (status bar, rulers, etc).  Call this function
-' to do so.
-Public Sub FixChromeLayout()
-    
-    'Move the message label into position (right-aligned, with a slight margin)
-    Dim newLeft As Long
-    newLeft = lineStatusBar(2).x1 + FixDPI(7)
-    If lblMessages.GetLeft <> newLeft Then lblMessages.SetLeft newLeft
-    
-    'If the message label will overflow other elements of the status bar, shrink it as necessary
-    Dim newMessageArea As Long
-    newMessageArea = (UserControl.ScaleWidth - lblMessages.GetLeft) - FixDPI(12)
-    
-    If newMessageArea < 0 Then
-        lblMessages.Visible = False
-    Else
-        If lblMessages.GetWidth <> newMessageArea Then lblMessages.SetWidth newMessageArea
-        lblMessages.Visible = True
-    End If
-    
-End Sub
-
-'Dynamically render some icons onto the status bar.
-Public Sub DrawStatusBarIcons(ByVal enabledState As Boolean)
-    
-    'Note the enabled state at a module level, in case we need to internally refresh the status bar for some reason
-    m_LastEnabledState = enabledState
-        
-    'Start by clearing the status bar
-    picStatusBar.Picture = LoadPicture("")
-    
-    'Some elements must always be reflowed dynamically
-    
-    'The zoom drop-down can now change width if a translation is active.  Make sure the zoom-in button is positioned accordingly.
-    cmdZoomIn.SetLeft cmbZoom.GetLeft + cmbZoom.GetWidth + FixDPI(3)
-    
-    'Move the left-most line into position.  (This must be done dynamically, or it will be mispositioned
-    ' on high-DPI displays)
-    lineStatusBar(0).Visible = True
-    lineStatusBar(0).x1 = (cmdZoomIn.GetLeft + cmdZoomIn.GetWidth) + FixDPI(6)
-    lineStatusBar(0).x2 = lineStatusBar(0).x1
-    
-    'We will only draw subsequent interface elements if at least one image is currently loaded.
-    If enabledState Then
-        
-        'Start with the "image size" button
-        cmdImgSize.SetLeft lineStatusBar(0).x1 + FixDPI(4)
-        If (Not cmdImgSize.Visible) Then cmdImgSize.Visible = True
-        
-        'After the "image size" icon comes the actual image size label.  Its position is determined by the image resize button width,
-        ' plus a 4px buffer on either size (contingent on DPI)
-        lblImgSize.SetLeft cmdImgSize.GetLeft + cmdImgSize.GetWidth + FixDPI(4)
-        
-        'The image size label is autosized.  Move the "size unit" combo box next to it, and the next vertical line
-        ' separator just past it.
-        If (Not cmbSizeUnit.Visible) Then cmbSizeUnit.Visible = True
-        cmbSizeUnit.SetLeft lblImgSize.GetLeft + lblImgSize.GetWidth + FixDPI(10)
-        
-        If (Not lineStatusBar(1).Visible) Then lineStatusBar(1).Visible = True
-        lineStatusBar(1).x1 = cmbSizeUnit.GetLeft + cmbSizeUnit.GetWidth + FixDPI(10)
-        lineStatusBar(1).x2 = lineStatusBar(1).x1
-        
-        'After the "image size" panel and separator comes mouse coordinates.  The basic steps from above are repeated.
-        If Not sbIconCoords Is Nothing Then
-            sbIconCoords.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(1).x1 + FixDPI(8), FixDPI(4), FixDPI(sbIconCoords.getDIBWidth), FixDPI(sbIconCoords.getDIBHeight)
-        End If
-        lblCoordinates.SetLeft lineStatusBar(1).x1 + FixDPI(14) + FixDPI(16)
-        
-        If (Not lineStatusBar(2).Visible) Then lineStatusBar(2).Visible = True
-        lineStatusBar(2).x1 = lblCoordinates.GetLeft + lblCoordinates.GetWidth + FixDPI(10)
-        lineStatusBar(2).x2 = lineStatusBar(2).x1
-        
-        'Render the network access icon as necessary
-        If m_NetworkAccessActive Then sbIconNetwork.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(2).x1 + FixDPI(8), FixDPI(4), FixDPI(sbIconNetwork.getDIBWidth), FixDPI(sbIconNetwork.getDIBHeight)
-        
-    'Images are not loaded.  Hide the lines and other items.
-    Else
-    
-        cmdImgSize.Visible = False
-        cmbSizeUnit.Visible = False
-        lineStatusBar(0).Visible = False
-        lineStatusBar(1).Visible = False
-        lineStatusBar(2).Visible = False
-        
-        If hScroll.Visible Then hScroll.Visible = False
-        If vScroll.Visible Then vScroll.Visible = False
-        
-        'Render the network access icon as necessary
-        If m_NetworkAccessActive Then sbIconNetwork.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(0).x1, FixDPI(4), FixDPI(sbIconNetwork.getDIBWidth), FixDPI(sbIconNetwork.getDIBHeight)
-                
-    End If
-    
-End Sub
-
-'Fill the "size units" drop-down.  We must do this relatively late in the load process, as we have to wait for the translation
-' engine to initialize.
 Public Function PopulateSizeUnits()
-    cmbSizeUnit.Clear
-    cmbSizeUnit.AddItem "px", 0
-    cmbSizeUnit.AddItem "in", 1
-    cmbSizeUnit.AddItem "cm", 2
-    cmbSizeUnit.ListIndex = 0
+    StatusBar.PopulateSizeUnits
 End Function
 
 'Whenever the mouse cursor needs to be reset, use this function to do so.  Also, when a new tool is created or a new tool feature
@@ -2313,13 +1916,14 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
 
 End Sub
 
-'Simple unified way to see if canvas interaction is allowed.
-Private Function IsCanvasInteractionAllowed() As Boolean
+'Simple, unified way to see if canvas interaction is allowed.
+Public Function IsCanvasInteractionAllowed() As Boolean
     IsCanvasInteractionAllowed = CanvasView.IsCanvasInteractionAllowed
 End Function
 
 'If the viewport experiences changes to scroll or zoom values, this function will be automatically called.  Any relays to external
 ' functions (functions that rely on viewport settings, obviously) should be handled here.
+' TODO: migrate this function elsewhere, so things other than the canvas can easily utilize it.
 Public Sub RelayViewportChanges()
     toolbar_Layers.NotifyViewportChange
 End Sub
@@ -2340,44 +1944,12 @@ Public Sub UpdateAgainstCurrentTheme()
     
     UpdateColorList
     CanvasView.UpdateAgainstCurrentTheme
-    
-    'Rebuild all drop-down boxes (so that translations can be applied)
-    Dim backupZoomIndex As Long, backupSizeIndex As Long
-    backupZoomIndex = cmbZoom.ListIndex
-    backupSizeIndex = cmbSizeUnit.ListIndex
-    
-    'Repopulate zoom dropdown text
-    If Not (g_Zoom Is Nothing) Then g_Zoom.initializeViewportEngine
-    If Not (g_Zoom Is Nothing) Then g_Zoom.populateZoomComboBox cmbZoom, backupZoomIndex
-    Me.PopulateSizeUnits
-    
-    'Auto-size the newly populated combo boxes, according to the width of their longest entries
-    cmbZoom.SetWidthAutomatically
-    cmbSizeUnit.SetWidthAutomatically
+    StatusBar.UpdateAgainstCurrentTheme
     
     'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
-    cmdZoomFit.AssignTooltip "Fit the image on-screen"
-    cmdZoomIn.AssignTooltip "Zoom in"
-    cmdZoomOut.AssignTooltip "Zoom out"
-    cmdImgSize.AssignTooltip "Resize image"
-    cmbZoom.AssignTooltip "Change viewport zoom"
-    cmbSizeUnit.AssignTooltip "Change the image size unit displayed to the left of this box"
     cmdCenter.AssignTooltip "Center the image inside the viewport"
     If Not (g_Themer Is Nothing) Then cmdCenter.BackColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
-        
-    'Request visual updates from all supported controls
-    lblCoordinates.UpdateAgainstCurrentTheme
-    lblImgSize.UpdateAgainstCurrentTheme
-    lblMessages.UpdateAgainstCurrentTheme
-    
-    cmdZoomFit.UpdateAgainstCurrentTheme
-    cmdZoomIn.UpdateAgainstCurrentTheme
-    cmdZoomOut.UpdateAgainstCurrentTheme
-    cmdImgSize.UpdateAgainstCurrentTheme
     cmdCenter.UpdateAgainstCurrentTheme
-    
-    cmbZoom.UpdateAgainstCurrentTheme
-    cmbSizeUnit.UpdateAgainstCurrentTheme
     
     hScroll.UpdateAgainstCurrentTheme
     vScroll.UpdateAgainstCurrentTheme
@@ -2385,38 +1957,9 @@ Public Sub UpdateAgainstCurrentTheme()
     'Any controls that utilize a custom background color must now be updated to match *our* background color.
     Dim sbBackColor As Long
     sbBackColor = m_Colors.RetrieveColor(PDC_StatusBar, Me.Enabled)
-    picStatusBar.BackColor = sbBackColor
-    
-    lblCoordinates.BackColor = sbBackColor
-    lblImgSize.BackColor = sbBackColor
-    lblMessages.BackColor = sbBackColor
-    
-    cmdZoomFit.BackColor = sbBackColor
-    cmdZoomIn.BackColor = sbBackColor
-    cmdZoomOut.BackColor = sbBackColor
-    cmdImgSize.BackColor = sbBackColor
     cmdCenter.BackColor = sbBackColor
     
-    cmbZoom.BackgroundColor = sbBackColor
-    cmbSizeUnit.BackgroundColor = sbBackColor
-    
-    'Fix combo box positioning (important on high-DPI displays, or if the active font has changed)
-    cmbZoom.Top = (picStatusBar.ScaleHeight - cmbZoom.Height) \ 2
-    cmbSizeUnit.Top = (picStatusBar.ScaleHeight - cmbSizeUnit.Height) \ 2
-    
-    'Restore zoom and size unit indices
-    cmbZoom.ListIndex = backupZoomIndex
-    cmbSizeUnit.ListIndex = backupSizeIndex
-    
-    'Note that we don't actually move the last line status bar; that is handled by DisplayImageCoordinates itself
-    If g_OpenImageCount > 0 Then
-        DisplayImageSize pdImages(g_CurrentImage), False
-    Else
-        DisplayImageSize Nothing, True
-    End If
-    
-    DisplayCanvasCoordinates 0, 0, True
-    FixChromeLayout
+    Me.UpdateCanvasLayout
     
     'Restore redraw capabilities
     Me.SetRedrawSuspension False

@@ -196,13 +196,9 @@ Attribute Enabled.VB_UserMemId = -514
 End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
-    
     UserControl.Enabled = newValue
     PropertyChanged "Enabled"
-    
-    'Redraw the control
     RedrawBackBuffer
-    
 End Property
 
 Public Property Get FontSize() As Single
@@ -432,7 +428,6 @@ Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
     RaiseEvent Click
 End Sub
 
-'INITIALIZE control
 Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class
