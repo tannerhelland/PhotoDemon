@@ -125,6 +125,7 @@
 			<PDCanvas>
 				<Background>CanvasColor</Background>
 				<StatusBar>GrayUltralight</StatusBar>
+				<SpecialButtonBackground>BackgroundCommandBar</SpecialButtonBackground>
 			</PDCanvas>
 			
 			<PDCheckBox>

@@ -411,6 +411,7 @@ Public Sub LoadTheProgram()
     Set g_WindowManager = New pdWindowManager
     
     'Register the main form
+    g_WindowManager.SetAutoRefreshMode False
     g_WindowManager.RegisterParentForm FormMain
     
     'Load all tool windows.  Even though they may not be visible (as the user can elect to hide them), we still want them loaded,
@@ -568,9 +569,6 @@ Public Sub LoadTheProgram()
         pdDebug.LogAction "", PDM_MEM_REPORT
         pdDebug.LogAction "Proceeding to load main window..."
     #End If
-    
-    'Display the main form
-    'FormMain.Show
     
     Unload FormSplash
         

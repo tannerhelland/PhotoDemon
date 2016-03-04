@@ -79,15 +79,14 @@ Public Enum PD_UI_Group
     PDUI_Macros = 11
     PDUI_Selections = 12
     PDUI_SelectionTransforms = 13
-    PDUI_Zoom = 14
-    PDUI_LayerTools = 15
-    PDUI_NonDestructiveFX = 16
+    PDUI_LayerTools = 14
+    PDUI_NonDestructiveFX = 15
 End Enum
 
 #If False Then
     Private Const PDUI_Save = 0, PDUI_SaveAs = 1, PDUI_Close = 2, PDUI_Undo = 3, PDUI_Redo = 4, PDUI_Copy = 5, PDUI_Paste = 6, PDUI_View = 7
     Private Const PDUI_ImageMenu = 8, PDUI_Metadata = 9, PDUI_GPSMetadata = 10, PDUI_Macros = 11, PDUI_Selections = 12
-    Private Const PDUI_SelectionTransforms = 13, PDUI_Zoom = 14, PDUI_LayerTools = 15, PDUI_NonDestructiveFX = 16
+    Private Const PDUI_SelectionTransforms = 13, PDUI_LayerTools = 14, PDUI_NonDestructiveFX = 15
 #End If
 
 'If PhotoDemon enabled font smoothing where there was none previously, it will restore the original setting upon exit.  This variable
@@ -115,6 +114,18 @@ Private m_PrevMessage As String
 ' corresponding GetSystemDPI() function to retrieve the cached value.
 Private m_CurrentSystemDPI As Single
 
+'Syncing the entire program's UI to current image settings is a time-consuming process.  To try and shortcut it whenever possible,
+' we track the last sync operation we performed.  If we receive a duplicate sync request, we can safely ignore it.
+Private m_LastUISync_HadNoImages As PD_BOOL, m_LastUISync_HadNoLayers As PD_BOOL, m_LastUISync_HadMultipleLayers As PD_BOOL
+Private m_LastUILimitingSize_Small As Single, m_LastUILimitingSize_Large As Single
+
+'Because the Interface handler is a module and not a class, like I prefer, we need to use a dedicated initialization function.
+Public Sub InitializeInterfaceBackend()
+    m_LastUISync_HadNoImages = PD_BOOL_UNKNOWN
+    m_LastUISync_HadNoLayers = PD_BOOL_UNKNOWN
+    m_LastUISync_HadMultipleLayers = PD_BOOL_UNKNOWN
+End Sub
+
 Public Sub CacheSystemDPI(ByVal newDPI As Single)
     m_CurrentSystemDPI = newDPI
 End Sub
@@ -139,7 +150,12 @@ Public Sub SyncInterfaceToCurrentImage()
     
     'If no images are loaded, we can disable a whole swath of controls
     If (g_OpenImageCount = 0) Then
-        SetUIMode_NoImages
+    
+        'Because this set of UI changes is immutable, there is no reason to repeat it if it was the last synchronization we performed.
+        If Not (m_LastUISync_HadNoImages = PD_BOOL_TRUE) Then
+            SetUIMode_NoImages
+            m_LastUISync_HadNoImages = PD_BOOL_TRUE
+        End If
         
     'If one or more images are loaded, our job is trickier.  Some controls (such as Copy to Clipboard) are enabled no matter what,
     ' while others (Undo and Redo) are only enabled if the current image requires it.
@@ -147,239 +163,86 @@ Public Sub SyncInterfaceToCurrentImage()
         
         If Not (pdImages(g_CurrentImage) Is Nothing) Then
         
-            'Start by enabling actions that are always available if one or more images are loaded.
-            SetUIGroupState PDUI_SaveAs, True
-            SetUIGroupState PDUI_Close, True
-            SetUIGroupState PDUI_EditCopyCut, True
-            SetUIGroupState PDUI_View, True
-            SetUIGroupState PDUI_ImageMenu, True
-            SetUIGroupState PDUI_Macros, True
-            SetUIGroupState PDUI_LayerTools, True
-            
-            'Display this image's path in the title bar.
-            If Not (g_WindowManager Is Nothing) Then
-                g_WindowManager.SetWindowCaptionW FormMain.hWnd, GetWindowCaption(pdImages(g_CurrentImage))
-            Else
-                FormMain.Caption = GetWindowCaption(pdImages(g_CurrentImage))
+            'Start with controls that are *always* enabled if at least one image is active.  These controls only need to be addressed when
+            ' we move between the "no images" and "at least one image" state.
+            If Not (m_LastUISync_HadNoImages = PD_BOOL_FALSE) Then
+                SetUIMode_AtLeastOneImage
+                m_LastUISync_HadNoImages = PD_BOOL_FALSE
             End If
+        
+            'Next, we have controls whose appearance varies according to the current image's state.  These include things like the
+            ' window caption (which changes if the filename changes), Undo/Redo state (changes based on tool actions), image size
+            ' and zoom indicators, etc.  These settings are more difficult to cache, because they can legitimately change for the
+            ' same image object, so detecting meaningful vs repeat changes is trickier.
+            SyncUI_CurrentImageSettings
             
-            'Draw icons onto the main viewport's status bar
-            'TODO: FIX THIS!
-            'FormMain.mainCanvas(0).DrawStatusBarIcons True
+            'Next, we are going to deal with layer-specific settings.
             
-            'Next, attempt to enable controls whose state depends on the current image - e.g. "Save", which is only enabled if
-            ' the image has not already been saved in its current state.
-            
-            'Note that all of these functions rely on the g_CurrentImage value to function.
-            
-            'Reset all Undo/Redo and related menus.  (Note that this also controls the SAVE BUTTON, as the image's save state is modified
-            ' by PD's Undo/Redo engine.)
-            SyncUndoRedoInterfaceElements True
-            
-            'Because those changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
-            ResetMenuIcons
-            
-            'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-            If Not pdImages(g_CurrentImage).imgMetadata Is Nothing Then
-                SetUIGroupState PDUI_Metadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
-                SetUIGroupState PDUI_GPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
-            Else
-                SetUIGroupState PDUI_Metadata, False
-                SetUIGroupState PDUI_GPSMetadata, False
-            End If
-            
-            'Display the size of this image in the status bar
-            If pdImages(g_CurrentImage).Width <> 0 Then DisplaySize pdImages(g_CurrentImage)
-            
-            'Update the form's icon to match the current image; if a custom icon is not available, use the stock PD one
-            If pdImages(g_CurrentImage).curFormIcon32 = 0 Then CreateCustomFormIcons pdImages(g_CurrentImage)
-            ChangeAppIcons pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
-                        
-            FormMain.mainCanvas(0).AlignCanvasView
-                        
-            'Check the image's color depth, and check/uncheck the matching Image Mode setting
-            'If Not (pdImages(g_CurrentImage).getActiveLayer() Is Nothing) Then
-            '    If pdImages(g_CurrentImage).getCompositeImageColorDepth() = 32 Then SetUIGroupState tImgMode32bpp, True Else SetUIGroupState tImgMode32bpp, False
-            'End If
-            
-            'Restore the zoom value for this particular image (again, only if the form has been initialized)
-            If pdImages(g_CurrentImage).Width <> 0 Then
-                g_AllowViewportRendering = False
-                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = pdImages(g_CurrentImage).currentZoomValue
-                g_AllowViewportRendering = True
-            End If
-            
-            'If a selection is active on this image, update the text boxes to match
-            If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
-                SetUIGroupState PDUI_Selections, True
-                SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).mainSelection.isTransformable
-                syncTextToCurrentSelection g_CurrentImage
-            Else
-                SetUIGroupState PDUI_Selections, False
-                SetUIGroupState PDUI_SelectionTransforms, False
-            End If
+            'Start with settings that are ALWAYS visible if there is at least one layer in the image.
+            ' (NOTE: PD doesn't currently support 0-layer images, so this is primarily a failsafe measure.)
             
             'Update all layer menus; some will be disabled depending on just how many layers are available, how many layers
             ' are visible, and other criteria.
-            If pdImages(g_CurrentImage).getNumOfLayers > 0 Then
+            If (pdImages(g_CurrentImage).getNumOfLayers > 0) And Not (pdImages(g_CurrentImage).getActiveLayer Is Nothing) Then
                 
-                'First, set some parameters contingent on the current layer's options
-                If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
-                
-                    'First, determine if the current layer is using any form of non-destructive resizing
-                    Dim nonDestructiveResizeActive As Boolean
-                    nonDestructiveResizeActive = False
-                    If (pdImages(g_CurrentImage).getActiveLayer.getLayerCanvasXModifier <> 1) Then nonDestructiveResizeActive = True
-                    If (pdImages(g_CurrentImage).getActiveLayer.getLayerCanvasYModifier <> 1) Then nonDestructiveResizeActive = True
-                    
-                    'If non-destructive resizing is active, the "reset layer size" menu (and corresponding Move Tool button) must be enabled.
-                    FormMain.MnuLayerSize(0).Enabled = nonDestructiveResizeActive
-                    toolpanel_MoveSize.cmdLayerMove(0).Enabled = nonDestructiveResizeActive
-                    toolpanel_MoveSize.cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
-                    
-                    'Similar logic is used for other non-destructive affine transforms
-                    toolpanel_MoveSize.cmdLayerAngleReset.Enabled = CBool(pdImages(g_CurrentImage).getActiveLayer.getLayerAngle <> 0)
-                    toolpanel_MoveSize.cmdLayerShearReset(0).Enabled = CBool(pdImages(g_CurrentImage).getActiveLayer.getLayerShearX <> 0)
-                    toolpanel_MoveSize.cmdLayerShearReset(1).Enabled = CBool(pdImages(g_CurrentImage).getActiveLayer.getLayerShearY <> 0)
-                    toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
-                    
-                    'If non-destructive FX are active on the current layer, update the non-destructive tool enablement to match
-                    SetUIGroupState PDUI_NonDestructiveFX, True
-                    
-                    'Layer rasterization depends on the current layer type
-                    FormMain.MnuLayerRasterize(0).Enabled = pdImages(g_CurrentImage).getActiveLayer.isLayerVector
-                    FormMain.MnuLayerRasterize(1).Enabled = CBool(pdImages(g_CurrentImage).getNumOfVectorLayers > 0)
-                    
+                'Activate any generic layer UI elements (e.g. elements whose enablement is consistent for any number of layers)
+                If Not (m_LastUISync_HadNoLayers = PD_BOOL_FALSE) Then
+                    SetUIMode_AtLeastOneLayer
+                    m_LastUISync_HadNoLayers = PD_BOOL_FALSE
                 End If
+                
+                'Next, activate UI parameters whose behavior changes depending on the current layer's settings
+                SyncUI_CurrentLayerSettings
+                
+                'Next, we must deal with controls whose enablement depends on how many layers are in the image.  Some options
+                ' (like "Flatten" or "Delete layer") are only relevant if this is a multi-layer image.
                 
                 'If only one layer is present, a number of layer menu items (Delete, Flatten, Merge, Order) will be disabled.
                 If pdImages(g_CurrentImage).getNumOfLayers = 1 Then
                 
-                    'Delete
-                    FormMain.MnuLayer(1).Enabled = False
-                
-                    'Merge up/down
-                    FormMain.MnuLayer(3).Enabled = False
-                    FormMain.MnuLayer(4).Enabled = False
+                    If Not (m_LastUISync_HadMultipleLayers = PD_BOOL_FALSE) Then
+                        SetUIMode_OnlyOneLayer
+                        m_LastUISync_HadMultipleLayers = PD_BOOL_FALSE
+                    End If
                     
-                    'Layer order
-                    FormMain.MnuLayer(5).Enabled = False
-                    
-                    'Flatten
-                    FormMain.MnuLayer(15).Enabled = False
-                    
-                    'Merge visible
-                    FormMain.MnuLayer(16).Enabled = False
-                    
-                'This image contains multiple layers.  Enable many menu items (if they aren't already).
+                'This image contains multiple layers.  Enable additional menu items (if they aren't already).
                 Else
-                
-                    'Delete
-                    If Not FormMain.MnuLayer(1).Enabled Then FormMain.MnuLayer(1).Enabled = True
                     
-                    'Delete hidden layers is only available if one or more layers are hidden, but not ALL layers are hidden.
-                    If (pdImages(g_CurrentImage).getNumOfHiddenLayers > 0) And (pdImages(g_CurrentImage).getNumOfHiddenLayers < pdImages(g_CurrentImage).getNumOfLayers) Then
-                        FormMain.MnuLayerDelete(1).Enabled = True
-                    Else
-                        FormMain.MnuLayerDelete(1).Enabled = False
-                    End If
-                
-                    'Merge up/down are not available for layers at the top and bottom of the image
-                    If isLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).getActiveLayerIndex, False) <> -1 Then
-                        FormMain.MnuLayer(3).Enabled = True
-                    Else
-                        FormMain.MnuLayer(3).Enabled = False
+                    If Not (m_LastUISync_HadMultipleLayers = PD_BOOL_TRUE) Then
+                        SetUIMode_MultipleLayers
+                        m_LastUISync_HadMultipleLayers = PD_BOOL_TRUE
                     End If
                     
-                    If isLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).getActiveLayerIndex, True) <> -1 Then
-                        FormMain.MnuLayer(4).Enabled = True
-                    Else
-                        FormMain.MnuLayer(4).Enabled = False
-                    End If
-                    
-                    'Order is always available if more than one layer exists in the image
-                    If Not FormMain.MnuLayer(5).Enabled Then FormMain.MnuLayer(5).Enabled = True
-                    
-                    'Within the order menu, certain items are disabled based on layer position.  Note that "move up" and
-                    ' "move to top" are both disabled for top images (similarly for bottom images and "move down/bottom"),
-                    ' so we can mirror the same enabled state for both options.
-                    If pdImages(g_CurrentImage).getActiveLayerIndex < pdImages(g_CurrentImage).getNumOfLayers - 1 Then
-                        FormMain.MnuLayerOrder(0).Enabled = True
-                    Else
-                        FormMain.MnuLayerOrder(0).Enabled = False
-                    End If
-                    
-                    If pdImages(g_CurrentImage).getActiveLayerIndex > 0 Then
-                        FormMain.MnuLayerOrder(1).Enabled = True
-                    Else
-                        FormMain.MnuLayerOrder(1).Enabled = False
-                    End If
-                    
-                    'Mirror "raise to top" and "lower to bottom" against the state of "raise layer" and "lower layer"
-                    FormMain.MnuLayerOrder(3).Enabled = FormMain.MnuLayerOrder(0).Enabled
-                    FormMain.MnuLayerOrder(4).Enabled = FormMain.MnuLayerOrder(1).Enabled
-                                    
-                    'Adding transparency to a layer is always permitted, but removing it is invalid if an image is already 24bpp.
-                    ' Note that at present, this may have unintended consequences - use with caution!
-                    If Not pdImages(g_CurrentImage).getActiveDIB Is Nothing Then
-                        If pdImages(g_CurrentImage).getActiveDIB.getDIBColorDepth = 24 Then
-                            FormMain.MnuLayerTransparency(3).Enabled = False
-                        Else
-                            If Not FormMain.MnuLayerTransparency(3).Enabled Then FormMain.MnuLayerTransparency(3).Enabled = True
-                        End If
-                    End If
-                    
-                    'Flatten is only available if one or more layers are visible
-                    If pdImages(g_CurrentImage).getNumOfVisibleLayers > 0 Then
-                        If Not FormMain.MnuLayer(15).Enabled Then FormMain.MnuLayer(15).Enabled = True
-                    Else
-                        FormMain.MnuLayer(15).Enabled = False
-                    End If
-                    
-                    'Merge visible is only available if two or more layers are visible
-                    If pdImages(g_CurrentImage).getNumOfVisibleLayers > 1 Then
-                        If Not FormMain.MnuLayer(16).Enabled Then FormMain.MnuLayer(16).Enabled = True
-                    Else
-                        FormMain.MnuLayer(16).Enabled = False
-                    End If
+                    'Next, activate UI parameters whose behavior changes depending on the settings of multiple layers in the image
+                    ' (e.g. "delete hidden layers" requires at least one hidden layer in the image)
+                    SyncUI_MultipleLayerSettings
                     
                 End If
                 
-                'If at least one layer is available, enable a number of layer options
-                If Not FormMain.MnuLayer(7).Enabled Then FormMain.MnuLayer(7).Enabled = True
-                If Not FormMain.MnuLayer(8).Enabled Then FormMain.MnuLayer(8).Enabled = True
-                If Not FormMain.MnuLayer(11).Enabled Then FormMain.MnuLayer(11).Enabled = True
-            
+            'This Else branch should never be triggered, because PD doesn't allow zero-layer images, by design.
             Else
-            
-                'Most layer menus are disabled if an image does not contain layers.  PD isn't designed to allow 0-layer images,
-                ' so this is primarily included as a fail-safe.
-                FormMain.MnuLayer(1).Enabled = False
-                FormMain.MnuLayer(3).Enabled = False
-                FormMain.MnuLayer(4).Enabled = False
-                FormMain.MnuLayer(5).Enabled = False
-                FormMain.MnuLayer(7).Enabled = False
-                FormMain.MnuLayer(8).Enabled = False
-                FormMain.MnuLayer(9).Enabled = False
-                FormMain.MnuLayer(11).Enabled = False
-                FormMain.MnuLayer(13).Enabled = False
-                FormMain.MnuLayer(15).Enabled = False
-                FormMain.MnuLayer(16).Enabled = False
-                SetUIGroupState PDUI_NonDestructiveFX, False
-            
+                If Not (m_LastUISync_HadNoLayers = PD_BOOL_TRUE) Then
+                    SetUIMode_NoLayers
+                    m_LastUISync_HadNoLayers = PD_BOOL_TRUE
+                End If
             End If
                     
         End If
         
+        'TODO: move selection settings into the tool handler; they're too low-level for this function
+        'If a selection is active on this image, update the text boxes to match
+        If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
+            SetUIGroupState PDUI_Selections, True
+            SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).mainSelection.isTransformable
+            syncTextToCurrentSelection g_CurrentImage
+        Else
+            SetUIGroupState PDUI_Selections, False
+            SetUIGroupState PDUI_SelectionTransforms, False
+        End If
+            
         'Finally, synchronize various tool settings.  I've optimized this so that only the settings relative to the current tool
         ' are updated; others will be modified if/when the active tool is changed.
         Tool_Support.syncToolOptionsUIToCurrentLayer
-        
-        'Finally, if the histogram window is open, redraw it.  (This isn't needed at present, but could be useful in the future)
-        'If FormHistogram.Visible And pdImages(g_CurrentImage).loadedSuccessfully Then
-        '    FormHistogram.TallyHistogramValues
-        '    FormHistogram.DrawHistogram
-        'End If
         
     End If
         
@@ -427,6 +290,209 @@ Public Sub SyncInterfaceToCurrentImage()
     'Redraw the layer box
     toolbar_Layers.NotifyLayerChange
         
+End Sub
+
+'Synchronize all settings whose behavior and/or appearance depends on:
+' 1) At least 2+ valid layers in the current image
+' 2) Different behavior and/or appearances for different layer settings
+' If a UI element appears the same for ANY amount of multiple layers (e.g. "Delete Layer"), use the SetUIMode_MultipleLayers() function.
+Private Sub SyncUI_MultipleLayerSettings()
+    
+    'Delete hidden layers is only available if one or more layers are hidden, but not ALL layers are hidden.
+    If (pdImages(g_CurrentImage).getNumOfHiddenLayers > 0) And (pdImages(g_CurrentImage).getNumOfHiddenLayers < pdImages(g_CurrentImage).getNumOfLayers) Then
+        FormMain.MnuLayerDelete(1).Enabled = True
+    Else
+        FormMain.MnuLayerDelete(1).Enabled = False
+    End If
+
+    'Merge up/down are not available for layers at the top and bottom of the image
+    If isLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).getActiveLayerIndex, False) <> -1 Then
+        FormMain.MnuLayer(3).Enabled = True
+    Else
+        FormMain.MnuLayer(3).Enabled = False
+    End If
+    
+    If isLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).getActiveLayerIndex, True) <> -1 Then
+        FormMain.MnuLayer(4).Enabled = True
+    Else
+        FormMain.MnuLayer(4).Enabled = False
+    End If
+    
+    'Within the order menu, certain items are disabled based on layer position.  Note that "move up" and
+    ' "move to top" are both disabled for top images (similarly for bottom images and "move down/bottom"),
+    ' so we can mirror the same enabled state for both options.
+    If pdImages(g_CurrentImage).getActiveLayerIndex < pdImages(g_CurrentImage).getNumOfLayers - 1 Then
+        If Not FormMain.MnuLayerOrder(0).Enabled Then
+            FormMain.MnuLayerOrder(0).Enabled = True
+            FormMain.MnuLayerOrder(3).Enabled = True    '"raise to top" mirrors "raise layer"
+        End If
+    Else
+        If FormMain.MnuLayerOrder(0).Enabled Then
+            FormMain.MnuLayerOrder(0).Enabled = False
+            FormMain.MnuLayerOrder(3).Enabled = False
+        End If
+    End If
+    
+    If pdImages(g_CurrentImage).getActiveLayerIndex > 0 Then
+        If Not FormMain.MnuLayerOrder(1).Enabled Then
+            FormMain.MnuLayerOrder(1).Enabled = True
+            FormMain.MnuLayerOrder(4).Enabled = True    '"lower to bottom" mirrors "lower layer"
+        End If
+    Else
+        If FormMain.MnuLayerOrder(1).Enabled Then
+            FormMain.MnuLayerOrder(1).Enabled = False
+            FormMain.MnuLayerOrder(4).Enabled = False
+        End If
+    End If
+    
+    
+    'Flatten is only available if one or more layers are actually *visible*
+    If pdImages(g_CurrentImage).getNumOfVisibleLayers > 0 Then
+        If Not FormMain.MnuLayer(15).Enabled Then FormMain.MnuLayer(15).Enabled = True
+    Else
+        FormMain.MnuLayer(15).Enabled = False
+    End If
+    
+    'Merge visible is only available if *two* or more layers are visible
+    If pdImages(g_CurrentImage).getNumOfVisibleLayers > 1 Then
+        If Not FormMain.MnuLayer(16).Enabled Then FormMain.MnuLayer(16).Enabled = True
+    Else
+        FormMain.MnuLayer(16).Enabled = False
+    End If
+    
+End Sub
+
+'Synchronize all settings whose behavior and/or appearance depends on:
+' 1) At least one valid layer in the current image
+' 2) Different behavior and/or appearances for different layers
+' If a UI element appears the same for ANY layer (e.g. toggling visibility), use the SetUIMode_AtLeastOneLayer() function.
+Private Sub SyncUI_CurrentLayerSettings()
+    
+    'First, determine if the current layer is using any form of non-destructive resizing
+    Dim nonDestructiveResizeActive As Boolean
+    nonDestructiveResizeActive = False
+    If (pdImages(g_CurrentImage).getActiveLayer.getLayerCanvasXModifier <> 1) Then
+        nonDestructiveResizeActive = True
+    ElseIf (pdImages(g_CurrentImage).getActiveLayer.getLayerCanvasYModifier <> 1) Then
+        nonDestructiveResizeActive = True
+    End If
+    
+    'If non-destructive resizing is active, the "reset layer size" menu (and corresponding Move Tool button) must be enabled.
+    If FormMain.MnuLayerSize(0).Enabled <> nonDestructiveResizeActive Then
+        FormMain.MnuLayerSize(0).Enabled = nonDestructiveResizeActive
+        toolpanel_MoveSize.cmdLayerMove(0).Enabled = nonDestructiveResizeActive
+    End If
+    
+    toolpanel_MoveSize.cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
+    
+    'Similar logic is used for other non-destructive affine transforms
+    toolpanel_MoveSize.cmdLayerAngleReset.Enabled = CBool(pdImages(g_CurrentImage).getActiveLayer.getLayerAngle <> 0)
+    toolpanel_MoveSize.cmdLayerShearReset(0).Enabled = CBool(pdImages(g_CurrentImage).getActiveLayer.getLayerShearX <> 0)
+    toolpanel_MoveSize.cmdLayerShearReset(1).Enabled = CBool(pdImages(g_CurrentImage).getActiveLayer.getLayerShearY <> 0)
+    toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
+    
+    'If non-destructive FX are active on the current layer, update the non-destructive tool enablement to match
+    SetUIGroupState PDUI_NonDestructiveFX, True
+    
+    'Layer rasterization depends on the current layer type
+    FormMain.MnuLayerRasterize(0).Enabled = pdImages(g_CurrentImage).getActiveLayer.isLayerVector
+    FormMain.MnuLayerRasterize(1).Enabled = CBool(pdImages(g_CurrentImage).getNumOfVectorLayers > 0)
+    
+End Sub
+
+'Synchronize all settings whose behavior and/or appearance depends on:
+' 1) At least one valid, loaded image
+' 2) Different behavior and/or appearances for different images
+' If a UI element appears the same for ANY loaded image (e.g. activating the main canvas), use the SetUIMode_AtLeastOneImage() function.
+Private Sub SyncUI_CurrentImageSettings()
+            
+    'Reset all Undo/Redo and related menus.  (Note that this also controls the SAVE BUTTON, as the image's save state is modified
+    ' by PD's Undo/Redo engine.)
+    SyncUndoRedoInterfaceElements True
+    
+    'Because Undo/Redo changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
+    ResetMenuIcons
+            
+    'Determine whether metadata is present, and dis/enable metadata menu items accordingly
+    If Not pdImages(g_CurrentImage).imgMetadata Is Nothing Then
+        SetUIGroupState PDUI_Metadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
+        SetUIGroupState PDUI_GPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
+    Else
+        SetUIGroupState PDUI_Metadata, False
+        SetUIGroupState PDUI_GPSMetadata, False
+    End If
+    
+    'Display the image's path in the title bar.
+    If Not (g_WindowManager Is Nothing) Then
+        g_WindowManager.SetWindowCaptionW FormMain.hWnd, GetWindowCaption(pdImages(g_CurrentImage))
+    Else
+        FormMain.Caption = GetWindowCaption(pdImages(g_CurrentImage))
+    End If
+            
+    'Display the image's size in the status bar
+    If (pdImages(g_CurrentImage).Width <> 0) Then DisplaySize pdImages(g_CurrentImage)
+            
+    'Update the form's icon to match the current image; if a custom icon is not available, use the stock PD one
+    If pdImages(g_CurrentImage).curFormIcon32 = 0 Then CreateCustomFormIcons pdImages(g_CurrentImage)
+    ChangeAppIcons pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
+    
+    'Restore the zoom value for this particular image (again, only if the form has been initialized)
+    If pdImages(g_CurrentImage).Width <> 0 Then
+        g_AllowViewportRendering = False
+        FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = pdImages(g_CurrentImage).currentZoomValue
+        g_AllowViewportRendering = True
+    End If
+    
+End Sub
+
+'If an image has multiple layers, call this function to enable any UI elements that operate on multiple layers.
+' Note that some multi-layer settings require certain additional criteria to be met, e.g. "Merge Visible Layers" requires at least
+' two visible layers, so it must still be handled specially.  This function is only for functions that are ALWAYS available if
+' multiple layers are present in an image.
+Private Sub SetUIMode_MultipleLayers()
+    If Not FormMain.MnuLayer(1).Enabled Then FormMain.MnuLayer(1).Enabled = True    'Delete layer
+    If Not FormMain.MnuLayer(5).Enabled Then FormMain.MnuLayer(5).Enabled = True    'Order submenu
+End Sub
+
+'If an image has only one layer (e.g. a loaded JPEG), call this function to disable any UI elements that operate on multiple layers.
+Private Sub SetUIMode_OnlyOneLayer()
+    FormMain.MnuLayer(1).Enabled = False    'Delete layer
+    FormMain.MnuLayer(3).Enabled = False    'Merge up/down
+    FormMain.MnuLayer(4).Enabled = False
+    FormMain.MnuLayer(5).Enabled = False    'Layer order
+    FormMain.MnuLayer(15).Enabled = False   'Flatten
+    FormMain.MnuLayer(16).Enabled = False   'Merge visible
+End Sub
+
+'If an image has at least one valid layer (as they always do in PD), call this function to enable relevant layer menus and controls.
+Private Sub SetUIMode_AtLeastOneLayer()
+    
+    If Not FormMain.MnuLayer(7).Enabled Then
+        FormMain.MnuLayer(7).Enabled = True
+        FormMain.MnuLayer(8).Enabled = True
+        FormMain.MnuLayer(11).Enabled = True
+        FormMain.MnuLayerTransparency(3).Enabled = True     'Because all PD layers are 32-bpp, we always enable "remove transparency"
+    End If
+            
+End Sub
+
+'If PD ever reaches a "no layers in the current image" state, this function should be called.  (Such a state is currently unsupported, so this
+' exists only as a failsafe measure.)
+Private Sub SetUIMode_NoLayers()
+    
+    FormMain.MnuLayer(1).Enabled = False
+    FormMain.MnuLayer(3).Enabled = False
+    FormMain.MnuLayer(4).Enabled = False
+    FormMain.MnuLayer(5).Enabled = False
+    FormMain.MnuLayer(7).Enabled = False
+    FormMain.MnuLayer(8).Enabled = False
+    FormMain.MnuLayer(9).Enabled = False
+    FormMain.MnuLayer(11).Enabled = False
+    FormMain.MnuLayer(13).Enabled = False
+    FormMain.MnuLayer(15).Enabled = False
+    FormMain.MnuLayer(16).Enabled = False
+    SetUIGroupState PDUI_NonDestructiveFX, False
+    
 End Sub
 
 'Whenever PD returns to a "no images loaded" state, this function should be called.  (There are a number of specialized UI decisions
@@ -482,7 +548,7 @@ Private Sub SetUIMode_NoImages()
     Icons_and_Cursors.DestroyAllIcons
     
     'With all menus reset to their default values, we can now redraw all associated menu icons.
-    ' (IMPORTANT: this must be redone after menu captions change, as icons are associated with captions.)
+    ' (IMPORTANT: this function must be called whenever menu captions change, because icons are associated by caption.)
     ResetMenuIcons
         
     'If no images are currently open, but images were previously opened during this session, release any memory associated
@@ -504,6 +570,26 @@ Private Sub SetUIMode_NoImages()
         g_OpenImageCount = 0
         
     End If
+    
+    'Forcibly blank out the current message if no images are loaded
+    Message ""
+    
+End Sub
+
+'Whenever PD enters an "at least one valid image loaded" state, this function should be called.  Note that this function does not
+' set any image-specific information; instead, it simply reverses a number of UI options that are disabled when no images exist.
+Private Sub SetUIMode_AtLeastOneImage()
+    
+    SetUIGroupState PDUI_SaveAs, True
+    SetUIGroupState PDUI_Close, True
+    SetUIGroupState PDUI_EditCopyCut, True
+    SetUIGroupState PDUI_View, True
+    SetUIGroupState PDUI_ImageMenu, True
+    SetUIGroupState PDUI_Macros, True
+    SetUIGroupState PDUI_LayerTools, True
+    
+    'Make sure scroll bars are enabled and positioned correctly on the canvas
+    FormMain.mainCanvas(0).AlignCanvasView
     
 End Sub
 
@@ -745,18 +831,6 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                 If FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = False
             End If
         
-        'Zoom controls not just the drop-down zoom box, but the zoom in, zoom out, and zoom fit buttons as well
-        Case PDUI_Zoom
-            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled <> newState Then
-                FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled = newState
-                FormMain.mainCanvas(0).EnableZoomIn newState
-                FormMain.mainCanvas(0).EnableZoomOut newState
-                FormMain.mainCanvas(0).EnableZoomFit newState
-            End If
-            
-            'When disabling zoom controls, reset the zoom drop-down to 100%
-            If Not newState Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetZoom100Index
-        
         'Various layer-related tools (move, etc) are exposed on the tool options dialog.  For consistency, we disable those UI elements
         ' when no images are loaded.
         Case PDUI_LayerTools
@@ -829,41 +903,36 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                 Next i
                 
                 'Quick fix buttons are only relevant if the current image has some non-destructive events applied
-                If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
-                
-                    If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState() Then
-                        
-                        For i = 0 To toolpanel_NDFX.cmdQuickFix.Count - 1
-                            toolpanel_NDFX.cmdQuickFix(i).Enabled = True
-                        Next i
-                        
-                    Else
-                        
-                        For i = 0 To toolpanel_NDFX.cmdQuickFix.Count - 1
-                            toolpanel_NDFX.cmdQuickFix(i).Enabled = False
-                        Next i
-                        
-                    End If
+                If Not (pdImages(g_CurrentImage).getActiveLayer Is Nothing) Then
                     
+                    With toolpanel_NDFX
+                    
+                        .setNDFXControlState False
+                        
+                        If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState() Then
+                            For i = 0 To .cmdQuickFix.Count - 1
+                                .cmdQuickFix(i).Enabled = True
+                            Next i
+                        Else
+                            For i = 0 To .cmdQuickFix.Count - 1
+                                .cmdQuickFix(i).Enabled = False
+                            Next i
+                        End If
+                        
+                        'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
+                        For i = 0 To .sltQuickFix.Count - 1
+                            .sltQuickFix(i).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXValue(i)
+                        Next i
+                        
+                        .setNDFXControlState True
+                        
+                    End With
+                    
+                Else
+                    For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
+                        toolpanel_NDFX.sltQuickFix(i).Value = 0
+                    Next i
                 End If
-                
-                'Disable automatic NDFX syncing, then update all sliders to match the current layer's values
-                With toolpanel_NDFX
-                    .setNDFXControlState False
-                    
-                    'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
-                    If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
-                        For i = 0 To .sltQuickFix.Count - 1
-                            .sltQuickFix(i) = pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXValue(i)
-                        Next i
-                    Else
-                        For i = 0 To .sltQuickFix.Count - 1
-                            .sltQuickFix(i) = 0
-                        Next i
-                    End If
-                    
-                    .setNDFXControlState True
-                End With
                 
             Else
                 
@@ -1098,7 +1167,7 @@ End Sub
 
 'Toolbars can be dynamically shown/hidden by a variety of processes (e.g. clicking an entry in the Window menu, clicking the X in a
 ' toolbar's command box, etc).  All those operations should wrap this singular function.
-Public Sub ToggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
+Public Sub ToggleToolbarVisibility(ByVal whichToolbar As pdToolbarType, Optional ByVal suppressRedraws As Boolean = False)
 
     Select Case whichToolbar
     
@@ -1128,7 +1197,7 @@ Public Sub ToggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
     End Select
     
     'Redraw the primary image viewport, as the available client area may have changed.
-    If g_NumOfImagesLoaded > 0 Then FormMain.RefreshAllCanvases
+    If (g_NumOfImagesLoaded > 0) And (Not suppressRedraws) Then FormMain.RefreshAllCanvases
     
 End Sub
 
@@ -1457,27 +1526,38 @@ End Function
 Public Sub DisplaySize(ByRef srcImage As pdImage)
     
     If Not (srcImage Is Nothing) Then
+        
         FormMain.mainCanvas(0).DisplayImageSize srcImage
+        
+        'Size is only displayed when it is changed, so if any controls have a maximum value linked to the size of the image,
+        ' now is an excellent time to update them.
+        Dim newLimitingSize_Small As Single, newLimitingSize_Large As Single
+        
+        If (srcImage.Width < srcImage.Height) Then
+            newLimitingSize_Small = srcImage.Width
+            newLimitingSize_Large = srcImage.Height
+        Else
+            newLimitingSize_Small = srcImage.Height
+            newLimitingSize_Large = srcImage.Width
+        End If
+        
+        If (m_LastUILimitingSize_Small <> newLimitingSize_Small) Or (m_LastUILimitingSize_Large <> newLimitingSize_Large) Then
+            
+            'Certain selection tools are size-limited by the current image
+            toolpanel_Selections.sltCornerRounding.Max = m_LastUILimitingSize_Small
+            toolpanel_Selections.sltSelectionLineWidth.Max = m_LastUILimitingSize_Large
+        
+            Dim i As Long
+            For i = 0 To toolpanel_Selections.sltSelectionBorder.Count - 1
+                toolpanel_Selections.sltSelectionBorder(i).Max = m_LastUILimitingSize_Small
+            Next i
+            
+            m_LastUILimitingSize_Small = newLimitingSize_Small
+            m_LastUILimitingSize_Large = newLimitingSize_Large
+            
+        End If
+    
     End If
-    
-    'Size is only displayed when it is changed, so if any controls have a maximum value linked to the size of the image,
-    ' now is an excellent time to update them.
-    Dim limitingSize As Long
-    
-    If srcImage.Width < srcImage.Height Then
-        limitingSize = srcImage.Width
-        toolpanel_Selections.sltCornerRounding.Max = srcImage.Width
-        toolpanel_Selections.sltSelectionLineWidth.Max = srcImage.Height
-    Else
-        limitingSize = srcImage.Height
-        toolpanel_Selections.sltCornerRounding.Max = srcImage.Height
-        toolpanel_Selections.sltSelectionLineWidth.Max = srcImage.Width
-    End If
-    
-    Dim i As Long
-    For i = 0 To toolpanel_Selections.sltSelectionBorder.Count - 1
-        toolpanel_Selections.sltSelectionBorder(i).Max = limitingSize
-    Next i
     
 End Sub
 

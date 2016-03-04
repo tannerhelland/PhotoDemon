@@ -278,7 +278,7 @@ Public Property Let Value(ByVal newValue As Double)
     'Don't make any changes unless the new value deviates from the existing one
     If (newValue <> pdssPrimary.Value) Or (newValue <> tudPrimary.Value) Then
         pdssPrimary.Value = newValue
-        tudPrimary.Value = pdssPrimary.Value
+        tudPrimary.Value = newValue
         If Me.Enabled Then RaiseEvent Change
         PropertyChanged "Value"
     End If
@@ -347,10 +347,12 @@ Private Sub ucSupport_LostFocusAPI()
 End Sub
 
 Private Sub tudPrimary_Change()
-    If tudPrimary.IsValid(False) Then
-        textBoxInitiated = True
-        Me.Value = tudPrimary.Value
-        textBoxInitiated = False
+    If (Not textBoxInitiated) Then
+        If tudPrimary.IsValid(False) Then
+            textBoxInitiated = True
+            Me.Value = tudPrimary.Value
+            textBoxInitiated = False
+        End If
     End If
 End Sub
 

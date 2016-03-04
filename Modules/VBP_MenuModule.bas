@@ -405,27 +405,35 @@ Public Sub MenuCloseAll()
     'Note that the user has opted to close ALL open images; this is used by the central image handler to know what kind
     ' of "Unsaved changes" dialog to display.
     g_ClosingAllImages = True
-
+    
+    Dim numOfImagesToUnload As Long, numImagesActuallyUnloaded As Long
+    numImagesActuallyUnloaded = 0
+    numOfImagesToUnload = g_OpenImageCount
+    
     'Loop through each image object and close their associated forms
     Dim i As Long
     For i = LBound(pdImages) To UBound(pdImages)
-    
-        Message "Unloading image %1 of %2", i, g_NumOfImagesLoaded
-    
+        
         If Not (pdImages(i) Is Nothing) Then
             If pdImages(i).IsActive Then
+                numImagesActuallyUnloaded = numImagesActuallyUnloaded + 1
+                Message "Unloading image %1 of %2", numImagesActuallyUnloaded, numOfImagesToUnload
                 FullPDImageUnload i, False
             End If
         End If
         
         'If the user presses "cancel" at some point in the unload chain, obey their request immediately
         ' (e.g. stop unloading images)
-        If Not g_ClosingAllImages Then Exit For
+        If (Not g_ClosingAllImages) Then
+            'If not all images were unloaded, notify the user
+            If g_OpenImageCount <> 0 Then Message "Close all images canceled."
+            Exit For
+        End If
         
     Next i
     
     'Redraw the screen to match the new program state
-    toolbar_ImageTabs.forceRedraw
+    toolbar_ImageTabs.ForceRedraw
     SyncInterfaceToCurrentImage
     
     'Reset the "closing all images" flags
@@ -542,7 +550,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     
     'Synchronize all interface elements to match the newly created image
     SyncInterfaceToCurrentImage
-    toolbar_ImageTabs.forceRedraw
+    toolbar_ImageTabs.ForceRedraw
     
     'Restore the default cursor
     Screen.MousePointer = vbNormal
