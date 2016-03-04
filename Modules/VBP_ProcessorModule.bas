@@ -432,7 +432,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                     'If the last selection Undo param string does not match the current selection param string, the user has
                     ' modified the selection in some way since the last Undo was created.  Create a new entry now.
                     If StrComp(lastSelParamString, pdImages(g_CurrentImage).mainSelection.getSelectionParamString, vbTextCompare) <> 0 Then
-                        pdImages(g_CurrentImage).undoManager.createUndoData "Modify selection", pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, , -1
+                        pdImages(g_CurrentImage).undoManager.CreateUndoData "Modify selection", pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, , -1
                     End If
                 
                 End If
@@ -504,7 +504,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 
                 'Also, redraw the current child form icon and the image tab-bar
                 CreateCustomFormIcons pdImages(g_CurrentImage)
-                toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
+                toolbar_ImageTabs.NotifyUpdatedImage g_CurrentImage
             End If
             
         Case "Batch wizard"
@@ -569,7 +569,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 
                 'Also, redraw the current child form icon and the image tab-bar
                 CreateCustomFormIcons pdImages(g_CurrentImage)
-                toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
+                toolbar_ImageTabs.NotifyUpdatedImage g_CurrentImage
             End If
             
         Case "Redo"
@@ -578,7 +578,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 
                 'Also, redraw the current child form icon and the image tab-bar
                 CreateCustomFormIcons pdImages(g_CurrentImage)
-                toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
+                toolbar_ImageTabs.NotifyUpdatedImage g_CurrentImage
             End If
             
         Case "Undo history"
@@ -649,14 +649,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         ' we add the old "Resize" operator here as well.
         Case "Resize image", "Resize"
             If showDialog Then
-                showResizeDialog PD_AT_WHOLEIMAGE
+                ShowResizeDialog PD_AT_WHOLEIMAGE
             Else
                 FormResize.ResizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetLong(6, MU_PIXELS), cParams.GetLong(7, 96), PD_AT_WHOLEIMAGE
             End If
             
         Case "Content-aware image resize"
             If showDialog Then
-                showContentAwareResizeDialog PD_AT_WHOLEIMAGE
+                ShowContentAwareResizeDialog PD_AT_WHOLEIMAGE
             Else
                 FormResizeContentAware.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, MU_PIXELS), cParams.GetLong(4, 96), PD_AT_WHOLEIMAGE
             End If
@@ -696,7 +696,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Rotate operations
         Case "Straighten image"
             If showDialog Then
-                showStraightenDialog PD_AT_WHOLEIMAGE
+                ShowStraightenDialog PD_AT_WHOLEIMAGE
             Else
                 FormStraighten.StraightenImage cParams.GetDouble(1), cParams.GetLong(2)
             End If
@@ -712,7 +712,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Arbitrary image rotation", "Arbitrary rotation"
             If showDialog Then
-                showRotateDialog PD_AT_WHOLEIMAGE
+                ShowRotateDialog PD_AT_WHOLEIMAGE
             Else
                 FormRotate.RotateArbitrary cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3)
             End If
@@ -849,7 +849,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Destructive layer orientation changes
         Case "Straighten layer"
             If showDialog Then
-                showStraightenDialog PD_AT_SINGLELAYER
+                ShowStraightenDialog PD_AT_SINGLELAYER
             Else
                 FormStraighten.StraightenImage cParams.GetDouble(1), cParams.GetLong(2)
             End If
@@ -865,7 +865,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Arbitrary layer rotation"
             If showDialog Then
-                showRotateDialog PD_AT_SINGLELAYER
+                ShowRotateDialog PD_AT_SINGLELAYER
             Else
                 FormRotate.RotateArbitrary cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3)
             End If
@@ -879,14 +879,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Destructive layer size changes
         Case "Resize layer"
             If showDialog Then
-                showResizeDialog PD_AT_SINGLELAYER
+                ShowResizeDialog PD_AT_SINGLELAYER
             Else
                 FormResize.ResizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetLong(6, MU_PIXELS), cParams.GetLong(7, 96), PD_AT_SINGLELAYER
             End If
         
         Case "Content-aware layer resize"
             If showDialog Then
-                showContentAwareResizeDialog PD_AT_SINGLELAYER
+                ShowContentAwareResizeDialog PD_AT_SINGLELAYER
             Else
                 FormResizeContentAware.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, MU_PIXELS), cParams.GetLong(4, 96), PD_AT_SINGLELAYER
             End If
@@ -1941,7 +1941,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     ' as well as the image tab-bar.
     If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
         CreateCustomFormIcons pdImages(g_CurrentImage)
-        toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
+        toolbar_ImageTabs.NotifyUpdatedImage g_CurrentImage
     End If
     
     'If the user canceled the requested action before it completed, we need to roll back the undo data we created
@@ -1980,7 +1980,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
         
             'Create the Undo data
-            pdImages(g_CurrentImage).undoManager.createUndoData processID, processParameters, createUndo, affectedLayerID, relevantTool
+            pdImages(g_CurrentImage).undoManager.CreateUndoData processID, processParameters, createUndo, affectedLayerID, relevantTool
             
         End If
     
@@ -2277,7 +2277,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional showDialog 
     ' as well as the image tab-bar.
     If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
         CreateCustomFormIcons pdImages(g_CurrentImage)
-        toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
+        toolbar_ImageTabs.NotifyUpdatedImage g_CurrentImage
         
         'TODO: notify the layer toolbox of the change, so it can generate a new thumbnail
         
@@ -2299,7 +2299,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional showDialog 
         
         'Create the Undo data; note that this line uniquely notifies the undo manager that it is allowed to coalesce identical
         ' processID requests.
-        pdImages(g_CurrentImage).undoManager.createUndoData processID, processParameters, createUndo, affectedLayerID, relevantTool, True
+        pdImages(g_CurrentImage).undoManager.CreateUndoData processID, processParameters, createUndo, affectedLayerID, relevantTool, True
         
     End If
     

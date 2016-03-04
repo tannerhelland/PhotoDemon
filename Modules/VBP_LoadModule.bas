@@ -389,10 +389,10 @@ Public Sub LoadTheProgram()
     
     'Create the program's primary zoom handler
     Set g_Zoom = New pdZoom
-    g_Zoom.initializeViewportEngine
+    g_Zoom.InitializeViewportEngine
     
     'Populate the main form's zoom drop-down
-    g_Zoom.populateZoomComboBox FormMain.mainCanvas(0).GetZoomDropDownReference()
+    g_Zoom.PopulateZoomComboBox FormMain.mainCanvas(0).GetZoomDropDownReference()
     
     'Populate the main canvas's size unit dropdown
     FormMain.mainCanvas(0).PopulateSizeUnits
@@ -468,16 +468,16 @@ Public Sub LoadTheProgram()
     LoadMessage "Initializing user interface..."
     
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB is too old to support 32bpp icons)
-    SetIcon FormMain.hWnd, "AAA", True
+    Icons_and_Cursors.SetThunderMainIcon
     
     'Initialize all system cursors we rely on (hand, busy, resizing, etc)
-    initAllCursors
+    Icons_and_Cursors.InitializeCursors
     
     'Set up the program's title bar.  Odd-numbered releases are development releases.  Even-numbered releases are formal builds.
     If Not (g_WindowManager Is Nothing) Then
-        g_WindowManager.SetWindowCaptionW FormMain.hWnd, GetPhotoDemonNameAndVersion()
+        g_WindowManager.SetWindowCaptionW FormMain.hWnd, Update_Support.GetPhotoDemonNameAndVersion()
     Else
-        FormMain.Caption = GetPhotoDemonNameAndVersion()
+        FormMain.Caption = Update_Support.GetPhotoDemonNameAndVersion()
     End If
     
     'PhotoDemon renders many of its own icons dynamically.  Initialize that engine now.
@@ -490,14 +490,6 @@ Public Sub LoadTheProgram()
     
     'Allow drag-and-drop operations
     g_AllowDragAndDrop = True
-    
-    'Set the main canvas background color
-    'TODO: figure out canvas background settings
-    'FormMain.mainCanvas(0).BackColor = g_CanvasBackground
-    
-    'Clear the main canvas coordinate and size displays
-    FormMain.mainCanvas(0).DisplayCanvasCoordinates 0, 0, True
-    FormMain.mainCanvas(0).DisplayImageSize Nothing, True
     
     'Throughout the program, g_MouseAccuracy is used to determine how close the mouse cursor must be to a point of interest to
     ' consider it "over" that point.  DPI must be accounted for when calculating this value (as it's calculated in pixels).
@@ -543,7 +535,7 @@ Public Sub LoadTheProgram()
     g_RecentMacros.MRU_LoadFromFile
             
     'Load and draw all menu icons
-    loadMenuIcons
+    Icons_and_Cursors.LoadMenuIcons
     
     'Synchronize all other interface elements to match the current program state (e.g. no images loaded).
     SyncInterfaceToCurrentImage
@@ -1171,7 +1163,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             
             'Note that we now need to see if the ICC profile has already been applied.  For CMYK images, the ICC profile will be applied by
             ' the image load function.  If we don't do this, we'll be left with a 32bpp image that contains CMYK data instead of RGBA!
-            If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) And (Not targetImage.imgStorage.doesKeyExist("Tone-mapping")) Then
+            If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) And (Not targetImage.imgStorage.DoesKeyExist("Tone-mapping")) Then
                 
                 '32bpp images must be un-premultiplied before the transformation
                 If targetDIB.getDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication False
@@ -1664,7 +1656,7 @@ PreloadMoreImages:
     
     'Synchronize all interface elements to match the newly loaded image(s)
     SyncInterfaceToCurrentImage
-    toolbar_ImageTabs.forceRedraw
+    toolbar_ImageTabs.ForceRedraw
     
     
     '*************************************************************************************************************************************

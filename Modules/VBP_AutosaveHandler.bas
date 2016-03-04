@@ -65,7 +65,7 @@ End Function
 
 'Check to make sure the last program shutdown was clean.  If it was, return TRUE (and write out a new safe shutdown file).
 ' If it was not, return FALSE.
-Public Function wasLastShutdownClean() As Boolean
+Public Function WasLastShutdownClean() As Boolean
 
     Dim safeShutdownPath As String
     safeShutdownPath = g_UserPreferences.getPresetPath & "SafeShutdown.xml"
@@ -76,7 +76,7 @@ Public Function wasLastShutdownClean() As Boolean
     
     If cFile.FileExist(safeShutdownPath) Then
     
-        wasLastShutdownClean = False
+        WasLastShutdownClean = False
 
     'The previous shutdown was clean.  Write a new safe shutdown file.
     Else
@@ -96,7 +96,7 @@ Public Function wasLastShutdownClean() As Boolean
         
         xmlEngine.writeXMLToFile safeShutdownPath
         
-        wasLastShutdownClean = True
+        WasLastShutdownClean = True
     
     End If
     
@@ -119,7 +119,7 @@ End Sub
 
 'After an unclean shutdown is detected, this function can be called to search the temp directory for saveable Undo/Redo data.
 ' It will return a value larger than 0 if Undo/Redo data was found.
-Public Function saveableImagesPresent() As Long
+Public Function SaveableImagesPresent() As Long
 
     'Search the temporary folder for any files matching PhotoDemon's Undo/Redo file pattern.  Because PD's Undo/Redo engine
     ' is awesome, it automatically saves very nice Undo XML files that contain key data for each pdImage opened by the program.
@@ -198,7 +198,7 @@ Public Function saveableImagesPresent() As Long
     If m_numOfXMLFound > 0 Then sortAutosaveEntries
     
     'Return the number of images found
-    saveableImagesPresent = m_numOfXMLFound
+    SaveableImagesPresent = m_numOfXMLFound
 
 End Function
 
@@ -229,7 +229,7 @@ Private Sub swapAutosaveData(ByRef asOne As AutosaveXML, ByRef asTwo As Autosave
 End Sub
 
 'If the user declines to restore old AutoSave data, purge it from the system (to prevent it from showing up in future searches).
-Public Sub purgeOldAutosaveData()
+Public Sub PurgeOldAutosaveData()
     
     If m_numOfXMLFound > 0 Then
     

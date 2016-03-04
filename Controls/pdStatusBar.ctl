@@ -11,16 +11,17 @@ Begin VB.UserControl pdStatusBar
    ScaleHeight     =   23
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   796
+   ToolboxBitmap   =   "pdStatusBar.ctx":0000
    Begin PhotoDemon.pdDropDown cmbSizeUnit 
       Height          =   360
       Left            =   3630
       TabIndex        =   0
       Top             =   15
       Width           =   660
-      _extentx        =   1164
-      _extenty        =   635
-      usecustombackgroundcolor=   -1
-      fontsize        =   9
+      _ExtentX        =   1164
+      _ExtentY        =   635
+      UseCustomBackgroundColor=   -1  'True
+      FontSize        =   9
    End
    Begin PhotoDemon.pdDropDown cmbZoom 
       Height          =   360
@@ -28,23 +29,23 @@ Begin VB.UserControl pdStatusBar
       TabIndex        =   1
       Top             =   15
       Width           =   1290
-      _extentx        =   2275
-      _extenty        =   635
-      usecustombackgroundcolor=   -1
-      fontsize        =   9
+      _ExtentX        =   2275
+      _ExtentY        =   635
+      UseCustomBackgroundColor=   -1  'True
+      FontSize        =   9
    End
    Begin PhotoDemon.pdLabel lblImgSize 
       Height          =   210
       Left            =   3240
       Top             =   60
       Width           =   345
-      _extentx        =   609
-      _extenty        =   370
-      backcolor       =   -2147483626
-      caption         =   "size:"
-      fontsize        =   9
-      layout          =   2
-      usecustombackcolor=   -1
+      _ExtentX        =   609
+      _ExtentY        =   370
+      BackColor       =   -2147483626
+      Caption         =   "size:"
+      FontSize        =   9
+      Layout          =   2
+      UseCustomBackColor=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdZoomFit 
       Height          =   345
@@ -52,10 +53,10 @@ Begin VB.UserControl pdStatusBar
       TabIndex        =   2
       Top             =   0
       Width           =   390
-      _extentx        =   688
-      _extenty        =   609
-      backcolor       =   -2147483626
-      usecustombackcolor=   -1
+      _ExtentX        =   688
+      _ExtentY        =   609
+      BackColor       =   -2147483626
+      UseCustomBackColor=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdZoomOut 
       Height          =   345
@@ -63,11 +64,11 @@ Begin VB.UserControl pdStatusBar
       TabIndex        =   3
       Top             =   0
       Width           =   390
-      _extentx        =   688
-      _extenty        =   609
-      autotoggle      =   -1
-      backcolor       =   -2147483626
-      usecustombackcolor=   -1
+      _ExtentX        =   688
+      _ExtentY        =   609
+      AutoToggle      =   -1  'True
+      BackColor       =   -2147483626
+      UseCustomBackColor=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdZoomIn 
       Height          =   345
@@ -75,11 +76,11 @@ Begin VB.UserControl pdStatusBar
       TabIndex        =   4
       Top             =   0
       Width           =   390
-      _extentx        =   688
-      _extenty        =   609
-      autotoggle      =   -1
-      backcolor       =   -2147483626
-      usecustombackcolor=   -1
+      _ExtentX        =   688
+      _ExtentY        =   609
+      AutoToggle      =   -1  'True
+      BackColor       =   -2147483626
+      UseCustomBackColor=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdImgSize 
       Height          =   345
@@ -87,37 +88,37 @@ Begin VB.UserControl pdStatusBar
       TabIndex        =   5
       Top             =   0
       Width           =   390
-      _extentx        =   688
-      _extenty        =   609
-      autotoggle      =   -1
-      backcolor       =   -2147483626
-      usecustombackcolor=   -1
+      _ExtentX        =   688
+      _ExtentY        =   609
+      AutoToggle      =   -1  'True
+      BackColor       =   -2147483626
+      UseCustomBackColor=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblCoordinates 
       Height          =   210
       Left            =   5160
       Top             =   60
       Width           =   345
-      _extentx        =   609
-      _extenty        =   370
-      backcolor       =   -2147483626
-      caption         =   "size:"
-      fontsize        =   9
-      layout          =   2
-      usecustombackcolor=   -1
+      _ExtentX        =   609
+      _ExtentY        =   370
+      BackColor       =   -2147483626
+      Caption         =   "size:"
+      FontSize        =   9
+      Layout          =   2
+      UseCustomBackColor=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblMessages 
       Height          =   210
       Left            =   6360
       Top             =   60
       Width           =   6825
-      _extentx        =   12039
-      _extenty        =   503
-      alignment       =   1
-      backcolor       =   -2147483626
-      caption         =   "(messages will appear here at run-time)"
-      fontsize        =   9
-      usecustombackcolor=   -1
+      _ExtentX        =   12039
+      _ExtentY        =   503
+      Alignment       =   1
+      BackColor       =   -2147483626
+      Caption         =   "(messages will appear here at run-time)"
+      FontSize        =   9
+      UseCustomBackColor=   -1  'True
    End
 End
 Attribute VB_Name = "pdStatusBar"

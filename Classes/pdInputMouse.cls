@@ -496,7 +496,7 @@ Public Sub setPNGCursor(ByVal pngResourceName As String, Optional ByVal cursorHo
     If (Not m_OverrideSetCursorMessages) Then
     
         Dim tmpCursorHandle As Long
-        tmpCursorHandle = Icon_and_Cursor_Handler.RequestCustomCursor(pngResourceName, cursorHotspotX, cursorHotspotY)
+        tmpCursorHandle = Icons_and_Cursors.RequestCustomCursor(pngResourceName, cursorHotspotX, cursorHotspotY)
         
         If m_CursorHandle <> tmpCursorHandle Then
             m_CursorHandle = tmpCursorHandle

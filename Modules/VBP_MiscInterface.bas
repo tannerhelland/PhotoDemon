@@ -61,32 +61,33 @@ Private Const PM_REMOVE As Long = &H1
 
 Public cancelCurrentAction As Boolean
 
-'Constants that define single meta-level actions that require certain controls to be en/disabled.  (For example, use tSave to disable
-' the File -> Save menu, file toolbar Save button, and Ctrl+S hotkey.)  Constants are listed in roughly the order they appear in the
-' main menu.
-Public Enum metaInitializer
-     tSave
-     tSaveAs
-     tClose
-     tUndo
-     tRedo
-     tCopy
-     tPaste
-     tView
-     tImageOps
-     tMetadata
-     tGPSMetadata
-     tMacro
-     tSelection
-     tSelectionTransform
-     tZoom
-     tLayerTools
-     tNonDestructiveFX
+'Some UI elements are always enabled or disabled as a group.  For example, the PDUI_Save group will simultaneously en/disable the
+' File -> Save menu, toolbar Save button(s), Ctrl+S hotkey, etc.  This enum is used throughout the interface manager to optimize the
+' way PD en/disables large groups of related controls
+Public Enum PD_UI_Group
+    PDUI_Save = 0
+    PDUI_SaveAs = 1
+    PDUI_Close = 2
+    PDUI_Undo = 3
+    PDUI_Redo = 4
+    PDUI_EditCopyCut = 5
+    PDUI_Paste = 6
+    PDUI_View = 7
+    PDUI_ImageMenu = 8
+    PDUI_Metadata = 9
+    PDUI_GPSMetadata = 10
+    PDUI_Macros = 11
+    PDUI_Selections = 12
+    PDUI_SelectionTransforms = 13
+    PDUI_Zoom = 14
+    PDUI_LayerTools = 15
+    PDUI_NonDestructiveFX = 16
 End Enum
 
 #If False Then
-    Private Const tSave = 0, tSaveAs = 0, tClose = 0, tUndo = 0, tRedo = 0, tCopy = 0, tPaste = 0, tView = 0, tImageOps = 0, tMetadata = 0, tGPSMetadata = 0
-    Private Const tMacro = 0, tSelection = 0, tSelectionTransform = 0, tZoom = 0, tLayerTools = 0, tNonDestructiveFX = 0
+    Private Const PDUI_Save = 0, PDUI_SaveAs = 1, PDUI_Close = 2, PDUI_Undo = 3, PDUI_Redo = 4, PDUI_Copy = 5, PDUI_Paste = 6, PDUI_View = 7
+    Private Const PDUI_ImageMenu = 8, PDUI_Metadata = 9, PDUI_GPSMetadata = 10, PDUI_Macros = 11, PDUI_Selections = 12
+    Private Const PDUI_SelectionTransforms = 13, PDUI_Zoom = 14, PDUI_LayerTools = 15, PDUI_NonDestructiveFX = 16
 #End If
 
 'If PhotoDemon enabled font smoothing where there was none previously, it will restore the original setting upon exit.  This variable
@@ -137,94 +138,23 @@ Public Sub SyncInterfaceToCurrentImage()
     'Start by breaking our interface decisions into two broad categories: "no images are loaded" and "one or more images are loaded".
     
     'If no images are loaded, we can disable a whole swath of controls
-    If g_OpenImageCount = 0 Then
-    
-        MetaToggle tSave, False
-        MetaToggle tSaveAs, False
-        MetaToggle tClose, False
-        MetaToggle tCopy, False
-        MetaToggle tView, False
-        MetaToggle tImageOps, False
-        MetaToggle tSelection, False
-        MetaToggle tMacro, False
-        MetaToggle tLayerTools, False
-        MetaToggle tNonDestructiveFX, False
+    If (g_OpenImageCount = 0) Then
+        SetUIMode_NoImages
         
-        'Disable various layer-related commands as well
-        FormMain.MnuLayerSize(0).Enabled = False
-        toolpanel_MoveSize.cmdLayerMove(0).Enabled = False
-        toolpanel_MoveSize.cmdLayerMove(1).Enabled = False
-        toolpanel_MoveSize.cmdLayerAngleReset.Enabled = False
-        toolpanel_MoveSize.cmdLayerShearReset(0).Enabled = False
-        toolpanel_MoveSize.cmdLayerShearReset(1).Enabled = False
-        toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = False
-        
-        'Reset all Undo/Redo and related menus as well
-        SyncUndoRedoInterfaceElements True
-                
-        'All relevant menu icons can now be redrawn.  (This must be redone after menu captions change, as icons are associated
-        ' with captions.)
-        resetMenuIcons
-        
-        '"Paste as new layer" is disabled when no images are loaded (but "Paste as new image" remains active)
-        FormMain.MnuEdit(8).Enabled = False
-                        
-        Message "Please load or import an image to begin editing."
-        
-        'Assign a generic caption to the main window
-        If Not (g_WindowManager Is Nothing) Then
-            g_WindowManager.SetWindowCaptionW FormMain.hWnd, GetPhotoDemonNameAndVersion()
-        Else
-            FormMain.Caption = GetPhotoDemonNameAndVersion()
-        End If
-        
-        FormMain.mainCanvas(0).ClearCanvas
-        
-        'Because dynamic icons are enabled, restore the main program icon and clear the custom image icon cache
-        setNewTaskbarIcon origIcon32, FormMain.hWnd
-        setNewAppIcon origIcon16, origIcon32
-        Icon_and_Cursor_Handler.DestroyAllIcons
-        
-        'If no images are currently open, but images were open in the past, release any memory associated with those images.
-        ' This helps minimize PD's memory usage.
-        If g_NumOfImagesLoaded > 1 Then
-        
-            'Loop through all pdImage objects and make sure they've been deactivated
-            For i = 0 To UBound(pdImages)
-                If (Not pdImages(i) Is Nothing) Then
-                    pdImages(i).deactivateImage
-                    Set pdImages(i) = Nothing
-                End If
-            Next i
-            
-            'Reset all window tracking variables
-            g_NumOfImagesLoaded = 0
-            g_CurrentImage = 0
-            g_OpenImageCount = 0
-            
-        End If
-                
-        'Erase any remaining viewport buffer.  (This is temporarily disabled because the RAM gain is small, and it potentially introduces
-        ' errors into functions that expect an activate viewport pipeline.  Further investigation TBD.)
-        'eraseViewportBuffers
-    
     'If one or more images are loaded, our job is trickier.  Some controls (such as Copy to Clipboard) are enabled no matter what,
     ' while others (Undo and Redo) are only enabled if the current image requires it.
     Else
         
-        If Not pdImages(g_CurrentImage) Is Nothing Then
+        If Not (pdImages(g_CurrentImage) Is Nothing) Then
         
             'Start by enabling actions that are always available if one or more images are loaded.
-            MetaToggle tSaveAs, True
-            MetaToggle tClose, True
-            MetaToggle tCopy, True
-            MetaToggle tView, True
-            MetaToggle tImageOps, True
-            MetaToggle tMacro, True
-            MetaToggle tLayerTools, True
-            
-            'Paste as new layer is always available if one (or more) images are loaded
-            If Not FormMain.MnuEdit(9).Enabled Then FormMain.MnuEdit(9).Enabled = True
+            SetUIGroupState PDUI_SaveAs, True
+            SetUIGroupState PDUI_Close, True
+            SetUIGroupState PDUI_EditCopyCut, True
+            SetUIGroupState PDUI_View, True
+            SetUIGroupState PDUI_ImageMenu, True
+            SetUIGroupState PDUI_Macros, True
+            SetUIGroupState PDUI_LayerTools, True
             
             'Display this image's path in the title bar.
             If Not (g_WindowManager Is Nothing) Then
@@ -247,36 +177,29 @@ Public Sub SyncInterfaceToCurrentImage()
             SyncUndoRedoInterfaceElements True
             
             'Because those changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
-            resetMenuIcons
+            ResetMenuIcons
             
             'Determine whether metadata is present, and dis/enable metadata menu items accordingly
             If Not pdImages(g_CurrentImage).imgMetadata Is Nothing Then
-                MetaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
-                MetaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
+                SetUIGroupState PDUI_Metadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
+                SetUIGroupState PDUI_GPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
             Else
-                MetaToggle tMetadata, False
-                MetaToggle tGPSMetadata, False
+                SetUIGroupState PDUI_Metadata, False
+                SetUIGroupState PDUI_GPSMetadata, False
             End If
             
             'Display the size of this image in the status bar
             If pdImages(g_CurrentImage).Width <> 0 Then DisplaySize pdImages(g_CurrentImage)
             
             'Update the form's icon to match the current image; if a custom icon is not available, use the stock PD one
-            If pdImages(g_CurrentImage).curFormIcon32 <> 0 Then
-                
-                'If images are docked, they do not have their own taskbar entries.  Change the main program icon to match this image.
-                setNewTaskbarIcon pdImages(g_CurrentImage).curFormIcon32, FormMain.hWnd
-                setNewAppIcon pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
-                
-            Else
-                setNewTaskbarIcon origIcon32, FormMain.hWnd
-            End If
+            If pdImages(g_CurrentImage).curFormIcon32 = 0 Then CreateCustomFormIcons pdImages(g_CurrentImage)
+            ChangeAppIcons pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
                         
             FormMain.mainCanvas(0).AlignCanvasView
                         
             'Check the image's color depth, and check/uncheck the matching Image Mode setting
             'If Not (pdImages(g_CurrentImage).getActiveLayer() Is Nothing) Then
-            '    If pdImages(g_CurrentImage).getCompositeImageColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
+            '    If pdImages(g_CurrentImage).getCompositeImageColorDepth() = 32 Then SetUIGroupState tImgMode32bpp, True Else SetUIGroupState tImgMode32bpp, False
             'End If
             
             'Restore the zoom value for this particular image (again, only if the form has been initialized)
@@ -288,12 +211,12 @@ Public Sub SyncInterfaceToCurrentImage()
             
             'If a selection is active on this image, update the text boxes to match
             If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
-                MetaToggle tSelection, True
-                MetaToggle tSelectionTransform, pdImages(g_CurrentImage).mainSelection.isTransformable
+                SetUIGroupState PDUI_Selections, True
+                SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).mainSelection.isTransformable
                 syncTextToCurrentSelection g_CurrentImage
             Else
-                MetaToggle tSelection, False
-                MetaToggle tSelectionTransform, False
+                SetUIGroupState PDUI_Selections, False
+                SetUIGroupState PDUI_SelectionTransforms, False
             End If
             
             'Update all layer menus; some will be disabled depending on just how many layers are available, how many layers
@@ -321,7 +244,7 @@ Public Sub SyncInterfaceToCurrentImage()
                     toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
                     
                     'If non-destructive FX are active on the current layer, update the non-destructive tool enablement to match
-                    MetaToggle tNonDestructiveFX, True
+                    SetUIGroupState PDUI_NonDestructiveFX, True
                     
                     'Layer rasterization depends on the current layer type
                     FormMain.MnuLayerRasterize(0).Enabled = pdImages(g_CurrentImage).getActiveLayer.isLayerVector
@@ -442,7 +365,7 @@ Public Sub SyncInterfaceToCurrentImage()
                 FormMain.MnuLayer(13).Enabled = False
                 FormMain.MnuLayer(15).Enabled = False
                 FormMain.MnuLayer(16).Enabled = False
-                MetaToggle tNonDestructiveFX, False
+                SetUIGroupState PDUI_NonDestructiveFX, False
             
             End If
                     
@@ -506,44 +429,104 @@ Public Sub SyncInterfaceToCurrentImage()
         
 End Sub
 
+'Whenever PD returns to a "no images loaded" state, this function should be called.  (There are a number of specialized UI decisions
+' required by this this state, and it's important to keep those options in one place.)
+Private Sub SetUIMode_NoImages()
+    
+    'Start by forcibly disabling every conceivable UI group that requires an underlying image
+    SetUIGroupState PDUI_Save, False
+    SetUIGroupState PDUI_SaveAs, False
+    SetUIGroupState PDUI_Close, False
+    SetUIGroupState PDUI_EditCopyCut, False
+    SetUIGroupState PDUI_View, False
+    SetUIGroupState PDUI_ImageMenu, False
+    SetUIGroupState PDUI_Selections, False
+    SetUIGroupState PDUI_Macros, False
+    SetUIGroupState PDUI_LayerTools, False
+    SetUIGroupState PDUI_NonDestructiveFX, False
+    SetUIGroupState PDUI_Undo, False
+    SetUIGroupState PDUI_Redo, False
+    
+    'Disable various layer-related toolbox options as well
+    toolpanel_MoveSize.cmdLayerMove(0).Enabled = False
+    toolpanel_MoveSize.cmdLayerMove(1).Enabled = False
+    toolpanel_MoveSize.cmdLayerAngleReset.Enabled = False
+    toolpanel_MoveSize.cmdLayerShearReset(0).Enabled = False
+    toolpanel_MoveSize.cmdLayerShearReset(1).Enabled = False
+    toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = False
+        
+    'Multiple edit menu items must also be disabled
+    FormMain.MnuEdit(2).Enabled = False     'Undo history
+    FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
+    FormMain.MnuEdit(4).Enabled = False     '"Repeat..." and "Fade..."
+    FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
+    FormMain.MnuEdit(5).Enabled = False
+    
+    'The fade option in the primary toolbar must also go
+    toolbar_Toolbox.cmdFile(FILE_FADE).AssignTooltip g_Language.TranslateMessage("Fade last action")
+    toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = False
+    
+    'Reset the main window's caption to its default PD name and version
+    If Not (g_WindowManager Is Nothing) Then
+        g_WindowManager.SetWindowCaptionW FormMain.hWnd, Update_Support.GetPhotoDemonNameAndVersion()
+    Else
+        FormMain.Caption = GetPhotoDemonNameAndVersion()
+    End If
+    
+    'Ask the canvas to reset itself.  Note that this also covers the status bar area and the image tabstrip, if they were
+    ' previously visible.
+    FormMain.mainCanvas(0).ClearCanvas
+    
+    'Restore the default taskbar and titlebar icons and clear the custom icon cache
+    Icons_and_Cursors.ResetAppIcons
+    Icons_and_Cursors.DestroyAllIcons
+    
+    'With all menus reset to their default values, we can now redraw all associated menu icons.
+    ' (IMPORTANT: this must be redone after menu captions change, as icons are associated with captions.)
+    ResetMenuIcons
+        
+    'If no images are currently open, but images were previously opened during this session, release any memory associated
+    ' with those images.  This helps minimize PD's memory usage at idle.
+    If g_NumOfImagesLoaded >= 1 Then
+    
+        'Loop through all pdImage objects and make sure they've been deactivated
+        Dim i As Long
+        For i = 0 To UBound(pdImages)
+            If (Not pdImages(i) Is Nothing) Then
+                pdImages(i).deactivateImage
+                Set pdImages(i) = Nothing
+            End If
+        Next i
+        
+        'Reset all window tracking variables
+        g_NumOfImagesLoaded = 0
+        g_CurrentImage = 0
+        g_OpenImageCount = 0
+        
+    End If
+    
+End Sub
+
 'Some non-destructive actions need to synchronize *only* Undo/Redo buttons and menus (and their related counterparts, e.g. "Fade").
 ' To make these actions snappier, I have pulled all Undo/Redo UI sync code out of syncInterfaceToImage, and into this separate sub,
 ' which can be called on-demand as necessary.
 '
-'If the caller will be calling resetMenuIcons after using this function, make sure to pass the optional suspendAssociatedRedraws as TRUE
+'If the caller will be calling ResetMenuIcons() after using this function, make sure to pass the optional suspendAssociatedRedraws as TRUE
 ' to prevent unnecessary redraws.
+'
+'Finally, if no images are loaded, this function does absolutely nothing.  Refer to SetUIMode_NoImages(), above, for details.
 Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws As Boolean = False)
 
-    If g_OpenImageCount = 0 Then
-    
-        MetaToggle tUndo, False, True
-        MetaToggle tRedo, False, True
-        
-        'Undo history is disabled when no images are loaded
-        FormMain.MnuEdit(2).Enabled = False
-        
-        '"Repeat..." and "Fade..." in the Edit menu are disabled when no images are loaded
-        FormMain.MnuEdit(4).Enabled = False
-        FormMain.MnuEdit(5).Enabled = False
-        toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = False
-        
-        FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
-        FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
-        toolbar_Toolbox.cmdFile(FILE_FADE).AssignTooltip g_Language.TranslateMessage("Fade last action")
-        
-        'Redraw menu icons as requested
-        If Not suspendAssociatedRedraws Then resetMenuIcons
-    
-    Else
+    If (g_OpenImageCount <> 0) Then
     
         'Save is a bit funny, because if the image HAS been saved to file, we DISABLE the save button.
-        MetaToggle tSave, Not pdImages(g_CurrentImage).getSaveState(pdSE_AnySave)
+        SetUIGroupState PDUI_Save, Not pdImages(g_CurrentImage).getSaveState(pdSE_AnySave)
         
         'Undo, Redo, Repeat and Fade are all closely related
         If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then
         
-            MetaToggle tUndo, pdImages(g_CurrentImage).undoManager.getUndoState, True
-            MetaToggle tRedo, pdImages(g_CurrentImage).undoManager.getRedoState, True
+            SetUIGroupState PDUI_Undo, pdImages(g_CurrentImage).undoManager.getUndoState
+            SetUIGroupState PDUI_Redo, pdImages(g_CurrentImage).undoManager.getRedoState
             
             'Undo history is enabled if either Undo or Redo is active
             If pdImages(g_CurrentImage).undoManager.getUndoState Or pdImages(g_CurrentImage).undoManager.getRedoState Then
@@ -577,7 +560,7 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             End If
             
             'Because these changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
-            If Not suspendAssociatedRedraws Then resetMenuIcons
+            If Not suspendAssociatedRedraws Then ResetMenuIcons
         
         End If
     
@@ -585,50 +568,43 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
 
 End Sub
 
-'metaToggle enables or disables a swath of controls related to a simple keyword (e.g. "Undo", which affects multiple menu items
+'SetUIGroupState enables or disables a swath of controls related to a simple keyword (e.g. "Undo", which affects multiple menu items
 ' and toolbar buttons)
-Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boolean, Optional ByVal suspendAssociatedRedraws As Boolean = False)
+Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Boolean)
     
     Dim i As Long
     
     Select Case metaItem
             
-        'Save (left-hand panel button AND menu item)
-        Case tSave
+        'Save (left-hand panel button(s) AND menu item)
+        Case PDUI_Save
             If FormMain.MnuFile(8).Enabled <> newState Then
-                
                 toolbar_Toolbox.cmdFile(FILE_SAVE).Enabled = newState
-                
-                FormMain.MnuFile(8).Enabled = newState
-                
-                'The File -> Revert menu is also tied to Save state (if the image has not been saved in its current state,
-                ' we allow the user to revert to the last save state).
-                FormMain.MnuFile(11).Enabled = newState
-                
+                FormMain.MnuFile(8).Enabled = newState      'Save
+                FormMain.MnuFile(11).Enabled = newState     'Revert
             End If
             
         'Save As (menu item only).  Note that Save Copy is also tied to Save As functionality, because they use the same rules
         ' for enablement (e.g. disabled if no images are loaded, always enabled otherwise)
-        Case tSaveAs
+        Case PDUI_SaveAs
             If FormMain.MnuFile(10).Enabled <> newState Then
                 toolbar_Toolbox.cmdFile(FILE_SAVEAS_LAYERS).Enabled = newState
                 toolbar_Toolbox.cmdFile(FILE_SAVEAS_FLAT).Enabled = newState
-                
-                FormMain.MnuFile(9).Enabled = newState
-                FormMain.MnuFile(10).Enabled = newState
+                FormMain.MnuFile(9).Enabled = newState      'Save as
+                FormMain.MnuFile(10).Enabled = newState     'Save copy
             End If
             
-        'Close and Close All
-        Case tClose
+        'Close (and Close All)
+        Case PDUI_Close
             If FormMain.MnuFile(5).Enabled <> newState Then
                 FormMain.MnuFile(5).Enabled = newState
                 FormMain.MnuFile(6).Enabled = newState
                 toolbar_Toolbox.cmdFile(FILE_CLOSE).Enabled = newState
             End If
         
-        'Undo (left-hand panel button AND menu item).  Undo toggles also control the "Fade last action" button, because that
-        ' action requires Undo data to operate.
-        Case tUndo
+        'Undo (left-hand panel button AND menu item).  Undo toggles also control the "Fade last action" button,
+        ' because that operates directly on previously saved Undo data.
+        Case PDUI_Undo
         
             If FormMain.MnuEdit(0).Enabled <> newState Then
                 toolbar_Toolbox.cmdFile(FILE_UNDO).Enabled = newState
@@ -644,11 +620,11 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & g_Language.TranslateMessage("Ctrl") & "+Z"
             End If
             
-            'When changing menu text, icons must be reapplied.
-            If Not suspendAssociatedRedraws Then resetMenuIcons
-        
+            'NOTE: when changing menu text, icons must be reapplied.  Make sure to call the ResetMenuIcons() function after changing
+            ' Undo/Redo enablement.
+            
         'Redo (left-hand panel button AND menu item)
-        Case tRedo
+        Case PDUI_Redo
             If FormMain.MnuEdit(1).Enabled <> newState Then
                 toolbar_Toolbox.cmdFile(FILE_REDO).Enabled = newState
                 FormMain.MnuEdit(1).Enabled = newState
@@ -663,11 +639,11 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & g_Language.TranslateMessage("Ctrl") & "+Y"
             End If
             
-            'When changing menu text, icons must be reapplied.
-            If Not suspendAssociatedRedraws Then resetMenuIcons
+            'NOTE: when changing menu text, icons must be reapplied.  Make sure to call the ResetMenuIcons() function after changing
+            ' Undo/Redo enablement.
             
         'Copy (menu item only)
-        Case tCopy
+        Case PDUI_EditCopyCut
             If FormMain.MnuEdit(7).Enabled <> newState Then FormMain.MnuEdit(7).Enabled = newState
             If FormMain.MnuEdit(8).Enabled <> newState Then FormMain.MnuEdit(8).Enabled = newState
             If FormMain.MnuEdit(9).Enabled <> newState Then FormMain.MnuEdit(9).Enabled = newState
@@ -675,35 +651,22 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             If FormMain.MnuEdit(12).Enabled <> newState Then FormMain.MnuEdit(12).Enabled = newState
             
         'View (top-menu level)
-        Case tView
+        Case PDUI_View
             If FormMain.MnuView.Enabled <> newState Then FormMain.MnuView.Enabled = newState
         
         'ImageOps is all Image-related menu items; it enables/disables the Image, Layer, Select, Color, and Print menus
-        Case tImageOps
+        Case PDUI_ImageMenu
             If FormMain.MnuImageTop.Enabled <> newState Then
-                FormMain.MnuImageTop.Enabled = newState
-                
-                'Use this same command to disable other menus
-                
-                'File -> Print
-                FormMain.MnuFile(15).Enabled = newState
-                
-                'Layer menu
-                FormMain.MnuLayerTop.Enabled = newState
-                
-                'Select menu
                 FormMain.MnuSelectTop.Enabled = newState
-                
-                'Adjustments menu
+                FormMain.MnuImageTop.Enabled = newState
+                FormMain.MnuLayerTop.Enabled = newState
                 FormMain.MnuAdjustmentsTop.Enabled = newState
-                
-                'Effects menu
                 FormMain.MnuEffectsTop.Enabled = newState
-                
+                FormMain.MnuFile(15).Enabled = newState     'File -> Print
             End If
             
         'Macro (within the Tools menu)
-        Case tMacro
+        Case PDUI_Macros
             If FormMain.mnuTool(3).Enabled <> newState Then
                 FormMain.mnuTool(3).Enabled = newState
                 FormMain.mnuTool(4).Enabled = newState
@@ -711,7 +674,7 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             End If
         
         'Selections in general
-        Case tSelection
+        Case PDUI_Selections
             
             'If selections are not active, clear all the selection value textboxes
             If Not newState Then
@@ -755,7 +718,7 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             If FormMain.MnuLayer(9).Enabled <> newState Then FormMain.MnuLayer(9).Enabled = newState
             
         'Transformable selection controls specifically
-        Case tSelectionTransform
+        Case PDUI_SelectionTransforms
         
             'Under certain circumstances, it is desirable to disable only the selection location boxes
             For i = 0 To toolpanel_Selections.tudSel.Count - 1
@@ -765,7 +728,7 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                 
         'If the ExifTool plugin is not available, metadata will ALWAYS be disabled.  (We do not currently have a separate fallback for
         ' reading/browsing/writing metadata.)
-        Case tMetadata
+        Case PDUI_Metadata
         
             If g_ExifToolEnabled Then
                 If FormMain.MnuMetadata(0).Enabled <> newState Then FormMain.MnuMetadata(0).Enabled = newState
@@ -774,7 +737,7 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             End If
         
         'GPS metadata is its own sub-category, and its activation is contigent upon an image having embedded GPS data
-        Case tGPSMetadata
+        Case PDUI_GPSMetadata
         
             If g_ExifToolEnabled Then
                 If FormMain.MnuMetadata(3).Enabled <> newState Then FormMain.MnuMetadata(3).Enabled = newState
@@ -783,7 +746,7 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             End If
         
         'Zoom controls not just the drop-down zoom box, but the zoom in, zoom out, and zoom fit buttons as well
-        Case tZoom
+        Case PDUI_Zoom
             If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled <> newState Then
                 FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled = newState
                 FormMain.mainCanvas(0).EnableZoomIn newState
@@ -792,11 +755,11 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             End If
             
             'When disabling zoom controls, reset the zoom drop-down to 100%
-            If Not newState Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
+            If Not newState Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetZoom100Index
         
         'Various layer-related tools (move, etc) are exposed on the tool options dialog.  For consistency, we disable those UI elements
         ' when no images are loaded.
-        Case tLayerTools
+        Case PDUI_LayerTools
             
             'Because we're dealing with text up/downs, we need to set hard limits relative to the current image's size.
             ' I'm currently using the "rule of three" - max/min values are the current dimensions of the image, x3.
@@ -856,7 +819,7 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             Tool_Support.setToolBusyState False
         
         'Non-destructive FX are effects that the user can apply to a layer, without permanently modifying the layer
-        Case tNonDestructiveFX
+        Case PDUI_NonDestructiveFX
         
             If newState Then
                 
@@ -1020,9 +983,7 @@ Public Function GetModalOwner(Optional ByVal assumeSecondaryDialog As Boolean = 
         
     'No modal dialog is active, making this the only one.  Give the main form ownership.
     Else
-        
         Set GetModalOwner = FormMain
-        
     End If
     
 End Function
@@ -1091,7 +1052,7 @@ Public Sub ToggleImageTabstripAlignment(ByVal newAlignment As AlignConstants, Op
     If Not suppressInterfaceSync Then
     
         '...and force the tabstrip to redraw itself (which it may not if the tabstrip's size hasn't changed, e.g. if Left and Right layout is toggled)
-        toolbar_ImageTabs.forceRedraw
+        toolbar_ImageTabs.ForceRedraw
     
         'Refresh the current image viewport (which may be positioned differently due to the tabstrip moving)
         FormMain.RefreshAllCanvases

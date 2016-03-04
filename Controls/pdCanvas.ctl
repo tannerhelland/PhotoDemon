@@ -1553,7 +1553,7 @@ Public Sub UpdateCanvasLayout()
     StatusBar.ReflowStatusBar (g_OpenImageCount > 0)
 End Sub
 
-'RELAY: (not really, but all these measurements need to be migrated to ucSupport)
+'TODO: migrate these measurements to rely on ucSupport, so we get proper high-DPI handling
 Public Sub AlignCanvasView()
     
     'Retrieve DPI-aware control dimensions from the support class
