@@ -573,7 +573,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             If Not srcPDImage.forInternalUseOnly Then SyncInterfaceToCurrentImage
                         
             'Notify the thumbnail window that this image has been updated (so it can show/hide the save icon)
-            If Not srcPDImage.forInternalUseOnly Then toolbar_ImageTabs.NotifyUpdatedImage srcPDImage.imageID
+            If Not srcPDImage.forInternalUseOnly Then Interface.NotifyImageChanged g_CurrentImage
             
         End If
     

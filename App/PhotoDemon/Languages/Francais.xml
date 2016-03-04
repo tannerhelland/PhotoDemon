@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.142</langversion>
+<langversion>6.7.144</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -625,11 +625,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <!-- BEGIN text for VBP_MiscInterface.bas -->
 
 <phrase>
-<original>Please load or import an image to begin editing.</original>
-<translation>S'il vous plaît charger ou importer une image pour commencer le montage.</translation>
-</phrase>
-
-<phrase>
 <original>Repeat</original>
 <translation>Répétez</translation>
 </phrase>
@@ -864,7 +859,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <translation>Annuler traitement d'image</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 68 phrases. 20 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 67 phrases. 20 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -1384,12 +1379,6 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de
 <!-- VBP_OutsideDevelopment_FreeImageV3.bas contains 0 phrases. -->
 
 <!-- END text for VBP_OutsideDevelopment_FreeImageV3.bas-->
-
-<!-- BEGIN text for VBP_OutsideDevelopment_SetIcon.bas -->
-
-<!-- VBP_OutsideDevelopment_SetIcon.bas contains 0 phrases. -->
-
-<!-- END text for VBP_OutsideDevelopment_SetIcon.bas-->
 
 <!-- BEGIN text for VBP_ExifToolInterface.bas -->
 
@@ -3260,16 +3249,6 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <!-- BEGIN text for pdCanvas.ctl -->
 
 <phrase>
-<original>size</original>
-<translation>taille</translation>
-</phrase>
-
-<phrase>
-<original>(messages will appear here at run-time)</original>
-<translation>(les messages apparaissent ici au moment de l'exécution)</translation>
-</phrase>
-
-<phrase>
 <original>Delete layer</original>
 <translation>Supprimer couche</translation>
 </phrase>
@@ -3282,11 +3261,6 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <phrase>
 <original>Erase selected area</original>
 <translation>Effacer zone sélectionnée</translation>
-</phrase>
-
-<phrase>
-<original>Resize image</original>
-<translation>Redimensionner l'image</translation>
 </phrase>
 
 <phrase>
@@ -3340,51 +3314,11 @@ S'il vous plaît entrer une valeur numérique.</translation>
 </phrase>
 
 <phrase>
-<original>px</original>
-<translation>px</translation>
-</phrase>
-
-<phrase>
-<original>in</original>
-<translation>dans</translation>
-</phrase>
-
-<phrase>
-<original>cm</original>
-<translation>cm</translation>
-</phrase>
-
-<phrase>
-<original>Fit the image on-screen</original>
-<translation>Monter l'image à l'écran</translation>
-</phrase>
-
-<phrase>
-<original>Zoom in</original>
-<translation>Zoom avant</translation>
-</phrase>
-
-<phrase>
-<original>Zoom out</original>
-<translation>Zoom arrière</translation>
-</phrase>
-
-<phrase>
-<original>Change viewport zoom</original>
-<translation>Changer fenêtre zoom</translation>
-</phrase>
-
-<phrase>
-<original>Change the image size unit displayed to the left of this box</original>
-<translation>Changer l'unité de taille de l'image affichée vers la gauche de cette boîte</translation>
-</phrase>
-
-<phrase>
 <original>Center the image inside the viewport</original>
 <translation></translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 53 phrases. 28 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 40 phrases. 26 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -5674,6 +5608,11 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 </phrase>
 
 <phrase>
+<original>Resize image</original>
+<translation>Redimensionner l'image</translation>
+</phrase>
+
+<phrase>
 <original>Content-aware image resize</original>
 <translation>Redimensionnement image contenu-courant</translation>
 </phrase>
@@ -5863,7 +5802,7 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 <translation>Retirer canal alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 181 were duplicates of existing phrases, so only 386 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 180 were duplicates of existing phrases, so only 387 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8244,6 +8183,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Artistic_GlassTiles.frm (FormGlassTiles) -->
 
 <phrase>
+<original>size</original>
+<translation>taille</translation>
+</phrase>
+
+<phrase>
 <original>curvature</original>
 <translation>Courbure</translation>
 </phrase>
@@ -8253,7 +8197,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Génération carreaux de verre</translation>
 </phrase>
 
-<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_GlassTiles.frm-->
 
@@ -12352,22 +12296,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>Fermer tous sauf ce</translation>
 </phrase>
 
-<phrase>
-<original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation>Une fois cette image a été enregistrée sur le disque, son nom de fichier apparaîtra ici.</translation>
-</phrase>
-
-<phrase>
-<original>This image does not have a filename.</original>
-<translation>Cette image ne est pas un nom de fichier.</translation>
-</phrase>
-
-<phrase>
-<original>Hover an image thumbnail to see its name and current file location.</original>
-<translation>Survolez une vignette de l'image pour voir son nom et l'emplacement du fichier actuel.</translation>
-</phrase>
-
-<!-- Toolbar_ImageTabstrip.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolbar_ImageTabstrip.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ImageTabstrip.frm-->
 
@@ -14727,12 +14656,84 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdImageStrip.ctl -->
+
+<phrase>
+<original>Once this image has been saved to disk, its filename will appear here.</original>
+<translation>Une fois cette image a été enregistrée sur le disque, son nom de fichier apparaîtra ici.</translation>
+</phrase>
+
+<phrase>
+<original>This image does not have a filename.</original>
+<translation>Cette image ne est pas un nom de fichier.</translation>
+</phrase>
+
+<phrase>
+<original>Hover an image thumbnail to see its name and current file location.</original>
+<translation>Survolez une vignette de l'image pour voir son nom et l'emplacement du fichier actuel.</translation>
+</phrase>
+
+<!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<!-- END text for pdImageStrip.ctl-->
+
+<!-- BEGIN text for pdStatusBar.ctl -->
+
+<phrase>
+<original>(messages will appear here at run-time)</original>
+<translation>(les messages apparaissent ici au moment de l'exécution)</translation>
+</phrase>
+
+<phrase>
+<original>px</original>
+<translation>px</translation>
+</phrase>
+
+<phrase>
+<original>in</original>
+<translation>dans</translation>
+</phrase>
+
+<phrase>
+<original>cm</original>
+<translation>cm</translation>
+</phrase>
+
+<phrase>
+<original>Fit the image on-screen</original>
+<translation>Monter l'image à l'écran</translation>
+</phrase>
+
+<phrase>
+<original>Zoom in</original>
+<translation>Zoom avant</translation>
+</phrase>
+
+<phrase>
+<original>Zoom out</original>
+<translation>Zoom arrière</translation>
+</phrase>
+
+<phrase>
+<original>Change viewport zoom</original>
+<translation>Changer fenêtre zoom</translation>
+</phrase>
+
+<phrase>
+<original>Change the image size unit displayed to the left of this box</original>
+<translation>Changer l'unité de taille de l'image affichée vers la gauche de cette boîte</translation>
+</phrase>
+
+<!-- pdStatusBar.ctl contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for pdStatusBar.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2522</phrasecount>
+<phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4326 phrases. -->
-<!-- 1804 are duplicates, so only 2522 unique phrases have been written to file. -->
-<!-- These 2522 phrases contain approximately 13451 total words. -->
+<!-- As of this build, PhotoDemon contains 4325 phrases. -->
+<!-- 1804 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 13442 total words. -->
 
 </pdData>

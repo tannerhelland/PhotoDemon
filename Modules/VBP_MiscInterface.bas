@@ -559,7 +559,7 @@ Private Sub SetUIMode_NoImages()
         Dim i As Long
         For i = 0 To UBound(pdImages)
             If (Not pdImages(i) Is Nothing) Then
-                pdImages(i).deactivateImage
+                pdImages(i).DeactivateImage
                 Set pdImages(i) = Nothing
             End If
         Next i
@@ -1121,7 +1121,8 @@ Public Sub ToggleImageTabstripAlignment(ByVal newAlignment As AlignConstants, Op
     If Not suppressInterfaceSync Then
     
         '...and force the tabstrip to redraw itself (which it may not if the tabstrip's size hasn't changed, e.g. if Left and Right layout is toggled)
-        toolbar_ImageTabs.ForceRedraw
+        ' TODO 7.0: now that the tabstrip lives on the canvas, this line should no longer be necessary
+        Interface.RequestTabstripRedraw
     
         'Refresh the current image viewport (which may be positioned differently due to the tabstrip moving)
         FormMain.RefreshAllCanvases
@@ -1935,4 +1936,71 @@ Public Sub DisplayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef
         
     End If
     
+End Sub
+
+'When a function does something that modifies the current image's appearance, it needs to notify this function.  This function will take
+' care of the messy business of notifying various UI elements (like the image tabstrip) of the change.
+'
+'If the change only affects a single image or layer, pass their indices; we can use them to shortcut a number of UI syncing steps.
+Public Sub NotifyImageChanged(Optional ByVal affectedImageIndex As Long = -1, Optional ByVal affectedLayerID As Long = -1)
+    
+    'If an image is *not* specified, assume this is in reference to the currently active image
+    If (affectedImageIndex < 0) Then affectedImageIndex = g_CurrentImage
+    
+    'Generate new taskbar and titlebar icons for the affected image
+    CreateCustomFormIcons pdImages(affectedImageIndex)
+    
+    'Notify the image tabstrip of any changes
+    toolbar_ImageTabs.NotifyUpdatedImage affectedImageIndex
+    
+End Sub
+
+'When a function results in an entirely new image being added to the central PD collection, it needs to notify this function.
+' This function will update all relevant UI elements to match.
+Public Sub NotifyImageAdded(Optional ByVal newImageIndex As Long = -1)
+
+    'If an image is *not* specified, assume this is in reference to the currently active image
+    If (newImageIndex < 0) Then newImageIndex = g_CurrentImage
+    
+    'Generate an initial set of taskbar and titlebar icons
+    CreateCustomFormIcons pdImages(newImageIndex)
+    
+    'Notify the image tabstrip of the addition.  (It has to make quite a few internal changes to accommodate new images.)
+    toolbar_ImageTabs.RegisterNewImage newImageIndex
+    
+End Sub
+
+'When a function results in an image being removed from the central PD collection, it needs to notify this function.
+' This function will update all relevant UI elements to match.  The optional "redrawImmediately" parameter is useful if multiple
+' images are about to be removed back-to-back; in this case, the function will not force immediate refreshes.  (However, make sure
+' that when the *last* image is unloaded, redrawImmediately is set to TRUE so that appropriate redraws can take place!)
+Public Sub NotifyImageRemoved(Optional ByVal oldImageIndex As Long = -1, Optional ByVal redrawImmediately As Boolean = True)
+
+    'If an image is *not* specified, assume this is in reference to the currently active image
+    If (oldImageIndex < 0) Then oldImageIndex = g_CurrentImage
+    
+    'The image tabstrip has to recalculate internal metrics whenever an image is unloaded
+    toolbar_ImageTabs.RemoveImage oldImageIndex, redrawImmediately
+
+End Sub
+
+'When a new image has been activated, call this function to apply all relevant UI changes.
+Public Sub NotifyNewActiveImage(Optional ByVal newImageIndex As Long = -1)
+    
+    'If an image is *not* specified, assume this is in reference to the currently active image
+    If (newImageIndex < 0) Then newImageIndex = g_CurrentImage
+    
+    'The toolbar must redraw itself to match the newly activated image
+    toolbar_ImageTabs.NotifyNewActiveImage newImageIndex
+    
+    'A newly activated image requires a whole swath of UI changes.  Ask SyncInterfaceToCurrentImage to handle this for us.
+    SyncInterfaceToCurrentImage
+    
+End Sub
+
+'I'm not very happy about needing this function.  If an action does something that requires a tabstrip redraw, it should be handled
+' by the dedicated NotifyXYZ functions, above.  The tabstrip should not require special handling.  That said, this is a temporary stopgap
+' until we fix some widespread UI synchronization issues throughout the project.
+Public Sub RequestTabstripRedraw()
+    toolbar_ImageTabs.ForceRedraw
 End Sub

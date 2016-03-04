@@ -426,15 +426,17 @@ Public Sub MenuCloseAll()
         ' (e.g. stop unloading images)
         If (Not g_ClosingAllImages) Then
             'If not all images were unloaded, notify the user
-            If g_OpenImageCount <> 0 Then Message "Close all images canceled."
+            If g_OpenImageCount <> 0 Then Message ""
             Exit For
         End If
         
     Next i
     
     'Redraw the screen to match the new program state
-    toolbar_ImageTabs.ForceRedraw
     SyncInterfaceToCurrentImage
+    
+    'TODO: now that PD 7.0 has moved the tabstrip into the canvas manager, see if we can drop this line entirely
+    Interface.RequestTabstripRedraw
     
     'Reset the "closing all images" flags
     g_ClosingAllImages = False
@@ -516,11 +518,8 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     pdImages(g_CurrentImage).originalFileName = pdImages(g_CurrentImage).originalFileNameAndExtension
     pdImages(g_CurrentImage).setSaveState False, pdSE_AnySave
     
-    'Create an icon-sized version of this image, which we will use as form's taskbar icon
-    CreateCustomFormIcons pdImages(g_CurrentImage)
-    
-    'Register this image with the image tab bar
-    toolbar_ImageTabs.RegisterNewImage g_CurrentImage
+    'Make any interface changes related to the presence of a new image
+    Interface.NotifyImageAdded g_CurrentImage
     
     'Just to be safe, update the color management profile of the current monitor
     CheckParentMonitor True
@@ -550,7 +549,9 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     
     'Synchronize all interface elements to match the newly created image
     SyncInterfaceToCurrentImage
-    toolbar_ImageTabs.ForceRedraw
+    
+    'TODO: activating a new image automatically redraws the tabstrip, so see if we can drop this line entirely as of 7.0
+    Interface.RequestTabstripRedraw
     
     'Restore the default cursor
     Screen.MousePointer = vbNormal

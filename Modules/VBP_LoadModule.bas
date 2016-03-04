@@ -896,7 +896,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 targetImage.originalFileFormat = FIF_PDI
                 targetImage.currentFileFormat = FIF_PDI
                 targetImage.originalColorDepth = 32
-                targetImage.notifyImageChanged UNDO_EVERYTHING
+                targetImage.NotifyImageChanged UNDO_EVERYTHING
                 mustCountColors = False
                 
                 decoderUsed = PDIDE_INTERNAL
@@ -913,7 +913,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 targetImage.originalFileFormat = FIF_JPEG
                 targetImage.currentFileFormat = FIF_JPEG
                 targetImage.originalColorDepth = 32
-                targetImage.notifyImageChanged UNDO_EVERYTHING
+                targetImage.NotifyImageChanged UNDO_EVERYTHING
                 mustCountColors = False
                 
                 decoderUsed = PDIDE_INTERNAL
@@ -1091,7 +1091,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             End If
             
             'Deactivate the (now useless) pdImage object, and forcibly unload whatever resources it has claimed
-            targetImage.deactivateImage
+            targetImage.DeactivateImage
             FullPDImageUnload targetImage.imageID, False
             
             GoTo PreloadMoreImages
@@ -1419,11 +1419,10 @@ PDI_Load_Continuation:
         'If this is a primary image, it needs to be rendered to the screen
         If isThisPrimaryImage Then
             
-            'Create an icon-sized version of this image, which we will use as form's taskbar icon
-            If MacroStatus <> MacroBATCH Then CreateCustomFormIcons targetImage
+            'Notify the UI manager that it now has one more image to deal with
+            If MacroStatus <> MacroBATCH Then Interface.NotifyImageAdded g_CurrentImage
             
-            'Register this image with the image tab bar
-            toolbar_ImageTabs.RegisterNewImage g_CurrentImage
+            'TODO: migrate additional portions of this codeblock into Interface.NotifyImageAdded
             
             'Just to be safe, update the color management profile of the current monitor
             CheckParentMonitor True
@@ -1654,7 +1653,10 @@ PreloadMoreImages:
     
     'Synchronize all interface elements to match the newly loaded image(s)
     SyncInterfaceToCurrentImage
-    toolbar_ImageTabs.ForceRedraw
+    
+    'TODO: see if we can remove this step; it *should* be handled by the image activation step, above, which automatically
+    ' adds the image to the tabstrip (and thus prompts a redraw)
+    Interface.RequestTabstripRedraw
     
     
     '*************************************************************************************************************************************
@@ -2002,7 +2004,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
             
             'If successful, notify the parent of the change
             If nodeLoadedSuccessfully Then
-                dstImage.notifyImageChanged UNDO_LAYER, i
+                dstImage.NotifyImageChanged UNDO_LAYER, i
             Else
                 Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
             End If

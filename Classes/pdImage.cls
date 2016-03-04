@@ -226,7 +226,7 @@ End Sub
 '
 'If the change involves a layer, an index *must* be specified, so the object can notify the layer of the change (allowing the
 ' layer to rebuild any internal caches or buffers, like layer styles).
-Public Function notifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional ByVal layerIndex As Long = -1)
+Public Function NotifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional ByVal layerIndex As Long = -1)
 
     'Separate handling by type.
     
@@ -823,7 +823,7 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
 End Function
 
 'When this DIB is no longer being used, we can deactivate it to save on resources.
-Public Sub deactivateImage()
+Public Sub DeactivateImage()
     
     'Erase the composite buffer
     If Not (compositeBuffer Is Nothing) Then
@@ -923,7 +923,7 @@ Public Function updateSize(Optional ByVal useBaseLayer As Boolean = True, Option
     End If
     
     'Changes to image size require a rebuild of our composited image cache
-    Me.notifyImageChanged UNDO_IMAGE
+    Me.NotifyImageChanged UNDO_IMAGE
     
 End Function
 
@@ -1240,7 +1240,7 @@ Public Function eraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     imgLayers(targetLayerIndex).CropNullPaddedLayer
     
     'Notify ourselves of the change
-    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, targetLayerIndex
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, targetLayerIndex
     
     eraseProcessedSelection = True
 
