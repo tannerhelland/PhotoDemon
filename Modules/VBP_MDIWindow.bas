@@ -47,7 +47,7 @@ Public Sub CreateNewPDImage(Optional ByVal forInternalUse As Boolean = False)
     pdImages(g_NumOfImagesLoaded).forInternalUseOnly = forInternalUse
     
     'Set a default zoom of 100% (note: this is likely to change, assuming the user has auto-zoom enabled)
-    pdImages(g_NumOfImagesLoaded).currentZoomValue = g_Zoom.getZoom100Index
+    pdImages(g_NumOfImagesLoaded).currentZoomValue = g_Zoom.GetZoom100Index
     
     'Set this image as the current one
     g_CurrentImage = g_NumOfImagesLoaded
@@ -71,9 +71,9 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
         
     'If the "fit all" zoom value is greater than 100%, use 100%.  Otherwise, use the "fit all" value as-is.
     Dim newZoomIndex As Long
-    newZoomIndex = g_Zoom.getZoomFitAllIndex
+    newZoomIndex = g_Zoom.GetZoomFitAllIndex
     
-    If g_Zoom.getZoomValue(newZoomIndex) > 1 Then newZoomIndex = g_Zoom.getZoom100Index
+    If g_Zoom.GetZoomValue(newZoomIndex) > 1 Then newZoomIndex = g_Zoom.GetZoom100Index
     
     'Update the main canvas zoom drop-down, and the pdImage container for this image (so that zoom is restored properly when
     ' the user switches between loaded images).
@@ -100,8 +100,8 @@ Public Sub FitOnScreen()
     g_AllowViewportRendering = False
     
     'Set zoom to the "fit whole" index
-    FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getZoomFitAllIndex
-    pdImages(g_CurrentImage).currentZoomValue = g_Zoom.getZoomFitAllIndex
+    FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetZoomFitAllIndex
+    pdImages(g_CurrentImage).currentZoomValue = g_Zoom.GetZoomFitAllIndex
     
     'Re-enable scrolling
     g_AllowViewportRendering = True
@@ -292,34 +292,30 @@ End Function
 
 'Previously, we could unload images by just unloading their containing form.  This is no longer possible, so we must
 ' unload images using this special function.
-Public Function UnloadPDImage(Cancel As Integer, ByVal imageID As Long, Optional ByVal resyncInterface As Boolean = True)
+Public Function UnloadPDImage(Cancel As Integer, ByVal imageIndex As Long, Optional ByVal resyncInterface As Boolean = True)
 
     'Failsafe to make sure the image was properly initialized
-    If pdImages(imageID) Is Nothing Then Exit Function
+    If pdImages(imageIndex) Is Nothing Then Exit Function
     
-    If pdImages(imageID).loadedSuccessfully And resyncInterface Then Message "Closing image..."
+    If pdImages(imageIndex).loadedSuccessfully And resyncInterface Then Message "Closing image..."
     
     'Decrease the open image count
     g_OpenImageCount = g_OpenImageCount - 1
     
     'Deactivate this DIB (note that this will take care of additional actions, like clearing the Undo/Redo cache
     ' for this image)
-    pdImages(imageID).deactivateImage
-    
-    'If this was the last (or only) open image and the histogram is loaded, unload the histogram
-    ' (If we don't do this, the histogram may attempt to update, and without an active image it will throw an error)
-    'If g_OpenImageCount = 0 Then Unload FormHistogram
+    pdImages(imageIndex).DeactivateImage
     
     'Remove this image from the thumbnail toolbar
-    toolbar_ImageTabs.RemoveImage imageID, resyncInterface
+    Interface.NotifyImageRemoved imageIndex, resyncInterface
     
     'Before exiting, restore focus to the next child window in line.  (But only if this image was the active window!)
-    If g_CurrentImage = CLng(imageID) Then
+    If g_CurrentImage = CLng(imageIndex) Then
     
         If g_OpenImageCount > 0 Then
         
             Dim i As Long
-            i = Val(imageID) + 1
+            i = Val(imageIndex) + 1
             If i > UBound(pdImages) Then i = i - 2
             
             Dim directionAscending As Boolean
@@ -338,7 +334,7 @@ Public Function UnloadPDImage(Cancel As Integer, ByVal imageID As Long, Optional
                     i = i + 1
                     If i > UBound(pdImages) Then
                         directionAscending = False
-                        i = imageID
+                        i = imageIndex
                     End If
                 Else
                     i = i - 1
@@ -376,7 +372,7 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         CheckParentMonitor True
         
         'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
-        If Not pdImages(g_CurrentImage) Is Nothing Then
+        If Not (pdImages(g_CurrentImage) Is Nothing) Then
             
             If refreshScreen Then
             
@@ -392,11 +388,8 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
                 FormMain.mainCanvas(0).AlignCanvasView
             
                 'Notify the thumbnail bar that a new image has been selected
-                toolbar_ImageTabs.NotifyNewActiveImage imageID
-            
-                'Synchronize various interface elements to match values stored in this image.
-                SyncInterfaceToCurrentImage
-            
+                Interface.NotifyNewActiveImage g_CurrentImage
+                
             End If
             
         End If

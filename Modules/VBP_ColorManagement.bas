@@ -632,7 +632,9 @@ Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
         End If
         
         'Note that the image tabstrip is also color-managed, so it needs to be redrawn as well
-        toolbar_ImageTabs.forceRedraw
+        ' TODO: now that the tabstrip is integrated into the underlying canvas control, this line should be revisited.
+        ' I'd prefer to have the canvas handle this, rather than a specialized function.
+        Interface.RequestTabstripRedraw
     
     End If
     
@@ -967,7 +969,7 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
         Next y
             If Not suppressMessages Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal x + modifyProgBarOffset
                 End If
             End If

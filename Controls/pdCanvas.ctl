@@ -24,6 +24,16 @@ Begin VB.UserControl pdCanvas
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   886
    ToolboxBitmap   =   "pdCanvas.ctx":0000
+   Begin PhotoDemon.pdImageStrip ImageStrip 
+      Height          =   855
+      Left            =   6240
+      TabIndex        =   6
+      Top             =   600
+      Visible         =   0   'False
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1508
+   End
    Begin PhotoDemon.pdStatusBar StatusBar 
       Align           =   2  'Align Bottom
       Height          =   345

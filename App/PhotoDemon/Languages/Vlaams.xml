@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.142</langversion>
+<langversion>6.7.144</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -625,11 +625,6 @@ Je kan gebruik maken van de MenuTest() sub in de Filters_Miscellaneous module om
 <!-- BEGIN text for VBP_MiscInterface.bas -->
 
 <phrase>
-<original>Please load or import an image to begin editing.</original>
-<translation>Gelieve een afbeelding te laden of importeren om de bewerking te beginnen.</translation>
-</phrase>
-
-<phrase>
 <original>Repeat</original>
 <translation>Herhaal</translation>
 </phrase>
@@ -864,7 +859,7 @@ Je kan gebruik maken van de MenuTest() sub in de Filters_Miscellaneous module om
 <translation>Annuleren afbeeldingsverwerking</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 68 phrases. 20 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 67 phrases. 20 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -1384,12 +1379,6 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <!-- VBP_OutsideDevelopment_FreeImageV3.bas contains 0 phrases. -->
 
 <!-- END text for VBP_OutsideDevelopment_FreeImageV3.bas-->
-
-<!-- BEGIN text for VBP_OutsideDevelopment_SetIcon.bas -->
-
-<!-- VBP_OutsideDevelopment_SetIcon.bas contains 0 phrases. -->
-
-<!-- END text for VBP_OutsideDevelopment_SetIcon.bas-->
 
 <!-- BEGIN text for VBP_ExifToolInterface.bas -->
 
@@ -3260,16 +3249,6 @@ Geef een numerieke waarde.</translation>
 <!-- BEGIN text for pdCanvas.ctl -->
 
 <phrase>
-<original>size</original>
-<translation>grootte</translation>
-</phrase>
-
-<phrase>
-<original>(messages will appear here at run-time)</original>
-<translation>(berichten zullen hier verschijnen in run-time)</translation>
-</phrase>
-
-<phrase>
 <original>Delete layer</original>
 <translation>Verwijder laag</translation>
 </phrase>
@@ -3282,11 +3261,6 @@ Geef een numerieke waarde.</translation>
 <phrase>
 <original>Erase selected area</original>
 <translation>Wis geselecteerd gebied</translation>
-</phrase>
-
-<phrase>
-<original>Resize image</original>
-<translation>Herschalen afbeelding</translation>
 </phrase>
 
 <phrase>
@@ -3340,51 +3314,11 @@ Geef een numerieke waarde.</translation>
 </phrase>
 
 <phrase>
-<original>px</original>
-<translation>px</translation>
-</phrase>
-
-<phrase>
-<original>in</original>
-<translation>in</translation>
-</phrase>
-
-<phrase>
-<original>cm</original>
-<translation>cm</translation>
-</phrase>
-
-<phrase>
-<original>Fit the image on-screen</original>
-<translation>Pas de afbeelding op het scherm</translation>
-</phrase>
-
-<phrase>
-<original>Zoom in</original>
-<translation>Inzoomen</translation>
-</phrase>
-
-<phrase>
-<original>Zoom out</original>
-<translation>Uitzoomen</translation>
-</phrase>
-
-<phrase>
-<original>Change viewport zoom</original>
-<translation>Wijzig viewport zoom</translation>
-</phrase>
-
-<phrase>
-<original>Change the image size unit displayed to the left of this box</original>
-<translation>Wijzig de afbeeldingseenheid weergegeven aan de linkerkant van dit vierkant</translation>
-</phrase>
-
-<phrase>
 <original>Center the image inside the viewport</original>
 <translation></translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 53 phrases. 28 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 40 phrases. 26 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -5674,6 +5608,11 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 </phrase>
 
 <phrase>
+<original>Resize image</original>
+<translation>Herschalen afbeelding</translation>
+</phrase>
+
+<phrase>
 <original>Content-aware image resize</original>
 <translation>inhoud-bewuste afbeeldingsherschaling</translation>
 </phrase>
@@ -5863,7 +5802,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 181 were duplicates of existing phrases, so only 386 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 180 were duplicates of existing phrases, so only 387 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8244,6 +8183,11 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- BEGIN text for Effects_Artistic_GlassTiles.frm (FormGlassTiles) -->
 
 <phrase>
+<original>size</original>
+<translation>grootte</translation>
+</phrase>
+
+<phrase>
 <original>curvature</original>
 <translation>kromming</translation>
 </phrase>
@@ -8253,7 +8197,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Genereren van glastegels</translation>
 </phrase>
 
-<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_GlassTiles.frm-->
 
@@ -12352,22 +12296,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <translation>Sluit alle behalve deze</translation>
 </phrase>
 
-<phrase>
-<original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation>Eeenmaal de afbeelding naar schijf bewaard is, zal haar bestandsnaam hier verschijnen</translation>
-</phrase>
-
-<phrase>
-<original>This image does not have a filename.</original>
-<translation>Als de afbeelding geen bestandsnaam heeft</translation>
-</phrase>
-
-<phrase>
-<original>Hover an image thumbnail to see its name and current file location.</original>
-<translation>Beweeg over een afbeeldingsvoorbeeld om z'n huidige naam en bestandslocatie te bekijken.</translation>
-</phrase>
-
-<!-- Toolbar_ImageTabstrip.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolbar_ImageTabstrip.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ImageTabstrip.frm-->
 
@@ -14726,12 +14655,84 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdImageStrip.ctl -->
+
+<phrase>
+<original>Once this image has been saved to disk, its filename will appear here.</original>
+<translation>Eeenmaal de afbeelding naar schijf bewaard is, zal haar bestandsnaam hier verschijnen</translation>
+</phrase>
+
+<phrase>
+<original>This image does not have a filename.</original>
+<translation>Als de afbeelding geen bestandsnaam heeft</translation>
+</phrase>
+
+<phrase>
+<original>Hover an image thumbnail to see its name and current file location.</original>
+<translation>Beweeg over een afbeeldingsvoorbeeld om z'n huidige naam en bestandslocatie te bekijken.</translation>
+</phrase>
+
+<!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<!-- END text for pdImageStrip.ctl-->
+
+<!-- BEGIN text for pdStatusBar.ctl -->
+
+<phrase>
+<original>(messages will appear here at run-time)</original>
+<translation>(berichten zullen hier verschijnen in run-time)</translation>
+</phrase>
+
+<phrase>
+<original>px</original>
+<translation>px</translation>
+</phrase>
+
+<phrase>
+<original>in</original>
+<translation>in</translation>
+</phrase>
+
+<phrase>
+<original>cm</original>
+<translation>cm</translation>
+</phrase>
+
+<phrase>
+<original>Fit the image on-screen</original>
+<translation>Pas de afbeelding op het scherm</translation>
+</phrase>
+
+<phrase>
+<original>Zoom in</original>
+<translation>Inzoomen</translation>
+</phrase>
+
+<phrase>
+<original>Zoom out</original>
+<translation>Uitzoomen</translation>
+</phrase>
+
+<phrase>
+<original>Change viewport zoom</original>
+<translation>Wijzig viewport zoom</translation>
+</phrase>
+
+<phrase>
+<original>Change the image size unit displayed to the left of this box</original>
+<translation>Wijzig de afbeeldingseenheid weergegeven aan de linkerkant van dit vierkant</translation>
+</phrase>
+
+<!-- pdStatusBar.ctl contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for pdStatusBar.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2522</phrasecount>
+<phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4326 phrases. -->
-<!-- 1804 are duplicates, so only 2522 unique phrases have been written to file. -->
-<!-- These 2522 phrases contain approximately 13451 total words. -->
+<!-- As of this build, PhotoDemon contains 4325 phrases. -->
+<!-- 1804 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 13442 total words. -->
 
 </pdData>

@@ -1638,7 +1638,7 @@ Private Sub cboMonitors_Click()
 
     'Start by retrieving the HMONITOR value for the selected monitor
     Dim hMonitor As Long
-    If Not (g_Displays.Displays(cboMonitors.ListIndex) Is Nothing) Then hMonitor = g_Displays.Displays(cboMonitors.ListIndex).getHandle
+    If Not (g_Displays.Displays(cboMonitors.ListIndex) Is Nothing) Then hMonitor = g_Displays.Displays(cboMonitors.ListIndex).GetHandle
     
     'Use that to retrieve a stored color profile (if any)
     Dim profilePath As String
@@ -1924,7 +1924,8 @@ Private Sub cmdBarMini_OKClick()
     'Because some preferences affect the program's interface, redraw the active image.
     FormMain.RefreshAllCanvases
         
-    toolbar_ImageTabs.forceRedraw
+    'TODO: the image tabstrip should be handled by the program canvas as of 7.0's release.  See if we can remove this line.
+    Interface.RequestTabstripRedraw
     
     SetProgBarVal 0
     ReleaseProgressBar
@@ -1974,7 +1975,7 @@ Private Sub cmdColorProfilePath_Click()
         txtColorProfilePath = sFile
         
         Dim hMonitor As Long
-        If Not g_Displays.Displays(cboMonitors.ListIndex) Is Nothing Then hMonitor = g_Displays.Displays(cboMonitors.ListIndex).getHandle
+        If Not g_Displays.Displays(cboMonitors.ListIndex) Is Nothing Then hMonitor = g_Displays.Displays(cboMonitors.ListIndex).GetHandle
         g_UserPreferences.SetPref_String "Transparency", "MonitorProfile_" & hMonitor, TrimNull(sFile)
         
         'If the "user custom color profiles" option button isn't selected, mark it now
@@ -2346,7 +2347,7 @@ Private Sub LoadAllPreferences()
                     monitorEntry = ""
                     
                     'Explicitly label the primary monitor
-                    If g_Displays.Displays(i).isPrimary Then
+                    If g_Displays.Displays(i).IsPrimary Then
                         monitorEntry = PrimaryMonitor
                         primaryIndex = i
                     Else
@@ -2354,13 +2355,13 @@ Private Sub LoadAllPreferences()
                     End If
                     
                     'Add the monitor's physical size
-                    monitorEntry = monitorEntry & g_Displays.Displays(i).getMonitorSizeAsString
+                    monitorEntry = monitorEntry & g_Displays.Displays(i).GetMonitorSizeAsString
                     
                     'Add the monitor's name
-                    monitorEntry = monitorEntry & " " & g_Displays.Displays(i).getBestMonitorName
+                    monitorEntry = monitorEntry & " " & g_Displays.Displays(i).GetBestMonitorName
                     
                     'Add the monitor's native resolution
-                    monitorEntry = monitorEntry & " (" & g_Displays.Displays(i).getMonitorResolutionAsString & ")"
+                    monitorEntry = monitorEntry & " (" & g_Displays.Displays(i).GetMonitorResolutionAsString & ")"
                                     
                     'Display this monitor in the list
                     cboMonitors.AddItem monitorEntry, i

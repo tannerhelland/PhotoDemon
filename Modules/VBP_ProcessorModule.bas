@@ -503,8 +503,8 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 pdImages(g_CurrentImage).undoManager.revertToLastSavedState
                 
                 'Also, redraw the current child form icon and the image tab-bar
-                CreateCustomFormIcons pdImages(g_CurrentImage)
-                toolbar_ImageTabs.NotifyUpdatedImage g_CurrentImage
+                Interface.NotifyImageChanged g_CurrentImage
+                
             End If
             
         Case "Batch wizard"
@@ -566,19 +566,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Undo"
             If FormMain.MnuEdit(0).Enabled Then
                 pdImages(g_CurrentImage).undoManager.RestoreUndoData
-                
-                'Also, redraw the current child form icon and the image tab-bar
-                CreateCustomFormIcons pdImages(g_CurrentImage)
-                toolbar_ImageTabs.NotifyUpdatedImage g_CurrentImage
+                Interface.NotifyImageChanged g_CurrentImage
             End If
             
         Case "Redo"
             If FormMain.MnuEdit(1).Enabled Then
                 pdImages(g_CurrentImage).undoManager.RestoreRedoData
-                
-                'Also, redraw the current child form icon and the image tab-bar
-                CreateCustomFormIcons pdImages(g_CurrentImage)
-                toolbar_ImageTabs.NotifyUpdatedImage g_CurrentImage
+                Interface.NotifyImageChanged g_CurrentImage
             End If
             
         Case "Undo history"
@@ -1940,8 +1934,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
     If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
-        CreateCustomFormIcons pdImages(g_CurrentImage)
-        toolbar_ImageTabs.NotifyUpdatedImage g_CurrentImage
+        Interface.NotifyImageChanged g_CurrentImage
     End If
     
     'If the user canceled the requested action before it completed, we need to roll back the undo data we created
@@ -1992,17 +1985,17 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo <> UNDO_NOTHING) Then
     
-        If g_OpenImageCount > 0 Then ActivatePDImage g_CurrentImage, "processor call complete"
+        If (g_OpenImageCount > 0) Then ActivatePDImage g_CurrentImage, "processor call complete"
     
         'Also, re-enable drag and drop operations
         g_AllowDragAndDrop = True
         FormMain.OLEDropMode = 1
-        
-    End If
     
     'The interface will automatically be synched if an image is open and some undo-related action was applied,
-    ' but if either of those did not occur, sync the interface now.
-    SyncInterfaceToCurrentImage
+    ' but if either of those did *not* occur, sync the interface now.
+    Else
+        SyncInterfaceToCurrentImage
+    End If
     
     'Restore focus to whichever control had it previously
     If m_FocusHWnd <> 0 Then g_WindowManager.SetFocusAPI m_FocusHWnd
@@ -2054,7 +2047,7 @@ MainErrHandler:
         PDMsgBox AddInfo, mType, "Invalid image file"
         
         'On an invalid picture load, there will be a blank form that needs to be dealt with.
-        pdImages(g_CurrentImage).deactivateImage
+        pdImages(g_CurrentImage).DeactivateImage
         
         Exit Sub
     
@@ -2276,11 +2269,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional showDialog 
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
     If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
-        CreateCustomFormIcons pdImages(g_CurrentImage)
-        toolbar_ImageTabs.NotifyUpdatedImage g_CurrentImage
-        
-        'TODO: notify the layer toolbox of the change, so it can generate a new thumbnail
-        
+        Interface.NotifyImageChanged g_CurrentImage, targetLayerID
     End If
     
     'Generally, we assume that actions want us to create Undo data for them.  However, there are a few known exceptions:

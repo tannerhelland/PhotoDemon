@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.854</langversion>
+<langversion>6.8.856</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ILoveVB</author>
@@ -624,11 +624,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <!-- BEGIN text for VBP_MiscInterface.bas -->
 
 <phrase>
-<original>Please load or import an image to begin editing.</original>
-<translation>请打开或导入图像以开始编辑。</translation>
-</phrase>
-
-<phrase>
 <original>Repeat</original>
 <translation>重复</translation>
 </phrase>
@@ -863,7 +858,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <translation>取消图像处理进度</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 68 phrases. 20 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 67 phrases. 20 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -1378,12 +1373,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <!-- VBP_OutsideDevelopment_FreeImageV3.bas contains 0 phrases. -->
 
 <!-- END text for VBP_OutsideDevelopment_FreeImageV3.bas-->
-
-<!-- BEGIN text for VBP_OutsideDevelopment_SetIcon.bas -->
-
-<!-- VBP_OutsideDevelopment_SetIcon.bas contains 0 phrases. -->
-
-<!-- END text for VBP_OutsideDevelopment_SetIcon.bas-->
 
 <!-- BEGIN text for VBP_ExifToolInterface.bas -->
 
@@ -3254,16 +3243,6 @@ Please enter a numeric value.</original>
 <!-- BEGIN text for pdCanvas.ctl -->
 
 <phrase>
-<original>size</original>
-<translation>大小</translation>
-</phrase>
-
-<phrase>
-<original>(messages will appear here at run-time)</original>
-<translation>（在运行时出现消息）</translation>
-</phrase>
-
-<phrase>
 <original>Delete layer</original>
 <translation>删除层</translation>
 </phrase>
@@ -3276,11 +3255,6 @@ Please enter a numeric value.</original>
 <phrase>
 <original>Erase selected area</original>
 <translation>删除选定区域</translation>
-</phrase>
-
-<phrase>
-<original>Resize image</original>
-<translation>调整图像大小</translation>
 </phrase>
 
 <phrase>
@@ -3334,51 +3308,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>px</original>
-<translation>像素</translation>
-</phrase>
-
-<phrase>
-<original>in</original>
-<translation>英寸</translation>
-</phrase>
-
-<phrase>
-<original>cm</original>
-<translation>厘米</translation>
-</phrase>
-
-<phrase>
-<original>Fit the image on-screen</original>
-<translation>适合图像到屏幕</translation>
-</phrase>
-
-<phrase>
-<original>Zoom in</original>
-<translation>放大</translation>
-</phrase>
-
-<phrase>
-<original>Zoom out</original>
-<translation>缩小</translation>
-</phrase>
-
-<phrase>
-<original>Change viewport zoom</original>
-<translation>改变视觉缩放</translation>
-</phrase>
-
-<phrase>
-<original>Change the image size unit displayed to the left of this box</original>
-<translation>将图像大小单位显示为左边框的值</translation>
-</phrase>
-
-<phrase>
 <original>Center the image inside the viewport</original>
 <translation>居中在图像视窗内</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 53 phrases. 28 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 40 phrases. 26 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -5665,6 +5599,11 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
+<original>Resize image</original>
+<translation>调整图像大小</translation>
+</phrase>
+
+<phrase>
 <original>Content-aware image resize</original>
 <translation>内容感知的图像调整大小</translation>
 </phrase>
@@ -5854,7 +5793,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 181 were duplicates of existing phrases, so only 386 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 180 were duplicates of existing phrases, so only 387 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8236,6 +8175,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Artistic_GlassTiles.frm (FormGlassTiles) -->
 
 <phrase>
+<original>size</original>
+<translation>大小</translation>
+</phrase>
+
+<phrase>
 <original>curvature</original>
 <translation>弯度</translation>
 </phrase>
@@ -8245,7 +8189,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>生成磁贴</translation>
 </phrase>
 
-<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_GlassTiles.frm-->
 
@@ -12344,22 +12288,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>关闭所有除此之外</translation>
 </phrase>
 
-<phrase>
-<original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation>一旦这个图像保存到磁盘，它的文件名就会出现在这里。</translation>
-</phrase>
-
-<phrase>
-<original>This image does not have a filename.</original>
-<translation>这个图像没有文件名。</translation>
-</phrase>
-
-<phrase>
-<original>Hover an image thumbnail to see its name and current file location.</original>
-<translation>一个图像的缩略图，看看它的名称和当前文件位置。</translation>
-</phrase>
-
-<!-- Toolbar_ImageTabstrip.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolbar_ImageTabstrip.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ImageTabstrip.frm-->
 
@@ -14715,12 +14644,84 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdImageStrip.ctl -->
+
+<phrase>
+<original>Once this image has been saved to disk, its filename will appear here.</original>
+<translation>一旦这个图像保存到磁盘，它的文件名就会出现在这里。</translation>
+</phrase>
+
+<phrase>
+<original>This image does not have a filename.</original>
+<translation>这个图像没有文件名。</translation>
+</phrase>
+
+<phrase>
+<original>Hover an image thumbnail to see its name and current file location.</original>
+<translation>一个图像的缩略图，看看它的名称和当前文件位置。</translation>
+</phrase>
+
+<!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<!-- END text for pdImageStrip.ctl-->
+
+<!-- BEGIN text for pdStatusBar.ctl -->
+
+<phrase>
+<original>(messages will appear here at run-time)</original>
+<translation>（在运行时出现消息）</translation>
+</phrase>
+
+<phrase>
+<original>px</original>
+<translation>像素</translation>
+</phrase>
+
+<phrase>
+<original>in</original>
+<translation>英寸</translation>
+</phrase>
+
+<phrase>
+<original>cm</original>
+<translation>厘米</translation>
+</phrase>
+
+<phrase>
+<original>Fit the image on-screen</original>
+<translation>适合图像到屏幕</translation>
+</phrase>
+
+<phrase>
+<original>Zoom in</original>
+<translation>放大</translation>
+</phrase>
+
+<phrase>
+<original>Zoom out</original>
+<translation>缩小</translation>
+</phrase>
+
+<phrase>
+<original>Change viewport zoom</original>
+<translation>改变视觉缩放</translation>
+</phrase>
+
+<phrase>
+<original>Change the image size unit displayed to the left of this box</original>
+<translation>将图像大小单位显示为左边框的值</translation>
+</phrase>
+
+<!-- pdStatusBar.ctl contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for pdStatusBar.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2522</phrasecount>
+<phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4326 phrases. -->
-<!-- 1804 are duplicates, so only 2522 unique phrases have been written to file. -->
-<!-- These 2522 phrases contain approximately 13451 total words. -->
+<!-- As of this build, PhotoDemon contains 4325 phrases. -->
+<!-- 1804 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 13442 total words. -->
 
 </pdData>

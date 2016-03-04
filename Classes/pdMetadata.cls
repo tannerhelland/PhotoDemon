@@ -869,7 +869,7 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
                             'Refresh the screen to reflect the new colors
                             If parentImageID = g_CurrentImage Then
                                 Viewport_Engine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
-                                toolbar_ImageTabs.notifyUpdatedImage parentImageID
+                                Interface.NotifyImageChanged parentImageID
                             End If
                             
                         End If
@@ -926,7 +926,7 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
                     'Refresh the screen to reflect the new colors
                     If parentImageID = g_CurrentImage Then
                         Viewport_Engine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
-                        toolbar_ImageTabs.notifyUpdatedImage parentImageID
+                        Interface.NotifyImageChanged parentImageID
                     End If
                     
                 End If

@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.UserControl pdImageStrip 
+   Alignable       =   -1  'True
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    ClientHeight    =   3600
@@ -50,6 +51,10 @@ Option Explicit
 'This control takes a slightly different approach to events.  It raises a standard Click() event, as expected, but as part
 ' of this event it provides a full collection of mouse information, too.  This is to facilitate RMB popup menu support.
 Public Event Click(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+'When the control's alignment is changed, it will raise a corresponding event.  This control does not perform any of
+' its own sizing, so it is up to the parent control to handle this event as they see fit.
+Public Event AlignmentChanged()
 
 'In addition, this class also raises events for when a new item is selected, and another when a given item is closed.
 ' These are much simpler than trying to reverse-engineer item indices from the generic Click() event.
@@ -121,6 +126,9 @@ Private weAreResponsibleForResize As Boolean
 ' toolbar (which varies according to its alignment, obviously).
 Private m_MouseInResizeTerritory As Boolean
 
+'Current image strip alignment
+Private m_Alignment As PD_ALIGNMENT
+
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -147,6 +155,17 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+Public Property Get Alignment() As PD_ALIGNMENT
+    Alignment = m_Alignment
+End Property
+
+Public Property Let Alignment(ByVal newAlignment As PD_ALIGNMENT)
+    m_Alignment = newAlignment
+    If (m_Alignment = pda_AlignAuto) Then m_Alignment = pda_AlignTop
+    RaiseEvent AlignmentChanged
+    PropertyChanged "Alignment"
+End Property
+
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_UserMemId = -514
@@ -154,13 +173,9 @@ Attribute Enabled.VB_UserMemId = -514
 End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
-    
     UserControl.Enabled = newValue
     PropertyChanged "Enabled"
-    
-    'Redraw the control
     RedrawBackBuffer
-    
 End Property
 
 'hWnds aren't exposed by default
@@ -745,7 +760,7 @@ End Sub
 
 'INITIALIZE control
 Private Sub UserControl_Initialize()
-        
+    
     'Reset the thumbnail array
     m_NumOfThumbs = 0
     ReDim m_Thumbs(0 To 3) As ImageThumbEntry
@@ -761,37 +776,7 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDImageStrip", colorCount
     If Not g_IsProgramRunning Then UpdateColorList
     
-    'Retrieve the unsaved image notification icon from the resource file
-    Set m_ModifiedIcon = New pdDIB
-    LoadResourceToDIB "NTFY_UNSAVED", m_ModifiedIcon
-    
-    'Retrieve all PNGs necessary to render the "close by hovering" X that appears
-    Set m_CloseIconRed = New pdDIB
-    LoadResourceToDIB "CLOSE_MINI_RED", m_CloseIconRed
-    
-    Set m_CloseIconGray = New pdDIB
-    LoadResourceToDIB "CLOSE_MINI_GRAY", m_CloseIconGray
-    
-    'Update the drop-shadow blur radius to account for DPI
-    m_ShadowRadius = FixDPI(2)
-    
-    'Generate a drop-shadow for the X.  (We can use the same one for both red and gray, obviously.)
-    Set m_CloseIconShadow = New pdDIB
-    Filters_Layers.createShadowDIB m_CloseIconGray, m_CloseIconShadow
-    m_CloseIconShadow.SetAlphaPremultiplication False
-    
-    'Pad and blur the drop-shadow
-    Dim tmpLUT() As Byte
-    
-    Dim cFilter As pdFilterLUT
-    Set cFilter = New pdFilterLUT
-    cFilter.fillLUT_Invert tmpLUT
-    
-    padDIB m_CloseIconShadow, FixDPI(THUMB_BORDER_PADDING)
-    quickBlurDIB m_CloseIconShadow, FixDPI(2), False
-    cFilter.applyLUTToAllColorChannels m_CloseIconShadow, tmpLUT, True
-    
-    m_CloseIconShadow.SetAlphaPremultiplication True
+    LoadImageStripIcons
     
     ' Track the last thumbnail whose close icon has been clicked.
     ' -1 means no close icon has been clicked yet
@@ -809,6 +794,7 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Private Sub UserControl_InitProperties()
+    Alignment = pda_AlignAuto
     Enabled = True
 End Sub
 
@@ -831,7 +817,10 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-    Enabled = PropBag.ReadProperty("Enabled", True)
+    With PropBag
+        Alignment = .ReadProperty("Alignment", 0)
+        Enabled = .ReadProperty("Enabled", True)
+    End With
 End Sub
 
 Private Sub UserControl_Resize()
@@ -839,7 +828,43 @@ Private Sub UserControl_Resize()
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-    PropBag.WriteProperty "Enabled", Me.Enabled, True
+    With PropBag
+        .WriteProperty "Alignment", m_Alignment, 0
+        .WriteProperty "Enabled", Me.Enabled, True
+    End With
+End Sub
+
+Private Sub LoadImageStripIcons()
+
+    'Retrieve the unsaved image notification icon from the resource file
+    If (m_ModifiedIcon Is Nothing) Then Set m_ModifiedIcon = New pdDIB
+    LoadResourceToDIB "NTFY_UNSAVED", m_ModifiedIcon
+    
+    'Retrieve all PNGs necessary to render the "close by hovering" X that appears
+    If (m_CloseIconRed Is Nothing) Then Set m_CloseIconRed = New pdDIB
+    LoadResourceToDIB "CLOSE_MINI_RED", m_CloseIconRed
+    
+    If (m_CloseIconGray Is Nothing) Then Set m_CloseIconGray = New pdDIB
+    LoadResourceToDIB "CLOSE_MINI_GRAY", m_CloseIconGray
+    
+    'Update the drop-shadow blur radius to account for DPI
+    m_ShadowRadius = FixDPI(2)
+    
+    'Generate a drop-shadow for the X.  (We can use the same one for both red and gray, obviously.)
+    If (m_CloseIconShadow Is Nothing) Then Set m_CloseIconShadow = New pdDIB
+    Filters_Layers.createShadowDIB m_CloseIconGray, m_CloseIconShadow
+    m_CloseIconShadow.SetAlphaPremultiplication False
+    
+    'Pad and blur the drop-shadow
+    Dim tmpLUT() As Byte
+    Dim cFilter As pdFilterLUT
+    Set cFilter = New pdFilterLUT
+    cFilter.fillLUT_Invert tmpLUT
+    padDIB m_CloseIconShadow, FixDPI(THUMB_BORDER_PADDING)
+    quickBlurDIB m_CloseIconShadow, FixDPI(2), False
+    cFilter.applyLUTToAllColorChannels m_CloseIconShadow, tmpLUT, True
+    m_CloseIconShadow.SetAlphaPremultiplication True
+    
 End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
@@ -856,9 +881,13 @@ Private Sub UpdateControlLayout()
     
     'Detect alignment changes (if any)
     If g_IsProgramRunning Then
-    
-        If (g_WindowManager.GetImageTabstripAlignment = vbAlignLeft) Or (g_WindowManager.GetImageTabstripAlignment = vbAlignRight) Then
-            m_VerticalLayout = True
+        
+        If Not (g_WindowManager Is Nothing) Then
+            If (g_WindowManager.GetImageTabstripAlignment = vbAlignLeft) Or (g_WindowManager.GetImageTabstripAlignment = vbAlignRight) Then
+                m_VerticalLayout = True
+            Else
+                m_VerticalLayout = False
+            End If
         Else
             m_VerticalLayout = False
         End If
@@ -898,7 +927,7 @@ Private Sub UpdateControlLayout()
     
     'Notify the window manager that the tab strip has been resized; it will resize image windows to match
     'If Not weAreResponsibleForResize Then
-    If g_IsProgramRunning Then g_WindowManager.NotifyImageTabStripResized
+    If g_IsProgramRunning And Not (g_WindowManager Is Nothing) Then g_WindowManager.NotifyImageTabStripResized
     
 End Sub
 
@@ -1084,6 +1113,7 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     UpdateColorList
+    UserControl.BackColor = m_Colors.RetrieveColor(PDIS_Background, Me.Enabled)
     ucSupport.UpdateAgainstThemeAndLanguage
 End Sub
 

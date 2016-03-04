@@ -269,7 +269,7 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         Set tmpDIB = Nothing
         
         'Notify the parent of the change
-        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).getActiveLayerIndex
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).getActiveLayerIndex
         
         'Update the main image's size and DPI values as necessary
         If thingToResize = PD_AT_WHOLEIMAGE Then
@@ -284,10 +284,7 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     Else
     
         pdImages(g_CurrentImage).undoManager.RestoreUndoData
-                
-        'Also, redraw the current child form icon and the image tab-bar
-        CreateCustomFormIcons pdImages(g_CurrentImage)
-        toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
+        Interface.NotifyImageChanged g_CurrentImage
     
     End If
     

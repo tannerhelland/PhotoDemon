@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.84</langversion>
+<langversion>6.6.86</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -625,11 +625,6 @@ Anda boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk m
 <!-- BEGIN text for VBP_MiscInterface.bas -->
 
 <phrase>
-<original>Please load or import an image to begin editing.</original>
-<translation>Sila memuatkan atau mengimport imej untuk memulakan penyuntingan.</translation>
-</phrase>
-
-<phrase>
 <original>Repeat</original>
 <translation>Ulang</translation>
 </phrase>
@@ -864,7 +859,7 @@ Anda boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk m
 <translation>Batal Memproses Gambar</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 68 phrases. 20 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 67 phrases. 20 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -1384,12 +1379,6 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <!-- VBP_OutsideDevelopment_FreeImageV3.bas contains 0 phrases. -->
 
 <!-- END text for VBP_OutsideDevelopment_FreeImageV3.bas-->
-
-<!-- BEGIN text for VBP_OutsideDevelopment_SetIcon.bas -->
-
-<!-- VBP_OutsideDevelopment_SetIcon.bas contains 0 phrases. -->
-
-<!-- END text for VBP_OutsideDevelopment_SetIcon.bas-->
 
 <!-- BEGIN text for VBP_ExifToolInterface.bas -->
 
@@ -3261,16 +3250,6 @@ Please masukkan nilai berangka.</translation>
 <!-- BEGIN text for pdCanvas.ctl -->
 
 <phrase>
-<original>size</original>
-<translation>saiz</translation>
-</phrase>
-
-<phrase>
-<original>(messages will appear here at run-time)</original>
-<translation>(mesej akan muncul di sini pada jangka masa)</translation>
-</phrase>
-
-<phrase>
 <original>Delete layer</original>
 <translation>hapus layar</translation>
 </phrase>
@@ -3283,16 +3262,6 @@ Please masukkan nilai berangka.</translation>
 <phrase>
 <original>Erase selected area</original>
 <translation>Menghapus kawasan yang dipilih</translation>
-</phrase>
-
-<phrase>
-<original>Resize image</original>
-<translation>Resize Gambar<translation>
-</phrase>
-
-<phrase>
-<original>show technical names</original>
-<translation>Tampilan Nama Nama Teknikal</translation>
 </phrase>
 
 <phrase>
@@ -3346,51 +3315,11 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
-<original>px</original>
-<translation>px</translation>
-</phrase>
-
-<phrase>
-<original>in</original>
-<translation>dalam</translation>
-</phrase>
-
-<phrase>
-<original>cm</original>
-<translation>cm</translation>
-</phrase>
-
-<phrase>
-<original>Fit the image on-screen</original>
-<translation>Fit imej pada skrin</translation>
-</phrase>
-
-<phrase>
-<original>Zoom in</original>
-<translation>zum masuk</translation>
-</phrase>
-
-<phrase>
-<original>Zoom out</original>
-<translation>zum keluar</translation>
-</phrase>
-
-<phrase>
-<original>Change viewport zoom</original>
-<translation>Perubahan viewport zoom</translation>
-</phrase>
-
-<phrase>
-<original>Change the image size unit displayed to the left of this box</original>
-<translation>Tukar unit saiz imej dipaparkan di sebelah kiri kotak ini</translation>
-</phrase>
-
-<phrase>
 <original>Center the image inside the viewport</original>
 <translation></translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 53 phrases. 28 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 40 phrases. 26 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -5680,6 +5609,16 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 </phrase>
 
 <phrase>
+<original>Resize image</original>
+<translation>Resize Gambar<translation>
+</phrase>
+
+<phrase>
+<original>show technical names</original>
+<translation>Tampilan Nama Nama Teknikal</translation>
+</phrase>
+
+<phrase>
 <original>Content-aware image resize</original>
 <translation>Konten-sadar image resize</translation>
 </phrase>
@@ -5869,7 +5808,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 181 were duplicates of existing phrases, so only 386 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 180 were duplicates of existing phrases, so only 387 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8250,6 +8189,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Artistic_GlassTiles.frm (FormGlassTiles) -->
 
 <phrase>
+<original>size</original>
+<translation>saiz</translation>
+</phrase>
+
+<phrase>
 <original>curvature</original>
 <translation>kelengkungan</translation>
 </phrase>
@@ -8259,7 +8203,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Menjana jubin kaca</translation>
 </phrase>
 
-<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_GlassTiles.frm-->
 
@@ -12358,22 +12302,7 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 <translation>Tutup semua kecuali ini</translation>
 </phrase>
 
-<phrase>
-<original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation>Setelah imej ini telah disimpan ke cakera, nama fail akan muncul di sini.</translation>
-</phrase>
-
-<phrase>
-<original>This image does not have a filename.</original>
-<translation>Imej ini tidak mempunyai nama fail.</translation>
-</phrase>
-
-<phrase>
-<original>Hover an image thumbnail to see its name and current file location.</original>
-<translation>Tuding satu thumbnail gambar untuk melihat nama dan semasa Lokasi fail.</translation>
-</phrase>
-
-<!-- Toolbar_ImageTabstrip.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolbar_ImageTabstrip.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ImageTabstrip.frm-->
 
@@ -14732,12 +14661,84 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdImageStrip.ctl -->
+
+<phrase>
+<original>Once this image has been saved to disk, its filename will appear here.</original>
+<translation>Setelah imej ini telah disimpan ke cakera, nama fail akan muncul di sini.</translation>
+</phrase>
+
+<phrase>
+<original>This image does not have a filename.</original>
+<translation>Imej ini tidak mempunyai nama fail.</translation>
+</phrase>
+
+<phrase>
+<original>Hover an image thumbnail to see its name and current file location.</original>
+<translation>Tuding satu thumbnail gambar untuk melihat nama dan semasa Lokasi fail.</translation>
+</phrase>
+
+<!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<!-- END text for pdImageStrip.ctl-->
+
+<!-- BEGIN text for pdStatusBar.ctl -->
+
+<phrase>
+<original>(messages will appear here at run-time)</original>
+<translation>(mesej akan muncul di sini pada jangka masa)</translation>
+</phrase>
+
+<phrase>
+<original>px</original>
+<translation>px</translation>
+</phrase>
+
+<phrase>
+<original>in</original>
+<translation>dalam</translation>
+</phrase>
+
+<phrase>
+<original>cm</original>
+<translation>cm</translation>
+</phrase>
+
+<phrase>
+<original>Fit the image on-screen</original>
+<translation>Fit imej pada skrin</translation>
+</phrase>
+
+<phrase>
+<original>Zoom in</original>
+<translation>zum masuk</translation>
+</phrase>
+
+<phrase>
+<original>Zoom out</original>
+<translation>zum keluar</translation>
+</phrase>
+
+<phrase>
+<original>Change viewport zoom</original>
+<translation>Perubahan viewport zoom</translation>
+</phrase>
+
+<phrase>
+<original>Change the image size unit displayed to the left of this box</original>
+<translation>Tukar unit saiz imej dipaparkan di sebelah kiri kotak ini</translation>
+</phrase>
+
+<!-- pdStatusBar.ctl contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for pdStatusBar.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2522</phrasecount>
+<phrasecount>2521</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4326 phrases. -->
-<!-- 1804 are duplicates, so only 2522 unique phrases have been written to file. -->
-<!-- These 2522 phrases contain approximately 13451 total words. -->
+<!-- As of this build, PhotoDemon contains 4325 phrases. -->
+<!-- 1804 are duplicates, so only 2521 unique phrases have been written to file. -->
+<!-- These 2521 phrases contain approximately 13442 total words. -->
 
 </pdData>

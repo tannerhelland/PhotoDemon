@@ -1763,7 +1763,8 @@ Private Sub Form_Resize()
     End If
 End Sub
 
-'Resize all currently active canvases
+'Resize all currently active canvases.  This was an important function back when PD used an MDI engine, but now that we
+' use our own tabbed interface, it's due for a major revisit.  If we could kill this function entirely, I'd be very happy.
 Public Sub RefreshAllCanvases()
 
     'If the main form has been minimized, don't refresh anything
@@ -3938,7 +3939,7 @@ Private Sub MnuLoadAllMRU_Click()
     LoadFileAsNewImage sFile
     
     'If the image loaded successfully, activate it and bring it to the foreground
-    If g_OpenImageCount > 0 Then ActivatePDImage g_CurrentImage, "finished loading all recent images"
+    If (g_OpenImageCount > 0) Then ActivatePDImage g_CurrentImage, "finished loading all recent images"
     
 End Sub
 
@@ -4146,7 +4147,7 @@ Public Sub mnuRecDocs_Click(Index As Integer)
     End If
     
     'If the image loaded successfully, activate it and bring it to the foreground
-    If g_OpenImageCount > 0 Then ActivatePDImage g_CurrentImage, "MRU entry finished loading"
+    If (g_OpenImageCount > 0) Then ActivatePDImage g_CurrentImage, "MRU entry finished loading"
     
 End Sub
 
@@ -4531,7 +4532,7 @@ Private Sub MoveToNextChildWindow(ByVal moveForward As Boolean)
         i = g_CurrentImage - 1
     End If
     
-    Do While i <> g_CurrentImage
+    Do While (i <> g_CurrentImage)
             
         'Loop back to the start of the window collection
         If moveForward Then
@@ -4540,7 +4541,7 @@ Private Sub MoveToNextChildWindow(ByVal moveForward As Boolean)
             If i < 0 Then i = g_NumOfImagesLoaded
         End If
                 
-        If Not pdImages(i) Is Nothing Then
+        If Not (pdImages(i) Is Nothing) Then
             If pdImages(i).IsActive Then
                 ActivatePDImage i, "user requested next/previous image"
                 Exit Do
