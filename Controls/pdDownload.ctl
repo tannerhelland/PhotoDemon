@@ -185,7 +185,7 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
     
     'Start by finding the matching internal struct
     Dim itemIndex As Long
-    itemIndex = doesKeyExist(AsyncProp.PropertyName)
+    itemIndex = DoesKeyExist(AsyncProp.PropertyName)
     
     If itemIndex >= 0 Then
     
@@ -365,7 +365,7 @@ End Sub
 Public Function wasDownloadSuccessful(ByVal itemKey As String) As Boolean
     
     Dim itemIndex As Long
-    itemIndex = doesKeyExist(itemKey)
+    itemIndex = DoesKeyExist(itemKey)
     
     If itemKey >= 0 Then
     
@@ -391,7 +391,7 @@ End Function
 Public Function copyDownloadArray(ByVal itemKey As String, ByRef targetBytes() As Byte) As Boolean
 
     Dim itemIndex As Long
-    itemIndex = doesKeyExist(itemKey)
+    itemIndex = DoesKeyExist(itemKey)
     
     If itemKey >= 0 Then
     
@@ -420,7 +420,7 @@ End Function
 Public Sub freeResourcesForItem(ByVal itemKey As String)
     
     Dim itemIndex As Long
-    itemIndex = doesKeyExist(itemKey)
+    itemIndex = DoesKeyExist(itemKey)
     
     If itemIndex >= 0 Then
     
@@ -514,7 +514,7 @@ End Sub
 Public Function addToQueue(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "", Optional ByVal checksumToVerify As Long = 0) As Boolean
 
     'Make sure this key is unique in the collection
-    If doesKeyExist(downloadKey) >= 0 Then
+    If DoesKeyExist(downloadKey) >= 0 Then
     
         'Duplicate keys are not allowed.
         Debug.Print "WARNING: duplicate download key requested in pdDownload addToQueue.  Invalid usage; download abandoned."
@@ -567,18 +567,18 @@ addToQueueFailure:
     
 End Function
 
-'doesKeyExist looks for a given downloadKey (a KEY, not a URL, although they may be the same thing depending on your usage)
+'DoesKeyExist looks for a given downloadKey (a KEY, not a URL, although they may be the same thing depending on your usage)
 ' in the current collection.  Like other places in PD, binary compare mode is enforced.  Plan accordingly.
 '
 'Returns: index of found key (>= 0) if key exists.  -1 if it does not exist.
-Public Function doesKeyExist(ByVal downloadKey As String) As Long
+Public Function DoesKeyExist(ByVal downloadKey As String) As Long
 
     If m_NumOfFiles > 0 Then
         
         Dim i As Long
         For i = 0 To m_NumOfFiles - 1
             If StrComp(downloadKey, m_DownloadList(i).Key, vbBinaryCompare) = 0 Then
-                doesKeyExist = i
+                DoesKeyExist = i
                 Exit Function
             End If
         Next i
@@ -587,7 +587,7 @@ Public Function doesKeyExist(ByVal downloadKey As String) As Long
         
     End If
     
-    doesKeyExist = -1
+    DoesKeyExist = -1
 
 End Function
 
@@ -689,7 +689,7 @@ Public Function startDownloadingByKey(ByVal itemKey As String) As Boolean
     
     'Retrieve an index for the specified key
     Dim keyIndex As Long
-    keyIndex = doesKeyExist(itemKey)
+    keyIndex = DoesKeyExist(itemKey)
     
     If keyIndex >= 0 Then
         startDownloadingByKey = startDownloadingByIndex(keyIndex)

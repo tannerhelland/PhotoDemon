@@ -33,7 +33,6 @@ Begin VB.Form FormPluginManager
       Width           =   10815
       _ExtentX        =   19076
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdButton cmdReset 
       Height          =   615
@@ -1889,7 +1888,7 @@ Private Sub cmdBarMini_OKClick()
     If (pEnabled(0) <> g_ImageFormats.FreeImageEnabled) Or (pEnabled(1) <> g_ZLibEnabled) Or (pEnabled(2) <> g_ScanEnabled) Or (pEnabled(3) <> g_ImageFormats.pngQuantEnabled) Or (pEnabled(4) <> g_ExifToolEnabled) Then
         Plugin_Management.LoadAllPlugins
         applyAllMenuIcons
-        resetMenuIcons
+        Icons_and_Cursors.ResetMenuIcons
         g_ImageFormats.generateInputFormats
         g_ImageFormats.generateOutputFormats
     End If
@@ -2036,7 +2035,7 @@ Private Sub UpdatePluginLabels()
     Dim pluginStatus As Boolean
     
     'FreeImage
-    pluginStatus = popPluginLabel(0, "FreeImage", EXPECTED_FREEIMAGE_VERSION, isFreeImageAvailable, g_ImageFormats.FreeImageEnabled)
+    pluginStatus = popPluginLabel(0, "FreeImage", EXPECTED_FREEIMAGE_VERSION, IsFreeImageAvailable, g_ImageFormats.FreeImageEnabled)
     
     'zLib
     pluginStatus = pluginStatus And popPluginLabel(1, "zLib", EXPECTED_ZLIB_VERSION, isZLibAvailable, g_ZLibEnabled)
@@ -2065,7 +2064,7 @@ Private Sub CollectAllVersionNumbers()
 
     'Start by analyzing plugin file metadata for version information.  This works for FreeImage and zLib (but
     ' do it for all four, just in case).
-    If isFreeImageAvailable Then CollectVersionInfo g_PluginPath & "freeimage.dll", 0 Else vString(0) = "none"
+    If IsFreeImageAvailable Then CollectVersionInfo g_PluginPath & "freeimage.dll", 0 Else vString(0) = "none"
     If isZLibAvailable Then CollectVersionInfo g_PluginPath & "zlibwapi.dll", 1 Else vString(1) = "none"
     If isEZTwainAvailable Then CollectVersionInfo g_PluginPath & "eztw32.dll", 2 Else vString(2) = "none"
     If isPngQuantAvailable Then CollectVersionInfo g_PluginPath & "pngquant.exe", 3 Else vString(3) = "none"

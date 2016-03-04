@@ -1,4 +1,4 @@
-Attribute VB_Name = "Icon_and_Cursor_Handler"
+Attribute VB_Name = "Icons_and_Cursors"
 '***************************************************************************
 'PhotoDemon Icon and Cursor Handler
 'Copyright 2012-2016 by Tanner Helland
@@ -30,6 +30,18 @@ Private Declare Function CreateIconIndirect Lib "user32" (icoInfo As ICONINFO) A
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+Private Declare Function LoadImageAsString Lib "user32" Alias "LoadImageA" (ByVal hInst As Long, ByVal lpsz As String, ByVal uType As Long, ByVal cxDesired As Long, ByVal cyDesired As Long, ByVal fuLoad As Long) As Long
+
+'System constants for retrieving system default icon sizes and related metrics
+Private Const SM_CXICON As Long = 11
+Private Const SM_CYICON As Long = 12
+Private Const SM_CXSMICON As Long = 49
+Private Const SM_CYSMICON As Long = 50
+Private Const LR_SHARED As Long = &H8000&
+Private Const IMAGE_ICON As Long = 1
+Private Const WM_SETICON As Long = &H80
+Private Const ICON_SMALL As Long = 0
+Private Const ICON_BIG As Long = 1
 
 'API needed for converting PNG data to icon or cursor format
 Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef mImage As Long) As Long
@@ -94,7 +106,7 @@ Private m_numOfIcons As Long
 Private m_iconHandles() As Long
 
 'This constant is used for testing only.  It should always be set to TRUE for production code.
-Public Const ALLOW_DYNAMIC_ICONS As Boolean = True
+Private Const ALLOW_DYNAMIC_ICONS As Boolean = True
 
 'This array tracks the resource identifiers and consequent numeric identifiers of all loaded icons.  The size of the array
 ' is arbitrary; just make sure it's larger than the max number of loaded icons.
@@ -113,8 +125,11 @@ Private cMRUIcons As clsMenuImage
 ' this module-level variable can be set to TRUE.
 Private m_refreshOutsideProgressBar As Boolean
 
+'PD's default large and small application icons.  These are cached for the duration of the current session.
+Private m_DefaultIconLarge As Long, m_DefaultIconSmall As Long
+
 'Load all the menu icons from PhotoDemon's embedded resource file
-Public Sub loadMenuIcons()
+Public Sub LoadMenuIcons()
 
     'If we are re-loading all icons instead of just loading them for the first time, clear out the old list
     If Not (cMenuImage Is Nothing) Then
@@ -590,7 +605,7 @@ End Sub
 
 'When menu captions are changed, the associated images are lost.  This forces a reset.
 ' Note that to keep the code small, all changeable icons are refreshed whenever this is called.
-Public Sub resetMenuIcons()
+Public Sub ResetMenuIcons()
         
     'Redraw the Undo/Redo menus
     addMenuIcon "UNDO", 1, 0     'Undo
@@ -690,7 +705,7 @@ End Sub
 '
 'FreeImage is currently required for this function, because it provides a simple way to move between DIBs and DDBs.  I could rewrite
 ' the function without FreeImage's help, but frankly don't consider it worth the trouble.
-Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long = 0) As Long
+Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long = 0, Optional ByVal flipVertically As Boolean = False) As Long
 
     If Not g_ImageFormats.FreeImageEnabled Then
         GetIconFromDIB = 0
@@ -698,7 +713,7 @@ Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long 
     End If
     
     Dim fi_DIB As Long
-    fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB)
+    fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB, flipVertically)
     
     'If the iconSize parameter is 0, use the current DIB's dimensions.  Otherwise, resize it as requested.
     If iconSize = 0 Then
@@ -745,7 +760,7 @@ Public Sub CreateCustomFormIcons(ByRef srcImage As pdImage)
 
     If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
     If Not g_ImageFormats.FreeImageEnabled Then Exit Sub
-    If srcImage Is Nothing Then Exit Sub
+    If (srcImage Is Nothing) Then Exit Sub
     
     Dim thumbDIB As pdDIB
     
@@ -755,8 +770,8 @@ Public Sub CreateCustomFormIcons(ByRef srcImage As pdImage)
         'Request two icon-format versions of the generated thumbnail.
         ' (Taskbar icons are generally 32x32.  Form titlebar icons are generally 16x16.)
         Dim hIcon32 As Long, hIcon16 As Long
-        hIcon32 = GetIconFromDIB(thumbDIB)
-        hIcon16 = GetIconFromDIB(thumbDIB, 16)
+        hIcon32 = GetIconFromDIB(thumbDIB, , True)
+        hIcon16 = GetIconFromDIB(thumbDIB, 16, False)   'Truthfully, I have no idea why this icon must be treated as upside-down.  FreeImage bug, perhaps?
         
         'Each pdImage instance stores its custom icon handles, which simplifies the process of synchronizing PD's icons
         ' to any given image if the user is working with multiple images at once.  Retrieve the old handles now, so we
@@ -771,6 +786,8 @@ Public Sub CreateCustomFormIcons(ByRef srcImage As pdImage)
         If oldIcon32 <> 0 Then DestroyIcon oldIcon32
         If oldIcon16 <> 0 Then DestroyIcon oldIcon16
         
+    Else
+        Debug.Print "WARNING!  Image refused to provide a thumbnail!"
     End If
 
 End Sub
@@ -846,7 +863,7 @@ End Function
 
 'Given an image in the .exe's resource section (typically a PNG image), return it as a cursor object.
 ' The calling function is responsible for deleting the cursor once they are done with it.
-Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0) As Long
+Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0) As Long
     
     'Start by extracting the PNG resource data into a pdLayer object.
     Dim resDIB As pdDIB
@@ -897,7 +914,7 @@ Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVa
         End With
                     
         'Create the cursor
-        createCursorFromResource = CreateIconIndirect(icoInfo)
+        CreateCursorFromResource = CreateIconIndirect(icoInfo)
         
         'Release our temporary mask and resource container, as Windows has now made its own copies
         DeleteObject monoBmp
@@ -914,7 +931,7 @@ Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVa
 End Function
 
 'Load all relevant program cursors into memory
-Public Sub initAllCursors()
+Public Sub InitializeCursors()
 
     ReDim customCursorHandles(0) As Long
 
@@ -927,7 +944,7 @@ Public Sub initAllCursors()
 End Sub
 
 'Unload any custom cursors from memory
-Public Sub unloadAllCursors()
+Public Sub UnloadAllCursors()
     
     If numOfCustomCursors = 0 Then Exit Sub
     
@@ -1038,7 +1055,7 @@ Public Function RequestCustomCursor(ByVal CursorName As String, Optional ByVal c
         RequestCustomCursor = customCursorHandles(cursorLocation)
     Else
         Dim tmpHandle As Long
-        tmpHandle = createCursorFromResource(CursorName, cursorHotspotX, cursorHotspotY)
+        tmpHandle = CreateCursorFromResource(CursorName, cursorHotspotX, cursorHotspotY)
         
         ReDim Preserve customCursorNames(0 To numOfCustomCursors) As String
         ReDim Preserve customCursorHandles(0 To numOfCustomCursors) As Long
@@ -1139,3 +1156,39 @@ Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
     
 End Function
 
+'PD will automatically update its taskbar icon to reflect the current image being edited.  I find this especially helpful
+' when multiple PD sessions are operating in parallel.
+Public Sub ChangeAppIcons(ByVal hIconSmall As Long, ByVal hIconLarge As Long)
+    If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
+    SendMessageA FormMain.hWnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall
+    SendMessageA FormMain.hWnd, WM_SETICON, ICON_BIG, ByVal hIconLarge
+End Sub
+
+'When all images are unloaded (or when the program is first loaded), we must reset the program icon to its default values.
+Public Sub ResetAppIcons()
+
+    If (m_DefaultIconLarge = 0) Then
+        m_DefaultIconLarge = LoadImageAsString(App.hInstance, "AAA", IMAGE_ICON, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON), LR_SHARED)
+    End If
+    
+    If (m_DefaultIconSmall = 0) Then
+        m_DefaultIconSmall = LoadImageAsString(App.hInstance, "AAA", IMAGE_ICON, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), LR_SHARED)
+    End If
+    
+    ChangeAppIcons m_DefaultIconSmall, m_DefaultIconLarge
+    
+End Sub
+
+'When PD is first loaded, we associate an icon with the master "ThunderMain" owner window, to ensure proper icons in places
+' like Task Manager.
+Public Sub SetThunderMainIcon()
+
+    'Start by loading the default icons from the resource file, as necessary
+    ResetAppIcons
+    
+    Dim tmHWnd As Long
+    tmHWnd = VB_Hacks.GetThunderMainHWnd()
+    SendMessageA tmHWnd, WM_SETICON, ICON_SMALL, ByVal m_DefaultIconLarge
+    SendMessageA tmHWnd, WM_SETICON, ICON_BIG, ByVal m_DefaultIconSmall
+
+End Sub

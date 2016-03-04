@@ -100,7 +100,7 @@ Public Sub SelectWholeImage()
     pdImages(g_CurrentImage).selectionActive = False
     
     'Create a new selection at the size of the image
-    pdImages(g_CurrentImage).mainSelection.selectAll
+    pdImages(g_CurrentImage).mainSelection.SelectAll
     
     'Lock in this selection
     pdImages(g_CurrentImage).mainSelection.lockIn
@@ -440,8 +440,8 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
         
     Else
         
-        MetaToggle tSelection, False
-        MetaToggle tSelectionTransform, False
+        SetUIGroupState PDUI_Selections, False
+        SetUIGroupState PDUI_SelectionTransforms, False
         For i = 0 To toolpanel_Selections.tudSel.Count - 1
             If toolpanel_Selections.tudSel(i).Value <> 0 Then toolpanel_Selections.tudSel(i).Value = 0
         Next i
@@ -495,7 +495,7 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
     
     'Adjust the mouseAccuracy value based on the current zoom value
     Dim mouseAccuracy As Double
-    mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.getZoomValue(srcImage.currentZoomValue))
+    mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.GetZoomValue(srcImage.currentZoomValue))
         
     'Find the smallest distance for this mouse position
     Dim minDistance As Double
@@ -689,7 +689,7 @@ Public Sub invertCurrentSelection()
     ' based on the size of the area to be processed.
     SetProgBarMax maskWidth
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'After all that work, the Invert code itself is very small and unexciting!
     For x = 0 To maskWidth
@@ -711,7 +711,7 @@ Public Sub invertCurrentSelection()
     pdImages(g_CurrentImage).mainSelection.findNewBoundsManually
     
     SetProgBarVal 0
-    releaseProgressBar
+    ReleaseProgressBar
     Message "Selection inversion complete."
     
     'Lock in this selection
@@ -754,7 +754,7 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         pdImages(g_CurrentImage).selectionActive = True
                 
         SetProgBarVal 0
-        releaseProgressBar
+        ReleaseProgressBar
         
         Message "Feathering complete."
         
@@ -818,7 +818,7 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         ' based on the size of the area to be processed.
         Dim progBarCheck As Long
         SetProgBarMax pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
         
         'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
         Dim scaleFactor As Double, invScaleFactor As Double
@@ -897,7 +897,7 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         pdImages(g_CurrentImage).selectionActive = True
                 
         SetProgBarVal 0
-        releaseProgressBar
+        ReleaseProgressBar
         
         Message "Feathering complete."
         
@@ -944,7 +944,7 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         pdImages(g_CurrentImage).selectionActive = True
                 
         SetProgBarVal 0
-        releaseProgressBar
+        ReleaseProgressBar
         
         Message "Selection resize complete."
         
@@ -992,7 +992,7 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         pdImages(g_CurrentImage).selectionActive = True
                 
         SetProgBarVal 0
-        releaseProgressBar
+        ReleaseProgressBar
         
         Message "Selection resize complete."
         
@@ -1055,7 +1055,7 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
         pdImages(g_CurrentImage).selectionActive = True
                 
         SetProgBarVal 0
-        releaseProgressBar
+        ReleaseProgressBar
         
         Message "Selection resize complete."
         
@@ -1244,8 +1244,8 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     pdImages(g_CurrentImage).mainSelection.requestNewMask
     
     'Make the selection tools visible
-    MetaToggle tSelection, True
-    MetaToggle tSelectionTransform, True
+    SetUIGroupState PDUI_Selections, True
+    SetUIGroupState PDUI_SelectionTransforms, True
     
     'Redraw the screen
     Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)

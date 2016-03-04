@@ -1612,10 +1612,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'An outside class provides access to specialized mouse events (like mousewheel and forward/back keys)
-Private WithEvents cMouseEvents As pdInputMouse
-Attribute cMouseEvents.VB_VarHelpID = -1
-
 'If one or more language file updates is downloaded and patched, this will be set to TRUE by the downloader.  When all updates finish,
 ' this value tells us to update the active language object if the currently in-use language was one of the ones we updated.
 Private m_LanguagesUpdatedSuccessfully As Boolean
@@ -1756,54 +1752,6 @@ End Function
 Public Sub triggerPendingAsynchronousDownloads()
     FormMain.mainCanvas(0).SetNetworkState True
     Me.asyncDownloader.setAutoDownloadMode True
-End Sub
-
-'Horizontal mousewheel; note that the pdInputMouse class automatically converts Shift+Wheel to horizontal wheel for us
-Private Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-    
-    Dim newX As Long, newY As Long
-    
-    If g_OpenImageCount > 0 Then
-        'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-        'TODO 7.0: fix mousewheel events when the main form has focus!
-        Drawing.ConvertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
-        'FormMain.mainCanvas(0).cMouseEvents_MouseWheelHorizontal Button, Shift, newX, newY, scrollAmount
-    End If
-
-End Sub
-
-'Vertical mousewheel; note that the pdInputMouse class automatically converts Shift+Wheel and Ctrl+Wheel actions to dedicated events,
-' so this function will only return plain MouseWheel events (or Alt+MouseWheel, I suppose)
-Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-
-    Dim newX As Long, newY As Long
-
-    If g_OpenImageCount > 0 Then
-        
-        'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-        Drawing.ConvertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
-        'TODO 7.0: clean up this mess
-        'FormMain.mainCanvas(0).cMouseEvents_MouseWheelVertical Button, Shift, newX, newY, scrollAmount
-        
-    End If
-
-End Sub
-
-'Ctrl+Wheel actions are detected by pdInputMouse and sent to this dedicated class
-Private Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
-
-    'The only child window that supports mousewheel zoom is the main canvas, so redirect any zoom events there.
-    If g_OpenImageCount > 0 Then
-    
-        Dim newX As Long, newY As Long
-    
-        'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-        Drawing.ConvertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
-        'TODO 7.0: fix this mess
-        'FormMain.mainCanvas(0).cMouseEvents_MouseWheelZoom Button, Shift, newX, newY, zoomAmount
-    
-    End If
-
 End Sub
 
 'When the main form is resized, we must re-align the main canvas
@@ -2398,7 +2346,7 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
         
         'Actual size
         If .HotKeyName(acceleratorIndex) = "Actual_Size" Then
-            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
+            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetZoom100Index
         End If
         
         'Various zoom values
@@ -2440,8 +2388,8 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
         End If
         
         'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
-        If .HotKeyName(acceleratorIndex) = "Next_Image" Then moveToNextChildWindow True
-        If .HotKeyName(acceleratorIndex) = "Prev_Image" Then moveToNextChildWindow False
+        If .HotKeyName(acceleratorIndex) = "Next_Image" Then MoveToNextChildWindow True
+        If .HotKeyName(acceleratorIndex) = "Prev_Image" Then MoveToNextChildWindow False
     
     End With
         
@@ -2695,10 +2643,6 @@ Private Sub Form_Load()
         pdDebug.LogAction "Preparing input tracker..."
     #End If
     
-    'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
-    Set cMouseEvents = New pdInputMouse
-    cMouseEvents.addInputTracker Me.hWnd, True, , True
-    
     
     '*************************************************************************************************************************************
     ' Next, make sure PD's previous session closed down successfully
@@ -2707,14 +2651,14 @@ Private Sub Form_Load()
     Message "Checking for old autosave data..."
     
     'DO NOT CHECK FOR AUTOSAVE DATA if another PhotoDemon session is active.
-    If Not App.PrevInstance Then
+    If (Not App.PrevInstance) Then
     
-        If Not Autosave_Handler.wasLastShutdownClean Then
+        If Not Autosave_Handler.WasLastShutdownClean Then
         
             'Oh no!  Something went horribly wrong with the last PD session.
                                     
             'See if there's any image autosave data worth recovering.
-            If Autosave_Handler.saveableImagesPresent > 0 Then
+            If Autosave_Handler.SaveableImagesPresent > 0 Then
             
                 'Autosave data was found!  Present it to the user.
                 Dim userWantsAutosaves As VbMsgBoxResult
@@ -2736,7 +2680,7 @@ Private Sub Form_Load()
                     
                     'The user has no interest in recovering AutoSave data.  Purge all the entries we found, so they don't show
                     ' up in future AutoSave searches.
-                    Autosave_Handler.purgeOldAutosaveData
+                    Autosave_Handler.PurgeOldAutosaveData
                 
                 End If
                 
@@ -3089,7 +3033,7 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Unloading custom cursors for this session"
     #End If
     
-    unloadAllCursors
+    UnloadAllCursors
     
     'Save all MRU lists to the preferences file.  (I've considered doing this as files are loaded, but the only time
     ' that would be an improvement is if the program crashes, and if it does crash, the user wouldn't want to re-load
@@ -3191,7 +3135,7 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Final step: writing out new autosave checksum..."
     #End If
     
-    Autosave_Handler.purgeOldAutosaveData
+    Autosave_Handler.PurgeOldAutosaveData
     Autosave_Handler.notifyCleanShutdown
     
     #If DEBUGMODE = 1 Then
@@ -4357,7 +4301,7 @@ Private Sub MnuSpecificZoom_Click(Index As Integer)
             Case 3
                 FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 10
             Case 4
-                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
+                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetZoom100Index
             Case 5
                 FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 14
             Case 6
@@ -4553,18 +4497,18 @@ Private Sub MnuWindow_Click(Index As Integer)
         
         'Next image
         Case 5
-            moveToNextChildWindow True
+            MoveToNextChildWindow True
             
         'Previous image
         Case 6
-            moveToNextChildWindow False
+            MoveToNextChildWindow False
 
     End Select
 
 End Sub
 
 'The "Next Image" and "Previous Image" options simply wrap this function.
-Private Sub moveToNextChildWindow(ByVal moveForward As Boolean)
+Private Sub MoveToNextChildWindow(ByVal moveForward As Boolean)
 
     'If one (or zero) images are loaded, ignore this option
     If g_OpenImageCount <= 1 Then Exit Sub
@@ -4648,13 +4592,13 @@ End Sub
 'Zoom in/out rely on the g_Zoom object to calculate a new value
 Private Sub MnuZoomIn_Click()
     If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled And FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex > 0 Then
-        FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomInIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
+        FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetNearestZoomInIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
     End If
 End Sub
 
 Private Sub MnuZoomOut_Click()
-    If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled And FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex <> g_Zoom.getZoomCount Then
-        FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomOutIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
+    If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled And FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex <> g_Zoom.GetZoomCount Then
+        FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetNearestZoomOutIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
     End If
 End Sub
 

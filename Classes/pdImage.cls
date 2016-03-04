@@ -818,6 +818,8 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     'Uncomment the line below to profile different thumbnail resize strategies
     'Debug.Print "Time taken for image thumbnail generation: " & CStr((Timer - startTime) * 1000) & " ms"
     
+    RequestThumbnail = True
+    
 End Function
 
 'When this DIB is no longer being used, we can deactivate it to save on resources.
@@ -1141,7 +1143,7 @@ Public Function eraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     End If
     
     'Before doing anything else, null-pad the layer we will be processing.  (At present, this function only operates on a single layer.)
-    imgLayers(targetLayerIndex).convertToNullPaddedLayer Me.Width, Me.Height
+    imgLayers(targetLayerIndex).ConvertToNullPaddedLayer Me.Width, Me.Height
     
     'Selections can be one of several types.  Right now, we don't give special handling to simple rectangular selections - all selections
     ' are fully processed according to the contents of the mask.  Also, all selections are currently created as 32bpp DIBs.
@@ -1235,7 +1237,7 @@ Public Function eraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     Erase selData
     
     'Shrink the layer to its maximum relevant size
-    imgLayers(targetLayerIndex).cropNullPaddedLayer
+    imgLayers(targetLayerIndex).CropNullPaddedLayer
     
     'Notify ourselves of the change
     pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, targetLayerIndex

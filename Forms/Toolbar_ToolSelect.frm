@@ -751,7 +751,7 @@ Private Sub NewToolSelected()
                 'If the existing selection type matches the tool type, no problem - activate the transform tools
                 ' (if relevant), but make no other changes to the image
                 If (g_CurrentTool = Selection_Handler.getRelevantToolFromSelectShape()) Then
-                    MetaToggle tSelectionTransform, pdImages(g_CurrentImage).mainSelection.isTransformable
+                    SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).mainSelection.isTransformable
                 
                 'A selection is already active, and it doesn't match the current tool type!
                 Else
@@ -935,21 +935,21 @@ Public Sub resetToolButtonStates()
     'To prevent flicker, we handle this in two passes.
     
     'First, activate the new window.
-    If toolPanelCollection.getNumOfEntries > 0 Then
+    If toolPanelCollection.GetNumOfEntries > 0 Then
     
-        For i = 0 To toolPanelCollection.getNumOfEntries - 1
+        For i = 0 To toolPanelCollection.GetNumOfEntries - 1
             
             'If this is the active panel, display it
-            If StrComp(toolPanelCollection.getKeyByIndex(i), LCase(m_ActiveToolPanelKey)) = 0 Then
-                g_WindowManager.ActivateToolPanel toolPanelCollection.getValueByIndex(i)
+            If StrComp(toolPanelCollection.GetKeyByIndex(i), LCase(m_ActiveToolPanelKey)) = 0 Then
+                g_WindowManager.ActivateToolPanel toolPanelCollection.GetValueByIndex(i)
             End If
             
         Next i
         
         'Next, hide all other panels
-        For i = 0 To toolPanelCollection.getNumOfEntries - 1
-            If StrComp(toolPanelCollection.getKeyByIndex(i), LCase(m_ActiveToolPanelKey)) <> 0 Then
-                g_WindowManager.SetVisibilityOfAnyWindowByHwnd toolPanelCollection.getValueByIndex(i), False
+        For i = 0 To toolPanelCollection.GetNumOfEntries - 1
+            If StrComp(toolPanelCollection.GetKeyByIndex(i), LCase(m_ActiveToolPanelKey)) <> 0 Then
+                g_WindowManager.SetVisibilityOfAnyWindowByHwnd toolPanelCollection.GetValueByIndex(i), False
             End If
         Next i
         
@@ -977,7 +977,7 @@ End Sub
 Private Sub lastUsedSettings_AddCustomPresetData()
     
     'Write the currently selected selection tool to file
-    lastUsedSettings.addPresetData "ActiveSelectionTool", g_CurrentTool
+    lastUsedSettings.AddPresetData "ActiveSelectionTool", g_CurrentTool
     
 End Sub
 
@@ -986,8 +986,8 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
     'Restore the last-used selection tool (which will be saved in the main form's preset file, if it exists)
     g_PreviousTool = -1
     
-    If Len(lastUsedSettings.retrievePresetData("ActiveSelectionTool")) <> 0 Then
-        g_CurrentTool = CLng(lastUsedSettings.retrievePresetData("ActiveSelectionTool"))
+    If Len(lastUsedSettings.RetrievePresetData("ActiveSelectionTool")) <> 0 Then
+        g_CurrentTool = CLng(lastUsedSettings.RetrievePresetData("ActiveSelectionTool"))
     Else
         g_CurrentTool = NAV_DRAG
     End If

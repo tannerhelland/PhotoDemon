@@ -225,7 +225,7 @@ End Function
 Public Sub setSelectionProperty(ByVal PropertyName As PD_SELECTION_PROPERTY, ByVal propertyValue As Variant)
     
     'Check to see if this value already exists in the collection
-    If m_PropertyDict.doesKeyExist(PropertyName) Then
+    If m_PropertyDict.DoesKeyExist(PropertyName) Then
     
         'If the values are the same, we don't need to actually add it
         If m_PropertyDict.GetEntry_Variant(PropertyName) = propertyValue Then Exit Sub
@@ -1778,7 +1778,7 @@ Private Sub createSelectionMask()
                 containingPDImage.getCompositedImage tmpDIB
             Else
                 tmpLayer.CopyExistingLayer containingPDImage.getActiveLayer
-                tmpLayer.convertToNullPaddedLayer containingPDImage.Width, containingPDImage.Height
+                tmpLayer.ConvertToNullPaddedLayer containingPDImage.Width, containingPDImage.Height
                 Set tmpDIB = tmpLayer.layerDIB
             End If
             
@@ -2321,7 +2321,7 @@ Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
             
             'Add the selection rectangle to the path
             If getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) > 0 Then
-                pdPath.addRoundedRectangle_Relative dstLeft, dstTop, dstRight - dstLeft, dstBottom - dstTop, getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) * g_Zoom.getZoomValue(containingPDImage.currentZoomValue)
+                pdPath.addRoundedRectangle_Relative dstLeft, dstTop, dstRight - dstLeft, dstBottom - dstTop, getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) * g_Zoom.GetZoomValue(containingPDImage.currentZoomValue)
             Else
                 pdPath.addRectangle_Absolute dstLeft, dstTop, dstRight, dstBottom
             End If
@@ -2342,7 +2342,7 @@ Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
             pdPath.addLine dstLeft, dstTop, dstRight, dstBottom
             
             'Widen the path to encompass only the border of the line
-            pdPath.convertPathToBorderType_Simple getSelectionProperty_Long(SP_LINE_WIDTH) * g_Zoom.getZoomValue(containingPDImage.currentZoomValue), LineCapRound
+            pdPath.convertPathToBorderType_Simple getSelectionProperty_Long(SP_LINE_WIDTH) * g_Zoom.GetZoomValue(containingPDImage.currentZoomValue), LineCapRound
             
         'Polygon and lasso selections use roughly identical outline code; the only difference is the reference array used and the number of points
         Case sPolygon, sLasso

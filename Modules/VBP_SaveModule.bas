@@ -165,7 +165,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                         
                         'If it does, provide the user with a prompt to choose whatever color depth they'd like
                         Dim dCheck As VbMsgBoxResult
-                        dCheck = promptColorDepth(saveFormat)
+                        dCheck = PromptColorDepth(saveFormat)
                         
                         If dCheck = vbOK Then
                             outputColorDepth = g_ColorDepth
@@ -234,7 +234,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             If loadRelevantForm Then
                 
                 Dim gotSettings As VbMsgBoxResult
-                gotSettings = promptJPEGSettings(srcPDImage)
+                gotSettings = PromptJPEGSettings(srcPDImage)
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 If gotSettings = vbOK Then
@@ -365,7 +365,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             If loadRelevantForm Then
                 
                 Dim gotJP2Settings As VbMsgBoxResult
-                gotJP2Settings = promptJP2Settings(srcPDImage)
+                gotJP2Settings = PromptJP2Settings(srcPDImage)
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 If gotJP2Settings = vbOK Then
@@ -423,7 +423,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             If loadRelevantForm Then
                 
                 Dim gotWebPSettings As VbMsgBoxResult
-                gotWebPSettings = promptWebPSettings(srcPDImage)
+                gotWebPSettings = PromptWebPSettings(srcPDImage)
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 If gotWebPSettings = vbOK Then
@@ -456,7 +456,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             If loadRelevantForm Then
                 
                 Dim gotJXRSettings As VbMsgBoxResult
-                gotJXRSettings = promptJXRSettings(srcPDImage)
+                gotJXRSettings = PromptJXRSettings(srcPDImage)
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 If gotJXRSettings = vbOK Then
@@ -573,7 +573,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             If Not srcPDImage.forInternalUseOnly Then SyncInterfaceToCurrentImage
                         
             'Notify the thumbnail window that this image has been updated (so it can show/hide the save icon)
-            If Not srcPDImage.forInternalUseOnly Then toolbar_ImageTabs.notifyUpdatedImage srcPDImage.imageID
+            If Not srcPDImage.forInternalUseOnly Then toolbar_ImageTabs.NotifyUpdatedImage srcPDImage.imageID
             
         End If
     
@@ -957,7 +957,7 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
         Else
             If forceAlphaConvert = -1 Then
                 Dim alphaCheck As VbMsgBoxResult
-                alphaCheck = promptAlphaCutoff(tmpDIB)
+                alphaCheck = PromptAlphaCutoff(tmpDIB)
                 
                 'If the alpha dialog is canceled, abandon the entire save
                 If alphaCheck = vbCancel Then
@@ -1124,7 +1124,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
                 Else
             
                     Dim alphaCheck As VbMsgBoxResult
-                    alphaCheck = promptAlphaCutoff(tmpDIB)
+                    alphaCheck = PromptAlphaCutoff(tmpDIB)
                     
                     'If the alpha dialog is canceled, abandon the entire save
                     If alphaCheck = vbCancel Then
@@ -1199,7 +1199,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     If fi_DIB <> 0 Then
     
         'Embed a background color if available, and the user has requested it.
-        If pngPreserveBKGD And srcPDImage.imgStorage.doesKeyExist("pngBackgroundColor") Then
+        If pngPreserveBKGD And srcPDImage.imgStorage.DoesKeyExist("pngBackgroundColor") Then
             
             Dim rQuad As RGBQUAD
             rQuad.Red = ExtractR(srcPDImage.imgStorage.GetEntry_Long("pngBackgroundColor"))
@@ -1455,7 +1455,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
             Else
             
                 Dim alphaCheck As VbMsgBoxResult
-                alphaCheck = promptAlphaCutoff(tmpDIB)
+                alphaCheck = PromptAlphaCutoff(tmpDIB)
                 
                 'If the alpha dialog is canceled, abandon the entire save
                 If alphaCheck = vbCancel Then
@@ -1785,7 +1785,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
             'We're not in a batch conversion, so ask the user which cut-off they would like to use.
             Else
                 Dim alphaCheck As VbMsgBoxResult
-                alphaCheck = promptAlphaCutoff(tmpDIB)
+                alphaCheck = PromptAlphaCutoff(tmpDIB)
                 
                 'If the alpha dialog is canceled, abandon the entire save
                 If alphaCheck = vbCancel Then

@@ -86,7 +86,7 @@ Public Sub SynchronizeWindows(ByVal parentHwnd As Long, ByVal childHwnd As Long)
     strKey = Trim$(Str(parentHwnd))
     
     'Make sure this window doesn't already exist in the collection
-    If Not m_windowDict.doesKeyExist(strKey) Then
+    If Not m_windowDict.DoesKeyExist(strKey) Then
         
         'Store the pair of hWnds
         m_windowDict.AddEntry strKey, childHwnd
