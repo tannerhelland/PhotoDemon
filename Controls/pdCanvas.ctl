@@ -190,8 +190,9 @@ Private Enum PDCANVAS_COLOR_LIST
     [_First] = 0
     PDC_Background = 0
     PDC_StatusBar = 1
-    [_Last] = 1
-    [_Count] = 2
+    PDC_SpecialButtonBackground = 2
+    [_Last] = 2
+    [_Count] = 3
 End Enum
 
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
@@ -1622,7 +1623,7 @@ Private Sub UserControl_Show()
         
         'Request an update against the current theme
         ' TODO: do we really need to do this manually, or is PD's central theme function smart enough to do this on its own?
-        Me.UpdateAgainstCurrentTheme
+        'Me.UpdateAgainstCurrentTheme
         
 CanvasShowError:
         
@@ -1931,24 +1932,30 @@ End Sub
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
 ' step must also be called if/when PD's visual theme settings change.
 Private Sub UpdateColorList()
-    m_Colors.LoadThemeColor PDC_Background, "Background", IDE_GRAY
-    m_Colors.LoadThemeColor PDC_StatusBar, "StatusBar", IDE_GRAY
+    With m_Colors
+        .LoadThemeColor PDC_Background, "Background", IDE_GRAY
+        .LoadThemeColor PDC_StatusBar, "StatusBar", IDE_GRAY
+        .LoadThemeColor PDC_SpecialButtonBackground, "SpecialButtonBackground", IDE_GRAY
+    End With
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
 ' and/or retranslating all button captions against the current language.
 Public Sub UpdateAgainstCurrentTheme()
     
+    Debug.Print "(the primary canvas is retheming itself - how many times is this occurring in a given session??)"
+    
     'Suspend redraws until all theme updates are complete
     Me.SetRedrawSuspension True
     
     UpdateColorList
+    UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
     CanvasView.UpdateAgainstCurrentTheme
     StatusBar.UpdateAgainstCurrentTheme
     
     'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
     cmdCenter.AssignTooltip "Center the image inside the viewport"
-    If Not (g_Themer Is Nothing) Then cmdCenter.BackColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+    cmdCenter.BackColor = m_Colors.RetrieveColor(PDC_SpecialButtonBackground, Me.Enabled)
     cmdCenter.UpdateAgainstCurrentTheme
     
     hScroll.UpdateAgainstCurrentTheme
@@ -1957,7 +1964,6 @@ Public Sub UpdateAgainstCurrentTheme()
     'Any controls that utilize a custom background color must now be updated to match *our* background color.
     Dim sbBackColor As Long
     sbBackColor = m_Colors.RetrieveColor(PDC_StatusBar, Me.Enabled)
-    cmdCenter.BackColor = sbBackColor
     
     Me.UpdateCanvasLayout
     

@@ -342,15 +342,16 @@ End Enum
 
 'Some options in PD support automatic enablement, contingent on various (hopefully) intelligent algorithms.
 ' Use this enum instead of raw Booleans if an algorithm is capable of self-setting certain settings.
-' (Say that 10x fast :p)
+' (Say that 10x fast :p)  Similarly, if an option has never been set, we can safely detect that case, too.
 Public Enum PD_BOOL
+    PD_BOOL_UNKNOWN = -1
     PD_BOOL_FALSE = 0
     PD_BOOL_TRUE = 1
     PD_BOOL_AUTO = 2
 End Enum
 
 #If False Then
-    Private Const PD_BOOL_FALSE = 0, PD_BOOL_TRUE = 1, PD_BOOL_AUTO = 2
+    Private Const PD_BOOL_UNKNOWN = -1, PD_BOOL_FALSE = 0, PD_BOOL_TRUE = 1, PD_BOOL_AUTO = 2
 #End If
 
 'Tone-mapping is required for high bit-depth images.  PhotoDemon supports a variety of tone-map operations.

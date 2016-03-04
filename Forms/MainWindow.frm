@@ -1756,9 +1756,11 @@ End Sub
 
 'When the main form is resized, we must re-align the main canvas
 Private Sub Form_Resize()
-    
-    RefreshAllCanvases
-
+    If Not (g_WindowManager Is Nothing) Then
+        If g_WindowManager.GetAutoRefreshMode Then RefreshAllCanvases
+    Else
+        RefreshAllCanvases
+    End If
 End Sub
 
 'Resize all currently active canvases
@@ -1773,7 +1775,8 @@ Public Sub RefreshAllCanvases()
     
     'API is used instead of .Move as it produces smoother movement
     MoveWindow mainCanvas(0).hWnd, mainRect.x1, mainRect.y1, mainRect.x2 - mainRect.x1, mainRect.y2 - mainRect.y1, 1
-    'TODO 7.0: fix this mess
+    
+    'TODO 7.0: fix this mess - these functions take a LOT of time to process, and they are being called way too frequently!
     mainCanvas(0).UpdateCanvasLayout
     mainCanvas(0).UpdateAgainstCurrentTheme
     
@@ -2570,10 +2573,6 @@ Private Sub Form_Load()
     ' Now that all engines are initialized, we can prep and display the main editing window
     '*************************************************************************************************************************************
     
-    'We can now display the main form and any visible toolbars.  (There is currently a flicker if toolbars have been hidden by the user,
-    ' and I'm working on a solution to that.)
-    Me.Visible = True
-    
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Registering toolbars with the window manager..."
     #End If
@@ -2583,6 +2582,15 @@ Private Sub Form_Load()
     g_WindowManager.RegisterChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, LAYER_TOOLBOX, , FixDPI(200)
     g_WindowManager.RegisterChildForm toolbar_Options, TOOLBAR_WINDOW, 3, TOOLS_TOOLBOX
     g_WindowManager.RegisterChildForm toolbar_ImageTabs, IMAGE_TABSTRIP, , , , , FixDPI(32)
+    
+    'With all windows in position, reposition the main form's canvas
+    g_WindowManager.SetAutoRefreshMode True
+    FormMain.RefreshAllCanvases
+    g_WindowManager.SetAutoRefreshMode False
+    
+    'We can now display the main form and any visible toolbars.  (There is currently a flicker if toolbars have been hidden by the user,
+    ' and I'm working on a solution to that.)
+    Me.Visible = True
     
     'The debug window can optionally be displayed, but only in nightly builds
     #If DEBUGMODE = 1 Then
@@ -2637,6 +2645,7 @@ Private Sub Form_Load()
     #End If
     
     'With all toolboxes loaded, we need to synchronize the main canvas layout against any that remain visible
+    g_WindowManager.SetAutoRefreshMode True
     RefreshAllCanvases
     
     #If DEBUGMODE = 1 Then

@@ -382,6 +382,10 @@ Private insideMinimizeMode As Boolean
 Private m_CurrentToolPanelHwnd As Long
 Private m_ToolPanelDictionary As pdDictionary
 
+'If m_AutoRefreshMode is TRUE, the window manager will forcibly re-align the main window's canvas area to match any
+' changes to window settings.
+Private m_AutoRefreshMode As Boolean
+
 '***********************************************************************************************
 '  GENERIC HELPER FUNCTIONS: VB-friendly wrappers to window-related APIs
 '***********************************************************************************************
@@ -435,6 +439,19 @@ End Sub
 '***********************************************************************************************
 '  (/End GENERIC HELPER FUNCTIONS)
 '***********************************************************************************************
+
+'Various window manager settings require us to re-align the primary canvas.  (e.g. showing or hiding a toolbar window
+' changes the available canvas area)  Normally, the window manager will automatically request a refresh of the canvas
+' when one of these actions occurs, but if the caller knows that multiple refresh-triggering-actions will be happening
+' in a group (like when PD is first loaded, and all toolbars are loaded and positioned in turn), it can deactivate
+' those auto-refreshes for a meaningful performance boost.
+Public Sub SetAutoRefreshMode(ByVal newMode As Boolean)
+    m_AutoRefreshMode = newMode
+End Sub
+
+Public Function GetAutoRefreshMode() As Boolean
+    GetAutoRefreshMode = m_AutoRefreshMode
+End Function
 
 'Activate a new tool options panel
 Public Sub ActivateToolPanel(ByVal formHwndToActivate As Long)
@@ -648,7 +665,7 @@ Public Sub SetWindowVisibility(ByVal winHwnd As Long, ByVal newVisibility As Boo
     End If
      
     'Because the main image canvas area may be modified due to window visibility, redraw it now
-    FormMain.RefreshAllCanvases
+    If m_AutoRefreshMode Then FormMain.RefreshAllCanvases
     
 End Sub
 
@@ -1414,7 +1431,7 @@ Public Sub UpdateMinimumDimensions(ByVal srcHwnd As Long, Optional ByVal minWidt
                 'If the window is too small, fix it now
                 If GetWindowWidth(srcHwnd) < minWidth Then
                     pdWindows(i).formReference.Move pdWindows(i).formReference.Left, pdWindows(i).formReference.Top, minWidth * Screen.TwipsPerPixelX
-                    FormMain.RefreshAllCanvases
+                    If m_AutoRefreshMode Then FormMain.RefreshAllCanvases
                 End If
                 
             End If
@@ -1428,7 +1445,7 @@ Public Sub UpdateMinimumDimensions(ByVal srcHwnd As Long, Optional ByVal minWidt
                 'If the window is too small, fix it now
                 If GetWindowHeight(srcHwnd) < minHeight Then
                     pdWindows(i).formReference.Move pdWindows(i).formReference.Left, pdWindows(i).formReference.Top, , minHeight * Screen.TwipsPerPixelY
-                    FormMain.RefreshAllCanvases
+                    If m_AutoRefreshMode Then FormMain.RefreshAllCanvases
                 End If
                 
             End If
@@ -1546,6 +1563,8 @@ Private Sub Class_Initialize()
     numOfExtraWindows = 0
     ReDim extraWindowHwnds(0) As Long
     
+    m_AutoRefreshMode = True
+    
     'Prepare the subclasser
     Set cSubclass = New cSelfSubHookCallback
     
@@ -1575,7 +1594,7 @@ End Sub
 
 'When the user has resized the image tabstrip, we need to redraw all image windows to match (but toolbars are okay).
 Public Sub NotifyImageTabStripResized()
-    If Not mainFormTriggeredChange Then FormMain.RefreshAllCanvases
+    If (Not mainFormTriggeredChange) And m_AutoRefreshMode Then FormMain.RefreshAllCanvases
 End Sub
 
 'When the user has manually resized one of the toolboxes, we need to adjust other toolboxes to match.
@@ -1590,7 +1609,7 @@ Public Sub NotifyToolboxResized(Optional ByVal hWndOfResizeSource As Long = 0, O
     If pdWindows(imageTabstripIndex).isVisible Then RequestWindowRedraw imageTabstripIndex, curWinRect
     
     'Ask the main form's canvas to redraw itself, per the passed parameter
-    If refreshCanvasToo Then FormMain.RefreshAllCanvases
+    If refreshCanvasToo And m_AutoRefreshMode Then FormMain.RefreshAllCanvases
     
 End Sub
 
