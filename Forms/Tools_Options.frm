@@ -49,129 +49,6 @@ Begin VB.Form FormPreferences
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   6660
-      Index           =   0
-      Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   444
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   0
-      Top             =   120
-      Width           =   8295
-      Begin PhotoDemon.pdDropDown cboMRUCaption 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   1
-         Top             =   3360
-         Width           =   7800
-         _ExtentX        =   13758
-         _ExtentY        =   582
-      End
-      Begin PhotoDemon.pdDropDown cboImageCaption 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   2
-         Top             =   810
-         Width           =   7800
-         _ExtentX        =   13758
-         _ExtentY        =   582
-      End
-      Begin PhotoDemon.pdSpinner tudRecentFiles 
-         Height          =   345
-         Left            =   3900
-         TabIndex        =   5
-         Top             =   3885
-         Width           =   1335
-         _ExtentX        =   2355
-         _ExtentY        =   661
-         Min             =   1
-         Max             =   32
-         Value           =   10
-      End
-      Begin PhotoDemon.pdCheckBox chkMouseHighResolution 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   8
-         Top             =   1920
-         Width           =   7800
-         _ExtentX        =   13758
-         _ExtentY        =   582
-         Caption         =   "use high-resolution input tracking"
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   2
-         Left            =   0
-         Top             =   1440
-         Width           =   8100
-         _ExtentX        =   14288
-         _ExtentY        =   503
-         Caption         =   "mouse and pen input"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblRecentFileCount 
-         Height          =   240
-         Left            =   240
-         Top             =   3960
-         Width           =   3480
-         _ExtentX        =   6138
-         _ExtentY        =   423
-         Caption         =   "maximum number of recent file entries: "
-         ForeColor       =   4210752
-         Layout          =   2
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   13
-         Left            =   0
-         Top             =   2520
-         Width           =   8100
-         _ExtentX        =   14288
-         _ExtentY        =   503
-         Caption         =   "recent files list"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblMRUText 
-         Height          =   240
-         Left            =   240
-         Top             =   3000
-         Width           =   7875
-         _ExtentX        =   13891
-         _ExtentY        =   503
-         Caption         =   "recently used file shortcuts should be: "
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   4
-         Left            =   0
-         Top             =   0
-         Width           =   8100
-         _ExtentX        =   14288
-         _ExtentY        =   503
-         Caption         =   "captions"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblImageText 
-         Height          =   240
-         Left            =   240
-         Top             =   450
-         Width           =   7800
-         _ExtentX        =   13758
-         _ExtentY        =   423
-         Caption         =   "image window titles should be: "
-         ForeColor       =   4210752
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   6660
       Index           =   5
       Left            =   3000
       MousePointer    =   1  'Arrow
@@ -1445,6 +1322,129 @@ Begin VB.Form FormPreferences
          _ExtentX        =   13996
          _ExtentY        =   582
          Caption         =   "notify me when an update is ready"
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6660
+      Index           =   0
+      Left            =   3000
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   444
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   0
+      Top             =   120
+      Width           =   8295
+      Begin PhotoDemon.pdDropDown cboMRUCaption 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   1
+         Top             =   3360
+         Width           =   7800
+         _ExtentX        =   13758
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdDropDown cboImageCaption 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   2
+         Top             =   810
+         Width           =   7800
+         _ExtentX        =   13758
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdSpinner tudRecentFiles 
+         Height          =   345
+         Left            =   3900
+         TabIndex        =   5
+         Top             =   3885
+         Width           =   1335
+         _ExtentX        =   2355
+         _ExtentY        =   661
+         Min             =   1
+         Max             =   32
+         Value           =   10
+      End
+      Begin PhotoDemon.pdCheckBox chkMouseHighResolution 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   8
+         Top             =   1920
+         Width           =   7800
+         _ExtentX        =   13758
+         _ExtentY        =   582
+         Caption         =   "use high-resolution input tracking"
+      End
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+         Height          =   285
+         Index           =   2
+         Left            =   0
+         Top             =   1440
+         Width           =   8100
+         _ExtentX        =   14288
+         _ExtentY        =   503
+         Caption         =   "mouse and pen input"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblRecentFileCount 
+         Height          =   240
+         Left            =   240
+         Top             =   3960
+         Width           =   3480
+         _ExtentX        =   6138
+         _ExtentY        =   423
+         Caption         =   "maximum number of recent file entries: "
+         ForeColor       =   4210752
+         Layout          =   2
+      End
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+         Height          =   285
+         Index           =   13
+         Left            =   0
+         Top             =   2520
+         Width           =   8100
+         _ExtentX        =   14288
+         _ExtentY        =   503
+         Caption         =   "recent files list"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblMRUText 
+         Height          =   240
+         Left            =   240
+         Top             =   3000
+         Width           =   7875
+         _ExtentX        =   13891
+         _ExtentY        =   503
+         Caption         =   "recently used file shortcuts should be: "
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+         Height          =   285
+         Index           =   4
+         Left            =   0
+         Top             =   0
+         Width           =   8100
+         _ExtentX        =   14288
+         _ExtentY        =   503
+         Caption         =   "captions"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblImageText 
+         Height          =   240
+         Left            =   240
+         Top             =   450
+         Width           =   7800
+         _ExtentX        =   13758
+         _ExtentY        =   423
+         Caption         =   "image window titles should be: "
+         ForeColor       =   4210752
       End
    End
 End
