@@ -40,10 +40,10 @@ Option Explicit
 Public Event CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef bHandled As Boolean, ByRef lReturn As Long)
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
-Public Event WindowMove(ByVal newLeft As Long, ByVal newTop As Long)
-Public Event WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
 Public Event RepaintRequired(ByVal updateLayoutToo As Boolean)
 Public Event VisibilityChange(ByVal newVisibility As Boolean)
+Public Event WindowMove(ByVal newLeft As Long, ByVal newTop As Long)
+Public Event WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
 
 Public Event MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -1079,7 +1079,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             
             'Finally, notify the parent of the pending visibility change
             RaiseEvent VisibilityChange(m_Visibility)
-        
+            
         'All other messages are custom requests from the window.  Use them to raise custom message events.
         Case Else
             RaiseEvent CustomMessage(uMsg, wParam, lParam, bHandled, lReturn)

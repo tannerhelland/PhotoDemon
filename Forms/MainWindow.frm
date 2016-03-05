@@ -2980,6 +2980,13 @@ Private Sub Form_Unload(Cancel As Integer)
     
     Me.asyncDownloader.Reset
     
+    'Allow any objects on this form to save preferences and other user data
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Asking all FormMain components to write out final user preference values..."
+    #End If
+    
+    FormMain.mainCanvas(0).WriteUserPreferences
+    
     'Release the clipboard manager.  If we are responsible for the current clipboard data, we must manually upload a
     ' copy of all supported formats - for this reason, this step may be a little slow.
     #If DEBUGMODE = 1 Then
