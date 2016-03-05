@@ -477,8 +477,6 @@ End Sub
 
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     
-    Debug.Print "mouse up"
-    
     If m_MouseDown Then
         m_MouseDown = False
         m_InitX = 0
@@ -486,8 +484,6 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
         m_MouseDistanceTraveled = 0
         weAreResponsibleForResize = False
     End If
-    
-    If m_MouseInResizeTerritory Then UpdateAgainstTabstripPreferences
     
 End Sub
 
