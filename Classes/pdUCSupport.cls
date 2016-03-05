@@ -239,7 +239,7 @@ Public Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean
         'Initialize special subclassers, as requested
         If customMouseEvents Then
             Set m_MouseEvents = New pdInputMouse
-            If g_IsProgramRunning Then m_MouseEvents.addInputTracker m_hWnd, True, True, appCommandEvents, True
+            If g_IsProgramRunning Then m_MouseEvents.AddInputTracker m_hWnd, True, True, appCommandEvents, True
         End If
         
         If customKeyEvents Then
@@ -500,6 +500,16 @@ Public Sub SubclassCustomMessage(ByVal wMsg As Long, Optional ByVal msgIsInterna
     
 End Sub
 
+Public Sub NotifyMouseDragResize_Start()
+    m_MouseEvents.SetCaptureOverride True
+End Sub
+
+Public Sub NotifyMouseDragResize_End()
+    m_MouseEvents.SetCaptureOverride False
+    m_MouseEvents.ResetTracking
+    Me.RequestCursor IDC_DEFAULT
+End Sub
+
 '***************************************************************************
 ' (end setup and initialization functions)
 '***************************************************************************
@@ -703,13 +713,17 @@ End Sub
 
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInsideUC = False
-    m_MouseEvents.setSystemCursor IDC_DEFAULT
+    m_MouseEvents.SetSystemCursor IDC_DEFAULT
     RaiseEvent MouseLeave(Button, Shift, x, y)
 End Sub
 
 Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    If Not m_MouseInsideUC Then m_MouseInsideUC = True
-    RaiseEvent MouseMoveCustom(Button, Shift, x, y)
+    If (Not m_MouseInsideUC) Then
+        m_MouseInsideUC = True
+        RaiseEvent MouseEnter(Button, Shift, x, y)
+    Else
+        RaiseEvent MouseMoveCustom(Button, Shift, x, y)
+    End If
 End Sub
 
 Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
@@ -774,14 +788,14 @@ Private Sub m_Painter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, B
     'If we are currently using "no backbuffer" mode, just paint our backcolor to the DC
     If m_NoBackBufferMode Then
     
-        Dim backgroundColor As Long
+        Dim BackgroundColor As Long
         If m_BackColor = -1 Then
-            backgroundColor = m_Colors.RetrieveColor(UCS_Background)
+            BackgroundColor = m_Colors.RetrieveColor(UCS_Background)
         Else
-            backgroundColor = m_BackColor
+            BackgroundColor = m_BackColor
         End If
         
-        Drawing.FillRectToDC targetDC, winLeft, winTop, winWidth, winHeight, backgroundColor
+        Drawing.FillRectToDC targetDC, winLeft, winTop, winWidth, winHeight, BackgroundColor
     
     'If backbuffering is active (as it is with most PD controls), copy the relevant portion of the buffer into place.
     Else
@@ -894,20 +908,20 @@ Public Function IsMouseInside() As Boolean
     IsMouseInside = m_MouseInsideUC
 End Function
 
-Public Function isMouseButtonDown(ByVal Button As PDMouseButtonConstants) As Boolean
-    isMouseButtonDown = CBool((Button And m_MouseButtonState) <> 0)
+Public Function IsMouseButtonDown(ByVal Button As PDMouseButtonConstants) As Boolean
+    IsMouseButtonDown = CBool((Button And m_MouseButtonState) <> 0)
 End Function
 
 Public Sub RequestCursor(Optional ByVal standardCursorType As SystemCursorConstant = IDC_DEFAULT)
-    m_MouseEvents.setSystemCursor standardCursorType
+    m_MouseEvents.SetSystemCursor standardCursorType
 End Sub
 
 Public Sub RequestCursor_PNG(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
-    m_MouseEvents.setPNGCursor pngResourceName, cursorHotspotX, cursorHotspotY
+    m_MouseEvents.SetPNGCursor pngResourceName, cursorHotspotX, cursorHotspotY
 End Sub
 
 Public Sub RequestMousePosition(ByVal mouseX As Double, ByVal mouseY As Double)
-    m_MouseEvents.moveCursorToNewPosition mouseX, mouseY
+    m_MouseEvents.MoveCursorToNewPosition mouseX, mouseY
 End Sub
 
 'Want a new control size?  No problem.  Request a resize here.  Missing width/height parameters will be set to match the

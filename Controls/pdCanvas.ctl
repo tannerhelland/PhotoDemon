@@ -46,8 +46,8 @@ Begin VB.UserControl pdCanvas
       Top             =   600
       Visible         =   0   'False
       Width           =   990
-      _extentx        =   1746
-      _extenty        =   1746
+      _ExtentX        =   1746
+      _ExtentY        =   1746
    End
    Begin PhotoDemon.pdStatusBar StatusBar 
       Height          =   345
@@ -55,8 +55,8 @@ Begin VB.UserControl pdCanvas
       TabIndex        =   5
       Top             =   7350
       Width           =   13290
-      _extentx        =   23442
-      _extenty        =   609
+      _ExtentX        =   23442
+      _ExtentY        =   609
    End
    Begin PhotoDemon.pdCanvasView CanvasView 
       Height          =   4935
@@ -64,8 +64,8 @@ Begin VB.UserControl pdCanvas
       TabIndex        =   4
       Top             =   600
       Width           =   4575
-      _extentx        =   8281
-      _extenty        =   8916
+      _ExtentX        =   8281
+      _ExtentY        =   8916
    End
    Begin PhotoDemon.pdButtonToolbox cmdCenter 
       Height          =   255
@@ -74,11 +74,11 @@ Begin VB.UserControl pdCanvas
       Top             =   5640
       Visible         =   0   'False
       Width           =   255
-      _extentx        =   450
-      _extenty        =   450
-      autotoggle      =   -1  'True
-      backcolor       =   -2147483626
-      usecustombackcolor=   -1  'True
+      _ExtentX        =   450
+      _ExtentY        =   450
+      AutoToggle      =   -1  'True
+      BackColor       =   -2147483626
+      UseCustomBackColor=   -1  'True
    End
    Begin PhotoDemon.pdScrollBar hScroll 
       Height          =   255
@@ -87,10 +87,10 @@ Begin VB.UserControl pdCanvas
       Top             =   5640
       Visible         =   0   'False
       Width           =   4575
-      _extentx        =   8070
-      _extenty        =   450
-      orientationhorizontal=   -1  'True
-      visualstyle     =   1
+      _ExtentX        =   8070
+      _ExtentY        =   450
+      OrientationHorizontal=   -1  'True
+      VisualStyle     =   1
    End
    Begin PhotoDemon.pdScrollBar vScroll 
       Height          =   4935
@@ -99,9 +99,9 @@ Begin VB.UserControl pdCanvas
       Top             =   600
       Visible         =   0   'False
       Width           =   255
-      _extentx        =   450
-      _extenty        =   8705
-      visualstyle     =   1
+      _ExtentX        =   450
+      _ExtentY        =   8705
+      VisualStyle     =   1
    End
    Begin VB.Menu mnuImageTabsContext 
       Caption         =   "&Image"
@@ -184,6 +184,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
+' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
+Public Event GotFocusAPI()
+Public Event LostFocusAPI()
+
 Private Enum PD_MOUSEEVENT
     pMouseDown = 0
     pMouseMove = 1
@@ -250,6 +255,11 @@ End Enum
 #If False Then
     Private Const POP_SAVE = 0, POP_SAVE_COPY = 1, POP_SAVE_AS = 2, POP_REVERT = 3, POP_OPEN_IN_EXPLORER = 5, POP_CLOSE = 7, POP_CLOSE_OTHERS = 8
 #End If
+
+'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
+' but I've since attempted to wrap these into a single master control support class.
+Private WithEvents ucSupport As pdUCSupport
+Attribute ucSupport.VB_VarHelpID = -1
 
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
@@ -462,26 +472,64 @@ Public Property Get hWnd()
     hWnd = UserControl.hWnd
 End Property
 
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
+End Property
+
 'Note that this control does *not* return its own DC.  Instead, it returns the DC of the underlying CanvasView object.
 ' This is by design.
 Public Property Get hDC()
     hDC = CanvasView.hDC
 End Property
 
+'To support high-DPI settings properly, we expose specialized move+size functions
+Public Function GetLeft() As Long
+    GetLeft = ucSupport.GetControlLeft
+End Function
+
+Public Sub SetLeft(ByVal newLeft As Long)
+    ucSupport.RequestNewPosition newLeft, , True
+End Sub
+
+Public Function GetTop() As Long
+    GetTop = ucSupport.GetControlTop
+End Function
+
+Public Sub SetTop(ByVal newTop As Long)
+    ucSupport.RequestNewPosition , newTop, True
+End Sub
+
+Public Function GetWidth() As Long
+    GetWidth = ucSupport.GetControlWidth
+End Function
+
+Public Sub SetWidth(ByVal newWidth As Long)
+    ucSupport.RequestNewSize newWidth, , True
+End Sub
+
+Public Function GetHeight() As Long
+    GetHeight = ucSupport.GetControlHeight
+End Function
+
+Public Sub SetHeight(ByVal newHeight As Long)
+    ucSupport.RequestNewSize , newHeight, True
+End Sub
+
+Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
+    ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
+End Sub
+
+'When the control receives focus, if the focus isn't received via mouse click, display a focus rect around the active button
+Private Sub ucSupport_GotFocusAPI()
+    RaiseEvent GotFocusAPI
+End Sub
+
+'When the control loses focus, erase any focus rects it may have active
+Private Sub ucSupport_LostFocusAPI()
+    RaiseEvent LostFocusAPI
+End Sub
+
 'TODO: why is this exposed externally?
-Public Sub EnableZoomIn(ByVal isEnabled As Boolean)
-    'cmdZoomIn.Enabled = isEnabled
-End Sub
-
-Public Sub EnableZoomOut(ByVal isEnabled As Boolean)
-    'cmdZoomOut.Enabled = isEnabled
-End Sub
-
-Public Sub EnableZoomFit(ByVal isEnabled As Boolean)
-    'cmdZoomFit.Enabled = isEnabled
-    'cmdZoomFit.Value = (cmbZoom.ListIndex = g_Zoom.getZoomFitAllIndex)
-End Sub
-
 Public Function GetZoomDropDownReference() As pdDropDown
     Set GetZoomDropDownReference = StatusBar.GetZoomDropDownReference
 End Function
@@ -1689,7 +1737,15 @@ Private Sub mnuTabstripPopup_Click(Index As Integer)
 
 End Sub
 
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    AlignCanvasView
+End Sub
+
 Private Sub UserControl_Initialize()
+    
+    'Initialize a master user control support class
+    Set ucSupport = New pdUCSupport
+    ucSupport.RegisterControl UserControl.hWnd, , True
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -1733,13 +1789,6 @@ Private Sub HScroll_Scroll(ByVal eventIsCritical As Boolean)
         RelayViewportChanges
         
     End If
-    
-End Sub
-
-Private Sub UserControl_Resize()
-
-    'Align the canvas picture box to fill the available area
-    AlignCanvasView
     
 End Sub
 
@@ -1832,8 +1881,8 @@ Public Sub AlignCanvasView()
     
     'TODO: retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
-    bWidth = UserControl.ScaleWidth
-    bHeight = UserControl.ScaleHeight
+    bWidth = ucSupport.GetControlWidth
+    bHeight = ucSupport.GetControlHeight
     
     'Using the DPI-aware measurements, construct a rect that defines the entire available control area
     Dim ucRect As RECTF
@@ -1918,6 +1967,15 @@ Public Sub AlignCanvasView()
     
     m_InternalResize = False
     
+End Sub
+
+'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
+Private Sub UserControl_Paint()
+    If Not g_IsProgramRunning Then ucSupport.RequestIDERepaint UserControl.hDC
+End Sub
+
+Private Sub UserControl_Resize()
+    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_Show()
@@ -2285,6 +2343,7 @@ Public Sub UpdateAgainstCurrentTheme()
     Me.SetRedrawSuspension True
     
     UpdateColorList
+    ucSupport.SetCustomBackColor m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
     UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
     CanvasView.UpdateAgainstCurrentTheme
     StatusBar.UpdateAgainstCurrentTheme

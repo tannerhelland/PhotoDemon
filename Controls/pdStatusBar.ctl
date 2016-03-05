@@ -502,6 +502,7 @@ Public Sub ReflowStatusBar(ByVal enabledState As Boolean)
         
         'After the "image size" icon comes the actual image size label.  Its position is determined by the image resize button width,
         ' plus a 4px buffer on either size (contingent on DPI)
+        If Not lblImgSize.Visible Then lblImgSize.Visible = True
         lblImgSize.SetLeft cmdImgSize.GetLeft + cmdImgSize.GetWidth + FixDPI(4)
         
         'The image size label is autosized.  Move the "size unit" combo box next to it, and the next vertical line
@@ -512,6 +513,7 @@ Public Sub ReflowStatusBar(ByVal enabledState As Boolean)
         m_LinePositions(1) = cmbSizeUnit.GetLeft + cmbSizeUnit.GetWidth + FixDPI(10)
         
         'After the "image size" panel and separator comes mouse coordinates.  The basic steps from above are repeated.
+        If Not lblCoordinates.Visible Then lblCoordinates.Visible = True
         lblCoordinates.SetLeft m_LinePositions(1) + FixDPI(14) + FixDPI(16)
         
         m_LinePositions(2) = lblCoordinates.GetLeft + lblCoordinates.GetWidth + FixDPI(10)
@@ -523,7 +525,10 @@ Public Sub ReflowStatusBar(ByVal enabledState As Boolean)
         cmdZoomOut.Visible = False
         cmbZoom.Visible = False
         cmdImgSize.Visible = False
+        lblImgSize.Visible = False
         cmbSizeUnit.Visible = False
+        lblCoordinates.Visible = False
+        lblMessages.Caption = ""
     End If
     
     'We only establish positions up to the mouse coordinate label.  All items *past* that point are positioned by
@@ -553,7 +558,7 @@ Public Sub FitMessageArea()
     If newMessageArea < 0 Then
         lblMessages.Visible = False
     Else
-        If lblMessages.GetWidth <> newMessageArea Then lblMessages.SetWidth newMessageArea
+        If (lblMessages.GetWidth <> newMessageArea) Then lblMessages.SetWidth newMessageArea
         lblMessages.Visible = True
     End If
     
