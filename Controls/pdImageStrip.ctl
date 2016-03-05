@@ -392,8 +392,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
                 weAreResponsibleForResize = True
                 ReleaseCapture
                 SendMessage Me.hWnd, WM_NCLBUTTONDOWN, hitCode, ByVal 0&
-                'TODO: add glue code for catching the "end of resize" mode, so we can recapture the mouse and all that
-                '       good stuff.
+                RaiseEvent PositionChanged
                 
             End If
         
@@ -900,6 +899,24 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     End With
 End Sub
 
+Public Sub ReadUserPreferences()
+
+    'Constraining size is settable by the user
+    Dim cSize As Long
+    cSize = g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Size", Me.ConstrainingSize)
+    
+    If m_VerticalLayout Then
+        If ucSupport.GetControlWidth <> cSize Then Me.SetWidth cSize
+    Else
+        If ucSupport.GetControlHeight <> cSize Then Me.SetHeight cSize
+    End If
+    
+End Sub
+
+Public Sub WriteUserPreferences()
+    g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Size", Me.ConstrainingSize
+End Sub
+
 Private Sub LoadImageStripIcons()
 
     'Retrieve the unsaved image notification icon from the resource file
@@ -1160,8 +1177,6 @@ End Sub
 'When the control's size is changed in some way, call this function to perform some internal maintenance tasks,
 ' and raise an event our parent can deal with.
 Public Sub UpdateAgainstTabstripPreferences()
-    
-    'Determine our visibility, based on the current user preference.
     
     RaiseEvent PositionChanged
     

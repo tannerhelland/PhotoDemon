@@ -430,7 +430,7 @@ Public Sub LoadTheProgram()
     #End If
     
     'Retrieve two additional settings for the image tabstrip menu: when to display it, and its alignment
-    ToggleImageTabstripVisibility g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1), True, True
+    ToggleImageTabstripVisibility g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1), True
     ToggleImageTabstripAlignment g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Alignment", vbAlignTop), True, True
     
     'The primary toolbox has some options of its own.  Load them now.
@@ -493,6 +493,9 @@ Public Sub LoadTheProgram()
     'Throughout the program, g_MouseAccuracy is used to determine how close the mouse cursor must be to a point of interest to
     ' consider it "over" that point.  DPI must be accounted for when calculating this value (as it's calculated in pixels).
     g_MouseAccuracy = FixDPIFloat(6)
+    
+    'Allow main form components to load any control-specific preferences they may utilize
+    FormMain.mainCanvas(0).ReadUserPreferences
     
     'Apply visual styles
     FormMain.UpdateAgainstCurrentTheme False

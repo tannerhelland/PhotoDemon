@@ -1138,7 +1138,7 @@ End Sub
 
 'The image tabstrip can set to appear under a variety of circumstances.  Use this sub to change the current setting; it will
 ' automatically handle syncing with the preferences file.
-Public Sub ToggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVal suppressInterfaceSync As Boolean = False, Optional ByVal suppressPrefUpdate As Boolean = False)
+Public Sub ToggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVal suppressPrefUpdate As Boolean = False)
 
     'Start by synchronizing menu checkmarks to the selected option
     Dim i As Long
@@ -1150,27 +1150,9 @@ Public Sub ToggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVa
         End If
     Next i
 
-    'Write the matching preference out to file
+    'Write the matching preference out to file, then notify the primary canvas of the change
     If (Not suppressPrefUpdate) Then g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Visibility", newSetting
-    
-    If (Not suppressInterfaceSync) Then
-    
-        'Refresh the current image viewport (which may be positioned differently due to the tabstrip moving)
-        FormMain.RefreshAllCanvases
-    
-        'Synchronize the interface to match; note that this will handle showing/hiding the tabstrip based on the number of
-        ' currently open images.
-        SyncInterfaceToCurrentImage
-        
-    End If
-    
-    'If images are loaded, we may need to redraw their viewports because the available client area may have changed.
-    If (g_NumOfImagesLoaded > 0) Then
-        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    End If
-    
-    'NEW VERSION: we don't need to modify all these things; instead, just notify the canvas of this change
-    If (Not suppressInterfaceSync) Then FormMain.mainCanvas(0).NotifyImageStripVisibilityMode newSetting
+    FormMain.mainCanvas(0).NotifyImageStripVisibilityMode newSetting
 
 End Sub
 

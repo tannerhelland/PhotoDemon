@@ -1752,20 +1752,16 @@ Private Function ShouldImageStripBeVisible() As Boolean
     
     ShouldImageStripBeVisible = False
     
-    Select Case ImageStrip.VisibilityMode
+    'User preference = "Always visible"
+    If ImageStrip.VisibilityMode = 0 Then
+        If g_OpenImageCount > 0 Then ShouldImageStripBeVisible = True
     
-        'Always visible
-        Case 0
-            If g_OpenImageCount > 0 Then ShouldImageStripBeVisible = True
+    'User preference = "Visible if 2+ images loaded"
+    ElseIf ImageStrip.VisibilityMode = 1 Then
+        If g_OpenImageCount > 1 Then ShouldImageStripBeVisible = True
         
-        'Visible if 2+ images loaded
-        Case 1
-            If g_OpenImageCount > 1 Then ShouldImageStripBeVisible = True
-        
-        'Never visible
-        Case 2
-    
-    End Select
+    'User preference = "Never visible"
+    End If
     
 End Function
 
@@ -1948,6 +1944,15 @@ CanvasShowError:
     
     Exit Sub
 
+End Sub
+
+'At present, the only component of the canvas that saves preferences is the image tabstrip
+Public Sub ReadUserPreferences()
+    ImageStrip.ReadUserPreferences
+End Sub
+
+Public Sub WriteUserPreferences()
+    ImageStrip.WriteUserPreferences
 End Sub
 
 Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
@@ -2268,7 +2273,7 @@ End Sub
 ' and/or retranslating all button captions against the current language.
 Public Sub UpdateAgainstCurrentTheme()
     
-    Debug.Print "(the primary canvas is retheming itself - how many times is this occurring in a given session??)"
+    Debug.Print "(the primary canvas is retheming itself - watch for excessive invocations!)"
     
     'Suspend redraws until all theme updates are complete
     Me.SetRedrawSuspension True
