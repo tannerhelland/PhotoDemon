@@ -141,6 +141,7 @@ Public Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Long, ByVal 
 ' means the inside edge type can change; we thus have to support all edge types in order to interact with SendMessage
 ' regardless of tabstrip alignment.)
 Public Const WM_NCLBUTTONDOWN As Long = &HA1
+Public Const WM_NCLBUTTONUP As Long = &HA2
 Public Const HTLEFT As Long = 10
 Public Const HTTOP As Long = 12
 Public Const HTRIGHT As Long = 11

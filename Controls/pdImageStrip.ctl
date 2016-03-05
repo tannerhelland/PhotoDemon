@@ -396,8 +396,12 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
                 
                 'Initiate resizing, and set a form-level marker so that other functions know we're responsible for any resize-related events
                 weAreResponsibleForResize = True
-                ReleaseCapture
+                ucSupport.NotifyMouseDragResize_Start
                 SendMessage Me.hWnd, WM_NCLBUTTONDOWN, hitCode, ByVal 0&
+                
+                'After the drag operation is complete, the code will resume right here
+                ucSupport.NotifyMouseDragResize_End
+                m_MouseDown = False
                 RaiseEvent PositionChanged
                 
             End If
