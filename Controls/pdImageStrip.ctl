@@ -168,15 +168,21 @@ End Property
 
 Public Property Let Alignment(ByVal newAlignment As AlignConstants)
     
-    If newAlignment = vbAlignNone Then newAlignment = vbAlignTop
+    'When switching between horizontal and vertical layouts, we need to adjust our size to match.
+    Dim prevVerticalLayout As Boolean, prevConstrainingSize As Long
+    prevVerticalLayout = m_VerticalLayout
+    prevConstrainingSize = Me.ConstrainingSize
     
-    If (newAlignment = vbAlignLeft) Or (newAlignment = vbAlignRight) Then
-        m_VerticalLayout = True
-    Else
-        m_VerticalLayout = False
+    'From the new alignment setting, determine whether we are in horizontal or vertical mode
+    If newAlignment = vbAlignNone Then newAlignment = vbAlignTop
+    m_VerticalLayout = CBool((newAlignment = vbAlignLeft) Or (newAlignment = vbAlignRight))
+    
+    'If we've just switched between horizontal and vertical modes, resize the control to reflect our current height
+    If (prevVerticalLayout <> m_VerticalLayout) Then
+        ucSupport.RequestNewSize prevConstrainingSize, prevConstrainingSize, True
     End If
     
-    If m_Alignment <> newAlignment Then
+    If (m_Alignment <> newAlignment) Or (prevVerticalLayout <> m_VerticalLayout) Then
         m_Alignment = newAlignment
         UpdateControlLayout
         UpdateAgainstTabstripPreferences
@@ -372,7 +378,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
                 'Figure out which resize message to send to Windows; this varies by tabstrip orientation (obviously)
                 Dim hitCode As Long
     
-                Select Case g_WindowManager.GetImageTabstripAlignment
+                Select Case Me.Alignment
                 
                     Case vbAlignLeft
                         hitCode = HTRIGHT
@@ -710,7 +716,7 @@ Private Function IsMouseOverResizeBorder(ByVal mouseX As Single, ByVal mouseY As
     Dim resizeBorderAllowance As Long
     resizeBorderAllowance = FixDPI(5)
     
-    Select Case g_WindowManager.GetImageTabstripAlignment
+    Select Case Me.Alignment
     
         Case vbAlignLeft
             If (mouseY > 0) And (mouseY < ucSupport.GetControlHeight) And (mouseX > ucSupport.GetControlWidth - resizeBorderAllowance) Then IsMouseOverResizeBorder = True
@@ -963,8 +969,8 @@ Private Sub UpdateControlLayout()
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
-    bWidth = ucSupport.GetBackBufferWidth
-    bHeight = ucSupport.GetBackBufferHeight
+    bWidth = ucSupport.GetControlWidth
+    bHeight = ucSupport.GetControlHeight
     
     'Detect alignment changes (if any)
     If g_IsProgramRunning Then
@@ -1002,10 +1008,6 @@ Private Sub UpdateControlLayout()
     'Redraw the toolbar
     RedrawBackBuffer
     
-    'Notify the window manager that the tab strip has been resized; it will resize image windows to match
-    'If Not weAreResponsibleForResize Then
-    'If g_IsProgramRunning And Not (g_WindowManager Is Nothing) Then g_WindowManager.NotifyImageTabStripResized
-    
 End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
@@ -1019,9 +1021,9 @@ Private Sub RedrawBackBuffer()
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long, bufferDC As Long
+    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDIS_Background, Me.Enabled))
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
-    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDIS_Background, Me.Enabled))
     
     If g_IsProgramRunning And (m_NumOfThumbs > 0) Then
         
@@ -1068,11 +1070,11 @@ Private Sub RedrawBackBuffer()
             'Fill in the rest of this thumbnail's rect
             If m_VerticalLayout Then
                 thumbRect.Top = (i * m_ThumbHeight) - m_ScrollValue
-                If g_WindowManager.GetImageTabstripAlignment = vbAlignLeft Then thumbRect.Left = 0 Else thumbRect.Left = 2
+                If Me.Alignment = vbAlignLeft Then thumbRect.Left = 0 Else thumbRect.Left = 2
                 If ((thumbRect.Top + thumbRect.Height) >= 0) And (thumbRect.Top <= bHeight) Then tabVisible = True
             Else
                 thumbRect.Left = (i * m_ThumbWidth) - m_ScrollValue
-                If g_WindowManager.GetImageTabstripAlignment = vbAlignTop Then thumbRect.Top = 0 Else thumbRect.Top = 2
+                If Me.Alignment = vbAlignTop Then thumbRect.Top = 0 Else thumbRect.Top = 2
                 If ((thumbRect.Left + thumbRect.Width) >= 0) And (thumbRect.Left <= bWidth) Then tabVisible = True
             End If
             
@@ -1084,7 +1086,7 @@ Private Sub RedrawBackBuffer()
         Dim separatorColor As Long
         separatorColor = m_Colors.RetrieveColor(PDIS_Separator, Me.Enabled)
         
-        Select Case g_WindowManager.GetImageTabstripAlignment
+        Select Case Me.Alignment
         
             Case vbAlignLeft
                 GDIPlusDrawLineToDC bufferDC, bWidth - 1, 0, bWidth - 1, bHeight, separatorColor, 255, 2, False

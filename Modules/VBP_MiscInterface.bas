@@ -1084,55 +1084,28 @@ Public Function GetKeyboardRepeatRate() As Double
     
 End Function
 
-Public Sub ToggleImageTabstripAlignment(ByVal newAlignment As AlignConstants, Optional ByVal suppressInterfaceSync As Boolean = False, Optional ByVal suppressPrefUpdate As Boolean = False)
+Public Sub ToggleImageTabstripAlignment(ByVal newAlignment As AlignConstants, Optional ByVal suppressPrefUpdate As Boolean = False)
     
     'Reset the menu checkmarks
     Dim curMenuIndex As Long
-    
-    Select Case newAlignment
-    
-        Case vbAlignLeft
-            curMenuIndex = 4
-        
-        Case vbAlignTop
-            curMenuIndex = 5
-        
-        Case vbAlignRight
-            curMenuIndex = 6
-        
-        Case vbAlignBottom
-            curMenuIndex = 7
-        
-    End Select
+    If (newAlignment = vbAlignLeft) Then
+        curMenuIndex = 4
+    ElseIf (newAlignment = vbAlignTop) Then
+        curMenuIndex = 5
+    ElseIf (newAlignment = vbAlignRight) Then
+        curMenuIndex = 6
+    ElseIf (newAlignment = vbAlignBottom) Then
+        curMenuIndex = 7
+    End If
     
     Dim i As Long
     For i = 4 To 7
-        If i = curMenuIndex Then
-            FormMain.MnuWindowTabstrip(i).Checked = True
-        Else
-            FormMain.MnuWindowTabstrip(i).Checked = False
-        End If
+        FormMain.MnuWindowTabstrip(i).Checked = CBool(i = curMenuIndex)
     Next i
     
-    'Write the preference out to file.
-    If Not suppressPrefUpdate Then g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Alignment", CLng(newAlignment)
-    
-    'Notify the window manager of the change
-    g_WindowManager.SetImageTabstripAlignment newAlignment
-    
-    If Not suppressInterfaceSync Then
-    
-        '...and force the tabstrip to redraw itself (which it may not if the tabstrip's size hasn't changed, e.g. if Left and Right layout is toggled)
-        ' TODO 7.0: now that the tabstrip lives on the canvas, this line should no longer be necessary
-        'Interface.RequestTabstripRedraw
-        
-        'NEW VERSION: we don't need to modify all these things; instead, just notify the canvas of this change
-        If (Not suppressInterfaceSync) Then FormMain.mainCanvas(0).NotifyImageStripAlignment newAlignment
-        
-        'Refresh the current image viewport (which may be positioned differently due to the tabstrip moving)
-        'FormMain.RefreshAllCanvases
-        
-    End If
+    'Write the preference out to file, then notify the canvas of the change
+    If (Not suppressPrefUpdate) Then g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Alignment", CLng(newAlignment)
+    FormMain.mainCanvas(0).NotifyImageStripAlignment newAlignment
     
 End Sub
 
