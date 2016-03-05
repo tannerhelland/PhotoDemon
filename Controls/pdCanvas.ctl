@@ -24,37 +24,9 @@ Begin VB.UserControl pdCanvas
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   886
    ToolboxBitmap   =   "pdCanvas.ctx":0000
-   Begin PhotoDemon.pdImageStrip ImageStrip 
-      Height          =   990
-      Left            =   6240
-      TabIndex        =   6
-      Top             =   600
-      Visible         =   0   'False
-      Width           =   990
-      _ExtentX        =   1746
-      _ExtentY        =   1746
-   End
-   Begin PhotoDemon.pdStatusBar StatusBar 
-      Height          =   345
-      Left            =   0
-      TabIndex        =   5
-      Top             =   7350
-      Width           =   13290
-      _ExtentX        =   23442
-      _ExtentY        =   609
-   End
-   Begin PhotoDemon.pdCanvasView CanvasView 
-      Height          =   4935
-      Left            =   360
-      TabIndex        =   4
-      Top             =   600
-      Width           =   4575
-      _ExtentX        =   8281
-      _ExtentY        =   8916
-   End
    Begin VB.PictureBox picProgressBar 
-      Align           =   2  'Align Bottom
       Appearance      =   0  'Flat
+      BackColor       =   &H00E0E0E0&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   255
@@ -63,9 +35,37 @@ Begin VB.UserControl pdCanvas
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   886
       TabIndex        =   0
-      Top             =   7440
+      Top             =   6975
       Visible         =   0   'False
       Width           =   13290
+   End
+   Begin PhotoDemon.pdImageStrip ImageStrip 
+      Height          =   990
+      Left            =   6240
+      TabIndex        =   6
+      Top             =   600
+      Visible         =   0   'False
+      Width           =   990
+      _extentx        =   1746
+      _extenty        =   1746
+   End
+   Begin PhotoDemon.pdStatusBar StatusBar 
+      Height          =   345
+      Left            =   0
+      TabIndex        =   5
+      Top             =   7350
+      Width           =   13290
+      _extentx        =   23442
+      _extenty        =   609
+   End
+   Begin PhotoDemon.pdCanvasView CanvasView 
+      Height          =   4935
+      Left            =   360
+      TabIndex        =   4
+      Top             =   600
+      Width           =   4575
+      _extentx        =   8281
+      _extenty        =   8916
    End
    Begin PhotoDemon.pdButtonToolbox cmdCenter 
       Height          =   255
@@ -74,11 +74,11 @@ Begin VB.UserControl pdCanvas
       Top             =   5640
       Visible         =   0   'False
       Width           =   255
-      _ExtentX        =   450
-      _ExtentY        =   450
-      AutoToggle      =   -1  'True
-      BackColor       =   -2147483626
-      UseCustomBackColor=   -1  'True
+      _extentx        =   450
+      _extenty        =   450
+      autotoggle      =   -1  'True
+      backcolor       =   -2147483626
+      usecustombackcolor=   -1  'True
    End
    Begin PhotoDemon.pdScrollBar hScroll 
       Height          =   255
@@ -87,10 +87,10 @@ Begin VB.UserControl pdCanvas
       Top             =   5640
       Visible         =   0   'False
       Width           =   4575
-      _ExtentX        =   8070
-      _ExtentY        =   450
-      OrientationHorizontal=   -1  'True
-      VisualStyle     =   1
+      _extentx        =   8070
+      _extenty        =   450
+      orientationhorizontal=   -1  'True
+      visualstyle     =   1
    End
    Begin PhotoDemon.pdScrollBar vScroll 
       Height          =   4935
@@ -99,9 +99,9 @@ Begin VB.UserControl pdCanvas
       Top             =   600
       Visible         =   0   'False
       Width           =   255
-      _ExtentX        =   450
-      _ExtentY        =   8705
-      VisualStyle     =   1
+      _extentx        =   450
+      _extenty        =   8705
+      visualstyle     =   1
    End
    Begin VB.Menu mnuImageTabsContext 
       Caption         =   "&Image"
@@ -1901,6 +1901,12 @@ Public Sub AlignCanvasView()
     '...Followed by the status bar
     With statusBarRect
         StatusBar.SetPositionAndSize .Left, .Top, .Width, .Height
+    End With
+    
+    '...and the progress bar placeholder.  (Note that it doesn't need a special rect - we always just position it
+    ' above the status bar.)
+    With statusBarRect
+        picProgressBar.Move .Left, .Top - picProgressBar.Height, .Width, picProgressBar.Height
     End With
     
     '...And finally, the image tabstrip (as relevant)
