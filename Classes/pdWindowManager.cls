@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Manager class
 'Copyright 2013-2016 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 20/September/15
-'Last update: start purging this class of "floating window" code.  It's time to simplify PD, and this class is more overdue than most.
+'Last updated: 05/March/06
+'Last update: purge all image tabstrip code, as it's now handled by pdCanvas and pdImageStrip
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
 ' 2013, it became time to rewrite its window method once again - this time, to a tabbed interface in line with the major
@@ -189,31 +189,30 @@ Private Type pdWindowData
     minimumHeight As Long
     offsetX As Long
     offsetY As Long
-    optionalToolbarType As pdToolbarType
+    optionalToolbarType As PDToolbarType
     originalWidthClient As Long
     originalHeightClient As Long
     originalWidthFull As Long
     originalHeightFull As Long
-    previousRenderStyle As renderedBorderStyle
+    previousRenderStyle As RenderedBorderStyle
     subclassingReleased As Boolean
-    typeOfWindow As pdWindowType
+    typeOfWindow As PDWindowType
     windowName As String
 End Type
 
 'This class tracks a lot of different window types.  Each gets special treatment, so we track their type as follows:
-Public Enum pdWindowType
+Public Enum PDWindowType
     MAIN_WINDOW = 0
     TOOLBAR_WINDOW = 1
     IMAGE_WINDOW = 2
-    IMAGE_TABSTRIP = 3
-    GENERIC_FLOATING_WINDOW = 4
+    GENERIC_FLOATING_WINDOW = 3
 End Enum
 
 #If False Then
-    Private Const MAIN_WINDOW = 0, TOOLBAR_WINDOW = 1, IMAGE_WINDOW = 2, IMAGE_TABSTRIP = 3, GENERIC_FLOATING_WINDOW = 4
+    Private Const MAIN_WINDOW = 0, TOOLBAR_WINDOW = 1, IMAGE_WINDOW = 2, GENERIC_FLOATING_WINDOW = 3
 #End If
 
-Public Enum pdToolbarType
+Public Enum PDToolbarType
     NOT_A_TOOLBAR = 0
     FILE_TOOLBOX = 1
     LAYER_TOOLBOX = 2
@@ -227,7 +226,7 @@ End Enum
     Private Const NOT_A_TOOLBAR = 0, FILE_TOOLBOX = 1, LAYER_TOOLBOX = 2, TOOLS_TOOLBOX = 3, DEBUG_TOOLBOX = 4
 #End If
 
-Private Enum renderedBorderStyle
+Private Enum RenderedBorderStyle
     NO_STYLE = 0
     DOCK_STYLE = 2
 End Enum
@@ -237,7 +236,7 @@ End Enum
 #End If
 
 'When a window is being resized, it is helpful to know which edge is being resized.  Windows uses the following system, which we mimic:
-Private Enum winResizeEdge
+Private Enum WinResizeEdge
     WMSZ_LEFT = 1
     WMSZ_RIGHT = 2
     WMSZ_TOP = 3
@@ -253,7 +252,7 @@ End Enum
 #End If
 
 'These constants can be used as the second parameter of the ShowWindow API function
-Private Enum showWindowOptions
+Private Enum ShowWindowOptions
     SW_HIDE = 0
     SW_SHOWNORMAL = 1
     SW_SHOWMINIMIZED = 2
@@ -283,7 +282,7 @@ Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
-Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
+Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As ShowWindowOptions) As Long
 Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Long) As Long
 Private Declare Function LockSetForegroundWindow Lib "user32" (ByVal uLockCode As Long) As Long
 Private Const LSFW_LOCK As Long = 1
@@ -347,10 +346,6 @@ Private numOfPDWindows As Long
 'Primary window tracking; while the main window's data is stored just like the data for any other window, it is helpful to maintain dedicated
 ' links to its hWnd and position in the tracking array, to prevent us having to constantly search for it.
 Private mainWindowHwnd As Long, mainWindowIndex As Long
-
-'The custom image tabstrip is another specialized window that is internally tracked like any other, but because it has unique needs, it is
-' helpful to maintain a dedicated link to it.
-Private imageTabstripHwnd As Long, imageTabstripIndex As Long
 
 'When PD loses focus, we automatically revert all top-level toolbar windows to normal style.  When PD regains focus, we restore them as top-most.
 ' Activation/deactivation messages are received multiple times, but we only want to do activation/deactivation stuff once, so our current state
@@ -502,7 +497,6 @@ Public Sub ActivateToolPanel(ByVal formHwndToActivate As Long)
     
 End Sub
 
-'Counterpart to activateToolPanel, above
 Public Sub DeactivateToolPanel(ByVal programIsGoingDown As Boolean, Optional ByVal useCustomHwnd As Long = 0)
     
     'By default, this function will automatically apply the new settings to the last tool options panel it created.
@@ -535,101 +529,10 @@ Public Sub DeactivateToolPanel(ByVal programIsGoingDown As Boolean, Optional ByV
     
 End Sub
 
-'Retrieve the current tabstrip alignment
-Public Function GetImageTabstripAlignment() As AlignConstants
-
-    With pdWindows(imageTabstripIndex).alignmentOptions
-    
-        If .alignLeft Then GetImageTabstripAlignment = vbAlignLeft
-        If .alignTop Then GetImageTabstripAlignment = vbAlignTop
-        If .alignRight Then GetImageTabstripAlignment = vbAlignRight
-        If .alignBottom Then GetImageTabstripAlignment = vbAlignBottom
-    
-    End With
-
-End Function
-
-'When the user changes the image tabstrip's alignment, this function must be called.  It will make all necessary adjustments
-' inside the window manager and automatically reposition the tabstrip.
-Public Sub SetImageTabstripAlignment(ByVal newAlignment As AlignConstants)
-
-    'Make a copy of the current alignment
-    Dim prevAlign As pdWindowAlignment
-    prevAlign = pdWindows(imageTabstripIndex).alignmentOptions
-    
-    'Reset all current alignment values to FALSE
-    With pdWindows(imageTabstripIndex)
-    
-        .alignmentOptions.alignLeft = False
-        .alignmentOptions.alignTop = False
-        .alignmentOptions.alignRight = False
-        .alignmentOptions.alignBottom = False
-        
-        Select Case newAlignment
-        
-            Case vbAlignTop
-                .alignmentOptions.alignTop = True
-            
-            Case vbAlignBottom
-                .alignmentOptions.alignBottom = True
-            
-            Case vbAlignLeft
-                .alignmentOptions.alignLeft = True
-            
-            Case vbAlignRight
-                .alignmentOptions.alignRight = True
-            
-        End Select
-    
-    End With
-    
-    'If we are changing from a vertical to horizontal alignment (or vice-versa), the window dimensions need to be swapped.
-    Dim curRect As winRect
-    GetWindowRect imageTabstripHwnd, curRect
-    
-    Select Case newAlignment
-    
-        'Check for left/right alignment changing to top/bottom alignment
-        Case vbAlignTop, vbAlignBottom
-            If prevAlign.alignLeft Or prevAlign.alignRight Then
-                SetWindowPos imageTabstripHwnd, 0, curRect.x1, curRect.y1, curRect.x2 - curRect.x1, curRect.x2 - curRect.x1, SWP_NOREDRAW Or SWP_NOACTIVATE Or SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOSENDCHANGING
-            Else
-                SetWindowPos imageTabstripHwnd, 0, curRect.x1, curRect.y1, curRect.y2 - curRect.y1, curRect.y2 - curRect.y1, SWP_NOREDRAW Or SWP_NOACTIVATE Or SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOSENDCHANGING
-            End If
-            
-        'Check for top/bottom alignment changing to left/right alignment
-        Case vbAlignLeft, vbAlignRight
-            If prevAlign.alignTop Or prevAlign.alignBottom Then
-                SetWindowPos imageTabstripHwnd, 0, curRect.x1, curRect.y1, curRect.y2 - curRect.y1, curRect.y2 - curRect.y1, SWP_NOREDRAW Or SWP_NOACTIVATE Or SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOSENDCHANGING
-            Else
-                SetWindowPos imageTabstripHwnd, 0, curRect.x1, curRect.y1, curRect.x2 - curRect.x1, curRect.x2 - curRect.x1, SWP_NOREDRAW Or SWP_NOACTIVATE Or SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOSENDCHANGING
-            End If
-    
-    End Select
-    
-    'Request a redraw of the window, which will handle any additional resizing of the tabstrip
-    Dim curMainFormRect As winRect
-    GetWindowRect pdWindows(mainWindowIndex).hWnd, curMainFormRect
-    
-    RequestWindowRedraw imageTabstripIndex, curMainFormRect
-    
-    'Request a redraw of the main window; because it clips children, it needs to be notified of non-standard redraws like this to
-    ' avoid leftover artifacts along the tabstrip's borders.
-    RequestWindowRedraw mainWindowIndex, curMainFormRect
-    
-    'The available client area for the main form may have changed.  Refresh all relevant image windows.
-    Dim i As Long
-    For i = 0 To numOfPDWindows - 1
-        
-        If pdWindows(i).typeOfWindow <> MAIN_WINDOW Then UpdateWindowStyle i
-    
-    Next i
-
-End Sub
-
 'Toolbox windows can be hidden (but not unloaded!) via this sub.  It's important to note that toolbox windows should *not* be
 ' unloaded, because many aspects of PD interact with the toolboxes - for example, en/disabling buttons on the file toolbar as
-' necessary - and if the toolbox is unloaded, those statements will cause errors.
+' necessary - and if the toolbox is unloaded, those statements will either cause errors, or result in unintentional re-loading
+' of the underlying form.
 Public Sub SetWindowVisibility(ByVal winHwnd As Long, ByVal newVisibility As Boolean, Optional ByVal suppressImageRedraws As Boolean = False)
     
     'Find this entry in the windows array, and mark its visibility status
@@ -693,7 +596,7 @@ End Sub
 
 'Similar to the functions below, this sub can be used to retrieve a rect that contains (in *screen coordinates*) the position of the main
 ' form's "actual" client rect, by which I mean - the rect accounting for docked toolbars, as necessary.
-Friend Sub GetActualMainFormClientRect(ByRef modifiedRect As winRect, Optional ByVal ignoreTabstrip As Boolean = False, Optional ByVal useScreenCoordinates As Boolean = True)
+Friend Sub GetActualMainFormClientRect(ByRef modifiedRect As winRect, Optional ByVal useScreenCoordinates As Boolean = True)
 
     'Start by retrieving the main form's client rect, in screen coordinates as desired.
     Dim clientRect As winRect, toolbarRect As winRect
@@ -724,28 +627,6 @@ Friend Sub GetActualMainFormClientRect(ByRef modifiedRect As winRect, Optional B
             
         End If
     Next i
-        
-    'If the image tabstrip is visible, remove its size as well
-    If pdWindows(imageTabstripIndex).isVisible And (Not ignoreTabstrip) Then
-    
-        With pdWindows(imageTabstripIndex)
-        
-            If .alignmentOptions.alignLeft Then clientRect.x1 = clientRect.x1 + GetWindowWidth(.hWnd)
-            If .alignmentOptions.alignTop Then clientRect.y1 = clientRect.y1 + GetWindowHeight(.hWnd)
-            If .alignmentOptions.alignRight Then clientRect.x2 = clientRect.x2 - GetWindowWidth(.hWnd)
-            If .alignmentOptions.alignBottom Then clientRect.y2 = clientRect.y2 - GetWindowHeight(.hWnd)
-        
-        End With
-        
-    End If
-    
-    'Provide a 1px border around the client area
-    'NOTE: this has been removed as of 20 Dec 13, but I'm leaving the code as comments in case it ever becomes prudent
-    '      to reinstate the border.
-    'clientRect.x1 = clientRect.x1 + 1
-    'clientRect.x2 = clientRect.x2 - 1
-    'clientRect.y1 = clientRect.y1 + 1
-    'clientRect.y2 = clientRect.y2 - 1
     
     modifiedRect = clientRect
 
@@ -758,13 +639,6 @@ Public Function RequestActualMainFormClientWidth() As Long
     Dim clientRect As winRect
     GetClientRect mainWindowHwnd, clientRect
     RequestActualMainFormClientWidth = clientRect.x2 - clientRect.x1
-    
-    'If the image tabstrip is visible and left- or right-aligned, remove its width as well
-    If pdWindows(imageTabstripIndex).isVisible Then
-        If pdWindows(imageTabstripIndex).alignmentOptions.alignLeft Or pdWindows(imageTabstripIndex).alignmentOptions.alignRight Then
-            RequestActualMainFormClientWidth = RequestActualMainFormClientWidth - GetWindowWidth(pdWindows(imageTabstripIndex).hWnd)
-        End If
-    End If
     
     'We must also remove all docked toolbar widths from the client size.
     Dim toolbarRect As winRect
@@ -787,13 +661,6 @@ Public Function RequestActualMainFormClientHeight() As Long
     Dim clientRect As winRect
     GetClientRect mainWindowHwnd, clientRect
     RequestActualMainFormClientHeight = clientRect.y2
-    
-    'If the image tabstrip is visible and top- or bottom-aligned, remove its height as well
-    If pdWindows(imageTabstripIndex).isVisible Then
-        If pdWindows(imageTabstripIndex).alignmentOptions.alignTop Or pdWindows(imageTabstripIndex).alignmentOptions.alignBottom Then
-            RequestActualMainFormClientHeight = RequestActualMainFormClientHeight - GetWindowHeight(pdWindows(imageTabstripIndex).hWnd)
-        End If
-    End If
     
     'We must remove all docked horizontal toolbar heights from the client size.
     Dim toolbarRect As winRect
@@ -1044,34 +911,6 @@ Private Sub UpdateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
             'Force a full repaint (to make sure children controls are also repainted)
             ForceFullWindowRefresh winIndex
             
-        'Image tabstrip
-        Case IMAGE_TABSTRIP
-        
-            'Remove the window border
-            newWinStyle = WS_CHILD
-            If pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
-            SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
-            'SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_LAYERED
-            SetWindowPos pdWindows(winIndex).hWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED Or SWP_NOACTIVATE
-            
-            'Specify the main form as the tabstrip's parent
-            SetParent pdWindows(winIndex).hWnd, mainWindowHwnd
-            
-            'Force the window to properly align within the client area of the parent
-            GetActualMainFormClientRect childRect, True, False
-            
-            With pdWindows(winIndex)
-            
-                If .alignmentOptions.alignLeft Then MoveWindow .hWnd, childRect.x1, childRect.y1, GetWindowWidth(.hWnd), childRect.y2 - childRect.y1, 1 'IIf(.isVisible, 1, 0)
-                If .alignmentOptions.alignTop Then MoveWindow .hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, GetWindowHeight(.hWnd), 1 'IIf(.isVisible, 1, 0)
-                If .alignmentOptions.alignRight Then MoveWindow .hWnd, childRect.x2 - GetWindowWidth(.hWnd), childRect.y1, GetWindowWidth(.hWnd), childRect.y2 - childRect.y1, 1 'IIf(.isVisible, 1, 0)
-                If .alignmentOptions.alignBottom Then MoveWindow .hWnd, childRect.x1, childRect.y2 - GetWindowHeight(.hWnd), childRect.x2 - childRect.x1, GetWindowHeight(.hWnd), 1 'IIf(.isVisible, 1, 0)
-            
-            End With
-            
-            'Force a full repaint (to make sure children controls are also repainted)
-            If pdWindows(winIndex).isVisible Then ForceFullWindowRefresh winIndex
-            
     End Select
     
     'Finally, update this window's rect, and store its offset (so that the children windows will stay in their proper location)
@@ -1170,14 +1009,6 @@ Public Function RestoreWindowLocation(ByVal windowIndex As Long, ByVal preferred
             .formReference.BorderStyle = .lastWindowBorder
             .formReference.WindowState = .lastWindowState
             
-            'Alignment data is currently only used for the image tabstrip.  In the future, it may be enabled for other toolbars.
-            If .typeOfWindow = IMAGE_TABSTRIP Then
-                .alignmentOptions.alignLeft = CBool(xmlEngine.getUniqueTag_String("alignLeft", "False", , "windowEntry", "id", .windowName))
-                .alignmentOptions.alignTop = CBool(xmlEngine.getUniqueTag_String("alignTop", "True", , "windowEntry", "id", .windowName))
-                .alignmentOptions.alignRight = CBool(xmlEngine.getUniqueTag_String("alignRight", "False", , "windowEntry", "id", .windowName))
-                .alignmentOptions.alignBottom = CBool(xmlEngine.getUniqueTag_String("alignBottom", "False", , "windowEntry", "id", .windowName))
-            End If
-            
             'Make sure the location values will result in an on-screen form.  If they will not (for example, if the user detached a
             ' secondary monitor on which PhotoDemon was being used), change the values to ensure this window appears on-screen.
             
@@ -1216,13 +1047,7 @@ Public Function RestoreWindowLocation(ByVal windowIndex As Long, ByVal preferred
         
     'Window data was not found.  Move the window to a new location using the preferred location param.
     Else
-    
-        If pdWindows(windowIndex).typeOfWindow = IMAGE_TABSTRIP Then
-            pdWindows(windowIndex).alignmentOptions.alignTop = True
-        Else
-            RequestIdealPosition pdWindows(windowIndex).hWnd, preferredLocationIfNecessary
-        End If
-    
+        RequestIdealPosition pdWindows(windowIndex).hWnd, preferredLocationIfNecessary
     End If
 
 End Function
@@ -1460,7 +1285,7 @@ End Sub
 
 'Each child window must be registered through this class, using its hWnd.  This class will then use that hWnd to do things
 ' like move child windows proportionally to their parent.
-Public Sub RegisterChildForm(ByRef childForm As Form, ByVal whatWindowType As pdWindowType, Optional ByVal preferredLocationIfNecessary As Long = 1, Optional ByVal toolbarType As pdToolbarType = NOT_A_TOOLBAR, Optional imageWindowIndex As Long = -1, Optional ByVal minWidth As Long = -1, Optional ByVal minHeight As Long = -1)
+Public Sub RegisterChildForm(ByRef childForm As Form, ByVal whatWindowType As PDWindowType, Optional ByVal preferredLocationIfNecessary As Long = 1, Optional ByVal toolbarType As PDToolbarType = NOT_A_TOOLBAR, Optional imageWindowIndex As Long = -1, Optional ByVal minWidth As Long = -1, Optional ByVal minHeight As Long = -1)
     
     'Has this window already been registered?  If so, don't re-register it.
     Dim i As Long
@@ -1512,13 +1337,6 @@ Public Sub RegisterChildForm(ByRef childForm As Form, ByVal whatWindowType As pd
     
     'Update this window's offset (because it may have been moved by the above function)
     RequestWindowResync numOfPDWindows
-    
-    'If this is the custom image tabstrip window, make a note of its hWnd and array location, because we will refer to it frequently
-    ' and this is faster than constantly searching the window array for it.
-    If pdWindows(numOfPDWindows).typeOfWindow = IMAGE_TABSTRIP Then
-        imageTabstripHwnd = pdWindows(numOfPDWindows).hWnd
-        imageTabstripIndex = numOfPDWindows
-    End If
     
     'Resize the window array for future additions
     numOfPDWindows = numOfPDWindows + 1
@@ -1604,10 +1422,6 @@ Public Sub NotifyToolboxResized(Optional ByVal hWndOfResizeSource As Long = 0, O
     Dim curWinRect As winRect
     GetWindowRect mainWindowHwnd, curWinRect
     
-    'The image tabstrip should be immediately resized; without this, the forms may overlap in an ugly way until
-    ' the mouse button is released.
-    If pdWindows(imageTabstripIndex).isVisible Then RequestWindowRedraw imageTabstripIndex, curWinRect
-    
     'Ask the main form's canvas to redraw itself, per the passed parameter
     If refreshCanvasToo And m_AutoRefreshMode Then FormMain.RefreshAllCanvases
     
@@ -1634,20 +1448,6 @@ Private Sub RequestWindowRedraw(ByVal winIndex As Long, ByRef curWinRect As winR
             
             'Stretch the toolbars to fit the full width/height of the main form (as applicable)
             FixDockedToolbarSize winIndex
-            
-        'Image tabstrip
-        Case IMAGE_TABSTRIP
-            'Force the window to top-align within the client area of the parent
-            GetActualMainFormClientRect childRect, True, False
-            
-            With pdWindows(winIndex)
-            
-                If .alignmentOptions.alignLeft Then MoveWindow .hWnd, childRect.x1, childRect.y1, GetWindowWidth(.hWnd), childRect.y2 - childRect.y1, 1 'IIf(.isVisible, 1, 0)
-                If .alignmentOptions.alignTop Then MoveWindow .hWnd, childRect.x1, childRect.y1, childRect.x2 - childRect.x1, GetWindowHeight(.hWnd), 1 'IIf(.isVisible, 1, 0)
-                If .alignmentOptions.alignRight Then MoveWindow .hWnd, childRect.x2 - GetWindowWidth(.hWnd), childRect.y1, GetWindowWidth(.hWnd), childRect.y2 - childRect.y1, 1 'IIf(.isVisible, 1, 0)
-                If .alignmentOptions.alignBottom Then MoveWindow .hWnd, childRect.x1, childRect.y2 - GetWindowHeight(.hWnd), childRect.x2 - childRect.x1, GetWindowHeight(.hWnd), 1 'IIf(.isVisible, 1, 0)
-            
-            End With
             
     End Select
                     
@@ -1722,7 +1522,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     Dim curWinRect As winRect
     
     Dim userSizeTooSmall As Boolean
-    Dim resizeHandle As winResizeEdge
+    Dim resizeHandle As WinResizeEdge
     
     Dim i As Long
     

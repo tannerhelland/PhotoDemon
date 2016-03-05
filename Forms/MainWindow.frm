@@ -1772,7 +1772,7 @@ Public Sub RefreshAllCanvases()
 
     'Start by reorienting the canvas to fill the full available client area
     Dim mainRect As winRect
-    g_WindowManager.GetActualMainFormClientRect mainRect, False, False
+    g_WindowManager.GetActualMainFormClientRect mainRect, False
     
     'API is used instead of .Move as it produces smoother movement
     MoveWindow mainCanvas(0).hWnd, mainRect.x1, mainRect.y1, mainRect.x2 - mainRect.x1, mainRect.y2 - mainRect.y1, 1
