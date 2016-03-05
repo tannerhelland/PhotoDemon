@@ -123,14 +123,15 @@ Private Const DEFAULT_COLOR_CACHE_SIZE As Long = 16
 ' to cache them here, so one-off functions don't need to deal with messy color maintenance.
 Public Enum PD_UI_COLOR_LIST
     [_First] = 0
-    UI_UniversalLineEdge = 0
-    UI_UniversalLineCenter = 1
-    [_Last] = 1
-    [_Count] = 2
+    UI_UniversalCanvasElement = 0
+    UI_UniversalLineEdge = 1
+    UI_UniversalLineCenter = 2
+    [_Last] = 2
+    [_Count] = 3
 End Enum
 
 #If False Then
-    Private Const PDUIC_UniversalLineEdge = 0, PDUIC_UniversalLineCenter = 1
+    Private Const UI_UniversalCanvasElement = 0, UI_UniversalLineEdge = 1, UI_UniversalLineCenter = 2
 #End If
 
 'Color retrieval and storage of program-wide UI colors is handled by a dedicated class
@@ -574,6 +575,7 @@ Private Sub CacheUniversalColors()
     m_UniversalColors.InitializeColorList "UIElements", colorCount
     
     With m_UniversalColors
+        .LoadThemeColor UI_UniversalCanvasElement, "UniversalCanvasElement", IDE_GRAY
         .LoadThemeColor UI_UniversalLineEdge, "UniversalLineEdge", IDE_BLUE
         .LoadThemeColor UI_UniversalLineCenter, "UniversalLineCenter", IDE_GRAY
     End With

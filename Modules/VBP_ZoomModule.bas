@@ -214,7 +214,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
     End With
     
     'We also need to wipe the back buffer
-    GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, srcImage.canvasBuffer.getDIBWidth, srcImage.canvasBuffer.getDIBHeight, g_CanvasBackground, 255, CompositingModeSourceCopy
+    GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, srcImage.canvasBuffer.getDIBWidth, srcImage.canvasBuffer.getDIBHeight, g_Themer.GetGenericUIColor(UI_UniversalCanvasElement), 255, CompositingModeSourceCopy
     
     'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.BackBuffer for us.  If the user's preferences are "BEST QUALITY",
     ' Stage 2 composited a full-sized version of the image.  The goal of this stage (3) is two-fold:
@@ -620,9 +620,9 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     ' (TODO: creating the back buffer as 32-bit screws up selection rendering, because the current selection engine always assumes
     '         a 24-bit target.  Look at fixing this!)
     If (srcImage.canvasBuffer.getDIBWidth <> CanvasRect_ActualPixels.Width) Or (srcImage.canvasBuffer.getDIBHeight <> CanvasRect_ActualPixels.Height) Then
-        srcImage.canvasBuffer.createBlank CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, 24, g_CanvasBackground, 255
+        srcImage.canvasBuffer.createBlank CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, 24, g_Themer.GetGenericUIColor(UI_UniversalCanvasElement), 255
     Else
-        GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, g_CanvasBackground, 255, CompositingModeSourceCopy
+        GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, g_Themer.GetGenericUIColor(UI_UniversalCanvasElement), 255, CompositingModeSourceCopy
     End If
     
     'Because subsequent stages of the pipeline may need all the data we've assembled, store a copy of all relevant rects

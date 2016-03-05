@@ -418,6 +418,7 @@
 			</PDToolButton>
 			
 			<UIElements>
+				<UniversalCanvasElement>CanvasColor</UniversalCanvasElement>
 				<UniversalLineEdge>Black</UniversalLineEdge>
 				<UniversalLineCenter>White</UniversalLineCenter>
 				<UniversalLineCenter-hover>AccentDefault</UniversalLineCenter-hover>
