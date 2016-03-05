@@ -35,7 +35,6 @@ Begin VB.UserControl pdCanvas
       _ExtentY        =   1508
    End
    Begin PhotoDemon.pdStatusBar StatusBar 
-      Align           =   2  'Align Bottom
       Height          =   345
       Left            =   0
       TabIndex        =   5
@@ -64,7 +63,7 @@ Begin VB.UserControl pdCanvas
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   886
       TabIndex        =   0
-      Top             =   7095
+      Top             =   7440
       Visible         =   0   'False
       Width           =   13290
    End
@@ -104,6 +103,48 @@ Begin VB.UserControl pdCanvas
       _ExtentY        =   8705
       VisualStyle     =   1
    End
+   Begin VB.Menu mnuImageTabsContext 
+      Caption         =   "&Image"
+      Visible         =   0   'False
+      Begin VB.Menu mnuTabstripPopup 
+         Caption         =   "&Save"
+         Enabled         =   0   'False
+         Index           =   0
+      End
+      Begin VB.Menu mnuTabstripPopup 
+         Caption         =   "Save copy (&lossless)"
+         Index           =   1
+      End
+      Begin VB.Menu mnuTabstripPopup 
+         Caption         =   "Save &as..."
+         Index           =   2
+      End
+      Begin VB.Menu mnuTabstripPopup 
+         Caption         =   "Revert"
+         Enabled         =   0   'False
+         Index           =   3
+      End
+      Begin VB.Menu mnuTabstripPopup 
+         Caption         =   "-"
+         Index           =   4
+      End
+      Begin VB.Menu mnuTabstripPopup 
+         Caption         =   "Open location in E&xplorer"
+         Index           =   5
+      End
+      Begin VB.Menu mnuTabstripPopup 
+         Caption         =   "-"
+         Index           =   6
+      End
+      Begin VB.Menu mnuTabstripPopup 
+         Caption         =   "&Close"
+         Index           =   7
+      End
+      Begin VB.Menu mnuTabstripPopup 
+         Caption         =   "Close all except this"
+         Index           =   8
+      End
+   End
 End
 Attribute VB_Name = "pdCanvas"
 Attribute VB_GlobalNameSpace = False
@@ -114,8 +155,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Canvas User Control (previously a standalone form)
 'Copyright 2002-2016 by Tanner Helland
 'Created: 29/November/02
-'Last updated: 03/March/16
-'Last update: migrate status bar into its own dedicated control
+'Last updated: 05/March/16
+'Last update: finish integrating the image strip control as a canvas element
 '
 'In 2013, PD's canvas was rebuilt as a dedicated user control, and instead of each image maintaining its own canvas inside
 ' separate, dedicated windows (which required a *ton* of code to keep in sync with the main PD window), a single canvas was
@@ -190,6 +231,25 @@ Private m_LayerAutoActivateIndex As Long
 ' will add "Remove Selection" to the Undo/Redo chain; however, if no selection was active, the working selection will simply
 ' be erased.
 Private m_SelectionActiveBeforeMouseEvents As Boolean
+
+'When we reflow the interface, we mark a special "resize" state to prevent recursive automatic reflow event notifications
+Private m_InternalResize As Boolean
+
+'In Feb '15, Raj added a great context menu to the image tabstrip.  To help simplify menu enable/disable behavior,
+' this enum can be used to identify individual menu entries.
+Private Enum POPUP_MENU_ENTRIES
+    POP_SAVE = 0
+    POP_SAVE_COPY = 1
+    POP_SAVE_AS = 2
+    POP_REVERT = 3
+    POP_OPEN_IN_EXPLORER = 5
+    POP_CLOSE = 7
+    POP_CLOSE_OTHERS = 8
+End Enum
+
+#If False Then
+    Private Const POP_SAVE = 0, POP_SAVE_COPY = 1, POP_SAVE_AS = 2, POP_REVERT = 3, POP_OPEN_IN_EXPLORER = 5, POP_CLOSE = 7, POP_CLOSE_OTHERS = 8
+#End If
 
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
@@ -347,6 +407,27 @@ End Sub
 
 Public Sub RequestViewportRedraw(Optional ByVal refreshImmediately As Boolean = False)
     CanvasView.RequestRedraw refreshImmediately
+End Sub
+
+'Tabstrip relays include the next five functions
+Public Sub NotifyTabstripAddNewThumb(ByVal pdImageIndex As Long)
+    ImageStrip.AddNewThumb pdImageIndex
+End Sub
+
+Public Sub NotifyTabstripNewActiveImage(ByVal pdImageIndex As Long)
+    ImageStrip.NotifyNewActiveImage pdImageIndex
+End Sub
+
+Public Sub NotifyTabstripUpdatedImage(ByVal pdImageIndex As Long)
+    ImageStrip.NotifyUpdatedImage pdImageIndex
+End Sub
+
+Public Sub NotifyTabstripRemoveThumb(ByVal pdImageIndex As Long, Optional ByVal refreshStrip As Boolean = True)
+    ImageStrip.RemoveThumb pdImageIndex, refreshStrip
+End Sub
+
+Public Sub NotifyTabstripTotalRedrawRequired()
+    ImageStrip.RequestTotalRedraw
 End Sub
 
 'Return the current width/height of the underlying canvas view
@@ -1505,6 +1586,109 @@ Public Sub CanvasView_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByV
 
 End Sub
 
+Private Sub ImageStrip_Click(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    If (Button And pdRightButton) <> 0 Then
+    
+        'Enable various pop-up menu entries.  Wherever possible, we simply want to mimic the official PD menu, which saves
+        ' us having to supply our own heuristics for menu enablement.
+        mnuTabstripPopup(POP_SAVE).Enabled = FormMain.MnuFile(8).Enabled
+        mnuTabstripPopup(POP_SAVE_COPY).Enabled = FormMain.MnuFile(9).Enabled
+        mnuTabstripPopup(POP_SAVE_AS).Enabled = FormMain.MnuFile(10).Enabled
+        mnuTabstripPopup(POP_REVERT).Enabled = FormMain.MnuFile(11).Enabled
+        mnuTabstripPopup(POP_CLOSE).Enabled = FormMain.MnuFile(5).Enabled
+        
+        'Two special commands only appear in this menu: Open in Explorer, and Close Other Images
+        ' Use our own enablement heuristics for these.
+        
+        'Open in Explorer only works if the image is currently on-disk
+        mnuTabstripPopup(POP_OPEN_IN_EXPLORER).Enabled = (Len(pdImages(g_CurrentImage).locationOnDisk) > 0)
+        
+        'Close Other Images only works if more than one image is open.  We can determine this using the Next/Previous Image items
+        ' in the Window menu
+        mnuTabstripPopup(POP_CLOSE).Enabled = FormMain.MnuWindow(5).Enabled
+        
+        'Raise the context menu
+        UserControl.PopupMenu mnuImageTabsContext, x:=x, y:=y
+        
+    End If
+    
+End Sub
+
+Private Sub ImageStrip_ItemClosed(ByVal itemIndex As Long)
+    Image_Canvas_Handler.FullPDImageUnload itemIndex
+End Sub
+
+Private Sub ImageStrip_ItemSelected(ByVal itemIndex As Long)
+    ActivatePDImage itemIndex, "user clicked image thumbnail"
+End Sub
+
+'When the image strip's position changes, we may need to move it to an entirely new position.  This also necessitates
+' a layout adjustment of all other controls on the canvas.
+Private Sub ImageStrip_PositionChanged()
+    If Not m_InternalResize Then Me.AlignCanvasView
+End Sub
+
+'All popup menu clicks are handled here
+Private Sub mnuTabstripPopup_Click(Index As Integer)
+
+    Select Case Index
+        
+        'Save
+        Case 0
+            File_Menu.MenuSave g_CurrentImage
+        
+        'Save copy (lossless)
+        Case 1
+            File_Menu.MenuSaveLosslessCopy g_CurrentImage
+        
+        'Save as
+        Case 2
+            File_Menu.MenuSaveAs g_CurrentImage
+        
+        'Revert
+        Case 3
+            
+            pdImages(g_CurrentImage).undoManager.revertToLastSavedState
+                        
+            'Also, redraw the current child form icon
+            CreateCustomFormIcons pdImages(g_CurrentImage)
+            ImageStrip.NotifyUpdatedImage g_CurrentImage
+        
+        '(separator)
+        Case 4
+        
+        'Open location in Explorer
+        Case 5
+            Dim filePath As String, shellCommand As String
+            filePath = pdImages(g_CurrentImage).locationOnDisk
+            shellCommand = "explorer.exe /select,""" & filePath & """"
+            Shell shellCommand, vbNormalFocus
+        
+        '(separator)
+        Case 6
+        
+        'Close
+        Case 7
+            Image_Canvas_Handler.FullPDImageUnload g_CurrentImage
+        
+        'Close all but this
+        Case 8
+            
+            Dim curImageID As Long
+            curImageID = pdImages(g_CurrentImage).imageID
+            
+            Dim i As Long
+            For i = 0 To UBound(pdImages)
+                If (Not pdImages(i) Is Nothing) Then
+                    If pdImages(i).imageID <> curImageID Then FullPDImageUnload i
+                End If
+            Next i
+    
+    End Select
+
+End Sub
+
 Private Sub UserControl_Initialize()
     
     'Prep the color manager and load default colors
@@ -1564,34 +1748,143 @@ Public Sub UpdateCanvasLayout()
     StatusBar.ReflowStatusBar (g_OpenImageCount > 0)
 End Sub
 
+Private Function ShouldImageStripBeVisible() As Boolean
+    
+    ShouldImageStripBeVisible = False
+    
+    Select Case ImageStrip.VisibilityMode
+    
+        'Always visible
+        Case 0
+            If g_OpenImageCount > 0 Then ShouldImageStripBeVisible = True
+        
+        'Visible if 2+ images loaded
+        Case 1
+            If g_OpenImageCount > 1 Then ShouldImageStripBeVisible = True
+        
+        'Never visible
+        Case 2
+    
+    End Select
+    
+End Function
+
+'Given the current user control rect, modify it to account for the image tabstrip's position, and also fill a new rect
+' with the tabstrip's dimensions.
+Private Sub FillTabstripRect(ByRef ucRect As RECTF, ByRef dstRect As RECTF)
+    
+    Dim cSize As Long
+    cSize = ImageStrip.ConstrainingSize
+    
+    With dstRect
+
+        Select Case ImageStrip.Alignment
+        
+            Case vbAlignTop
+                .Left = ucRect.Left
+                .Top = ucRect.Top
+                .Width = ucRect.Width
+                .Height = cSize
+                ucRect.Top = ucRect.Top + cSize
+                ucRect.Height = ucRect.Height - cSize
+            
+            Case vbAlignBottom
+                .Left = ucRect.Left
+                .Top = (ucRect.Top + ucRect.Height) - cSize
+                .Width = ucRect.Width
+                .Height = cSize
+                ucRect.Height = ucRect.Height - cSize
+            
+            Case vbAlignLeft
+                .Left = ucRect.Left
+                .Top = ucRect.Top
+                .Width = cSize
+                .Height = ucRect.Height
+                ucRect.Left = ucRect.Left + cSize
+                ucRect.Width = ucRect.Width - cSize
+            
+            Case vbAlignRight
+                .Left = (ucRect.Left + ucRect.Width) - cSize
+                .Top = ucRect.Top
+                .Width = cSize
+                .Height = ucRect.Height
+                ucRect.Width = ucRect.Width - cSize
+        
+        End Select
+        
+    End With
+    
+End Sub
+
+'Given the current user control rect, modify it to account for the status bar's position, and also fill a new rect
+' with the status bar's dimensions.
+Private Sub FillStatusBarRect(ByRef ucRect As RECTF, ByRef dstRect As RECTF)
+    ucRect.Height = ucRect.Height - StatusBar.GetHeight
+    dstRect.Top = ucRect.Top + ucRect.Height
+    dstRect.Height = StatusBar.GetHeight
+    dstRect.Left = ucRect.Left
+    dstRect.Width = ucRect.Width
+End Sub
+
 'TODO: migrate these measurements to rely on ucSupport, so we get proper high-DPI handling
 Public Sub AlignCanvasView()
+        
+    'Prevent recursive redraws by putting the entire UC into "resize mode"; while in this mode, we ignore anything that
+    ' attempts to auto-initiate a canvas realignment request.
+    If m_InternalResize Then Exit Sub
+    m_InternalResize = True
     
-    'Retrieve DPI-aware control dimensions from the support class
+    'TODO: retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
     bWidth = UserControl.ScaleWidth
     bHeight = UserControl.ScaleHeight
+    
+    'Using the DPI-aware measurements, construct a rect that defines the entire available control area
+    Dim ucRect As RECTF
+    ucRect.Left = 0
+    ucRect.Top = 0
+    ucRect.Width = bWidth
+    ucRect.Height = bHeight
+    
+    'The image tabstrip, if visible, gets placement preference
+    Dim tabstripVisible As Boolean, tabstripRect As RECTF
+    tabstripVisible = ShouldImageStripBeVisible
+    
+    'If we are showing the tabstrip for the first time, we need to position it prior to displaying it
+    If tabstripVisible Then
+        FillTabstripRect ucRect, tabstripRect
+    Else
+        ImageStrip.Visible = tabstripVisible
+    End If
+    
+    'With the tabstrip rect in place, we now need to calculate a status bar rect
+    Dim statusBarRect As RECTF
+    FillStatusBarRect ucRect, statusBarRect
     
     'As of version 7.0, scroll bars are always visible.  This matches the behavior of paint-centric software like Krita,
     ' and makes it much easier to enable scrolling past the edge of an image (without resorting to stupid click-hold
     ' scroll behavior like GIMP).
     Dim hScrollTop As Long, hScrollLeft As Long, vScrollTop As Long, vScrollLeft As Long
-    hScrollLeft = 0
-    hScrollTop = bHeight - (Me.GetStatusBarHeight + hScroll.GetHeight)
+    hScrollLeft = ucRect.Left
+    hScrollTop = (ucRect.Top + ucRect.Height) - hScroll.GetHeight
+    If hScroll.Visible Then ucRect.Height = ucRect.Height - hScroll.GetHeight
     
-    vScrollLeft = bWidth - vScroll.GetWidth
-    vScrollTop = 0
+    vScrollTop = ucRect.Top
+    vScrollLeft = (ucRect.Left + ucRect.Width) - vScroll.GetWidth
+    If vScroll.Visible Then ucRect.Width = ucRect.Width - vScroll.GetWidth
     
     'With scroll bar positions calculated, calculate width/height values for the main canvas picture box
     Dim cvTop As Long, cvLeft As Long, cvWidth As Long, cvHeight As Long
-    cvTop = 0
-    cvLeft = 0
-    cvWidth = vScrollLeft - cvLeft
-    cvHeight = hScrollTop - cvTop
+    cvTop = ucRect.Top
+    cvLeft = ucRect.Left
+    cvWidth = ucRect.Width
+    cvHeight = ucRect.Height
     
     'Move the CanvasView box into position first
     If (CanvasView.GetLeft <> cvLeft) Or (CanvasView.GetTop <> cvTop) Or (CanvasView.GetWidth <> cvWidth) Or (CanvasView.GetHeight <> cvHeight) Then
-        If cvWidth > 0 And cvHeight > 0 Then CanvasView.SetPositionAndSize cvLeft, cvTop, cvWidth, cvHeight
+        If cvWidth > 0 And cvHeight > 0 Then
+            CanvasView.SetPositionAndSize cvLeft, cvTop, cvWidth, cvHeight
+        End If
     End If
     
     '...Followed by the scrollbars
@@ -1608,6 +1901,20 @@ Public Sub AlignCanvasView()
         cmdCenter.SetLeft vScrollLeft
         cmdCenter.SetTop hScrollTop
     End If
+    
+    '...Followed by the status bar
+    With statusBarRect
+        StatusBar.SetPositionAndSize .Left, .Top, .Width, .Height
+    End With
+    
+    '...And finally, the image tabstrip (as relevant)
+    With tabstripRect
+        ImageStrip.SetPositionAndSize .Left, .Top, .Width, .Height
+    End With
+    
+    If tabstripVisible And (Not ImageStrip.Visible) Then ImageStrip.Visible = True
+    
+    m_InternalResize = False
     
 End Sub
 
@@ -1939,6 +2246,14 @@ Public Sub RelayViewportChanges()
     toolbar_Layers.NotifyViewportChange
 End Sub
 
+Public Sub NotifyImageStripVisibilityMode(ByVal newMode As Long)
+    ImageStrip.VisibilityMode = newMode
+End Sub
+
+Public Sub NotifyImageStripAlignment(ByVal newAlignment As AlignConstants)
+    ImageStrip.Alignment = newAlignment
+End Sub
+
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
 ' step must also be called if/when PD's visual theme settings change.
 Private Sub UpdateColorList()
@@ -1962,6 +2277,7 @@ Public Sub UpdateAgainstCurrentTheme()
     UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
     CanvasView.UpdateAgainstCurrentTheme
     StatusBar.UpdateAgainstCurrentTheme
+    ImageStrip.UpdateAgainstCurrentTheme
     
     'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
     cmdCenter.AssignTooltip "Center the image inside the viewport"

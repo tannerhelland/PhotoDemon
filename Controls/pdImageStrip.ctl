@@ -52,9 +52,9 @@ Option Explicit
 ' of this event it provides a full collection of mouse information, too.  This is to facilitate RMB popup menu support.
 Public Event Click(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
-'When the control's alignment is changed, it will raise a corresponding event.  This control does not perform any of
-' its own sizing, so it is up to the parent control to handle this event as they see fit.
-Public Event AlignmentChanged()
+'When the control's position is changed in any way (size, alignment, visibility), this event is raised.  It is up to
+' the caller to handle the event and perform any relevant positioning adjustments.
+Public Event PositionChanged()
 
 'In addition, this class also raises events for when a new item is selected, and another when a given item is closed.
 ' These are much simpler than trying to reverse-engineer item indices from the generic Click() event.
@@ -126,8 +126,15 @@ Private weAreResponsibleForResize As Boolean
 ' toolbar (which varies according to its alignment, obviously).
 Private m_MouseInResizeTerritory As Boolean
 
-'Current image strip alignment
-Private m_Alignment As PD_ALIGNMENT
+'Current image strip alignment and visibility mode.  (Visibility mode controls when the tabstrip is visible -
+' always, on multiple loaded images, or never.)
+Private m_Alignment As AlignConstants, m_VisibilityMode As Long
+
+'Minimum and maximum allowable size.  Note that the actual dimension that correlates to this measurement
+' (width or height) changes depending on orientation.  Also, the maximum size may be further limited by
+' available viewport space.
+Private Const MIN_STRIP_SIZE As Long = 40
+Private Const MAX_STRIP_SIZE As Long = 300
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -155,15 +162,43 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
-Public Property Get Alignment() As PD_ALIGNMENT
+Public Property Get Alignment() As AlignConstants
     Alignment = m_Alignment
 End Property
 
-Public Property Let Alignment(ByVal newAlignment As PD_ALIGNMENT)
-    m_Alignment = newAlignment
-    If (m_Alignment = pda_AlignAuto) Then m_Alignment = pda_AlignTop
-    RaiseEvent AlignmentChanged
-    PropertyChanged "Alignment"
+Public Property Let Alignment(ByVal newAlignment As AlignConstants)
+    
+    If newAlignment = vbAlignNone Then newAlignment = vbAlignTop
+    
+    If (newAlignment = vbAlignLeft) Or (newAlignment = vbAlignRight) Then
+        m_VerticalLayout = True
+    Else
+        m_VerticalLayout = False
+    End If
+    
+    If m_Alignment <> newAlignment Then
+        m_Alignment = newAlignment
+        UpdateControlLayout
+        UpdateAgainstTabstripPreferences
+        PropertyChanged "Alignment"
+    End If
+    
+End Property
+
+'Constraining size is the size of the image strip in the non-fitting direction.  This size is adjustable by the user.
+Public Property Get ConstrainingSize() As Long
+    If m_VerticalLayout Then ConstrainingSize = ucSupport.GetControlWidth Else ConstrainingSize = ucSupport.GetControlHeight
+End Property
+
+Public Property Get VisibilityMode() As Long
+    VisibilityMode = m_VisibilityMode
+End Property
+
+Public Property Let VisibilityMode(ByVal newMode As Long)
+    If m_VisibilityMode <> newMode Then
+        m_VisibilityMode = newMode
+        UpdateAgainstTabstripPreferences
+    End If
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -357,6 +392,8 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
                 weAreResponsibleForResize = True
                 ReleaseCapture
                 SendMessage Me.hWnd, WM_NCLBUTTONDOWN, hitCode, ByVal 0&
+                'TODO: add glue code for catching the "end of resize" mode, so we can recapture the mouse and all that
+                '       good stuff.
                 
             End If
         
@@ -434,12 +471,19 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
 End Sub
 
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+    
+    Debug.Print "mouse up"
+    
     If m_MouseDown Then
         m_MouseDown = False
         m_InitX = 0
         m_InitY = 0
         m_MouseDistanceTraveled = 0
+        weAreResponsibleForResize = False
     End If
+    
+    If m_MouseInResizeTerritory Then UpdateAgainstTabstripPreferences
+    
 End Sub
 
 Private Sub ucSupport_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
@@ -474,7 +518,31 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+        
+    'Enforce minimum and maximum size restrictions
+    Dim relevantSize As Long
+    If m_VerticalLayout Then
+        relevantSize = ucSupport.GetControlWidth
+    Else
+        relevantSize = ucSupport.GetControlHeight
+    End If
+    
+    If relevantSize < FixDPI(MIN_STRIP_SIZE) Then
+        If m_VerticalLayout Then
+            ucSupport.RequestNewSize FixDPI(MIN_STRIP_SIZE), ucSupport.GetControlHeight, False
+        Else
+            ucSupport.RequestNewSize ucSupport.GetControlWidth, FixDPI(MIN_STRIP_SIZE), False
+        End If
+    ElseIf relevantSize > FixDPI(MAX_STRIP_SIZE) Then
+        If m_VerticalLayout Then
+            ucSupport.RequestNewSize FixDPI(MAX_STRIP_SIZE), ucSupport.GetControlHeight, False
+        Else
+            ucSupport.RequestNewSize ucSupport.GetControlWidth, FixDPI(MAX_STRIP_SIZE), False
+        End If
+    End If
+    
     UpdateControlLayout
+    
 End Sub
 
 'New images are currently added by their master pdImages() index; at some point it might be nice to modify this to
@@ -776,8 +844,6 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDImageStrip", colorCount
     If Not g_IsProgramRunning Then UpdateColorList
     
-    LoadImageStripIcons
-    
     ' Track the last thumbnail whose close icon has been clicked.
     ' -1 means no close icon has been clicked yet
     m_CloseTriggeredOnThumbnail = -1
@@ -794,7 +860,7 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Private Sub UserControl_InitProperties()
-    Alignment = pda_AlignAuto
+    Alignment = vbAlignTop
     Enabled = True
 End Sub
 
@@ -818,7 +884,7 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
-        Alignment = .ReadProperty("Alignment", 0)
+        Alignment = .ReadProperty("Alignment", vbAlignTop)
         Enabled = .ReadProperty("Enabled", True)
     End With
 End Sub
@@ -829,7 +895,7 @@ End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
-        .WriteProperty "Alignment", m_Alignment, 0
+        .WriteProperty "Alignment", m_Alignment, vbAlignTop
         .WriteProperty "Enabled", Me.Enabled, True
     End With
 End Sub
@@ -867,6 +933,10 @@ Private Sub LoadImageStripIcons()
     
 End Sub
 
+Public Sub RequestTotalRedraw()
+    UpdateControlLayout
+End Sub
+
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
 Private Sub UpdateControlLayout()
@@ -881,16 +951,6 @@ Private Sub UpdateControlLayout()
     
     'Detect alignment changes (if any)
     If g_IsProgramRunning Then
-        
-        If Not (g_WindowManager Is Nothing) Then
-            If (g_WindowManager.GetImageTabstripAlignment = vbAlignLeft) Or (g_WindowManager.GetImageTabstripAlignment = vbAlignRight) Then
-                m_VerticalLayout = True
-            Else
-                m_VerticalLayout = False
-            End If
-        Else
-            m_VerticalLayout = False
-        End If
         
         'If the control's size has changed in the dimension that determines thumb size, we need to recreate all image thumbnails
         Dim thumbsMustBeUpdated As Boolean
@@ -927,7 +987,7 @@ Private Sub UpdateControlLayout()
     
     'Notify the window manager that the tab strip has been resized; it will resize image windows to match
     'If Not weAreResponsibleForResize Then
-    If g_IsProgramRunning And Not (g_WindowManager Is Nothing) Then g_WindowManager.NotifyImageTabStripResized
+    'If g_IsProgramRunning And Not (g_WindowManager Is Nothing) Then g_WindowManager.NotifyImageTabStripResized
     
 End Sub
 
@@ -1097,6 +1157,16 @@ Private Sub RenderThumbTab(ByVal targetDC As Long, ByVal thumbIndex As Long, ByR
     
 End Sub
 
+'When the control's size is changed in some way, call this function to perform some internal maintenance tasks,
+' and raise an event our parent can deal with.
+Public Sub UpdateAgainstTabstripPreferences()
+    
+    'Determine our visibility, based on the current user preference.
+    
+    RaiseEvent PositionChanged
+    
+End Sub
+
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
 ' step must also be called if/when PD's visual theme settings change.
 Private Sub UpdateColorList()
@@ -1114,6 +1184,7 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     UpdateColorList
     UserControl.BackColor = m_Colors.RetrieveColor(PDIS_Background, Me.Enabled)
+    LoadImageStripIcons
     ucSupport.UpdateAgainstThemeAndLanguage
 End Sub
 

@@ -75,7 +75,7 @@ Private m_DefaultHeight As Long
 Private m_TotalHeight As Long
 
 'Divider height is calculated as a fraction of the default line height.  This makes things like DPI handling much simpler.
-Private Const SEPARATOR_LINE_HEIGHT As Single = 0.75
+Private Const SEPARATOR_LINE_HEIGHT As Single = 0.55
 
 'Font size is used to determine default line height.  You can ignore it if the box will be fully custom-drawn.
 Private m_FontSize As Single

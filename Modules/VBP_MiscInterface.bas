@@ -249,33 +249,35 @@ Public Sub SyncInterfaceToCurrentImage()
     'Perform a special check for the image tabstrip.  Its appearance is contingent on a setting provided by the user, coupled
     ' with the number of presently open images.
     
-    'A setting of 2 equates to index 2 in the menu, specifically "Never show image tabstrip".  Hide the tabstrip.
-    If g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1) = 2 Then
-        g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, False
-    Else
-        
-        'A setting of 1 equates to index 1 in the menu, specifically "Show for 2+ loaded images".  Check image count and
-        ' set visibility accordingly.
-        If g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1) = 1 Then
-            
-            If g_OpenImageCount > 1 Then
-                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, True
-            Else
-                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, False
-            End If
-        
-        'A setting of 0 equates to index 0 in the menu, specifically "always show tabstrip".
-        Else
-        
-            If g_OpenImageCount > 0 Then
-                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, True
-            Else
-                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, False
-            End If
-        
-        End If
+    'TODO 7.0: find a better way to solve this
     
-    End If
+'    'A setting of 2 equates to index 2 in the menu, specifically "Never show image tabstrip".  Hide the tabstrip.
+'    If g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1) = 2 Then
+'        g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, False
+'    Else
+'
+'        'A setting of 1 equates to index 1 in the menu, specifically "Show for 2+ loaded images".  Check image count and
+'        ' set visibility accordingly.
+'        If g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1) = 1 Then
+'
+'            If g_OpenImageCount > 1 Then
+'                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, True
+'            Else
+'                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, False
+'            End If
+'
+'        'A setting of 0 equates to index 0 in the menu, specifically "always show tabstrip".
+'        Else
+'
+'            If g_OpenImageCount > 0 Then
+'                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, True
+'            Else
+'                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, False
+'            End If
+'
+'        End If
+'
+'    End If
         
     'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls, like
     ' the "Next/Previous" Window menu items.
@@ -1122,10 +1124,13 @@ Public Sub ToggleImageTabstripAlignment(ByVal newAlignment As AlignConstants, Op
     
         '...and force the tabstrip to redraw itself (which it may not if the tabstrip's size hasn't changed, e.g. if Left and Right layout is toggled)
         ' TODO 7.0: now that the tabstrip lives on the canvas, this line should no longer be necessary
-        Interface.RequestTabstripRedraw
-    
+        'Interface.RequestTabstripRedraw
+        
+        'NEW VERSION: we don't need to modify all these things; instead, just notify the canvas of this change
+        If (Not suppressInterfaceSync) Then FormMain.mainCanvas(0).NotifyImageStripAlignment newAlignment
+        
         'Refresh the current image viewport (which may be positioned differently due to the tabstrip moving)
-        FormMain.RefreshAllCanvases
+        'FormMain.RefreshAllCanvases
         
     End If
     
@@ -1138,7 +1143,7 @@ Public Sub ToggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVa
     'Start by synchronizing menu checkmarks to the selected option
     Dim i As Long
     For i = 0 To 2
-        If newSetting = i Then
+        If (newSetting = i) Then
             FormMain.MnuWindowTabstrip(i).Checked = True
         Else
             FormMain.MnuWindowTabstrip(i).Checked = False
@@ -1146,9 +1151,9 @@ Public Sub ToggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVa
     Next i
 
     'Write the matching preference out to file
-    If Not suppressPrefUpdate Then g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Visibility", newSetting
+    If (Not suppressPrefUpdate) Then g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Visibility", newSetting
     
-    If Not suppressInterfaceSync Then
+    If (Not suppressInterfaceSync) Then
     
         'Refresh the current image viewport (which may be positioned differently due to the tabstrip moving)
         FormMain.RefreshAllCanvases
@@ -1163,6 +1168,9 @@ Public Sub ToggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVa
     If (g_NumOfImagesLoaded > 0) Then
         Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
+    
+    'NEW VERSION: we don't need to modify all these things; instead, just notify the canvas of this change
+    If (Not suppressInterfaceSync) Then FormMain.mainCanvas(0).NotifyImageStripVisibilityMode newSetting
 
 End Sub
 
@@ -1951,7 +1959,7 @@ Public Sub NotifyImageChanged(Optional ByVal affectedImageIndex As Long = -1, Op
     CreateCustomFormIcons pdImages(affectedImageIndex)
     
     'Notify the image tabstrip of any changes
-    toolbar_ImageTabs.NotifyUpdatedImage affectedImageIndex
+    FormMain.mainCanvas(0).NotifyTabstripUpdatedImage affectedImageIndex
     
 End Sub
 
@@ -1966,7 +1974,7 @@ Public Sub NotifyImageAdded(Optional ByVal newImageIndex As Long = -1)
     CreateCustomFormIcons pdImages(newImageIndex)
     
     'Notify the image tabstrip of the addition.  (It has to make quite a few internal changes to accommodate new images.)
-    toolbar_ImageTabs.RegisterNewImage newImageIndex
+    FormMain.mainCanvas(0).NotifyTabstripAddNewThumb newImageIndex
     
 End Sub
 
@@ -1980,8 +1988,8 @@ Public Sub NotifyImageRemoved(Optional ByVal oldImageIndex As Long = -1, Optiona
     If (oldImageIndex < 0) Then oldImageIndex = g_CurrentImage
     
     'The image tabstrip has to recalculate internal metrics whenever an image is unloaded
-    toolbar_ImageTabs.RemoveImage oldImageIndex, redrawImmediately
-
+    FormMain.mainCanvas(0).NotifyTabstripRemoveThumb oldImageIndex, redrawImmediately
+    
 End Sub
 
 'When a new image has been activated, call this function to apply all relevant UI changes.
@@ -1991,7 +1999,7 @@ Public Sub NotifyNewActiveImage(Optional ByVal newImageIndex As Long = -1)
     If (newImageIndex < 0) Then newImageIndex = g_CurrentImage
     
     'The toolbar must redraw itself to match the newly activated image
-    toolbar_ImageTabs.NotifyNewActiveImage newImageIndex
+    FormMain.mainCanvas(0).NotifyTabstripNewActiveImage newImageIndex
     
     'A newly activated image requires a whole swath of UI changes.  Ask SyncInterfaceToCurrentImage to handle this for us.
     SyncInterfaceToCurrentImage
@@ -2002,5 +2010,5 @@ End Sub
 ' by the dedicated NotifyXYZ functions, above.  The tabstrip should not require special handling.  That said, this is a temporary stopgap
 ' until we fix some widespread UI synchronization issues throughout the project.
 Public Sub RequestTabstripRedraw()
-    toolbar_ImageTabs.ForceRedraw
+    FormMain.mainCanvas(0).NotifyTabstripTotalRedrawRequired
 End Sub

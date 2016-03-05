@@ -417,7 +417,7 @@ Public Sub LoadTheProgram()
     'Load all tool windows.  Even though they may not be visible (as the user can elect to hide them), we still want them loaded,
     ' so we can interact with them as necessary (e.g. "enable Undo button", etc).
     Load toolbar_Toolbox
-    Load toolbar_ImageTabs
+    Load toolbar_Layers
     Load toolbar_Options
     
     'Retrieve tool window visibility and mark those menus as well
@@ -429,10 +429,8 @@ Public Sub LoadTheProgram()
         FormMain.MnuDevelopers(0).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Debug Window", False)
     #End If
     
-    'Retrieve two additional settings for the image tabstrip menu: when to display the image tabstrip...
+    'Retrieve two additional settings for the image tabstrip menu: when to display it, and its alignment
     ToggleImageTabstripVisibility g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1), True, True
-    
-    '...and the alignment of the tabstrip
     ToggleImageTabstripAlignment g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Alignment", vbAlignTop), True, True
     
     'The primary toolbox has some options of its own.  Load them now.

@@ -870,7 +870,9 @@ Public Sub RequestNewSize(Optional ByVal newWidth As Long = 0, Optional ByVal ne
     If newHeight = 0 Then newHeight = m_MoveSize.GetHeight
     
     m_ResizeEventsSuspended = Not alsoNotifyMeViaEvent
-    m_MoveSize.SetSize newWidth, newHeight, alsoNotifyMeViaEvent
+    If (newWidth <> m_MoveSize.GetWidth) Or (newHeight <> m_MoveSize.GetHeight) Then
+        m_MoveSize.SetSize newWidth, newHeight, alsoNotifyMeViaEvent
+    End If
     m_ResizeEventsSuspended = False
     
 End Sub
@@ -884,7 +886,9 @@ Public Sub RequestNewPosition(Optional ByVal newLeft As Long = -100, Optional By
     If newTop = -100 Then newTop = m_MoveSize.GetTop
     
     m_ResizeEventsSuspended = Not alsoNotifyMeViaEvent
-    m_MoveSize.SetPosition newLeft, newTop
+    If (newLeft <> m_MoveSize.GetLeft) Or (newTop <> m_MoveSize.GetTop) Then
+        m_MoveSize.SetPosition newLeft, newTop
+    End If
     m_ResizeEventsSuspended = False
     
 End Sub
