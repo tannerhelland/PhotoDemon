@@ -375,7 +375,6 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
         toolbar_Toolbox.UpdateAgainstCurrentTheme
         toolbar_Options.UpdateAgainstCurrentTheme
         toolbar_Layers.UpdateAgainstCurrentTheme
-        toolbar_ImageTabs.UpdateAgainstCurrentTheme
         
     End If
         

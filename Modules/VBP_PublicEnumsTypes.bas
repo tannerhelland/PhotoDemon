@@ -511,15 +511,3 @@ Public Type PDCachedColor
     OrigColorName As String
     OrigColorValues As PDThemeColor
 End Type
-
-Public Enum PD_ALIGNMENT
-    pda_AlignAuto = 0
-    pda_AlignLeft = 1
-    pda_AlignTop = 2
-    pda_AlignRight = 3
-    pda_AlignBottom = 4
-End Enum
-
-#If False Then
-    Private Const pda_AlignAuto = 0, pda_AlignLeft = 1, pda_AlignTop = 2, pda_AlignRight = 3, pda_AlignBottom = 4
-#End If

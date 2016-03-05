@@ -2582,7 +2582,6 @@ Private Sub Form_Load()
     g_WindowManager.RegisterChildForm toolbar_Toolbox, TOOLBAR_WINDOW, 1, FILE_TOOLBOX, , FixDPI(48)
     g_WindowManager.RegisterChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, LAYER_TOOLBOX, , FixDPI(200)
     g_WindowManager.RegisterChildForm toolbar_Options, TOOLBAR_WINDOW, 3, TOOLS_TOOLBOX
-    g_WindowManager.RegisterChildForm toolbar_ImageTabs, IMAGE_TABSTRIP, , , , , FixDPI(32)
     
     'With all windows in position, reposition the main form's canvas
     g_WindowManager.SetAutoRefreshMode True
@@ -2624,14 +2623,6 @@ Private Sub Form_Load()
     '  cases are covered nicely.)
     toolbar_Options.Show vbModeless, Me
     toolbar_Toolbox.resetToolButtonStates
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Preparing image tabstrip..."
-    #End If
-    
-    'We only display the image tab manager now if the user loaded two or more images from the command line
-    toolbar_ImageTabs.Show vbModeless, Me
-    g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, IIf(g_OpenImageCount > 1, True, False)
     
     'The debug window is only shown in nightly builds, and even then, it's only shown if explicitly requested
     #If DEBUGMODE = 1 Then
@@ -3084,7 +3075,7 @@ Private Sub Form_Unload(Cancel As Integer)
     #If DEBUGMODE = 1 Then
         If Not (toolbar_Debug Is Nothing) Then Unload toolbar_Debug
     #End If
-    If Not (toolbar_ImageTabs Is Nothing) Then Unload toolbar_ImageTabs
+    
     If Not (toolbar_Layers Is Nothing) Then Unload toolbar_Layers
     If Not (toolbar_Options Is Nothing) Then Unload toolbar_Options
     If Not (toolbar_Toolbox Is Nothing) Then Unload toolbar_Toolbox
@@ -3875,7 +3866,6 @@ Private Sub mnuLanguages_Click(Index As Integer)
     Message "Removing existing translation..."
     g_Language.undoTranslations FormMain, True
     g_Language.undoTranslations toolbar_Toolbox, True
-    g_Language.undoTranslations toolbar_ImageTabs, True
     g_Language.undoTranslations toolbar_Options, True
     g_Language.undoTranslations toolbar_Layers, True
     

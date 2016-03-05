@@ -33,8 +33,8 @@ Begin VB.Form toolbar_ImageTabs
       TabIndex        =   0
       Top             =   120
       Width           =   3735
-      _extentx        =   6588
-      _extenty        =   661
+      _ExtentX        =   6588
+      _ExtentY        =   661
    End
    Begin VB.Menu mnuImageTabsContext 
       Caption         =   "&Image"
@@ -126,7 +126,7 @@ End Enum
 #End If
 
 'External functions can force a full redraw by calling this sub
-Public Sub ForceRedraw()
+Public Sub forceRedraw()
     Form_Resize
 End Sub
 
@@ -204,6 +204,10 @@ End Sub
 
 Private Sub ImageStrip_ItemSelected(ByVal itemIndex As Long)
     ActivatePDImage itemIndex, "user clicked image thumbnail"
+End Sub
+
+Private Sub mnuImageTabsContext_Click()
+
 End Sub
 
 'All popup menu clicks are handled here
