@@ -143,6 +143,11 @@ Private m_CustomCaptionRect As RECT
 ' weird ways (e.g. in the middle of other paint operations).  If they require custom painting, this will be set to TRUE.
 Private m_CustomCaptionPaintingActive As Boolean
 
+'Some controls want to take advantage of all the nice things this class offers, without managing a persistent back buffer.  (For example,
+' every pixel of pdCanvas is covered by child controls, so it's extremely wasteful to manage a full backbuffer that would never be used!)
+' This value is set to FALSE by default.
+Private m_NoBackBufferMode As Boolean
+
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
 ' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
@@ -167,7 +172,7 @@ Private m_Colors As pdThemeColors
 
 'The FIRST THING a user control must do is call this sub.  This prepares the support class, applies basic subclassing,
 ' and initializes a bunch of other support modules.
-Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Control As Long = 0)
+Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Control As Long = 0, Optional ByVal noBackBufferRequired As Boolean = False)
     
     m_hWnd = hWnd_Control
     m_hDC = hDC_Control
@@ -209,8 +214,12 @@ Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         m_MoveSize.AttachToHWnd m_hWnd, g_IsProgramRunning
         CacheWindowDimensions
         
+        'The vast majority of PD's custom controls are double-buffered to prevent flickering, but some controls do not require this.
+        ' For those controls, we avoid creating a backbuffer, which can spare quite a bit of memory.
+        m_NoBackBufferMode = noBackBufferRequired
+        
         'Initialize the backbuffer and sync it to the current control size
-        SyncBackBufferSize True
+        If (Not m_NoBackBufferMode) Then SyncBackBufferSize True
         
     Else
         #If DEBUGMODE = 1 Then
@@ -414,14 +423,26 @@ End Sub
 
 'If automatic caption painting is turned off, the caller can use this function paint the caption to any location of their choosing.
 Public Sub PaintCaptionManually(Optional ByVal newX As Long = -1, Optional ByVal newY As Long = -1, Optional ByVal customColor As Long = -1)
-    If newX = -1 Then newX = m_CustomCaptionRect.Left
-    If newY = -1 Then newY = m_CustomCaptionRect.Top
-    m_Caption.DrawCaption_Clipped m_BackBuffer.getDIBDC, newX, newY, m_BackBuffer.getDIBWidth - newX, m_BackBuffer.getDIBHeight - newY, customColor
+    If m_NoBackBufferMode Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  You cannot paint outside a WM_PAINT cycle if double-buffering was deactivated!"
+        #End If
+    Else
+        If newX = -1 Then newX = m_CustomCaptionRect.Left
+        If newY = -1 Then newY = m_CustomCaptionRect.Top
+        m_Caption.DrawCaption_Clipped m_BackBuffer.getDIBDC, newX, newY, m_BackBuffer.getDIBWidth - newX, m_BackBuffer.getDIBHeight - newY, customColor
+    End If
 End Sub
 
 'If automatic caption painting is turned off, the caller can use this function paint the caption to any rect of their choosing.
 Public Sub PaintCaptionManually_Clipped(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, Optional ByVal customColor As Long = -1, Optional ByVal useEllipses As Boolean = False, Optional ByVal useOriginalFontSize As Boolean = False, Optional ByVal centerVertically As Boolean = False)
-    m_Caption.DrawCaption_Clipped m_BackBuffer.getDIBDC, dstX, dstY, dstWidth, dstHeight, customColor, useEllipses, useOriginalFontSize, centerVertically
+    If m_NoBackBufferMode Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  You cannot paint outside a WM_PAINT cycle if double-buffering was deactivated!"
+        #End If
+    Else
+        m_Caption.DrawCaption_Clipped m_BackBuffer.getDIBDC, dstX, dstY, dstWidth, dstHeight, customColor, useEllipses, useOriginalFontSize, centerVertically
+    End If
 End Sub
 
 Public Sub SetCaptionCustomColor(ByVal newColor As Long)
@@ -531,17 +552,19 @@ Private Function ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Opti
     
     'There are a couple different ways to apply the repaint.  If the caller specifies a fill rect, we obey it, but if they don't,
     ' we want to wipe the entire buffer.  As a convenience to the caller, we also apply the backcolor inside the IDE.
-    If g_IsProgramRunning Then
-        If (rpLeft = 0#) And (rpTop = 0#) And (rpWidth = 0#) And (rpHeight = 0#) Then
-            GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0#, 0#, m_Width, m_Height, newBackColor
+    If (Not m_NoBackBufferMode) Then
+        If g_IsProgramRunning Then
+            If (rpLeft = 0#) And (rpTop = 0#) And (rpWidth = 0#) And (rpHeight = 0#) Then
+                GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0#, 0#, m_Width, m_Height, newBackColor
+            Else
+                GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, rpLeft, rpTop, rpWidth, rpHeight, newBackColor
+            End If
         Else
-            GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, rpLeft, rpTop, rpWidth, rpHeight, newBackColor
-        End If
-    Else
-        If (rpLeft = 0#) And (rpTop = 0#) And (rpWidth = 0#) And (rpHeight = 0#) Then
-            Drawing.FillRectToDC m_BackBuffer.getDIBDC, -1, -1, m_Width + 2, m_Height + 2, newBackColor
-        Else
-            Drawing.FillRectToDC m_BackBuffer.getDIBDC, rpLeft - 1, rpTop - 1, rpWidth + 2, rpHeight + 2, newBackColor
+            If (rpLeft = 0#) And (rpTop = 0#) And (rpWidth = 0#) And (rpHeight = 0#) Then
+                Drawing.FillRectToDC m_BackBuffer.getDIBDC, -1, -1, m_Width + 2, m_Height + 2, newBackColor
+            Else
+                Drawing.FillRectToDC m_BackBuffer.getDIBDC, rpLeft - 1, rpTop - 1, rpWidth + 2, rpHeight + 2, newBackColor
+            End If
         End If
     End If
             
@@ -553,7 +576,7 @@ End Function
 Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
     
     'At compile-time, this event will likely be fired; because the back buffer doesn't exist, ignore the request
-    If (m_BackBuffer Is Nothing) Then Exit Sub
+    If (m_BackBuffer Is Nothing) Or m_NoBackBufferMode Then Exit Sub
     
     'We only want to recreate the buffer when absolutely necessary, so start with a size check.
     Dim bufferWasResized As Boolean
@@ -744,9 +767,27 @@ End Sub
 'Rather than bother the caller with paint requests, we handle them internally, by flipping the back buffer to the underlying
 ' control's DC.
 Private Sub m_Painter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
+    
     Dim targetDC As Long
     If m_hDC <> 0 Then targetDC = m_hDC Else targetDC = m_Painter.GetPaintStructDC
-    BitBlt targetDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
+    
+    'If we are currently using "no backbuffer" mode, just paint our backcolor to the DC
+    If m_NoBackBufferMode Then
+    
+        Dim backgroundColor As Long
+        If m_BackColor = -1 Then
+            backgroundColor = m_Colors.RetrieveColor(UCS_Background)
+        Else
+            backgroundColor = m_BackColor
+        End If
+        
+        Drawing.FillRectToDC targetDC, winLeft, winTop, winWidth, winHeight, backgroundColor
+    
+    'If backbuffering is active (as it is with most PD controls), copy the relevant portion of the buffer into place.
+    Else
+        BitBlt targetDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
+    End If
+    
 End Sub
 
 '***************************************************************************
@@ -780,6 +821,14 @@ End Function
 
 'Retrieve a copy of the back buffer's DC.  Optionally, you can request that the control wipe the background first.
 Public Function GetBackBufferDC(Optional ByVal repaintBackground As Boolean = False, Optional ByVal newBackColor As Long = -1&) As Long
+    
+    If m_NoBackBufferMode Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  You cannot request a back buffer DC when backbuffering has been disabled!"
+        #End If
+        GetBackBufferDC = 0
+        Exit Function
+    End If
     
     'As a failsafe, make sure the back buffer size is up-to-date
     SyncBackBufferSize
@@ -918,7 +967,7 @@ Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
         m_Painter.RequestRepaint raiseImmediateDrawEvent
     Else
         'Inside the IDE, subclassing is disabled, so we must paint the control manually
-        If Not (m_BackBuffer Is Nothing) Then
+        If (Not (m_BackBuffer Is Nothing)) And (Not m_NoBackBufferMode) Then
             
             CacheWindowDimensions
             If (Not m_CustomCaptionPaintingActive) Then SyncBackBufferSize True
@@ -937,7 +986,7 @@ End Sub
 ' the Paint event (and we don't want to subclass inside the designer).
 Public Sub RequestIDERepaint(ByVal targetDC As Long)
 
-    If (Not g_IsProgramRunning) And (m_hDC = 0) Then
+    If (Not g_IsProgramRunning) And (m_hDC = 0) And (Not m_NoBackBufferMode) Then
         If Not (m_BackBuffer Is Nothing) Then
             CacheWindowDimensions
             If m_CustomCaptionPaintingActive Then
@@ -991,6 +1040,7 @@ Private Sub Class_Initialize()
     m_BackColor = -1
     m_RedrawRequestCount = 0
     m_Visibility = False
+    m_NoBackBufferMode = False
     
     'Some classes are required for minimal drawing inside the IDE.  As such, we must prep them now, instead of waiting for a
     ' formal UC registration event.

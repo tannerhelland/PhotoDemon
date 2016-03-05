@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.144</langversion>
+<langversion>6.7.145</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -3248,6 +3248,46 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <!-- BEGIN text for pdCanvas.ctl -->
 
 <phrase>
+<original>&Image</original>
+<translation>Bild</translation>
+</phrase>
+
+<phrase>
+<original>&Save</original>
+<translation>Speichern</translation>
+</phrase>
+
+<phrase>
+<original>Save copy (&lossless)</original>
+<translation>Verlustfreie Kopie speichern</translation>
+</phrase>
+
+<phrase>
+<original>Save &as</original>
+<translation>Speichern als</translation>
+</phrase>
+
+<phrase>
+<original>Revert</original>
+<translation>Rückgängig machen</translation>
+</phrase>
+
+<phrase>
+<original>Open location in E&xplorer</original>
+<translation>Speicherort im Explorer öffnen</translation>
+</phrase>
+
+<phrase>
+<original>&Close</original>
+<translation>Schließen</translation>
+</phrase>
+
+<phrase>
+<original>Close all except this</original>
+<translation>Alle anderen schließen</translation>
+</phrase>
+
+<phrase>
 <original>Delete layer</original>
 <translation>Ebene löschen</translation>
 </phrase>
@@ -3317,7 +3357,7 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <translation></translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 40 phrases. 26 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 48 phrases. 26 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3611,6 +3651,27 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 
 <!-- END text for pdHyperlink.ctl-->
 
+<!-- BEGIN text for pdImageStrip.ctl -->
+
+<phrase>
+<original>Once this image has been saved to disk, its filename will appear here.</original>
+<translation>Wenn dieses Bild gespeichert wird, erscheint hier sein Dateiname.</translation>
+</phrase>
+
+<phrase>
+<original>This image does not have a filename.</original>
+<translation>Dieses Bild hat noch keinen Dateinamen.</translation>
+</phrase>
+
+<phrase>
+<original>Hover an image thumbnail to see its name and current file location.</original>
+<translation>Bewegen Sie den Mauszeiger auf ein Vorschaubild - dann sehen Sie Namen und Speicherort des Bildes.</translation>
+</phrase>
+
+<!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<!-- END text for pdImageStrip.ctl-->
+
 <!-- BEGIN text for pdLabel.ctl -->
 
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
@@ -3834,6 +3895,67 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 
 <!-- END text for pdSpinner.ctl-->
 
+<!-- BEGIN text for pdStatusBar.ctl -->
+
+<phrase>
+<original>size</original>
+<translation>Größe</translation>
+</phrase>
+
+<phrase>
+<original>(messages will appear here at run-time)</original>
+<translation>(Nachrichten werden zur Laufzeit hier zu erscheinen)</translation>
+</phrase>
+
+<phrase>
+<original>px</original>
+<translation>px</translation>
+</phrase>
+
+<phrase>
+<original>in</original>
+<translation>in</translation>
+</phrase>
+
+<phrase>
+<original>cm</original>
+<translation>cm</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>Bildgröße ändern</translation>
+</phrase>
+
+<phrase>
+<original>Fit the image on-screen</original>
+<translation>Bild an Bildschirm anpassen</translation>
+</phrase>
+
+<phrase>
+<original>Zoom in</original>
+<translation>Ansicht vergrößern</translation>
+</phrase>
+
+<phrase>
+<original>Zoom out</original>
+<translation>Ansicht verkleinern</translation>
+</phrase>
+
+<phrase>
+<original>Change viewport zoom</original>
+<translation>Ansicht vergrößern/verkleinern</translation>
+</phrase>
+
+<phrase>
+<original>Change the image size unit displayed to the left of this box</original>
+<translation>Maßeinheit ändern</translation>
+</phrase>
+
+<!-- pdStatusBar.ctl contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+
+<!-- END text for pdStatusBar.ctl-->
+
 <!-- BEGIN text for pdTextBox.ctl -->
 
 <!-- pdTextBox.ctl contains 0 phrases. -->
@@ -3915,33 +4037,8 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
-<original>&Close</original>
-<translation>Schließen</translation>
-</phrase>
-
-<phrase>
 <original>Close all</original>
 <translation>Alle schließen</translation>
-</phrase>
-
-<phrase>
-<original>&Save</original>
-<translation>Speichern</translation>
-</phrase>
-
-<phrase>
-<original>Save copy (&lossless)</original>
-<translation>Verlustfreie Kopie speichern</translation>
-</phrase>
-
-<phrase>
-<original>Save &as</original>
-<translation>Speichern als</translation>
-</phrase>
-
-<phrase>
-<original>Revert</original>
-<translation>Rückgängig machen</translation>
 </phrase>
 
 <phrase>
@@ -4042,11 +4139,6 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <phrase>
 <original>1:1 (actual size, 100%)</original>
 <translation>1:1 (Originalgröße, 100 %)</translation>
-</phrase>
-
-<phrase>
-<original>&Image</original>
-<translation>Bild</translation>
 </phrase>
 
 <phrase>
@@ -5607,11 +5699,6 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 </phrase>
 
 <phrase>
-<original>Resize image</original>
-<translation>Bildgröße ändern</translation>
-</phrase>
-
-<phrase>
 <original>Content-aware image resize</original>
 <translation>Inhaltsabhängige Bildverzerrung</translation>
 </phrase>
@@ -5801,7 +5888,7 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 180 were duplicates of existing phrases, so only 387 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8182,11 +8269,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Artistic_GlassTiles.frm (FormGlassTiles) -->
 
 <phrase>
-<original>size</original>
-<translation>Größe</translation>
-</phrase>
-
-<phrase>
 <original>curvature</original>
 <translation>Krümmung</translation>
 </phrase>
@@ -8196,7 +8278,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Glasbausteine herstellen</translation>
 </phrase>
 
-<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_GlassTiles.frm-->
 
@@ -12278,27 +12360,6 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 
 <!-- END text for Toolbar_Debug.frm-->
 
-<!-- BEGIN text for Toolbar_ImageTabstrip.frm (toolbar_ImageTabs) -->
-
-<phrase>
-<original>Images</original>
-<translation>Bilder</translation>
-</phrase>
-
-<phrase>
-<original>Open location in E&xplorer</original>
-<translation>Speicherort im Explorer öffnen</translation>
-</phrase>
-
-<phrase>
-<original>Close all except this</original>
-<translation>Alle anderen schließen</translation>
-</phrase>
-
-<!-- Toolbar_ImageTabstrip.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for Toolbar_ImageTabstrip.frm-->
-
 <!-- BEGIN text for Toolbar_Layers.frm (toolbar_Layers) -->
 
 <phrase>
@@ -13512,6 +13573,41 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 </phrase>
 
 <phrase>
+<original>use high-resolution input tracking</original>
+<translation>mit hochauflösender Eingabeverfolgung</translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation>Maus- und Stift-Eingabe</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent file entries</original>
+<translation>Höchstzahl der Einträge bei "Zuletzt geöffnete Dateien"</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>Liste der zuletzt geöffneten Dateien</translation>
+</phrase>
+
+<phrase>
+<original>recently used file shortcuts should be</original>
+<translation>Anzeige der zuletzt geöffneten Dateien</translation>
+</phrase>
+
+<phrase>
+<original>captions</original>
+<translation>Titel</translation>
+</phrase>
+
+<phrase>
+<original>image window titles should be</original>
+<translation>Titelzeile des Bildfensters</translation>
+</phrase>
+
+<phrase>
 <original>use the system color profile</original>
 <translation>System-Farbprofil benutzen</translation>
 </phrase>
@@ -13792,51 +13888,6 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 </phrase>
 
 <phrase>
-<original>use high-resolution input tracking</original>
-<translation>mit hochauflösender Eingabeverfolgung</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>Maus- und Stift-Eingabe</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>Höchstzahl der Einträge bei "Zuletzt geöffnete Dateien"</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>Liste der zuletzt geöffneten Dateien</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts should be</original>
-<translation>Anzeige der zuletzt geöffneten Dateien</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>Titel</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>Titelzeile des Bildfensters</translation>
-</phrase>
-
-<phrase>
-<original>image canvas background</original>
-<translation>Hintergrund der Bild-Leinwand</translation>
-</phrase>
-
-<phrase>
-<original>canvas appearance</original>
-<translation>Aussehen der Leinwand</translation>
-</phrase>
-
-<phrase>
 <original>(none)</original>
 <translation>(keine)</translation>
 </phrase>
@@ -13873,31 +13924,6 @@ Are you sure you want to continue?</original>
 <phrase>
 <original>Reset all preferences</original>
 <translation>Einstellungen zurücksetzen</translation>
-</phrase>
-
-<phrase>
-<original>system theme: light</original>
-<translation>System-Thema: hell</translation>
-</phrase>
-
-<phrase>
-<original>system theme: dark</original>
-<translation>System-Thema: dunkel</translation>
-</phrase>
-
-<phrase>
-<original>custom color (click box to customize)</original>
-<translation>benutzerdefinierte Farbe (Feld zum Anpassen anklicken)</translation>
-</phrase>
-
-<phrase>
-<original>The image canvas sits "behind" the image on the screen.  Dark colors are generally preferable, as they help the image stand out while you work on it.</original>
-<translation>Die Leinwand des Bildes liegt auf dem Bildschirm "hinter" dem Bild. Dunkle Farben sind im Allgemeinen vorzuziehen, weil sie das Bild während der Bearbeitung hervorheben.</translation>
-</phrase>
-
-<phrase>
-<original>Click to change the image window background color</original>
-<translation>Klicken Sie hier, um die Hintergrundfarbe des Bildfensters zu ändern</translation>
 </phrase>
 
 <phrase>
@@ -14399,7 +14425,7 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 <translation>WARNUNG: Dieser Ordner ist ungültig (Zutritt verboten!). Bitte geben Sie einen gültigen Ordner an. Wenn Sie keinen neuen Ordner angeben, verwendet PhotoDemon den üblichen Speicherort des Systems für temporäre Dateien.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 242 phrases. 65 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 234 phrases. 64 were duplicates of existing phrases, so only 170 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14654,84 +14680,12 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdImageStrip.ctl -->
-
-<phrase>
-<original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation>Wenn dieses Bild gespeichert wird, erscheint hier sein Dateiname.</translation>
-</phrase>
-
-<phrase>
-<original>This image does not have a filename.</original>
-<translation>Dieses Bild hat noch keinen Dateinamen.</translation>
-</phrase>
-
-<phrase>
-<original>Hover an image thumbnail to see its name and current file location.</original>
-<translation>Bewegen Sie den Mauszeiger auf ein Vorschaubild - dann sehen Sie Namen und Speicherort des Bildes.</translation>
-</phrase>
-
-<!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
-
-<!-- END text for pdImageStrip.ctl-->
-
-<!-- BEGIN text for pdStatusBar.ctl -->
-
-<phrase>
-<original>(messages will appear here at run-time)</original>
-<translation>(Nachrichten werden zur Laufzeit hier zu erscheinen)</translation>
-</phrase>
-
-<phrase>
-<original>px</original>
-<translation>px</translation>
-</phrase>
-
-<phrase>
-<original>in</original>
-<translation>in</translation>
-</phrase>
-
-<phrase>
-<original>cm</original>
-<translation>cm</translation>
-</phrase>
-
-<phrase>
-<original>Fit the image on-screen</original>
-<translation>Bild an Bildschirm anpassen</translation>
-</phrase>
-
-<phrase>
-<original>Zoom in</original>
-<translation>Ansicht vergrößern</translation>
-</phrase>
-
-<phrase>
-<original>Zoom out</original>
-<translation>Ansicht verkleinern</translation>
-</phrase>
-
-<phrase>
-<original>Change viewport zoom</original>
-<translation>Ansicht vergrößern/verkleinern</translation>
-</phrase>
-
-<phrase>
-<original>Change the image size unit displayed to the left of this box</original>
-<translation>Maßeinheit ändern</translation>
-</phrase>
-
-<!-- pdStatusBar.ctl contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for pdStatusBar.ctl-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2521</phrasecount>
+<phrasecount>2513</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4325 phrases. -->
-<!-- 1804 are duplicates, so only 2521 unique phrases have been written to file. -->
-<!-- These 2521 phrases contain approximately 13442 total words. -->
+<!-- As of this build, PhotoDemon contains 4316 phrases. -->
+<!-- 1803 are duplicates, so only 2513 unique phrases have been written to file. -->
+<!-- These 2513 phrases contain approximately 13388 total words. -->
 
 </pdData>

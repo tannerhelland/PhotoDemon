@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.856</langversion>
+<langversion>6.8.857</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ILoveVB</author>
@@ -3243,6 +3243,46 @@ Please enter a numeric value.</original>
 <!-- BEGIN text for pdCanvas.ctl -->
 
 <phrase>
+<original>&Image</original>
+<translation>&I 图像</translation>
+</phrase>
+
+<phrase>
+<original>&Save</original>
+<translation>&S 保存</translation>
+</phrase>
+
+<phrase>
+<original>Save copy (&lossless)</original>
+<translation>保存副本（无损）</translation>
+</phrase>
+
+<phrase>
+<original>Save &as</original>
+<translation>&A 另存为</translation>
+</phrase>
+
+<phrase>
+<original>Revert</original>
+<translation>恢复原状</translation>
+</phrase>
+
+<phrase>
+<original>Open location in E&xplorer</original>
+<translation>&X 在浏览器中打开位置</translation>
+</phrase>
+
+<phrase>
+<original>&Close</original>
+<translation>&C 关闭</translation>
+</phrase>
+
+<phrase>
+<original>Close all except this</original>
+<translation>关闭所有除此之外</translation>
+</phrase>
+
+<phrase>
 <original>Delete layer</original>
 <translation>删除层</translation>
 </phrase>
@@ -3312,7 +3352,7 @@ Please enter a numeric value.</original>
 <translation>居中在图像视窗内</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 40 phrases. 26 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 48 phrases. 26 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -3605,6 +3645,27 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdHyperlink.ctl-->
 
+<!-- BEGIN text for pdImageStrip.ctl -->
+
+<phrase>
+<original>Once this image has been saved to disk, its filename will appear here.</original>
+<translation>一旦这个图像保存到磁盘，它的文件名就会出现在这里。</translation>
+</phrase>
+
+<phrase>
+<original>This image does not have a filename.</original>
+<translation>这个图像没有文件名。</translation>
+</phrase>
+
+<phrase>
+<original>Hover an image thumbnail to see its name and current file location.</original>
+<translation>一个图像的缩略图，看看它的名称和当前文件位置。</translation>
+</phrase>
+
+<!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<!-- END text for pdImageStrip.ctl-->
+
 <!-- BEGIN text for pdLabel.ctl -->
 
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
@@ -3828,6 +3889,67 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdSpinner.ctl-->
 
+<!-- BEGIN text for pdStatusBar.ctl -->
+
+<phrase>
+<original>size</original>
+<translation>大小</translation>
+</phrase>
+
+<phrase>
+<original>(messages will appear here at run-time)</original>
+<translation>（在运行时出现消息）</translation>
+</phrase>
+
+<phrase>
+<original>px</original>
+<translation>像素</translation>
+</phrase>
+
+<phrase>
+<original>in</original>
+<translation>英寸</translation>
+</phrase>
+
+<phrase>
+<original>cm</original>
+<translation>厘米</translation>
+</phrase>
+
+<phrase>
+<original>Resize image</original>
+<translation>调整图像大小</translation>
+</phrase>
+
+<phrase>
+<original>Fit the image on-screen</original>
+<translation>适合图像到屏幕</translation>
+</phrase>
+
+<phrase>
+<original>Zoom in</original>
+<translation>放大</translation>
+</phrase>
+
+<phrase>
+<original>Zoom out</original>
+<translation>缩小</translation>
+</phrase>
+
+<phrase>
+<original>Change viewport zoom</original>
+<translation>改变视觉缩放</translation>
+</phrase>
+
+<phrase>
+<original>Change the image size unit displayed to the left of this box</original>
+<translation>将图像大小单位显示为左边框的值</translation>
+</phrase>
+
+<!-- pdStatusBar.ctl contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+
+<!-- END text for pdStatusBar.ctl-->
+
 <!-- BEGIN text for pdTextBox.ctl -->
 
 <!-- pdTextBox.ctl contains 0 phrases. -->
@@ -3909,33 +4031,8 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>&Close</original>
-<translation>&C 关闭</translation>
-</phrase>
-
-<phrase>
 <original>Close all</original>
 <translation>全部关闭</translation>
-</phrase>
-
-<phrase>
-<original>&Save</original>
-<translation>&S 保存</translation>
-</phrase>
-
-<phrase>
-<original>Save copy (&lossless)</original>
-<translation>保存副本（无损）</translation>
-</phrase>
-
-<phrase>
-<original>Save &as</original>
-<translation>&A 另存为</translation>
-</phrase>
-
-<phrase>
-<original>Revert</original>
-<translation>恢复原状</translation>
 </phrase>
 
 <phrase>
@@ -4036,11 +4133,6 @@ or the File > Open and File > Import menus.</original>
 <phrase>
 <original>1:1 (actual size, 100%)</original>
 <translation>1:1（实际尺寸，100%）</translation>
-</phrase>
-
-<phrase>
-<original>&Image</original>
-<translation>&I 图像</translation>
 </phrase>
 
 <phrase>
@@ -5599,11 +5691,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>Resize image</original>
-<translation>调整图像大小</translation>
-</phrase>
-
-<phrase>
 <original>Content-aware image resize</original>
 <translation>内容感知的图像调整大小</translation>
 </phrase>
@@ -5793,7 +5880,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 180 were duplicates of existing phrases, so only 387 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8175,11 +8262,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Artistic_GlassTiles.frm (FormGlassTiles) -->
 
 <phrase>
-<original>size</original>
-<translation>大小</translation>
-</phrase>
-
-<phrase>
 <original>curvature</original>
 <translation>弯度</translation>
 </phrase>
@@ -8189,7 +8271,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>生成磁贴</translation>
 </phrase>
 
-<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_GlassTiles.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_GlassTiles.frm-->
 
@@ -12271,27 +12353,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <!-- END text for Toolbar_Debug.frm-->
 
-<!-- BEGIN text for Toolbar_ImageTabstrip.frm (toolbar_ImageTabs) -->
-
-<phrase>
-<original>Images</original>
-<translation>图像</translation>
-</phrase>
-
-<phrase>
-<original>Open location in E&xplorer</original>
-<translation>&X 在浏览器中打开位置</translation>
-</phrase>
-
-<phrase>
-<original>Close all except this</original>
-<translation>关闭所有除此之外</translation>
-</phrase>
-
-<!-- Toolbar_ImageTabstrip.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for Toolbar_ImageTabstrip.frm-->
-
 <!-- BEGIN text for Toolbar_Layers.frm (toolbar_Layers) -->
 
 <phrase>
@@ -13503,6 +13564,41 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>use high-resolution input tracking</original>
+<translation>使用高分辨率输入跟踪</translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation>鼠标和笔输入</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent file entries</original>
+<translation>最近文件项的最大数目</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>最近的文件列表</translation>
+</phrase>
+
+<phrase>
+<original>recently used file shortcuts should be</original>
+<translation>最近使用的文件的快捷方式</translation>
+</phrase>
+
+<phrase>
+<original>captions</original>
+<translation>标题</translation>
+</phrase>
+
+<phrase>
+<original>image window titles should be</original>
+<translation>图像窗口的标题显示内容</translation>
+</phrase>
+
+<phrase>
 <original>use the system color profile</original>
 <translation>使用该系统的颜色配置文件</translation>
 </phrase>
@@ -13783,51 +13879,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>use high-resolution input tracking</original>
-<translation>使用高分辨率输入跟踪</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>鼠标和笔输入</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>最近文件项的最大数目</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>最近的文件列表</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts should be</original>
-<translation>最近使用的文件的快捷方式</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>标题</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>图像窗口的标题显示内容</translation>
-</phrase>
-
-<phrase>
-<original>image canvas background</original>
-<translation>图像画布背景</translation>
-</phrase>
-
-<phrase>
-<original>canvas appearance</original>
-<translation>画布背景</translation>
-</phrase>
-
-<phrase>
 <original>(none)</original>
 <translation>（无）</translation>
 </phrase>
@@ -13864,31 +13915,6 @@ Are you sure you want to continue?</original>
 <phrase>
 <original>Reset all preferences</original>
 <translation>重设所有设置</translation>
-</phrase>
-
-<phrase>
-<original>system theme: light</original>
-<translation>系统主题：亮</translation>
-</phrase>
-
-<phrase>
-<original>system theme: dark</original>
-<translation>系统主题：暗</translation>
-</phrase>
-
-<phrase>
-<original>custom color (click box to customize)</original>
-<translation>自定义颜色（点击对话框自定义）</translation>
-</phrase>
-
-<phrase>
-<original>The image canvas sits "behind" the image on the screen.  Dark colors are generally preferable, as they help the image stand out while you work on it.</original>
-<translation>图像画布在屏幕上“落后”的图像。黑暗的颜色通常是可取的，因为在你工作的时候，他们有助于你的形象。</translation>
-</phrase>
-
-<phrase>
-<original>Click to change the image window background color</original>
-<translation>单击可以改变图像窗口背景色</translation>
 </phrase>
 
 <phrase>
@@ -14389,7 +14415,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>警告：这个文件夹是无效的（禁止访问）。请提供一个有效的文件夹。如果没有新的文件夹设置，PhotoDemon将使用系统默认的临时位置。</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 242 phrases. 65 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 234 phrases. 64 were duplicates of existing phrases, so only 170 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14644,84 +14670,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdImageStrip.ctl -->
-
-<phrase>
-<original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation>一旦这个图像保存到磁盘，它的文件名就会出现在这里。</translation>
-</phrase>
-
-<phrase>
-<original>This image does not have a filename.</original>
-<translation>这个图像没有文件名。</translation>
-</phrase>
-
-<phrase>
-<original>Hover an image thumbnail to see its name and current file location.</original>
-<translation>一个图像的缩略图，看看它的名称和当前文件位置。</translation>
-</phrase>
-
-<!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
-
-<!-- END text for pdImageStrip.ctl-->
-
-<!-- BEGIN text for pdStatusBar.ctl -->
-
-<phrase>
-<original>(messages will appear here at run-time)</original>
-<translation>（在运行时出现消息）</translation>
-</phrase>
-
-<phrase>
-<original>px</original>
-<translation>像素</translation>
-</phrase>
-
-<phrase>
-<original>in</original>
-<translation>英寸</translation>
-</phrase>
-
-<phrase>
-<original>cm</original>
-<translation>厘米</translation>
-</phrase>
-
-<phrase>
-<original>Fit the image on-screen</original>
-<translation>适合图像到屏幕</translation>
-</phrase>
-
-<phrase>
-<original>Zoom in</original>
-<translation>放大</translation>
-</phrase>
-
-<phrase>
-<original>Zoom out</original>
-<translation>缩小</translation>
-</phrase>
-
-<phrase>
-<original>Change viewport zoom</original>
-<translation>改变视觉缩放</translation>
-</phrase>
-
-<phrase>
-<original>Change the image size unit displayed to the left of this box</original>
-<translation>将图像大小单位显示为左边框的值</translation>
-</phrase>
-
-<!-- pdStatusBar.ctl contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for pdStatusBar.ctl-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2521</phrasecount>
+<phrasecount>2513</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4325 phrases. -->
-<!-- 1804 are duplicates, so only 2521 unique phrases have been written to file. -->
-<!-- These 2521 phrases contain approximately 13442 total words. -->
+<!-- As of this build, PhotoDemon contains 4316 phrases. -->
+<!-- 1803 are duplicates, so only 2513 unique phrases have been written to file. -->
+<!-- These 2513 phrases contain approximately 13388 total words. -->
 
 </pdData>
