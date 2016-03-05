@@ -69,9 +69,6 @@ Public g_ExifToolEnabled As Boolean
 ' the entire library (which is fairly large).  This variable stores our received library handle.
 Public g_FreeImageHandle As Long
 
-'How to draw the background of image forms; -1 is checkerboard, any other value is treated as an RGB long
-Public g_CanvasBackground As Long
-
 'Does the user want us to prompt them when they try to close unsaved images?
 Public g_ConfirmClosingUnsaved As Boolean
 

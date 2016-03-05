@@ -340,9 +340,6 @@ Public Sub loadUserSettings()
     'Pull all other stored paths
     MacroPath = GetPref_String("Paths", "Macro", MacroPath)
     SelectionPath = GetPref_String("Paths", "Selections", SelectionPath)
-    
-    'Get the canvas background color
-    g_CanvasBackground = GetPref_Long("Interface", "CanvasBackground", RGB(201, 211, 226))
         
     'Check if the user wants us to prompt them about closing unsaved images
     g_ConfirmClosingUnsaved = GetPref_Boolean("Saving", "ConfirmClosingUnsaved", True)
