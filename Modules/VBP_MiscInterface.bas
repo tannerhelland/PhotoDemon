@@ -246,42 +246,9 @@ Public Sub SyncInterfaceToCurrentImage()
         
     End If
         
-    'Perform a special check for the image tabstrip.  Its appearance is contingent on a setting provided by the user, coupled
-    ' with the number of presently open images.
-    
-    'TODO 7.0: find a better way to solve this
-    
-'    'A setting of 2 equates to index 2 in the menu, specifically "Never show image tabstrip".  Hide the tabstrip.
-'    If g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1) = 2 Then
-'        g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, False
-'    Else
-'
-'        'A setting of 1 equates to index 1 in the menu, specifically "Show for 2+ loaded images".  Check image count and
-'        ' set visibility accordingly.
-'        If g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1) = 1 Then
-'
-'            If g_OpenImageCount > 1 Then
-'                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, True
-'            Else
-'                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, False
-'            End If
-'
-'        'A setting of 0 equates to index 0 in the menu, specifically "always show tabstrip".
-'        Else
-'
-'            If g_OpenImageCount > 0 Then
-'                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, True
-'            Else
-'                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, False
-'            End If
-'
-'        End If
-'
-'    End If
-        
     'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls, like
     ' the "Next/Previous" Window menu items.
-    If g_OpenImageCount >= 2 Then
+    If (g_OpenImageCount >= 2) Then
         FormMain.MnuWindow(5).Enabled = True
         FormMain.MnuWindow(6).Enabled = True
     Else
@@ -1131,14 +1098,14 @@ End Sub
 
 'Toolbars can be dynamically shown/hidden by a variety of processes (e.g. clicking an entry in the Window menu, clicking the X in a
 ' toolbar's command box, etc).  All those operations should wrap this singular function.
-Public Sub ToggleToolbarVisibility(ByVal whichToolbar As pdToolbarType, Optional ByVal suppressRedraws As Boolean = False)
+Public Sub ToggleToolbarVisibility(ByVal whichToolbar As PDToolbarType, Optional ByVal suppressRedraws As Boolean = False)
 
     Select Case whichToolbar
     
         Case FILE_TOOLBOX
             FormMain.MnuWindowToolbox(0).Checked = Not FormMain.MnuWindowToolbox(0).Checked
             g_UserPreferences.SetPref_Boolean "Core", "Show File Toolbox", FormMain.MnuWindowToolbox(0).Checked
-            g_WindowManager.SetWindowVisibility toolbar_Toolbox.hWnd, FormMain.MnuWindowToolbox(0).Checked
+            g_WindowManager.SetToolboxVisibility toolbar_Toolbox.hWnd, FormMain.MnuWindowToolbox(0).Checked
             
         Case TOOLS_TOOLBOX
             FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
@@ -1151,17 +1118,17 @@ Public Sub ToggleToolbarVisibility(ByVal whichToolbar As pdToolbarType, Optional
         Case LAYER_TOOLBOX
             FormMain.MnuWindow(2).Checked = Not FormMain.MnuWindow(2).Checked
             g_UserPreferences.SetPref_Boolean "Core", "Show Layers Toolbox", FormMain.MnuWindow(2).Checked
-            g_WindowManager.SetWindowVisibility toolbar_Layers.hWnd, FormMain.MnuWindow(2).Checked
+            g_WindowManager.SetToolboxVisibility toolbar_Layers.hWnd, FormMain.MnuWindow(2).Checked
         
         Case DEBUG_TOOLBOX
             FormMain.MnuDevelopers(0).Checked = Not FormMain.MnuDevelopers(0).Checked
             g_UserPreferences.SetPref_Boolean "Core", "Show Debug Window", FormMain.MnuDevelopers(0).Checked
-            g_WindowManager.SetWindowVisibility toolbar_Debug.hWnd, FormMain.MnuDevelopers(0).Checked
+            g_WindowManager.SetToolboxVisibility toolbar_Debug.hWnd, FormMain.MnuDevelopers(0).Checked
     
     End Select
     
     'Redraw the primary image viewport, as the available client area may have changed.
-    If (g_NumOfImagesLoaded > 0) And (Not suppressRedraws) Then FormMain.RefreshAllCanvases
+    If (g_NumOfImagesLoaded > 0) And (Not suppressRedraws) Then FormMain.UpdateMainLayout
     
 End Sub
 

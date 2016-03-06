@@ -304,6 +304,8 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     End If
     
     'Also raise a generic "click" event, which our parent can deal with however they want
+    RedrawBackBuffer
+    ucSupport.RequestCursor IDC_HAND
     RaiseEvent Click(Button, Shift, x, y)
     
 End Sub

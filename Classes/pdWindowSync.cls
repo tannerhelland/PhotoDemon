@@ -92,7 +92,7 @@ Public Sub SynchronizeWindows(ByVal parentHwnd As Long, ByVal childHwnd As Long)
         m_windowDict.AddEntry strKey, childHwnd
         
         'Subclass size and visibility messages on the parent window
-        If m_Subclass Is Nothing Then Set m_Subclass = New cSelfSubHookCallback
+        If (m_Subclass Is Nothing) Then Set m_Subclass = New cSelfSubHookCallback
         m_Subclass.ssc_Subclass parentHwnd, childHwnd, 1, Me
         m_Subclass.ssc_AddMsg parentHwnd, MSG_BEFORE, WM_SIZE
         

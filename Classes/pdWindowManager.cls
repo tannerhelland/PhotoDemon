@@ -46,9 +46,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Opacity of toolbar windows when a child window is active
-Private Const INACTIVE_TOOLBOX_OPACITY As Byte = 170
-
 'Subclassed messages related to window movement
 Private Const WM_SYSCOMMAND As Long = &H112
 Private Const WM_SYSCOMMAND_WPARAM_MASK As Long = &HFFF0&
@@ -95,20 +92,6 @@ Private Const SWP_SHOWWINDOW As Long = &H40
 Private Const SWP_NOZORDER As Long = &H4
 Private Const SWP_DRAWFRAME As Long = &H20
 Private Const SWP_NOCOPYBITS As Long = &H100
-
-'Experimental messages related to Win 7 taskbar stuff
-Private Const WM_CHILDACTIVATE As Long = &H22
-
-'AnimateWindows decs
-Private Const AW_ACTIVATE As Long = &H20000
-Private Const AW_BLEND As Long = &H80000
-Private Const AW_CENTER As Long = &H10
-Private Const AW_HIDE As Long = &H10000
-Private Const AW_HOR_POSITIVE As Long = &H1
-Private Const AW_HOR_NEGATIVE As Long = &H2
-Private Const AW_SLIDE As Long = &H40000
-Private Const AW_VER_POSITIVE As Long = &H4
-Private Const AW_VER_NEGATIVE As Long = &H8
 
 Private Enum enWindowStyles
     WS_BORDER = &H800000
@@ -167,7 +150,7 @@ Private Const HWND_TOP As Long = 0
 Private Const HWND_BOTTOM As Long = 1
 
 'Windows can be aligned in a variety of ways, and it's helpful to track each direction independently.
-Private Type pdWindowAlignment
+Private Type PDWindowAlignment
     alignLeft As Boolean
     alignTop As Boolean
     alignRight As Boolean
@@ -176,7 +159,7 @@ End Type
 
 'Each window that the manager tracks stores some basic metadata in a variable of this type.
 Private Type pdWindowData
-    alignmentOptions As pdWindowAlignment
+    alignmentOptions As PDWindowAlignment
     forciblyMinimized As Boolean
     formReference As Form
     hWnd As Long
@@ -204,12 +187,11 @@ End Type
 Public Enum PDWindowType
     MAIN_WINDOW = 0
     TOOLBAR_WINDOW = 1
-    IMAGE_WINDOW = 2
-    GENERIC_FLOATING_WINDOW = 3
+    GENERIC_FLOATING_WINDOW = 2
 End Enum
 
 #If False Then
-    Private Const MAIN_WINDOW = 0, TOOLBAR_WINDOW = 1, IMAGE_WINDOW = 2, GENERIC_FLOATING_WINDOW = 3
+    Private Const MAIN_WINDOW = 0, TOOLBAR_WINDOW = 1, GENERIC_FLOATING_WINDOW = 2
 #End If
 
 Public Enum PDToolbarType
@@ -281,12 +263,7 @@ Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, B
 Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
-Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As ShowWindowOptions) As Long
-Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Long) As Long
-Private Declare Function LockSetForegroundWindow Lib "user32" (ByVal uLockCode As Long) As Long
-Private Const LSFW_LOCK As Long = 1
-Private Const LSFW_UNLOCK As Long = 2
 
 'APIs for getting/setting Unicode window captions
 Private Declare Function DefWindowProcW Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
@@ -295,40 +272,30 @@ Private Const WM_GETTEXTLENGTH = &HE
 Private Const WM_SETTEXT = &HC
 
 'APIs for changing window style
-Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal targetHwnd As Long, ByVal TransColor As Long, ByVal newAlpha As Byte, ByVal fFlags As Long) As Boolean
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long) As Long
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 Private Declare Function GetParent Lib "user32" (ByVal targetHwnd As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
-Private Declare Function BeginDeferWindowPos Lib "user32" (ByVal nNumWindows As Long) As Long
-Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Private Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
 Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
-Private Declare Function AdjustWindowRect Lib "user32" (ByRef lpRect As winRect, ByVal dwStyle As Long, ByVal bMenu As Long) As Long
-Private Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal targetHwnd As Long, ByVal lpString As String) As Long
 Private Declare Function AnimateWindow Lib "user32" (ByVal targetHwnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
 Private Declare Function GetFocus Lib "user32" () As Long
 Private Declare Function SetFocus Lib "user32" (ByVal targetHwnd As Long) As Long
-Private Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByVal lprcUpdateRectPtr As Long, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
 
 'RedrawWindow API constants
 Private Const RDW_INVALIDATE As Long = &H1
 Private Const RDW_INTERNALPAINT As Long = &H2
 Private Const RDW_ERASE As Long = &H4
- 
 Private Const RDW_VALIDATE As Long = &H8
 Private Const RDW_NOINTERNALPAINT As Long = &H10
 Private Const RDW_NOERASE As Long = &H20
- 
 Private Const RDW_NOCHILDREN As Long = &H40
 Private Const RDW_ALLCHILDREN As Long = &H80
-
 Private Const RDW_UPDATENOW As Long = &H100
 Private Const RDW_ERASENOW As Long = &H200
- 
 Private Const RDW_FRAME As Long = &H400
 Private Const RDW_NOFRAME As Long = &H800
 
@@ -454,7 +421,7 @@ Public Sub ActivateToolPanel(ByVal formHwndToActivate As Long)
     'Cache the hWnd of this form
     m_CurrentToolPanelHwnd = formHwndToActivate
     
-    'Find the options panel inside our window collection
+    'Locate the parent options panel inside our window collection
     Dim optionWindowHwnd As Long
     
     Dim i As Long
@@ -467,8 +434,9 @@ Public Sub ActivateToolPanel(ByVal formHwndToActivate As Long)
     
     If (m_CurrentToolPanelHwnd <> 0) And (optionWindowHwnd <> 0) Then
         
-        'Initialize the backup window setting dictionary, as necessary
-        If m_ToolPanelDictionary Is Nothing Then Set m_ToolPanelDictionary = New pdDictionary
+        'Initialize the backup window setting dictionary, as necessary.  We use this to store a list of which tool panels have been
+        ' activated this session.  This allows us to swap between previously-used panels more quickly than loading+unloading from scratch.
+        If (m_ToolPanelDictionary Is Nothing) Then Set m_ToolPanelDictionary = New pdDictionary
         
         'First, make the form a child of the options panel form
         If GetParent(m_CurrentToolPanelHwnd) <> optionWindowHwnd Then
@@ -497,6 +465,7 @@ Public Sub ActivateToolPanel(ByVal formHwndToActivate As Long)
     
 End Sub
 
+'After a tool panel has been loaded, it must be specially activated.  This is necessary because we dynamically mess with its window bits.
 Public Sub DeactivateToolPanel(ByVal programIsGoingDown As Boolean, Optional ByVal useCustomHwnd As Long = 0)
     
     'By default, this function will automatically apply the new settings to the last tool options panel it created.
@@ -505,7 +474,7 @@ Public Sub DeactivateToolPanel(ByVal programIsGoingDown As Boolean, Optional ByV
     Dim targetHwnd As Long
     If useCustomHwnd = 0 Then targetHwnd = m_CurrentToolPanelHwnd Else targetHwnd = useCustomHwnd
     
-    'Release the parent reference for the previous activate tool panel
+    'Release the parent reference for the previous activated tool panel
     If targetHwnd <> 0 Then
         
         If programIsGoingDown Then
@@ -533,7 +502,7 @@ End Sub
 ' unloaded, because many aspects of PD interact with the toolboxes - for example, en/disabling buttons on the file toolbar as
 ' necessary - and if the toolbox is unloaded, those statements will either cause errors, or result in unintentional re-loading
 ' of the underlying form.
-Public Sub SetWindowVisibility(ByVal winHwnd As Long, ByVal newVisibility As Boolean, Optional ByVal suppressImageRedraws As Boolean = False)
+Public Sub SetToolboxVisibility(ByVal winHwnd As Long, ByVal newVisibility As Boolean, Optional ByVal suppressImageRedraws As Boolean = False)
     
     'Find this entry in the windows array, and mark its visibility status
     Dim winIndex As Long
@@ -562,13 +531,13 @@ Public Sub SetWindowVisibility(ByVal winHwnd As Long, ByVal newVisibility As Boo
     If Not suppressImageRedraws Then
     
         For i = 0 To numOfPDWindows - 1
-            If pdWindows(i).typeOfWindow <> MAIN_WINDOW Then UpdateWindowStyle i
+            If (pdWindows(i).typeOfWindow <> MAIN_WINDOW) Then UpdateWindowStyle i
         Next i
     
     End If
      
     'Because the main image canvas area may be modified due to window visibility, redraw it now
-    If m_AutoRefreshMode Then FormMain.RefreshAllCanvases
+    If m_AutoRefreshMode Then FormMain.UpdateMainLayout
     
 End Sub
 
@@ -596,16 +565,11 @@ End Sub
 
 'Similar to the functions below, this sub can be used to retrieve a rect that contains (in *screen coordinates*) the position of the main
 ' form's "actual" client rect, by which I mean - the rect accounting for docked toolbars, as necessary.
-Friend Sub GetActualMainFormClientRect(ByRef modifiedRect As winRect, Optional ByVal useScreenCoordinates As Boolean = True)
+Friend Sub GetActualMainFormClientRect(ByRef modifiedRect As winRect)
 
-    'Start by retrieving the main form's client rect, in screen coordinates as desired.
+    'Start by retrieving the main form's client rect
     Dim clientRect As winRect, toolbarRect As winRect
-    
-    If useScreenCoordinates Then
-        GetClientCoordsRelativeToScreen mainWindowHwnd, clientRect
-    Else
-        GetClientRect mainWindowHwnd, clientRect
-    End If
+    GetClientRect mainWindowHwnd, clientRect
         
     'Subtract the width and/or height of docked toolbars from the rect, contingent on their visibility and alignment
     Dim i As Long
@@ -632,52 +596,6 @@ Friend Sub GetActualMainFormClientRect(ByRef modifiedRect As winRect, Optional B
 
 End Sub
 
-'External functions (such as those that auto-zoom an image to fit it on-screen) need to know the size of the client area on the main form.
-' That client size will change based on the docking status of toolbars, so we must use the window manager to calculate it.
-Public Function RequestActualMainFormClientWidth() As Long
-
-    Dim clientRect As winRect
-    GetClientRect mainWindowHwnd, clientRect
-    RequestActualMainFormClientWidth = clientRect.x2 - clientRect.x1
-    
-    'We must also remove all docked toolbar widths from the client size.
-    Dim toolbarRect As winRect
-    
-    Dim i As Long
-    For i = 0 To numOfPDWindows - 1
-        If (pdWindows(i).typeOfWindow = TOOLBAR_WINDOW) And (pdWindows(i).isVisible) Then
-            If pdWindows(i).alignmentOptions.alignLeft Or pdWindows(i).alignmentOptions.alignRight Then
-                GetWindowRect pdWindows(i).hWnd, toolbarRect
-                RequestActualMainFormClientWidth = RequestActualMainFormClientWidth - (toolbarRect.x2 - toolbarRect.x1)
-            End If
-        End If
-    Next i
-    
-End Function
-
-'At present, the docking status of toolbars doesn't affect the main form's client height, making this calculation quite easy.
-Public Function RequestActualMainFormClientHeight() As Long
-
-    Dim clientRect As winRect
-    GetClientRect mainWindowHwnd, clientRect
-    RequestActualMainFormClientHeight = clientRect.y2
-    
-    'We must remove all docked horizontal toolbar heights from the client size.
-    Dim toolbarRect As winRect
-    
-    'Remove all vertical toolbar widths from the client rect
-    Dim i As Long
-    For i = 0 To numOfPDWindows - 1
-        If (pdWindows(i).typeOfWindow = TOOLBAR_WINDOW) And (pdWindows(i).isVisible) Then
-            If pdWindows(i).alignmentOptions.alignTop Or pdWindows(i).alignmentOptions.alignBottom Then
-                GetWindowRect pdWindows(i).hWnd, toolbarRect
-                RequestActualMainFormClientHeight = RequestActualMainFormClientHeight - (toolbarRect.y2 - toolbarRect.y1)
-            End If
-        End If
-    Next i
-    
-End Function
-
 'If a toolbar is docked, it will also be aligned.  We can use alignment data to position it instead of an x/y offset.
 Private Sub SetWindowPosByAlignment(ByVal winIndex As Long, Optional ByVal suspendRedraw As Boolean = False)
 
@@ -691,10 +609,10 @@ Private Sub SetWindowPosByAlignment(ByVal winIndex As Long, Optional ByVal suspe
     Dim mainClientRect As winRect
     GetClientRect mainWindowHwnd, mainClientRect
         
-    'PhotoDemon toolboxes have a sort of hierarchy in how they are arranged.  In order, the preference for sizing goes:
-    ' 1) Tool options toolbox (on bottom)
-    ' 2) Primary toolbox (on left)
-    ' 3) Layers toolbox (on right)
+    'PhotoDemon toolboxes are arranged in a specific hierarchy.  In order, the preference for sizing goes:
+    ' 1) Tool options toolbox (on bottom).  This needs as much horizontal space as it can get, so it stretches the full width of the main window.
+    ' 2) Primary toolbox (on left).  This extends from the main form's menu bar to the top of the tool options box (if visible).
+    ' 3) Layers toolbox (on right).  Same rules as the primary toolbox, but right-aligned.
     Dim i As Long, fileToolboxIndex As Long, toolsToolboxIndex As Long
     For i = 0 To numOfPDWindows - 1
         If pdWindows(i).optionalToolbarType = FILE_TOOLBOX Then fileToolboxIndex = i
@@ -818,41 +736,12 @@ Private Sub ForceFullWindowRefresh(ByVal winIndex As Long)
     UpdateWindow pdWindows(winIndex).hWnd
 End Sub
 
-'Retrieve the client coordinates of a window, but relative to the *screen* (e.g. with the top-left set to screen coords instead of the default (0,0)
-Private Sub GetClientCoordsRelativeToScreen(ByVal targetHwnd As Long, ByRef rectToFill As winRect)
-
-    Dim curClientRect As winRect
-    GetClientRect targetHwnd, curClientRect
-    
-    'Client rect is always based at (0,0); to convert it to screen coordinates, we use the ClientToScreen API function.
-    Dim clientLeft As POINTAPI, clientRight As POINTAPI
-    
-    'Retrieve the top-left corner first.  Note that we don't have to fill clientLeft, because the top-left client coordinates are always (0,0)
-    ClientToScreen targetHwnd, clientLeft
-    
-    'Fill the bottom-right coord object, then convert it to screen coords
-    clientRight.x = curClientRect.x2
-    clientRight.y = curClientRect.y2
-    ClientToScreen targetHwnd, clientRight
-    
-    'Fill the rect object we were passed.
-    rectToFill.x1 = clientLeft.x
-    rectToFill.y1 = clientLeft.y
-    rectToFill.x2 = clientRight.x
-    rectToFill.y2 = clientRight.y
-
-End Sub
-
 'When a window is floated or docked, certain appearance changes must be made (such as changing its window border).  Because multiple actions
 ' trigger such a change, we provide the ability to update a window separately, via this function.
 Private Sub UpdateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad As Boolean = False)
 
-    Dim mainFormRect As winRect, mainFormClientRect As winRect, childRect As winRect
+    Dim mainFormClientRect As winRect, childRect As winRect
     Dim newWinStyle As Long
-    
-    'Because we will access the main form's location and client location under a variety of circumstances, retrieve their values now
-    GetWindowRect mainWindowHwnd, mainFormRect
-    GetClientCoordsRelativeToScreen mainWindowHwnd, mainFormClientRect
     
     Select Case pdWindows(winIndex).typeOfWindow
     
@@ -1055,18 +944,9 @@ End Function
 'Load previous window locations from file.
 Public Function LoadAllWindowLocations() As Boolean
     
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If cFile.FileExist(windowDataPath) Then
-            
-        'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
-        If (Not xmlEngine.loadXMLFile(windowDataPath)) Or Not (xmlEngine.isPDDataType("Window locations")) Then
-            Debug.Print "No window location data found.  A new window location file has been created."
-            resetXMLData
-        End If
-            
-    Else
+    'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
+    If (Not xmlEngine.LoadXMLFile(windowDataPath)) Or Not (xmlEngine.isPDDataType("Window locations")) Then
+        Debug.Print "No window location data found.  A new window location file has been created."
         resetXMLData
     End If
     
@@ -1081,42 +961,37 @@ Public Function SaveAllWindowLocations() As Boolean
     Dim i As Long
     For i = 0 To numOfPDWindows - 1
     
-        'We save locations for everything but image windows
-        If Not (pdWindows(i).typeOfWindow = IMAGE_WINDOW) Then
-    
-            'Check for this window preset in the file.  If it does not exist, add it now.
-            If Not xmlEngine.doesTagExist("windowEntry", "id", pdWindows(i).windowName) Then
-            
-                xmlEngine.writeTagWithAttribute "windowEntry", "id", pdWindows(i).windowName, "", True
-                xmlEngine.closeTag "windowEntry"
-                xmlEngine.writeBlankLine
-            
-            End If
-            
-            'Write this window's location data into the XML file.
-            With pdWindows(i)
-            
-                'Window rect values
-                xmlEngine.updateTag "windowLeft", .lastPosition.x1, "windowEntry", "id", .windowName
-                xmlEngine.updateTag "windowTop", .lastPosition.y1, "windowEntry", "id", .windowName
-                xmlEngine.updateTag "windowRight", .lastPosition.x2, "windowEntry", "id", .windowName
-                xmlEngine.updateTag "windowBottom", .lastPosition.y2, "windowEntry", "id", .windowName
-                
-                'Window and border state
-                xmlEngine.updateTag "windowState", .lastWindowState, "windowEntry", "id", .windowName
-                xmlEngine.updateTag "windowStyle", .lastWindowBorder, "windowEntry", "id", .windowName
-                
-                'Alignment; this is only used by the image tabstrip at present, but may be enabled for other windows
-                ' in the future.
-                xmlEngine.updateTag "alignLeft", Trim$(Str(.alignmentOptions.alignLeft)), "windowEntry", "id", .windowName
-                xmlEngine.updateTag "alignTop", Trim$(Str(.alignmentOptions.alignTop)), "windowEntry", "id", .windowName
-                xmlEngine.updateTag "alignRight", Trim$(Str(.alignmentOptions.alignRight)), "windowEntry", "id", .windowName
-                xmlEngine.updateTag "alignBottom", Trim$(Str(.alignmentOptions.alignBottom)), "windowEntry", "id", .windowName
-                
-            End With
+        'Check for this window preset in the file.  If it does not exist, add it now.
+        If Not xmlEngine.doesTagExist("windowEntry", "id", pdWindows(i).windowName) Then
+        
+            xmlEngine.writeTagWithAttribute "windowEntry", "id", pdWindows(i).windowName, "", True
+            xmlEngine.closeTag "windowEntry"
+            xmlEngine.writeBlankLine
         
         End If
-    
+        
+        'Write this window's location data into the XML file.
+        With pdWindows(i)
+        
+            'Window rect values
+            xmlEngine.updateTag "windowLeft", .lastPosition.x1, "windowEntry", "id", .windowName
+            xmlEngine.updateTag "windowTop", .lastPosition.y1, "windowEntry", "id", .windowName
+            xmlEngine.updateTag "windowRight", .lastPosition.x2, "windowEntry", "id", .windowName
+            xmlEngine.updateTag "windowBottom", .lastPosition.y2, "windowEntry", "id", .windowName
+            
+            'Window and border state
+            xmlEngine.updateTag "windowState", .lastWindowState, "windowEntry", "id", .windowName
+            xmlEngine.updateTag "windowStyle", .lastWindowBorder, "windowEntry", "id", .windowName
+            
+            'Alignment; this is only used by the image tabstrip at present, but may be enabled for other windows
+            ' in the future.
+            xmlEngine.updateTag "alignLeft", Trim$(Str(.alignmentOptions.alignLeft)), "windowEntry", "id", .windowName
+            xmlEngine.updateTag "alignTop", Trim$(Str(.alignmentOptions.alignTop)), "windowEntry", "id", .windowName
+            xmlEngine.updateTag "alignRight", Trim$(Str(.alignmentOptions.alignRight)), "windowEntry", "id", .windowName
+            xmlEngine.updateTag "alignBottom", Trim$(Str(.alignmentOptions.alignBottom)), "windowEntry", "id", .windowName
+            
+        End With
+        
     Next i
     
     'Write the data out to file
@@ -1256,7 +1131,7 @@ Public Sub UpdateMinimumDimensions(ByVal srcHwnd As Long, Optional ByVal minWidt
                 'If the window is too small, fix it now
                 If GetWindowWidth(srcHwnd) < minWidth Then
                     pdWindows(i).formReference.Move pdWindows(i).formReference.Left, pdWindows(i).formReference.Top, minWidth * Screen.TwipsPerPixelX
-                    If m_AutoRefreshMode Then FormMain.RefreshAllCanvases
+                    If m_AutoRefreshMode Then FormMain.UpdateMainLayout
                 End If
                 
             End If
@@ -1270,7 +1145,7 @@ Public Sub UpdateMinimumDimensions(ByVal srcHwnd As Long, Optional ByVal minWidt
                 'If the window is too small, fix it now
                 If GetWindowHeight(srcHwnd) < minHeight Then
                     pdWindows(i).formReference.Move pdWindows(i).formReference.Left, pdWindows(i).formReference.Top, , minHeight * Screen.TwipsPerPixelY
-                    If m_AutoRefreshMode Then FormMain.RefreshAllCanvases
+                    If m_AutoRefreshMode Then FormMain.UpdateMainLayout
                 End If
                 
             End If
@@ -1333,7 +1208,7 @@ Public Sub RegisterChildForm(ByRef childForm As Form, ByVal whatWindowType As PD
     UpdateWindowStyle numOfPDWindows, True
     
     'Move the window into place using either last-known location data, or the supplied "preferred location"
-    If pdWindows(numOfPDWindows).typeOfWindow <> IMAGE_WINDOW Then RestoreWindowLocation numOfPDWindows, preferredLocationIfNecessary
+    RestoreWindowLocation numOfPDWindows, preferredLocationIfNecessary
     
     'Update this window's offset (because it may have been moved by the above function)
     RequestWindowResync numOfPDWindows
@@ -1410,11 +1285,6 @@ Private Sub Class_Terminate()
 
 End Sub
 
-'When the user has resized the image tabstrip, we need to redraw all image windows to match (but toolbars are okay).
-Public Sub NotifyImageTabStripResized()
-    If (Not mainFormTriggeredChange) And m_AutoRefreshMode Then FormMain.RefreshAllCanvases
-End Sub
-
 'When the user has manually resized one of the toolboxes, we need to adjust other toolboxes to match.
 Public Sub NotifyToolboxResized(Optional ByVal hWndOfResizeSource As Long = 0, Optional ByVal refreshCanvasToo As Boolean = True)
     
@@ -1423,7 +1293,7 @@ Public Sub NotifyToolboxResized(Optional ByVal hWndOfResizeSource As Long = 0, O
     GetWindowRect mainWindowHwnd, curWinRect
     
     'Ask the main form's canvas to redraw itself, per the passed parameter
-    If refreshCanvasToo And m_AutoRefreshMode Then FormMain.RefreshAllCanvases
+    If refreshCanvasToo And m_AutoRefreshMode Then FormMain.UpdateMainLayout
     
 End Sub
 
@@ -1476,9 +1346,6 @@ Private Sub MoveWindowToLastKnownLocation(ByVal windowIndex As Long, ByRef mainF
             
     End Select
     
-    'Previously we would request a resync of position after this, but that is no longer necessary.
-    'requestWindowResync i
-
 End Sub
 
 'If the main program knows an action is likely to screw up window appearance (such as forcible hide/restore during screen capture),
@@ -1730,31 +1597,31 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'The OS will automatically handle window restoration for us, but we need to make sure to resync all window positions
                 ' afterwards.  If we don't do this, PD's internal window position values will fall out of sync.
                 If ((wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Or (wParam = SC_SIZE) Or (wParam = SC_MOVE)) And (bBefore = False) And (Not isPDDeactivated) Then
-                    
+
                     'Debug.Print "PD restoration code running..."
-                    
+
                     GetWindowRect mainWindowHwnd, curWinRect
                     For i = 0 To numOfPDWindows - 1
                         RequestWindowResync i
                         RequestWindowRedraw i, pdWindows(mainWindowIndex).lastPosition
                     Next i
-                    
+
                     If insideMinimizeMode Then insideMinimizeMode = False
-                
+
                 End If
-                
+
                 'When minimizing, check all windows, and if one has not been minimized, minimize it now
                 If (wParam = SC_MINIMIZE) And (bBefore = True) Then
-                    
+
                     'Debug.Print "PD minimize code running..."
-                    
+
                     'As a failsafe, update each window's location before minimizing it
                     For i = 0 To numOfPDWindows - 1
                         RequestWindowResync i
                     Next i
-                    
+
                     insideMinimizeMode = True
-                    
+
                 End If
                 
             'The user is switching to or from PD and another application

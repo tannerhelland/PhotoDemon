@@ -1757,25 +1757,29 @@ End Sub
 'When the main form is resized, we must re-align the main canvas
 Private Sub Form_Resize()
     If Not (g_WindowManager Is Nothing) Then
-        If g_WindowManager.GetAutoRefreshMode Then RefreshAllCanvases
+        If g_WindowManager.GetAutoRefreshMode Then UpdateMainLayout
     Else
-        RefreshAllCanvases
+        UpdateMainLayout
     End If
 End Sub
 
 'Resize all currently active canvases.  This was an important function back when PD used an MDI engine, but now that we
 ' use our own tabbed interface, it's due for a major revisit.  If we could kill this function entirely, I'd be very happy.
-Public Sub RefreshAllCanvases()
+Public Sub UpdateMainLayout()
 
     'If the main form has been minimized, don't refresh anything
     If FormMain.WindowState = vbMinimized Then Exit Sub
 
     'Start by reorienting the canvas to fill the full available client area
     Dim mainRect As winRect
-    g_WindowManager.GetActualMainFormClientRect mainRect, False
+    g_WindowManager.GetActualMainFormClientRect mainRect
     
-    'API is used instead of .Move as it produces smoother movement
-    MoveWindow mainCanvas(0).hWnd, mainRect.x1, mainRect.y1, mainRect.x2 - mainRect.x1, mainRect.y2 - mainRect.y1, 1
+    'See if a move is even necessary.
+    'If (mainCanvas(0).GetLeft <> mainRect.x1) Or (mainCanvas(0).GetWidth <> mainRect.x2 - mainRect.x1) Then
+    '    If (mainCanvas(0).GetTop <> mainRect.y1) Or (mainCanvas(0).GetHeight <> mainRect.y2 - mainRect.y1) Then
+            MoveWindow mainCanvas(0).hWnd, mainRect.x1, mainRect.y1, mainRect.x2 - mainRect.x1, mainRect.y2 - mainRect.y1, 1
+    '    End If
+    'End If
     
     'TODO 7.0: fix this mess - these functions take a LOT of time to process, and they are being called way too frequently!
     mainCanvas(0).UpdateCanvasLayout
@@ -2585,7 +2589,7 @@ Private Sub Form_Load()
     
     'With all windows in position, reposition the main form's canvas
     g_WindowManager.SetAutoRefreshMode True
-    FormMain.RefreshAllCanvases
+    FormMain.UpdateMainLayout
     g_WindowManager.SetAutoRefreshMode False
     
     'We can now display the main form and any visible toolbars.  (There is currently a flicker if toolbars have been hidden by the user,
@@ -2605,14 +2609,14 @@ Private Sub Form_Load()
     
     'Display the various toolboxes per the user's display settings
     toolbar_Toolbox.Show vbModeless, Me
-    g_WindowManager.SetWindowVisibility toolbar_Toolbox.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
+    g_WindowManager.SetToolboxVisibility toolbar_Toolbox.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Preparing layers toolbar..."
     #End If
     
     toolbar_Layers.Show vbModeless, Me
-    g_WindowManager.SetWindowVisibility toolbar_Layers.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Layers Toolbox", True)
+    g_WindowManager.SetToolboxVisibility toolbar_Layers.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Layers Toolbox", True)
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Preparing options toolbar..."
@@ -2628,7 +2632,7 @@ Private Sub Form_Load()
     #If DEBUGMODE = 1 Then
         If (PD_BUILD_QUALITY = PD_PRE_ALPHA) Or (PD_BUILD_QUALITY = PD_ALPHA) Then
             'toolbar_Debug.Show vbModeless, Me
-            'g_WindowManager.setWindowVisibility toolbar_Debug.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Debug Window", False)
+            'g_WindowManager.SetToolboxVisibility toolbar_Debug.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Debug Window", False)
         End If
     #End If
     
@@ -2638,7 +2642,7 @@ Private Sub Form_Load()
     
     'With all toolboxes loaded, we need to synchronize the main canvas layout against any that remain visible
     g_WindowManager.SetAutoRefreshMode True
-    RefreshAllCanvases
+    UpdateMainLayout
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Preparing input tracker..."

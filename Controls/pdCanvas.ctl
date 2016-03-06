@@ -1637,7 +1637,9 @@ End Sub
 Private Sub ImageStrip_Click(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     If (Button And pdRightButton) <> 0 Then
-    
+        
+        ucSupport.RequestCursor IDC_DEFAULT
+        
         'Enable various pop-up menu entries.  Wherever possible, we simply want to mimic the official PD menu, which saves
         ' us having to supply our own heuristics for menu enablement.
         mnuTabstripPopup(POP_SAVE).Enabled = FormMain.MnuFile(8).Enabled
@@ -1658,6 +1660,7 @@ Private Sub ImageStrip_Click(ByVal Button As PDMouseButtonConstants, ByVal Shift
         
         'Raise the context menu
         UserControl.PopupMenu mnuImageTabsContext, x:=x, y:=y
+        ShowCursor 1
         
     End If
     
@@ -1746,6 +1749,7 @@ Private Sub UserControl_Initialize()
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, , True
+    ucSupport.RequestExtraFunctionality True
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors

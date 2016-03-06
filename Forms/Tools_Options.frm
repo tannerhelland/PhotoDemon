@@ -1837,7 +1837,7 @@ Private Sub cmdBarMini_OKClick()
     'All user preferences have now been written out to file
     
     'Because some preferences affect the program's interface, redraw the active image.
-    FormMain.RefreshAllCanvases
+    FormMain.UpdateMainLayout
         
     'TODO: the image tabstrip should be handled by the program canvas as of 7.0's release.  See if we can remove this line.
     Interface.RequestTabstripRedraw
