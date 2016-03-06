@@ -538,7 +538,7 @@ Private Sub ResetClassCursor(Optional ByVal currentIndex As Long = 0)
     
     If (Not m_OverrideSetCursorMessages) Then
         SetClassLong m_TrackingData(PDIT_DEFAULT, currentIndex), GCL_HCURSOR, LoadCursor(0, IDC_DEFAULT) 'For now, always reset the cursor to an arrow.  This is necessary until we can fix some bad SetClassLong handling elsewhere in PD (via setHandCursor, when applied to picture boxes) :: m_PrevClassCursorHandle
-        SetCursor LoadCursor(0, IDC_DEFAULT)
+        SetCursor LoadCursor(0, IDC_ARROW)      'Note that this MUST be IDC_ARROW; IDC_DEFAULT will show nothing on some control
     End If
     
 End Sub
