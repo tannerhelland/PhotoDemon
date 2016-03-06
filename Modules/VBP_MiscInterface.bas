@@ -3,8 +3,8 @@ Attribute VB_Name = "Interface"
 'Miscellaneous Functions Related to the User Interface
 'Copyright 2001-2016 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 20/June/14
-'Last update: add interface-syncing functions for non-destructive edit tools
+'Last updated: 06/March/16
+'Last update: start implementing fine-grained UI sync caching, so sync various controls only when necessary
 '
 'Miscellaneous routines related to rendering and handling PhotoDemon's interface.  As the program's complexity has
 ' increased, so has the need for specialized handling of certain UI elements.
@@ -1096,42 +1096,6 @@ Public Sub ToggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVa
 
 End Sub
 
-'Toolbars can be dynamically shown/hidden by a variety of processes (e.g. clicking an entry in the Window menu, clicking the X in a
-' toolbar's command box, etc).  All those operations should wrap this singular function.
-Public Sub ToggleToolbarVisibility(ByVal whichToolbar As PDToolbarType, Optional ByVal suppressRedraws As Boolean = False)
-
-    Select Case whichToolbar
-    
-        Case FILE_TOOLBOX
-            FormMain.MnuWindowToolbox(0).Checked = Not FormMain.MnuWindowToolbox(0).Checked
-            g_UserPreferences.SetPref_Boolean "Core", "Show File Toolbox", FormMain.MnuWindowToolbox(0).Checked
-            g_WindowManager.SetToolboxVisibility toolbar_Toolbox.hWnd, FormMain.MnuWindowToolbox(0).Checked
-            
-        Case TOOLS_TOOLBOX
-            FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
-            g_UserPreferences.SetPref_Boolean "Core", "Show Selections Toolbox", FormMain.MnuWindow(1).Checked
-            
-            'Because this toolbox's visibility is also tied to the current tool, we wrap a different functions.  This function
-            ' will show/hide the toolbox as necessary.
-            toolbar_Toolbox.resetToolButtonStates
-            
-        Case LAYER_TOOLBOX
-            FormMain.MnuWindow(2).Checked = Not FormMain.MnuWindow(2).Checked
-            g_UserPreferences.SetPref_Boolean "Core", "Show Layers Toolbox", FormMain.MnuWindow(2).Checked
-            g_WindowManager.SetToolboxVisibility toolbar_Layers.hWnd, FormMain.MnuWindow(2).Checked
-        
-        Case DEBUG_TOOLBOX
-            FormMain.MnuDevelopers(0).Checked = Not FormMain.MnuDevelopers(0).Checked
-            g_UserPreferences.SetPref_Boolean "Core", "Show Debug Window", FormMain.MnuDevelopers(0).Checked
-            g_WindowManager.SetToolboxVisibility toolbar_Debug.hWnd, FormMain.MnuDevelopers(0).Checked
-    
-    End Select
-    
-    'Redraw the primary image viewport, as the available client area may have changed.
-    If (g_NumOfImagesLoaded > 0) And (Not suppressRedraws) Then FormMain.UpdateMainLayout
-    
-End Sub
-
 Public Function FixDPI(ByVal pxMeasurement As Long) As Long
 
     'The first time this function is called, m_DPIRatio will be 0.  Calculate it.
@@ -1261,7 +1225,9 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         
         'STEP 1: give all clickable controls a hand icon instead of the default pointer.
         ' (Note: this code sets all command buttons, scroll bars, option buttons, check boxes, list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor)
-        If (Not TypeOf eControl Is PictureBox) Then
+        If (TypeOf eControl Is PictureBox) Then
+            setArrowCursor eControl
+        Else
             If ((TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox)) Then
                 setHandCursor eControl
             End If

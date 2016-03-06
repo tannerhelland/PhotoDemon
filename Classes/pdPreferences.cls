@@ -104,7 +104,7 @@ Public Sub startBatchPreferenceMode()
 
     'Initialize an XML object
     Set xmlEngine = New pdXML
-    xmlEngine.loadXMLFile PreferencesPath
+    xmlEngine.LoadXMLFile PreferencesPath
 
 End Sub
 
@@ -323,7 +323,7 @@ Public Sub loadUserSettings()
     Set cFile = New pdFSO
     
     'If no preferences file exists, build a default one
-    If Not cFile.FileExist(PreferencesPath) Then createNewPreferencesFile
+    If Not cFile.FileExist(PreferencesPath) Then CreateNewPreferencesFile
     
     'Start batch processing mode for preferences, which is much faster (as we don't have to go out to the hard drive
     ' for each preference access).
@@ -378,14 +378,14 @@ Public Sub resetPreferences()
     
     If cFile.FileExist(PreferencesPath) Then cFile.KillFile PreferencesPath
     
-    createNewPreferencesFile
+    CreateNewPreferencesFile
     loadUserSettings
     
 End Sub
 
 'Create a new preferences XML file from scratch.  When new preferences are added to the preferences dialog, they should also be
 ' added to this function, to ensure that the most intelligent preference is selected by default.
-Private Sub createNewPreferencesFile()
+Private Sub CreateNewPreferencesFile()
 
     'This function is used to determine whether PhotoDemon is being run for the first time.  Why do it here?
     ' 1) When first downloaded, PhotoDemon doesn't come with a prefs file.  Thus this routine MUST be called.
@@ -420,7 +420,6 @@ Private Sub createNewPreferencesFile()
     xmlEngine.closeTag "Advanced"
     xmlEngine.writeBlankLine
     
-    'Write out the "batch processor" block of preferences:
     xmlEngine.writeTag "BatchProcess", "", True
         xmlEngine.writeTag "DriveBox", ""
         xmlEngine.writeTag "InputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
@@ -433,7 +432,6 @@ Private Sub createNewPreferencesFile()
     ' exposed to the user (e.g. the user cannot toggle these from the Preferences dialog).
     xmlEngine.writeTag "Core", "", True
         xmlEngine.writeTag "DisplayIDEWarning", "True"
-        xmlEngine.writeTag "FloatingToolbars", "False"
         xmlEngine.writeTag "HasGitHubAccount", ""
         xmlEngine.writeTag "LastOpenFilter", "1"        'Default to "All Compatible Graphics" filter for loading
         xmlEngine.writeTag "LastFilePreferencesPage", "1"
@@ -444,10 +442,6 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "LastWindowTop", "1"
         xmlEngine.writeTag "LastWindowWidth", "1"
         xmlEngine.writeTag "LastWindowHeight", "1"
-        xmlEngine.writeTag "ShowFileToolbox", "True"
-        xmlEngine.writeTag "ShowSelectionsToolbox", "True"
-        xmlEngine.writeTag "ShowLayersToolbox", "True"
-        xmlEngine.writeTag "ShowDebugWindow", "False"
     xmlEngine.closeTag "Core"
     xmlEngine.writeBlankLine
     
@@ -457,7 +451,6 @@ Private Sub createNewPreferencesFile()
     xmlEngine.closeTag "Dialogs"
     xmlEngine.writeBlankLine
     
-    'Write out the "file format" block of preferences:
     xmlEngine.writeTag "FileFormats", "", True
         xmlEngine.writeTag "BitmapRLE", "False"
         xmlEngine.writeTag "PNGBackgroundColor", "True"
@@ -470,9 +463,7 @@ Private Sub createNewPreferencesFile()
     xmlEngine.closeTag "FileFormats"
     xmlEngine.writeBlankLine
     
-    'Write out the "interface" block of preferences:
     xmlEngine.writeTag "Interface", "", True
-        xmlEngine.writeTag "CanvasBackground", Trim$(Str(vb3DShadow)) 'RGB(201, 211, 226)
         xmlEngine.writeTag "CanvasDropShadow", "True"
         xmlEngine.writeTag "HighResolutionInput", "False"
         xmlEngine.writeTag "MRUCaptionLength", "0"
@@ -481,13 +472,11 @@ Private Sub createNewPreferencesFile()
     xmlEngine.closeTag "Interface"
     xmlEngine.writeBlankLine
     
-    'Write out the "language" block of preferences:
     xmlEngine.writeTag "Language", "", True
         xmlEngine.writeTag "CurrentLanguageFile", ""
     xmlEngine.closeTag "Language"
     xmlEngine.writeBlankLine
     
-    'Write out the "loading" block of preferences:
     xmlEngine.writeTag "Loading", "", True
         xmlEngine.writeTag "AutomaticallyLoadMetadata", "False"
         xmlEngine.writeTag "ExifAutoRotate", "True"
@@ -496,8 +485,7 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "VerifyInitialColorDepth", "True"
     xmlEngine.closeTag "Loading"
     xmlEngine.writeBlankLine
-        
-    'Write out the "paths" block of preferences:
+    
     xmlEngine.writeTag "Paths", "", True
         xmlEngine.writeTag "TempFiles", GetSystemTemporaryPath
         xmlEngine.writeTag "OpenImage", GetWindowsFolder(CSIDL_MYPICTURES)
@@ -507,7 +495,6 @@ Private Sub createNewPreferencesFile()
     xmlEngine.closeTag "Paths"
     xmlEngine.writeBlankLine
     
-    'Write out the "performance" block of preferences:
     xmlEngine.writeTag "Performance", "", True
         xmlEngine.writeTag "ColorPerformance", "1"
         xmlEngine.writeTag "InterfaceDecorationPerformance", "1"
@@ -517,7 +504,6 @@ Private Sub createNewPreferencesFile()
     xmlEngine.closeTag "Performance"
     xmlEngine.writeBlankLine
     
-    'Write out the "plugins" block preferences:
     xmlEngine.writeTag "Plugins", "", True
         xmlEngine.writeTag "ForceExifToolDisable", "False"
         xmlEngine.writeTag "ForceEZTwainDisable", "False"
@@ -530,8 +516,7 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "PNGQuantPerformance", "3"
     xmlEngine.closeTag "Plugins"
     xmlEngine.writeBlankLine
-
-    'Write out the "saving" block of preferences:
+    
     xmlEngine.writeTag "Saving", "", True
         xmlEngine.writeTag "ConfirmClosingUnsaved", "True"
         xmlEngine.writeTag "MetadataExport", "1"
@@ -540,14 +525,19 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "SuggestedFormat", "0"
     xmlEngine.closeTag "Saving"
     xmlEngine.writeBlankLine
-
-    'Write out the "tools" block of preferences:
+    
+    xmlEngine.writeTag "Toolbox", "", True
+        xmlEngine.writeTag "ShowFileToolbox", "True"
+        xmlEngine.writeTag "ShowSelectionsToolbox", "True"
+        xmlEngine.writeTag "ShowLayersToolbox", "True"
+        xmlEngine.writeTag "ShowDebugWindow", "False"
+    xmlEngine.closeTag "Toolbox"
+    
     xmlEngine.writeTag "Tools", "", True
         xmlEngine.writeTag "ClearSelectionAfterCrop", "True"
     xmlEngine.closeTag "Tools"
     xmlEngine.writeBlankLine
-
-    'Write out the "transparency" block of preferences:
+    
     xmlEngine.writeTag "Transparency", "", True
         xmlEngine.writeTag "AlphaCheckMode", "0"
         xmlEngine.writeTag "AlphaCheckOne", Trim$(Str(RGB(255, 255, 255)))
@@ -556,7 +546,6 @@ Private Sub createNewPreferencesFile()
     xmlEngine.closeTag "Transparency"
     xmlEngine.writeBlankLine
     
-    'Write out the "updates" block of preferences:
     xmlEngine.writeTag "Updates", "", True
         xmlEngine.writeTag "CheckForUpdates", "True"
         xmlEngine.writeTag "LastUpdateCheck", ""
@@ -704,7 +693,7 @@ Private Function GetPreference(ByRef strSectionHeader As String, ByRef strVariab
     'Create an XML object and load the XML settings file
     If Not m_BatchModeActive Then
         Set xmlEngine = New pdXML
-        xmlEngine.loadXMLFile PreferencesPath
+        xmlEngine.LoadXMLFile PreferencesPath
     End If
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon preferences file
@@ -727,7 +716,7 @@ Public Function WritePreference(strSectionHeader As String, strVariableName As S
     'Create an XML object and load the XML settings file
     If Not m_BatchModeActive Then
         Set xmlEngine = New pdXML
-        xmlEngine.loadXMLFile PreferencesPath
+        xmlEngine.LoadXMLFile PreferencesPath
     End If
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon preferences file

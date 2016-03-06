@@ -414,19 +414,40 @@ Public Sub LoadTheProgram()
     g_WindowManager.SetAutoRefreshMode False
     g_WindowManager.RegisterParentForm FormMain
     
+    '**
+    ' NEW CODE FOR 7.0:
+    ' Initialize the new, lightweight toolbox handler.  This will load things like toolbox sizes from the last session.
+    Toolboxes.LoadToolboxData
+    
+    'Hypothetically, we don't actually want to do more here - instead, we save it for after the main form has been positioned.
+    
+    '**
+    
     'Load all tool windows.  Even though they may not be visible (as the user can elect to hide them), we still want them loaded,
     ' so we can interact with them as necessary (e.g. "enable Undo button", etc).
+    
+    #If DEBUGMODE = 1 Then
+        perfCheck.markEvent "Window manager: load left toolbox"
+    #End If
     Load toolbar_Toolbox
+    
+    #If DEBUGMODE = 1 Then
+        perfCheck.markEvent "Window manager: load right toolbox"
+    #End If
     Load toolbar_Layers
+    
+    #If DEBUGMODE = 1 Then
+        perfCheck.markEvent "Window manager: load bottom toolbox"
+    #End If
     Load toolbar_Options
     
     'Retrieve tool window visibility and mark those menus as well
-    FormMain.MnuWindowToolbox(0).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
-    FormMain.MnuWindow(1).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
-    FormMain.MnuWindow(2).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Layers Toolbox", True)
+    FormMain.MnuWindowToolbox(0).Checked = g_UserPreferences.GetPref_Boolean("Toolbox", "Show Left Toolbox", True)
+    FormMain.MnuWindow(1).Checked = g_UserPreferences.GetPref_Boolean("Toolbox", "Show Bottom Toolbox", True)
+    FormMain.MnuWindow(2).Checked = g_UserPreferences.GetPref_Boolean("Toolbox", "Show Right Toolbox", True)
     
     #If DEBUGMODE = 1 Then
-        FormMain.MnuDevelopers(0).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Debug Window", False)
+        FormMain.MnuDevelopers(0).Checked = g_UserPreferences.GetPref_Boolean("Toolbox", "Show Debug Window", False)
     #End If
     
     'Retrieve two additional settings for the image tabstrip menu: when to display it, and its alignment
