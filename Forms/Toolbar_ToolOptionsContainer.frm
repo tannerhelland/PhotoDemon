@@ -63,7 +63,7 @@ Private Sub Form_Load()
 End Sub
 
 'Toolbars can never be unloaded, EXCEPT when the whole program is going down.  Check for the program-wide closing flag prior
-' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the toggleToolbarVisibility sub
+' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the ToggleToolboxVisibility sub
 ' will also keep this toolbar's Window menu entry in sync with the form's current visibility.)
 Private Sub Form_Unload(Cancel As Integer)
     
@@ -72,7 +72,7 @@ Private Sub Form_Unload(Cancel As Integer)
         g_WindowManager.UnregisterForm Me
     Else
         Cancel = True
-        ToggleToolbarVisibility TOOLS_TOOLBOX
+        ToggleToolboxVisibility BOTTOM_TOOLBOX
     End If
     
 End Sub

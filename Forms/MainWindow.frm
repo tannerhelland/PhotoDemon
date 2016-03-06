@@ -26,7 +26,7 @@ Begin VB.Form FormMain
    ScaleWidth      =   1260
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
-      Top             =   4440
+      Top             =   2280
       _ExtentX        =   661
       _ExtentY        =   661
    End
@@ -34,33 +34,33 @@ Begin VB.Form FormMain
       Enabled         =   0   'False
       Interval        =   250
       Left            =   120
-      Top             =   2040
+      Top             =   600
    End
    Begin VB.Timer tmrCountdown 
       Enabled         =   0   'False
       Interval        =   200
       Left            =   120
-      Top             =   1560
+      Top             =   120
    End
    Begin PhotoDemon.pdCanvas mainCanvas 
-      Height          =   3735
+      Height          =   5055
       Index           =   0
-      Left            =   6120
+      Left            =   2640
       TabIndex        =   0
-      Top             =   2880
+      Top             =   120
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
-      Top             =   3840
+      Top             =   1680
       _ExtentX        =   873
       _ExtentY        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
-      Top             =   2520
+      Top             =   1080
       _ExtentX        =   635
       _ExtentY        =   635
       ErrAsOut        =   0   'False
@@ -1754,7 +1754,9 @@ Public Sub triggerPendingAsynchronousDownloads()
     Me.asyncDownloader.setAutoDownloadMode True
 End Sub
 
-'When the main form is resized, we must re-align the main canvas
+'When the main form is resized, we must re-align the main canvas.
+' TODO: if the window manager is already calling UpdateMainLayout, we're repeating those steps twice. Confirm that this
+'       isn't happening prior to the 7.0 release.
 Private Sub Form_Resize()
     If Not (g_WindowManager Is Nothing) Then
         If g_WindowManager.GetAutoRefreshMode Then UpdateMainLayout
@@ -1769,9 +1771,28 @@ Public Sub UpdateMainLayout()
 
     'If the main form has been minimized, don't refresh anything
     If FormMain.WindowState = vbMinimized Then Exit Sub
-
+    
+    '**
+    ' NEW CODE FOR 7.0:
+    ' Let the toolbox manager determine positions for us
+    
+    Dim mainRect As winRect, canvasRect As winRect
+    g_WindowManager.GetClientWinRect FormMain.hWnd, mainRect
+    Toolboxes.CalculateNewToolboxRects mainRect, canvasRect
+    
+    'With toolbox positions successfully calculated, we can now synchronize each toolbox to its calculated rect.
+    'Toolboxes.PositionToolbox PDT_LeftToolbox, toolbar_Toolbox.hWnd
+    'Toolboxes.PositionToolbox PDT_RightToolbox, toolbar_Layers.hWnd
+    'Toolboxes.PositionToolbox PDT_BottomToolbox, toolbar_Options.hWnd
+    
+    'Similarly, we can drop the canvas into place using the helpful rect provided by the toolbox module
+    'With canvasRect
+    '    FormMain.mainCanvas(0).SetPositionAndSize .x1, .y1, .x2 - .x1, .y2 - .y1
+    'End With
+    
+    '**
+    
     'Start by reorienting the canvas to fill the full available client area
-    Dim mainRect As winRect
     g_WindowManager.GetActualMainFormClientRect mainRect
     
     'See if a move is even necessary.
@@ -1879,7 +1900,7 @@ Private Sub mnuDevelopers_Click(Index As Integer)
         'Debug window
         Case 0
             #If DEBUGMODE = 1 Then
-                ToggleToolbarVisibility DEBUG_TOOLBOX
+                ToggleToolboxVisibility DEBUG_TOOLBOX
             #End If
         
         '(separator)
@@ -2254,7 +2275,7 @@ Private Sub MnuWindowToolbox_Click(Index As Integer)
     
         'Toggle toolbox visibility
         Case 0
-            ToggleToolbarVisibility FILE_TOOLBOX
+            ToggleToolboxVisibility LEFT_TOOLBOX
         
         '<separator>
         Case 1
@@ -2582,10 +2603,16 @@ Private Sub Form_Load()
         pdDebug.LogAction "Registering toolbars with the window manager..."
     #End If
     
+    '**
+    ' NEW CODE FOR 7.0:
+    ' Let the toolbox manager determine positions for us via UpdateMainLayout
+    ' (In other words, skip the "register child form" steps below.)
+    '**
+    
     'Register all toolbox forms with the window manager
-    g_WindowManager.RegisterChildForm toolbar_Toolbox, TOOLBAR_WINDOW, 1, FILE_TOOLBOX, , FixDPI(48)
-    g_WindowManager.RegisterChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, LAYER_TOOLBOX, , FixDPI(200)
-    g_WindowManager.RegisterChildForm toolbar_Options, TOOLBAR_WINDOW, 3, TOOLS_TOOLBOX
+    g_WindowManager.RegisterChildForm toolbar_Toolbox, TOOLBAR_WINDOW, 1, LEFT_TOOLBOX, , FixDPI(48)
+    g_WindowManager.RegisterChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, RIGHT_TOOLBOX, , FixDPI(200)
+    g_WindowManager.RegisterChildForm toolbar_Options, TOOLBAR_WINDOW, 3, BOTTOM_TOOLBOX
     
     'With all windows in position, reposition the main form's canvas
     g_WindowManager.SetAutoRefreshMode True
@@ -2609,14 +2636,14 @@ Private Sub Form_Load()
     
     'Display the various toolboxes per the user's display settings
     toolbar_Toolbox.Show vbModeless, Me
-    g_WindowManager.SetToolboxVisibility toolbar_Toolbox.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
+    g_WindowManager.SetToolboxVisibility toolbar_Toolbox.hWnd, g_UserPreferences.GetPref_Boolean("Toolbox", "Show Left Toolbox", True)
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Preparing layers toolbar..."
     #End If
     
     toolbar_Layers.Show vbModeless, Me
-    g_WindowManager.SetToolboxVisibility toolbar_Layers.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Layers Toolbox", True)
+    g_WindowManager.SetToolboxVisibility toolbar_Layers.hWnd, g_UserPreferences.GetPref_Boolean("Toolbox", "Show Right Toolbox", True)
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Preparing options toolbar..."
@@ -2990,11 +3017,12 @@ Private Sub Form_Unload(Cancel As Integer)
     #End If
     
     FormMain.mainCanvas(0).WriteUserPreferences
+    Toolboxes.SaveToolboxData
     
     'Release the clipboard manager.  If we are responsible for the current clipboard data, we must manually upload a
     ' copy of all supported formats - for this reason, this step may be a little slow.
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "FormMain gone.  Shutting down clipboard manager..."
+        pdDebug.LogAction "Shutting down clipboard manager..."
     #End If
     
     If g_Clipboard.IsPDDataOnClipboard And g_IsProgramCompiled Then
@@ -3020,14 +3048,14 @@ Private Sub Form_Unload(Cancel As Integer)
         
     'Perform any printer-related cleanup
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Removing printer temp files"
+        pdDebug.LogAction "Removing printer temp files..."
     #End If
     
     Printing.performPrinterCleanup
     
     'Stop tracking hotkeys
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Turning off hotkey manager"
+        pdDebug.LogAction "Turning off hotkey manager..."
     #End If
     
     pdHotkeys.DeactivateHook True
@@ -3035,14 +3063,14 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Destroy all custom-created form icons
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Destroying custom icons for this session"
+        pdDebug.LogAction "Destroying custom icons for this session..."
     #End If
     
     DestroyAllIcons
     
     'Release the hand cursor we use for all clickable objects
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Unloading custom cursors for this session"
+        pdDebug.LogAction "Unloading custom cursors for this session..."
     #End If
     
     UnloadAllCursors
@@ -3051,7 +3079,7 @@ Private Sub Form_Unload(Cancel As Integer)
     ' that would be an improvement is if the program crashes, and if it does crash, the user wouldn't want to re-load
     ' the problematic image anyway.)
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Saving recent file list"
+        pdDebug.LogAction "Saving recent file list..."
     #End If
     
     g_RecentFiles.MRU_SaveToFile
@@ -3059,28 +3087,28 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Restore the user's font smoothing setting as necessary.  (Only relevant on XP.)
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Restoring ClearType settings (if any)"
+        pdDebug.LogAction "Restoring ClearType settings (if any)..."
     #End If
     
     HandleClearType False
     
     'Release any Win7-specific features
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Releasing custom Windows 7 features"
+        pdDebug.LogAction "Releasing custom Windows 7 features..."
     #End If
     
     releaseWin7Features
     
     'TODO: implement this, as necessary, once theming is active
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Releasing main form theming"
+        pdDebug.LogAction "Releasing main form theming..."
     #End If
     
     'ReleaseFormTheming Me
     
     'Unload all toolbars
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Unloading toolbars"
+        pdDebug.LogAction "Unloading toolboxes.."
     #End If
     
     #If DEBUGMODE = 1 Then
@@ -3093,7 +3121,7 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Release this form from the window manager, and write out all window data to file
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Shutting down window manager"
+        pdDebug.LogAction "Shutting down window manager..."
     #End If
     
     g_WindowManager.UnregisterForm Me
@@ -3101,7 +3129,7 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'As a final failsafe, forcibly unload any remaining forms
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Forcibly unloading any remaining forms"
+        pdDebug.LogAction "Forcibly unloading any remaining forms..."
     #End If
     
     Dim tmpForm As Form
@@ -4494,11 +4522,11 @@ Private Sub MnuWindow_Click(Index As Integer)
             
         'Show/hide tool options
         Case 1
-            ToggleToolbarVisibility TOOLS_TOOLBOX
+            ToggleToolboxVisibility BOTTOM_TOOLBOX
         
         'Show/hide layer toolbox
         Case 2
-            ToggleToolbarVisibility LAYER_TOOLBOX
+            ToggleToolboxVisibility RIGHT_TOOLBOX
         
         '<top-level Image tabstrip>
         Case 3

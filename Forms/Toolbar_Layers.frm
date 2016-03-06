@@ -221,7 +221,7 @@ Private Sub Form_Resize()
 End Sub
 
 'Toolbars can never be unloaded, EXCEPT when the whole program is going down.  Check for the program-wide closing flag prior
-' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the toggleToolbarVisibility sub
+' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the ToggleToolboxVisibility sub
 ' will also keep this toolbar's Window menu entry in sync with the form's current visibility.)
 Private Sub Form_Unload(Cancel As Integer)
     
@@ -244,7 +244,7 @@ Private Sub Form_Unload(Cancel As Integer)
         
     Else
         Cancel = True
-        ToggleToolbarVisibility LAYER_TOOLBOX
+        ToggleToolboxVisibility RIGHT_TOOLBOX
     End If
     
 End Sub
@@ -367,6 +367,11 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
             m_WeAreResponsibleForResize = True
             ReleaseCapture
             SendMessage Me.hWnd, WM_NCLBUTTONDOWN, hitCode, ByVal 0&
+            
+            'After the toolbox has been resized, we need to manually notify the toolbox manager, so it can
+            ' notify any neighboring toolboxes (and/or the central canvas)
+            Toolboxes.SetConstrainingSize PDT_RightToolbox, Me.ScaleWidth
+            'TODO: redraw the main window to match!
             
             'A premature exit is required, because the end of this sub contains code to detect the release of the
             ' mouse after a drag event.  Because the event is not being initiated normally, we can't detect a standard

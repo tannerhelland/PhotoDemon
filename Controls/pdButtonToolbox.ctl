@@ -236,7 +236,7 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
     m_ButtonHeight = srcDIB.getDIBHeight
     
     'Create our vertical sprite-sheet DIB, and mark it as having premultiplied alpha
-    If m_ButtonImages Is Nothing Then Set m_ButtonImages = New pdDIB
+    If (m_ButtonImages Is Nothing) Then Set m_ButtonImages = New pdDIB
     m_ButtonImages.createBlank m_ButtonWidth, m_ButtonHeight * 3, srcDIB.getDIBColorDepth, 0, 0
     m_ButtonImages.setInitialAlphaPremultiplicationState True
     
@@ -529,7 +529,7 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
     ' property is set, the button is not pressed, etc).
     Dim btnColorBorder As Long, btnColorFill As Long
     Dim considerActive As Boolean
-    considerActive = (m_ButtonState And (Not m_DontHighlightDownState)) Or (m_AutoToggle And ucSupport.isMouseButtonDown(pdLeftButton))
+    considerActive = (m_ButtonState And (Not m_DontHighlightDownState)) Or (m_AutoToggle And ucSupport.IsMouseButtonDown(pdLeftButton))
     
     'If our owner has requested a custom backcolor, it takes precedence (but only if the button is inactive)
     If m_UseCustomBackColor And (Not considerActive) Then

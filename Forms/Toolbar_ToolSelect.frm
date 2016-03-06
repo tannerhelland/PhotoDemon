@@ -484,6 +484,11 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             ReleaseCapture
             SendMessage Me.hWnd, WM_NCLBUTTONDOWN, hitCode, ByVal 0&
             
+            'After the toolbox has been resized, we need to manually notify the toolbox manager, so it can
+            ' notify any neighboring toolboxes (and/or the central canvas)
+            Toolboxes.SetConstrainingSize PDT_LeftToolbox, Me.ScaleWidth
+            'TODO: redraw the main window to match!
+            
             'A premature exit is required, because the end of this sub contains code to detect the release of the
             ' mouse after a drag event.  Because the event is not being initiated normally, we can't detect a standard
             ' MouseUp event, so instead, we mimic it by checking MouseMove and m_WeAreResponsibleForResize = TRUE.
@@ -547,7 +552,7 @@ Private Sub Form_Load()
     Set lastUsedSettings = New pdLastUsedSettings
     lastUsedSettings.setParentForm Me
     lastUsedSettings.loadAllControlValues
-        
+    
     'Retrieve any relevant toolbox display settings from the user's preferences file
     m_ShowCategoryLabels = g_UserPreferences.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
     m_ButtonSize = g_UserPreferences.GetPref_Long("Core", "Toolbox Button Size", 1)
@@ -721,7 +726,7 @@ Private Sub ReflowButtonSet(ByVal associatedTitleIndex As Long, ByVal categoryIs
 End Sub
 
 'Toolbars can never be unloaded, EXCEPT when the whole program is going down.  Check for the program-wide closing flag prior
-' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the toggleToolbarVisibility sub
+' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the ToggleToolboxVisibility sub
 ' will also keep this toolbar's Window menu entry in sync with the form's current visibility.)
 Private Sub Form_Unload(Cancel As Integer)
     
@@ -730,7 +735,7 @@ Private Sub Form_Unload(Cancel As Integer)
         g_WindowManager.UnregisterForm Me
     Else
         Cancel = True
-        ToggleToolbarVisibility FILE_TOOLBOX
+        ToggleToolboxVisibility LEFT_TOOLBOX
     End If
     
 End Sub
@@ -911,12 +916,17 @@ Public Sub resetToolButtonStates()
             'Hand tool is currently the only tool without additional options
             Case NAV_DRAG
                 g_WindowManager.SetToolboxVisibility toolbar_Options.hWnd, False, False
+                Toolboxes.SetToolboxVisibility PDT_BottomToolbox, False
                 
             'All other tools expose options, so display the toolbox (unless the user has disabled the window completely)
             Case Else
-                g_WindowManager.SetToolboxVisibility toolbar_Options.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True), False
+                g_WindowManager.SetToolboxVisibility toolbar_Options.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Bottom Toolbox", True), False
+                Toolboxes.SetToolboxVisibilityByPreference PDT_BottomToolbox
                 
         End Select
+        
+        'NEW SYSTEM!  After setting visibility, we must apply the changes.
+        'FormMain.UpdateMainLayout
         
     End If
     

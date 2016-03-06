@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.UserControl ShellPipe 
    Appearance      =   0  'Flat
-   BackColor       =   &H80000005&
+   BackColor       =   &H0080FFFF&
    CanGetFocus     =   0   'False
    ClientHeight    =   360
    ClientLeft      =   0
@@ -13,10 +13,10 @@ Begin VB.UserControl ShellPipe
    HitBehavior     =   0  'None
    InvisibleAtRuntime=   -1  'True
    PaletteMode     =   4  'None
-   Picture         =   "ShellPipe.ctx":0000
-   ScaleHeight     =   360
-   ScaleWidth      =   360
-   ToolboxBitmap   =   "ShellPipe.ctx":01A2
+   ScaleHeight     =   24
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   24
+   ToolboxBitmap   =   "ShellPipe.ctx":0000
    Windowless      =   -1  'True
    Begin VB.Timer tmrCheck 
       Enabled         =   0   'False
