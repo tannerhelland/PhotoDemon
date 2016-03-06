@@ -526,7 +526,7 @@ End Function
 
 'Load an XML file into memory.  This function will also do some basic validation to ensure the requested file is actually XML.
 ' Returns: TRUE if file found, loaded, and validated successfully.  FALSE otherwise.
-Public Function loadXMLFile(ByVal xmlPath As String) As Boolean
+Public Function LoadXMLFile(ByVal xmlPath As String) As Boolean
     
     If m_File.FileExist(xmlPath) Then
     
@@ -539,17 +539,17 @@ Public Function loadXMLFile(ByVal xmlPath As String) As Boolean
             
             'Check for an XML header
             If verifyXMLHeader(m_xmlContents) Then
-                loadXMLFile = True
+                LoadXMLFile = True
             Else
-                loadXMLFile = False
+                LoadXMLFile = False
             End If
             
         Else
-            loadXMLFile = False
+            LoadXMLFile = False
         End If
     
     Else
-        loadXMLFile = False
+        LoadXMLFile = False
     End If
     
 End Function

@@ -413,7 +413,7 @@ Private Sub cmdFile_Click(Index As Integer)
         
     'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
     ' for forms may get stuck on the west/east "resize" cursor.  To avoid this, reset it after any button click.
-    cMouseEvents.setSystemCursor IDC_ARROW
+    cMouseEvents.SetSystemCursor IDC_ARROW
         
     Select Case Index
     
@@ -451,7 +451,7 @@ End Sub
 'When the mouse leaves this toolbox, reset it to an arrow (so other forms don't magically acquire the west/east resize cursor, as the mouse is
 ' likely to leave off the right side of this form)
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    cMouseEvents.setSystemCursor IDC_ARROW
+    cMouseEvents.SetSystemCursor IDC_ARROW
 End Sub
 
 Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -477,7 +477,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     If mouseInResizeTerritory Then
     
         'Change the cursor to a resize cursor
-        cMouseEvents.setSystemCursor IDC_SIZEWE
+        cMouseEvents.SetSystemCursor IDC_SIZEWE
         
         If (Button = vbLeftButton) Then
             m_WeAreResponsibleForResize = True
@@ -492,7 +492,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         End If
         
     Else
-        cMouseEvents.setSystemCursor IDC_ARROW
+        cMouseEvents.SetSystemCursor IDC_ARROW
     End If
     
     'Check for mouse release; we will only reach this point if the mouse is *not* in resize territory, which in turn
@@ -541,7 +541,7 @@ Private Sub Form_Load()
     
     'Initialize a mouse handler
     Set cMouseEvents = New pdInputMouse
-    cMouseEvents.addInputTracker Me.hWnd, True, True, , True
+    cMouseEvents.AddInputTracker Me.hWnd, True, True, , True
     
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
@@ -561,7 +561,7 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_LostFocus()
-    cMouseEvents.setSystemCursor IDC_DEFAULT
+    cMouseEvents.SetSystemCursor IDC_DEFAULT
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
@@ -910,11 +910,11 @@ Public Sub resetToolButtonStates()
             
             'Hand tool is currently the only tool without additional options
             Case NAV_DRAG
-                g_WindowManager.SetWindowVisibility toolbar_Options.hWnd, False, False
+                g_WindowManager.SetToolboxVisibility toolbar_Options.hWnd, False, False
                 
             'All other tools expose options, so display the toolbox (unless the user has disabled the window completely)
             Case Else
-                g_WindowManager.SetWindowVisibility toolbar_Options.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True), False
+                g_WindowManager.SetToolboxVisibility toolbar_Options.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True), False
                 
         End Select
         
@@ -963,7 +963,7 @@ Private Sub cmdTools_Click(Index As Integer)
         
     'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
     ' for forms may get stuck on the west/east "resize" cursor.  To avoid this, reset it after any button click.
-    cMouseEvents.setSystemCursor IDC_ARROW
+    cMouseEvents.SetSystemCursor IDC_ARROW
     
     'Update the previous and current tool entries
     g_PreviousTool = g_CurrentTool

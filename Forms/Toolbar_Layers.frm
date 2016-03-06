@@ -1,6 +1,5 @@
 VERSION 5.00
 Begin VB.Form toolbar_Layers 
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Layers"
@@ -31,6 +30,7 @@ Begin VB.Form toolbar_Layers
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
+      HasDC           =   0   'False
       Height          =   735
       Index           =   2
       Left            =   240
@@ -46,6 +46,7 @@ Begin VB.Form toolbar_Layers
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
+      HasDC           =   0   'False
       Height          =   735
       Index           =   1
       Left            =   360
@@ -72,6 +73,7 @@ Begin VB.Form toolbar_Layers
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
+      HasDC           =   0   'False
       Height          =   735
       Index           =   0
       Left            =   480
@@ -177,7 +179,7 @@ Private Sub Form_Load()
     
     'Prep a mouse handler
     Set m_MouseEvents = New pdInputMouse
-    m_MouseEvents.addInputTracker Me.hWnd, True, True, , True, True
+    m_MouseEvents.AddInputTracker Me.hWnd, True, True, , True, True
     
     'Prep a window synchronizer and add each subpanel to it
     Set m_WindowSync = New pdWindowSync
@@ -359,7 +361,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     If mouseInResizeTerritory Then
     
         'Change the cursor to a resize cursor
-        m_MouseEvents.setSystemCursor IDC_SIZEWE
+        m_MouseEvents.SetSystemCursor IDC_SIZEWE
         
         If (Button = vbLeftButton) Then
             m_WeAreResponsibleForResize = True
@@ -374,7 +376,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
         End If
         
     Else
-        m_MouseEvents.setSystemCursor IDC_DEFAULT
+        m_MouseEvents.SetSystemCursor IDC_DEFAULT
     End If
     
     'Check for mouse release; we will only reach this point if the mouse is *not* in resize territory, which in turn
@@ -383,7 +385,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     If m_WeAreResponsibleForResize Then
         
         m_WeAreResponsibleForResize = False
-        m_MouseEvents.setSystemCursor IDC_DEFAULT
+        m_MouseEvents.SetSystemCursor IDC_DEFAULT
         
         'If theming is disabled, window performance is so poor that the window manager will automatically
         ' disable canvas updates until the mouse is released.  Request a full update now.
@@ -394,7 +396,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
 End Sub
 
 Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
-    m_MouseEvents.setSystemCursor IDC_DEFAULT
+    m_MouseEvents.SetSystemCursor IDC_DEFAULT
 End Sub
 
 Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
