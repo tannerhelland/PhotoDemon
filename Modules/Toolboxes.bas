@@ -206,11 +206,11 @@ Public Sub PositionToolbox(ByVal toolID As PD_Toolbox, ByVal toolboxHWnd As Long
             .hWnd = toolboxHWnd
             
             If (toolID = PDT_LeftToolbox) Then
-                g_WindowManager.RequestMinMaxTracking toolboxHWnd, .MinSize, , .MaxSize
+                g_WindowManager.RequestMinMaxTracking toolboxHWnd, toolID, .MinSize, , .MaxSize
             ElseIf (toolID = PDT_BottomToolbox) Then
                 
             ElseIf (toolID = PDT_RightToolbox) Then
-                g_WindowManager.RequestMinMaxTracking toolboxHWnd, .MinSize, , .MaxSize
+                g_WindowManager.RequestMinMaxTracking toolboxHWnd, toolID, .MinSize, , .MaxSize
             End If
             
         End If

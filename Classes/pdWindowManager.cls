@@ -59,6 +59,8 @@ Private Const WM_SHOWWINDOW As Long = &H18
 Private Const WM_WINDOWPOSCHANGED As Long = &H47
 Private Const WM_NCACTIVATE As Long = &H86
 Private Const WM_GETMINMAXINFO As Long = &H24
+Private Const WM_CANCELMODE As Long = &H1F
+Private Const WM_ENABLE As Long = &HA
 
 'Subclassed messages for detecting when PD is losing focus to another app, or regaining it from another app
 Private Const WA_INACTIVE      As Long = 0
@@ -298,6 +300,7 @@ Private m_AutoRefreshMode As Boolean
 ' a window attempts a resize.  *sigh*
 Private Type MinMaxTracker
     hWnd As Long
+    internalID As Long
     minWidth As Long
     minHeight As Long
     maxWidth As Long
@@ -333,12 +336,16 @@ Public Sub SetWindowCaptionW(ByRef targetHwnd As Long, ByRef newCaption As Strin
     DefWindowProcW targetHwnd, WM_SETTEXT, 0&, ByVal StrPtr(newCaption)
 End Sub
 
-Public Sub SetVisibilityOfAnyWindowByHwnd(ByVal srcHwnd As Long, ByVal visibilityState As Boolean, Optional ByVal activateWindowToo As Boolean = False)
+Public Sub SetVisibilityByHWnd(ByVal srcHwnd As Long, ByVal visibilityState As Boolean, Optional ByVal activateWindowToo As Boolean = False)
     If visibilityState Then
         If activateWindowToo Then ShowWindow srcHwnd, SW_RESTORE Else ShowWindow srcHwnd, SW_SHOWNA
     Else
         ShowWindow srcHwnd, SW_HIDE
     End If
+End Sub
+
+Public Sub SetEnablementByHWnd(ByVal dstHwnd As Long, ByVal enabledState As Boolean)
+    EnableWindow dstHwnd, IIf(enabledState, 1&, 0&)
 End Sub
 
 Friend Sub GetClientWinRect(ByVal srcHwnd As Long, ByRef dstRect As winRect)
@@ -427,7 +434,7 @@ Public Sub ActivateToolPanel(ByVal formHWndToActivate As Long, ByVal optionWindo
         SetWindowPos m_CurrentToolPanelHwnd, HWND_TOP, 0, 1, optionsPanelRect.x2 - optionsPanelRect.x1, optionsPanelRect.y2 - optionsPanelRect.y1, SWP_NOACTIVATE Or SWP_NOOWNERZORDER Or SWP_NOZORDER
         
         'Finally, set visibility according to the parent window
-        Me.SetVisibilityOfAnyWindowByHwnd m_CurrentToolPanelHwnd, toolbar_Options.Visible, False
+        Me.SetVisibilityByHWnd m_CurrentToolPanelHwnd, toolbar_Options.Visible, False
         
     End If
     
@@ -458,7 +465,7 @@ Public Sub DeactivateToolPanel(ByVal programIsGoingDown As Boolean, Optional ByV
             
         End If
         
-        Me.SetVisibilityOfAnyWindowByHwnd targetHwnd, False
+        Me.SetVisibilityByHWnd targetHwnd, False
         
     End If
     
@@ -492,6 +499,11 @@ End Sub
 Private Sub ForceFullWindowRefresh(ByVal winIndex As Long)
     InvalidateRect pdWindows(winIndex).hWnd, ByVal 0&, 0
     UpdateWindow pdWindows(winIndex).hWnd
+End Sub
+
+Public Sub ForceWindowRepaint(ByVal hWnd As Long)
+    InvalidateRect hWnd, ByVal 0&, 0&
+    UpdateWindow hWnd
 End Sub
 
 'The first time PhotoDemon is run, this sub can be called to nicely center the window on the user's primary monitor.
@@ -813,10 +825,11 @@ End Sub
 
 'Use this function to set minimum and/or maximum sizes for any arbitrary window.  (Note that this requires us to subclass
 ' the window in question; plan accordingly!)
-Friend Sub RequestMinMaxTracking(ByVal srcHwnd As Long, Optional ByVal minWidth As Long = 0, Optional ByVal minHeight As Long = 0, Optional ByVal maxWidth As Long = 0, Optional ByVal maxHeight As Long = 0)
+Friend Sub RequestMinMaxTracking(ByVal srcHwnd As Long, Optional ByVal internalID As Long, Optional ByVal minWidth As Long = 0, Optional ByVal minHeight As Long = 0, Optional ByVal maxWidth As Long = 0, Optional ByVal maxHeight As Long = 0)
 
     With m_MinMaxEntries(m_numOfMinMaxEntries)
         .hWnd = srcHwnd
+        .internalID = internalID
         .minWidth = minWidth
         .minHeight = minHeight
         .maxWidth = maxWidth
@@ -1068,12 +1081,13 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     CopyMemory ByVal lParam, ByVal VarPtr(m_tmpMinMax), Len(m_tmpMinMax)
                     bHandled = True
                     lReturn = 0
+                    Exit For
                     
                 End If
             Next i
         
         End If
-    
+        
     End If
 
 

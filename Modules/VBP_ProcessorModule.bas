@@ -50,6 +50,12 @@ Private m_Processing As Boolean
 'Elapsed time of this processor request (to enable this, see the top constant in the Public_Constants module)
 Private m_ProcessingTime As Double
 
+'When calling a dialog, the main Processing function will actually get called twice: first, with showDialog = true,
+' then a second, nested call with showDialog = false.  We track the nested function state because some tasks
+' (like UI things, e.g. displaying a "busy" cursor) should be reset by the outer Processor invocation, not the inner one.
+' Tracking nested states also helps us avoid repeating unnecessary synchronization tasks.
+Private m_NestedProcessingCount As Long
+
 'Prior to initiating a (potentially) lengthy process, PD notes the window with keyboard input, then forcibly locks down input.
 ' After the action completes, keyboard focus is restored to its proper place.
 Private m_FocusHWnd As Long
@@ -98,7 +104,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
 
     'Main error handler for the software processor is initialized by this line
     On Error GoTo MainErrHandler
-        
+    
+    'Every time this sub is entered, increment the process counter.  You can check for this value being > 1 to see if we are in
+    ' the midst of a nested processor request.
+    m_NestedProcessingCount = m_NestedProcessingCount + 1
+    
     'If we are applying an action to the image (e.g. not just showing a dialog), and the action is likely to take awhile
     ' (e.g. it is processing an image, and not just modifying a layer header) display a busy cursor.
     If (Not showDialog) Then
@@ -137,7 +147,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'With focus removed from any valid objects, now is a good time to mark the software processor as busy
     ' (but only when we're not showing a dialog!)
-    If Not showDialog Then m_Processing = True
+    If (Not showDialog) Then m_Processing = True
     
     'Next, complete part two of our "unwanted user interaction" failsafe: disable the main form to prevent the user from clicking additional
     ' menus or tools while this action is processing
@@ -259,6 +269,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 'Reset default tracking values and/or UI states prior to exiting
                 m_Processing = False
                 Screen.MousePointer = vbDefault
+                m_NestedProcessingCount = m_NestedProcessingCount - 1
                 FormMain.Enabled = True
                 
                 Exit Sub
@@ -294,6 +305,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                     'Reset default tracking values and/or UI states prior to exiting
                     m_Processing = False
                     Screen.MousePointer = vbDefault
+                    m_NestedProcessingCount = m_NestedProcessingCount - 1
                     FormMain.Enabled = True
                     
                     Exit Sub
@@ -528,8 +540,8 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                     If Not FormPrint.Visible Then ShowPDDialog vbModal, FormPrint
                 End If
                 
-                'In the future, the print dialog will be replaced with this new version.  However, there are
-                ' bigger priorities for 6.2, so I'm putting this on hold for now...
+                'In the future, the print dialog should be replaced with a new version.  However, this is a monumental task
+                ' and there are any number of bigger priorities at present, so this has been put on hold indefinitely...
                 'If Not FormPrintNew.Visible Then showPDDialog vbModal, FormPrintNew
                 
             End If
@@ -538,7 +550,10 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Unload FormMain
             
             'If the user does not cancel the exit, we must forcibly exit this sub (otherwise the program will not exit)
-            If g_ProgramShuttingDown Then Exit Sub
+            If g_ProgramShuttingDown Then
+                m_NestedProcessingCount = m_NestedProcessingCount - 1
+                Exit Sub
+            End If
         
         Case "Select scanner or camera"
             Twain32SelectScanner
@@ -1920,17 +1935,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
     End If
     
-    'Restore the mouse pointer to its default value.
-    ' (NOTE: if we are in the midst of a batch conversion, leave the cursor on "busy".  The batch function will restore the cursor when done.)
-    If MacroStatus <> MacroBATCH Then
-        Screen.MousePointer = vbDefault
-        
-        '13 March 2015: I don't know why this DoEvents is here.  I have commented it out for now, but will reinstate it if I can
-        ' figure out why I ever used it in the first place.
-        'DoEvents
-        
-    End If
-        
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
     If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
@@ -1979,9 +1983,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     End If
     
-    'Unlock the main form
-    If MacroStatus <> MacroBATCH Then FormMain.Enabled = True
-        
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo <> UNDO_NOTHING) Then
     
@@ -1991,18 +1992,41 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         g_AllowDragAndDrop = True
         FormMain.OLEDropMode = 1
     
-    'The interface will automatically be synched if an image is open and some undo-related action was applied,
-    ' but if either of those did *not* occur, sync the interface now.
+    'The interface will automatically be synched if an image is open and some undo-related action was applied (via the
+    ' ActivatePDImage function, above).  If an undo-related action was *not* applied, it's harder to know if an interface
+    ' sync is required.  Run some tests to see if we can skip this step.
     Else
-        SyncInterfaceToCurrentImage
+        
+        'If a dialog was raised via PD's ShowDialog function, we may be able to skip a UI sync
+        If showDialog Then
+        
+            'If the raised dialog was canceled, skip a UI sync entirely
+            If Not (Interface.GetLastShowDialogResult = vbCancel) Then SyncInterfaceToCurrentImage
+        
+        'If no dialog was shown, a resync is required as we can't guarantee that the image state is unchanged
+        Else
+            SyncInterfaceToCurrentImage
+        End If
+            
     End If
+    
+    'Unlock the main form
+    If (MacroStatus <> MacroBATCH) Then FormMain.Enabled = True
     
     'Restore focus to whichever control had it previously
     If m_FocusHWnd <> 0 Then g_WindowManager.SetFocusAPI m_FocusHWnd
     
     'If an update is available, and we haven't displayed a notification yet, do so now
     If g_ShowUpdateNotification Then Update_Support.DisplayUpdateNotification
-        
+    
+    'Restore the mouse pointer to its default value.
+    ' (NOTE: if we are in the midst of a batch conversion, leave the cursor on "busy".  The batch function will restore the cursor when done.)
+    If (MacroStatus <> MacroBATCH) And (m_NestedProcessingCount <= 1) Then Screen.MousePointer = vbDefault
+    
+    'Every time this sub is exited, decrement the process counter.  When this value reaches zero, we know we are about to exit
+    ' the outermost processor request.
+    m_NestedProcessingCount = m_NestedProcessingCount - 1
+    
     'Mark the processor as ready
     m_Processing = False
     
@@ -2014,6 +2038,7 @@ MainErrHandler:
     
     'Reset the mouse pointer and access to the main form
     Screen.MousePointer = vbDefault
+    m_NestedProcessingCount = m_NestedProcessingCount - 1
     FormMain.Enabled = True
 
     'We'll use this string to hold additional error data
