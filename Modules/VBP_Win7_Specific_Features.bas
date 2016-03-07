@@ -179,22 +179,22 @@ End Function
 
 'If the OS is detected as Windows 7+, this function will be called.  It will prepare a handle to the OLE interface
 ' we use for Win7-specific features.
-Public Sub prepWin7Features()
+Public Sub PrepWin7Features()
 
     'To disable this functionality (e.g during testing), change this line to FALSE.  It will prevent any further execution of Win7-specific features.
     win7FeaturesAllowed = True
     
     If win7FeaturesAllowed Then
-        Dim CLSID As Guid, InterfaceGuid As Guid
-        Call CLSIDFromString(StrConv(CLSID_TaskbarList, vbUnicode), CLSID)
+        Dim clsid As Guid, InterfaceGuid As Guid
+        Call CLSIDFromString(StrConv(CLSID_TaskbarList, vbUnicode), clsid)
         Call IIDFromString(StrConv(IID_ITaskbarList3, vbUnicode), InterfaceGuid)
-        Call CoCreateInstance(CLSID, 0, 1, InterfaceGuid, objHandle)
+        Call CoCreateInstance(clsid, 0, 1, InterfaceGuid, objHandle)
     End If
     
 End Sub
 
 'Make sure to release the interface when we are done with it!
-Public Sub releaseWin7Features()
+Public Sub ReleaseWin7Features()
     
     If win7FeaturesAllowed Then
         If objHandle <> 0 Then CallInterface objHandle, unk_Release, 0

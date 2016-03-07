@@ -1427,16 +1427,8 @@ Begin VB.Form FormMain
          Caption         =   "Developers"
          Index           =   10
          Begin VB.Menu MnuDevelopers 
-            Caption         =   "Debug window"
-            Index           =   0
-         End
-         Begin VB.Menu MnuDevelopers 
-            Caption         =   "-"
-            Index           =   1
-         End
-         Begin VB.Menu MnuDevelopers 
             Caption         =   "Theme editor..."
-            Index           =   2
+            Index           =   0
          End
       End
    End
@@ -1772,42 +1764,21 @@ Public Sub UpdateMainLayout()
     'If the main form has been minimized, don't refresh anything
     If FormMain.WindowState = vbMinimized Then Exit Sub
     
-    '**
-    ' NEW CODE FOR 7.0:
-    ' Let the toolbox manager determine positions for us
-    
+    'As of 7.0, a new, lightweight toolbox manager can calculate idealized window positions for us.
     Dim mainRect As winRect, canvasRect As winRect
     g_WindowManager.GetClientWinRect FormMain.hWnd, mainRect
     Toolboxes.CalculateNewToolboxRects mainRect, canvasRect
     
     'With toolbox positions successfully calculated, we can now synchronize each toolbox to its calculated rect.
-    'Toolboxes.PositionToolbox PDT_LeftToolbox, toolbar_Toolbox.hWnd
-    'Toolboxes.PositionToolbox PDT_RightToolbox, toolbar_Layers.hWnd
-    'Toolboxes.PositionToolbox PDT_BottomToolbox, toolbar_Options.hWnd
+    Toolboxes.PositionToolbox PDT_LeftToolbox, toolbar_Toolbox.hWnd, FormMain.hWnd
+    Toolboxes.PositionToolbox PDT_RightToolbox, toolbar_Layers.hWnd, FormMain.hWnd
+    Toolboxes.PositionToolbox PDT_BottomToolbox, toolbar_Options.hWnd, FormMain.hWnd
     
-    'Similarly, we can drop the canvas into place using the helpful rect provided by the toolbox module
-    'With canvasRect
-    '    FormMain.mainCanvas(0).SetPositionAndSize .x1, .y1, .x2 - .x1, .y2 - .y1
-    'End With
-    
-    '**
-    
-    'Start by reorienting the canvas to fill the full available client area
-    g_WindowManager.GetActualMainFormClientRect mainRect
-    
-    'See if a move is even necessary.
-    'If (mainCanvas(0).GetLeft <> mainRect.x1) Or (mainCanvas(0).GetWidth <> mainRect.x2 - mainRect.x1) Then
-    '    If (mainCanvas(0).GetTop <> mainRect.y1) Or (mainCanvas(0).GetHeight <> mainRect.y2 - mainRect.y1) Then
-            MoveWindow mainCanvas(0).hWnd, mainRect.x1, mainRect.y1, mainRect.x2 - mainRect.x1, mainRect.y2 - mainRect.y1, 1
-    '    End If
-    'End If
-    
-    'TODO 7.0: fix this mess - these functions take a LOT of time to process, and they are being called way too frequently!
-    mainCanvas(0).UpdateCanvasLayout
-    mainCanvas(0).UpdateAgainstCurrentTheme
-    
-    'Refresh any current windows
-    If g_OpenImageCount > 0 Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), mainCanvas(0)
+    'Similarly, we can drop the canvas into place using the helpful rect provided by the toolbox module.
+    ' Note that resizing the canvas rect will automatically trigger a redraw of the viewport, as necessary.
+    With canvasRect
+        FormMain.mainCanvas(0).SetPositionAndSize .x1, .y1, .x2 - .x1, .y2 - .y1
+    End With
     
 End Sub
 
@@ -1897,17 +1868,8 @@ Private Sub mnuDevelopers_Click(Index As Integer)
 
     Select Case Index
     
-        'Debug window
-        Case 0
-            #If DEBUGMODE = 1 Then
-                ToggleToolboxVisibility DEBUG_TOOLBOX
-            #End If
-        
-        '(separator)
-        Case 1
-        
         'Theme Editor
-        Case 2
+        Case 0
             ShowPDDialog vbModal, FormThemeEditor
     
     End Select
@@ -2275,7 +2237,7 @@ Private Sub MnuWindowToolbox_Click(Index As Integer)
     
         'Toggle toolbox visibility
         Case 0
-            ToggleToolboxVisibility LEFT_TOOLBOX
+            ToggleToolboxVisibility PDT_LeftToolbox
         
         '<separator>
         Case 1
@@ -2610,9 +2572,9 @@ Private Sub Form_Load()
     '**
     
     'Register all toolbox forms with the window manager
-    g_WindowManager.RegisterChildForm toolbar_Toolbox, TOOLBAR_WINDOW, 1, LEFT_TOOLBOX, , FixDPI(48)
-    g_WindowManager.RegisterChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, RIGHT_TOOLBOX, , FixDPI(200)
-    g_WindowManager.RegisterChildForm toolbar_Options, TOOLBAR_WINDOW, 3, BOTTOM_TOOLBOX
+    'g_WindowManager.RegisterChildForm toolbar_Toolbox, TOOLBAR_WINDOW, 1, LEFT_TOOLBOX, , FixDPI(48)
+    'g_WindowManager.RegisterChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, RIGHT_TOOLBOX, , FixDPI(200)
+    'g_WindowManager.RegisterChildForm toolbar_Options, TOOLBAR_WINDOW, 3, BOTTOM_TOOLBOX
     
     'With all windows in position, reposition the main form's canvas
     g_WindowManager.SetAutoRefreshMode True
@@ -2623,53 +2585,13 @@ Private Sub Form_Load()
     ' and I'm working on a solution to that.)
     Me.Visible = True
     
-    'The debug window can optionally be displayed, but only in nightly builds
-    #If DEBUGMODE = 1 Then
-        If (PD_BUILD_QUALITY = PD_PRE_ALPHA) Or (PD_BUILD_QUALITY = PD_ALPHA) Then
-            'g_WindowManager.registerChildForm toolbar_Debug, GENERIC_FLOATING_WINDOW, 4, DEBUG_TOOLBOX
-        End If
-    #End If
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Preparing primary toolbar..."
-    #End If
-    
-    'Display the various toolboxes per the user's display settings
-    toolbar_Toolbox.Show vbModeless, Me
-    g_WindowManager.SetToolboxVisibility toolbar_Toolbox.hWnd, g_UserPreferences.GetPref_Boolean("Toolbox", "Show Left Toolbox", True)
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Preparing layers toolbar..."
-    #End If
-    
-    toolbar_Layers.Show vbModeless, Me
-    g_WindowManager.SetToolboxVisibility toolbar_Layers.hWnd, g_UserPreferences.GetPref_Boolean("Toolbox", "Show Right Toolbox", True)
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Preparing options toolbar..."
-    #End If
-    
     'Visibility for the options toolbox is automatically set according to the current tool; this is different from other dialogs.
     ' (Note that the .resetToolButtonStates function checks the relevant preference prior to changing the window state, so all
     '  cases are covered nicely.)
-    toolbar_Options.Show vbModeless, Me
-    toolbar_Toolbox.resetToolButtonStates
+    toolbar_Toolbox.ResetToolButtonStates
     
-    'The debug window is only shown in nightly builds, and even then, it's only shown if explicitly requested
-    #If DEBUGMODE = 1 Then
-        If (PD_BUILD_QUALITY = PD_PRE_ALPHA) Or (PD_BUILD_QUALITY = PD_ALPHA) Then
-            'toolbar_Debug.Show vbModeless, Me
-            'g_WindowManager.SetToolboxVisibility toolbar_Debug.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Debug Window", False)
-        End If
-    #End If
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Updating primary canvas against current toolbar layout..."
-    #End If
-    
-    'With all toolboxes loaded, we need to synchronize the main canvas layout against any that remain visible
+    'With all toolboxes loaded, we can reactivate automatic synching of toolbox positions and sizes
     g_WindowManager.SetAutoRefreshMode True
-    UpdateMainLayout
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Preparing input tracker..."
@@ -2874,7 +2796,7 @@ Private Sub Form_Load()
     #End If
     
     'Finally, return focus to the main form
-    FormMain.SetFocus
+    g_WindowManager.SetFocusAPI FormMain.hWnd
     
     Exit Sub
     
@@ -3097,22 +3019,11 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Releasing custom Windows 7 features..."
     #End If
     
-    releaseWin7Features
-    
-    'TODO: implement this, as necessary, once theming is active
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Releasing main form theming..."
-    #End If
-    
-    'ReleaseFormTheming Me
+    ReleaseWin7Features
     
     'Unload all toolbars
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Unloading toolboxes.."
-    #End If
-    
-    #If DEBUGMODE = 1 Then
-        If Not (toolbar_Debug Is Nothing) Then Unload toolbar_Debug
     #End If
     
     If Not (toolbar_Layers Is Nothing) Then Unload toolbar_Layers
@@ -4522,11 +4433,11 @@ Private Sub MnuWindow_Click(Index As Integer)
             
         'Show/hide tool options
         Case 1
-            ToggleToolboxVisibility BOTTOM_TOOLBOX
+            ToggleToolboxVisibility PDT_BottomToolbox
         
         'Show/hide layer toolbox
         Case 2
-            ToggleToolboxVisibility RIGHT_TOOLBOX
+            ToggleToolboxVisibility PDT_RightToolbox
         
         '<top-level Image tabstrip>
         Case 3

@@ -1,13 +1,13 @@
 VERSION 5.00
 Begin VB.Form toolbar_Layers 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
+   BorderStyle     =   0  'None
    Caption         =   "Layers"
    ClientHeight    =   7245
-   ClientLeft      =   45
-   ClientTop       =   315
+   ClientLeft      =   0
+   ClientTop       =   -75
    ClientWidth     =   3735
-   ClipControls    =   0   'False
    FillStyle       =   0  'Solid
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -18,6 +18,7 @@ Begin VB.Form toolbar_Layers
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -25,6 +26,7 @@ Begin VB.Form toolbar_Layers
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   249
    ShowInTaskbar   =   0   'False
+   Visible         =   0   'False
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -240,11 +242,7 @@ Private Sub Form_Unload(Cancel As Integer)
         
         'Release this window from any program-wide handlers
         ReleaseFormTheming Me
-        g_WindowManager.UnregisterForm Me
         
-    Else
-        Cancel = True
-        ToggleToolboxVisibility RIGHT_TOOLBOX
     End If
     
 End Sub
@@ -255,7 +253,6 @@ End Sub
 Private Sub ReflowInterface()
     
     'If the form is invisible (due to minimize or something else), just exit now
-    If Not Me.Visible Then Exit Sub
     If (Me.ScaleHeight = 0) Or (Me.ScaleWidth = 0) Then Exit Sub
     
     'When the parent form is resized, resize the layer list (and other items) to properly fill the
@@ -371,7 +368,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
             'After the toolbox has been resized, we need to manually notify the toolbox manager, so it can
             ' notify any neighboring toolboxes (and/or the central canvas)
             Toolboxes.SetConstrainingSize PDT_RightToolbox, Me.ScaleWidth
-            'TODO: redraw the main window to match!
+            FormMain.UpdateMainLayout
             
             'A premature exit is required, because the end of this sub contains code to detect the release of the
             ' mouse after a drag event.  Because the event is not being initiated normally, we can't detect a standard
@@ -394,7 +391,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
         
         'If theming is disabled, window performance is so poor that the window manager will automatically
         ' disable canvas updates until the mouse is released.  Request a full update now.
-        If (Not g_IsThemingEnabled) Then g_WindowManager.NotifyToolboxResized Me.hWnd, True
+        'If (Not g_IsThemingEnabled) Then g_WindowManager.NotifyToolboxResized Me.hWnd, True
         
     End If
     

@@ -1,11 +1,12 @@
 VERSION 5.00
 Begin VB.Form toolbar_Options 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
+   BorderStyle     =   0  'None
    Caption         =   " Tools"
    ClientHeight    =   1470
-   ClientLeft      =   45
-   ClientTop       =   315
+   ClientLeft      =   0
+   ClientTop       =   -75
    ClientWidth     =   13515
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -16,6 +17,7 @@ Begin VB.Form toolbar_Options
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -23,6 +25,7 @@ Begin VB.Form toolbar_Options
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   901
    ShowInTaskbar   =   0   'False
+   Visible         =   0   'False
    Begin VB.Line lnSeparatorTop 
       BorderColor     =   &H80000002&
       X1              =   0
@@ -66,15 +69,7 @@ End Sub
 ' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the ToggleToolboxVisibility sub
 ' will also keep this toolbar's Window menu entry in sync with the form's current visibility.)
 Private Sub Form_Unload(Cancel As Integer)
-    
-    If g_ProgramShuttingDown Then
-        ReleaseFormTheming Me
-        g_WindowManager.UnregisterForm Me
-    Else
-        Cancel = True
-        ToggleToolboxVisibility BOTTOM_TOOLBOX
-    End If
-    
+    If g_ProgramShuttingDown Then ReleaseFormTheming Me
 End Sub
 
 'Updating against the current theme accomplishes a number of things:

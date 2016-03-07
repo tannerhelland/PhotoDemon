@@ -1,13 +1,14 @@
 VERSION 5.00
 Begin VB.Form toolbar_Toolbox 
+   Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
+   BorderStyle     =   0  'None
    Caption         =   "File"
    ClientHeight    =   9810
-   ClientLeft      =   45
-   ClientTop       =   315
+   ClientLeft      =   0
+   ClientTop       =   -75
    ClientWidth     =   2115
-   ClipControls    =   0   'False
+   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +18,7 @@ Begin VB.Form toolbar_Toolbox
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -487,7 +489,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             'After the toolbox has been resized, we need to manually notify the toolbox manager, so it can
             ' notify any neighboring toolboxes (and/or the central canvas)
             Toolboxes.SetConstrainingSize PDT_LeftToolbox, Me.ScaleWidth
-            'TODO: redraw the main window to match!
+            FormMain.UpdateMainLayout
             
             'A premature exit is required, because the end of this sub contains code to detect the release of the
             ' mouse after a drag event.  Because the event is not being initiated normally, we can't detect a standard
@@ -509,7 +511,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         
         'If theming is disabled, window performance is so poor that the window manager will automatically
         ' disable canvas updates until the mouse is released.  Request a full update now.
-        If (Not g_IsThemingEnabled) Then g_WindowManager.NotifyToolboxResized Me.hWnd, True
+        'If (Not g_IsThemingEnabled) Then g_WindowManager.NotifyToolboxResized Me.hWnd, True
         
     End If
 
@@ -729,15 +731,7 @@ End Sub
 ' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the ToggleToolboxVisibility sub
 ' will also keep this toolbar's Window menu entry in sync with the form's current visibility.)
 Private Sub Form_Unload(Cancel As Integer)
-    
-    If g_ProgramShuttingDown Then
-        ReleaseFormTheming Me
-        g_WindowManager.UnregisterForm Me
-    Else
-        Cancel = True
-        ToggleToolboxVisibility LEFT_TOOLBOX
-    End If
-    
+    If g_ProgramShuttingDown Then ReleaseFormTheming Me
 End Sub
 
 'When a new tool is selected, we may need to initialize certain values.
@@ -806,13 +800,13 @@ Public Sub selectNewTool(ByVal newToolID As PDTools)
     If newToolID <> g_CurrentTool Then
         g_PreviousTool = g_CurrentTool
         g_CurrentTool = newToolID
-        resetToolButtonStates
+        ResetToolButtonStates
     End If
     
 End Sub
 
 'When a new tool button is selected, we need to raise all the others and display the proper options box
-Public Sub resetToolButtonStates()
+Public Sub ResetToolButtonStates()
     
     'Start by depressing the selected button and raising all unselected ones
     Dim catID As Long
@@ -915,18 +909,18 @@ Public Sub resetToolButtonStates()
             
             'Hand tool is currently the only tool without additional options
             Case NAV_DRAG
-                g_WindowManager.SetToolboxVisibility toolbar_Options.hWnd, False, False
+                'g_WindowManager.SetToolboxVisibility toolbar_Options.hWnd, False, False
                 Toolboxes.SetToolboxVisibility PDT_BottomToolbox, False
                 
             'All other tools expose options, so display the toolbox (unless the user has disabled the window completely)
             Case Else
-                g_WindowManager.SetToolboxVisibility toolbar_Options.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Bottom Toolbox", True), False
+                'g_WindowManager.SetToolboxVisibility toolbar_Options.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Bottom Toolbox", True), False
                 Toolboxes.SetToolboxVisibilityByPreference PDT_BottomToolbox
                 
         End Select
         
         'NEW SYSTEM!  After setting visibility, we must apply the changes.
-        'FormMain.UpdateMainLayout
+        FormMain.UpdateMainLayout
         
     End If
     
@@ -951,7 +945,7 @@ Public Sub resetToolButtonStates()
             
             'If this is the active panel, display it
             If StrComp(toolPanelCollection.GetKeyByIndex(i), LCase(m_ActiveToolPanelKey)) = 0 Then
-                g_WindowManager.ActivateToolPanel toolPanelCollection.GetValueByIndex(i)
+                g_WindowManager.ActivateToolPanel toolPanelCollection.GetValueByIndex(i), toolbar_Options.hWnd
             End If
             
         Next i
@@ -980,7 +974,7 @@ Private Sub cmdTools_Click(Index As Integer)
     g_CurrentTool = Index
     
     'Update the tool options area to match the newly selected tool
-    resetToolButtonStates
+    ResetToolButtonStates
     
 End Sub
 
@@ -1002,7 +996,7 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
         g_CurrentTool = NAV_DRAG
     End If
     
-    resetToolButtonStates
+    ResetToolButtonStates
     
 End Sub
 
@@ -1071,7 +1065,8 @@ Public Sub updateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw
         End If
     Next i
     
-    g_WindowManager.UpdateMinimumDimensions Me.hWnd, m_ButtonWidth
+    'TODO: notify the new toolbox manager of this change
+    'g_WindowManager.UpdateMinimumDimensions Me.hWnd, m_ButtonWidth
     
     'Reflow the interface as requested
     If Not suppressRedraw Then ReflowToolboxLayout
