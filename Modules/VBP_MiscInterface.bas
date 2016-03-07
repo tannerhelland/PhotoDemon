@@ -105,6 +105,11 @@ Private m_DPIRatio As Double
 Private currentDialogReference As Form
 Private isSecondaryDialog As Boolean
 
+'When the master "ShowPDDialog" function is called, it's assumed that the dialog it raises is using one of PD's command bar instances.
+' The command bar will set a global "OK/Cancel" value that subsequent functions can retrieve, if they're curious.  (For example,
+' a "cancel" result usually means that you can skip subsequent UI syncs, as the image's status has not changed.)
+Private m_LastShowDialogResult As VbMsgBoxResult
+
 'When a message is displayed to the user in the message portion of the status bar, we automatically cache the message's contents.
 ' If a subsequent request is raised with the exact same text, we can skip the whole message display process.
 Private m_PrevMessage As String
@@ -121,9 +126,15 @@ Private m_LastUILimitingSize_Small As Single, m_LastUILimitingSize_Large As Sing
 
 'Because the Interface handler is a module and not a class, like I prefer, we need to use a dedicated initialization function.
 Public Sub InitializeInterfaceBackend()
+
     m_LastUISync_HadNoImages = PD_BOOL_UNKNOWN
     m_LastUISync_HadNoLayers = PD_BOOL_UNKNOWN
     m_LastUISync_HadMultipleLayers = PD_BOOL_UNKNOWN
+    
+    'vbIgnore is used internally as the "no result" value for a dialog box, as PD never provides an actual "ignore" option
+    ' in its dialogs.
+    m_LastShowDialogResult = vbIgnore
+    
 End Sub
 
 Public Sub CacheSystemDPI(ByVal newDPI As Single)
@@ -931,6 +942,9 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     
     g_ModalDialogActive = True
     
+    'Reset our "last dialog result" tracker.  (We use "ignore" as the "default" value, as it's a value PD never utilizes internally.)
+    m_LastShowDialogResult = vbIgnore
+    
     'Start by loading the form and hiding it
     dialogForm.Visible = False
     
@@ -1007,6 +1021,23 @@ showPDDialogError:
     g_ModalDialogActive = False
 
 End Sub
+
+'Any commandbar-based dialog will automatically notify us of its "OK" or "Cancel" result; subsequent functions can check this return
+' via GetLastShowDialogResult(), below.
+Public Sub NotifyShowDialogResult(ByVal msgResult As VbMsgBoxResult)
+    
+    'Only store the result if the dialog was initiated via ShowPDDialog, above
+    If g_ModalDialogActive Then m_LastShowDialogResult = msgResult
+    
+End Sub
+
+'This function will tell you if the last commandbar-based dialog was closed via OK or CANCEL.
+'IMPORTANT NOTE: calling this function will RESET THE LAST-GENERATED RESULT, by design.  PD only calls this function from a singular place
+'                (the central Processing module), and it prevents errors to
+Public Function GetLastShowDialogResult() As VbMsgBoxResult
+    GetLastShowDialogResult = m_LastShowDialogResult
+    m_LastShowDialogResult = vbIgnore
+End Function
 
 'When raising a modal dialog, we want to set the window ownership to the top-most (relevant) window in the program, which may
 ' or may not be the main program window.  This function can called to determine the proper owner of an arbitrary modal dialog box.

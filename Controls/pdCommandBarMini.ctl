@@ -148,7 +148,10 @@ Private Sub CmdCancel_Click()
         m_dontShutdownYet = False
         Exit Sub
     End If
-        
+    
+    'Notify the central Interface handler that CANCEL was clicked; this lets other functions bypass a UI sync
+    Interface.NotifyShowDialogResult vbCancel
+    
     'Hide the parent form from view
     If UserControl.Parent.Visible Then UserControl.Parent.Hide
         
@@ -168,6 +171,9 @@ Private Sub CmdOK_Click()
         m_dontShutdownYet = False
         Exit Sub
     End If
+    
+    'Notify the central Interface handler that OK was clicked; this lets other functions know that a UI sync is required
+    Interface.NotifyShowDialogResult vbOK
     
     'Hide the parent form from view
     If UserControl.Parent.Visible Then UserControl.Parent.Hide

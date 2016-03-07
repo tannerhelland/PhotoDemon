@@ -80,6 +80,7 @@ Private Const SWP_HIDEWINDOW As Long = &H80&
 Private Const SWP_SHOWWINDOW As Long = &H40&
 
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function IsWindowEnabled Lib "user32" (ByVal hWnd As Long) As Long
 Private Const WM_SHOWWINDOW As Long = &H18&
 Private Const WM_WINDOWPOSCHANGING As Long = &H46&
 
@@ -817,6 +818,10 @@ End Sub
 ' can check it to know how the control visibility is *about* to change.
 Public Function AmIVisible() As Boolean
     AmIVisible = m_Visibility
+End Function
+
+Public Function AmIEnabled() As Boolean
+    AmIEnabled = CBool(IsWindowEnabled(m_hWnd) = 1)
 End Function
 
 'Want a new tooltip?  No problem; call this function to perform an instant update.

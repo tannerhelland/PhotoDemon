@@ -949,7 +949,7 @@ Public Sub ResetToolButtonStates()
         'Next, hide all other panels
         For i = 0 To toolPanelCollection.GetNumOfEntries - 1
             If StrComp(toolPanelCollection.GetKeyByIndex(i), LCase(m_ActiveToolPanelKey)) <> 0 Then
-                g_WindowManager.SetVisibilityOfAnyWindowByHwnd toolPanelCollection.GetValueByIndex(i), False
+                g_WindowManager.SetVisibilityByHWnd toolPanelCollection.GetValueByIndex(i), False
             End If
         Next i
         

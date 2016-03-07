@@ -447,7 +447,7 @@ Private Function SavePreset() As Boolean
 
     'Prompt the user for a name
     Dim newNameReturn As VbMsgBoxResult, newPresetName As String
-    newNameReturn = Dialog_Handler.promptNewPreset(m_Presets, UserControl.Parent, newPresetName)
+    newNameReturn = Dialog_Handler.PromptNewPreset(m_Presets, UserControl.Parent, newPresetName)
     
     If newNameReturn = vbOK Then
     
@@ -517,9 +517,12 @@ Private Sub CmdCancel_Click()
         m_dontShutdownYet = False
         Exit Sub
     End If
-        
+    
+    'Notify the central Interface handler that CANCEL was clicked; this lets other functions bypass a subsequent UI sync
+    Interface.NotifyShowDialogResult vbCancel
+    
     'Automatically unload our parent, unless the override property is set (as it is in dialogs that return some value)
-    If Not m_dontAutoUnloadParent Then Unload UserControl.Parent
+    If (Not m_dontAutoUnloadParent) Then Unload UserControl.Parent
     
 End Sub
 
@@ -566,6 +569,9 @@ Private Sub CmdOK_Click()
     
     'Write the current control values to the XML engine.  These will be loaded the next time the user uses this tool.
     StorePreset
+    
+    'Notify the central Interface handler that OK was clicked; this lets other functions know that a UI sync is required
+    Interface.NotifyShowDialogResult vbOK
     
     'Hide the parent form from view
     UserControl.Parent.Visible = False
@@ -1160,7 +1166,7 @@ Private Sub LoadAllPresets(Optional ByVal newListIndex As Long = 0)
         'Add all discovered presets to the combo box.  Note that we do not use a traditional stack pop here, as that would cause
         ' the preset order to be reversed!
         Dim i As Long
-        For i = 0 To listOfPresets.getNumOfStrings - 1
+        For i = 0 To listOfPresets.GetNumOfStrings - 1
             cboPreset.AddItem " " & listOfPresets.GetString(i), i + 1
         Next i
         
