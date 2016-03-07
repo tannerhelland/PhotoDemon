@@ -96,6 +96,11 @@ Public Sub SaveToolboxData()
 
 End Sub
 
+'This function purely exists so we can properly synchronize the main Window menu checkmarks to the saved toolbox visibility preferences
+Public Function GetToolboxVisibilityPreference(ByVal toolID As PD_Toolbox) As Boolean
+    GetToolboxVisibilityPreference = m_Toolboxes(toolID).IsVisiblePreference
+End Function
+
 'All hard-coded toolbox values should be handled in this sub - NOWHERE else!  (Otherwise, code maintenance becomes very unpleasant.)
 Private Sub FillDefaultToolboxValues()
     
@@ -105,9 +110,9 @@ Private Sub FillDefaultToolboxValues()
             Select Case i
             
                 Case PDT_LeftToolbox
-                    .DefaultSize = FixDPI(142)
+                    .DefaultSize = FixDPI(96)
                     .MinSize = FixDPI(48)
-                    .MaxSize = FixDPI(200)      'ARBITRARY VALUE!  TODO: figure out a meaningful number
+                    .MaxSize = FixDPI(188)
                 
                 Case PDT_BottomToolbox
                     .DefaultSize = FixDPI(100)
@@ -115,9 +120,9 @@ Private Sub FillDefaultToolboxValues()
                     .MaxSize = FixDPI(500)      ' to the requirements of each tool, so these are basically just dummy values.
                 
                 Case PDT_RightToolbox
-                    .DefaultSize = FixDPI(250)      'This seems large - given our new UI tools, let's see if we can shrink this a bit
-                    .MinSize = FixDPI(200)
-                    .MaxSize = FixDPI(400)      'ARBITRARY VALUE!  TODO: figure out a meaningful number
+                    .DefaultSize = FixDPI(230)
+                    .MinSize = FixDPI(180)
+                    .MaxSize = FixDPI(360)
                     
             End Select
         End With
@@ -193,9 +198,23 @@ End Sub
 'Show and/or position a toolbox according to its current settings.  In most cases, you will want to call
 ' CalculateNewToolboxRects(), above, prior to invoking this function.
 Public Sub PositionToolbox(ByVal toolID As PD_Toolbox, ByVal toolboxHWnd As Long, ByVal parentHwnd As Long)
+    
     SetParent toolboxHWnd, parentHwnd
     With m_Toolboxes(toolID)
-        .hWnd = toolboxHWnd
+        
+        If (.hWnd <> toolboxHWnd) Then
+            .hWnd = toolboxHWnd
+            
+            If (toolID = PDT_LeftToolbox) Then
+                g_WindowManager.RequestMinMaxTracking toolboxHWnd, .MinSize, , .MaxSize
+            ElseIf (toolID = PDT_BottomToolbox) Then
+                
+            ElseIf (toolID = PDT_RightToolbox) Then
+                g_WindowManager.RequestMinMaxTracking toolboxHWnd, .MinSize, , .MaxSize
+            End If
+            
+        End If
+        
         If .IsVisibleNow Then
             MoveWindow toolboxHWnd, .toolRect.x1, .toolRect.y1, .toolRect.x2 - .toolRect.x1, .toolRect.y2 - .toolRect.y1, 1&
             ShowWindow toolboxHWnd, SW_SHOWNA
@@ -204,6 +223,7 @@ Public Sub PositionToolbox(ByVal toolID As PD_Toolbox, ByVal toolboxHWnd As Long
             MoveWindow toolboxHWnd, .toolRect.x1, .toolRect.y1, .toolRect.x2 - .toolRect.x1, .toolRect.y2 - .toolRect.y1, 0&
         End If
     End With
+    
 End Sub
 
 'If a toolbox is resized by the user, you must call this function to notify other windows of the change.

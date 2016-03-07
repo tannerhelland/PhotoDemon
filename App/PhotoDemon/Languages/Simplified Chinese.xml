@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.857</langversion>
+<langversion>6.8.858</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ILoveVB</author>
@@ -5196,11 +5196,6 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Debug window</original>
-<translation>调试窗口</translation>
-</phrase>
-
-<phrase>
 <original>Theme editor</original>
 <translation>主题编辑器</translation>
 </phrase>
@@ -5880,7 +5875,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- MainWindow.frm contains 566 phrases. 187 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12312,47 +12307,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <!-- END text for Startup_Splash.frm-->
 
-<!-- BEGIN text for Toolbar_Debug.frm (toolbar_Debug) -->
-
-<phrase>
-<original>Debug</original>
-<translation>调试</translation>
-</phrase>
-
-<phrase>
-<original>DIBs created</original>
-<translation>DIB已创建</translation>
-</phrase>
-
-<phrase>
-<original>DIBs erased</original>
-<translation>DIB已删除</translation>
-</phrase>
-
-<phrase>
-<original>DIBs active</original>
-<translation>DIBs 活动</translation>
-</phrase>
-
-<phrase>
-<original>Fonts created</original>
-<translation>创建字体</translation>
-</phrase>
-
-<phrase>
-<original>Fonts erased</original>
-<translation>字体擦除</translation>
-</phrase>
-
-<phrase>
-<original>Fonts active</original>
-<translation>字体活动</translation>
-</phrase>
-
-<!-- Toolbar_Debug.frm contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
-
-<!-- END text for Toolbar_Debug.frm-->
-
 <!-- BEGIN text for Toolbar_Layers.frm (toolbar_Layers) -->
 
 <phrase>
@@ -13564,41 +13518,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>use high-resolution input tracking</original>
-<translation>使用高分辨率输入跟踪</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>鼠标和笔输入</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>最近文件项的最大数目</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>最近的文件列表</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts should be</original>
-<translation>最近使用的文件的快捷方式</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>标题</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>图像窗口的标题显示内容</translation>
-</phrase>
-
-<phrase>
 <original>use the system color profile</original>
 <translation>使用该系统的颜色配置文件</translation>
 </phrase>
@@ -13876,6 +13795,41 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>notify me when an update is ready</original>
 <translation>有更新时通知我</translation>
+</phrase>
+
+<phrase>
+<original>use high-resolution input tracking</original>
+<translation>使用高分辨率输入跟踪</translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation>鼠标和笔输入</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent file entries</original>
+<translation>最近文件项的最大数目</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>最近的文件列表</translation>
+</phrase>
+
+<phrase>
+<original>recently used file shortcuts should be</original>
+<translation>最近使用的文件的快捷方式</translation>
+</phrase>
+
+<phrase>
+<original>captions</original>
+<translation>标题</translation>
+</phrase>
+
+<phrase>
+<original>image window titles should be</original>
+<translation>图像窗口的标题显示内容</translation>
 </phrase>
 
 <phrase>
@@ -14670,12 +14624,18 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Toolboxes.bas -->
+
+<!-- Toolboxes.bas contains 0 phrases. -->
+
+<!-- END text for Toolboxes.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2513</phrasecount>
+<phrasecount>2505</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4316 phrases. -->
-<!-- 1803 are duplicates, so only 2513 unique phrases have been written to file. -->
-<!-- These 2513 phrases contain approximately 13388 total words. -->
+<!-- As of this build, PhotoDemon contains 4308 phrases. -->
+<!-- 1803 are duplicates, so only 2505 unique phrases have been written to file. -->
+<!-- These 2505 phrases contain approximately 13373 total words. -->
 
 </pdData>

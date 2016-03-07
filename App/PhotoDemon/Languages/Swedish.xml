@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.145</langversion>
+<langversion>6.7.146</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -5204,11 +5204,6 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>Debug window</original>
-<translation>Debug fönster</translation>
-</phrase>
-
-<phrase>
 <original>Theme editor</original>
 <translation>tema redaktör</translation>
 </phrase>
@@ -5890,7 +5885,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- MainWindow.frm contains 566 phrases. 187 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12321,47 +12316,6 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <!-- END text for Startup_Splash.frm-->
 
-<!-- BEGIN text for Toolbar_Debug.frm (toolbar_Debug) -->
-
-<phrase>
-<original>Debug</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>DIBs created</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>DIBs erased</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>DIBs active</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Fonts created</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Fonts erased</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Fonts active</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolbar_Debug.frm contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
-
-<!-- END text for Toolbar_Debug.frm-->
-
 <!-- BEGIN text for Toolbar_Layers.frm (toolbar_Layers) -->
 
 <phrase>
@@ -13575,41 +13529,6 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 </phrase>
 
 <phrase>
-<original>use high-resolution input tracking</original>
-<translation>Använd högupplösta ingång spårning</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>mus och penninmatning</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>maximala antalet poster fil senare</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>lista filer nyligen</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts should be</original>
-<translation>nyligen använda genvägar fil bör vara</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>texter</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>bildfönstertitlar bör vara</translation>
-</phrase>
-
-<phrase>
 <original>use the system color profile</original>
 <translation>använda systemet färgprofil</translation>
 </phrase>
@@ -13887,6 +13806,41 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 <phrase>
 <original>notify me when an update is ready</original>
 <translation>meddela mig när en uppdatering är klar</translation>
+</phrase>
+
+<phrase>
+<original>use high-resolution input tracking</original>
+<translation>Använd högupplösta ingång spårning</translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation>mus och penninmatning</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent file entries</original>
+<translation>maximala antalet poster fil senare</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>lista filer nyligen</translation>
+</phrase>
+
+<phrase>
+<original>recently used file shortcuts should be</original>
+<translation>nyligen använda genvägar fil bör vara</translation>
+</phrase>
+
+<phrase>
+<original>captions</original>
+<translation>texter</translation>
+</phrase>
+
+<phrase>
+<original>image window titles should be</original>
+<translation>bildfönstertitlar bör vara</translation>
 </phrase>
 
 <phrase>
@@ -14682,12 +14636,18 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Toolboxes.bas -->
+
+<!-- Toolboxes.bas contains 0 phrases. -->
+
+<!-- END text for Toolboxes.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2513</phrasecount>
+<phrasecount>2505</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4316 phrases. -->
-<!-- 1803 are duplicates, so only 2513 unique phrases have been written to file. -->
-<!-- These 2513 phrases contain approximately 13388 total words. -->
+<!-- As of this build, PhotoDemon contains 4308 phrases. -->
+<!-- 1803 are duplicates, so only 2505 unique phrases have been written to file. -->
+<!-- These 2505 phrases contain approximately 13373 total words. -->
 
 </pdData>

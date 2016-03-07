@@ -509,9 +509,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         
         m_WeAreResponsibleForResize = False
         
-        'If theming is disabled, window performance is so poor that the window manager will automatically
-        ' disable canvas updates until the mouse is released.  Request a full update now.
-        'If (Not g_IsThemingEnabled) Then g_WindowManager.NotifyToolboxResized Me.hWnd, True
+        'TODO: make sure this is okay with 7.0's new toolbox manager
         
     End If
 
@@ -578,11 +576,9 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
 End Sub
 
+'Reflow the form's contents
 Private Sub Form_Resize()
-    
-    'Reflow the form's contents
     ReflowToolboxLayout
-    
 End Sub
 
 Private Sub ReflowToolboxLayout()

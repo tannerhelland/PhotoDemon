@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.145</langversion>
+<langversion>6.7.146</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -5202,11 +5202,6 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
-<original>Debug window</original>
-<translation>Debug-Fenster</translation>
-</phrase>
-
-<phrase>
 <original>Theme editor</original>
 <translation>Themen-Editor</translation>
 </phrase>
@@ -5888,7 +5883,7 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- MainWindow.frm contains 566 phrases. 187 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12319,47 +12314,6 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 
 <!-- END text for Startup_Splash.frm-->
 
-<!-- BEGIN text for Toolbar_Debug.frm (toolbar_Debug) -->
-
-<phrase>
-<original>Debug</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>DIBs created</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>DIBs erased</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>DIBs active</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Fonts created</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Fonts erased</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Fonts active</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolbar_Debug.frm contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
-
-<!-- END text for Toolbar_Debug.frm-->
-
 <!-- BEGIN text for Toolbar_Layers.frm (toolbar_Layers) -->
 
 <phrase>
@@ -13573,41 +13527,6 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 </phrase>
 
 <phrase>
-<original>use high-resolution input tracking</original>
-<translation>mit hochauflösender Eingabeverfolgung</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>Maus- und Stift-Eingabe</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>Höchstzahl der Einträge bei "Zuletzt geöffnete Dateien"</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>Liste der zuletzt geöffneten Dateien</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts should be</original>
-<translation>Anzeige der zuletzt geöffneten Dateien</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>Titel</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>Titelzeile des Bildfensters</translation>
-</phrase>
-
-<phrase>
 <original>use the system color profile</original>
 <translation>System-Farbprofil benutzen</translation>
 </phrase>
@@ -13885,6 +13804,41 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 <phrase>
 <original>notify me when an update is ready</original>
 <translation>Ich möchte erfahren, wenn ein Update fertig ist</translation>
+</phrase>
+
+<phrase>
+<original>use high-resolution input tracking</original>
+<translation>mit hochauflösender Eingabeverfolgung</translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation>Maus- und Stift-Eingabe</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent file entries</original>
+<translation>Höchstzahl der Einträge bei "Zuletzt geöffnete Dateien"</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>Liste der zuletzt geöffneten Dateien</translation>
+</phrase>
+
+<phrase>
+<original>recently used file shortcuts should be</original>
+<translation>Anzeige der zuletzt geöffneten Dateien</translation>
+</phrase>
+
+<phrase>
+<original>captions</original>
+<translation>Titel</translation>
+</phrase>
+
+<phrase>
+<original>image window titles should be</original>
+<translation>Titelzeile des Bildfensters</translation>
 </phrase>
 
 <phrase>
@@ -14680,12 +14634,18 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Toolboxes.bas -->
+
+<!-- Toolboxes.bas contains 0 phrases. -->
+
+<!-- END text for Toolboxes.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2513</phrasecount>
+<phrasecount>2505</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4316 phrases. -->
-<!-- 1803 are duplicates, so only 2513 unique phrases have been written to file. -->
-<!-- These 2513 phrases contain approximately 13388 total words. -->
+<!-- As of this build, PhotoDemon contains 4308 phrases. -->
+<!-- 1803 are duplicates, so only 2505 unique phrases have been written to file. -->
+<!-- These 2505 phrases contain approximately 13373 total words. -->
 
 </pdData>

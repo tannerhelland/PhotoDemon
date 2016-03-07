@@ -526,12 +526,10 @@ Private Sub CreateNewPreferencesFile()
     xmlEngine.closeTag "Saving"
     xmlEngine.writeBlankLine
     
+    'Toolbox settings are automatically filled-in by the Toolboxes module
     xmlEngine.writeTag "Toolbox", "", True
-        xmlEngine.writeTag "ShowFileToolbox", "True"
-        xmlEngine.writeTag "ShowSelectionsToolbox", "True"
-        xmlEngine.writeTag "ShowLayersToolbox", "True"
-        xmlEngine.writeTag "ShowDebugWindow", "False"
     xmlEngine.closeTag "Toolbox"
+    xmlEngine.writeBlankLine
     
     xmlEngine.writeTag "Tools", "", True
         xmlEngine.writeTag "ClearSelectionAfterCrop", "True"

@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.145</langversion>
+<langversion>6.7.146</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -5204,11 +5204,6 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
-<original>Debug window</original>
-<translation>tetingkap debug</translation>
-</phrase>
-
-<phrase>
 <original>Theme editor</original>
 <translation>editor tema</translation>
 </phrase>
@@ -5890,7 +5885,7 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- MainWindow.frm contains 566 phrases. 187 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12321,47 +12316,6 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 
 <!-- END text for Startup_Splash.frm-->
 
-<!-- BEGIN text for Toolbar_Debug.frm (toolbar_Debug) -->
-
-<phrase>
-<original>Debug</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>DIBs created</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>DIBs erased</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>DIBs active</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Fonts created</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Fonts erased</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Fonts active</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolbar_Debug.frm contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
-
-<!-- END text for Toolbar_Debug.frm-->
-
 <!-- BEGIN text for Toolbar_Layers.frm (toolbar_Layers) -->
 
 <phrase>
@@ -13575,41 +13529,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>use high-resolution input tracking</original>
-<translation>menggunakan Penjejakan input resolusi tinggi</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>tetikus dan input pen</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>Bilangan maksimum penyertaan fail baru-baru ini</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>senarai fail baru-baru ini</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts should be</original>
-<translation>Pintasan fail baru-baru ini yang digunakan hendaklah</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>kapsyen</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>tajuk tetingkap imej harus</translation>
-</phrase>
-
-<phrase>
 <original>use the system color profile</original>
 <translation>menggunakan profil warna sistem</translation>
 </phrase>
@@ -13887,6 +13806,41 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>notify me when an update is ready</original>
 <translation>memberitahu saya apabila kemas kini bersedia</translation>
+</phrase>
+
+<phrase>
+<original>use high-resolution input tracking</original>
+<translation>menggunakan Penjejakan input resolusi tinggi</translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation>tetikus dan input pen</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent file entries</original>
+<translation>Bilangan maksimum penyertaan fail baru-baru ini</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>senarai fail baru-baru ini</translation>
+</phrase>
+
+<phrase>
+<original>recently used file shortcuts should be</original>
+<translation>Pintasan fail baru-baru ini yang digunakan hendaklah</translation>
+</phrase>
+
+<phrase>
+<original>captions</original>
+<translation>kapsyen</translation>
+</phrase>
+
+<phrase>
+<original>image window titles should be</original>
+<translation>tajuk tetingkap imej harus</translation>
 </phrase>
 
 <phrase>
@@ -14682,12 +14636,18 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Toolboxes.bas -->
+
+<!-- Toolboxes.bas contains 0 phrases. -->
+
+<!-- END text for Toolboxes.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2513</phrasecount>
+<phrasecount>2505</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4316 phrases. -->
-<!-- 1803 are duplicates, so only 2513 unique phrases have been written to file. -->
-<!-- These 2513 phrases contain approximately 13388 total words. -->
+<!-- As of this build, PhotoDemon contains 4308 phrases. -->
+<!-- 1803 are duplicates, so only 2505 unique phrases have been written to file. -->
+<!-- These 2505 phrases contain approximately 13373 total words. -->
 
 </pdData>
