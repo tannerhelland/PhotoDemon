@@ -93,10 +93,10 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     End If
     
     'If we minimized the main window, now's the time to return it to normal size
-    If captureFullDesktop And minimizePD Then
-        ShowWindow FormMain.hWnd, SW_RESTORE
-        g_WindowManager.RefreshAllWindows
-    End If
+    If captureFullDesktop And minimizePD Then ShowWindow FormMain.hWnd, SW_RESTORE
+        
+    'TODO: confirm that the previous step is okay on XP.  Previously, we had to forcibly invoke a full refresh via
+    ' the window manager, but since switching to the new, lightweight toolbox manager in v7.0, I haven't re-checked this.
     
     'Set the picture of the form to equal its image
     Dim tmpFilename As String

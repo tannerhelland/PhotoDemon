@@ -164,7 +164,7 @@ Private Type pdWindowData
     formReference As Form
     hWnd As Long
     hasBeenMadeTransparent As Boolean
-    IsVisible As Boolean
+    isVisible As Boolean
     lastPosition As winRect
     lastWindowState As Long
     lastWindowBorder As Long
@@ -420,21 +420,10 @@ Public Function GetAutoRefreshMode() As Boolean
 End Function
 
 'Activate a new tool options panel
-Public Sub ActivateToolPanel(ByVal formHwndToActivate As Long)
+Public Sub ActivateToolPanel(ByVal formHWndToActivate As Long, ByVal optionWindowHwnd As Long)
     
     'Cache the hWnd of this form
-    m_CurrentToolPanelHwnd = formHwndToActivate
-    
-    'Locate the parent options panel inside our window collection
-    Dim optionWindowHwnd As Long
-    
-    Dim i As Long
-    For i = 0 To UBound(pdWindows)
-        If pdWindows(i).optionalToolbarType = BOTTOM_TOOLBOX Then
-            optionWindowHwnd = pdWindows(i).hWnd
-            Exit For
-        End If
-    Next i
+    m_CurrentToolPanelHwnd = formHWndToActivate
     
     If (m_CurrentToolPanelHwnd <> 0) And (optionWindowHwnd <> 0) Then
         
@@ -469,7 +458,7 @@ Public Sub ActivateToolPanel(ByVal formHwndToActivate As Long)
     
 End Sub
 
-'After a tool panel has been loaded, it must be specially activated.  This is necessary because we dynamically mess with its window bits.
+'After a tool panel has been loaded, it must be specially deactivated.  This is necessary because we dynamically mess with its window bits.
 Public Sub DeactivateToolPanel(ByVal programIsGoingDown As Boolean, Optional ByVal useCustomHwnd As Long = 0)
     
     'By default, this function will automatically apply the new settings to the last tool options panel it created.
@@ -518,10 +507,10 @@ Public Sub SetToolboxVisibility(ByVal winHwnd As Long, ByVal newVisibility As Bo
             winIndex = i
         
             'If this window's visibility already matches what we have stored, ignore the request and exit
-            If pdWindows(i).IsVisible = newVisibility Then
+            If pdWindows(i).isVisible = newVisibility Then
                 Exit Sub
             Else
-                pdWindows(i).IsVisible = newVisibility
+                pdWindows(i).isVisible = newVisibility
                 Exit For
             End If
             
@@ -576,7 +565,7 @@ Friend Sub GetActualMainFormClientRect(ByRef modifiedRect As winRect)
     'Subtract the width and/or height of docked toolbars from the rect, contingent on their visibility and alignment
     Dim i As Long
     For i = 0 To numOfPDWindows - 1
-        If (pdWindows(i).typeOfWindow = TOOLBAR_WINDOW) And (pdWindows(i).IsVisible) Then
+        If (pdWindows(i).typeOfWindow = TOOLBAR_WINDOW) And (pdWindows(i).isVisible) Then
             
             GetWindowRect pdWindows(i).hWnd, toolbarRect
                 
@@ -622,12 +611,12 @@ Private Sub SetWindowPosByAlignment(ByVal winIndex As Long, Optional ByVal suspe
     Next i
     
     'For the file toolbox, add the height of the file toolbox to the y1 position
-    If (pdWindows(winIndex).optionalToolbarType = LEFT_TOOLBOX) And (pdWindows(toolsToolboxIndex).IsVisible) Then
+    If (pdWindows(winIndex).optionalToolbarType = LEFT_TOOLBOX) And (pdWindows(toolsToolboxIndex).isVisible) Then
         mainClientRect.y2 = mainClientRect.y2 - GetClientHeight(toolbar_Options.hWnd)
     End If
     
     'For the layers toolbox, subtract the height of the tools toolbox from the y2 position
-    If (pdWindows(winIndex).optionalToolbarType = RIGHT_TOOLBOX) And (pdWindows(toolsToolboxIndex).IsVisible) Then
+    If (pdWindows(winIndex).optionalToolbarType = RIGHT_TOOLBOX) And (pdWindows(toolsToolboxIndex).isVisible) Then
         mainClientRect.y2 = mainClientRect.y2 - GetClientHeight(toolbar_Options.hWnd)
     End If
     
@@ -694,13 +683,13 @@ Private Sub FixDockedToolbarSize(ByVal winIndex As Long)
     Next i
     
     'For the primary toolbox, subtract the height of the options toolbox from the y2 position
-    If (pdWindows(winIndex).optionalToolbarType = LEFT_TOOLBOX) And (pdWindows(toolsToolboxIndex).IsVisible) Then
+    If (pdWindows(winIndex).optionalToolbarType = LEFT_TOOLBOX) And (pdWindows(toolsToolboxIndex).isVisible) Then
         clientHeight = clientHeight - GetClientHeight(toolbar_Options.hWnd)
         curMainFormClient.y2 = curMainFormClient.y2 - GetClientHeight(toolbar_Options.hWnd)
     End If
     
     'For the layers toolbox, subtract the height of the tools toolbox from the y2 position
-    If (pdWindows(winIndex).optionalToolbarType = RIGHT_TOOLBOX) And (pdWindows(toolsToolboxIndex).IsVisible) Then
+    If (pdWindows(winIndex).optionalToolbarType = RIGHT_TOOLBOX) And (pdWindows(toolsToolboxIndex).isVisible) Then
         clientHeight = clientHeight - GetClientHeight(toolbar_Options.hWnd)
         curMainFormClient.y2 = curMainFormClient.y2 - GetClientHeight(toolbar_Options.hWnd)
     End If
@@ -758,7 +747,7 @@ Private Sub UpdateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 
                 'Remove the window border
                 newWinStyle = WS_CHILD Or WS_CLIPCHILDREN
-                If (Not isFirstLoad) And pdWindows(winIndex).IsVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
+                If (Not isFirstLoad) And pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
                 SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
                 SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_NOACTIVATE Or WS_EX_COMPOSITED 'Or WS_EX_LAYERED
                 SetWindowPos pdWindows(winIndex).hWnd, HWND_TOP, 0, 0, pdWindows(winIndex).originalWidthClient, pdWindows(winIndex).originalHeightClient, SWP_NOMOVE Or SWP_FRAMECHANGED Or SWP_NOOWNERZORDER Or SWP_NOCOPYBITS
@@ -1180,7 +1169,7 @@ Public Sub RegisterChildForm(ByRef childForm As Form, ByVal whatWindowType As PD
     GetWindowRect mainWindowHwnd, parentRect
     
     With pdWindows(numOfPDWindows)
-        .IsVisible = True
+        .isVisible = True
         .minimumWidth = minWidth
         .minimumHeight = minHeight
         .offsetX = childRect.x1 - parentRect.x1
@@ -1234,7 +1223,7 @@ Public Sub UnregisterForm(ByRef srcForm As Form)
             UpdateStoredWindowLocation i
             
             'Mark the window as invisible
-            pdWindows(i).IsVisible = False
+            pdWindows(i).isVisible = False
             
             'Release this window's subclassing
             pdWindows(i).subclassingReleased = True
@@ -1427,9 +1416,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     If Not mainFormTriggeredChange Then RequestWindowResync winIndex
                     
                     'If this is the tool options panel, and a child options panel is active, synchronize their sizes
-                    If (pdWindows(winIndex).optionalToolbarType = BOTTOM_TOOLBOX) And (m_CurrentToolPanelHwnd <> 0) Then
-                        ActivateToolPanel m_CurrentToolPanelHwnd
-                    End If
+                    'If (pdWindows(winIndex).optionalToolbarType = BOTTOM_TOOLBOX) And (m_CurrentToolPanelHwnd <> 0) Then
+                    '    ActivateToolPanel m_CurrentToolPanelHwnd
+                    'End If
                     
                 End If
             

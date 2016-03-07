@@ -15,6 +15,7 @@ Attribute VB_Name = "Toolboxes"
 
 Option Explicit
 
+Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As Long) As Long
 Private Const SW_HIDE As Long = 0&
@@ -24,7 +25,7 @@ Private Const SW_SHOWNA As Long = 8&
 Private Type PD_Toolbox_Data
     ConstrainingSize As Long
     hWnd As Long
-    ToolRect As winRect
+    toolRect As winRect
     
     DefaultSize As Long     'These three settings are *hard-coded*.
     MinSize As Long         'The user has no control over them.
@@ -145,13 +146,13 @@ Public Sub CalculateNewToolboxRects(ByRef mainFormClientRect As winRect, ByRef d
     With m_Toolboxes(PDT_BottomToolbox)
         If .IsVisibleNow Then
         
-            .ToolRect.x1 = mainFormClientRect.x1
-            .ToolRect.x2 = mainFormClientRect.x2
-            .ToolRect.y2 = mainFormClientRect.y2
-            .ToolRect.y1 = mainFormClientRect.y2 - .ConstrainingSize
+            .toolRect.x1 = mainFormClientRect.x1
+            .toolRect.x2 = mainFormClientRect.x2
+            .toolRect.y2 = mainFormClientRect.y2
+            .toolRect.y1 = mainFormClientRect.y2 - .ConstrainingSize
             
             'As each toolbar is positioned, we update the client rect we received to reflect the new positions.
-            mainFormClientRect.y2 = .ToolRect.y1
+            mainFormClientRect.y2 = .toolRect.y1
             
         End If
     End With
@@ -160,46 +161,47 @@ Public Sub CalculateNewToolboxRects(ByRef mainFormClientRect As winRect, ByRef d
     ' to remember is that the *bottom* of these toolbars is determined by the *top* of the bottom toolbar.
     With m_Toolboxes(PDT_LeftToolbox)
         If .IsVisibleNow Then
-            .ToolRect.x1 = mainFormClientRect.x1
-            .ToolRect.x2 = .ToolRect.x1 + .ConstrainingSize
-            .ToolRect.y1 = mainFormClientRect.y1
-            .ToolRect.y2 = mainFormClientRect.y2
-            mainFormClientRect.x1 = .ToolRect.x2
+            .toolRect.x1 = mainFormClientRect.x1
+            .toolRect.x2 = .toolRect.x1 + .ConstrainingSize
+            .toolRect.y1 = mainFormClientRect.y1
+            .toolRect.y2 = mainFormClientRect.y2
+            mainFormClientRect.x1 = .toolRect.x2
         End If
     End With
     
     With m_Toolboxes(PDT_RightToolbox)
         If .IsVisibleNow Then
-            .ToolRect.x1 = mainFormClientRect.x2 - .ConstrainingSize
-            .ToolRect.x2 = mainFormClientRect.x2
-            .ToolRect.y1 = mainFormClientRect.y1
-            .ToolRect.y2 = mainFormClientRect.y2
-            mainFormClientRect.x2 = .ToolRect.x1
+            .toolRect.x1 = mainFormClientRect.x2 - .ConstrainingSize
+            .toolRect.x2 = mainFormClientRect.x2
+            .toolRect.y1 = mainFormClientRect.y1
+            .toolRect.y2 = mainFormClientRect.y2
+            mainFormClientRect.x2 = .toolRect.x1
         End If
     End With
     
     'Add 1-pixel's worth of padding to all affected sides of the canvas rect (e.g. the top can stay where it is,
     ' as there is no neighboring toolbox).
     With dstCanvasRect
-        .x1 = mainFormClientRect.x1 + 1
-        .x2 = mainFormClientRect.x2 - 1
+        .x1 = mainFormClientRect.x1
+        .x2 = mainFormClientRect.x2
         .y1 = mainFormClientRect.y1
-        .y2 = mainFormClientRect.y2 - 1
+        .y2 = mainFormClientRect.y2
     End With
     
 End Sub
 
 'Show and/or position a toolbox according to its current settings.  In most cases, you will want to call
 ' CalculateNewToolboxRects(), above, prior to invoking this function.
-Public Sub PositionToolbox(ByVal toolID As PD_Toolbox, ByVal toolboxHWnd As Long)
+Public Sub PositionToolbox(ByVal toolID As PD_Toolbox, ByVal toolboxHWnd As Long, ByVal parentHwnd As Long)
+    SetParent toolboxHWnd, parentHwnd
     With m_Toolboxes(toolID)
         .hWnd = toolboxHWnd
         If .IsVisibleNow Then
-            MoveWindow toolboxHWnd, .ToolRect.x1, .ToolRect.y1, .ToolRect.x2 - .ToolRect.x1, .ToolRect.y2 - .ToolRect.y1, 1&
+            MoveWindow toolboxHWnd, .toolRect.x1, .toolRect.y1, .toolRect.x2 - .toolRect.x1, .toolRect.y2 - .toolRect.y1, 1&
             ShowWindow toolboxHWnd, SW_SHOWNA
         Else
             ShowWindow toolboxHWnd, SW_HIDE
-            MoveWindow toolboxHWnd, .ToolRect.x1, .ToolRect.y1, .ToolRect.x2 - .ToolRect.x1, .ToolRect.y2 - .ToolRect.y1, 0&
+            MoveWindow toolboxHWnd, .toolRect.x1, .toolRect.y1, .toolRect.x2 - .toolRect.x1, .toolRect.y2 - .toolRect.y1, 0&
         End If
     End With
 End Sub
@@ -244,52 +246,32 @@ End Sub
 
 'Toolbars can be dynamically shown/hidden by a variety of processes (e.g. clicking an entry in the Window menu, clicking the X in a
 ' toolbar's command box, etc).  All those operations should wrap this singular function.
-Public Sub ToggleToolboxVisibility(ByVal whichToolbar As PDToolbarType, Optional ByVal suppressRedraws As Boolean = False)
+Public Sub ToggleToolboxVisibility(ByVal whichToolbar As PD_Toolbox, Optional ByVal suppressRedraws As Boolean = False)
 
     Select Case whichToolbar
     
-        Case LEFT_TOOLBOX
+        Case PDT_LeftToolbox
             FormMain.MnuWindowToolbox(0).Checked = Not FormMain.MnuWindowToolbox(0).Checked
-            g_UserPreferences.SetPref_Boolean "Toolbox", "Show Left Toolbox", FormMain.MnuWindowToolbox(0).Checked
-            g_WindowManager.SetToolboxVisibility toolbar_Toolbox.hWnd, FormMain.MnuWindowToolbox(0).Checked
-            
-            'NEW SYSTEM: because we're using a module, we can't raise events.  As such, the caller must perform a manual
-            ' redraw after toggling visibility settings.
             SetToolboxVisibilityPreference PDT_LeftToolbox, FormMain.MnuWindowToolbox(0).Checked
             
-        Case BOTTOM_TOOLBOX
+        Case PDT_BottomToolbox
             FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
-            g_UserPreferences.SetPref_Boolean "Toolbox", "Show Bottom Toolbox", FormMain.MnuWindow(1).Checked
-            
-            'NEW SYSTEM: because we're using a module, we can't raise events.  As such, the caller must perform a manual
-            ' redraw after toggling visibility settings.
             SetToolboxVisibilityPreference PDT_BottomToolbox, FormMain.MnuWindowToolbox(1).Checked
             
-            'Because this toolbox's visibility is also tied to the current tool, we wrap a different functions.  This function
+            'Because this toolbox's visibility is also tied to the current tool, we wrap a different function.  This function
             ' will show/hide the toolbox as necessary.
-            toolbar_Toolbox.resetToolButtonStates
+            toolbar_Toolbox.ResetToolButtonStates
             
-        Case RIGHT_TOOLBOX
+        Case PDT_RightToolbox
             FormMain.MnuWindow(2).Checked = Not FormMain.MnuWindow(2).Checked
-            g_UserPreferences.SetPref_Boolean "Toolbox", "Show Right Toolbox", FormMain.MnuWindow(2).Checked
-            
-            'NEW SYSTEM: because we're using a module, we can't raise events.  As such, the caller must perform a manual
-            ' redraw after toggling visibility settings.
             SetToolboxVisibilityPreference PDT_RightToolbox, FormMain.MnuWindowToolbox(2).Checked
             
-            g_WindowManager.SetToolboxVisibility toolbar_Layers.hWnd, FormMain.MnuWindow(2).Checked
-        
-        Case DEBUG_TOOLBOX
-            FormMain.MnuDevelopers(0).Checked = Not FormMain.MnuDevelopers(0).Checked
-            g_UserPreferences.SetPref_Boolean "Toolbox", "Show Debug Window", FormMain.MnuDevelopers(0).Checked
-            g_WindowManager.SetToolboxVisibility toolbar_Debug.hWnd, FormMain.MnuDevelopers(0).Checked
-    
     End Select
     
     'NEW SYSTEM: the below line can stay, but we need to remove the "loaded images" check.  Even if no images are loaded,
     ' we need to reset the canvas area.
     
     'Redraw the primary image viewport, as the available client area may have changed.
-    If (g_NumOfImagesLoaded > 0) And (Not suppressRedraws) Then FormMain.UpdateMainLayout
+    If (Not suppressRedraws) Then FormMain.UpdateMainLayout
     
 End Sub

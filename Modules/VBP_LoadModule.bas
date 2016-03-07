@@ -414,17 +414,13 @@ Public Sub LoadTheProgram()
     g_WindowManager.SetAutoRefreshMode False
     g_WindowManager.RegisterParentForm FormMain
     
-    '**
-    ' NEW CODE FOR 7.0:
-    ' Initialize the new, lightweight toolbox handler.  This will load things like toolbox sizes from the last session.
+    'As of 7.0, all we need to do here is initialize the new, lightweight toolbox handler.  This will load things
+    ' like toolbox sizes and visibility from the previous session.
     Toolboxes.LoadToolboxData
     
-    'Hypothetically, we don't actually want to do more here - instead, we save it for after the main form has been positioned.
-    
-    '**
-    
-    'Load all tool windows.  Even though they may not be visible (as the user can elect to hide them), we still want them loaded,
-    ' so we can interact with them as necessary (e.g. "enable Undo button", etc).
+    'With toolbox data assembled, we can now silently load each tool window.  Even though these windows may not
+    ' be visible (as the user can elect to hide them), we still want them loaded so that we can activate them quickly
+    ' if/when they are enabled.
     
     #If DEBUGMODE = 1 Then
         perfCheck.markEvent "Window manager: load left toolbox"
@@ -576,8 +572,8 @@ Public Sub LoadTheProgram()
     #End If
     
     'Display the splash screen for at least a second or two
-    If Timer - m_StartTime < m_LoadTime Then
-        Do While Timer - m_StartTime < m_LoadTime
+    If (Timer - m_StartTime) < m_LoadTime Then
+        Do While (Timer - m_StartTime) < m_LoadTime
         Loop
     End If
     
