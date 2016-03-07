@@ -385,13 +385,10 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     ' means we can free the release code and resize the window now.  (On some OS/theme combinations, the canvas will
     ' live-resize as the mouse is moved.  On others, the canvas won't redraw until the mouse is released.)
     If m_WeAreResponsibleForResize Then
-        
         m_WeAreResponsibleForResize = False
         m_MouseEvents.SetSystemCursor IDC_DEFAULT
         
-        'If theming is disabled, window performance is so poor that the window manager will automatically
-        ' disable canvas updates until the mouse is released.  Request a full update now.
-        'If (Not g_IsThemingEnabled) Then g_WindowManager.NotifyToolboxResized Me.hWnd, True
+        'TODO: make sure this is okay with 7.0's new toolbox manager
         
     End If
     

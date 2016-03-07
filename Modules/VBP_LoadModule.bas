@@ -120,7 +120,7 @@ Public Sub LoadTheProgram()
     g_IsWin10OrLater = cSysInfo.IsOSWin10OrLater
     
     'If we are on Windows 7, prepare some Win7-specific features (like taskbar progress bars)
-    If g_IsWin7OrLater Then prepWin7Features
+    If g_IsWin7OrLater Then PrepWin7Features
     
     
     
@@ -438,13 +438,9 @@ Public Sub LoadTheProgram()
     Load toolbar_Options
     
     'Retrieve tool window visibility and mark those menus as well
-    FormMain.MnuWindowToolbox(0).Checked = g_UserPreferences.GetPref_Boolean("Toolbox", "Show Left Toolbox", True)
-    FormMain.MnuWindow(1).Checked = g_UserPreferences.GetPref_Boolean("Toolbox", "Show Bottom Toolbox", True)
-    FormMain.MnuWindow(2).Checked = g_UserPreferences.GetPref_Boolean("Toolbox", "Show Right Toolbox", True)
-    
-    #If DEBUGMODE = 1 Then
-        FormMain.MnuDevelopers(0).Checked = g_UserPreferences.GetPref_Boolean("Toolbox", "Show Debug Window", False)
-    #End If
+    FormMain.MnuWindowToolbox(0).Checked = Toolboxes.GetToolboxVisibilityPreference(PDT_LeftToolbox)
+    FormMain.MnuWindow(1).Checked = Toolboxes.GetToolboxVisibilityPreference(PDT_BottomToolbox)
+    FormMain.MnuWindow(2).Checked = Toolboxes.GetToolboxVisibilityPreference(PDT_RightToolbox)
     
     'Retrieve two additional settings for the image tabstrip menu: when to display it, and its alignment
     ToggleImageTabstripVisibility g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1), True

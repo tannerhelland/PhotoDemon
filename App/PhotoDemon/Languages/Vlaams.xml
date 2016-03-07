@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.145</langversion>
+<langversion>6.7.146</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -5203,11 +5203,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>Debug window</original>
-<translation>Debug venster</translation>
-</phrase>
-
-<phrase>
 <original>Theme editor</original>
 <translation>Thema-editor</translation>
 </phrase>
@@ -5889,7 +5884,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- MainWindow.frm contains 566 phrases. 187 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12320,47 +12315,6 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <!-- END text for Startup_Splash.frm-->
 
-<!-- BEGIN text for Toolbar_Debug.frm (toolbar_Debug) -->
-
-<phrase>
-<original>Debug</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>DIBs created</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>DIBs erased</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>DIBs active</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Fonts created</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Fonts erased</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Fonts active</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolbar_Debug.frm contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
-
-<!-- END text for Toolbar_Debug.frm-->
-
 <!-- BEGIN text for Toolbar_Layers.frm (toolbar_Layers) -->
 
 <phrase>
@@ -13574,41 +13528,6 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
-<original>use high-resolution input tracking</original>
-<translation>gebruik maken van high-resolution input tracking</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>muis en peninvoer</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>maximum aantal recente bestanden</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>lijst recente bestanden</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts should be</original>
-<translation>snelkoppelingen van laatst gebruikte bestanden moeten worden</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>bijschriften</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>afbeeldingsvenstertitels moeten worden</translation>
-</phrase>
-
-<phrase>
 <original>use the system color profile</original>
 <translation>gebruik het kleurenprofiel van het systeem</translation>
 </phrase>
@@ -13886,6 +13805,41 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 <phrase>
 <original>notify me when an update is ready</original>
 <translation>waarschuwing weergeven wanneer er een update is klaar</translation>
+</phrase>
+
+<phrase>
+<original>use high-resolution input tracking</original>
+<translation>gebruik maken van high-resolution input tracking</translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation>muis en peninvoer</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent file entries</original>
+<translation>maximum aantal recente bestanden</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>lijst recente bestanden</translation>
+</phrase>
+
+<phrase>
+<original>recently used file shortcuts should be</original>
+<translation>snelkoppelingen van laatst gebruikte bestanden moeten worden</translation>
+</phrase>
+
+<phrase>
+<original>captions</original>
+<translation>bijschriften</translation>
+</phrase>
+
+<phrase>
+<original>image window titles should be</original>
+<translation>afbeeldingsvenstertitels moeten worden</translation>
 </phrase>
 
 <phrase>
@@ -14681,12 +14635,18 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Toolboxes.bas -->
+
+<!-- Toolboxes.bas contains 0 phrases. -->
+
+<!-- END text for Toolboxes.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2513</phrasecount>
+<phrasecount>2505</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4316 phrases. -->
-<!-- 1803 are duplicates, so only 2513 unique phrases have been written to file. -->
-<!-- These 2513 phrases contain approximately 13388 total words. -->
+<!-- As of this build, PhotoDemon contains 4308 phrases. -->
+<!-- 1803 are duplicates, so only 2505 unique phrases have been written to file. -->
+<!-- These 2505 phrases contain approximately 13373 total words. -->
 
 </pdData>
