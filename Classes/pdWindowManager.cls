@@ -185,7 +185,7 @@ End Enum
 #End If
 
 'These constants can be used as the second parameter of the ShowWindow API function
-Private Enum ShowWindowOptions
+Private Enum showWindowOptions
     SW_HIDE = 0
     SW_SHOWNORMAL = 1
     SW_SHOWMINIMIZED = 2
@@ -214,7 +214,7 @@ Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, B
 Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
-Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As ShowWindowOptions) As Long
+Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
 
 'APIs for getting/setting Unicode window captions
 Private Declare Function DefWindowProcW Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
@@ -717,7 +717,7 @@ Private Sub UpdateStoredWindowLocation(ByVal indexInWindowArray As Long)
 End Sub
 
 'The primary PhotoDemon form must register its hWnd, so we can track its movement and move any children windows accordingly.
-Public Sub RegisterParentForm(ByRef parentForm As Form)
+Public Sub RegisterMainForm(ByRef parentForm As Form)
 
     'Has this window already been registered?  If so, don't re-register it.
     Dim i As Long
@@ -737,10 +737,11 @@ Public Sub RegisterParentForm(ByRef parentForm As Form)
     
     'Apply any unique styles to the parent window
     Dim newWinStyle As Long
-    newWinStyle = GetWindowLong(parentForm.hWnd, GWL_STYLE)
-    SetWindowLong parentForm.hWnd, GWL_STYLE, newWinStyle Or WS_CLIPCHILDREN
-    newWinStyle = GetWindowLong(parentForm.hWnd, GWL_EXSTYLE)
-    SetWindowLong parentForm.hWnd, GWL_EXSTYLE, newWinStyle Or WS_EX_COMPOSITED
+    newWinStyle = GetWindowLong(parentForm.hWnd, GWL_EXSTYLE) Or WS_EX_COMPOSITED
+    
+    'On Vista+, layered windows consume a bit more resources but they play very nicely with DWM
+    If g_IsVistaOrLater Then newWinStyle = newWinStyle Or WS_EX_LAYERED
+    SetWindowLong parentForm.hWnd, GWL_EXSTYLE, newWinStyle
     
     'Subclass the main window
     cSubclass.ssc_Subclass mainWindowHwnd, , , Me
