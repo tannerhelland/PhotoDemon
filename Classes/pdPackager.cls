@@ -775,12 +775,36 @@ Public Function writePackageToFile(ByVal dstFilename As String, Optional ByVal s
     
     If createSuccess Then
     
-        'Writing out the three crucial pieces of data: the header, the directory, and the data
-        With m_File
-            .WriteDataToFile hFile, VarPtr(m_FileHeader), LenB(m_FileHeader)
-            .WriteDataToFile hFile, VarPtr(rawDirectoryBuffer(0)), UBound(rawDirectoryBuffer) + 1
-            .WriteDataToFile hFile, VarPtr(rawDataBuffer(0)), UBound(rawDataBuffer) + 1
-        End With
+        'NEW TEST!  First, attempt to write out the package using a memory-mapped file.  This is much faster (comparable to
+        ' an asynchronous write) vs raw WriteData calls.
+        Dim mmapHandle As Long, mmapPtr As Long, totalWriteSize As Long
+        totalWriteSize = LenB(m_FileHeader) + UBound(rawDirectoryBuffer) + 1 + UBound(rawDataBuffer) + 1
+        
+        If m_File.ConvertFileHandleToMMPtr(hFile, mmapHandle, mmapPtr, totalWriteSize) Then
+        
+            'Write out the file data using good ol' CopyMemory!
+            Dim mmapOffset As Long, netDirectorySize As Long
+            mmapOffset = LenB(m_FileHeader)
+            netDirectorySize = UBound(rawDirectoryBuffer) + 1
+            
+            CopyMemory mmapPtr, VarPtr(m_FileHeader), mmapOffset
+            CopyMemory mmapPtr + mmapOffset, VarPtr(rawDirectoryBuffer(0)), netDirectorySize
+            CopyMemory mmapPtr + mmapOffset + netDirectorySize, VarPtr(rawDataBuffer(0)), UBound(rawDataBuffer) + 1
+            
+            'Release the mapped view and allow the system to write the file at its leisure
+            m_File.ReleaseMMHandle mmapHandle, mmapPtr
+            
+        'If we failed to allocate sufficient memory for a memory-mapped write, fall back to default write techniques
+        Else
+    
+            'Writing out the three crucial pieces of data: the header, the directory, and the data
+            With m_File
+                .WriteDataToFile hFile, VarPtr(m_FileHeader), LenB(m_FileHeader)
+                .WriteDataToFile hFile, VarPtr(rawDirectoryBuffer(0)), UBound(rawDirectoryBuffer) + 1
+                .WriteDataToFile hFile, VarPtr(rawDataBuffer(0)), UBound(rawDataBuffer) + 1
+            End With
+            
+        End If
         
         m_File.CloseFileHandle hFile
         
