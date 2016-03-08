@@ -61,6 +61,8 @@ Private Const FILE_ATTRIBUTE_NORMAL As Long = &H80&
 Private Const FILE_ATTRIBUTE_TEMPORARY As Long = &H100&
 
 Private Const INVALID_HANDLE_VALUE As Long = -1
+Private Const PAGE_READWRITE As Long = 4
+Private Const FILE_MAP_WRITE As Long = 2
 
 Public Enum PDFSO_FILE_ACCESS_OPTIMIZE
     OptimizeNone = 0
@@ -87,6 +89,11 @@ Private Declare Function CreateFileW Lib "kernel32" (ByVal lpFileName As Long, B
 Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToDstBuffer As Long, ByVal nNumberOfBytesToRead As Long, ByRef lpNumberOfBytesRead As Long, ByVal lpOverlapped As Long) As Long
 Private Declare Function SetFilePointer Lib "kernel32" (ByVal hFile As Long, ByVal lDistanceToMove As Long, ByRef lpDistanceToMoveHigh As Long, ByVal dwMoveMethod As FILE_POINTER_MOVE_METHOD) As Long
 Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToSourceBuffer As Long, ByVal nNumberOfBytesToWrite As Long, ByRef lpNumberOfBytesWritten As Long, ByVal ptrToOverlappedStruct As Long) As Long
+Private Declare Function CreateFileMapping Lib "kernel32" Alias "CreateFileMappingW" (ByVal hFile As Long, ByVal lpFileMappingAttributes As Long, ByVal flProtect As Long, ByVal dwMaximumSizeHigh As Long, ByVal dwMaximumSizeLow As Long, ByVal ptrToNameString As Long) As Long
+Private Declare Function MapViewOfFile Lib "kernel32" (ByVal hFileMappingObject As Long, ByVal dwDesiredAccess As Long, ByVal dwFileOffsetHigh As Long, ByVal dwFileOffsetLow As Long, ByVal dwNumberOfBytesToMap As Long) As Long
+Private Declare Function OpenFileMapping Lib "kernel32" Alias "OpenFileMappingW" (ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal ptrToNameString As Long) As Long
+Private Declare Function UnmapViewOfFile Lib "kernel32" (ByVal lpBaseAddress As Long) As Long
+Private Declare Function FlushViewOfFile Lib "kernel32" (ByVal lpBaseAddress As Long, ByVal dwNumberOfBytesToFlush As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
 
 Private Type WIN32_FIND_DATA
@@ -1513,9 +1520,85 @@ Friend Function CreateAppendFileHandle(ByRef srcFilePath As String, ByRef dstFil
     
 End Function
 
+'Given a file handle successfully created by CreateFileHandle, above, create a memory-mapped view of the file and return
+' a pointer to the start of the map.  This is effectively a "shortcut" function that maps the entire file view at once,
+' enabling the caller to CopyMemory whatever they want directly into the file itself, which the system can then flush
+' at its leisure (enabling a sort of poor man's asynchronicity).
+'
+'IMPORTANT: read/write access is required by this function, so you *must* specify both read+write attributes on the
+' originally created file handle.  If you do not, the mmap handle creation will fail.
+'
+'Besides returning a basic pass/fail result, this function fills two output values: a handle to the mapped object,
+' and a pointer for writing.  The pointer can be immediately used with CopyMemory, and the mapped object handle must
+' be retained as we need it to close the map after writing has finished.  Do not confuse the two values!
+'
+'ALSO: you *must* remember the value of dstBaseAddress.  The *same* base address value must be passed to the UnmapView
+' function upon completion, so for things like offset calculations, you should use a separate variable.
+Friend Function ConvertFileHandleToMMPtr(ByVal srcFileHandle As Long, ByRef dstMappedHandle As Long, ByRef dstBaseAddress As Long, ByVal sizeInBytes As Long, Optional ByVal nameOfMap As String = vbNullString) As Boolean
+    
+    Dim ptrName As Long
+    If Len(nameOfMap) <> 0 Then ptrName = StrPtr(nameOfMap) Else ptrName = 0
+    dstMappedHandle = CreateFileMapping(srcFileHandle, 0&, PAGE_READWRITE, 0&, sizeInBytes, ptrName)
+                                 
+    If (dstMappedHandle = 0) Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdFSO.ConvertFileHandleToMMPtr failed to create a handle for " & nameOfMap & ".  Relevant last error: " & Err.LastDllError
+        #End If
+        ConvertFileHandleToMMPtr = False
+    
+    'Handle creation appears to be successful
+    Else
+        
+        'Immediately map a full-sized view of the file, and retrieve a pointer to the initial offset
+        dstBaseAddress = MapViewOfFile(dstMappedHandle, FILE_MAP_WRITE, 0&, 0&, 0&)
+        
+        If (dstBaseAddress = 0) Then
+            CloseHandle dstMappedHandle
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  pdFSO.ConvertFileHandleToMMPtr failed to map the created handle for " & nameOfMap & ".  Relevant last error: " & Err.LastDllError
+            #End If
+            ConvertFileHandleToMMPtr = False
+        Else
+            ConvertFileHandleToMMPtr = True
+        End If
+        
+    End If
+    
+End Function
+
+'Partner function to ConvertFileHandleToMMPtr, above.  The same values output by that function must be passed here,
+' including an identical value for the base address.  Also, note that the flushImmediately parameter is asynchronous;
+' it will not wait for the flush to cpmlete before returning, so you should take that into account if you plan to
+' immediately access the written file via a separate method like ReadFile.  (If you want to enforce an immediate full
+' write to the actual physical media, you'd need to follow this function with a manual call to FlushFileBuffers.)
+Friend Function ReleaseMMHandle(ByVal srcMappedHandle As Long, ByVal srcBaseAddress As Long, Optional ByVal srcFileHandleToo As Long = 0, Optional ByVal flushImmediately As Boolean = False) As Boolean
+    
+    If (srcMappedHandle <> 0) And (srcBaseAddress <> 0) Then
+        
+        'Unmapping the view frees up the corresponding memory chunk in our address space; do this first
+        UnmapViewOfFile srcBaseAddress
+        
+        'If the caller wants a flush, initiate it before we release the mapping handle
+        If flushImmediately Then FlushViewOfFile srcBaseAddress, 0&
+        
+        'Release the mapped file object
+        ReleaseMMHandle = CBool(CloseHandle(srcMappedHandle) <> 0)
+        
+        'As a convenience to the caller, we can close the original file handle now as well.
+        If (srcFileHandleToo <> 0) Then ReleaseMMHandle = ReleaseMMHandle And CloseFileHandle(srcFileHandleToo)
+        
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdFSO.ReleaseMMHandle was passed null values.  Fix this!"
+        #End If
+        ReleaseMMHandle = False
+    End If
+    
+End Function
+
 'Close an open file handle.
 ' Returns: TRUE if successful.
-Public Function CloseFileHandle(ByRef srcHandle As Long) As Boolean
+Friend Function CloseFileHandle(ByRef srcHandle As Long) As Boolean
     
     If srcHandle <> 0 Then
         CloseFileHandle = CBool(CloseHandle(srcHandle) <> 0)
