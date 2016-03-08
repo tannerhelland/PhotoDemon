@@ -265,7 +265,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                 
                 'Attempt to save. Note that the user can still cancel at this point, and we want to honor their cancellation
                 Dim saveSuccessful As Boolean
-                saveSuccessful = MenuSave(CLng(imageID))
+                saveSuccessful = MenuSave(pdImages(imageID))
                 
                 'If something went wrong, or the user canceled the save dialog, stop the unload process
                 Cancel = Not saveSuccessful

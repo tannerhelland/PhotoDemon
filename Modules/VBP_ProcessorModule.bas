@@ -502,13 +502,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             File_Menu.MenuCloseAll
         
         Case "Save"
-            File_Menu.MenuSave g_CurrentImage
+            File_Menu.MenuSave pdImages(g_CurrentImage)
             
         Case "Save as"
-            File_Menu.MenuSaveAs g_CurrentImage
+            File_Menu.MenuSaveAs pdImages(g_CurrentImage)
             
         Case "Save copy"
-            File_Menu.MenuSaveLosslessCopy g_CurrentImage
+            File_Menu.MenuSaveLosslessCopy pdImages(g_CurrentImage)
             
         Case "Revert"
             If FormMain.MnuFile(9).Enabled Then

@@ -3113,9 +3113,9 @@ Private Sub prepareForBatchConversion()
                     'Request a save from the PhotoDemon_SaveImage method, and pass it a specialized string containing
                     ' any extra information for the requested format (JPEG quality, etc)
                     If Len(m_FormatParams) <> 0 Then
-                        PhotoDemon_SaveImage pdImages(CLng(g_CurrentImage)), tmpFilename, CLng(g_CurrentImage), False, m_FormatParams
+                        PhotoDemon_SaveImage pdImages(CLng(g_CurrentImage)), tmpFilename, False, m_FormatParams
                     Else
-                        PhotoDemon_SaveImage pdImages(CLng(g_CurrentImage)), tmpFilename, CLng(g_CurrentImage), False
+                        PhotoDemon_SaveImage pdImages(CLng(g_CurrentImage)), tmpFilename, False
                     End If
                 
                 End If

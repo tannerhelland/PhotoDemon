@@ -158,12 +158,12 @@ End Function
 'Subroutine for saving an image to file.  This function assumes the image already exists on disk and is simply
 ' being replaced; if the file does not exist on disk, this routine will automatically transfer control to Save As...
 ' The imageToSave is a reference to an ID in the pdImages() array.  It can be grabbed from the form.Tag value as well.
-Public Function MenuSave(ByVal imageID As Long) As Boolean
+Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
 
-    If Len(pdImages(imageID).locationOnDisk) = 0 Then
-    
-        'This image hasn't been saved before.  Launch the Save As... dialog
-        MenuSave = MenuSaveAs(imageID)
+    'Certain criteria make is impossible to blindly save an image to disk (such as the image being loaded from a
+    ' non-disk source, like the clipbord).  When this happens, we'll silently switch to a Save As... dialog.
+    If Saving.IsSaveAsRequired(srcImage) Then
+        MenuSave = MenuSaveAs(srcImage)
         
     Else
     
@@ -173,26 +173,26 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
                 
         'If the user has requested that we only save copies of current images, we need to come up with a new filename
         If g_UserPreferences.GetPref_Long("Saving", "Overwrite Or Copy", 0) = 0 Then
-            dstFilename = pdImages(imageID).locationOnDisk
+            dstFilename = srcImage.locationOnDisk
         Else
         
             'Determine the destination directory
             Dim tempPathString As String
-            tempPathString = pdImages(imageID).locationOnDisk
+            tempPathString = srcImage.locationOnDisk
             StripDirectory tempPathString
             
             'Perform a failsafe check for a filename of some sort.  If this parameter is missing, the common dialog request will fail.
-            If Len(pdImages(imageID).originalFileName) = 0 Then
-                pdImages(imageID).originalFileName = g_Language.TranslateMessage("New image")
+            If Len(srcImage.originalFileName) = 0 Then
+                srcImage.originalFileName = g_Language.TranslateMessage("New image")
             End If
             
             'Next, determine the target filename
             Dim tempFilename As String
-            tempFilename = pdImages(imageID).originalFileName
+            tempFilename = srcImage.originalFileName
             
             'Finally, determine the target file extension
             Dim tempExtension As String
-            tempExtension = GetExtension(pdImages(imageID).locationOnDisk)
+            tempExtension = GetExtension(srcImage.locationOnDisk)
             
             'Now, call the incrementFilename function to find a unique filename of the "filename (n+1)" variety
             dstFilename = tempPathString & incrementFilename(tempPathString, tempFilename, tempExtension) & "." & tempExtension
@@ -203,24 +203,24 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
         ' If it is, the user needs to be prompted at least once for those settings.
         
         'JPEG
-        If (pdImages(imageID).currentFileFormat = FIF_JPEG) And (Not pdImages(imageID).imgStorage.GetEntry_Boolean("hasSeenJPEGPrompt")) Then
-            MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
+        If (srcImage.currentFileFormat = FIF_JPEG) And (Not srcImage.imgStorage.GetEntry_Boolean("hasSeenJPEGPrompt")) Then
+            MenuSave = PhotoDemon_SaveImage(srcImage, dstFilename, True)
         
         'JPEG-2000
-        ElseIf (pdImages(imageID).currentFileFormat = FIF_JP2) And (Not pdImages(imageID).imgStorage.GetEntry_Boolean("hasSeenJP2Prompt")) Then
-            MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
+        ElseIf (srcImage.currentFileFormat = FIF_JP2) And (Not srcImage.imgStorage.GetEntry_Boolean("hasSeenJP2Prompt")) Then
+            MenuSave = PhotoDemon_SaveImage(srcImage, dstFilename, True)
             
         'WebP
-        ElseIf (pdImages(imageID).currentFileFormat = FIF_WEBP) And (Not pdImages(imageID).imgStorage.GetEntry_Boolean("hasSeenWebPPrompt")) Then
-            MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
+        ElseIf (srcImage.currentFileFormat = FIF_WEBP) And (Not srcImage.imgStorage.GetEntry_Boolean("hasSeenWebPPrompt")) Then
+            MenuSave = PhotoDemon_SaveImage(srcImage, dstFilename, True)
         
         'JXR
-        ElseIf (pdImages(imageID).currentFileFormat = FIF_WEBP) And (Not pdImages(imageID).imgStorage.GetEntry_Boolean("hasSeenJXRPrompt")) Then
-            MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
+        ElseIf (srcImage.currentFileFormat = FIF_WEBP) And (Not srcImage.imgStorage.GetEntry_Boolean("hasSeenJXRPrompt")) Then
+            MenuSave = PhotoDemon_SaveImage(srcImage, dstFilename, True)
         
         'All other formats
         Else
-            MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, False, pdImages(imageID).saveParameters)
+            MenuSave = PhotoDemon_SaveImage(srcImage, dstFilename, False, srcImage.saveParameters)
             
         End If
     End If
@@ -228,7 +228,7 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
 End Function
 
 'Subroutine for displaying a commondialog save box, then saving an image to the specified file
-Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
+Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     
     Dim saveFileDialog As pdOpenSaveDialog
     Set saveFileDialog = New pdOpenSaveDialog
@@ -251,14 +251,14 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         ' Use that preference to determine which save filter we select.
         If g_UserPreferences.GetPref_Long("Saving", "Suggested Format", 0) = 0 Then
         
-            g_LastSaveFilter = g_ImageFormats.getIndexOfOutputFIF(pdImages(imageID).currentFileFormat) + 1
+            g_LastSaveFilter = g_ImageFormats.getIndexOfOutputFIF(srcImage.currentFileFormat) + 1
     
             'The user may have loaded a file format where INPUT is supported but OUTPUT is not.  If this happens,
             ' we need to suggest an alternative format.  Use the color-depth of the current image as our guide.
             If g_LastSaveFilter = 0 Then
                 
                 '24bpp DIBs default to JPEG
-                If pdImages(g_CurrentImage).getCompositeImageColorDepth() = 24 Then
+                If srcImage.getCompositeImageColorDepth() = 24 Then
                     g_LastSaveFilter = g_ImageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
                 
                 '32bpp DIBs default to PNG
@@ -274,19 +274,19 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     End If
     
     'Perform a failsafe check for a filename of some sort.  If this parameter is missing, the common dialog request will fail.
-    If Len(pdImages(imageID).originalFileName) = 0 Then
-        pdImages(imageID).originalFileName = g_Language.TranslateMessage("New image")
+    If Len(srcImage.originalFileName) = 0 Then
+        srcImage.originalFileName = g_Language.TranslateMessage("New image")
     End If
     
     'Check to see if an image with this filename appears in the save location. If it does, use the incrementFilename
     ' function to append ascending numbers (of the format "_(#)") to the filename until a unique filename is found.
     Dim sFile As String
-    sFile = tempPathString & incrementFilename(tempPathString, pdImages(imageID).originalFileName, g_ImageFormats.getOutputFormatExtension(g_LastSaveFilter - 1))
+    sFile = tempPathString & incrementFilename(tempPathString, srcImage.originalFileName, g_ImageFormats.getOutputFormatExtension(g_LastSaveFilter - 1))
         
     If saveFileDialog.GetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, g_LastSaveFilter, tempPathString, g_Language.TranslateMessage("Save an image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd) Then
                 
         'Store the selected file format to the image object
-        pdImages(imageID).currentFileFormat = g_ImageFormats.getOutputFIF(g_LastSaveFilter - 1)
+        srcImage.currentFileFormat = g_ImageFormats.getOutputFIF(g_LastSaveFilter - 1)
         
         'Save the new directory as the default path for future usage
         tempPathString = sFile
@@ -297,7 +297,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
         g_UserPreferences.SetPref_Long "Core", "Last Save Filter", g_LastSaveFilter
                         
         'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
-        MenuSaveAs = PhotoDemon_SaveImage(pdImages(imageID), sFile, imageID, True)
+        MenuSaveAs = PhotoDemon_SaveImage(srcImage, sFile, True)
         
     Else
         MenuSaveAs = False
@@ -313,21 +313,21 @@ End Function
 ' 3) Update the Recent Files list with the saved copy.  If we don't do this, the user has no way of knowing what save settings
 '     we've used (filename, location, etc)
 ' 4) Increment the filename automatically.  Saving a copy does not overwrite old copies.  This is important.
-Public Function MenuSaveLosslessCopy(ByVal imageID As Long) As Boolean
+Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
 
     'First things first: see if the image currently exists on-disk.  If it doesn't, we have no choice but to provide a save
     ' prompt.
-    If Len(pdImages(imageID).locationOnDisk) = 0 Then
+    If Len(srcImage.locationOnDisk) = 0 Then
         
         'TODO: make this a dialog with a "check to remember" option.  I'm waiting on this because I want a generic solution
         '       for these types of dialogs, because they would be helpful in many places throughout PD.
         PDMsgBox "Before lossless copies can be saved, you must save this image at least once." & vbCrLf & vbCrLf & "Lossless copies will be saved to the same folder as this initial image save.", vbInformation + vbOKOnly + vbApplicationModal, "Initial save required"
         
         'This image hasn't been saved before.  Launch the Save As... dialog, and wait for it to return.
-        MenuSaveLosslessCopy = MenuSaveAs(imageID)
+        MenuSaveLosslessCopy = MenuSaveAs(srcImage)
         
         'If the user canceled, abandon ship
-        If Not MenuSaveLosslessCopy Then Exit Function
+        If (Not MenuSaveLosslessCopy) Then Exit Function
         
     End If
     
@@ -335,13 +335,13 @@ Public Function MenuSaveLosslessCopy(ByVal imageID As Long) As Boolean
     Dim dstFilename As String, tmpPathString As String
     
     'Determine the destination directory now
-    tmpPathString = pdImages(imageID).locationOnDisk
+    tmpPathString = srcImage.locationOnDisk
     StripDirectory tmpPathString
     
     'Next, let's determine the target filename.  This is the current filename, auto-incremented to whatever number is
     ' available next.
     Dim tmpFilename As String
-    tmpFilename = pdImages(imageID).originalFileName
+    tmpFilename = srcImage.originalFileName
     
     'Now, call the incrementFilename function to find a unique filename of the "filename (n+1)" variety, with the PDI
     ' file extension forcibly applied.
@@ -350,7 +350,7 @@ Public Function MenuSaveLosslessCopy(ByVal imageID As Long) As Boolean
     'dstFilename now contains the full path and filename where our image copy should go.  Save it!
     If g_ZLibEnabled Then
         Saving.beginSaveProcess
-        MenuSaveLosslessCopy = SavePhotoDemonImage(pdImages(imageID), dstFilename, , , , , , True)
+        MenuSaveLosslessCopy = SavePhotoDemonImage(srcImage, dstFilename, , , , , , True)
     Else
     
         'If zLib doesn't exist...
@@ -370,7 +370,7 @@ Public Function MenuSaveLosslessCopy(ByVal imageID As Long) As Boolean
     If MenuSaveLosslessCopy Then
         
         'Add this file to the MRU list
-        g_RecentFiles.MRU_AddNewFile dstFilename, pdImages(imageID)
+        g_RecentFiles.MRU_AddNewFile dstFilename, srcImage
         
         'Return SUCCESS!
         MenuSaveLosslessCopy = True

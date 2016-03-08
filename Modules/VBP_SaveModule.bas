@@ -3,16 +3,17 @@ Attribute VB_Name = "Saving"
 'File Saving Interface
 'Copyright 2001-2016 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 05/October/14
-'Last update: fix a rare bug involving BMP format and binary alpha channels
+'Last updated: 08/March/16
+'Last update: refactor various bits of save-related code to make PD's primary save functions much more versatile.
 '
-'Module responsible for all image saving, with the exception of the GDI+ image save function (which has been left in the GDI+ module
-' for consistency's sake).  Export functions are sorted by file type, and most serve as relatively lightweight wrappers to corresponding
-' functions in the FreeImage plugin.
+'Module responsible for all image saving, with the exception of the GDI+ image save function (which has been left in
+' the GDI+ module for consistency's sake).  Export functions are sorted by file type, and most serve as relatively
+' lightweight wrappers corresponding functions in the FreeImage plugin.
 '
-'The most important sub is PhotoDemon_SaveImage at the top of the module.  This sub is responsible for doing a multitude of handling before
-' and after saving an image, including items like selecting correct color depth prior to save, and requesting MRU updates post-save.  If
-' passed the loadRelevantForm parameter, it will also prompt the user for any format-specific settings (such as JPEG quality).
+'The most important sub is PhotoDemon_SaveImage at the top of the module.  This sub is responsible for a multitude of
+' decision-making related to saving an image, including tasks like raising format-specific save dialogs, determining
+' what color-depth to use, and requesting MRU updates post-save.  Note that the raising of export dialogs can be
+' manually controlled by the loadRelevantForm parameter.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -21,6 +22,21 @@ Attribute VB_Name = "Saving"
 
 Option Explicit
 
+'When a Save request is invoked, call this function to determine if Save As is needed instead.  (Several factors can
+' affect whether Save is okay; for example, if an image has never been saved before, we must raise a dialog to ask
+' for a save location and filename.)
+Public Function IsSaveAsRequired(ByRef srcImage As pdImage) As Boolean
+
+    'TODO: if an image started with 1 layer, but now has multiple layers, we should prompt for PDI saving instead.
+    
+    'At present, this heuristic is pretty simple: if the image hasn't been saved to disk before, require a Save As instead.
+    If Len(srcImage.locationOnDisk) = 0 Then
+        IsSaveAsRequired = True
+    Else
+        IsSaveAsRequired = False
+    End If
+
+End Function
 
 'This routine will blindly save the composited layer contents (from the pdImage object specified by srcPDImage) to dstPath.
 ' It is up to the calling routine to make sure this is what is wanted. (Note: this routine will erase any existing image
@@ -29,10 +45,9 @@ Option Explicit
 'INPUTS:
 '   1) pdImage to be saved
 '   2) Destination file path
-'   3) Optional: imageID (if provided, the function can write information about the save to the relevant object in the pdImages array - this primarily exists for legacy reasons)
-'   4) Optional: whether to display a form for the user to input additional save options (JPEG quality, etc)
-'   5) Optional: a string of relevant save parameters.  If this is not provided, relevant parameters will be loaded from the preferences file.
-Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath As String, Optional ByVal imageID As Long = -1, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal saveParamString As String = "", Optional ByVal forceColorDepthMethod As Long = -1, Optional ByVal suspendMetadataActions As Boolean = False, Optional ByVal suspendMRUUpdating As Boolean = False) As Boolean
+'   3) Optional: whether to display a form for the user to input additional save options (JPEG quality, etc)
+'   4) Optional: a string of relevant save parameters.  If this is not provided, relevant parameters will be loaded from the preferences file.
+Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath As String, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal saveParamString As String = "", Optional ByVal forceColorDepthMethod As Long = -1, Optional ByVal suspendMetadataActions As Boolean = False, Optional ByVal suspendMRUUpdating As Boolean = False) As Boolean
     
     'PD will only update the MRU list if the following criteria are met:
     ' 1) no save dialog with extra options is required OR
@@ -117,8 +132,8 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     Dim colorCountCheck As Long
                     Message "Counting image colors to determine optimal exported color depth..."
                     
-                    If imageID <> -1 Then
-                        colorCountCheck = getQuickColorCount(tmpCompositeDIB, imageID)
+                    If srcPDImage.imageID <> -1 Then
+                        colorCountCheck = getQuickColorCount(tmpCompositeDIB, srcPDImage.imageID)
                     Else
                         colorCountCheck = getQuickColorCount(tmpCompositeDIB)
                     End If
