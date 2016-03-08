@@ -1687,15 +1687,15 @@ Private Sub mnuTabstripPopup_Click(Index As Integer)
         
         'Save
         Case 0
-            File_Menu.MenuSave g_CurrentImage
+            File_Menu.MenuSave pdImages(g_CurrentImage)
         
         'Save copy (lossless)
         Case 1
-            File_Menu.MenuSaveLosslessCopy g_CurrentImage
+            File_Menu.MenuSaveLosslessCopy pdImages(g_CurrentImage)
         
         'Save as
         Case 2
-            File_Menu.MenuSaveAs g_CurrentImage
+            File_Menu.MenuSaveAs pdImages(g_CurrentImage)
         
         'Revert
         Case 3

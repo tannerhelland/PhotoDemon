@@ -274,7 +274,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
         tmpImage.currentFileFormat = g_ImageFormats.getOutputFIF(saveFormat - 1)
                                 
         'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
-        ExportSelectedAreaAsImage = PhotoDemon_SaveImage(tmpImage, sFile, , True)
+        ExportSelectedAreaAsImage = PhotoDemon_SaveImage(tmpImage, sFile, True)
         
     Else
         ExportSelectedAreaAsImage = False
@@ -344,7 +344,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
         tmpImage.currentFileFormat = g_ImageFormats.getOutputFIF(saveFormat - 1)
                                 
         'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
-        ExportSelectionMaskAsImage = PhotoDemon_SaveImage(tmpImage, sFile, , True)
+        ExportSelectionMaskAsImage = PhotoDemon_SaveImage(tmpImage, sFile, True)
         
     Else
         ExportSelectionMaskAsImage = False
