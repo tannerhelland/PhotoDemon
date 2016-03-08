@@ -1,13 +1,12 @@
 VERSION 5.00
 Begin VB.Form FormMain 
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
    ClientHeight    =   11130
    ClientLeft      =   1290
    ClientTop       =   1065
    ClientWidth     =   18900
-   ClipControls    =   0   'False
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,6 +16,7 @@ Begin VB.Form FormMain
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    Icon            =   "MainWindow.frx":0000
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
@@ -2553,44 +2553,32 @@ Private Sub Form_Load()
     ' Start by rerouting control to "LoadTheProgram", which initializes all key PD systems
     '*************************************************************************************************************************************
     
-    'The bulk of the loading code actually takes place inside the LoadTheProgram subroutine (which can be found in the "Loading" module)
-    Loading.LoadTheProgram
+    'The bulk of the loading code actually takes place inside the main module's ContinueLoadingProgram() function
+    modMain.ContinueLoadingProgram
     
     
     '*************************************************************************************************************************************
-    ' Now that all engines are initialized, we can prep and display the main editing window
+    ' Now that all program engines are initialized, we can finally display the primary window
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Registering toolbars with the window manager..."
     #End If
     
-    '**
-    ' NEW CODE FOR 7.0:
-    ' Let the toolbox manager determine positions for us via UpdateMainLayout
-    ' (In other words, skip the "register child form" steps below.)
-    '**
-    
-    'Register all toolbox forms with the window manager
-    'g_WindowManager.RegisterChildForm toolbar_Toolbox, TOOLBAR_WINDOW, 1, LEFT_TOOLBOX, , FixDPI(48)
-    'g_WindowManager.RegisterChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, RIGHT_TOOLBOX, , FixDPI(200)
-    'g_WindowManager.RegisterChildForm toolbar_Options, TOOLBAR_WINDOW, 3, BOTTOM_TOOLBOX
-    
-    'With all windows in position, reposition the main form's canvas
+    'Now that the main form has been correctly positioned on-screen, position all toolbars and the primary canvas
+    ' to match, then display the window.
     g_WindowManager.SetAutoRefreshMode True
     FormMain.UpdateMainLayout
     g_WindowManager.SetAutoRefreshMode False
     
-    'We can now display the main form and any visible toolbars.  (There is currently a flicker if toolbars have been hidden by the user,
-    ' and I'm working on a solution to that.)
     Me.Visible = True
     
     'Visibility for the options toolbox is automatically set according to the current tool; this is different from other dialogs.
-    ' (Note that the .resetToolButtonStates function checks the relevant preference prior to changing the window state, so all
+    ' (Note that the .ResetToolButtonStates function checks the relevant preference prior to changing the window state, so all
     '  cases are covered nicely.)
     toolbar_Toolbox.ResetToolButtonStates
     
-    'With all toolboxes loaded, we can reactivate automatic synching of toolbox positions and sizes
+    'With all toolboxes loaded, we can safely reactivate automatic syncing of toolboxes and the main window
     g_WindowManager.SetAutoRefreshMode True
     
     #If DEBUGMODE = 1 Then
@@ -3093,7 +3081,7 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Shutdown appears to be clean.  Turning final control over to modMain.finalShutdown()..."
     #End If
     
-    modMain.finalShutdown
+    modMain.FinalShutdown
     
     'If a restart is allowed, the last thing we do before exiting is shell a new PhotoDemon instance
     'If g_UserWantsRestart Then Update_Support.initiateRestart
