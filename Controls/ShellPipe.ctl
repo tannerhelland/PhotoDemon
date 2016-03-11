@@ -37,8 +37,8 @@ Attribute VB_Exposed = False
 'You may download the original version of this code from the following link (good as of May '14):
 ' http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control
 
-'Many thanks to dilettante for this excellent user control, which allows PhotoDemon to asynchronously interact
-' with the ExifTool plugin, thus greatly improving responsiveness and performance of metadata handling.
+'Many thanks to dilettante for this excellent user control, which allows PhotoDemon to interact with the ExifTool
+' plugn asynchronously, greatly improving responsiveness and performance of metadata handling.
 
 
 Option Explicit
@@ -861,13 +861,13 @@ Private Sub ReadData()
 End Sub
 
 Private Sub WriteData()
+    
     Dim Buffer As String
-    Dim CharsWritten As Long
-    Dim ErrNum As Long
+    Dim CharsWritten As Long, ErrNum As Long
     Dim Cancel As Boolean
     
     If PipeOpenIn Then
-        If BufferIn.Length > 0 Then
+        If (BufferIn.Length > 0) Then
             
             BufferIn.PeekBuffer Buffer
             
@@ -887,15 +887,17 @@ Private Sub WriteData()
             Else
                 ErrNum = Err.LastDllError
                 RaiseEvent Error(ErrNum, "ShellPipe.WriteData.WriteFile", Cancel)
-                If Not Cancel Then
-                    'Err.Raise ErrNum, TypeName(Me), "WriteData WriteFile error"
-                    Debug.Print "WARNING! Asynchronous ExifTool interface had a write failure; is ExifTool still running??"
+                If (Not Cancel) Then
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "WARNING! Asynchronous ExifTool interface had a write failure; is ExifTool still running??"
+                    #End If
                 End If
             End If
         End If
     Else
         BufferIn.Clear
     End If
+    
 End Sub
 
 Private Sub UserControl_Initialize()

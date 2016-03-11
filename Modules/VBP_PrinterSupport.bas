@@ -108,7 +108,7 @@ Private m_userPrintedThisSession As Boolean
 Private m_temporaryPrintPath As String
 
 'Call this function at shutdown time to perform any printer-related cleanup
-Public Sub performPrinterCleanup()
+Public Sub PerformPrinterCleanup()
 
     If m_userPrintedThisSession Then
         
@@ -122,7 +122,7 @@ Public Sub performPrinterCleanup()
 End Sub
 
 'This simple function can be used to route printing through the default "Windows Photo Printer" dialog.
-Public Sub printViaWindowsPhotoPrinter()
+Public Sub PrintViaWindowsPhotoPrinter()
 
     Message "Preparing image for printing..."
     

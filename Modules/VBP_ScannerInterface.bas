@@ -137,42 +137,34 @@ Public Sub Twain32Scan()
     'Note that this function has a fairly extensive error handling routine
     On Error GoTo ScanError
     
-    Dim ScannerCaptureFile As String, ScanCheck As Long
+    Dim scannerCaptureFile As String, scanCheck As Long
     'ScanCheck is used to store the return values of the EZTW32.dll scanner functions.  We start by setting it
     ' to an arbitrary value that only we know; if an error occurs and this value is still present, it means an
     ' error occurred outside of the EZTW32 library.
-    ScanCheck = -5
+    scanCheck = -5
     
     'A temporary file is required by the scanner; we will place it in the project folder, then delete it when finished
-    ScannerCaptureFile = g_UserPreferences.GetTempPath & "PDScanInterface.tmp"
+    scannerCaptureFile = g_UserPreferences.GetTempPath & "PDScanInterface.tmp"
         
     'This line uses the EZTW32.dll file to scan the image and send it to a temporary file
-    ScanCheck = TWAIN_AcquireToFilename(GetModalOwner().hWnd, ScannerCaptureFile)
+    scanCheck = TWAIN_AcquireToFilename(GetModalOwner().hWnd, scannerCaptureFile)
         
     'If the image was successfully scanned, load it
-    If ScanCheck = 0 Then
-        
-        'Because LoadFileAsNewImage requires a string array, create one to send it
-        Dim sFile(0) As String
-        sFile(0) = ScannerCaptureFile
+    If scanCheck = 0 Then
         
         Dim sTitle As String
         sTitle = g_Language.TranslateMessage("Scanned Image")
-        
-        Dim sFilename As String
-        sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
-        
-        LoadFileAsNewImage sFile, False, sTitle, sFilename
+        sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+        LoadFileAsNewImage scannerCaptureFile, sTitle, False
         
         'Be polite and remove the temporary file acquired from the scanner
         Dim cFile As pdFSO
         Set cFile = New pdFSO
-        
-        If cFile.FileExist(ScannerCaptureFile) Then cFile.KillFile ScannerCaptureFile
+        If cFile.FileExist(scannerCaptureFile) Then cFile.KillFile scannerCaptureFile
         
         Message "Image acquired successfully "
         
-        If FormMain.Enabled Then FormMain.SetFocus
+        If FormMain.Enabled Then g_WindowManager.SetFocusAPI FormMain.hWnd
     Else
         'If the scan was unsuccessful, let the user know what happened
         GoTo ScanError
@@ -189,7 +181,7 @@ ScanError:
     
     Dim scanErrMessage As String
     
-    Select Case ScanCheck
+    Select Case scanCheck
         Case -5
             scanErrMessage = g_Language.TranslateMessage("Unknown error occurred.  Please make sure your scanner is turned on and ready for use.")
         Case -4
@@ -203,10 +195,10 @@ ScanError:
             Message "Scan canceled."
             Exit Sub
         Case Else
-            scanErrMessage = g_Language.TranslateMessage("The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error #%1).  Please visit http://www.eztwain.com for more information.", ScanCheck)
+            scanErrMessage = g_Language.TranslateMessage("The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error #%1).  Please visit http://www.eztwain.com for more information.", scanCheck)
     End Select
         
     PDMsgBox scanErrMessage, vbExclamation + vbOKOnly + vbApplicationModal, "Scan Canceled"
-
     Message "Scan canceled. "
+    
 End Sub

@@ -287,12 +287,12 @@ End Function
 'Given a valid XML-formatted metadata string from ExifTool, parse it into usable PD metadata format.
 ' (The parent image's ID format is also passed to this function, because a custom "ready" tag with the image's ID must be manually
 '  removed from the XML string.)
-Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As Long) As Boolean
+Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As Long) As Boolean
 
     'If the ExifTool plugin can't be found, abandon all metadata loading attempts
     If Not g_ExifToolEnabled Then
         Message "ExifTool plugin missing.  Metadata import abandoned."
-        loadAllMetadata = False
+        LoadAllMetadata = False
         Exit Function
     End If
     
@@ -301,7 +301,7 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     
     'If no metadata was found, we can safely exit now
     If Len(mdString) = 0 Then
-        loadAllMetadata = False
+        LoadAllMetadata = False
         Exit Function
     End If
     
@@ -626,19 +626,13 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
              
             'Either way, ExifTool sometimes makes its own decision about what binary data to extract.  When it does this, it
             ' will give a comment similar to "(binary data 12345 bytes, use -b option to extract)".  Check for entries like
-            ' this, and remove the "use -b option" instructions.
+            ' this and remove the developer-centric "use -b option..." instructions.
             If (InStr(1, iMetadata(maxMetadataCount).Value, ", use -b option to extract") > 0) Then
-            
-                'Remove the binary identifier from this tag
                 iMetadata(maxMetadataCount).Value = Replace(iMetadata(maxMetadataCount).Value, ", use -b option to extract", "")
-            
             End If
             
             If (InStr(1, iMetadata(maxMetadataCount).ActualValue, ", use -b option to extract") > 0) Then
-            
-                'Remove the binary identifier from this tag
                 iMetadata(maxMetadataCount).ActualValue = Replace(iMetadata(maxMetadataCount).ActualValue, ", use -b option to extract", "")
-            
             End If
             
             
@@ -730,17 +724,14 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             'If InStr(1, UCase$(tmpString), "BINARY DATA", vbBinaryCompare) > 0 Then ignoreThisTag = True
             
             'Increment the max metadata count, and redim our metadata array as necessary
-            If Not ignoreThisTag Then
+            If (Not ignoreThisTag) Then
                 maxMetadataCount = maxMetadataCount + 1
                 ReDim Preserve iMetadata(0 To maxMetadataCount) As mdItem
             End If
         
         'If this line doesn't contain a tag, move to the next one
         Else
-                
-            'Move to the next line
             curLine = curLine + 1
-                
         End If
         
     Loop While curLine < UBound(xmlLines)
@@ -752,10 +743,10 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     ' and if found, apply any changes immediately.
     If maxMetadataCount > 0 Then
     
-    'Also, apply some failsafe checks for pdImage boundaries.  I would prefer to include all this on one line, but VB doesn't short-circuit,
-    ' so I have no choice but to list them like this.
+    'Make sure a target image is available to operate one, as these may include pixel-level adjustments that crash without
+    ' a valid target DIB.
     If (parentImageID <= UBound(pdImages)) Then
-    If Not pdImages(parentImageID) Is Nothing Then
+    If Not (pdImages(parentImageID) Is Nothing) Then
     
         Dim tagIndex As Long
         
@@ -764,7 +755,7 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
         ' of operations for PNG chunk processing is: ICC, sRGB, cHRM, gAMA.  ICC handling will happen separately, away from the load process,
         ' and if an ICC profile was found, this whole section can be skipped.
         
-        If (pdImages(parentImageID).originalFileFormat = FIF_PNG) And (Not pdImages(parentImageID).getActiveDIB.ICCProfile.hasICCData) Then
+        If (pdImages(parentImageID).originalFileFormat = FIF_PNG) And (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData) Then
         
             Dim srcGamma As Double
             srcGamma = 0
@@ -780,7 +771,7 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
                     pdDebug.LogAction "PNG file contains sRGB chunk. Applying color conversion now..."
                 #End If
                 
-                Color_Management.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
+                Color_Management.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).GetActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
                 
                 sRGBHandled = True
             
@@ -847,15 +838,15 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
                             '
                             'If the cHRM chunk is any other color space, we'll use the supplied gamma value, per the PNG spec
                             If (RedX = 0.64) And (RedY = 0.33) And (GreenX = 0.3) And (GreenY = 0.6) And (BlueX = 0.15) And (BlueY = 0.06) And (WhiteX = 0.3127) And (WhiteY = 0.329) Then
-                                Color_Management.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, 0, False, True
+                                Color_Management.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).GetActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, 0, False, True
                             Else
-                                Color_Management.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, srcGamma, False, True
+                                Color_Management.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).GetActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, srcGamma, False, True
                             End If
                             
                             'FOR TESTING PURPOSES: this sample line of code uses hard-coded sRGB values
                             'Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
                             
-                            'FOR TESTING PURPOSES: this sample line of code uses had-coded Adobe RGB values
+                            'FOR TESTING PURPOSES: this sample line of code uses hard-coded Adobe RGB values
                             'Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.21, 0.71, 0.15, 0.06, 0.3127, 0.329, 2.2, False, True
                             
                             'Note that cHRM has been handled; this prevents subsequent gAMA checks from applying a second round of
@@ -913,7 +904,7 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
                         pdDebug.LogAction "PNG file with custom gAMA data found. Applying gamma correction now..."
                     #End If
                     
-                    Filters_Layers.GammaCorrectDIB pdImages(parentImageID).getActiveDIB, 2.2 / srcGamma, True
+                    Filters_Layers.GammaCorrectDIB pdImages(parentImageID).GetActiveDIB, 2.2 / srcGamma, True
                     
                     #If DEBUGMODE = 1 Then
                         pdDebug.LogAction "Custom cHRM data analysis complete."
@@ -943,13 +934,12 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     End If
     End If
     
-    
     'If no metadata was found, return a FAIL state.  (ExifTool should always return *some* metadata, e.g. file date/time and generic
     ' stuff like that).  Otherwise, if at least one piece of valid metadata was found, return SUCCESS.
     If maxMetadataCount = 0 Then
-        loadAllMetadata = False
+        LoadAllMetadata = False
     Else
-        loadAllMetadata = True
+        LoadAllMetadata = True
     End If
     
 End Function
@@ -1000,7 +990,7 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByRef srcPDImage As
                 xmlEngine.writeXMLToFile tmpXMLPath, True
                                 
                 'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
-                If writeMetadata(tmpXMLPath, outputPath, srcPDImage) Then
+                If WriteMetadata(tmpXMLPath, outputPath, srcPDImage) Then
                     Message "Metadata embedded successfully."
                     
                 Else
@@ -1079,7 +1069,7 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByRef srcPDImage As
                 xmlEngine.writeXMLToFile tmpXMLPath, True
                 
                 'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
-                If writeMetadata(tmpXMLPath, outputPath, srcPDImage, True) Then
+                If WriteMetadata(tmpXMLPath, outputPath, srcPDImage, True) Then
                     Message "Metadata embedded successfully."
                 Else
                     Message "Metadata may not have been embedded (but saved image still written successfully)."

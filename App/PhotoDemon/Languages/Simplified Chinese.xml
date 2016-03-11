@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.858</langversion>
+<langversion>6.8.859</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ILoveVB</author>
@@ -15,7 +15,92 @@
 
 <!-- BEGIN text for VBP_Main.bas -->
 
-<!-- VBP_Main.bas contains 0 phrases. -->
+<phrase>
+<original>Detecting Windows® version</original>
+<translation>检测 Windows® 版本</translation>
+</phrase>
+
+<phrase>
+<original>Initializing all program directories</original>
+<translation>初始化所有程序目录</translation>
+</phrase>
+
+<phrase>
+<original>Loading all user settings</original>
+<translation>加载所有用户设置</translation>
+</phrase>
+
+<phrase>
+<original>Scanning for language files</original>
+<translation>扫描语言文件…… </translation>
+</phrase>
+
+<phrase>
+<original>Determining which language to use</original>
+<translation>确定要使用的语言</translation>
+</phrase>
+
+<phrase>
+<original>Applying selected language</original>
+<translation>使用所选择语言文件</translation>
+</phrase>
+
+<phrase>
+<original>Analyzing current monitor setup</original>
+<translation>分析当前监视器设置</translation>
+</phrase>
+
+<phrase>
+<original>Loading plugins</original>
+<translation>加载插件</translation>
+</phrase>
+
+<phrase>
+<original>Loading import/export libraries</original>
+<translation>加载输入/输出库</translation>
+</phrase>
+
+<phrase>
+<original>Initializing theme engine</original>
+<translation>初始化主题引擎</translation>
+</phrase>
+
+<phrase>
+<original>Building font cache</original>
+<translation>建立字体缓存</translation>
+</phrase>
+
+<phrase>
+<original>Initializing clipboard interface</original>
+<translation>初始化剪贴板接口</translation>
+</phrase>
+
+<phrase>
+<original>Initializing viewport engine</original>
+<translation>初始化视图引擎</translation>
+</phrase>
+
+<phrase>
+<original>Initializing window manager</original>
+<translation>初始化窗口管理器</translation>
+</phrase>
+
+<phrase>
+<original>Initializing image tools</original>
+<translation>初始化图形工具</translation>
+</phrase>
+
+<phrase>
+<original>Initializing user interface</original>
+<translation>初始化用户界面</translation>
+</phrase>
+
+<phrase>
+<original>Preparing program menus</original>
+<translation>准备程序菜单</translation>
+</phrase>
+
+<!-- VBP_Main.bas contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
 
 <!-- END text for VBP_Main.bas-->
 
@@ -621,6 +706,51 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <!-- END text for VBP_MDIWindow.bas-->
 
+<!-- BEGIN text for ImageLoader.bas -->
+
+<phrase>
+<original>Selected file is not in PDI format.  Load abandoned.</original>
+<translation>选择的文件不是PDI格式，取消打开。</translation>
+</phrase>
+
+<phrase>
+<original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
+
+To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
+<translation>该PDI文件 “%1” 包含压缩数据，但是zlib的插件丢失或禁用。
+
+要启用压缩的PDI文件的支持，单击帮助>检查更新，并在提示时，允许PhotoDemon下载所有推荐的插件。</translation>
+</phrase>
+
+<phrase>
+<original>zLib plugin missing</original>
+<translation>ZLIB缺少插件</translation>
+</phrase>
+
+<phrase>
+<original>PDI node could not be read; file may be invalid or corrupted.  Load abandoned.</original>
+<translation>PDI节点无法读取;文件可能无效或已损坏，放弃打开。</translation>
+</phrase>
+
+<phrase>
+<original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
+<translation>发生一个错误（#%1 - 2%）。 取消打开PDI</translation>
+</phrase>
+
+<phrase>
+<original>An error has occurred (#</original>
+<translation>已发生错误（#</translation>
+</phrase>
+
+<phrase>
+<original>GDI+ refused to load image.  Dropping back to internal routines and trying again</original>
+<translation>GDI+拒绝加载图像。降到内部例程并再次尝试</translation>
+</phrase>
+
+<!-- ImageLoader.bas contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<!-- END text for ImageLoader.bas-->
+
 <!-- BEGIN text for VBP_MiscInterface.bas -->
 
 <phrase>
@@ -944,156 +1074,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <translation>以后不自动提示我自动栅格化</translation>
 </phrase>
 
-<!-- VBP_LayerHandler.bas contains 34 phrases. 18 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
-
-<!-- END text for VBP_LayerHandler.bas-->
-
-<!-- BEGIN text for VBP_LoadModule.bas -->
-
-<phrase>
-<original>Detecting Windows® version</original>
-<translation>检测 Windows® 版本</translation>
-</phrase>
-
-<phrase>
-<original>Initializing all program directories</original>
-<translation>初始化所有程序目录</translation>
-</phrase>
-
-<phrase>
-<original>Loading all user settings</original>
-<translation>加载所有用户设置</translation>
-</phrase>
-
-<phrase>
-<original>Scanning for language files</original>
-<translation>扫描语言文件…… </translation>
-</phrase>
-
-<phrase>
-<original>Determining which language to use</original>
-<translation>确定要使用的语言</translation>
-</phrase>
-
-<phrase>
-<original>Applying selected language</original>
-<translation>使用所选择语言文件</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing current monitor setup</original>
-<translation>分析当前监视器设置</translation>
-</phrase>
-
-<phrase>
-<original>Loading plugins</original>
-<translation>加载插件</translation>
-</phrase>
-
-<phrase>
-<original>Loading import/export libraries</original>
-<translation>加载输入/输出库</translation>
-</phrase>
-
-<phrase>
-<original>Initializing theme engine</original>
-<translation>初始化主题引擎</translation>
-</phrase>
-
-<phrase>
-<original>Building font cache</original>
-<translation>建立字体缓存</translation>
-</phrase>
-
-<phrase>
-<original>Initializing clipboard interface</original>
-<translation>初始化剪贴板接口</translation>
-</phrase>
-
-<phrase>
-<original>Initializing viewport engine</original>
-<translation>初始化视图引擎</translation>
-</phrase>
-
-<phrase>
-<original>Initializing window manager</original>
-<translation>初始化窗口管理器</translation>
-</phrase>
-
-<phrase>
-<original>Initializing image tools</original>
-<translation>初始化图形工具</translation>
-</phrase>
-
-<phrase>
-<original>Initializing user interface</original>
-<translation>初始化用户界面</translation>
-</phrase>
-
-<phrase>
-<original>Preparing program menus</original>
-<translation>准备程序菜单</translation>
-</phrase>
-
-<phrase>
-<original>Loading image(s)</original>
-<translation>加载图像</translation>
-</phrase>
-
-<phrase>
-<original>Finishing final program initialization steps</original>
-<translation>完成最后的程序初始化步骤</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, the image '%1' could not be found.
-
-If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
-<translation>图像 '%1' 没有找到，如果这个形象最初位于可移动媒体（dvd，USB驱动器，等），请重新插入或重新连接媒体并再试一次。
-</translation>
-</phrase>
-
-<phrase>
-<original>File not found</original>
-<translation>文件没有找到</translation>
-</phrase>
-
-<phrase>
-<original>Loading image %1 of %2</original>
-<translation>打开图像 %1 / %2</translation>
-</phrase>
-
-<phrase>
-<original>Loading image</original>
-<translation>打开图像</translation>
-</phrase>
-
-<phrase>
-<original>GDI+ refused to load image.  Dropping back to internal routines and trying again</original>
-<translation>GDI+拒绝加载图像。降到内部例程并再次尝试</translation>
-</phrase>
-
-<phrase>
-<original>Failed to load %1</original>
-<translation>加载 %1 失败</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image:
-
-%1
-
-Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
-<translation>无法加载以下图像：
-%1
-请先使用其他程序转换为一个通用的图像格式（如JPEG、PNG）再用PhotodeMon打开。谢谢！</translation>
-</phrase>
-
-<phrase>
-<original>Image Import Failed</original>
-<translation>图像导入失败</translation>
-</phrase>
-
 <phrase>
 <original>frame %1</original>
 <translation>框架 %1</translation>
@@ -1114,19 +1094,28 @@ Please use another program to save this image in a generic format (such as JPEG 
 <translation>%1 页</translation>
 </phrase>
 
+<!-- VBP_LayerHandler.bas contains 42 phrases. 22 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+
+<!-- END text for VBP_LayerHandler.bas-->
+
+<!-- BEGIN text for VBP_LoadModule.bas -->
+
 <phrase>
-<original>frame</original>
-<translation>框架</translation>
+<original>Unfortunately, the image '%1' could not be found.
+
+If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
+<translation>图像 '%1' 没有找到，如果这个形象最初位于可移动媒体（dvd，USB驱动器，等），请重新插入或重新连接媒体并再试一次。
+</translation>
 </phrase>
 
 <phrase>
-<original>page</original>
-<translation>页</translation>
+<original>File not found</original>
+<translation>文件没有找到</translation>
 </phrase>
 
 <phrase>
-<original>All images loaded successfully.</original>
-<translation>成功加载所有图像。</translation>
+<original>Loading image</original>
+<translation>打开图像</translation>
 </phrase>
 
 <phrase>
@@ -1135,46 +1124,38 @@ Please use another program to save this image in a generic format (such as JPEG 
 </phrase>
 
 <phrase>
-<original>All images loaded, except for those that could not be found.</original>
-<translation>所有已找到文件全部成功加载</translation>
+<original>Failed to load %1</original>
+<translation>加载 %1 失败</translation>
 </phrase>
 
 <phrase>
-<original>Unfortunately, PhotoDemon was unable to find the following image(s):
+<original>Unfortunately, PhotoDemon was unable to load the following image:
 
 %1
 
-If these images were originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
-<translation>PhotodeMon无法找到下列图像：
+Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Image import failed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, PhotoDemon was unable to load the following image:
 
 %1
 
-如果这些图像最初位于可移动媒体（dvd，USB驱动器，等），请重新插入或重新连接媒体并再试一次。
-</translation>
-</phrase>
-
-<phrase>
-<original>Image files missing</original>
-<translation>图像文件丢失</translation>
-</phrase>
-
-<phrase>
-<original>All images loaded, except for those in invalid formats.</original>
-<translation>所有图片加载，除了那些无效的格式。</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, PhotoDemon was unable to load the following image(s):
-
+Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
+<translation>无法加载以下图像：
 %1
-
-Please use another program to save these images in a generic format (such as JPEG or PNG) before loading them into PhotoDemon. Thanks!</original>
-<translation>未能打开文件 %1 ：请先用其它软件把此图像转换为PhotoDemon支持的文件格式，谢谢！</translation>
+请先使用其他程序转换为一个通用的图像格式（如JPEG、PNG）再用PhotodeMon打开。谢谢！</translation>
 </phrase>
 
 <phrase>
-<original>Image Formats Not Supported</original>
-<translation>图像格式不支持</translation>
+<original>Image Import Failed</original>
+<translation>图像导入失败</translation>
 </phrase>
 
 <phrase>
@@ -1183,37 +1164,26 @@ Please use another program to save these images in a generic format (such as JPE
 </phrase>
 
 <phrase>
-<original>Selected file is not in PDI format.  Load abandoned.</original>
-<translation>选择的文件不是PDI格式，取消打开。</translation>
+<original>Loading image(s)</original>
+<translation>加载图像</translation>
 </phrase>
 
 <phrase>
-<original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
-
-To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
-<translation>该PDI文件 “%1” 包含压缩数据，但是zlib的插件丢失或禁用。
-
-要启用压缩的PDI文件的支持，单击帮助>检查更新，并在提示时，允许PhotoDemon下载所有推荐的插件。</translation>
+<original>%1 of %2 images loaded successfully</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>zLib plugin missing</original>
-<translation>ZLIB缺少插件</translation>
+<original>Unfortunately, PhotoDemon was unable to load the following image(s):
+
+%1
+Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>PDI node could not be read; file may be invalid or corrupted.  Load abandoned.</original>
-<translation>PDI节点无法读取;文件可能无效或已损坏，放弃打开。</translation>
-</phrase>
-
-<phrase>
-<original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
-<translation>发生一个错误（#%1 - 2%）。 取消打开PDI</translation>
-</phrase>
-
-<phrase>
-<original>An error has occurred (#</original>
-<translation>已发生错误（#</translation>
+<original>Some images were not loaded</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1236,7 +1206,7 @@ To enable support for compressed PDI files, click Help > Check for Updates, and 
 <translation>图像复制完成。</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 81 phrases. 29 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -1411,7 +1381,12 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>无法启动插件服务（无法创建过程：%1）。</translation>
 </phrase>
 
-<!-- VBP_ExifToolInterface.bas contains 8 phrases.  One was a duplicate of an existing phrase, so only 7 new phrases were written to file. -->
+<phrase>
+<original>Finishing final program initialization steps</original>
+<translation>完成最后的程序初始化步骤</translation>
+</phrase>
+
+<!-- VBP_ExifToolInterface.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_ExifToolInterface.bas-->
 
@@ -1917,16 +1892,6 @@ When finished, click the Submit button.  Thank you!</original>
 <!-- BEGIN text for VBP_SaveModule.bas -->
 
 <phrase>
-<original>Original color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-<translation>%1 支持此颜色深度，正在保存</translation>
-</phrase>
-
-<phrase>
-<original>Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
-<translation>%1 的BPP原来的颜色深度不支持当前格式。程序保存为 %2  BPP</translation>
-</phrase>
-
-<phrase>
 <original>Counting image colors to determine optimal exported color depth</original>
 <translation>计算图像的颜色来确定最优输出颜色深度</translation>
 </phrase>
@@ -2098,7 +2063,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>缩略图保存失败（未指明的GDI+错误）。</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 128 phrases. 94 were duplicates of existing phrases, so only 34 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 126 phrases. 94 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -2344,6 +2309,12 @@ Please enter a numeric value.</original>
 <!-- VBP_ToolSupport.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolSupport.bas-->
+
+<!-- BEGIN text for Toolboxes.bas -->
+
+<!-- Toolboxes.bas contains 0 phrases. -->
+
+<!-- END text for Toolboxes.bas-->
 
 <!-- BEGIN text for VBP_UniscribeInterface.bas -->
 
@@ -3969,6 +3940,11 @@ or the File > Open and File > Import menus.</original>
 <!-- END text for ShellPipe.ctl-->
 
 <!-- BEGIN text for MainWindow.frm (FormMain) -->
+
+<phrase>
+<original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>&File</original>
@@ -5875,7 +5851,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 566 phrases. 187 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -13518,141 +13494,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>use the system color profile</original>
-<translation>使用该系统的颜色配置文件</translation>
-</phrase>
-
-<phrase>
-<original>use one or more custom color profiles</original>
-<translation>使用一个或多个自定义颜色配置文件</translation>
-</phrase>
-
-<phrase>
-<original>color profile for selected monitor</original>
-<translation>选定监视器的颜色配置文件</translation>
-</phrase>
-
-<phrase>
-<original>available monitors</original>
-<translation>可用监视器</translation>
-</phrase>
-
-<phrase>
-<original>when rendering images to the screen</original>
-<translation>当渲染图像到屏幕</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>色彩管理</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard size</original>
-<translation>透明度棋盘大小</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard colors</original>
-<translation>透明度棋盘的颜色</translation>
-</phrase>
-
-<phrase>
-<original>transparency management</original>
-<translation>透明管理</translation>
-</phrase>
-
-<phrase>
-<original>please select a file type</original>
-<translation>请选择文件类型</translation>
-</phrase>
-
-<phrase>
-<original>file format options</original>
-<translation>文件格式选项：</translation>
-</phrase>
-
-<phrase>
-<original>TIFF (Tagged Image File Format) options</original>
-<translation>TIFF（标签图像文件格式）选项</translation>
-</phrase>
-
-<phrase>
-<original>PPM (Portable Pixmap) options</original>
-<translation>PPM（便携式像素图）选项</translation>
-</phrase>
-
-<phrase>
-<original>PNG (Portable Network Graphic) options</original>
-<translation>PNG（可移植网络图形）选项</translation>
-</phrase>
-
-<phrase>
-<original>TGA (Truevision) options</original>
-<translation>TGA（Truevision）选项</translation>
-</phrase>
-
-<phrase>
-<original>BMP (Bitmap) options</original>
-<translation>BMP（位图）选项</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>关闭图像时，提醒我关于我未保存的更改</translation>
-</phrase>
-
-<phrase>
-<original>when saving images that originally contained metadata</original>
-<translation>保存图像时包含最初元数据</translation>
-</phrase>
-
-<phrase>
-<original>metadata (EXIF, GPS, comments, etc.)</original>
-<translation>元数据（Exif，GPS，评论，等等）</translation>
-</phrase>
-
-<phrase>
-<original>set outgoing color depth</original>
-<translation>设置输出颜色深度</translation>
-</phrase>
-
-<phrase>
-<original>color depth of saved images</original>
-<translation>保存图像的颜色深度</translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>保存行为：重写与复制</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>当使用“保存”时</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>关闭未保存的图像</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>当使用“另存为”命令时，使用设定的默认文件格式</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>保存时使用默认文件格式</translation>
-</phrase>
-
-<phrase>
-<original>count unique colors in incoming images (to determine optimal color depth)</original>
-<translation>在输入图像中计算独特的颜色（以确定最佳的颜色深度）</translation>
-</phrase>
-
-<phrase>
 <original>display tone mapping options when importing HDR and RAW images</original>
 <translation>显示的色调映射选项当导入HDR和原图像</translation>
 </phrase>
@@ -13663,11 +13504,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>color depth</original>
-<translation>颜色深度</translation>
-</phrase>
-
-<phrase>
 <original>high-dynamic range (HDR) images</original>
 <translation>高动态范围图像（HDR）</translation>
 </phrase>
@@ -13675,6 +13511,11 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>when an image is first loaded, set its viewport zoom to</original>
 <translation>当一个图像第一次打开，将自动缩放到窗口</translation>
+</phrase>
+
+<phrase>
+<original>color management</original>
+<translation>色彩管理</translation>
 </phrase>
 
 <phrase>
@@ -13833,6 +13674,131 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>use the system color profile</original>
+<translation>使用该系统的颜色配置文件</translation>
+</phrase>
+
+<phrase>
+<original>use one or more custom color profiles</original>
+<translation>使用一个或多个自定义颜色配置文件</translation>
+</phrase>
+
+<phrase>
+<original>color profile for selected monitor</original>
+<translation>选定监视器的颜色配置文件</translation>
+</phrase>
+
+<phrase>
+<original>available monitors</original>
+<translation>可用监视器</translation>
+</phrase>
+
+<phrase>
+<original>when rendering images to the screen</original>
+<translation>当渲染图像到屏幕</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard size</original>
+<translation>透明度棋盘大小</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard colors</original>
+<translation>透明度棋盘的颜色</translation>
+</phrase>
+
+<phrase>
+<original>transparency management</original>
+<translation>透明管理</translation>
+</phrase>
+
+<phrase>
+<original>please select a file type</original>
+<translation>请选择文件类型</translation>
+</phrase>
+
+<phrase>
+<original>file format options</original>
+<translation>文件格式选项：</translation>
+</phrase>
+
+<phrase>
+<original>TIFF (Tagged Image File Format) options</original>
+<translation>TIFF（标签图像文件格式）选项</translation>
+</phrase>
+
+<phrase>
+<original>PPM (Portable Pixmap) options</original>
+<translation>PPM（便携式像素图）选项</translation>
+</phrase>
+
+<phrase>
+<original>PNG (Portable Network Graphic) options</original>
+<translation>PNG（可移植网络图形）选项</translation>
+</phrase>
+
+<phrase>
+<original>TGA (Truevision) options</original>
+<translation>TGA（Truevision）选项</translation>
+</phrase>
+
+<phrase>
+<original>BMP (Bitmap) options</original>
+<translation>BMP（位图）选项</translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn me me about unsaved changes</original>
+<translation>关闭图像时，提醒我关于我未保存的更改</translation>
+</phrase>
+
+<phrase>
+<original>when saving images that originally contained metadata</original>
+<translation>保存图像时包含最初元数据</translation>
+</phrase>
+
+<phrase>
+<original>metadata (EXIF, GPS, comments, etc.)</original>
+<translation>元数据（Exif，GPS，评论，等等）</translation>
+</phrase>
+
+<phrase>
+<original>set outgoing color depth</original>
+<translation>设置输出颜色深度</translation>
+</phrase>
+
+<phrase>
+<original>color depth of saved images</original>
+<translation>保存图像的颜色深度</translation>
+</phrase>
+
+<phrase>
+<original>save behavior: overwrite vs make a copy</original>
+<translation>保存行为：重写与复制</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>当使用“保存”时</translation>
+</phrase>
+
+<phrase>
+<original>closing unsaved images</original>
+<translation>关闭未保存的图像</translation>
+</phrase>
+
+<phrase>
+<original>when using the "Save As" command, set the default file format according to</original>
+<translation>当使用“另存为”命令时，使用设定的默认文件格式</translation>
+</phrase>
+
+<phrase>
+<original>default file format when saving</original>
+<translation>保存时使用默认文件格式</translation>
+</phrase>
+
+<phrase>
 <original>(none)</original>
 <translation>（无）</translation>
 </phrase>
@@ -13907,11 +13873,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>This option allows PhotoDemon to scan incoming images to determine the most appropriate color depth on a case-by-case basis (rather than relying on the source image file's color depth, which may have been chosen arbitrarily).</original>
-<translation>此选项允许Photodemon扫描输入的图像，以确定最合适的颜色深度在个案的基础上（而不是依靠源图像文件的颜色深度，这可能是任意选择）。</translation>
-</phrase>
-
-<phrase>
 <original>feature disabled due to missing plugin</original>
 <translation>由于缺少插件功能被禁用</translation>
 </phrase>
@@ -13942,18 +13903,13 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>to match the image file's original color depth</original>
-<translation>匹配图像文件的原始颜色深度</translation>
+<original>by asking me what color depth I want to use</original>
+<translation>通过问我想用什么颜色的深度</translation>
 </phrase>
 
 <phrase>
 <original>automatically</original>
 <translation>自动</translation>
-</phrase>
-
-<phrase>
-<original>by asking me what color depth I want to use</original>
-<translation>通过问我想用什么颜色的深度</translation>
 </phrase>
 
 <phrase>
@@ -14369,7 +14325,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>警告：这个文件夹是无效的（禁止访问）。请提供一个有效的文件夹。如果没有新的文件夹设置，PhotoDemon将使用系统默认的临时位置。</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 234 phrases. 64 were duplicates of existing phrases, so only 170 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 230 phrases. 64 were duplicates of existing phrases, so only 166 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14624,18 +14580,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Toolboxes.bas -->
-
-<!-- Toolboxes.bas contains 0 phrases. -->
-
-<!-- END text for Toolboxes.bas-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2505</phrasecount>
+<phrasecount>2495</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4308 phrases. -->
-<!-- 1803 are duplicates, so only 2505 unique phrases have been written to file. -->
-<!-- These 2505 phrases contain approximately 13373 total words. -->
+<!-- As of this build, PhotoDemon contains 4290 phrases. -->
+<!-- 1795 are duplicates, so only 2495 unique phrases have been written to file. -->
+<!-- These 2495 phrases contain approximately 13266 total words. -->
 
 </pdData>

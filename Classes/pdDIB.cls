@@ -1165,13 +1165,7 @@ Public Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
         
     'If alpha premultiplication state is not stored, make a best guess based on color depth
     Else
-        
-        If fColorDepth = 24 Then
-            localAlphaPremultiplied = False
-        Else
-            localAlphaPremultiplied = True
-        End If
-        
+        localAlphaPremultiplied = Not (fColorDepth = 24)
     End If
     
     'Retrieve DIB dimensions

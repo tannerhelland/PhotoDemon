@@ -40,25 +40,34 @@ Private Buffer As String
 Private CharsInUse As Long
 Private mHasLine As Boolean
 
+'Note from Tanner: I've added a few failsafe checks to this function prior to invoking various string operations.
+' I don't know if they can conceivably be triggered, but I'm running into random freezes on certain ExifTool interactions,
+' and failsafe checks can't hurt.
 Public Sub Append(ByVal Text As String)
-    Dim TextLen As Long
-    Dim BufferLen As Long
+    
+    Dim TextLen As Long, BufferLen As Long
     Dim Temp As String
     
     TextLen = Len(Text)
     If TextLen > 0 Then
         BufferLen = Len(Buffer)
-        Do While TextLen + CharsInUse > BufferLen
-            BufferLen = BufferLen + CHUNK_SIZE
-        Loop
+        
+        If (TextLen + CharsInUse) > BufferLen Then
+            Do While TextLen + CharsInUse > BufferLen
+                BufferLen = BufferLen + CHUNK_SIZE
+            Loop
+        End If
+        
         If BufferLen > Len(Buffer) Then
             Temp = Left$(Buffer, CharsInUse)
             Buffer = String$(BufferLen, 0)
             Mid$(Buffer, 1) = Temp
         End If
-        Mid$(Buffer, CharsInUse + 1, TextLen) = Text
+        
+        If (CharsInUse + 1) + TextLen <= Len(Buffer) Then Mid$(Buffer, CharsInUse + 1, TextLen) = Text
         CharsInUse = CharsInUse + TextLen
         mHasLine = mHasLine Or InStr(Text, vbCr) > 0
+        
     End If
 End Sub
 
@@ -78,19 +87,25 @@ End Function
 Public Sub Clear()
     If Len(Buffer) > CHUNK_SOFT_LIMIT Then
         Buffer = String$(CHUNK_SOFT_LIMIT, 0)
+    Else
+        If Len(Buffer) > 0 Then Buffer = String$(Len(Buffer), 0)
     End If
     CharsInUse = 0
     mHasLine = False
 End Sub
 
 Private Sub DeleteChars(ByVal Length As Long)
+    
     Dim strRemainder As String
-
-    strRemainder = Mid$(Buffer, Length + 1, _
-                        CharsInUse - Length)
+    
+    If (Length + 1) + (CharsInUse - Length) < Len(Buffer) Then
+        strRemainder = Mid$(Buffer, Length + 1, CharsInUse - Length)
+    End If
+    
     CharsInUse = Len(strRemainder)
     Mid$(Buffer, 1, CharsInUse) = strRemainder
     mHasLine = InStr(strRemainder, vbCr) > 0
+    
 End Sub
 
 Public Sub DeleteData(ByVal MaxLen As Long)
@@ -102,13 +117,13 @@ End Sub
 
 Public Function GetData(Optional ByVal MaxLen As Long = -1) As String
     If MaxLen < 0 Then
-        GetData = Left$(Buffer, CharsInUse)
+        If (CharsInUse > 0) Then GetData = Left$(Buffer, CharsInUse)
         Clear
     ElseIf MaxLen = 0 Then
         GetData = ""
     Else
         If MaxLen > CharsInUse Then MaxLen = CharsInUse
-        GetData = Left$(Buffer, MaxLen)
+        If MaxLen <= Len(Buffer) Then GetData = Left$(Buffer, MaxLen)
         DeleteChars MaxLen
     End If
 End Function
@@ -141,7 +156,7 @@ Public Property Get Length() As Long
 End Property
 
 Public Sub PeekBuffer(ByRef Data As String)
-    Data = Left$(Buffer, CharsInUse)
+    If CharsInUse <= Len(Buffer) Then Data = Left$(Buffer, CharsInUse) Else Data = ""
 End Sub
 
 #If SPB_DEBUG Then

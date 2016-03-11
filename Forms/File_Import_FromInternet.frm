@@ -32,7 +32,6 @@ Begin VB.Form FormInternetImport
       Width           =   10050
       _ExtentX        =   17727
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdTextBox txtURL 
       Height          =   315
@@ -110,24 +109,19 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     
     'If the download worked, attempt to load the image.
     If Len(downloadedFilename) <> 0 Then
-    
-        Dim sFile(0) As String
-        sFile(0) = downloadedFilename
         
-        Dim tmpFilename As String
-        tmpFilename = downloadedFilename
-        StripFilename tmpFilename
-        
-        LoadFileAsNewImage sFile, False, tmpFilename, tmpFilename
-        
-        'Unique to this particular import is remembering the full filename + extension (because this method of import
-        ' actually supplies a file extension, unlike scanning or screen capturing or something else)
-        If Not pdImages(g_CurrentImage) Is Nothing Then pdImages(g_CurrentImage).originalFileNameAndExtension = tmpFilename
-        
-        'Delete the temporary file
         Dim cFile As pdFSO
         Set cFile = New pdFSO
         
+        Dim tmpFilename As String
+        tmpFilename = cFile.GetFilename(downloadedFilename)
+        LoadFileAsNewImage downloadedFilename, tmpFilename, False
+        
+        'Unique to this particular import is remembering the full filename + extension (because this method of import
+        ' actually supplies a file extension, unlike scanning or screen capturing or something else)
+        If Not (pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).originalFileNameAndExtension = tmpFilename
+        
+        'Delete the temporary file
         If cFile.FileExist(downloadedFilename) Then cFile.KillFile downloadedFilename
         
         Message "Image download complete. "
@@ -333,8 +327,8 @@ Private Sub cmdBarMini_OKClick()
     
     If (LCase(Left$(fullURL, 7)) <> "http://") And (LCase(Left$(fullURL, 8)) <> "https://") And (LCase(Left$(fullURL, 6)) <> "ftp://") Then
         PDMsgBox "This URL is not valid.  Please make sure the URL begins with ""http://"" or ""ftp://"".", vbApplicationModal + vbOKOnly + vbExclamation, "Invalid URL"
-        txtURL.selectAll
-        cmdBarMini.doNotUnloadForm
+        txtURL.SelectAll
+        cmdBarMini.DoNotUnloadForm
         Exit Sub
     End If
     
@@ -348,14 +342,14 @@ Private Sub cmdBarMini_OKClick()
     'If the download failed, show the user this form (so they can try again).  Otherwise, unload this form.
     If Not downloadSuccessful Then
         Me.Visible = True
-        cmdBarMini.doNotUnloadForm
+        cmdBarMini.DoNotUnloadForm
     End If
     
 End Sub
 
 'When the form is activated, automatically select the text box for the user.  This makes a quick Ctrl+V possible.
 Private Sub Form_Activate()
-    txtURL.selectAll
+    txtURL.SelectAll
     txtURL.SetFocus
 End Sub
 

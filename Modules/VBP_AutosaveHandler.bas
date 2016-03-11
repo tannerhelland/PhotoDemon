@@ -144,7 +144,7 @@ Public Function SaveableImagesPresent() As Long
     Do While Len(chkFile) <> 0
     
         'First, make sure the file actually contains XML data
-        If xmlEngine.loadXMLFile(g_UserPreferences.GetTempPath & chkFile) Then
+        If xmlEngine.LoadXMLFile(g_UserPreferences.GetTempPath & chkFile) Then
         
             'If it does, make sure the XML data is valid, and that at least one Undo entry is listed in the file
             If xmlEngine.isPDDataType("Undo stack") And xmlEngine.validateLoadedXMLData("pdUndoVersion") Then
@@ -296,13 +296,11 @@ End Function
 
 'After any autosave images have been loaded into PD, call this function to replace those images' data (such as "location on disk")
 ' with information from the Autosave XML files.
-Public Sub alignLoadedImageWithAutosave(ByRef srcPDImage As pdImage)
+Public Sub AlignLoadedImageWithAutosave(ByRef srcPDImage As pdImage)
 
     Dim i As Long
     
-    'Make sure the image loaded successfully
     If Not (srcPDImage Is Nothing) Then
-    
         If srcPDImage.IsActive Then
         
             'Find a corresponding Autosave XML file for this image (if one exists)
@@ -311,14 +309,13 @@ Public Sub alignLoadedImageWithAutosave(ByRef srcPDImage As pdImage)
                 'If this file's location on disk matches the binary buffer associated with a given XML entry,
                 ' ask the pdImage object to rewrite its internal data to match the XML file.
                 If StrComp(srcPDImage.locationOnDisk, m_XmlEntries(i).xmlPath, vbTextCompare) = 0 Then
-                    srcPDImage.readExternalData m_XmlEntries(i).xmlPath
+                    srcPDImage.ReadExternalData m_XmlEntries(i).xmlPath
                     Exit For
                 End If
             
             Next i
         
         End If
-    
     End If
     
 End Sub
@@ -328,7 +325,7 @@ End Sub
 Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
 
     Dim i As Long, newImageID As Long, oldImageID As Long
-    Dim autosaveFile(0) As String
+    Dim autosaveFile As String
     
     'Before starting our processing loop, create a dummy pdUndo object.  This object will help us generate
     ' relevant filenames using PD's standard Undo filename formula.
@@ -341,9 +338,10 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
     Set xmlEngine = New pdXML
     
     'Process each XML entry in turn.  Because of the way we are reconstructing the Undo entries, we can't load
-    ' all the files in a single LoadFileAsNewImage request (despite it supporting an array of filenames).  Instead,
-    ' we must load each image individually, do a bunch of processing to the image (and its Undo files) to restore
-    ' it's proper image state, *then* move on to the next image.
+    ' all the files in a single request (despite PD's load function supporting a stack of filenames).
+    
+    'Instead, we must load each image individually, do a bunch of post-processing to the image (and its Undo files)
+    ' to restore it to its proper state, *then* move on to the next image.
     For i = 0 To UBound(fullXMLList)
     
         'Before doing anything else, we are going to rename the Undo files associated with this Autosave entry.
@@ -357,16 +355,16 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
         
         'Make a copy of the current Undo XML file for this image, as it will be overwritten as soon as we load the first
         ' Undo entry as a new image.
-        xmlEngine.loadXMLFile fullXMLList(i).xmlPath
+        xmlEngine.LoadXMLFile fullXMLList(i).xmlPath
         
         'We now have everything we need.  Load the base Undo entry as a new image.
-        autosaveFile(0) = tmpUndoEngine.generateUndoFilenameExternal(newImageID, 0, g_SessionID)
-        LoadFileAsNewImage autosaveFile, False, fullXMLList(i).friendlyName, fullXMLList(i).friendlyName
+        autosaveFile = tmpUndoEngine.generateUndoFilenameExternal(newImageID, 0, g_SessionID)
+        LoadFileAsNewImage autosaveFile, fullXMLList(i).friendlyName, False
         
         'It is possible, but extraordinarily rare, for the LoadFileAsNewImage function to fail (for example, if the user removed
-        ' a portable drive with the Autosave data in the midst of the load).  We can identify a fail state by the expected pdImage
+        ' a portable drive containing Autosave data in the midst of the load).  We can identify a fail state by the expected pdImage
         ' object being freed prematurely.
-        If Not pdImages(g_CurrentImage) Is Nothing Then
+        If Not (pdImages(g_CurrentImage) Is Nothing) Then
         
             'The new image has been successfully noted, but we must now overwrite some of the data PD has assigned it with
             ' its original data (such as its "location on disk", which should reflect its original location - not its

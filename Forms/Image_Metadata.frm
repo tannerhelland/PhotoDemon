@@ -33,7 +33,6 @@ Begin VB.Form FormMetadata
       Width           =   12015
       _ExtentX        =   21193
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdButton cmdTechnicalReport 
       Height          =   735
@@ -262,7 +261,7 @@ Private Sub btsTechnical_Click(Index As Integer, ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdTechnicalReport_Click()
-    Plugin_ExifTool_Interface.createTechnicalMetadataReport pdImages(g_CurrentImage)
+    ExifTool.CreateTechnicalMetadataReport pdImages(g_CurrentImage)
 End Sub
 
 Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
@@ -314,9 +313,9 @@ Private Sub Form_Load()
     
     'Enable mousewheel scrolling for the metadata box
     Set cMouseEvents = New pdInputMouse
-    cMouseEvents.addInputTracker picBuffer.hWnd, True, , , True
-    cMouseEvents.addInputTracker Me.hWnd
-    cMouseEvents.setSystemCursor IDC_ARROW
+    cMouseEvents.AddInputTracker picBuffer.hWnd, True, , , True
+    cMouseEvents.AddInputTracker Me.hWnd
+    cMouseEvents.SetSystemCursor IDC_ARROW
     
     'Prepare all rendering objects
     Set m_BackBuffer = New pdDIB

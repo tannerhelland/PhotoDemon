@@ -305,6 +305,7 @@ End Type
 
 'PhotoDemon supports multiple image encoders and decoders.
 Public Enum PD_IMAGE_DECODER_ENGINE
+    PDIDE_FAILEDTOLOAD = -1
     PDIDE_INTERNAL = 0
     PDIDE_FREEIMAGE = 1
     PDIDE_GDIPLUS = 2

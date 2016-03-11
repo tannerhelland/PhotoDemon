@@ -83,7 +83,7 @@ Private m_NumOfClipboardFormats As Long
 
 'Tracking variables; certain clipboard APIs require an owner hWnd, so we cache one here when the clipboard is first opened.
 Private m_IsClipboardOpen As Boolean
-Private m_OwnerHwnd As Long
+Private m_OwnerHWnd As Long
 
 'Windows defines some clipboard formats for us.  These never change, regardless of OS version.
 Public Enum PredefinedClipboardFormatConstants
@@ -634,9 +634,10 @@ End Function
 
 'If the clipboard contains one or more file paths, you can retrieve them via this function.  Note that you must pass a string array,
 ' even if there is only a single file on the clipboard.
-Public Function GetFileList(ByRef dstFileList() As String, ByRef numOfFiles As Long) As Boolean
+Public Function GetFileList(ByRef dstFileList As pdStringStack, ByRef numOfFiles As Long) As Boolean
     
     GetFileList = False
+    If (dstFileList Is Nothing) Then Set dstFileList = New pdStringStack
     
     'Make sure files actually exist on the clipboard
     If Me.DoesClipboardHaveFiles() Then
@@ -651,7 +652,6 @@ Public Function GetFileList(ByRef dstFileList() As String, ByRef numOfFiles As L
             If numOfFiles > 0 Then
                 
                 'Prep the target array, and a temporary buffer for each (null-terminated) return
-                ReDim dstFileList(0 To numOfFiles - 1) As String
                 Dim tmpFilename As String, strLength As Long
                 tmpFilename = String$(MAX_PATH_UNICODE, 0&)
                 
@@ -662,7 +662,7 @@ Public Function GetFileList(ByRef dstFileList() As String, ByRef numOfFiles As L
                     'Get the length of this string
                     strLength = DragQueryFile(hDrop, i, 0&, 0&)
                     If DragQueryFile(hDrop, i, StrPtr(tmpFilename), MAX_PATH_UNICODE) <> 0 Then
-                        dstFileList(i) = Left$(tmpFilename, strLength)
+                        dstFileList.AddString Left$(tmpFilename, strLength)
                     End If
                    
                 Next i
@@ -786,7 +786,7 @@ Public Function ClipboardOpen(ByVal hWndOwner As Long) As Boolean
     If (OpenClipboard(hWndOwner) <> 0) Then
         
         'Cache the owner hWnd and clipboard state, so we don't have to request them again
-        m_OwnerHwnd = hWndOwner
+        m_OwnerHWnd = hWndOwner
         m_IsClipboardOpen = True
         
         'Update the list of available clipboard formats, then exit
@@ -794,7 +794,7 @@ Public Function ClipboardOpen(ByVal hWndOwner As Long) As Boolean
         ClipboardOpen = True
         
     Else
-        m_OwnerHwnd = 0
+        m_OwnerHWnd = 0
         m_IsClipboardOpen = False
         ClipboardOpen = False
     End If
@@ -879,9 +879,9 @@ Public Function SetClipboardData_DelayedRendering(ByVal clipFormatID As Predefin
         'If we haven't already, subclass the main window and start listening for three clipboard-related messages
         If (m_Subclass Is Nothing) Then
             Set m_Subclass = New cSelfSubHookCallback
-            If (m_OwnerHwnd <> 0) Then
-                m_Subclass.ssc_Subclass m_OwnerHwnd, 0, 1, Me
-                m_Subclass.ssc_AddMsg m_OwnerHwnd, MSG_BEFORE, WM_RENDERFORMAT, WM_RENDERALLFORMATS, WM_DESTROYCLIPBOARD
+            If (m_OwnerHWnd <> 0) Then
+                m_Subclass.ssc_Subclass m_OwnerHWnd, 0, 1, Me
+                m_Subclass.ssc_AddMsg m_OwnerHWnd, MSG_BEFORE, WM_RENDERFORMAT, WM_RENDERALLFORMATS, WM_DESTROYCLIPBOARD
             Else
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "WARNING!  pdClipboard.SetClipboardData_DelayedRendering failed to initialized the subclasser, because you haven't given it an hWnd to subclass!"
@@ -905,7 +905,7 @@ End Function
 'Want to know if PD is responsible for the current clipboard data?  (You may want to do this prior to the program shutting down,
 ' for example, since WM_RENDERALLFORMATS doesn't play nicely with the way VB destroys windows.)
 Public Function IsOurDataOnTheClipboard() As Boolean
-    IsOurDataOnTheClipboard = CBool(GetClipboardOwner() = m_OwnerHwnd)
+    IsOurDataOnTheClipboard = CBool(GetClipboardOwner() = m_OwnerHWnd)
 End Function
 
 'On termination, we do a failsafe clipboard close, but it *really* should be closed manually as soon as you're done with it!

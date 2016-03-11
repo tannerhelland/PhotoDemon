@@ -98,21 +98,31 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         
             Select Case colorDepthMode
             
-                'Maintain the file's original color depth (if possible)
-                Case 0
-                    
-                    'Check to see if this format supports the image's original color depth
-                    If g_ImageFormats.isColorDepthSupported(saveFormat, srcPDImage.originalColorDepth) Then
+                'Prompt the user (but only if necessary).  (NOTE: only the value (0) should be used; 2 is
+                ' provided here for temporary backwards compatibility while I overhaul PD's save techniques)
+                Case 0, 2
+                
+                    'First, check to see if the save format in question supports multiple color depths
+                    If g_ImageFormats.doesFIFSupportMultipleColorDepths(saveFormat) Then
                         
-                        'If it IS supported, set the original color depth as the output color depth for this save
-                        outputColorDepth = srcPDImage.originalColorDepth
-                        Message "Original color depth of %1 bpp is supported by this format.  Proceeding with save...", outputColorDepth
+                        'If it does, provide the user with a prompt to choose whatever color depth they'd like
+                        Dim dCheck As VbMsgBoxResult
+                        dCheck = PromptColorDepth(saveFormat)
+                        
+                        If dCheck = vbOK Then
+                            outputColorDepth = g_ColorDepth
+                        Else
+                            PhotoDemon_SaveImage = False
+                            Message "Save canceled."
+                            
+                            Exit Function
+                        End If
                     
-                    'If it IS NOT supported, we need to find the closest available color depth for this format.
+                    'If this format only supports a single output color depth, don't bother the user with a prompt
                     Else
+                
                         outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, srcPDImage.originalColorDepth)
-                        Message "Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcPDImage.originalColorDepth, outputColorDepth
-                    
+                
                     End If
                 
                 'Count colors used
@@ -122,7 +132,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     Dim tmpCompositeDIB As pdDIB
                     Set tmpCompositeDIB = New pdDIB
                     
-                    srcPDImage.getCompositedImage tmpCompositeDIB, False
+                    srcPDImage.GetCompositedImage tmpCompositeDIB, False
                     
                     'Validate the composited image's alpha channel; if it is pointless, we can request 24bpp output depth.
                     If Not DIB_Handler.verifyDIBAlphaChannel(tmpCompositeDIB) Then tmpCompositeDIB.convertTo24bpp
@@ -172,31 +182,6 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     
                     End If
                 
-                'Prompt the user (but only if necessary)
-                Case 2
-                
-                    'First, check to see if the save format in question supports multiple color depths
-                    If g_ImageFormats.doesFIFSupportMultipleColorDepths(saveFormat) Then
-                        
-                        'If it does, provide the user with a prompt to choose whatever color depth they'd like
-                        Dim dCheck As VbMsgBoxResult
-                        dCheck = PromptColorDepth(saveFormat)
-                        
-                        If dCheck = vbOK Then
-                            outputColorDepth = g_ColorDepth
-                        Else
-                            PhotoDemon_SaveImage = False
-                            Message "Save canceled."
-                            
-                            Exit Function
-                        End If
-                    
-                    'If this format only supports a single output color depth, don't bother the user with a prompt
-                    Else
-                
-                        outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, srcPDImage.originalColorDepth)
-                
-                    End If
                     
                 'A color depth has been explicitly specified by the forceColorDepthMethod parameter.  We can find the color depth
                 ' by subtracting 16 from the parameter value.
@@ -274,7 +259,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             ' of the image before saving it - which makes it much faster - but FreeImage provides a number of additional
             ' parameters, like optimization, thumbnail embedding, and custom subsampling.  If no optional parameters are in use
             ' (or if FreeImage is unavailable), use GDI+.  Otherwise, use FreeImage.
-            beginSaveProcess
+            BeginSaveProcess
             
             If g_ImageFormats.FreeImageEnabled And (cParams.doesParamExist(2) Or cParams.doesParamExist(3)) Then
                 updateMRU = SaveJPEGImage(srcPDImage, dstPath, cParams.getParamString)
@@ -285,7 +270,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 
                 Message "No %1 encoder found. Save aborted.", "JPEG"
                 PhotoDemon_SaveImage = False
-                endSaveProcess
+                EndSaveProcess
                 
                 Exit Function
                 
@@ -296,14 +281,14 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         Case FIF_PDI
         
             If g_ZLibEnabled Then
-                beginSaveProcess
+                BeginSaveProcess
                 updateMRU = SavePhotoDemonImage(srcPDImage, dstPath, , , , , , True)
             Else
             
                 'If zLib doesn't exist...
                 PDMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, " PDI Interface Error", PROGRAMNAME
                 Message "No %1 encoder found. Save aborted.", "PDI"
-                endSaveProcess
+                EndSaveProcess
                 
                 Exit Function
                 
@@ -315,7 +300,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             'GIFs are preferentially exported by FreeImage, then GDI+ (if available)
             If g_ImageFormats.FreeImageEnabled Then
                 
-                beginSaveProcess
+                BeginSaveProcess
                 
                 If Not cParams.doesParamExist(1) Then
                     updateMRU = SaveGIFImage(srcPDImage, dstPath)
@@ -324,13 +309,13 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 End If
                 
             ElseIf g_ImageFormats.GDIPlusEnabled Then
-                beginSaveProcess
+                BeginSaveProcess
                 updateMRU = GDIPlusSavePicture(srcPDImage, dstPath, ImageGIF, 8)
             Else
             
                 Message "No %1 encoder found. Save aborted.", "GIF"
                 PhotoDemon_SaveImage = False
-                endSaveProcess
+                EndSaveProcess
                 
                 Exit Function
                 
@@ -346,7 +331,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             End If
             
             'PNGs are preferentially exported by FreeImage, then GDI+ (if available)
-            beginSaveProcess
+            BeginSaveProcess
             
             If g_ImageFormats.FreeImageEnabled Then
                 updateMRU = SavePNGImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
@@ -356,7 +341,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             
                 Message "No %1 encoder found. Save aborted.", "PNG"
                 PhotoDemon_SaveImage = False
-                endSaveProcess
+                EndSaveProcess
                 
                 Exit Function
                 
@@ -364,13 +349,13 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             
         'PPM
         Case FIF_PPM
-            beginSaveProcess
+            BeginSaveProcess
             If Not cParams.doesParamExist(1) Then cParams.setParamString buildParams(g_UserPreferences.GetPref_Long("File Formats", "PPM Export Format", 0))
             updateMRU = SavePPMImage(srcPDImage, dstPath, cParams.getParamString)
                 
         'TGA
         Case FIF_TARGA
-            beginSaveProcess
+            BeginSaveProcess
             If Not cParams.doesParamExist(1) Then cParams.setParamString buildParams(g_UserPreferences.GetPref_Boolean("File Formats", "TGA RLE", False))
             updateMRU = SaveTGAImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
             
@@ -390,7 +375,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 
                     PhotoDemon_SaveImage = False
                     Message "Save canceled."
-                    endSaveProcess
+                    EndSaveProcess
                     
                     Exit Function
                     
@@ -404,7 +389,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             'Store the JPEG-2000 quality in the image object so we don't have to pester the user for it if they save again
             srcPDImage.saveParameters = cParams.getParamString
             
-            beginSaveProcess
+            BeginSaveProcess
             updateMRU = SaveJP2Image(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
             
         'TIFF
@@ -416,7 +401,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             End If
             
             'TIFFs are preferentially exported by FreeImage, then GDI+ (if available)
-            beginSaveProcess
+            BeginSaveProcess
             
             If g_ImageFormats.FreeImageEnabled Then
                 updateMRU = SaveTIFImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
@@ -426,7 +411,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             
                 Message "No %1 encoder found. Save aborted.", "TIFF"
                 PhotoDemon_SaveImage = False
-                endSaveProcess
+                EndSaveProcess
                 
                 Exit Function
                 
@@ -448,7 +433,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 
                     PhotoDemon_SaveImage = False
                     Message "Save canceled."
-                    endSaveProcess
+                    EndSaveProcess
                     
                     Exit Function
                     
@@ -462,7 +447,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             'Store the JPEG-2000 quality in the image object so we don't have to pester the user for it if they save again
             srcPDImage.saveParameters = cParams.getParamString
             
-            beginSaveProcess
+            BeginSaveProcess
             updateMRU = SaveWebPImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
         
         'JPEG XR
@@ -481,7 +466,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 
                     PhotoDemon_SaveImage = False
                     Message "Save canceled."
-                    endSaveProcess
+                    EndSaveProcess
                     
                     Exit Function
                     
@@ -495,7 +480,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             'Store the JPEG-2000 quality in the image object so we don't have to pester the user for it if they save again
             srcPDImage.saveParameters = cParams.getParamString
             
-            beginSaveProcess
+            BeginSaveProcess
             updateMRU = SaveJXRImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
             
         'BMP
@@ -504,24 +489,24 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             'If the user has not provided explicit BMP parameters, load their default values from the preferences file
             If Not cParams.doesParamExist(1) Then cParams.setParamString buildParams(g_UserPreferences.GetPref_Boolean("File Formats", "Bitmap RLE", False))
             
-            beginSaveProcess
+            BeginSaveProcess
             updateMRU = SaveBMP(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
         
         'HDR
         Case FIF_HDR
-            beginSaveProcess
+            BeginSaveProcess
             updateMRU = SaveHDRImage(srcPDImage, dstPath)
         
         'PSD/PSB
         Case FIF_PSD
-            beginSaveProcess
+            BeginSaveProcess
             updateMRU = SavePSDImage(srcPDImage, dstPath, outputColorDepth)
         
         Case Else
         
             Message "Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident."
             PhotoDemon_SaveImage = False
-            endSaveProcess
+            EndSaveProcess
             
             Exit Function
         
@@ -552,7 +537,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     End If
     
     'At this point, it's safe to re-enable the main form and restore the default cursor
-    endSaveProcess
+    EndSaveProcess
     
     'UpdateMRU should only be true if the save was successful
     If updateMRU And (Not suspendMRUUpdating) Then
@@ -577,18 +562,18 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             
             'Mark this file as having been saved.
             If saveFormat = FIF_PDI Then
-                srcPDImage.setSaveState True, pdSE_SavePDI
+                srcPDImage.SetSaveState True, pdSE_SavePDI
             Else
-                srcPDImage.setSaveState True, pdSE_SaveFlat
+                srcPDImage.SetSaveState True, pdSE_SaveFlat
             End If
             
             PhotoDemon_SaveImage = True
             
             'Update the interface to match the newly saved image (e.g. disable the Save button)
-            If Not srcPDImage.forInternalUseOnly Then SyncInterfaceToCurrentImage
+            SyncInterfaceToCurrentImage
                         
             'Notify the thumbnail window that this image has been updated (so it can show/hide the save icon)
-            If Not srcPDImage.forInternalUseOnly Then Interface.NotifyImageChanged g_CurrentImage
+            Interface.NotifyImageChanged g_CurrentImage
             
         End If
     
@@ -657,7 +642,7 @@ Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, By
     'Retrieve a composited copy of the image, at full size
     Dim tmpImageCopy As pdDIB
     Set tmpImageCopy = New pdDIB
-    srcPDImage.getCompositedImage tmpImageCopy, False
+    srcPDImage.GetCompositedImage tmpImageCopy, False
     
     'If the output color depth is 24 or 32bpp, or if both GDI+ and FreeImage are missing, use our own internal methods
     ' to save the BMP file.
@@ -748,7 +733,7 @@ End Function
 '    exposed to the user.)
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
-Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal writeMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As Boolean = False, Optional ByVal secondPassDataCompression As Boolean = False, Optional ByVal srcIsUndo As Boolean = False) As Boolean
+Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal WriteMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As Boolean = False, Optional ByVal secondPassDataCompression As Boolean = False, Optional ByVal srcIsUndo As Boolean = False) As Boolean
     
     On Error GoTo SavePDIError
     
@@ -769,14 +754,14 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     
     'When creating the actual package, we specify numOfLayers + 1 nodes.  The +1 is for the pdImage header itself, which
     ' gets its own node, separate from the individual layer nodes.
-    pdiWriter.prepareNewPackage srcPDImage.getNumOfLayers + 1, PD_IMAGE_IDENTIFIER, srcPDImage.estimateRAMUsage
+    pdiWriter.prepareNewPackage srcPDImage.GetNumOfLayers + 1, PD_IMAGE_IDENTIFIER, srcPDImage.estimateRAMUsage
         
     'The first node we'll add is the pdImage header, in XML format.
     Dim nodeIndex As Long
     nodeIndex = pdiWriter.addNode("pdImage Header", -1, 0)
     
     Dim dataString As String
-    srcPDImage.writeExternalData dataString, True
+    srcPDImage.WriteExternalData dataString, True
     
     pdiWriter.addNodeDataFromString nodeIndex, True, dataString, compressHeaders, , embedChecksums
     
@@ -789,17 +774,17 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     Dim layerDIBPointer As Long, layerDIBLength As Long
     
     Dim i As Long
-    For i = 0 To srcPDImage.getNumOfLayers - 1
+    For i = 0 To srcPDImage.GetNumOfLayers - 1
     
         'Create a new node for this layer.  Note that the index is stored directly in the node name ("pdLayer (n)")
         ' while the layerID is stored as the nodeID.
-        nodeIndex = pdiWriter.addNode("pdLayer " & i, srcPDImage.getLayerByIndex(i).getLayerID, 1)
+        nodeIndex = pdiWriter.addNode("pdLayer " & i, srcPDImage.GetLayerByIndex(i).getLayerID, 1)
         
         'Retrieve the layer header and add it to the header section of this node.
         ' (Note: compression level of text data, like layer headers, is not controlled by the user.  For short strings like
         '        these headers, there is no meaningful gain from higher compression settings, but higher settings kills
         '        performance, so we stick with the default recommended zLib compression level.)
-        layerXMLHeader = srcPDImage.getLayerByIndex(i).getLayerHeaderAsXML(True)
+        layerXMLHeader = srcPDImage.GetLayerByIndex(i).getLayerHeaderAsXML(True)
         pdiWriter.addNodeDataFromString nodeIndex, True, layerXMLHeader, compressHeaders, , embedChecksums
         
         'If this is not a header-only file, retrieve any layer-type-specific data and add it to the data section of this node
@@ -810,17 +795,17 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
             'Specific handling varies by layer type
             
             'Image layers save their raster contents as a raw byte stream
-            If srcPDImage.getLayerByIndex(i).isLayerRaster Then
+            If srcPDImage.GetLayerByIndex(i).isLayerRaster Then
                 
                 Debug.Print "Writing layer index " & i & " out to file as RASTER layer."
-                srcPDImage.getLayerByIndex(i).layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
+                srcPDImage.GetLayerByIndex(i).layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
                 pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
                 
             'Text (and other vector layers) save their vector contents in XML format
-            ElseIf srcPDImage.getLayerByIndex(i).isLayerVector Then
+            ElseIf srcPDImage.GetLayerByIndex(i).isLayerVector Then
                 
                 Debug.Print "Writing layer index " & i & " out to file as VECTOR layer."
-                layerXMLData = srcPDImage.getLayerByIndex(i).getVectorDataAsXML(True)
+                layerXMLData = srcPDImage.GetLayerByIndex(i).getVectorDataAsXML(True)
                 pdiWriter.addNodeDataFromString nodeIndex, False, layerXMLData, compressLayers, compressionLevel, embedChecksums
             
             'No other layer types are currently supported
@@ -834,7 +819,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     Next i
     
     'Next, if the "write metadata" flag has been set, and the image has metadata, add a metadata entry to the file.
-    If (Not writeHeaderOnlyFile) And writeMetadata And Not (srcPDImage.imgMetadata Is Nothing) Then
+    If (Not writeHeaderOnlyFile) And WriteMetadata And Not (srcPDImage.imgMetadata Is Nothing) Then
     
         If srcPDImage.imgMetadata.hasXMLMetadata Then
             nodeIndex = pdiWriter.addNode("pdMetadata_Raw", -1, 2)
@@ -888,7 +873,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     'Start by creating the node entry; if successful, this will return the index of the node, which we can use
     ' to supply the actual header and DIB data.
     Dim nodeIndex As Long
-    nodeIndex = pdiWriter.addNode("pdLayer", srcLayer.getLayerID, pdImages(g_CurrentImage).getLayerIndexFromID(srcLayer.getLayerID))
+    nodeIndex = pdiWriter.addNode("pdLayer", srcLayer.getLayerID, pdImages(g_CurrentImage).GetLayerIndexFromID(srcLayer.getLayerID))
     
     'Retrieve the layer header (in XML format), then write the XML stream to the pdPackage instance
     Dim dataString As String
@@ -956,7 +941,7 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
     'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    srcPDImage.getCompositedImage tmpDIB, False
+    srcPDImage.GetCompositedImage tmpDIB, False
     
     'If the current image is 32bpp, we will need to apply some additional actions to the image to prepare the
     ' transparency.  Mark a bool value, because we will reference it in multiple places throughout the save function.
@@ -1098,7 +1083,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    srcPDImage.getCompositedImage tmpDIB, False
+    srcPDImage.GetCompositedImage tmpDIB, False
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
@@ -1377,7 +1362,7 @@ Public Function SavePPMImage(ByRef srcPDImage As pdImage, ByVal PPMPath As Strin
     'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    srcPDImage.getCompositedImage tmpDIB, False
+    srcPDImage.GetCompositedImage tmpDIB, False
     
     'PPM only supports 24bpp
     If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.convertTo24bpp
@@ -1447,7 +1432,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    srcPDImage.getCompositedImage tmpDIB, False
+    srcPDImage.GetCompositedImage tmpDIB, False
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
@@ -1596,7 +1581,7 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
             ' (This should still result in a good value, but at a much smaller time investment.)
             Dim testDIB As pdDIB
             Set testDIB = New pdDIB
-            srcPDImage.getCompositedImage testDIB, False
+            srcPDImage.GetCompositedImage testDIB, False
             If testDIB.getDIBColorDepth = 32 Then testDIB.convertTo24bpp
             
             If (testDIB.getDIBWidth > 1024) Or (testDIB.getDIBHeight > 1024) Then
@@ -1646,7 +1631,7 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
     'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    srcPDImage.getCompositedImage tmpDIB, False
+    srcPDImage.GetCompositedImage tmpDIB, False
     
     'JPEGs can only save 24bpp images, so flatten the alpha as necessary
     If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.convertTo24bpp
@@ -1778,7 +1763,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    srcPDImage.getCompositedImage tmpDIB, False
+    srcPDImage.GetCompositedImage tmpDIB, False
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
@@ -1982,7 +1967,7 @@ Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As Strin
     'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    srcPDImage.getCompositedImage tmpDIB, False
+    srcPDImage.GetCompositedImage tmpDIB, False
     
     'If the output color depth is 24 but the current image is 32, composite the image against a white background
     If (outputColorDepth < 32) And (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
@@ -2062,7 +2047,7 @@ Public Function SaveJXRImage(ByRef srcPDImage As pdImage, ByVal jxrPath As Strin
     'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    srcPDImage.getCompositedImage tmpDIB, False
+    srcPDImage.GetCompositedImage tmpDIB, False
     
     'If the output color depth is 24 but the current image is 32, composite the image against a white background
     If (outputColorDepth < 32) And (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
@@ -2134,7 +2119,7 @@ Public Function SaveWebPImage(ByRef srcPDImage As pdImage, ByVal WebPPath As Str
     'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    srcPDImage.getCompositedImage tmpDIB, False
+    srcPDImage.GetCompositedImage tmpDIB, False
     
     'If the output color depth is 24 but the current image is 32, composite the image against a white background
     If (outputColorDepth < 32) And (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
@@ -2197,7 +2182,7 @@ Public Function SaveHDRImage(ByRef srcPDImage As pdImage, ByVal HDRPath As Strin
     'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    srcPDImage.getCompositedImage tmpDIB, False
+    srcPDImage.GetCompositedImage tmpDIB, False
     
     'HDR only supports 24bpp
     If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.convertTo24bpp
@@ -2341,7 +2326,7 @@ Public Function SavePSDImage(ByRef srcPDImage As pdImage, ByVal psdPath As Strin
     'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    srcPDImage.getCompositedImage tmpDIB, False
+    srcPDImage.GetCompositedImage tmpDIB, False
     
     'If the output color depth is 24 but the current image is 32, composite the image against a white background
     If (outputColorDepth < 32) And (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
@@ -2772,11 +2757,11 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         
         'Layer data only (full layer header + full layer DIB).
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
-            Saving.SavePhotoDemonLayer srcPDImage.getLayerByID(targetLayerID), dstUndoFilename & ".layer", True, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), True
+            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), True
         
         'Layer header data only (e.g. DO NOT WRITE OUT THE LAYER DIB)
         Case UNDO_LAYERHEADER
-            Saving.SavePhotoDemonLayer srcPDImage.getLayerByID(targetLayerID), dstUndoFilename & ".layer", True, True, False, False, True, , True
+            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, True, False, False, True, , True
             
         'Selection data only
         Case UNDO_SELECTION
@@ -2855,18 +2840,10 @@ End Function
 'Some image formats can take a long time to write, especially if the image is large.  As a failsafe, call this function prior to
 ' initiating a save request.  Just make sure to call the counterpart function when saving completes (or if saving fails); otherwise, the
 ' main form will be disabled!
-Public Sub beginSaveProcess()
-
-    'Disable the main form and set a busy cursor
-    FormMain.Enabled = False
-    Screen.MousePointer = vbHourglass
-
+Public Sub BeginSaveProcess()
+    Processor.MarkProgramBusyState True, True
 End Sub
 
-Public Sub endSaveProcess()
-
-    'Re-enable the main form and restore the default cursor
-    FormMain.Enabled = True
-    Screen.MousePointer = vbDefault
-
+Public Sub EndSaveProcess()
+    Processor.MarkProgramBusyState False, True
 End Sub

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.146</langversion>
+<langversion>6.7.147</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -15,7 +15,92 @@
 
 <!-- BEGIN text for VBP_Main.bas -->
 
-<!-- VBP_Main.bas contains 0 phrases. -->
+<phrase>
+<original>Detecting Windows® version</original>
+<translation>Windows®-Version erkennen</translation>
+</phrase>
+
+<phrase>
+<original>Initializing all program directories</original>
+<translation>Alle Programmverzeichnisse initialisieren</translation>
+</phrase>
+
+<phrase>
+<original>Loading all user settings</original>
+<translation>Alle Benutzereinstellungen laden</translation>
+</phrase>
+
+<phrase>
+<original>Scanning for language files</original>
+<translation>Nach Sprachdateien suchen</translation>
+</phrase>
+
+<phrase>
+<original>Determining which language to use</original>
+<translation>Verwendete Sprache festlegen</translation>
+</phrase>
+
+<phrase>
+<original>Applying selected language</original>
+<translation>Ausgewählte Sprache anwenden</translation>
+</phrase>
+
+<phrase>
+<original>Analyzing current monitor setup</original>
+<translation>Aktuelle Monitoreinstellung analysieren</translation>
+</phrase>
+
+<phrase>
+<original>Loading plugins</original>
+<translation>Plugins laden</translation>
+</phrase>
+
+<phrase>
+<original>Loading import/export libraries</original>
+<translation>Import-/Export-Bibliotheken laden</translation>
+</phrase>
+
+<phrase>
+<original>Initializing theme engine</original>
+<translation>Themen-Engine initialisieren</translation>
+</phrase>
+
+<phrase>
+<original>Building font cache</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Initializing clipboard interface</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Initializing viewport engine</original>
+<translation>Viewport-Engine initialisieren</translation>
+</phrase>
+
+<phrase>
+<original>Initializing window manager</original>
+<translation>Fenstermanager initialisieren</translation>
+</phrase>
+
+<phrase>
+<original>Initializing image tools</original>
+<translation>Bildwerkzeuge initialisieren</translation>
+</phrase>
+
+<phrase>
+<original>Initializing user interface</original>
+<translation>Benutzeroberfläche initialisieren</translation>
+</phrase>
+
+<phrase>
+<original>Preparing program menus</original>
+<translation>Programm-Menüs vorbereiten</translation>
+</phrase>
+
+<!-- VBP_Main.bas contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
 
 <!-- END text for VBP_Main.bas-->
 
@@ -622,6 +707,51 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 
 <!-- END text for VBP_MDIWindow.bas-->
 
+<!-- BEGIN text for ImageLoader.bas -->
+
+<phrase>
+<original>Selected file is not in PDI format.  Load abandoned.</original>
+<translation>Die ausgewählte Datei ist nicht im PDI-Format. Laden abgebrochen.</translation>
+</phrase>
+
+<phrase>
+<original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
+
+To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
+<translation>Die PDI-Datei '%1' enthält gepackte Daten, aber das zLib-Plugin ist nicht vorhanden oder abgeschaltet.
+
+Wenn Sie gepackte PDI-Dateien verwenden wollen, wählen Sie 'Hilfe > Nach Updates suchen' im Menü an und lassen Sie PhotoDemon alle empfohlenen Plugins herunterladen.</translation>
+</phrase>
+
+<phrase>
+<original>zLib plugin missing</original>
+<translation>Das zLib-Plugin fehlt</translation>
+</phrase>
+
+<phrase>
+<original>PDI node could not be read; file may be invalid or corrupted.  Load abandoned.</original>
+<translation>PDI-Knoten nicht lesbar; Datei vermutlich beschädigt oder unbrauchbar. Laden abgebrochen.</translation>
+</phrase>
+
+<phrase>
+<original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
+<translation>Es hat einen Fehler gegeben (Nr. %1 - %2). PDI-Laden abgebrochen.</translation>
+</phrase>
+
+<phrase>
+<original>An error has occurred (#</original>
+<translation>Es hat einen Fehler gegeben (Nr. </translation>
+</phrase>
+
+<phrase>
+<original>GDI+ refused to load image.  Dropping back to internal routines and trying again</original>
+<translation>GDI+ weigert sich das Bild zu laden; Rückkehr zu internen Routinen und neuer Versuch</translation>
+</phrase>
+
+<!-- ImageLoader.bas contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<!-- END text for ImageLoader.bas-->
+
 <!-- BEGIN text for VBP_MiscInterface.bas -->
 
 <phrase>
@@ -945,106 +1075,31 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 <translation></translation>
 </phrase>
 
-<!-- VBP_LayerHandler.bas contains 34 phrases. 18 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<phrase>
+<original>frame %1</original>
+<translation>Einzelbild %1</translation>
+</phrase>
+
+<phrase>
+<original>icon (%1x%2)</original>
+<translation>Icon (%1 x %2)</translation>
+</phrase>
+
+<phrase>
+<original>icon (%1x%2, %3 bpp)</original>
+<translation>Icon (%1 x %2, mit %3 bpp)</translation>
+</phrase>
+
+<phrase>
+<original>page %1</original>
+<translation>Seite %1</translation>
+</phrase>
+
+<!-- VBP_LayerHandler.bas contains 42 phrases. 22 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for VBP_LayerHandler.bas-->
 
 <!-- BEGIN text for VBP_LoadModule.bas -->
-
-<phrase>
-<original>Detecting Windows® version</original>
-<translation>Windows®-Version erkennen</translation>
-</phrase>
-
-<phrase>
-<original>Initializing all program directories</original>
-<translation>Alle Programmverzeichnisse initialisieren</translation>
-</phrase>
-
-<phrase>
-<original>Loading all user settings</original>
-<translation>Alle Benutzereinstellungen laden</translation>
-</phrase>
-
-<phrase>
-<original>Scanning for language files</original>
-<translation>Nach Sprachdateien suchen</translation>
-</phrase>
-
-<phrase>
-<original>Determining which language to use</original>
-<translation>Verwendete Sprache festlegen</translation>
-</phrase>
-
-<phrase>
-<original>Applying selected language</original>
-<translation>Ausgewählte Sprache anwenden</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing current monitor setup</original>
-<translation>Aktuelle Monitoreinstellung analysieren</translation>
-</phrase>
-
-<phrase>
-<original>Loading plugins</original>
-<translation>Plugins laden</translation>
-</phrase>
-
-<phrase>
-<original>Loading import/export libraries</original>
-<translation>Import-/Export-Bibliotheken laden</translation>
-</phrase>
-
-<phrase>
-<original>Initializing theme engine</original>
-<translation>Themen-Engine initialisieren</translation>
-</phrase>
-
-<phrase>
-<original>Building font cache</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Initializing clipboard interface</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Initializing viewport engine</original>
-<translation>Viewport-Engine initialisieren</translation>
-</phrase>
-
-<phrase>
-<original>Initializing window manager</original>
-<translation>Fenstermanager initialisieren</translation>
-</phrase>
-
-<phrase>
-<original>Initializing image tools</original>
-<translation>Bildwerkzeuge initialisieren</translation>
-</phrase>
-
-<phrase>
-<original>Initializing user interface</original>
-<translation>Benutzeroberfläche initialisieren</translation>
-</phrase>
-
-<phrase>
-<original>Preparing program menus</original>
-<translation>Programm-Menüs vorbereiten</translation>
-</phrase>
-
-<phrase>
-<original>Loading image(s)</original>
-<translation>Bild(er) laden</translation>
-</phrase>
-
-<phrase>
-<original>Finishing final program initialization steps</original>
-<translation>Letzte Initialisierungsschritte werden ausgeführt</translation>
-</phrase>
 
 <phrase>
 <original>Unfortunately, the image '%1' could not be found.
@@ -1061,23 +1116,32 @@ Wenn dieses Bild ursprünglich auf einem Wechselmedium (DVD, USB-Stick usw.) ges
 </phrase>
 
 <phrase>
-<original>Loading image %1 of %2</original>
-<translation>Bild %1 von %2 laden</translation>
-</phrase>
-
-<phrase>
 <original>Loading image</original>
 <translation>Bild laden</translation>
 </phrase>
 
 <phrase>
-<original>GDI+ refused to load image.  Dropping back to internal routines and trying again</original>
-<translation>GDI+ weigert sich das Bild zu laden; Rückkehr zu internen Routinen und neuer Versuch</translation>
+<original>Image loaded successfully.</original>
+<translation>Das Bild wurde geladen.</translation>
 </phrase>
 
 <phrase>
 <original>Failed to load %1</original>
 <translation>Laden von %1 fehlgeschlagen</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, PhotoDemon was unable to load the following image:
+
+%1
+
+Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Image import failed</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1099,128 +1163,31 @@ Bitte benutzen Sie ein anderes Programm, um das Bild in einem bekannteren Format
 </phrase>
 
 <phrase>
-<original>frame %1</original>
-<translation>Einzelbild %1</translation>
+<original>Layer import canceled.</original>
+<translation>Ebenen-Import abgebrochen.</translation>
 </phrase>
 
 <phrase>
-<original>icon (%1x%2)</original>
-<translation>Icon (%1 x %2)</translation>
+<original>Loading image(s)</original>
+<translation>Bild(er) laden</translation>
 </phrase>
 
 <phrase>
-<original>icon (%1x%2, %3 bpp)</original>
-<translation>Icon (%1 x %2, mit %3 bpp)</translation>
-</phrase>
-
-<phrase>
-<original>page %1</original>
-<translation>Seite %1</translation>
-</phrase>
-
-<phrase>
-<original>frame</original>
-<translation>Einzelbild</translation>
-</phrase>
-
-<phrase>
-<original>page</original>
-<translation>Seite</translation>
-</phrase>
-
-<phrase>
-<original>All images loaded successfully.</original>
-<translation>Alle Bilder wurden geladen.</translation>
-</phrase>
-
-<phrase>
-<original>Image loaded successfully.</original>
-<translation>Das Bild wurde geladen.</translation>
-</phrase>
-
-<phrase>
-<original>All images loaded, except for those that could not be found.</original>
-<translation>Alle Bilder geladen - außer denen, die nicht zu finden waren!</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, PhotoDemon was unable to find the following image(s):
-
-%1
-
-If these images were originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
-<translation>Leider konnte PhotoDemon das/die folgende(n) Bild(er) nicht finden:
-
-%1
-
-Wenn es/sie auf einem Wechselmedium (DVD, USB-Stick usw.) gespeichert war(en), müssen Sie das Medium wieder einlegen / anschließen und es noch mal versuchen.</translation>
-</phrase>
-
-<phrase>
-<original>Image files missing</original>
-<translation>Bilddatei(en) nicht auffindbar</translation>
-</phrase>
-
-<phrase>
-<original>All images loaded, except for those in invalid formats.</original>
-<translation>Alle Bilder geladen - außer denen in unbrauchbaren Formaten!</translation>
+<original>%1 of %2 images loaded successfully</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, PhotoDemon was unable to load the following image(s):
 
 %1
-
-Please use another program to save these images in a generic format (such as JPEG or PNG) before loading them into PhotoDemon. Thanks!</original>
-<translation>Leider konnte PhotoDemon das/die folgende(n) Bild(er) nicht laden:
-
-%1
-
-Bitte benutzen Sie ein anderes Programm, um es/sie in einem bekannteren Format zu speichern (wie JPEG oder PNG) und danach mit PhotoDemon zu öffnen. Danke!</translation>
+Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Image Formats Not Supported</original>
-<translation>Bildformate nicht verwendbar</translation>
-</phrase>
-
-<phrase>
-<original>Layer import canceled.</original>
-<translation>Ebenen-Import abgebrochen.</translation>
-</phrase>
-
-<phrase>
-<original>Selected file is not in PDI format.  Load abandoned.</original>
-<translation>Die ausgewählte Datei ist nicht im PDI-Format. Laden abgebrochen.</translation>
-</phrase>
-
-<phrase>
-<original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
-
-To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
-<translation>Die PDI-Datei '%1' enthält gepackte Daten, aber das zLib-Plugin ist nicht vorhanden oder abgeschaltet.
-
-Wenn Sie gepackte PDI-Dateien verwenden wollen, wählen Sie 'Hilfe > Nach Updates suchen' im Menü an und lassen Sie PhotoDemon alle empfohlenen Plugins herunterladen.</translation>
-</phrase>
-
-<phrase>
-<original>zLib plugin missing</original>
-<translation>Das zLib-Plugin fehlt</translation>
-</phrase>
-
-<phrase>
-<original>PDI node could not be read; file may be invalid or corrupted.  Load abandoned.</original>
-<translation>PDI-Knoten nicht lesbar; Datei vermutlich beschädigt oder unbrauchbar. Laden abgebrochen.</translation>
-</phrase>
-
-<phrase>
-<original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
-<translation>Es hat einen Fehler gegeben (Nr. %1 - %2). PDI-Laden abgebrochen.</translation>
-</phrase>
-
-<phrase>
-<original>An error has occurred (#</original>
-<translation>Es hat einen Fehler gegeben (Nr. </translation>
+<original>Some images were not loaded</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1243,7 +1210,7 @@ Wenn Sie gepackte PDI-Dateien verwenden wollen, wählen Sie 'Hilfe > Nach Update
 <translation>Bild wurde dupliziert.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 81 phrases. 29 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -1417,7 +1384,12 @@ In Version 6.0 wurden das Format der PhotoDemon-Makrodateien überarbeitet, um n
 <translation>Plugin-Dienst konnte nicht gestartet werden (konnte den Prozess %1 nicht erzeugen).</translation>
 </phrase>
 
-<!-- VBP_ExifToolInterface.bas contains 8 phrases.  One was a duplicate of an existing phrase, so only 7 new phrases were written to file. -->
+<phrase>
+<original>Finishing final program initialization steps</original>
+<translation>Letzte Initialisierungsschritte werden ausgeführt</translation>
+</phrase>
+
+<!-- VBP_ExifToolInterface.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_ExifToolInterface.bas-->
 
@@ -1921,16 +1893,6 @@ Wenn Sie fertig sind, klicken Sie bitte auf "Senden". Danke!</translation>
 <!-- BEGIN text for VBP_SaveModule.bas -->
 
 <phrase>
-<original>Original color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-<translation>Die Original-Farbtiefe von %1 bpp ist bei diesem Format möglich. Weiter mit Speichern</translation>
-</phrase>
-
-<phrase>
-<original>Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
-<translation>Die Original-Farbtiefe von %1 bpp ist bei diesem Format NICHT möglich. Weiter mit Speichern als %2 bpp-Bild</translation>
-</phrase>
-
-<phrase>
 <original>Counting image colors to determine optimal exported color depth</original>
 <translation>Die Bildfarben werden gezählt, um die optimale Farbtiefe für den Export festzulegen</translation>
 </phrase>
@@ -2102,7 +2064,7 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 <translation>Speichern des Vorschaubildes fehlgeschlagen (unklare Fehlermeldung von GDI+).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 128 phrases. 94 were duplicates of existing phrases, so only 34 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 126 phrases. 94 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -2349,6 +2311,12 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <!-- VBP_ToolSupport.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolSupport.bas-->
+
+<!-- BEGIN text for Toolboxes.bas -->
+
+<!-- Toolboxes.bas contains 0 phrases. -->
+
+<!-- END text for Toolboxes.bas-->
 
 <!-- BEGIN text for VBP_UniscribeInterface.bas -->
 
@@ -3975,6 +3943,11 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <!-- END text for ShellPipe.ctl-->
 
 <!-- BEGIN text for MainWindow.frm (FormMain) -->
+
+<phrase>
+<original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>&File</original>
@@ -5883,7 +5856,7 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 566 phrases. 187 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -13527,141 +13500,6 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 </phrase>
 
 <phrase>
-<original>use the system color profile</original>
-<translation>System-Farbprofil benutzen</translation>
-</phrase>
-
-<phrase>
-<original>use one or more custom color profiles</original>
-<translation>Verwenden Sie ein oder mehrere benutzerdefinierte Farbprofile</translation>
-</phrase>
-
-<phrase>
-<original>color profile for selected monitor</original>
-<translation>Farbprofil für ausgewählten Monitor</translation>
-</phrase>
-
-<phrase>
-<original>available monitors</original>
-<translation>verfügbaren Monitore</translation>
-</phrase>
-
-<phrase>
-<original>when rendering images to the screen</original>
-<translation>beim Rendern von Bildern auf dem Bildschirm</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>Farbmanagement</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard size</original>
-<translation>Größe des "Transparenz-Schachbretts"</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard colors</original>
-<translation>Farben des "Transparenz-Schachbretts"</translation>
-</phrase>
-
-<phrase>
-<original>transparency management</original>
-<translation>Transparenz-Management</translation>
-</phrase>
-
-<phrase>
-<original>please select a file type</original>
-<translation>Bitte wählen Sie einen Dateityp</translation>
-</phrase>
-
-<phrase>
-<original>file format options</original>
-<translation>Dateiformat-Einstellungen</translation>
-</phrase>
-
-<phrase>
-<original>TIFF (Tagged Image File Format) options</original>
-<translation>Einstellungen für TIFF (Tagged Image File Format)</translation>
-</phrase>
-
-<phrase>
-<original>PPM (Portable Pixmap) options</original>
-<translation>Einstellungen für PPM (Portable Pixmap)</translation>
-</phrase>
-
-<phrase>
-<original>PNG (Portable Network Graphic) options</original>
-<translation>Einstellungen für PNG (Portable Network Graphic)</translation>
-</phrase>
-
-<phrase>
-<original>TGA (Truevision) options</original>
-<translation>Einstellungen für TGA (Truevision)</translation>
-</phrase>
-
-<phrase>
-<original>BMP (Bitmap) options</original>
-<translation>Einstellungen für BMP (Bitmap)</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>beim Schließen von Bilddateien möchte ich vor ungespeicherten Änderungen gewarnt werden</translation>
-</phrase>
-
-<phrase>
-<original>when saving images that originally contained metadata</original>
-<translation>wenn Sie Bilder speichern, die ursprünglich Metadaten enthielten</translation>
-</phrase>
-
-<phrase>
-<original>metadata (EXIF, GPS, comments, etc.)</original>
-<translation>Metadaten (EXIF, GPS, Kommentare usw.)</translation>
-</phrase>
-
-<phrase>
-<original>set outgoing color depth</original>
-<translation>Farbtiefe beim Speichern setzen</translation>
-</phrase>
-
-<phrase>
-<original>color depth of saved images</original>
-<translation>Farbtiefe der gespeicherten Bilder</translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>Speicher-Verhalten: überschreiben oder kopieren</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>wenn "Speichern" verwendet wird,</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>Ungespeicherte Bilder schließen?</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>wenn "Speichern als"verwendet wird, wird das Standardformat so gesetzt</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>Standardformat beim Speichern</translation>
-</phrase>
-
-<phrase>
-<original>count unique colors in incoming images (to determine optimal color depth)</original>
-<translation>eindeutige Farben in eingehenden Bilder zählen (um die optimale Farbtiefe zu bestimmen)</translation>
-</phrase>
-
-<phrase>
 <original>display tone mapping options when importing HDR and RAW images</original>
 <translation>Einstellungsdialog für Tone Mapping anzeigen, wenn HDR- oder RAW-Bilder importiert werden</translation>
 </phrase>
@@ -13672,11 +13510,6 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 </phrase>
 
 <phrase>
-<original>color depth</original>
-<translation>Farbtiefe</translation>
-</phrase>
-
-<phrase>
 <original>high-dynamic range (HDR) images</original>
 <translation>Hochkontrastbilder (HDR)</translation>
 </phrase>
@@ -13684,6 +13517,11 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 <phrase>
 <original>when an image is first loaded, set its viewport zoom to</original>
 <translation>wenn ein Bild zum ersten Mal geladen wird, Zoom einstellen auf</translation>
+</phrase>
+
+<phrase>
+<original>color management</original>
+<translation>Farbmanagement</translation>
 </phrase>
 
 <phrase>
@@ -13842,6 +13680,131 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 </phrase>
 
 <phrase>
+<original>use the system color profile</original>
+<translation>System-Farbprofil benutzen</translation>
+</phrase>
+
+<phrase>
+<original>use one or more custom color profiles</original>
+<translation>Verwenden Sie ein oder mehrere benutzerdefinierte Farbprofile</translation>
+</phrase>
+
+<phrase>
+<original>color profile for selected monitor</original>
+<translation>Farbprofil für ausgewählten Monitor</translation>
+</phrase>
+
+<phrase>
+<original>available monitors</original>
+<translation>verfügbaren Monitore</translation>
+</phrase>
+
+<phrase>
+<original>when rendering images to the screen</original>
+<translation>beim Rendern von Bildern auf dem Bildschirm</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard size</original>
+<translation>Größe des "Transparenz-Schachbretts"</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard colors</original>
+<translation>Farben des "Transparenz-Schachbretts"</translation>
+</phrase>
+
+<phrase>
+<original>transparency management</original>
+<translation>Transparenz-Management</translation>
+</phrase>
+
+<phrase>
+<original>please select a file type</original>
+<translation>Bitte wählen Sie einen Dateityp</translation>
+</phrase>
+
+<phrase>
+<original>file format options</original>
+<translation>Dateiformat-Einstellungen</translation>
+</phrase>
+
+<phrase>
+<original>TIFF (Tagged Image File Format) options</original>
+<translation>Einstellungen für TIFF (Tagged Image File Format)</translation>
+</phrase>
+
+<phrase>
+<original>PPM (Portable Pixmap) options</original>
+<translation>Einstellungen für PPM (Portable Pixmap)</translation>
+</phrase>
+
+<phrase>
+<original>PNG (Portable Network Graphic) options</original>
+<translation>Einstellungen für PNG (Portable Network Graphic)</translation>
+</phrase>
+
+<phrase>
+<original>TGA (Truevision) options</original>
+<translation>Einstellungen für TGA (Truevision)</translation>
+</phrase>
+
+<phrase>
+<original>BMP (Bitmap) options</original>
+<translation>Einstellungen für BMP (Bitmap)</translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn me me about unsaved changes</original>
+<translation>beim Schließen von Bilddateien möchte ich vor ungespeicherten Änderungen gewarnt werden</translation>
+</phrase>
+
+<phrase>
+<original>when saving images that originally contained metadata</original>
+<translation>wenn Sie Bilder speichern, die ursprünglich Metadaten enthielten</translation>
+</phrase>
+
+<phrase>
+<original>metadata (EXIF, GPS, comments, etc.)</original>
+<translation>Metadaten (EXIF, GPS, Kommentare usw.)</translation>
+</phrase>
+
+<phrase>
+<original>set outgoing color depth</original>
+<translation>Farbtiefe beim Speichern setzen</translation>
+</phrase>
+
+<phrase>
+<original>color depth of saved images</original>
+<translation>Farbtiefe der gespeicherten Bilder</translation>
+</phrase>
+
+<phrase>
+<original>save behavior: overwrite vs make a copy</original>
+<translation>Speicher-Verhalten: überschreiben oder kopieren</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>wenn "Speichern" verwendet wird,</translation>
+</phrase>
+
+<phrase>
+<original>closing unsaved images</original>
+<translation>Ungespeicherte Bilder schließen?</translation>
+</phrase>
+
+<phrase>
+<original>when using the "Save As" command, set the default file format according to</original>
+<translation>wenn "Speichern als"verwendet wird, wird das Standardformat so gesetzt</translation>
+</phrase>
+
+<phrase>
+<original>default file format when saving</original>
+<translation>Standardformat beim Speichern</translation>
+</phrase>
+
+<phrase>
 <original>(none)</original>
 <translation>(keine)</translation>
 </phrase>
@@ -13916,11 +13879,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>This option allows PhotoDemon to scan incoming images to determine the most appropriate color depth on a case-by-case basis (rather than relying on the source image file's color depth, which may have been chosen arbitrarily).</original>
-<translation>Diese Einstellung ermöglicht PhotoDemon, eingehende Bilder zu untersuchen und von Fall zu Fall die optimale Farbtiefe zu bestimmen (anstatt sich auf die Farbtiefe der Quelldatei zu verlassen, die möglicherweise willkürlich gewählt wurde).</translation>
-</phrase>
-
-<phrase>
 <original>feature disabled due to missing plugin</original>
 <translation>Funktion abgeschaltet, weil ein Plugin fehlt</translation>
 </phrase>
@@ -13951,18 +13909,13 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>to match the image file's original color depth</original>
-<translation>auf die Farbtiefe der ursprünglichen Bilddatei</translation>
+<original>by asking me what color depth I want to use</original>
+<translation>... auf die Farbtiefe, die Sie jeweils einstellen</translation>
 </phrase>
 
 <phrase>
 <original>automatically</original>
 <translation>automatisch</translation>
-</phrase>
-
-<phrase>
-<original>by asking me what color depth I want to use</original>
-<translation>... auf die Farbtiefe, die Sie jeweils einstellen</translation>
 </phrase>
 
 <phrase>
@@ -14379,7 +14332,7 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 <translation>WARNUNG: Dieser Ordner ist ungültig (Zutritt verboten!). Bitte geben Sie einen gültigen Ordner an. Wenn Sie keinen neuen Ordner angeben, verwendet PhotoDemon den üblichen Speicherort des Systems für temporäre Dateien.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 234 phrases. 64 were duplicates of existing phrases, so only 170 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 230 phrases. 64 were duplicates of existing phrases, so only 166 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14634,18 +14587,12 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Toolboxes.bas -->
-
-<!-- Toolboxes.bas contains 0 phrases. -->
-
-<!-- END text for Toolboxes.bas-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2505</phrasecount>
+<phrasecount>2495</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4308 phrases. -->
-<!-- 1803 are duplicates, so only 2505 unique phrases have been written to file. -->
-<!-- These 2505 phrases contain approximately 13373 total words. -->
+<!-- As of this build, PhotoDemon contains 4290 phrases. -->
+<!-- 1795 are duplicates, so only 2495 unique phrases have been written to file. -->
+<!-- These 2495 phrases contain approximately 13266 total words. -->
 
 </pdData>

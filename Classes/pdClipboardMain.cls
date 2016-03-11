@@ -443,18 +443,15 @@ Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean,
             #End If
             
             'We've previously saved a valid stash file.  Attempt to load it as a new file.
-            Dim sFile() As String, sTitle As String, sFilename As String
-            ReDim sFile(0) As String
-            
-            sFile(0) = m_StashFile
+            Dim sTitle As String
             sTitle = g_Language.TranslateMessage("Clipboard Image")
-            sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+            sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
                 
             'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
             If srcIsMeantAsLayer Then
-                Layer_Handler.LoadImageAsNewLayer False, sFile(0), sTitle, True
+                Layer_Handler.LoadImageAsNewLayer False, m_StashFile, sTitle, True
             Else
-                LoadFileAsNewImage sFile, False, sTitle, sFilename
+                LoadFileAsNewImage m_StashFile, sTitle, False
             End If
                 
             'If we made it all the way here, the load was (probably?) successful
@@ -492,11 +489,6 @@ Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As S
     'Temporary file for storing the clipboard data.  (This lets us use PD's central image load function.)
     Dim tmpClipboardFile As String
     
-    'Additional file information variables, which we pass to the central load function to let it know that this is only a temp file,
-    ' and it should use these hint values instead of assuming normal image load behavior.
-    Dim sFile() As String, sTitle As String, sFilename As String
-    ReDim sFile(0) As String
-    
     'pdFSO is used to ensure Unicode subfolder compatibility
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -526,17 +518,17 @@ Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As S
                 'We can now use the standard image load routine to import the temporary file.  Because we don't want the
                 ' load function to use the temporary file name as the image name, we manually supply a filename to suggest
                 ' if the user eventually tries to save the file.
-                sFile(0) = tmpClipboardFile
+                Dim sTitle As String
                 sTitle = g_Language.TranslateMessage("Clipboard Image")
-                sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+                sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
                 
                 'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
                 If srcIsMeantAsLayer Then
-                    Layer_Handler.LoadImageAsNewLayer False, sFile(0), sTitle, True
+                    Layer_Handler.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
                 Else
-                    LoadFileAsNewImage sFile, False, sTitle, sFilename
+                    LoadFileAsNewImage tmpClipboardFile, sTitle, False
                 End If
-                    
+                
                 'Be polite and remove the temporary file
                 cFile.KillFile tmpClipboardFile
                 
@@ -658,17 +650,16 @@ Private Function ClipboardPaste_ListOfFiles(ByVal srcIsMeantAsLayer As Boolean)
         m_ClipboardInfo.pdci_CurrentFormat = CF_HDROP
         m_ClipboardInfo.pdci_OriginalFormat = CF_HDROP
         
-        Dim listOfFiles() As String, numOfFiles As Long
+        Dim listOfFiles As pdStringStack, numOfFiles As Long, tmpFilename As String
         If m_Clipboard.GetFileList(listOfFiles, numOfFiles) Then
             
             'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
             If srcIsMeantAsLayer Then
-                Dim i As Long
-                For i = 0 To UBound(listOfFiles)
-                    If Len(listOfFiles(i)) <> 0 Then Layer_Handler.LoadImageAsNewLayer False, listOfFiles(i), , True
-                Next i
+                Do While listOfFiles.PopString(tmpFilename)
+                    If Len(tmpFilename) <> 0 Then Layer_Handler.LoadImageAsNewLayer False, tmpFilename, , True
+                Loop
             Else
-                LoadFileAsNewImage listOfFiles
+                Loading.LoadMultipleImageFiles listOfFiles
             End If
             
             ClipboardPaste_ListOfFiles = True
@@ -740,10 +731,7 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean)
                     If srcIsMeantAsLayer Then
                         Layer_Handler.LoadImageAsNewLayer False, targetFile, , True
                     Else
-                        Dim tmpFiles() As String
-                        ReDim tmpFiles(0) As String
-                        tmpFiles(0) = targetFile
-                        LoadFileAsNewImage tmpFiles
+                        LoadFileAsNewImage targetFile
                     End If
                     
                     ClipboardPaste_TextSource = True
@@ -785,18 +773,14 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcI
         
         'Additional file information variables, which we pass to the central load function to let it know that this is only a temp file,
         ' and it should use these hint values instead of assuming normal image load behavior.
-        Dim sFile() As String
-        ReDim sFile(0) As String
-        sFile(0) = tmpDownloadFile
-                
         Dim tmpFilename As String
         tmpFilename = cFile.GetFilename(tmpDownloadFile, True)
         
         'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
         If (g_OpenImageCount > 0) And srcIsMeantAsLayer Then
-            Layer_Handler.LoadImageAsNewLayer False, sFile(0), True
+            Layer_Handler.LoadImageAsNewLayer False, tmpDownloadFile, tmpFilename, True
         Else
-            LoadFileAsNewImage sFile, False, tmpFilename, tmpFilename, , , , , , True
+            LoadFileAsNewImage tmpDownloadFile, tmpFilename, False, True
         End If
         
         'Delete the temporary file
@@ -938,6 +922,12 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                         'Always count the header size in the offset
                         pixelOffset = .biSize
                         
+                        Debug.Print "biSize: " & .biSize
+                        Debug.Print "biClrUsed: " & .biClrUsed
+                        Debug.Print "biCompression: " & .biCompression
+                        Debug.Print "biSizeImage: " & .biSizeImage
+                        Debug.Print "biClrImportant: " & .biClrImportant
+                        
                         'If a color table is included, add it to the offset
                         If .biClrUsed > 0 Then
                             pixelOffset = pixelOffset + .biClrUsed * 4
@@ -945,10 +935,9 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                             If .biBitCount <= 8 Then pixelOffset = pixelOffset + 4 * (2 ^ .biBitCount)
                         End If
                         
-                        'Bitfields are optional with certain bit-depths; if bitfields are specified, add them too
+                        'Bitfields are optional with certain bit-depths; if bitfields are specified, add them too.
                         If (.biCompression = 3) Then
-                            If (.biBitCount = 16) Then pixelOffset = pixelOffset + 12
-                            If (.biBitCount = 32) Then pixelOffset = pixelOffset + 16
+                            If (.biBitCount = 16) Or (.biBitCount = 32) Then pixelOffset = pixelOffset + 12
                         End If
                         
                     End With
@@ -967,7 +956,7 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                     Dim cFile As pdFSO
                     Set cFile = New pdFSO
                     If cFile.FileExist(tmpClipboardFile) Then cFile.KillFile tmpClipboardFile
-                        
+                    
                     'Populate the BMP file header; it's a simple 14-byte, unchanging struct that requires only a magic number,
                     ' a total filesize, and an offset that points at the pixel bits (NOT the BMP file header, or the embedded
                     ' DIB header - the actual pixel bits).
@@ -998,17 +987,15 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                     'We can now use PD's standard image load routine to import the temporary file.  Because we don't want the
                     ' load function to use the temporary file name as the image name, we manually supply a filename to suggest
                     ' if the user eventually tries to save the file.
-                    Dim sFile() As String, sTitle As String, sFilename As String
-                    ReDim sFile(0) As String
-                    sFile(0) = tmpClipboardFile
+                    Dim sTitle As String
                     sTitle = g_Language.TranslateMessage("Clipboard Image")
-                    sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+                    sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
                         
                     'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-                    If srcIsMeantAsLayer Then
-                        Layer_Handler.LoadImageAsNewLayer False, sFile(0), sTitle, True
+                    If (g_OpenImageCount > 0) And srcIsMeantAsLayer Then
+                        Layer_Handler.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
                     Else
-                        LoadFileAsNewImage sFile, False, sTitle, sFilename
+                        LoadFileAsNewImage tmpClipboardFile, sTitle, False
                     End If
                             
                     'Once the load is complete, be polite and remove the temporary file
@@ -1225,9 +1212,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
                             Layer_Handler.LoadImageAsNewLayer False, cFiles.GetString(i), , True
                         Next i
                     Else
-                        Dim sFiles() As String
-                        cFiles.GetCopyOfStringArray sFiles
-                        LoadFileAsNewImage sFiles
+                        Loading.LoadMultipleImageFiles cFiles
                     End If
                     
                 End If
@@ -1398,20 +1383,24 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                 
                 If (g_OpenImageCount > 0) And loadAsLayers Then
                     For i = 0 To listOfFiles.GetNumOfStrings - 1
-                        Layer_Handler.LoadImageAsNewLayer False, listOfFiles.GetString(i), cFile.GetFilename(listOfFiles.GetString(i), True), True
-                        If cFile.FileExist(listOfFiles.GetString(i)) Then cFile.KillFile listOfFiles.GetString(i)
+                        If cFile.FileExist(listOfFiles.GetString(i)) Then
+                            Layer_Handler.LoadImageAsNewLayer False, listOfFiles.GetString(i), cFile.GetFilename(listOfFiles.GetString(i), True), True
+                            cFile.KillFile listOfFiles.GetString(i)
+                        End If
                     Next i
                 Else
                     
-                    Dim sFile() As String, sTitle As String, sFilename As String
-                    ReDim sFile(0) As String
-                    
+                    'Now we have to do something kinda ugly.  We don't want to load the bare filenames, because they are
+                    ' just temp files - and we don't want to prompt the user to save stuff in the temp folder!
+                    ' So instead, we'll pass each file individually to the single-load image function, and we'll manually
+                    ' supply a custom title for each file.
+                    Dim sTitle As String
                     Do While listOfFiles.PopString(tmpFilename)
-                        sFile(0) = tmpFilename
-                        sTitle = cFile.GetFilename(tmpFilename, True)
-                        sFilename = cFile.GetFilename(tmpFilename, True)
-                        LoadFileAsNewImage sFile, False, sTitle, sFilename
-                        If cFile.FileExist(tmpFilename) Then cFile.KillFile tmpFilename
+                        If cFile.FileExist(tmpFilename) Then
+                            sTitle = cFile.GetFilename(tmpFilename, True)
+                            LoadFileAsNewImage tmpFilename, sTitle, False
+                            cFile.KillFile tmpFilename
+                        End If
                     Loop
                     
                 End If
@@ -1460,17 +1449,15 @@ Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject,
     'We can now use PD's standard image load routine to import the temporary file.  Because we don't want the
     ' load function to use the temporary file name as the image name, we manually supply a filename to suggest
     ' if the user eventually tries to save the file.
-    Dim sFile() As String, sTitle As String, sFilename As String
-    ReDim sFile(0) As String
-    sFile(0) = tmpDragDropFile
+    Dim sTitle As String, sFilename As String
     sTitle = g_Language.TranslateMessage("Imported Image")
-    sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+    sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
     
     'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
     If (g_OpenImageCount > 0) And loadAsLayers Then
-        Layer_Handler.LoadImageAsNewLayer False, sFile(0), sTitle, True
+        Layer_Handler.LoadImageAsNewLayer False, tmpDragDropFile, sTitle, True
     Else
-        LoadFileAsNewImage sFile, False, sTitle, sFilename
+        LoadFileAsNewImage tmpDragDropFile, sTitle, False
     End If
         
     'Be polite and remove the temporary file
@@ -1550,10 +1537,7 @@ Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, O
                 If (g_OpenImageCount > 0) And loadAsLayers Then
                     Layer_Handler.LoadImageAsNewLayer False, targetFile, , True
                 Else
-                    Dim tmpFiles() As String
-                    ReDim tmpFiles(0) As String
-                    tmpFiles(0) = targetFile
-                    LoadFileAsNewImage tmpFiles
+                    LoadFileAsNewImage targetFile
                 End If
                 
                 DragDrop_TextData = True

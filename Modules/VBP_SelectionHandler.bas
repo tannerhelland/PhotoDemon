@@ -227,9 +227,6 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     Dim tmpImage As pdImage
     Set tmpImage = New pdImage
     
-    'Mark the image "for internal use only"; this prevents it from doing things like updating the interface to match its status
-    tmpImage.forInternalUseOnly = True
-    
     'Copy the current selection DIB into a temporary DIB.
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
@@ -299,9 +296,6 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     'Prepare a temporary pdImage object to house the current selection mask
     Dim tmpImage As pdImage
     Set tmpImage = New pdImage
-    
-    'Mark the image "for internal use only"; this prevents it from doing things like updating the interface to match its status
-    tmpImage.forInternalUseOnly = True
     
     'Create a temporary DIB, then retrieve the current selection into it
     Dim tmpDIB As pdDIB

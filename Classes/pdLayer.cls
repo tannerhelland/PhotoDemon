@@ -276,7 +276,7 @@ Private m_PlgPoints() As POINTFLOAT
 '
 'Finally, this function will mark all layer caches as dirty, causing a lot of subsequent work, so use it only when
 ' absolutely necessary.
-Public Sub notifyOfDestructiveChanges()
+Public Sub NotifyOfDestructiveChanges()
 
     'Mark the layer thumbnail as dirty
     m_IsThumbClean = False
@@ -379,7 +379,7 @@ Public Sub rasterizeVectorData()
         
     'While possibly unnecessary for some vector layer types, rasterization is a serious enough change that it's wise to regenerate
     ' any/all internal caches.
-    Me.notifyOfDestructiveChanges
+    Me.NotifyOfDestructiveChanges
 
 End Sub
 
@@ -949,7 +949,7 @@ Public Sub makeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Op
         End If
                 
         'Mark this layer as dirty
-        Me.notifyOfDestructiveChanges
+        Me.NotifyOfDestructiveChanges
         
     End If
 
@@ -1595,7 +1595,7 @@ Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
             End With
             
             'Note that all internal layer caches are no longer valid
-            Me.notifyOfDestructiveChanges
+            Me.NotifyOfDestructiveChanges
             
         End If
         
@@ -1688,7 +1688,7 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
         End Select
                 
         'Note that all internal layer caches are no longer valid; this will also cause the raster cache to be marked unclean
-        Me.notifyOfDestructiveChanges
+        Me.NotifyOfDestructiveChanges
         
         CreateVectorDataFromXML = True
     
@@ -1757,7 +1757,7 @@ Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal n
     
     'Note that all internal layer caches are no longer valid.  This is particularly important for vector layers, which generate a raster copy
     ' of their contents "on the fly"
-    Me.notifyOfDestructiveChanges
+    Me.NotifyOfDestructiveChanges
 
 End Sub
 
@@ -1819,7 +1819,7 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
     End Select
     
     'Note that all internal layer caches are no longer valid
-    Me.notifyOfDestructiveChanges
+    Me.NotifyOfDestructiveChanges
     
 End Sub
 
@@ -2059,7 +2059,7 @@ Public Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
         myLayerData.l_OffsetY = 0
     
         'Mark the layer as dirty
-        Me.notifyOfDestructiveChanges
+        Me.NotifyOfDestructiveChanges
     
     End If
     
@@ -2186,7 +2186,7 @@ Public Function checkForPointOfInterest(ByVal layerX As Long, ByVal layerY As Lo
     ' (TODO: come up with a better solution for this.  Accuracy should *really* be handled in the canvas coordinate space,
     '        so perhaps the caller should specify an image x/y and a radius...?)
     Dim mouseAccuracy As Double
-    mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.getZoomValue(pdImages(g_CurrentImage).currentZoomValue))
+    mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.GetZoomValue(pdImages(g_CurrentImage).currentZoomValue))
     
     'Find the smallest distance for this mouse position
     Dim minDistance As Double
@@ -2434,9 +2434,6 @@ Private Sub Class_Terminate()
     
     Dim i As Long
     For i = 0 To NUM_OF_LOD_CACHES - 1
-        If Not (lodDIB(i) Is Nothing) Then
-            lodDIB(i).eraseDIB
-            Set lodDIB(i) = Nothing
-        End If
+        Set lodDIB(i) = Nothing
     Next i
 End Sub

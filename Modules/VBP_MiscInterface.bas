@@ -194,7 +194,7 @@ Public Sub SyncInterfaceToCurrentImage()
             
             'Update all layer menus; some will be disabled depending on just how many layers are available, how many layers
             ' are visible, and other criteria.
-            If (pdImages(g_CurrentImage).getNumOfLayers > 0) And Not (pdImages(g_CurrentImage).getActiveLayer Is Nothing) Then
+            If (pdImages(g_CurrentImage).GetNumOfLayers > 0) And Not (pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
                 
                 'Activate any generic layer UI elements (e.g. elements whose enablement is consistent for any number of layers)
                 If Not (m_LastUISync_HadNoLayers = PD_BOOL_FALSE) Then
@@ -209,7 +209,7 @@ Public Sub SyncInterfaceToCurrentImage()
                 ' (like "Flatten" or "Delete layer") are only relevant if this is a multi-layer image.
                 
                 'If only one layer is present, a number of layer menu items (Delete, Flatten, Merge, Order) will be disabled.
-                If pdImages(g_CurrentImage).getNumOfLayers = 1 Then
+                If pdImages(g_CurrentImage).GetNumOfLayers = 1 Then
                 
                     If Not (m_LastUISync_HadMultipleLayers = PD_BOOL_FALSE) Then
                         SetUIMode_OnlyOneLayer
@@ -279,20 +279,20 @@ End Sub
 Private Sub SyncUI_MultipleLayerSettings()
     
     'Delete hidden layers is only available if one or more layers are hidden, but not ALL layers are hidden.
-    If (pdImages(g_CurrentImage).getNumOfHiddenLayers > 0) And (pdImages(g_CurrentImage).getNumOfHiddenLayers < pdImages(g_CurrentImage).getNumOfLayers) Then
+    If (pdImages(g_CurrentImage).getNumOfHiddenLayers > 0) And (pdImages(g_CurrentImage).getNumOfHiddenLayers < pdImages(g_CurrentImage).GetNumOfLayers) Then
         FormMain.MnuLayerDelete(1).Enabled = True
     Else
         FormMain.MnuLayerDelete(1).Enabled = False
     End If
 
     'Merge up/down are not available for layers at the top and bottom of the image
-    If isLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).getActiveLayerIndex, False) <> -1 Then
+    If IsLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).GetActiveLayerIndex, False) <> -1 Then
         FormMain.MnuLayer(3).Enabled = True
     Else
         FormMain.MnuLayer(3).Enabled = False
     End If
     
-    If isLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).getActiveLayerIndex, True) <> -1 Then
+    If IsLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).GetActiveLayerIndex, True) <> -1 Then
         FormMain.MnuLayer(4).Enabled = True
     Else
         FormMain.MnuLayer(4).Enabled = False
@@ -301,7 +301,7 @@ Private Sub SyncUI_MultipleLayerSettings()
     'Within the order menu, certain items are disabled based on layer position.  Note that "move up" and
     ' "move to top" are both disabled for top images (similarly for bottom images and "move down/bottom"),
     ' so we can mirror the same enabled state for both options.
-    If pdImages(g_CurrentImage).getActiveLayerIndex < pdImages(g_CurrentImage).getNumOfLayers - 1 Then
+    If pdImages(g_CurrentImage).GetActiveLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers - 1 Then
         If Not FormMain.MnuLayerOrder(0).Enabled Then
             FormMain.MnuLayerOrder(0).Enabled = True
             FormMain.MnuLayerOrder(3).Enabled = True    '"raise to top" mirrors "raise layer"
@@ -313,7 +313,7 @@ Private Sub SyncUI_MultipleLayerSettings()
         End If
     End If
     
-    If pdImages(g_CurrentImage).getActiveLayerIndex > 0 Then
+    If pdImages(g_CurrentImage).GetActiveLayerIndex > 0 Then
         If Not FormMain.MnuLayerOrder(1).Enabled Then
             FormMain.MnuLayerOrder(1).Enabled = True
             FormMain.MnuLayerOrder(4).Enabled = True    '"lower to bottom" mirrors "lower layer"
@@ -351,9 +351,9 @@ Private Sub SyncUI_CurrentLayerSettings()
     'First, determine if the current layer is using any form of non-destructive resizing
     Dim nonDestructiveResizeActive As Boolean
     nonDestructiveResizeActive = False
-    If (pdImages(g_CurrentImage).getActiveLayer.getLayerCanvasXModifier <> 1) Then
+    If (pdImages(g_CurrentImage).GetActiveLayer.getLayerCanvasXModifier <> 1) Then
         nonDestructiveResizeActive = True
-    ElseIf (pdImages(g_CurrentImage).getActiveLayer.getLayerCanvasYModifier <> 1) Then
+    ElseIf (pdImages(g_CurrentImage).GetActiveLayer.getLayerCanvasYModifier <> 1) Then
         nonDestructiveResizeActive = True
     End If
     
@@ -363,19 +363,19 @@ Private Sub SyncUI_CurrentLayerSettings()
         toolpanel_MoveSize.cmdLayerMove(0).Enabled = nonDestructiveResizeActive
     End If
     
-    toolpanel_MoveSize.cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
+    toolpanel_MoveSize.cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
     
     'Similar logic is used for other non-destructive affine transforms
-    toolpanel_MoveSize.cmdLayerAngleReset.Enabled = CBool(pdImages(g_CurrentImage).getActiveLayer.getLayerAngle <> 0)
-    toolpanel_MoveSize.cmdLayerShearReset(0).Enabled = CBool(pdImages(g_CurrentImage).getActiveLayer.getLayerShearX <> 0)
-    toolpanel_MoveSize.cmdLayerShearReset(1).Enabled = CBool(pdImages(g_CurrentImage).getActiveLayer.getLayerShearY <> 0)
-    toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
+    toolpanel_MoveSize.cmdLayerAngleReset.Enabled = CBool(pdImages(g_CurrentImage).GetActiveLayer.getLayerAngle <> 0)
+    toolpanel_MoveSize.cmdLayerShearReset(0).Enabled = CBool(pdImages(g_CurrentImage).GetActiveLayer.getLayerShearX <> 0)
+    toolpanel_MoveSize.cmdLayerShearReset(1).Enabled = CBool(pdImages(g_CurrentImage).GetActiveLayer.getLayerShearY <> 0)
+    toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
     
     'If non-destructive FX are active on the current layer, update the non-destructive tool enablement to match
     SetUIGroupState PDUI_NonDestructiveFX, True
     
     'Layer rasterization depends on the current layer type
-    FormMain.MnuLayerRasterize(0).Enabled = pdImages(g_CurrentImage).getActiveLayer.isLayerVector
+    FormMain.MnuLayerRasterize(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.isLayerVector
     FormMain.MnuLayerRasterize(1).Enabled = CBool(pdImages(g_CurrentImage).getNumOfVectorLayers > 0)
     
 End Sub
@@ -883,13 +883,13 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                 Next i
                 
                 'Quick fix buttons are only relevant if the current image has some non-destructive events applied
-                If Not (pdImages(g_CurrentImage).getActiveLayer Is Nothing) Then
+                If Not (pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
                     
                     With toolpanel_NDFX
                     
                         .setNDFXControlState False
                         
-                        If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState() Then
+                        If pdImages(g_CurrentImage).GetActiveLayer.getLayerNonDestructiveFXState() Then
                             For i = 0 To .cmdQuickFix.Count - 1
                                 .cmdQuickFix(i).Enabled = True
                             Next i
@@ -901,7 +901,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                         
                         'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
                         For i = 0 To .sltQuickFix.Count - 1
-                            .sltQuickFix(i).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXValue(i)
+                            .sltQuickFix(i).Value = pdImages(g_CurrentImage).GetActiveLayer.getLayerNonDestructiveFXValue(i)
                         Next i
                         
                         .setNDFXControlState True
@@ -1591,28 +1591,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         If MacroStatus = MacroSTART Then newString = newString & " {-" & g_Language.TranslateMessage("Recording") & "-}"
         
         'Post the message to the screen
-        If MacroStatus <> MacroBATCH Then
-            
-            'If the window is disabled, it will not refresh when new messages are posted.  We can work around this limitation
-            ' by toggling the state immediately prior to updating, then restoring the state afterward
-            
-            'Make a backup of the current form state
-            Dim curMainFormState As Boolean, curMainFormCursor As Long
-            curMainFormState = FormMain.Enabled
-            curMainFormCursor = Screen.MousePointer
-            
-            'Display the message
-            If (Not curMainFormState) And (Not g_ModalDialogActive) Then FormMain.Enabled = True
-            FormMain.mainCanvas(0).DisplayCanvasMessage newString
-            If (Not curMainFormState) Then Replacement_DoEvents FormMain.mainCanvas(0).hWnd
-            
-            'Restore original form state (only relevant if we had to change state to display the message)
-            If (Not curMainFormState) And (Not g_ModalDialogActive) Then
-                FormMain.Enabled = False
-                Screen.MousePointer = curMainFormCursor
-            End If
-            
-        End If
+        If (MacroStatus <> MacroBATCH) Then FormMain.mainCanvas(0).DisplayCanvasMessage newString
         
         'Update the global "previous message" string, so external functions can access it.
         g_LastPostedMessage = newString
@@ -1620,15 +1599,6 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
     End If
     
 End Sub
-
-'Pass AutoSelectText a text box and it will select all text currently in the text box
-Public Function AutoSelectText(ByRef tBox As TextBox)
-    If Not tBox.Visible Then Exit Function
-    If Not tBox.Enabled Then Exit Function
-    tBox.SetFocus
-    tBox.SelStart = 0
-    tBox.SelLength = Len(tBox.Text)
-End Function
 
 'When the mouse is moved outside the primary image, clear the image coordinates display
 Public Sub ClearImageCoordinatesDisplay()

@@ -249,7 +249,7 @@ Public Function GetFilename(ByVal sString As String) As String
 End Function
 
 'Return a filename without an extension
-Public Function getFilenameWithoutExtension(ByVal sString As String) As String
+Public Function GetFilenameWithoutExtension(ByVal sString As String) As String
 
     Dim tmpFilename As String
 
@@ -268,7 +268,7 @@ Public Function getFilenameWithoutExtension(ByVal sString As String) As String
     'Remove the extension, if any
     StripOffExtension tmpFilename
     
-    getFilenameWithoutExtension = tmpFilename
+    GetFilenameWithoutExtension = tmpFilename
     
 End Function
 

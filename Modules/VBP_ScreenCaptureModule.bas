@@ -110,28 +110,17 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     Set tmpDIB = Nothing
         
     'Once the capture is saved, load it up like any other bitmap
-    ' NOTE: Because LoadFileAsNewImage requires an array of strings, create an array to send to it
-    Dim sFile() As String
-    ReDim sFile(0) As String
-    sFile(0) = tmpFilename
-    
     Dim sTitle As String
-    If captureFullDesktop Then
-        sTitle = g_Language.TranslateMessage("Screen Capture")
-    Else
-        sTitle = windowName
-    End If
+    If captureFullDesktop Then sTitle = g_Language.TranslateMessage("Screen Capture") Else sTitle = windowName
     
     'Sanitize the calculated string to remove any potentially invalid characters
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    sTitle = cFile.MakeValidWindowsFilename(sTitle)
-    
     Dim sTitlePlusDate As String
-    sTitlePlusDate = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+    sTitlePlusDate = cFile.MakeValidWindowsFilename(sTitle) & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
     
-    LoadFileAsNewImage sFile, False, sTitle, sTitlePlusDate
+    LoadFileAsNewImage tmpFilename, sTitlePlusDate, False
     
     'Erase the temp file
     If cFile.FileExist(tmpFilename) Then cFile.KillFile tmpFilename

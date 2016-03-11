@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.146</langversion>
+<langversion>6.7.147</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -15,7 +15,92 @@
 
 <!-- BEGIN text for VBP_Main.bas -->
 
-<!-- VBP_Main.bas contains 0 phrases. -->
+<phrase>
+<original>Detecting Windows® version</original>
+<translation>Versi Windows Mengesan</translation>
+</phrase>
+
+<phrase>
+<original>Initializing all program directories</original>
+<translation>Memulakan semua direktori program</translation>
+</phrase>
+
+<phrase>
+<original>Loading all user settings</original>
+<translation>Memuatkan semua tetapan pengguna</translation>
+</phrase>
+
+<phrase>
+<original>Scanning for language files</original>
+<translation>Mengimbas fail bahasa</translation>
+</phrase>
+
+<phrase>
+<original>Determining which language to use</original>
+<translation>Menentukan bahasa untuk digunakan</translation>
+</phrase>
+
+<phrase>
+<original>Applying selected language</original>
+<translation>Menggunakan bahasa dipilih</translation>
+</phrase>
+
+<phrase>
+<original>Analyzing current monitor setup</original>
+<translation>Menganalisis setup monitor semasa</translation>
+</phrase>
+
+<phrase>
+<original>Loading plugins</original>
+<translation>memuatkan plugin</translation>
+</phrase>
+
+<phrase>
+<original>Loading import/export libraries</original>
+<translation>Memuatkan perpustakaan import/eksport</translation>
+</phrase>
+
+<phrase>
+<original>Initializing theme engine</original>
+<translation>Memulakan enjin tema</translation>
+</phrase>
+
+<phrase>
+<original>Building font cache</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Initializing clipboard interface</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Initializing viewport engine</original>
+<translation>Memulakan enjin viewport</translation>
+</phrase>
+
+<phrase>
+<original>Initializing window manager</original>
+<translation>Memulakan pengurus tetingkap</translation>
+</phrase>
+
+<phrase>
+<original>Initializing image tools</original>
+<translation>Memulakan alat imej</translation>
+</phrase>
+
+<phrase>
+<original>Initializing user interface</original>
+<translation>Memulakan antara muka pengguna</translation>
+</phrase>
+
+<phrase>
+<original>Preparing program menus</original>
+<translation>Menyediakan menu program</translation>
+</phrase>
+
+<!-- VBP_Main.bas contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
 
 <!-- END text for VBP_Main.bas-->
 
@@ -622,6 +707,51 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 
 <!-- END text for VBP_MDIWindow.bas-->
 
+<!-- BEGIN text for ImageLoader.bas -->
+
+<phrase>
+<original>Selected file is not in PDI format.  Load abandoned.</original>
+<translation>Fail yang dipilih bukan dalam format PDI. Beban terbengkalai.</translation>
+</phrase>
+
+<phrase>
+<original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
+
+To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
+<translation>Fail PDI " %1" mengandungi data dimampatkan, tetapi plugin zlib itu hilang atau disabled.
+
+To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan apabila diminta, membenarkan PhotoDemon untuk memuat turun semua plugin disyorkan.</translation>
+</phrase>
+
+<phrase>
+<original>zLib plugin missing</original>
+<translation>plugin zlib hilang</translation>
+</phrase>
+
+<phrase>
+<original>PDI node could not be read; file may be invalid or corrupted.  Load abandoned.</original>
+<translation>Nod PDI tidak boleh dibaca; Fail tidak sah atau rosak. Beban terbengkalai.</translation>
+</phrase>
+
+<phrase>
+<original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
+<translation>Ralat telah berlaku (# %1 - %2). Beban PDI terbengkalai.</translation>
+</phrase>
+
+<phrase>
+<original>An error has occurred (#</original>
+<translation>Ralat telah berlaku (#</translation>
+</phrase>
+
+<phrase>
+<original>GDI+ refused to load image.  Dropping back to internal routines and trying again</original>
+<translation>GDI enggan memuatkan imej. Menjatuhkan kembali ke rutin dalaman dan cuba sekali lagi</translation>
+</phrase>
+
+<!-- ImageLoader.bas contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<!-- END text for ImageLoader.bas-->
+
 <!-- BEGIN text for VBP_MiscInterface.bas -->
 
 <phrase>
@@ -945,106 +1075,31 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 <translation></translation>
 </phrase>
 
-<!-- VBP_LayerHandler.bas contains 34 phrases. 18 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<phrase>
+<original>frame %1</original>
+<translation>rangka %1</translation>
+</phrase>
+
+<phrase>
+<original>icon (%1x%2)</original>
+<translation>icon ( %1x %2)</translation>
+</phrase>
+
+<phrase>
+<original>icon (%1x%2, %3 bpp)</original>
+<translation>icon ( %1x %2, %3 bpp)</translation>
+</phrase>
+
+<phrase>
+<original>page %1</original>
+<translation>Laman %1</translation>
+</phrase>
+
+<!-- VBP_LayerHandler.bas contains 42 phrases. 22 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for VBP_LayerHandler.bas-->
 
 <!-- BEGIN text for VBP_LoadModule.bas -->
-
-<phrase>
-<original>Detecting Windows® version</original>
-<translation>Versi Windows Mengesan</translation>
-</phrase>
-
-<phrase>
-<original>Initializing all program directories</original>
-<translation>Memulakan semua direktori program</translation>
-</phrase>
-
-<phrase>
-<original>Loading all user settings</original>
-<translation>Memuatkan semua tetapan pengguna</translation>
-</phrase>
-
-<phrase>
-<original>Scanning for language files</original>
-<translation>Mengimbas fail bahasa</translation>
-</phrase>
-
-<phrase>
-<original>Determining which language to use</original>
-<translation>Menentukan bahasa untuk digunakan</translation>
-</phrase>
-
-<phrase>
-<original>Applying selected language</original>
-<translation>Menggunakan bahasa dipilih</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing current monitor setup</original>
-<translation>Menganalisis setup monitor semasa</translation>
-</phrase>
-
-<phrase>
-<original>Loading plugins</original>
-<translation>memuatkan plugin</translation>
-</phrase>
-
-<phrase>
-<original>Loading import/export libraries</original>
-<translation>Memuatkan perpustakaan import/eksport</translation>
-</phrase>
-
-<phrase>
-<original>Initializing theme engine</original>
-<translation>Memulakan enjin tema</translation>
-</phrase>
-
-<phrase>
-<original>Building font cache</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Initializing clipboard interface</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Initializing viewport engine</original>
-<translation>Memulakan enjin viewport</translation>
-</phrase>
-
-<phrase>
-<original>Initializing window manager</original>
-<translation>Memulakan pengurus tetingkap</translation>
-</phrase>
-
-<phrase>
-<original>Initializing image tools</original>
-<translation>Memulakan alat imej</translation>
-</phrase>
-
-<phrase>
-<original>Initializing user interface</original>
-<translation>Memulakan antara muka pengguna</translation>
-</phrase>
-
-<phrase>
-<original>Preparing program menus</original>
-<translation>Menyediakan menu program</translation>
-</phrase>
-
-<phrase>
-<original>Loading image(s)</original>
-<translation>Memuatkan imej (s)</translation>
-</phrase>
-
-<phrase>
-<original>Finishing final program initialization steps</original>
-<translation>Kemasan langkah program pengawalan akhir</translation>
-</phrase>
 
 <phrase>
 <original>Unfortunately, the image '%1' could not be found.
@@ -1061,23 +1116,32 @@ If imej ini pada asalnya terletak di media boleh alih (DVD, pemacu USB, dan lain
 </phrase>
 
 <phrase>
-<original>Loading image %1 of %2</original>
-<translation>Memuatkan imej %1 daripada %2</translation>
-</phrase>
-
-<phrase>
 <original>Loading image</original>
 <translation>Memuatkan imej</translation>
 </phrase>
 
 <phrase>
-<original>GDI+ refused to load image.  Dropping back to internal routines and trying again</original>
-<translation>GDI enggan memuatkan imej. Menjatuhkan kembali ke rutin dalaman dan cuba sekali lagi</translation>
+<original>Image loaded successfully.</original>
+<translation>Imej dimuatkan dengan jayanya.</translation>
 </phrase>
 
 <phrase>
 <original>Failed to load %1</original>
 <translation>Gagal memuatkan %1</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, PhotoDemon was unable to load the following image:
+
+%1
+
+Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Image import failed</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1099,128 +1163,31 @@ Please menggunakan program lain untuk menyelamatkan imej ini dalam format generi
 </phrase>
 
 <phrase>
-<original>frame %1</original>
-<translation>rangka %1</translation>
+<original>Layer import canceled.</original>
+<translation>Lapisan import dibatalkan.</translation>
 </phrase>
 
 <phrase>
-<original>icon (%1x%2)</original>
-<translation>icon ( %1x %2)</translation>
+<original>Loading image(s)</original>
+<translation>Memuatkan imej (s)</translation>
 </phrase>
 
 <phrase>
-<original>icon (%1x%2, %3 bpp)</original>
-<translation>icon ( %1x %2, %3 bpp)</translation>
-</phrase>
-
-<phrase>
-<original>page %1</original>
-<translation>Laman %1</translation>
-</phrase>
-
-<phrase>
-<original>frame</original>
-<translation>bingkai</translation>
-</phrase>
-
-<phrase>
-<original>page</original>
-<translation>laman</translation>
-</phrase>
-
-<phrase>
-<original>All images loaded successfully.</original>
-<translation>Semua imej yang dimuatkan dengan jayanya.</translation>
-</phrase>
-
-<phrase>
-<original>Image loaded successfully.</original>
-<translation>Imej dimuatkan dengan jayanya.</translation>
-</phrase>
-
-<phrase>
-<original>All images loaded, except for those that could not be found.</original>
-<translation>Semua imej dimuatkan, kecuali orang-orang yang tidak dapat ditemui.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, PhotoDemon was unable to find the following image(s):
-
-%1
-
-If these images were originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
-<translation>Malangnya, PhotoDemon tidak dapat mencari imej yang berikut (s):
-
-%1
-
-If imej-imej ini pada asalnya terletak di media boleh alih (DVD, pemacu USB, dan lain-lain), sila masukkan semula atau melampirkan semula media dan cuba lagi.</translation>
-</phrase>
-
-<phrase>
-<original>Image files missing</original>
-<translation>Fail-fail imej hilang</translation>
-</phrase>
-
-<phrase>
-<original>All images loaded, except for those in invalid formats.</original>
-<translation>Semua imej dimuatkan, kecuali bagi mereka dalam format yang tidak sah.</translation>
+<original>%1 of %2 images loaded successfully</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, PhotoDemon was unable to load the following image(s):
 
 %1
-
-Please use another program to save these images in a generic format (such as JPEG or PNG) before loading them into PhotoDemon. Thanks!</original>
-<translation>Malangnya, PhotoDemon tidak dapat memuatkan imej berikut (s):
-
-%1
-
-Please menggunakan program lain untuk menyimpan imej-imej ini dalam format yang generik (seperti JPEG atau PNG) sebelum memuatkan mereka ke dalam PhotoDemon. Terima kasih!</translation>
+Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Image Formats Not Supported</original>
-<translation>Format Imej Tidak Disokong</translation>
-</phrase>
-
-<phrase>
-<original>Layer import canceled.</original>
-<translation>Lapisan import dibatalkan.</translation>
-</phrase>
-
-<phrase>
-<original>Selected file is not in PDI format.  Load abandoned.</original>
-<translation>Fail yang dipilih bukan dalam format PDI. Beban terbengkalai.</translation>
-</phrase>
-
-<phrase>
-<original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
-
-To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
-<translation>Fail PDI " %1" mengandungi data dimampatkan, tetapi plugin zlib itu hilang atau disabled.
-
-To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan apabila diminta, membenarkan PhotoDemon untuk memuat turun semua plugin disyorkan.</translation>
-</phrase>
-
-<phrase>
-<original>zLib plugin missing</original>
-<translation>plugin zlib hilang</translation>
-</phrase>
-
-<phrase>
-<original>PDI node could not be read; file may be invalid or corrupted.  Load abandoned.</original>
-<translation>Nod PDI tidak boleh dibaca; Fail tidak sah atau rosak. Beban terbengkalai.</translation>
-</phrase>
-
-<phrase>
-<original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
-<translation>Ralat telah berlaku (# %1 - %2). Beban PDI terbengkalai.</translation>
-</phrase>
-
-<phrase>
-<original>An error has occurred (#</original>
-<translation>Ralat telah berlaku (#</translation>
+<original>Some images were not loaded</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1243,7 +1210,7 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 <translation>Pertindihan imej yang lengkap.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 81 phrases. 29 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -1417,7 +1384,12 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 <translation>Gagal untuk memulakan perkhidmatan plugin (tidak boleh mewujudkan proses: %1).</translation>
 </phrase>
 
-<!-- VBP_ExifToolInterface.bas contains 8 phrases.  One was a duplicate of an existing phrase, so only 7 new phrases were written to file. -->
+<phrase>
+<original>Finishing final program initialization steps</original>
+<translation>Kemasan langkah program pengawalan akhir</translation>
+</phrase>
+
+<!-- VBP_ExifToolInterface.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_ExifToolInterface.bas-->
 
@@ -1923,16 +1895,6 @@ When selesai, klik butang Hantar. Terima kasih!</translation>
 <!-- BEGIN text for VBP_SaveModule.bas -->
 
 <phrase>
-<original>Original color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-<translation>Kedalaman warna asal %1 bpp disokong oleh format ini. Meneruskan menyelamatkan</translation>
-</phrase>
-
-<phrase>
-<original>Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
-<translation>Kedalaman warna asal %1 bpp tidak disokong oleh format ini. Prosiding untuk menyelamatkan sebagai %2 bpp</translation>
-</phrase>
-
-<phrase>
 <original>Counting image colors to determine optimal exported color depth</original>
 <translation>Mengira warna gambar untuk menentukan optimum kedalaman warna dieksport</translation>
 </phrase>
@@ -2104,7 +2066,7 @@ To membolehkan sokongan untuk format imej ini, sila menyalin fail FreeImage.dll 
 <translation>Thumbnail menyelamatkan gagal (ralat GDI tidak ditentukan).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 128 phrases. 94 were duplicates of existing phrases, so only 34 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 126 phrases. 94 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -2351,6 +2313,12 @@ Please masukkan nilai berangka.</translation>
 <!-- VBP_ToolSupport.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolSupport.bas-->
+
+<!-- BEGIN text for Toolboxes.bas -->
+
+<!-- Toolboxes.bas contains 0 phrases. -->
+
+<!-- END text for Toolboxes.bas-->
 
 <!-- BEGIN text for VBP_UniscribeInterface.bas -->
 
@@ -3977,6 +3945,11 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <!-- END text for ShellPipe.ctl-->
 
 <!-- BEGIN text for MainWindow.frm (FormMain) -->
+
+<phrase>
+<original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>&File</original>
@@ -5885,7 +5858,7 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 566 phrases. 187 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -13529,141 +13502,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>use the system color profile</original>
-<translation>menggunakan profil warna sistem</translation>
-</phrase>
-
-<phrase>
-<original>use one or more custom color profiles</original>
-<translation>menggunakan satu atau lebih profil warna adat</translation>
-</phrase>
-
-<phrase>
-<original>color profile for selected monitor</original>
-<translation>profil warna untuk monitor dipilih</translation>
-</phrase>
-
-<phrase>
-<original>available monitors</original>
-<translation>monitor boleh didapati</translation>
-</phrase>
-
-<phrase>
-<original>when rendering images to the screen</original>
-<translation>apabila imej yang ke skrin</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>pengurusan warna</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard size</original>
-<translation>saiz ketelusan papan main dam</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard colors</original>
-<translation>warna ketelusan papan main dam</translation>
-</phrase>
-
-<phrase>
-<original>transparency management</original>
-<translation>pengurusan ketelusan</translation>
-</phrase>
-
-<phrase>
-<original>please select a file type</original>
-<translation>sila pilih jenis fail</translation>
-</phrase>
-
-<phrase>
-<original>file format options</original>
-<translation>pilihan format fail</translation>
-</phrase>
-
-<phrase>
-<original>TIFF (Tagged Image File Format) options</original>
-<translation>TIFF (Tagged Image File Format) pilihan</translation>
-</phrase>
-
-<phrase>
-<original>PPM (Portable Pixmap) options</original>
-<translation>PPM (Pixmap Portable) pilihan</translation>
-</phrase>
-
-<phrase>
-<original>PNG (Portable Network Graphic) options</original>
-<translation>PNG (Portable Network Grafik) pilihan</translation>
-</phrase>
-
-<phrase>
-<original>TGA (Truevision) options</original>
-<translation>TGA (Truevision) pilihan</translation>
-</phrase>
-
-<phrase>
-<original>BMP (Bitmap) options</original>
-<translation>BMP (Bitmap) pilihan</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>apabila menutup imej, memberi amaran kepada saya saya tentang perubahan yang tidak disimpan</translation>
-</phrase>
-
-<phrase>
-<original>when saving images that originally contained metadata</original>
-<translation>apabila menyimpan imej yang pada asalnya terkandung metadata</translation>
-</phrase>
-
-<phrase>
-<original>metadata (EXIF, GPS, comments, etc.)</original>
-<translation>metadata (EXIF, GPS, komen, dll)</translation>
-</phrase>
-
-<phrase>
-<original>set outgoing color depth</original>
-<translation>ditetapkan kedalaman warna keluar</translation>
-</phrase>
-
-<phrase>
-<original>color depth of saved images</original>
-<translation>kedalaman warna imej disimpan</translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>menyelamatkan tingkah laku: menulis ganti vs membuat salinan</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>apabila "Simpan" digunakan</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>menutup imej yang tidak disimpan</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>apabila menggunakan "Save As" perintah, menetapkan format fail lalai mengikut</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>lalai format fail apabila menyimpan</translation>
-</phrase>
-
-<phrase>
-<original>count unique colors in incoming images (to determine optimal color depth)</original>
-<translation>mengira warna unik dalam imej masuk (untuk menentukan kedalaman warna yang optimum)</translation>
-</phrase>
-
-<phrase>
 <original>display tone mapping options when importing HDR and RAW images</original>
 <translation>pilihan pemetaan paparan nada apabila mengimport HDR dan imej RAW</translation>
 </phrase>
@@ -13674,11 +13512,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>color depth</original>
-<translation>kedalaman warna</translation>
-</phrase>
-
-<phrase>
 <original>high-dynamic range (HDR) images</original>
 <translation>pelbagai (HDR) imej tinggi dinamik</translation>
 </phrase>
@@ -13686,6 +13519,11 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>when an image is first loaded, set its viewport zoom to</original>
 <translation>apabila imej mula dimuatkan, set zoom viewport untuk</translation>
+</phrase>
+
+<phrase>
+<original>color management</original>
+<translation>pengurusan warna</translation>
 </phrase>
 
 <phrase>
@@ -13844,6 +13682,131 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>use the system color profile</original>
+<translation>menggunakan profil warna sistem</translation>
+</phrase>
+
+<phrase>
+<original>use one or more custom color profiles</original>
+<translation>menggunakan satu atau lebih profil warna adat</translation>
+</phrase>
+
+<phrase>
+<original>color profile for selected monitor</original>
+<translation>profil warna untuk monitor dipilih</translation>
+</phrase>
+
+<phrase>
+<original>available monitors</original>
+<translation>monitor boleh didapati</translation>
+</phrase>
+
+<phrase>
+<original>when rendering images to the screen</original>
+<translation>apabila imej yang ke skrin</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard size</original>
+<translation>saiz ketelusan papan main dam</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard colors</original>
+<translation>warna ketelusan papan main dam</translation>
+</phrase>
+
+<phrase>
+<original>transparency management</original>
+<translation>pengurusan ketelusan</translation>
+</phrase>
+
+<phrase>
+<original>please select a file type</original>
+<translation>sila pilih jenis fail</translation>
+</phrase>
+
+<phrase>
+<original>file format options</original>
+<translation>pilihan format fail</translation>
+</phrase>
+
+<phrase>
+<original>TIFF (Tagged Image File Format) options</original>
+<translation>TIFF (Tagged Image File Format) pilihan</translation>
+</phrase>
+
+<phrase>
+<original>PPM (Portable Pixmap) options</original>
+<translation>PPM (Pixmap Portable) pilihan</translation>
+</phrase>
+
+<phrase>
+<original>PNG (Portable Network Graphic) options</original>
+<translation>PNG (Portable Network Grafik) pilihan</translation>
+</phrase>
+
+<phrase>
+<original>TGA (Truevision) options</original>
+<translation>TGA (Truevision) pilihan</translation>
+</phrase>
+
+<phrase>
+<original>BMP (Bitmap) options</original>
+<translation>BMP (Bitmap) pilihan</translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn me me about unsaved changes</original>
+<translation>apabila menutup imej, memberi amaran kepada saya saya tentang perubahan yang tidak disimpan</translation>
+</phrase>
+
+<phrase>
+<original>when saving images that originally contained metadata</original>
+<translation>apabila menyimpan imej yang pada asalnya terkandung metadata</translation>
+</phrase>
+
+<phrase>
+<original>metadata (EXIF, GPS, comments, etc.)</original>
+<translation>metadata (EXIF, GPS, komen, dll)</translation>
+</phrase>
+
+<phrase>
+<original>set outgoing color depth</original>
+<translation>ditetapkan kedalaman warna keluar</translation>
+</phrase>
+
+<phrase>
+<original>color depth of saved images</original>
+<translation>kedalaman warna imej disimpan</translation>
+</phrase>
+
+<phrase>
+<original>save behavior: overwrite vs make a copy</original>
+<translation>menyelamatkan tingkah laku: menulis ganti vs membuat salinan</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>apabila "Simpan" digunakan</translation>
+</phrase>
+
+<phrase>
+<original>closing unsaved images</original>
+<translation>menutup imej yang tidak disimpan</translation>
+</phrase>
+
+<phrase>
+<original>when using the "Save As" command, set the default file format according to</original>
+<translation>apabila menggunakan "Save As" perintah, menetapkan format fail lalai mengikut</translation>
+</phrase>
+
+<phrase>
+<original>default file format when saving</original>
+<translation>lalai format fail apabila menyimpan</translation>
+</phrase>
+
+<phrase>
 <original>(none)</original>
 <translation>(Tiada)</translation>
 </phrase>
@@ -13918,11 +13881,6 @@ Are anda pasti anda mahu teruskan?</translation>
 </phrase>
 
 <phrase>
-<original>This option allows PhotoDemon to scan incoming images to determine the most appropriate color depth on a case-by-case basis (rather than relying on the source image file's color depth, which may have been chosen arbitrarily).</original>
-<translation>Pilihan ini membolehkan PhotoDemon untuk mengimbas imej yang masuk untuk menentukan kedalaman warna yang paling sesuai berdasarkan kes demi kes (dan bukannya bergantung kepada kedalaman warna fail imej sumber, yang mungkin telah dipilih secara sewenang-wenangnya).</translation>
-</phrase>
-
-<phrase>
 <original>feature disabled due to missing plugin</original>
 <translation>ciri dilumpuhkan kerana plugin hilang</translation>
 </phrase>
@@ -13953,18 +13911,13 @@ Are anda pasti anda mahu teruskan?</translation>
 </phrase>
 
 <phrase>
-<original>to match the image file's original color depth</original>
-<translation>untuk dipadankan dengan kedalaman warna asal fail imej yang</translation>
+<original>by asking me what color depth I want to use</original>
+<translation>dengan bertanya saya apa kedalaman warna saya ingin menggunakan</translation>
 </phrase>
 
 <phrase>
 <original>automatically</original>
 <translation>secara automatik</translation>
-</phrase>
-
-<phrase>
-<original>by asking me what color depth I want to use</original>
-<translation>dengan bertanya saya apa kedalaman warna saya ingin menggunakan</translation>
 </phrase>
 
 <phrase>
@@ -14381,7 +14334,7 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <translation>AMARAN: folder ini adalah tidak sah (akses dilarang). Sila berikan folder yang sah. Jika tiada folder baru disediakan, PhotoDemon akan menggunakan lokasi temp lalai sistem.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 234 phrases. 64 were duplicates of existing phrases, so only 170 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 230 phrases. 64 were duplicates of existing phrases, so only 166 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14636,18 +14589,12 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Toolboxes.bas -->
-
-<!-- Toolboxes.bas contains 0 phrases. -->
-
-<!-- END text for Toolboxes.bas-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2505</phrasecount>
+<phrasecount>2495</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4308 phrases. -->
-<!-- 1803 are duplicates, so only 2505 unique phrases have been written to file. -->
-<!-- These 2505 phrases contain approximately 13373 total words. -->
+<!-- As of this build, PhotoDemon contains 4290 phrases. -->
+<!-- 1795 are duplicates, so only 2495 unique phrases have been written to file. -->
+<!-- These 2495 phrases contain approximately 13266 total words. -->
 
 </pdData>

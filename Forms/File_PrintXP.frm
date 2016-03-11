@@ -591,7 +591,7 @@ Private Sub Form_Load()
     
     Dim tmpComposite As pdDIB
     Set tmpComposite = New pdDIB
-    pdImages(g_CurrentImage).getCompositedImage tmpComposite
+    pdImages(g_CurrentImage).GetCompositedImage tmpComposite
     tmpComposite.RenderToPictureBox picOut
     
     picOut.ScaleMode = vbTwips
@@ -637,7 +637,7 @@ Private Sub CmdOK_Click()
     
     'Before printing anything, check to make sure the textboxes have valid input
     If Not (NumberValid(txtCopies.Text) And RangeValid(Val(txtCopies.Text), 1, 1000)) Then
-        AutoSelectText txtCopies
+        'AutoSelectText txtCopies
         Exit Sub
     End If
 
@@ -953,7 +953,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub txtCopies_GotFocus()
-    AutoSelectText txtCopies
+    'AutoSelectText txtCopies
 End Sub
 
 'Used to draw the main image onto a preview picture box
@@ -977,15 +977,15 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
             srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
             srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
         Else
-            srcWidth = pdImages(g_CurrentImage).getActiveDIB().getDIBWidth
-            srcHeight = pdImages(g_CurrentImage).getActiveDIB().getDIBHeight
+            srcWidth = pdImages(g_CurrentImage).GetActiveDIB().getDIBWidth
+            srcHeight = pdImages(g_CurrentImage).GetActiveDIB().getDIBHeight
         End If
     End If
             
     'Now, use that aspect ratio to determine a proper size for our temporary DIB
     Dim newWidth As Long, newHeight As Long
     
-    convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
+    ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
     
     'Normally this will draw a preview of pdImages(g_CurrentImage).containingForm's relevant image.  However, another picture source can be specified.
     If Not useOtherPictureSrc Then
@@ -993,24 +993,24 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
         'Check to see if a selection is active; if it isn't, simply render the full form
         If Not pdImages(g_CurrentImage).selectionActive Then
         
-            If pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth = 32 Then
+            If pdImages(g_CurrentImage).GetActiveDIB().getDIBColorDepth = 32 Then
                 Set tmpDIB = New pdDIB
-                tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB(), newWidth, newHeight, True
+                tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).GetActiveDIB(), newWidth, newHeight, True
                 If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
                 tmpDIB.RenderToPictureBox dstPicture
             Else
-                pdImages(g_CurrentImage).getActiveDIB().RenderToPictureBox dstPicture
+                pdImages(g_CurrentImage).GetActiveDIB().RenderToPictureBox dstPicture
             End If
         
         Else
         
             'Copy the current selection into a temporary DIB
             Set tmpDIB = New pdDIB
-            tmpDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
-            BitBlt tmpDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+            tmpDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).GetActiveDIB().getDIBColorDepth
+            BitBlt tmpDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).GetActiveDIB().getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
         
             'If the image is transparent, composite it; otherwise, render the preview using the temporary object
-            If pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth = 32 Then
+            If pdImages(g_CurrentImage).GetActiveDIB().getDIBColorDepth = 32 Then
                 If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
             End If
             

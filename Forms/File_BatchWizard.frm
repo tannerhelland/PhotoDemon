@@ -2293,17 +2293,19 @@ End Sub
 
 'Allow the user to use an "Open Image" dialog to add files to the batch convert list
 Private Sub cmdUseCD_Click()
-    'String returned from the common dialog wrapper
-    Dim sFile() As String
     
-    If PhotoDemon_OpenImageDialog(sFile, Me.hWnd) Then
+    Dim listOfFiles As pdStringStack
+    If PhotoDemon_OpenImageDialog(listOfFiles, Me.hWnd) Then
         
-        Dim x As Long
-        For x = 0 To UBound(sFile)
-            addFileToBatchList sFile(x)
-        Next x
+        Dim tmpFilename As String
+        Do While listOfFiles.PopString(tmpFilename)
+            addFileToBatchList tmpFilename
+        Loop
+        
         fixHorizontalListBoxScrolling lstFiles, 16
+        
     End If
+    
 End Sub
 
 Private Sub Dir1_Change()
@@ -2699,39 +2701,25 @@ Private Sub UpdatePreview(ByVal srcImagePath As String)
     If CBool(chkEnablePreview) And (StrComp(m_CurImagePreview, srcImagePath, vbTextCompare) <> 0) Then
     
         'Use PD's central load function to load a copy of the requested image
-        Dim tmpImagePath(0) As String
-        tmpImagePath(0) = srcImagePath
-        
         Dim tmpImage As pdImage
         Set tmpImage = New pdImage
         
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
         
-        LoadFileAsNewImage tmpImagePath, False, "", "", False, tmpImage, tmpDIB, 0, True
-        
-        'Try to ascertain if the image loaded correctly
-        Dim loadFailed As Boolean
-        loadFailed = False
-        
-        If tmpDIB Is Nothing Then
-            loadFailed = True
-        Else
-            If (tmpDIB.getDIBWidth = 0) Or (tmpDIB.getDIBHeight = 0) Then loadFailed = True
-        End If
-        
-        If Not tmpImage.loadedSuccessfully Then loadFailed = True
+        Dim loadSuccessful As Boolean
+        loadSuccessful = Loading.QuickLoadImageToDIB(srcImagePath, tmpDIB)
         
         'If the image load failed, display a placeholder message; otherwise, render the image to the picture box
-        If loadFailed Then
+        If loadSuccessful Then
+            tmpDIB.RenderToPictureBox picPreview
+        Else
             picPreview.Picture = LoadPicture("")
             Dim strToPrint As String
             strToPrint = g_Language.TranslateMessage("Preview not available")
             picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.textWidth(strToPrint)) \ 2
             picPreview.CurrentY = (picPreview.ScaleHeight - picPreview.textHeight(strToPrint)) \ 2
             picPreview.Print strToPrint
-        Else
-            tmpDIB.RenderToPictureBox picPreview
         End If
         
         'Remember the name of the current preview; this saves us having to reload the preview any more than
@@ -2905,9 +2893,6 @@ Private Sub prepareForBatchConversion()
     Dim totalNumOfFiles As Long
     totalNumOfFiles = lstFiles.ListCount
     
-    'LoadFileAsNewImage requires an array.  This array will be used to send it individual filenames
-    Dim sFile(0) As String
-    
     'Prepare the folder that will receive the processed images
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -2956,176 +2941,142 @@ Private Sub prepareForBatchConversion()
         'As a failsafe, check to make sure the current input file exists before attempting to load it
         If cFile.FileExist(tmpFilename) Then
             
-            sFile(0) = tmpFilename
-            
             'Check to see if the image file is a multipage file
             Dim howManyPages As Long
-            
             howManyPages = IsMultiImage(tmpFilename)
             
             'TODO: integrate this with future support for exporting multipage files.  At present, to avoid complications,
-            ' PD will only load the first page/frame of a multipage file during conversion.  (This is why the code below
-            ' looks so goofy.)
+            ' PD will only load the first page/frame of a multipage file during conversion.
             
-            'Check the user's preference regarding multipage images.  If they have specifically requested that we load
-            ' only the first page of the image, ignore any subsequent pages.
-            If howManyPages > 0 Then
-                howManyPages = 1
-            '    If g_UserPreferences.GetPref_Long("Loading", "Multipage Image Prompt", 0) = 1 Then howManyPages = 1
-            Else
-                howManyPages = 1
+            'Load the current image
+            LoadFileAsNewImage tmpFilename, , False
+            
+            'Make sure the image loaded correctly
+            If Not (pdImages(g_CurrentImage) Is Nothing) Then
+            If pdImages(g_CurrentImage).loadedSuccessfully Then
+                
+                'With the image loaded, it is time to apply any requested photo editing actions.
+                If optActions(1) Then
+                
+                    'If the user has requested automatic lighting fixes, apply it now
+                    If CBool(chkActions(0)) Then
+                        Process "White balance", , buildParams("0.1"), UNDO_LAYER
+                    End If
+                
+                    'If the user has requested an image resize, apply it now
+                    If CBool(chkActions(1)) Then
+                        Process "Resize image", , buildParams(ucResize.imgWidth, ucResize.imgHeight, RESIZE_LANCZOS, cmbResizeFit.ListIndex, RGB(255, 255, 255), ucResize.unitOfMeasurement, ucResize.ImgDPIAsPPI, PD_AT_WHOLEIMAGE)
+                    End If
+                    
+                    'If the user has requested a macro, play it now
+                    If CBool(chkActions(2)) Then PlayMacroFromFile txtMacro
+                    
+                End If
+            
+                'With the macro complete, prepare the file for saving
+                tmpFilename = lstFiles.List(curBatchFile)
+                StripOffExtension tmpFilename
+                StripFilename tmpFilename
+            
+                'Build a full file path using the options the user specified
+                If cmbOutputOptions.ListIndex = 0 Then
+                    If CBool(chkRenamePrefix) Then tmpFilename = txtAppendFront & tmpFilename
+                    If CBool(chkRenameSuffix) Then tmpFilename = tmpFilename & txtAppendBack
+                Else
+                    tmpFilename = curBatchFile + 1
+                    If CBool(chkRenamePrefix) Then tmpFilename = txtAppendFront & tmpFilename
+                    If CBool(chkRenameSuffix) Then tmpFilename = tmpFilename & txtAppendBack
+                End If
+                
+                'If requested, remove any specified text from the filename
+                If CBool(chkRenameRemove) And (Len(txtRenameRemove) <> 0) Then
+                
+                    'Use case-sensitive or case-insensitive matching as requested
+                    If CBool(chkRenameCaseSensitive) Then
+                        If InStr(1, tmpFilename, txtRenameRemove, vbBinaryCompare) Then
+                            tmpFilename = Replace(tmpFilename, txtRenameRemove, "", , , vbBinaryCompare)
+                        End If
+                    Else
+                        If InStr(1, tmpFilename, txtRenameRemove, vbTextCompare) Then
+                            tmpFilename = Replace(tmpFilename, txtRenameRemove, "", , , vbTextCompare)
+                        End If
+                    End If
+                    
+                End If
+                
+                'Replace spaces with underscores if requested
+                If CBool(chkRenameSpaces) Then
+                    If InStr(1, tmpFilename, " ") Then
+                        tmpFilename = Replace(tmpFilename, " ", "_")
+                    End If
+                End If
+                
+                'Change the full filename's case if requested
+                If CBool(chkRenameCase) Then
+                    If optCase(0) Then tmpFilename = LCase(tmpFilename) Else tmpFilename = UCase(tmpFilename)
+                End If
+                
+                'Attach a proper image format file extension and save format ID number based off the user's
+                ' requested output format
+                
+                'Possibility 1: use original file format
+                If optFormat(0) Then
+                    
+                    m_FormatParams = ""
+                    
+                    'See if this image's file format is supported by the export engine
+                    If g_ImageFormats.getIndexOfOutputFIF(pdImages(g_CurrentImage).currentFileFormat) = -1 Then
+                        
+                        'If it isn't, save as JPEG or PNG contingent on color depth
+                        
+                        '24bpp images default to JPEG
+                        If pdImages(g_CurrentImage).getCompositeImageColorDepth = 24 Then
+                            tmpFileExtension = g_ImageFormats.getExtensionFromFIF(FIF_JPEG)
+                            pdImages(g_CurrentImage).currentFileFormat = FIF_JPEG
+                        
+                        '32bpp images default to PNG
+                        Else
+                            tmpFileExtension = g_ImageFormats.getExtensionFromFIF(FIF_JPEG)
+                            pdImages(g_CurrentImage).currentFileFormat = FIF_PNG
+                        End If
+                        
+                    Else
+                        
+                        'This format IS supported, so use the default extension
+                        tmpFileExtension = g_ImageFormats.getExtensionFromFIF(pdImages(g_CurrentImage).currentFileFormat)
+                    
+                    End If
+                    
+                'Possibility 2: force all images to a single file format
+                Else
+                    tmpFileExtension = g_ImageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex)
+                    pdImages(g_CurrentImage).currentFileFormat = g_ImageFormats.getOutputFIF(cmbOutputFormat.ListIndex)
+                End If
+                
+                'If the user has requested lower- or upper-case, we now need to convert the extension as well
+                If CBool(chkRenameCase) Then
+                    If optCase(0) Then tmpFileExtension = LCase(tmpFileExtension) Else tmpFileExtension = UCase(tmpFileExtension)
+                End If
+                
+                'Because removing specified text from filenames may lead to files with the same name, call the incrementFilename
+                ' function to find a unique filename of the "filename (n+1)" variety if necessary.  This will also prepend the
+                ' drive and directory structure.
+                tmpFilename = outputPath & incrementFilename(outputPath, tmpFilename, tmpFileExtension) & "." & tmpFileExtension
+                                
+                'Request a save from the PhotoDemon_SaveImage method, and pass it a specialized string containing
+                ' any extra information for the requested format (JPEG quality, etc)
+                If Len(m_FormatParams) <> 0 Then
+                    PhotoDemon_SaveImage pdImages(CLng(g_CurrentImage)), tmpFilename, False, m_FormatParams
+                Else
+                    PhotoDemon_SaveImage pdImages(CLng(g_CurrentImage)), tmpFilename, False
+                End If
+            
             End If
-            
-            'Now, loop through each page or frame (if applicable), load the image, and process it.
-            Dim curPage As Long
-            For curPage = 0 To howManyPages - 1
-            
-                'Load the current image
-                LoadFileAsNewImage sFile, False, , , , , , curPage
+            End If
+        
+            'Unload the active form
+            FullPDImageUnload g_CurrentImage
                 
-                'Make sure the image loaded correctly
-                If Not (pdImages(g_CurrentImage) Is Nothing) Then
-                If pdImages(g_CurrentImage).loadedSuccessfully Then
-                    
-                    'With the image loaded, it is time to apply any requested photo editing actions.
-                    If optActions(1) Then
-                    
-                        'If the user has requested automatic lighting fixes, apply it now
-                        If CBool(chkActions(0)) Then
-                            Process "White balance", , buildParams("0.1"), UNDO_LAYER
-                        End If
-                    
-                        'If the user has requested an image resize, apply it now
-                        If CBool(chkActions(1)) Then
-                            Process "Resize image", , buildParams(ucResize.imgWidth, ucResize.imgHeight, RESIZE_LANCZOS, cmbResizeFit.ListIndex, RGB(255, 255, 255), ucResize.unitOfMeasurement, ucResize.ImgDPIAsPPI, PD_AT_WHOLEIMAGE)
-                        End If
-                        
-                        'If the user has requested a macro, play it now
-                        If CBool(chkActions(2)) Then PlayMacroFromFile txtMacro
-                        
-                    End If
-                
-                    'With the macro complete, prepare the file for saving
-                    tmpFilename = lstFiles.List(curBatchFile)
-                    StripOffExtension tmpFilename
-                    StripFilename tmpFilename
-                
-                    'Build a full file path using the options the user specified
-                    If cmbOutputOptions.ListIndex = 0 Then
-                        If CBool(chkRenamePrefix) Then tmpFilename = txtAppendFront & tmpFilename
-                        If CBool(chkRenameSuffix) Then tmpFilename = tmpFilename & txtAppendBack
-                    Else
-                        tmpFilename = curBatchFile + 1
-                        If CBool(chkRenamePrefix) Then tmpFilename = txtAppendFront & tmpFilename
-                        If CBool(chkRenameSuffix) Then tmpFilename = tmpFilename & txtAppendBack
-                    End If
-                    
-                    'Add the page number if necessary
-                    If curPage > 0 Then tmpFilename = tmpFilename & " (" & curPage & ")"
-                    
-                    'If requested, remove any specified text from the filename
-                    If CBool(chkRenameRemove) And (Len(txtRenameRemove) <> 0) Then
-                    
-                        'Use case-sensitive or case-insensitive matching as requested
-                        If CBool(chkRenameCaseSensitive) Then
-                            If InStr(1, tmpFilename, txtRenameRemove, vbBinaryCompare) Then
-                                tmpFilename = Replace(tmpFilename, txtRenameRemove, "", , , vbBinaryCompare)
-                            End If
-                        Else
-                            If InStr(1, tmpFilename, txtRenameRemove, vbTextCompare) Then
-                                tmpFilename = Replace(tmpFilename, txtRenameRemove, "", , , vbTextCompare)
-                            End If
-                        End If
-                        
-                    End If
-                    
-                    'Replace spaces with underscores if requested
-                    If CBool(chkRenameSpaces) Then
-                        If InStr(1, tmpFilename, " ") Then
-                            tmpFilename = Replace(tmpFilename, " ", "_")
-                        End If
-                    End If
-                    
-                    'Change the full filename's case if requested
-                    If CBool(chkRenameCase) Then
-                    
-                        If optCase(0) Then
-                            tmpFilename = LCase(tmpFilename)
-                        Else
-                            tmpFilename = UCase(tmpFilename)
-                        End If
-                    
-                    End If
-                    
-                    'Attach a proper image format file extension and save format ID number based off the user's
-                    ' requested output format
-                    
-                    'Possibility 1: use original file format
-                    If optFormat(0) Then
-                        
-                        m_FormatParams = ""
-                        
-                        'See if this image's file format is supported by the export engine
-                        If g_ImageFormats.getIndexOfOutputFIF(pdImages(g_CurrentImage).currentFileFormat) = -1 Then
-                            
-                            'If it isn't, save as JPEG or PNG contingent on color depth
-                            
-                            '24bpp images default to JPEG
-                            If pdImages(g_CurrentImage).getCompositeImageColorDepth = 24 Then
-                                tmpFileExtension = g_ImageFormats.getExtensionFromFIF(FIF_JPEG)
-                                pdImages(g_CurrentImage).currentFileFormat = FIF_JPEG
-                            
-                            '32bpp images default to PNG
-                            Else
-                                tmpFileExtension = g_ImageFormats.getExtensionFromFIF(FIF_JPEG)
-                                pdImages(g_CurrentImage).currentFileFormat = FIF_PNG
-                            End If
-                            
-                        Else
-                            
-                            'This format IS supported, so use the default extension
-                            tmpFileExtension = g_ImageFormats.getExtensionFromFIF(pdImages(g_CurrentImage).currentFileFormat)
-                        
-                        End If
-                        
-                    'Possibility 2: force all images to a single file format
-                    Else
-                        tmpFileExtension = g_ImageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex)
-                        pdImages(g_CurrentImage).currentFileFormat = g_ImageFormats.getOutputFIF(cmbOutputFormat.ListIndex)
-                    End If
-                    
-                    'If the user has requested lower- or upper-case, we now need to convert the extension as well
-                    If CBool(chkRenameCase) Then
-                    
-                        If optCase(0) Then
-                            tmpFileExtension = LCase(tmpFileExtension)
-                        Else
-                            tmpFileExtension = UCase(tmpFileExtension)
-                        End If
-                    
-                    End If
-                    
-                    'Because removing specified text from filenames may lead to files with the same name, call the incrementFilename
-                    ' function to find a unique filename of the "filename (n+1)" variety if necessary.  This will also prepend the
-                    ' drive and directory structure.
-                    tmpFilename = outputPath & incrementFilename(outputPath, tmpFilename, tmpFileExtension) & "." & tmpFileExtension
-                                    
-                    'Request a save from the PhotoDemon_SaveImage method, and pass it a specialized string containing
-                    ' any extra information for the requested format (JPEG quality, etc)
-                    If Len(m_FormatParams) <> 0 Then
-                        PhotoDemon_SaveImage pdImages(CLng(g_CurrentImage)), tmpFilename, False, m_FormatParams
-                    Else
-                        PhotoDemon_SaveImage pdImages(CLng(g_CurrentImage)), tmpFilename, False
-                    End If
-                
-                End If
-                End If
-            
-                'Unload the active form
-                FullPDImageUnload g_CurrentImage
-                
-            Next curPage
-            
             'If a good number of images have been processed, start estimating the amount of time remaining
             If (curBatchFile > 10) Then
             

@@ -88,6 +88,8 @@ Public Const MAX_PATH_LEN = 260
 ' to track save state.  However, FreeImage does not include PDI support, and because their VB6 interface may change between
 ' versions, we don't want to store our constant in the FreeImage modules - so we keep it here!
 Public Const FIF_PDI As Long = 100
+Public Const FIF_RAWBUFFER As Long = 101
+Public Const FIF_TMPFILE As Long = 102
 
 'Some other FIF_ formats supported by PhotoDemon, but not by FreeImage
 Public Const FIF_WMF As Long = 110

@@ -213,7 +213,7 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
             m_NumOfFilesFinishedDownloading = m_NumOfFilesFinishedDownloading + 1
             
             'Check to see if all downloads have completed
-            checkAllDownloadsComplete
+            CheckAllDownloadsComplete
                         
         'Download appears to be successful, but we won't know for sure until we try to access the .Value property...
         Else
@@ -301,7 +301,7 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
             m_NumOfFilesFinishedDownloading = m_NumOfFilesFinishedDownloading + 1
             
             'Check to see if all downloads have completed
-            checkAllDownloadsComplete
+            CheckAllDownloadsComplete
         
         End If
     
@@ -333,12 +333,12 @@ DownloadError:
     m_NumOfFilesFinishedDownloading = m_NumOfFilesFinishedDownloading + 1
     
     'Check to see if all downloads have completed
-    checkAllDownloadsComplete
+    CheckAllDownloadsComplete
     
 End Sub
 
 'Call this to see if all downloads are complete.  If they are, a "FinishedAllItems" event will be raised.
-Public Sub checkAllDownloadsComplete()
+Public Sub CheckAllDownloadsComplete()
 
     If m_NumOfFilesFinishedDownloading = m_NumOfFiles Then
     
@@ -362,7 +362,7 @@ Public Sub checkAllDownloadsComplete()
 End Sub
 
 'Callers can query individual items for success/failure
-Public Function wasDownloadSuccessful(ByVal itemKey As String) As Boolean
+Public Function WasDownloadSuccessful(ByVal itemKey As String) As Boolean
     
     Dim itemIndex As Long
     itemIndex = DoesKeyExist(itemKey)
@@ -373,22 +373,22 @@ Public Function wasDownloadSuccessful(ByVal itemKey As String) As Boolean
         With m_DownloadList(itemIndex)
         
             If (.CurrentStatus = PDS_DOWNLOAD_COMPLETE) And (UBound(.DataBytes) >= LBound(.DataBytes)) Then
-                wasDownloadSuccessful = True
+                WasDownloadSuccessful = True
             Else
-                wasDownloadSuccessful = False
+                WasDownloadSuccessful = False
             End If
         
         End With
     
     Else
-        wasDownloadSuccessful = False
+        WasDownloadSuccessful = False
     End If
 
 End Function
 
 'Callers can use this to retrieve the downloaded contents of a given key.  (Note that at present, the downloaded data remains
 ' in memory, even if the caller requested it written out to file.)
-Public Function copyDownloadArray(ByVal itemKey As String, ByRef targetBytes() As Byte) As Boolean
+Public Function CopyDownloadArray(ByVal itemKey As String, ByRef targetBytes() As Byte) As Boolean
 
     Dim itemIndex As Long
     itemIndex = DoesKeyExist(itemKey)
@@ -402,22 +402,22 @@ Public Function copyDownloadArray(ByVal itemKey As String, ByRef targetBytes() A
                 
                 ReDim targetBytes(LBound(.DataBytes) To UBound(.DataBytes)) As Byte
                 CopyMemory ByVal VarPtr(targetBytes(LBound(.DataBytes))), ByVal VarPtr(.DataBytes(LBound(.DataBytes))), (UBound(.DataBytes) - LBound(.DataBytes)) + 1
-                copyDownloadArray = True
+                CopyDownloadArray = True
                 
             Else
-                copyDownloadArray = False
+                CopyDownloadArray = False
             End If
         
         End With
     
     Else
-        copyDownloadArray = False
+        CopyDownloadArray = False
     End If
 
 End Function
 
 'When a caller is done with a given download item, they can call this function to release all resources associated with that item.
-Public Sub freeResourcesForItem(ByVal itemKey As String)
+Public Sub FreeResourcesForItem(ByVal itemKey As String)
     
     Dim itemIndex As Long
     itemIndex = DoesKeyExist(itemKey)
@@ -429,10 +429,10 @@ Public Sub freeResourcesForItem(ByVal itemKey As String)
             
             'Erase the data chunk, but leave any other indicators as things like "all downloads complete" may rely
             ' on that data.
-            Erase .DataBytes
+            ReDim .DataBytes(0) As Byte
             
             'Also erase the name, so new downloads with that name can be initiated
-            .Key = ""
+            .Key = vbNullString
             
         End With
         
@@ -478,10 +478,7 @@ Public Sub Reset(Optional ByVal setFailsafeTimer As Boolean = True)
 End Sub
 
 Private Sub UserControl_Initialize()
-    
-    'Reset everything to its default state
     Reset False
-    
 End Sub
 
 'At termination, all downloads are forcibly stopped and any existing data is deleted.
@@ -511,14 +508,14 @@ End Sub
 '    of the file immediately.
 '
 'Returns: success/fail.  Fail is unlikely, unless the caller does something stupid like specifying a duplicate key.
-Public Function addToQueue(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "", Optional ByVal checksumToVerify As Long = 0) As Boolean
+Public Function AddToQueue(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "", Optional ByVal checksumToVerify As Long = 0) As Boolean
 
     'Make sure this key is unique in the collection
     If DoesKeyExist(downloadKey) >= 0 Then
     
         'Duplicate keys are not allowed.
         Debug.Print "WARNING: duplicate download key requested in pdDownload addToQueue.  Invalid usage; download abandoned."
-        addToQueue = False
+        AddToQueue = False
         Exit Function
     
     End If
@@ -547,18 +544,18 @@ Public Function addToQueue(ByVal downloadKey As String, ByVal urlString As Strin
     
     'If the user requested an immediate download, initiate it now and mirror that return value to addToQueue
     If m_DownloadsAllowed Or startDownloadImmediately Then
-        addToQueue = startDownloadingByIndex(itemIndex)
+        AddToQueue = StartDownloadingByIndex(itemIndex)
     Else
-        addToQueue = True
+        AddToQueue = True
     End If
     
     'Success!
-    addToQueue = True
+    AddToQueue = True
     Exit Function
     
 addToQueueFailure:
 
-    addToQueue = False
+    AddToQueue = False
     m_LastErrorNumber = Err.Number
     m_LastErrorDescription = Err.Description
     
@@ -594,12 +591,12 @@ End Function
 'pdDownload will automatically resize its download directory as files are added to it, and it starts with a default directory
 ' size of FOUR.  If you know that you will be downloading many files, you can set the directory size in advance; this spares
 ' expensive ReDim Preserve operations down the road.
-Public Function forceDownloadQueueSize(ByVal newSize As Long) As Boolean
+Public Function ForceDownloadQueueSize(ByVal newSize As Long) As Boolean
 
     'Perform a failsafe check against current queue contents
     If (newSize < m_NumOfFiles) Or (newSize < 0) Then
         Debug.Print "WARNING! forceDownloadQueueSize requested an invalid size; queue cannot be reduced while downloads are in progress."
-        forceDownloadQueueSize = False
+        ForceDownloadQueueSize = False
         Exit Function
     End If
     
@@ -622,7 +619,7 @@ End Function
 ' case where files download faster than PD can add subsequent ones to the queue.  To stop auto-download mode, you must
 ' manually pass FALSE to this function.  (Note that there is no penalty to leaving the object in auto-download mode, as it
 ' won't do anything if there aren't files to download.)
-Public Sub setAutoDownloadMode(ByVal newMode As Boolean)
+Public Sub SetAutoDownloadMode(ByVal newMode As Boolean)
     
     m_DownloadsAllowed = newMode
     
@@ -632,7 +629,7 @@ Public Sub setAutoDownloadMode(ByVal newMode As Boolean)
         Dim i As Long
         For i = 0 To m_NumOfFiles - 1
             If m_DownloadList(i).CurrentStatus = PDS_NOT_YET_STARTED Then
-                startDownloadingByIndex i
+                StartDownloadingByIndex i
             End If
         Next i
     
@@ -643,7 +640,7 @@ End Sub
 'Start downloading an individual item.  Generally speaking, this should be used internally, rather than called randomly from
 ' outside sources.  Returned value is TRUE if the download appears to be initiated successfully; FALSE if we couldn't start
 ' the download.  For detailed failure information, use the separate error retrieval functions.
-Public Function startDownloadingByIndex(ByVal keyIndex As Long) As Boolean
+Public Function StartDownloadingByIndex(ByVal keyIndex As Long) As Boolean
 
     'This function actually makes use of error tracking, as .AsyncRead may throw errors for various Internet issues.
     On Error GoTo startDownloadingFailure
@@ -659,23 +656,23 @@ Public Function startDownloadingByIndex(ByVal keyIndex As Long) As Boolean
                 UserControl.AsyncRead .DownloadURL, vbAsyncTypeByteArray, .Key, .DownloadFlags
             End With
             
-            startDownloadingByIndex = True
+            StartDownloadingByIndex = True
             
         Else
             Debug.Print "WARNING! This item is already downloading!"
-            startDownloadingByIndex = False
+            StartDownloadingByIndex = False
         End If
         
     Else
         Debug.Print "WARNING! Could not start download, because the specific item index is invalid."
-        startDownloadingByIndex = False
+        StartDownloadingByIndex = False
     End If
     
 'UserControl.AsyncRead may throw errors for various Internet issues.  Rather than raise errors, we simply return FALSE,
 ' and the caller can choose to retrieve more specific error information as necessary.
 startDownloadingFailure:
 
-    startDownloadingByIndex = False
+    StartDownloadingByIndex = False
     m_LastErrorNumber = Err.Number
     m_LastErrorDescription = Err.Description
     
@@ -685,26 +682,26 @@ startDownloadingFailure:
 End Function
 
 'Thin wrapper to startDownloadingByIndex, above
-Public Function startDownloadingByKey(ByVal itemKey As String) As Boolean
+Public Function StartDownloadingByKey(ByVal itemKey As String) As Boolean
     
     'Retrieve an index for the specified key
     Dim keyIndex As Long
     keyIndex = DoesKeyExist(itemKey)
     
     If keyIndex >= 0 Then
-        startDownloadingByKey = startDownloadingByIndex(keyIndex)
+        StartDownloadingByKey = StartDownloadingByIndex(keyIndex)
     Else
         Debug.Print "WARNING! Could not start download, because itemKey does not exist in collection."
-        startDownloadingByKey = False
+        StartDownloadingByKey = False
     End If
     
 End Function
 
 'If a function tied to downloading returns a FALSE state, last error data can be retrieved here.
-Public Function getLastErrorNumber() As Long
-    getLastErrorNumber = m_LastErrorNumber
+Public Function GetLastErrorNumber() As Long
+    GetLastErrorNumber = m_LastErrorNumber
 End Function
 
-Public Function getLastErrorDescription() As String
-    getLastErrorDescription = m_LastErrorDescription
+Public Function GetLastErrorDescription() As String
+    GetLastErrorDescription = m_LastErrorDescription
 End Function
