@@ -761,7 +761,7 @@ End Sub
 
 Private Sub cboSelSmoothing_Click()
 
-    updateSelectionPanelLayout
+    UpdateSelectionPanelLayout
     
     'If a selection is already active, change its type to match the current selection, then redraw it
     If selectionsAllowed(False) Then
@@ -847,8 +847,8 @@ Private Sub Form_Load()
     
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
-    lastUsedSettings.setParentForm Me
-    lastUsedSettings.loadAllControlValues
+    lastUsedSettings.SetParentForm Me
+    lastUsedSettings.LoadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
     UpdateAgainstCurrentTheme
@@ -858,8 +858,8 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'Save all last-used settings to file
-    lastUsedSettings.saveAllControlValues
-    lastUsedSettings.setParentForm Nothing
+    lastUsedSettings.SaveAllControlValues
+    lastUsedSettings.SetParentForm Nothing
 
 End Sub
 
@@ -910,7 +910,7 @@ End Sub
 
 'When certain selection settings are enabled or disabled, corresponding controls are shown or hidden.  To keep the
 ' panel concise and clean, we move other controls up or down depending on what controls are visible.
-Public Sub updateSelectionPanelLayout()
+Public Sub UpdateSelectionPanelLayout()
 
     'Display the feathering slider as necessary
     If cboSelSmoothing.ListIndex = sFullyFeathered Then
