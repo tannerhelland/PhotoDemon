@@ -55,16 +55,16 @@ Private parentForm As Object
 
 'BEFORE DOING ANYTHING WITH THIS CLASS, the parent form needs to call this function and pass itself as a reference.
 ' This class relies heavily on direct access to its parent form - so don't forget to do this!
-Public Sub setParentForm(ByRef ownerForm As Object)
+Public Sub SetParentForm(ByRef ownerForm As Object)
     Set parentForm = ownerForm
 End Sub
 
 'The parent form must manually request the restoration of all previous values.  We do this to give the parent time
 ' to initialize things like drop-downs and other objects.
-Public Function loadAllControlValues() As Boolean
+Public Function LoadAllControlValues() As Boolean
 
     'Start by looking for a preset file for this form
-    Set xmlEngine = New pdXML
+    If (xmlEngine Is Nothing) Then Set xmlEngine = New pdXML
     parentToolName = Replace$(parentForm.Name, "Form", "", , , vbTextCompare)
     parentToolPath = g_UserPreferences.getPresetPath & parentToolName & ".xml"
     
@@ -74,33 +74,30 @@ Public Function loadAllControlValues() As Boolean
     If cFile.FileExist(parentToolPath) Then
             
         'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
-        If (Not xmlEngine.loadXMLFile(parentToolPath)) Or Not (xmlEngine.validateLoadedXMLData("toolName")) Then
+        If (Not xmlEngine.LoadXMLFile(parentToolPath)) Or Not (xmlEngine.validateLoadedXMLData("toolName")) Then
             Message "This form's preset file may be corrupted.  A new preset file has been created."
-            resetXMLData
+            ResetXMLData
         End If
             
     Else
-        resetXMLData
+        ResetXMLData
     End If
-        
-    'Populate the preset combo box with any presets found in the file.
-    'findAllXMLPresets
     
     'The XML object is now primed and ready for use.  Look for last-used control settings, and load them if available.
-    readXMLSettings
+    ReadXMLSettings
     
 End Function
 
-Public Function saveAllControlValues() As Boolean
+Public Function SaveAllControlValues() As Boolean
 
     'Write the current control values to the XML engine.  These will be loaded the next time the user uses this tool.
-    fillXMLSettings
+    FillXMLSettings
     xmlEngine.writeXMLToFile parentToolPath
 
 End Function
 
 'Reset the XML engine for this tool.  Note that the XML object SHOULD ALREADY BE INSTANTIATED before calling this function.
-Private Function resetXMLData()
+Private Function ResetXMLData()
 
     xmlEngine.prepareNewXML "Tool preset"
     xmlEngine.writeBlankLine
@@ -114,7 +111,7 @@ End Function
 
 'This sub will fill the class's pdXML class (xmlEngine) with the values of all controls on this form, and it will store
 ' those values in the section titled "presetName".
-Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used settings")
+Private Sub FillXMLSettings(Optional ByVal presetName As String = "last-used settings")
     
     presetName = Trim$(presetName)
     
@@ -252,7 +249,7 @@ End Function
 
 'This sub will set the values of all controls on this form, using the values stored in the tool's XML file under the
 ' "presetName" section.  By default, it will look for the last-used settings, as this is its most common request.
-Private Function readXMLSettings(Optional ByVal presetName As String = "last-used settings") As Boolean
+Private Function ReadXMLSettings(Optional ByVal presetName As String = "last-used settings") As Boolean
     
     presetName = Trim$(presetName)
         
@@ -368,7 +365,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
     RaiseEvent ReadCustomPresetData
     
     'We have now filled all controls with their relevant values from the XML file.
-    readXMLSettings = True
+    ReadXMLSettings = True
     
 End Function
 
@@ -378,16 +375,10 @@ Private Function InControlArray(Ctl As Object) As Boolean
     InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
 End Function
 
+Private Sub Class_Initialize()
+    Set xmlEngine = New pdXML
+End Sub
+
 Private Sub Class_Terminate()
     Set parentForm = Nothing
 End Sub
-
-
-
-
-
-
-
-
-
-

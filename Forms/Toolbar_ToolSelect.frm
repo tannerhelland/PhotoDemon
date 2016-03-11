@@ -366,10 +366,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'The value of all controls on this form are saved and loaded to file by this class
-Private WithEvents lastUsedSettings As pdLastUsedSettings
-Attribute lastUsedSettings.VB_VarHelpID = -1
-
 'When we are responsible for this window resizing (because the user is resizing our window manually), we set this to TRUE.
 ' This variable is then checked before requesting additional redraws during our resize event.
 Private m_WeAreResponsibleForResize As Boolean
@@ -406,6 +402,10 @@ Private m_rightBoundary As Long
 
 'The currently active tool panel and ID key will be mirrored to this reference
 Private m_ActiveToolPanelKey As String
+
+'When toggling tool-buttons, we set a module-level check to ensure that each toggle doesn't cause us to
+' re-enter the reflow code.
+Private m_InsideReflowCode As Boolean
 
 'This form supports a variety of resize modes, and we use cMouseEvents to handle cursor duties
 Private WithEvents cMouseEvents As pdInputMouse
@@ -547,11 +547,9 @@ Private Sub Form_Load()
     'Initialize a mouse handler
     Set cMouseEvents = New pdInputMouse
     cMouseEvents.AddInputTracker Me.hWnd, True, True, , True
-    
-    'Load any last-used settings for this form
-    Set lastUsedSettings = New pdLastUsedSettings
-    lastUsedSettings.setParentForm Me
-    lastUsedSettings.loadAllControlValues
+        
+    g_PreviousTool = -1
+    g_CurrentTool = g_UserPreferences.GetPref_Long("Tools", "LastUsedTool", NAV_DRAG)
     
     'Retrieve any relevant toolbox display settings from the user's preferences file
     m_ShowCategoryLabels = g_UserPreferences.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
@@ -567,13 +565,6 @@ End Sub
 
 Private Sub Form_LostFocus()
     cMouseEvents.SetSystemCursor IDC_DEFAULT
-End Sub
-
-Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-    
-    'Save all last-used settings to file
-    lastUsedSettings.saveAllControlValues
-    
 End Sub
 
 'Reflow the form's contents
@@ -727,6 +718,7 @@ End Sub
 ' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the ToggleToolboxVisibility sub
 ' will also keep this toolbar's Window menu entry in sync with the form's current visibility.)
 Private Sub Form_Unload(Cancel As Integer)
+    g_UserPreferences.SetPref_Long "Tools", "LastUsedTool", g_CurrentTool
     If g_ProgramShuttingDown Then ReleaseFormTheming Me
 End Sub
 
@@ -791,7 +783,7 @@ End Sub
 
 'External functions can use this to request the selection of a new tool (for example, Select All uses this to set the
 ' rectangular tool selector as the current tool)
-Public Sub selectNewTool(ByVal newToolID As PDTools)
+Public Sub SelectNewTool(ByVal newToolID As PDTools)
     
     If newToolID <> g_CurrentTool Then
         g_PreviousTool = g_CurrentTool
@@ -803,14 +795,16 @@ End Sub
 
 'When a new tool button is selected, we need to raise all the others and display the proper options box
 Public Sub ResetToolButtonStates()
-    
+        
+    m_InsideReflowCode = True
+        
     'Start by depressing the selected button and raising all unselected ones
     Dim catID As Long
     For catID = 0 To cmdTools.Count - 1
         If catID = g_CurrentTool Then
-            cmdTools(catID).Value = True
+            If Not cmdTools(catID).Value Then cmdTools(catID).Value = True
         Else
-            cmdTools(catID).Value = False
+            If cmdTools(catID).Value Then cmdTools(catID).Value = False
         End If
     Next catID
     
@@ -871,7 +865,7 @@ Public Sub ResetToolButtonStates()
     
     'Next, some tools display information about the current layer.  Synchronize that information before proceeding, so that the
     ' option panel's information is correct as soon as the window appears.
-    Tool_Support.syncToolOptionsUIToCurrentLayer
+    Tool_Support.SyncToolOptionsUIToCurrentLayer
     
     'Check the selection state before swapping tools.  If a selection is active, and the user is switching to the same
     ' tool used to create the current selection, we don't want to erase the current selection.  If they are switching
@@ -894,7 +888,7 @@ Public Sub ResetToolButtonStates()
     End If
     
     'If the current tool is a selection tool, make sure the selection area box (interior/exterior/border) is enabled properly
-    If (getSelectionShapeFromCurrentTool > -1) Then toolpanel_Selections.updateSelectionPanelLayout
+    If (getSelectionShapeFromCurrentTool > -1) Then toolpanel_Selections.UpdateSelectionPanelLayout
     
     'Next, we can automatically hide the options toolbox for certain tools (because they have no options).  This is a
     ' nice courtesy, as it frees up space on the main canvas area if the current tool has no adjustable options.
@@ -905,18 +899,16 @@ Public Sub ResetToolButtonStates()
             
             'Hand tool is currently the only tool without additional options
             Case NAV_DRAG
-                'g_WindowManager.SetToolboxVisibility toolbar_Options.hWnd, False, False
                 Toolboxes.SetToolboxVisibility PDT_BottomToolbox, False
                 
             'All other tools expose options, so display the toolbox (unless the user has disabled the window completely)
             Case Else
-                'g_WindowManager.SetToolboxVisibility toolbar_Options.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Bottom Toolbox", True), False
                 Toolboxes.SetToolboxVisibilityByPreference PDT_BottomToolbox
                 
         End Select
         
         'NEW SYSTEM!  After setting visibility, we must apply the changes.
-        FormMain.UpdateMainLayout
+        If FormMain.Visible Then FormMain.UpdateMainLayout
         
     End If
     
@@ -956,43 +948,30 @@ Public Sub ResetToolButtonStates()
     End If
             
     NewToolSelected
+    
+    m_InsideReflowCode = False
         
 End Sub
 
 Private Sub cmdTools_Click(Index As Integer)
-        
-    'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
-    ' for forms may get stuck on the west/east "resize" cursor.  To avoid this, reset it after any button click.
-    cMouseEvents.SetSystemCursor IDC_ARROW
     
     'Update the previous and current tool entries
-    g_PreviousTool = g_CurrentTool
-    g_CurrentTool = Index
-    
-    'Update the tool options area to match the newly selected tool
-    ResetToolButtonStates
-    
-End Sub
-
-Private Sub lastUsedSettings_AddCustomPresetData()
-    
-    'Write the currently selected selection tool to file
-    lastUsedSettings.AddPresetData "ActiveSelectionTool", g_CurrentTool
-    
-End Sub
-
-Private Sub lastUsedSettings_ReadCustomPresetData()
-
-    'Restore the last-used selection tool (which will be saved in the main form's preset file, if it exists)
-    g_PreviousTool = -1
-    
-    If Len(lastUsedSettings.RetrievePresetData("ActiveSelectionTool")) <> 0 Then
-        g_CurrentTool = CLng(lastUsedSettings.RetrievePresetData("ActiveSelectionTool"))
-    Else
-        g_CurrentTool = NAV_DRAG
+    If cmdTools(Index).Value Then
+        g_PreviousTool = g_CurrentTool
+        g_CurrentTool = Index
     End If
     
-    ResetToolButtonStates
+    'Update the tool options area to match the newly selected tool
+    If (Not m_InsideReflowCode) And (cmdTools(Index).Value) Then
+        
+        'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
+        ' for forms may get stuck on the west/east "resize" cursor.  To avoid this, reset it after any button click.
+        cMouseEvents.SetSystemCursor IDC_ARROW
+        
+        'Repaint all tool buttons to reflect the new selection
+        ResetToolButtonStates
+    
+    End If
     
 End Sub
 

@@ -223,11 +223,10 @@ End Property
 'Assign a DIB to this button.  Matching disabled and hover state DIBs are automatically generated.
 ' Note that you can supply an existing DIB, or a resource name.  You must supply one or the other (obviously).
 ' No preprocessing is currently applied to DIBs loaded as a resource.
-Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0)
+Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0)
     
     'Load the requested resource DIB, as necessary.  (I say "as necessary" because the caller can supply the DIB as-is, too.)
     If Len(resName) <> 0 Then LoadResourceToDIB resName, srcDIB
-    
     If (srcDIB Is Nothing) Then Exit Sub
     
     'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
@@ -235,44 +234,114 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
     m_ButtonWidth = srcDIB.getDIBWidth
     m_ButtonHeight = srcDIB.getDIBHeight
     
-    'Create our vertical sprite-sheet DIB, and mark it as having premultiplied alpha
-    If (m_ButtonImages Is Nothing) Then Set m_ButtonImages = New pdDIB
-    m_ButtonImages.createBlank m_ButtonWidth, m_ButtonHeight * 3, srcDIB.getDIBColorDepth, 0, 0
-    m_ButtonImages.setInitialAlphaPremultiplicationState True
+    If (m_ButtonWidth <> 0) And (m_ButtonHeight <> 0) Then
     
-    'Copy the normal DIB into place at the top of the sheet
-    BitBlt m_ButtonImages.getDIBDC, 0, 0, m_ButtonWidth, m_ButtonHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
-    
-    'Next, make a copy of the source DIB.
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB srcDIB
-    
-    'Convert this to a brighter, "glowing" version; we'll use this when rendering a hovered state.
-    If customGlowWhenHovered = 0 Then
-        ScaleDIBRGBValues tmpDIB, UC_HOVER_BRIGHTNESS, True
-    Else
-        ScaleDIBRGBValues tmpDIB, customGlowWhenHovered, True
+        'Unpremultiply the source image
+        Dim initAlphaState As Boolean
+        initAlphaState = srcDIB.getAlphaPremultiplication
+        If initAlphaState Then srcDIB.SetAlphaPremultiplication False
+        
+        'Create our vertical sprite-sheet DIB, and mark it as having premultiplied alpha
+        If (m_ButtonImages Is Nothing) Then Set m_ButtonImages = New pdDIB
+        m_ButtonImages.createBlank m_ButtonWidth, m_ButtonHeight * 3, srcDIB.getDIBColorDepth, 0, 0
+        m_ButtonImages.setInitialAlphaPremultiplicationState False
+        
+        'Copy the normal DIB into place at the top of the sheet
+        BitBlt m_ButtonImages.getDIBDC, 0, 0, m_ButtonWidth, m_ButtonHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
+        
+        'A separate function will automatically generate "glowy hovered" and "grayscale disabled" versions for us
+        GenerateVariantButtonImages customGlowWhenHovered, scalePixelsWhenDisabled
+        
+        'Reset alpha premultiplication
+        m_ButtonImages.SetAlphaPremultiplication True
+        If Len(resName) = 0 Then
+            If initAlphaState Then srcDIB.SetAlphaPremultiplication True
+        End If
+        
     End If
-    
-    'Copy this DIB into position #2, beneath the base DIB
-    BitBlt m_ButtonImages.getDIBDC, 0, m_ButtonHeight, m_ButtonWidth, m_ButtonHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
-    
-    'Finally, create a grayscale copy of the original image.  This will serve as the "disabled state" copy.
-    tmpDIB.createFromExistingDIB srcDIB
-    GrayscaleDIB tmpDIB, True
-    If scalePixelsWhenDisabled <> 0 Then ScaleDIBRGBValues tmpDIB, scalePixelsWhenDisabled, True
-    
-    'Place it into position #3, beneath the previous two DIBs
-    BitBlt m_ButtonImages.getDIBDC, 0, m_ButtonHeight * 2, m_ButtonWidth, m_ButtonHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
-    
-    'Free whatever DIBs we can.  (If the caller passed us the source DIB, we trust them to release it.)
-    Set tmpDIB = Nothing
-    If Len(resName) <> 0 Then Set srcDIB = Nothing
     
     'Request a control layout update, which will also calculate a centered position for the new image
     UpdateControlLayout
 
+End Sub
+
+'After loading the initial button DIB and creating a matching spritesheet, call this function to fill the rest of
+' the spritesheet with the "glowy hovered" and "grayscale disabled" button image variants.
+Private Sub GenerateVariantButtonImages(Optional ByVal hoverGlowAmount As Long = 0, Optional ByVal disabledGlowAmount As Long = 0)
+
+    If hoverGlowAmount = 0 Then hoverGlowAmount = UC_HOVER_BRIGHTNESS
+    
+    'Start by building two lookup tables: one for the hovered image, and a second one for the grayscale image
+    Dim hLookup() As Byte, gLookup() As Byte
+    ReDim hLookup(0 To 255) As Byte: ReDim gLookup(0 To 765) As Byte
+    
+    Dim newColor As Long
+    Dim x As Long, y As Long
+    For x = 0 To 255
+        newColor = x + hoverGlowAmount
+        If newColor > 255 Then newColor = 255
+        hLookup(x) = newColor
+    Next x
+    
+    For x = 0 To 765
+        newColor = (x \ 3) + disabledGlowAmount
+        If newColor > 255 Then newColor = 255
+        gLookup(x) = newColor
+    Next x
+    
+    'Grab direct access to the spritesheet's bytes
+    Dim srcPixels() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, m_ButtonImages
+    CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
+    
+    Dim initY As Long, finalY As Long, offsetY As Long
+    initY = m_ButtonHeight
+    finalY = m_ButtonHeight + (m_ButtonHeight - 1)
+    offsetY = m_ButtonHeight
+    
+    Dim initX As Long, finalX As Long
+    initX = 0
+    finalX = (m_ButtonWidth - 1) * 4
+    
+    Dim r As Long, g As Long, b As Long, gray As Long, alpha As Long
+    
+    'Paint the hovered segment of the sprite strip
+    For y = initY To finalY
+    For x = initX To finalX Step 4
+        alpha = srcPixels(x + 3, y - offsetY)
+        If alpha <> 0 Then
+            srcPixels(x, y) = hLookup(srcPixels(x, y - offsetY))
+            srcPixels(x + 1, y) = hLookup(srcPixels(x + 1, y - offsetY))
+            srcPixels(x + 2, y) = hLookup(srcPixels(x + 2, y - offsetY))
+            srcPixels(x + 3, y) = alpha
+        End If
+    Next x
+    Next y
+    
+    'Paint the disabled segment of the sprite strip
+    initY = m_ButtonHeight * 2
+    finalY = m_ButtonHeight * 2 + (m_ButtonHeight - 1)
+    offsetY = m_ButtonHeight * 2
+    
+    For y = initY To finalY
+    For x = initX To finalX Step 4
+        alpha = srcPixels(x + 3, y - offsetY)
+        If alpha <> 0 Then
+            b = srcPixels(x, y - offsetY)
+            g = srcPixels(x + 1, y - offsetY)
+            r = srcPixels(x + 2, y - offsetY)
+            gray = gLookup(r + g + b)
+            srcPixels(x, y) = gray
+            srcPixels(x + 1, y) = gray
+            srcPixels(x + 2, y) = gray
+            srcPixels(x + 3, y) = alpha
+        End If
+    Next x
+    Next y
+    
+    CopyMemory ByVal VarPtrArray(srcPixels), 0&, 4
+    
 End Sub
 
 'Assign an *OPTIONAL* special DIB to this button, to be used only when the button is pressed.  A disabled-state image is not generated,

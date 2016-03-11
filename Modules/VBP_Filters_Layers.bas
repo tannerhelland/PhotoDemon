@@ -222,7 +222,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'The number of pixels in the current median box are tracked dynamically.
@@ -320,7 +320,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
             'Update the progress bar every (progBarCheck) lines
             If Not suppressMessages Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal x + modifyProgBarOffset
                 End If
             End If
@@ -372,7 +372,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color values
@@ -537,7 +537,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -584,7 +584,7 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color values
@@ -695,7 +695,7 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -747,7 +747,7 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color variables
@@ -800,7 +800,7 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -1031,7 +1031,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         Next y
             If Not suppressMessages Then
                 If (x And 63) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                 End If
             End If
         Next x
@@ -1133,7 +1133,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         Next y
             If Not suppressMessages Then
                 If (x And 63) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                 End If
             End If
         Next x
@@ -1216,7 +1216,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         Next y
             If Not suppressMessages Then
                 If (x And 63) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                 End If
             End If
         Next x
@@ -1254,7 +1254,7 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     If modifyProgBarMax = -1 Then modifyProgBarMax = gaussDIB.getDIBWidth * numIterations + gaussDIB.getDIBHeight * numIterations
     If Not suppressMessages Then SetProgBarMax modifyProgBarMax
     
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Modify the Gaussian radius, and convert it to an integer.  (Box blurs don't work on floating-point radii.)
     Dim comparableRadius As Long
@@ -1374,7 +1374,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Create a one-dimensional Gaussian kernel using the requested radius
@@ -1590,7 +1590,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
     Next x
         If Not suppressMessages Then
             If (y And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal y + modifyProgBarOffset
             End If
         End If
@@ -1677,7 +1677,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
     Next x
         If Not suppressMessages Then
             If (y And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal (y + finalY) + modifyProgBarOffset
             End If
         End If
@@ -1741,7 +1741,7 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Create a filter support class, which will aid with edge handling and interpolation
@@ -1917,7 +1917,7 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -1974,7 +1974,7 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Create a filter support class, which will aid with edge handling and interpolation
@@ -2150,7 +2150,7 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -2206,7 +2206,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     Dim xRadius As Long
@@ -2311,7 +2311,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         'Halt for external events, like ESC-to-cancel and progress bar updates
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -2368,7 +2368,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     Dim yRadius As Long
@@ -2473,7 +2473,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         'Halt for external events, like ESC-to-cancel and progress bar updates
         If Not suppressMessages Then
             If (y And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal y + modifyProgBarOffset
             End If
         End If
@@ -2529,7 +2529,7 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Create a filter support class, which will aid with edge handling and interpolation
@@ -2587,7 +2587,7 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -2680,7 +2680,7 @@ Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessa
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color values
@@ -2708,7 +2708,7 @@ Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessa
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -2728,7 +2728,7 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
 
     'Unpremultiply the source DIB, as necessary
     If srcDIB.getDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication False
-
+    
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
@@ -2756,7 +2756,7 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color values
@@ -2791,7 +2791,7 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -2916,7 +2916,7 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color values
@@ -2959,7 +2959,7 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -3057,7 +3057,7 @@ Public Function createBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not suppressMessages Then progBarCheck = findBestProgBarValue()
+    If Not suppressMessages Then progBarCheck = FindBestProgBarValue()
         
     'Color variables
     Dim srcR As Long, srcG As Long, srcB As Long
@@ -3166,7 +3166,7 @@ Public Function createBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal modifyProgBarOffset + x
             End If
         End If
@@ -3272,7 +3272,7 @@ Public Function createBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
         Next y
             If Not suppressMessages Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal modifyProgBarOffset + finalX + x
                 End If
             End If
