@@ -64,9 +64,6 @@ Option Explicit
     'Current index of the zoom combo box
     Public currentZoomValue As Long
     
-    'Size of the file when loaded
-    Public originalFileSize As Long
-    
     'Original name of the image
     Public originalFileName As String
     
@@ -100,9 +97,6 @@ Option Explicit
     'A copy of the image's current icon (at 16 and 32px sizes)
     Public curFormIcon32 As Long, curFormIcon16 As Long
     
-    'If this image is simply being used for internal PhotoDemon processing, hide it from the user
-    Public forInternalUseOnly As Boolean
-    
     'Persistent buffer, for storing the fully composited image.  This composite is only updated when absolutely necessary;
     ' otherwise, look at grabbing the dedicated canvasBuffer, below.
     Public compositeBuffer As pdDIB
@@ -110,10 +104,7 @@ Option Explicit
     'Image's canvas buffer.  This holds a composited version of the image, extracted and cropped to reflect the current viewport.
     ' It is cached here to make viewport rendering faster and more reliable.
     Public canvasBuffer As pdDIB
-    
-    'If this image is 32bpp then it requires a specialized compositing layer for rendering the transparency
-    Public alphaFixDIB As pdDIB
-    
+        
     'Image's selection data (stored and handled by a mainSelection object)
     Public mainSelection As pdSelection
     Public selectionActive As Boolean
@@ -211,7 +202,7 @@ Public Sub rebuildCompositeBuffer()
     Else
         
         'Rebuild the composite cache
-        imgCompositor.getCompositedImage Me, compositeBuffer
+        imgCompositor.GetCompositedImage Me, compositeBuffer
         
         'Mark the cache as clean
         'm_CompositeCacheClean = True
@@ -247,9 +238,9 @@ Public Function NotifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional 
             m_CompositeCacheClean = False
             
             If layerIndex <> -1 Then
-                Me.getLayerByIndex(layerIndex).notifyOfDestructiveChanges
+                Me.GetLayerByIndex(layerIndex).NotifyOfDestructiveChanges
             Else
-                Debug.Print "WARNING!  Invalid params passed to pdImage.notifyImageChanged (-1 layer index for a layer action)."
+                Debug.Print "WARNING!  Invalid params passed to pdImage.notifyImageChanged (-1 layer index for a layer action)"
             End If
         
         Case UNDO_LAYERHEADER
@@ -281,7 +272,7 @@ End Function
 
 'Merge two layers together.  Note this can be used to merge any two arbitrary layers, with the bottom layer holding the result
 ' of the merge.  It is up to the caller to deal with any subsequent layer deletions, etc - this sub just performs the merge.
-Public Sub mergeTwoLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True)
+Public Sub MergeTwoLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True)
     imgCompositor.mergeLayers topLayer, bottomLayer, bottomLayerIsFullSize
 End Sub
 
@@ -289,10 +280,10 @@ End Sub
 ' object references, we ask the calling function to supply the DIB they want filled.  Optionally, they can also request a
 ' particular premultiplication status of the composited DIB's alpha values.  (This is helpful for save functions, which
 ' require non-premultiplied alpha, vs viewport functions, which require premultiplied alpha).
-Public Sub getCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True)
+Public Sub GetCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True)
     
     'If the current composite cache is dirty, rebuild it
-    If Not m_CompositeCacheClean Then rebuildCompositeBuffer
+    If (Not m_CompositeCacheClean) Then rebuildCompositeBuffer
     
     'Give the caller a copy of the composited image
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
@@ -305,51 +296,51 @@ End Sub
 
 'Returns a subsection of the fully composited image (in pdDIB format, of course).  This is helpful for rendering the main viewport,
 ' as we only composite the relevant portions of the image.
-Public Sub getCompositedRect(ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic)
-    imgCompositor.getCompositedRect Me, dstDIB, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, interpolationType, ignoreInternalCaches, levelOfDetail
+Public Sub GetCompositedRect(ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic)
+    imgCompositor.GetCompositedRect Me, dstDIB, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, interpolationType, ignoreInternalCaches, levelOfDetail
 End Sub
 
 'Get the currently active layer index
-Public Function getActiveLayerIndex() As Long
-    getActiveLayerIndex = m_curLayer
+Public Function GetActiveLayerIndex() As Long
+    GetActiveLayerIndex = m_curLayer
 End Function
 
 'Get the currently active layer canonical ID
-Public Function getActiveLayerID() As Long
+Public Function GetActiveLayerID() As Long
     If m_curLayer > UBound(imgLayers) Then
-        getActiveLayerID = imgLayers(0).getLayerID
+        GetActiveLayerID = imgLayers(0).getLayerID
     Else
-        getActiveLayerID = imgLayers(m_curLayer).getLayerID
+        GetActiveLayerID = imgLayers(m_curLayer).getLayerID
     End If
 End Function
 
 'Get the number of layers in this image.  (Note: this function might return zero, so handle that condition correctly
 ' in calling functions!)
-Public Function getNumOfLayers() As Long
-    getNumOfLayers = m_numOfLayers
+Public Function GetNumOfLayers() As Long
+    GetNumOfLayers = m_numOfLayers
 End Function
 
 'Retrieve a reference to the currently active layer's DIB.  This is effectively a shortcut function when we
 ' need quick access to the current layer's DIB.
-Public Function getActiveDIB() As pdDIB
-    Set getActiveDIB = imgLayers(m_curLayer).layerDIB
+Public Function GetActiveDIB() As pdDIB
+    Set GetActiveDIB = imgLayers(m_curLayer).layerDIB
 End Function
 
 'Retrieve the currently active layer
-Public Function getActiveLayer() As pdLayer
+Public Function GetActiveLayer() As pdLayer
     If m_numOfLayers > 0 Then
         
         'Failsafe check for a valid current layer
         If m_curLayer > UBound(imgLayers) Then m_curLayer = 0
-        Set getActiveLayer = imgLayers(m_curLayer)
+        Set GetActiveLayer = imgLayers(m_curLayer)
         
     Else
-        Set getActiveLayer = Nothing
+        Set GetActiveLayer = Nothing
     End If
 End Function
 
 'Set the currently active layer by its cardinal ID value
-Public Sub setActiveLayerByID(ByVal newActiveLayerID As Long)
+Public Sub SetActiveLayerByID(ByVal newActiveLayerID As Long)
     
     Dim i As Long
     For i = 0 To UBound(imgLayers)
@@ -363,7 +354,7 @@ Public Sub setActiveLayerByID(ByVal newActiveLayerID As Long)
     
 End Sub
 
-Public Sub setActiveLayerByIndex(ByVal newActiveLayerIndex As Long)
+Public Sub SetActiveLayerByIndex(ByVal newActiveLayerIndex As Long)
 
     'Validate the incoming layer index
     If newActiveLayerIndex < 0 Then newActiveLayerIndex = 0
@@ -374,24 +365,24 @@ Public Sub setActiveLayerByIndex(ByVal newActiveLayerIndex As Long)
 End Sub
 
 'Retrieve a layer index using its canonical ID.
-Public Function getLayerIndexFromID(ByVal requestedID As Long) As Long
+Public Function GetLayerIndexFromID(ByVal requestedID As Long) As Long
     
     Dim i As Long
     For i = 0 To UBound(imgLayers)
         If imgLayers(i).getLayerID = requestedID Then
-            getLayerIndexFromID = i
+            GetLayerIndexFromID = i
             Exit Function
         End If
     Next i
     
     'If we made it all the way here, the requested layer was not found.  Return 0.
-    getLayerIndexFromID = 0
+    GetLayerIndexFromID = 0
     
 End Function
 
 'Retrieve a layer at an arbitrary position.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
 ' Also, this function does not check bounds, so make sure the passed index is valid!
-Public Function getLayerByIndex(ByVal layerIndex As Long) As pdLayer
+Public Function GetLayerByIndex(ByVal layerIndex As Long) As pdLayer
     
     'As a failsafe, validate the incoming layer index
     If layerIndex > UBound(imgLayers) Then
@@ -403,7 +394,7 @@ Public Function getLayerByIndex(ByVal layerIndex As Long) As pdLayer
     
     'Return the requested layer
     'If Not imgLayers(layerIndex) Is Nothing Then
-        Set getLayerByIndex = imgLayers(layerIndex)
+        Set GetLayerByIndex = imgLayers(layerIndex)
     'Else
     '    Set getLayerByIndex = Nothing
     'End If
@@ -412,24 +403,24 @@ End Function
 
 'Retrieve a layer using its canonical ID.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
 ' Also, this function does not check bounds, so make sure the passed index is valid!
-Public Function getLayerByID(ByVal requestedID As Long) As pdLayer
+Public Function GetLayerByID(ByVal requestedID As Long) As pdLayer
     
     Dim i As Long
     For i = 0 To m_numOfLayers - 1
         If imgLayers(i).getLayerID = requestedID Then
-            Set getLayerByID = imgLayers(i)
+            Set GetLayerByID = imgLayers(i)
             Exit Function
         End If
     Next i
     
     'If we made it all the way here, the requested layer was not found.  Return Nothing.
     Debug.Print "WARNING!  getLayerByID received an invalid ID: " & requestedID
-    Set getLayerByID = Nothing
+    Set GetLayerByID = Nothing
     
 End Function
 
 'Simple function for moving a given layer up/down in the layer stack.
-Public Sub moveLayerByIndex(ByVal srcLayerIndex As Long, ByVal moveLayerUp As Boolean)
+Public Sub MoveLayerByIndex(ByVal srcLayerIndex As Long, ByVal moveLayerUp As Boolean)
 
     'Before doing anything else, make sure the requested move is a valid one
     If moveLayerUp Then
@@ -442,12 +433,12 @@ Public Sub moveLayerByIndex(ByVal srcLayerIndex As Long, ByVal moveLayerUp As Bo
     If moveLayerUp Then
     
         'Move the selected layer UP.
-        swapTwoLayers srcLayerIndex, srcLayerIndex + 1
+        SwapTwoLayers srcLayerIndex, srcLayerIndex + 1
     
     Else
     
         'Move the selected layer DOWN.
-        swapTwoLayers srcLayerIndex, srcLayerIndex - 1
+        SwapTwoLayers srcLayerIndex, srcLayerIndex - 1
     
     End If
 
@@ -457,16 +448,16 @@ End Sub
 ' The destination layer index will be the *new* index of the source layer.  If the two indices match, the function will terminate.
 '
 'The function will return TRUE if the layers were moved successfully.
-Public Function moveLayerToArbitraryIndex(ByVal srcLayerIndex As Long, ByVal dstLayerIndex As Long) As Boolean
+Public Function MoveLayerToArbitraryIndex(ByVal srcLayerIndex As Long, ByVal dstLayerIndex As Long) As Boolean
 
     'Before doing anything else, make sure the requested move is a valid one
     If srcLayerIndex = dstLayerIndex Then
-        moveLayerToArbitraryIndex = False
+        MoveLayerToArbitraryIndex = False
         Exit Function
     End If
         
     If (srcLayerIndex < 0) Or (srcLayerIndex > m_numOfLayers - 1) Then
-        moveLayerToArbitraryIndex = False
+        MoveLayerToArbitraryIndex = False
         Exit Function
     End If
     
@@ -488,7 +479,7 @@ Public Function moveLayerToArbitraryIndex(ByVal srcLayerIndex As Long, ByVal dst
     
         'Iterate through all layers between the current position and the new one, swapping layers as we go
         For i = srcLayerIndex To dstLayerIndex - 1
-            swapTwoLayers i, i + 1
+            SwapTwoLayers i, i + 1
         Next i
     
     Else
@@ -497,17 +488,17 @@ Public Function moveLayerToArbitraryIndex(ByVal srcLayerIndex As Long, ByVal dst
     
         'Iterate through all layers between the current position and the new one, swapping layers as we go
         For i = srcLayerIndex To dstLayerIndex + 1 Step -1
-            swapTwoLayers i, i - 1
+            SwapTwoLayers i, i - 1
         Next i
     
     End If
     
-    moveLayerToArbitraryIndex = True
+    MoveLayerToArbitraryIndex = True
 
 End Function
 
 'Used by various layer movement functions.  Given two layer indices, swap them.
-Public Sub swapTwoLayers(ByVal srcLayerIndex_1 As Long, ByVal srcLayerIndex_2 As Long)
+Public Sub SwapTwoLayers(ByVal srcLayerIndex_1 As Long, ByVal srcLayerIndex_2 As Long)
 
     'Create a temporary reference to the first layer
     Dim tmpLayerRef As pdLayer
@@ -525,7 +516,7 @@ Public Sub swapTwoLayers(ByVal srcLayerIndex_1 As Long, ByVal srcLayerIndex_2 As
 End Sub
 
 'Delete a given layer.  The pdLayers stack will automatically be resized to match.
-Public Sub deleteLayerByIndex(ByVal srcLayerIndex As Long)
+Public Sub DeleteLayerByIndex(ByVal srcLayerIndex As Long)
 
     'Validate the layer index
     If srcLayerIndex < 0 Or srcLayerIndex >= m_numOfLayers Then Exit Sub
@@ -552,7 +543,7 @@ End Sub
 'In the event that you want to do something else with the XML data, I have now added an optional parameter.
 ' Mark "filePathIsActuallyString" as TRUE to treat the filename string as a destination buffer, and this function will
 ' write the XML data there (instead of treating it as a filename).
-Public Function writeExternalData(ByRef dstFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False) As Boolean
+Public Function WriteExternalData(ByRef dstFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False) As Boolean
 
     On Error GoTo failedDataWrite
 
@@ -578,7 +569,6 @@ Public Function writeExternalData(ByRef dstFilename As String, Optional ByVal fi
     xmlEngine.writeTag "xResolution", xResolution
     xmlEngine.writeTag "yResolution", yResolution
     xmlEngine.writeTag "DPI", imageDPI
-    xmlEngine.writeTag "OriginalFileSize", originalFileSize
     xmlEngine.writeTag "OriginalFileName", originalFileName
     xmlEngine.writeTag "OriginalFileNameAndExtension", originalFileNameAndExtension
     xmlEngine.writeTag "LocationOnDisk", locationOnDisk
@@ -591,6 +581,7 @@ Public Function writeExternalData(ByRef dstFilename As String, Optional ByVal fi
     
     'Next comes conditional data, which may not exist in the scripting dictionary.  If it's available, we'll write it out.
     If imgStorage.DoesKeyExist("pngBackgroundColor") Then xmlEngine.writeTag "pngBackgroundColor", imgStorage.GetEntry_Long("pngBackgroundColor")
+    If imgStorage.DoesKeyExist("OriginalFileSize") Then xmlEngine.writeTag "OriginalFileSize", imgStorage.GetEntry_Long("OriginalFileSize")
     
     xmlEngine.writeBlankLine
     
@@ -607,13 +598,13 @@ Public Function writeExternalData(ByRef dstFilename As String, Optional ByVal fi
         xmlEngine.writeXMLToFile dstFilename
     End If
     
-    writeExternalData = True
+    WriteExternalData = True
     Exit Function
     
 failedDataWrite:
 
     Debug.Print "WARNING: could not write XML data to file.  Are you sure this drive has enough free space?"
-    writeExternalData = False
+    WriteExternalData = False
     
 End Function
 
@@ -627,7 +618,7 @@ End Function
 ' of the values we already have stored for this image.  The Undo/Redo engine may also specify non-destructive loading, in which case
 ' we assume that our existing layer stack is valid, but in the wrong order - so simply reorder the stack according to the data in the
 ' XML, instead of full-on recreating it from scratch.
-Public Function readExternalData(ByRef srcFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False, Optional ByVal sourceIsUndoFile As Boolean = False, Optional ByVal loadNonDestructively As Boolean = False) As Boolean
+Public Function ReadExternalData(ByRef srcFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False, Optional ByVal sourceIsUndoFile As Boolean = False, Optional ByVal loadNonDestructively As Boolean = False) As Boolean
 
     On Error GoTo failedDataRead
     
@@ -643,7 +634,7 @@ Public Function readExternalData(ByRef srcFilename As String, Optional ByVal fil
     If filePathIsActuallyString Then
         xmlLoadSuccessful = xmlEngine.loadXMLFromString(srcFilename)
     Else
-        xmlLoadSuccessful = xmlEngine.loadXMLFile(srcFilename)
+        xmlLoadSuccessful = xmlEngine.LoadXMLFile(srcFilename)
     End If
     
     'Make sure the supplied XML actually contains pdImage data.
@@ -658,12 +649,11 @@ Public Function readExternalData(ByRef srcFilename As String, Optional ByVal fil
         
         'All settings past this point are only relevant when loading a file anew, not when it's being used as part of
         ' the Undo/Redo stack.
-        If Not sourceIsUndoFile Then
+        If (Not sourceIsUndoFile) Then
         
             'These values are all stored in the PDI file, but they're not really relevant.  I will look at not storing
             ' them in the first place, but for now, just ignore them.
             'TODO: make a firm decision on what data does not belong in PDI files!
-            'Me.originalFileSize = xmlEngine.getUniqueTag_Long("originalFileSize")
             'Me.originalFileName = xmlEngine.getUniqueTag_String("originalFileName")
             'Me.originalFileNameAndExtension = xmlEngine.getUniqueTag_String("originalFileNameAndExtension")
             'Me.locationOnDisk = xmlEngine.getUniqueTag_String("locationOnDisk")
@@ -702,14 +692,14 @@ Public Function readExternalData(ByRef srcFilename As String, Optional ByVal fil
     End If
     
     'The pdImage struct has been created successfully!
-    readExternalData = True
+    ReadExternalData = True
     
     Exit Function
     
 failedDataRead:
     
     Debug.Print "WARNING: could not validate XML data.  pdImage internals were not updated."
-    readExternalData = False
+    ReadExternalData = False
     
 End Function
 
@@ -813,7 +803,7 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     'Note that the user's thumbnail performance setting affects the quality used here.
     Dim intMode As InterpolationMode
     If g_ThumbnailPerformance = PD_PERF_FASTEST Then intMode = InterpolationModeNearestNeighbor Else intMode = InterpolationModeHighQualityBicubic
-    Me.getCompositedRect dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, 0, 0, Me.Width, Me.Height, intMode, , CLC_Thumbnail
+    Me.GetCompositedRect dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, 0, 0, Me.Width, Me.Height, intMode, , CLC_Thumbnail
     
     'Uncomment the line below to profile different thumbnail resize strategies
     'Debug.Print "Time taken for image thumbnail generation: " & CStr((Timer - startTime) * 1000) & " ms"
@@ -826,22 +816,10 @@ End Function
 Public Sub DeactivateImage()
     
     'Erase the composite buffer
-    If Not (compositeBuffer Is Nothing) Then
-        compositeBuffer.eraseDIB
-        Set compositeBuffer = Nothing
-    End If
+    If Not (compositeBuffer Is Nothing) Then Set compositeBuffer = Nothing
     
     'Erase the canvas buffer
-    If Not (canvasBuffer Is Nothing) Then
-        canvasBuffer.eraseDIB
-        Set canvasBuffer = Nothing
-    End If
-    
-    'If the alpha adjustment DIB exists, erase it too
-    If Not (alphaFixDIB Is Nothing) Then
-        alphaFixDIB.eraseDIB
-        Set alphaFixDIB = Nothing
-    End If
+    If Not (canvasBuffer Is Nothing) Then Set canvasBuffer = Nothing
     
     'If a selection exists, wipe it
     If Not (mainSelection Is Nothing) Then Set mainSelection = Nothing
@@ -859,10 +837,19 @@ Public Sub DeactivateImage()
     'Release the compositor
     If Not (imgCompositor Is Nothing) Then Set imgCompositor = Nothing
     
+    'Release all layers
+    Dim i As Long
+    If m_numOfLayers > 0 Then
+        For i = 0 To UBound(imgLayers)
+            Set imgLayers(i) = Nothing
+        Next i
+        m_numOfLayers = 0
+    End If
+    
     'It doesn't make a big difference, but we can also empty out this image's String-type variables to save a bit of space.
-    originalFileName = ""
-    originalFileNameAndExtension = ""
-    locationOnDisk = ""
+    originalFileName = vbNullString
+    originalFileNameAndExtension = vbNullString
+    locationOnDisk = vbNullString
     
     'Mark this image as inactive
     IsActive = False
@@ -871,7 +858,7 @@ End Sub
     
 'Outside actions (such as saving) can affect the HasBeenSaved variable.  However, because we need to do additional
 ' processing based on the state of this variable, we provide this interface.
-Public Sub setSaveState(ByVal newSaveState As Boolean, ByVal typeOfSaveEvent As PD_SAVE_EVENT)
+Public Sub SetSaveState(ByVal newSaveState As Boolean, ByVal typeOfSaveEvent As PD_SAVE_EVENT)
     
     'The image has just been saved
     If newSaveState Then
@@ -912,7 +899,7 @@ End Sub
 'If this is another type of resize action, such as a canvas resize, the caller must supply the new width/height values desired.
 '
 'Note that this function performs NO VALIDATION on the passed width/height values.  Make sure they are correct in advance!
-Public Function updateSize(Optional ByVal useBaseLayer As Boolean = True, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
+Public Function UpdateSize(Optional ByVal useBaseLayer As Boolean = True, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
     
     If useBaseLayer Then
         Me.Width = imgLayers(0).getLayerWidth(False)
@@ -935,7 +922,6 @@ Private Sub Class_Initialize()
     loadedSuccessfully = False
     hasBeenSavedPDI = False
     hasBeenSavedFlat = False
-    forInternalUseOnly = False
     
     'Initialize the public storage dictionary
     Set imgStorage = New pdDictionary
@@ -952,9 +938,6 @@ Private Sub Class_Initialize()
     'Initialize the composite and canvas buffers
     Set compositeBuffer = New pdDIB
     Set canvasBuffer = New pdDIB
-    
-    'Initialize the alpha composite layer
-    Set alphaFixDIB = New pdDIB
     
     'Initialize the main selection
     Set mainSelection = New pdSelection
@@ -1020,7 +1003,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     Set srcDIB = New pdDIB
     
     If useMergedImage Then
-        getCompositedImage srcDIB, True
+        GetCompositedImage srcDIB, True
     Else
         retrieveNullPaddedLayer srcDIB, m_curLayer
     End If

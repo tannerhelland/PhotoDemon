@@ -170,7 +170,7 @@ Private Function getNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
     
     End Select
     
-    getNonEssentialPluginFiles = CBool(dstStringStack.getNumOfStrings <> 0)
+    getNonEssentialPluginFiles = CBool(dstStringStack.GetNumOfStrings <> 0)
     
 End Function
 
@@ -225,11 +225,11 @@ Private Function initializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up..."
                 #End If
-                Plugin_ExifTool_Interface.killStrandedExifToolInstances
+                ExifTool.KillStrandedExifToolInstances
             End If
             
             'Attempt to shell a new ExifTool instance.  If shell fails (for whatever reason), the function will return FALSE.
-            initializationSuccessful = Plugin_ExifTool_Interface.startExifTool()
+            initializationSuccessful = ExifTool.StartExifTool()
                     
         Case CCP_EZTwain
             'The ezTwain module provides a function called "isEZTwainAvailable()", but all it does is check if the EZTwain DLL exists.

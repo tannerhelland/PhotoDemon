@@ -114,7 +114,7 @@ Private Enum EMFType
     EmfTypeEmfPlusDual = MetafileTypeEmfPlusDual   'both EMF+ and EMF
 End Enum
 
-Private Type CLSID
+Private Type clsid
     Data1         As Long
     Data2         As Integer
     Data3         As Integer
@@ -122,8 +122,8 @@ Private Type CLSID
 End Type
 
 Private Type ImageCodecInfo
-    ClassID           As CLSID
-    FormatID          As CLSID
+    ClassID           As clsid
+    FormatID          As clsid
     CodecName         As Long
     DllName           As Long
     formatDescription As Long
@@ -138,7 +138,7 @@ Private Type ImageCodecInfo
 End Type
 
 Private Type EncoderParameter
-    Guid           As CLSID
+    Guid           As clsid
     NumberOfValues As Long
     encType           As EncoderParameterValueType
     Value          As Long
@@ -377,7 +377,7 @@ Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal hImage As Long) A
 Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (gdiBitmapInfo As BITMAPINFO, gdiBitmapData As Any, BITMAP As Long) As GDIPlusStatus
 Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (numEncoders As Long, Size As Long) As GDIPlusStatus
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numEncoders As Long, ByVal Size As Long, Encoders As Any) As GDIPlusStatus
-Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal sFilename As String, clsidEncoder As CLSID, encoderParams As Any) As GDIPlusStatus
+Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal sFilename As String, clsidEncoder As clsid, encoderParams As Any) As GDIPlusStatus
 Private Declare Function GdipGetImageWidth Lib "gdiplus" (ByVal hImage As Long, ByRef imgWidth As Long) As Long
 Private Declare Function GdipGetImageHeight Lib "gdiplus" (ByVal hImage As Long, ByRef imgHeight As Long) As Long
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal hImage As Long, ByRef imgWidth As Single, ByRef imgHeight As Single) As Long
@@ -386,7 +386,7 @@ Private Declare Function GdipGetDC Lib "gdiplus" (ByVal mGraphics As Long, ByRef
 Private Declare Function GdipReleaseDC Lib "gdiplus" (ByVal mGraphics As Long, ByVal hDC As Long) As Long
 Private Declare Function GdipBitmapLockBits Lib "gdiplus" (ByVal gdipBitmap As Long, gdipRect As RECTL, ByVal gdipFlags As Long, ByVal iPixelFormat As Long, LockedBitmapData As BitmapData) As GDIPlusStatus
 Private Declare Function GdipBitmapUnlockBits Lib "gdiplus" (ByVal gdipBitmap As Long, LockedBitmapData As BitmapData) As GDIPlusStatus
-Private Declare Function GdipGetImageRawFormat Lib "gdiplus" (ByVal gImage As Long, ByRef guidContainer As CLSID) As GDIPlusStatus
+Private Declare Function GdipGetImageRawFormat Lib "gdiplus" (ByVal gImage As Long, ByRef guidContainer As clsid) As GDIPlusStatus
 Private Declare Function GdipGetImageGraphicsContext Lib "gdiplus" (ByVal hImage As Long, ByRef hGraphics As Long) As GDIPlusStatus
 Private Declare Function GdipCreateMetafileFromFile Lib "gdiplus" (ByVal srcFilePtr As Long, ByRef hMetafile As Long) As GDIPlusStatus
 Private Declare Function GdipGraphicsClear Lib "gdiplus" (ByVal hGraphics As Long, ByVal lColor As Long) As GDIPlusStatus
@@ -407,8 +407,8 @@ Private Declare Function GdipGetImageVerticalResolution Lib "gdiplus" (ByVal hIm
 Private Declare Function OleCreatePictureIndirect Lib "olepro32" (lpPictDesc As PictDesc, riid As Any, ByVal fPictureOwnsHandle As Long, iPic As IPicture) As Long
 
 'CLSIDFromString is used to convert a mimetype into a CLSID required by the GDI+ image encoder
-Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpszProgID As Long, ByRef pclsid As CLSID) As Long
-Private Declare Function StringFromCLSID Lib "ole32" (ByRef pclsid As CLSID, ByRef lpszProgID As Long) As Long
+Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpszProgID As Long, ByRef pclsid As clsid) As Long
+Private Declare Function StringFromCLSID Lib "ole32" (ByRef pclsid As clsid, ByRef lpszProgID As Long) As Long
          
 'Necessary for converting between ASCII and UNICODE strings
 Private Declare Function lstrlenW Lib "kernel32" (ByVal psString As Any) As Long
@@ -1745,7 +1745,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     End If
     
     'Retrieve the image's format as a GUID
-    Dim imgCLSID As CLSID
+    Dim imgCLSID As clsid
     GdipGetImageRawFormat hImage, imgCLSID
     
     'Convert the GUID into a string
@@ -1782,7 +1782,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         ReDim iccProfileBuffer(0 To profileSize - 1) As Byte
         GdipGetPropertyItem hImage, PropertyTagICCProfile, profileSize, ByVal VarPtr(iccProfileBuffer(0))
         
-        dstDIB.ICCProfile.loadICCFromGDIPlus profileSize - 16, VarPtr(iccProfileBuffer(0)) + 16
+        dstDIB.ICCProfile.LoadICCFromGDIPlus profileSize - 16, VarPtr(iccProfileBuffer(0)) + 16
         
         Erase iccProfileBuffer
         
@@ -2033,14 +2033,14 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             GdipBitmapUnlockBits hImage, copyBitmapData
                         
             'Apply the transformation using the dedicated CMYK transform handler
-            If ApplyCMYKTransform(dstDIB.ICCProfile.getICCDataPointer, dstDIB.ICCProfile.getICCDataSize, tmpCMYKDIB, dstDIB, dstDIB.ICCProfile.getSourceRenderIntent) Then
+            If ApplyCMYKTransform(dstDIB.ICCProfile.GetICCDataPointer, dstDIB.ICCProfile.GetICCDataSize, tmpCMYKDIB, dstDIB, dstDIB.ICCProfile.GetSourceRenderIntent) Then
             
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "Copying newly transformed sRGB data..."
                 #End If
             
                 'The transform was successful, and the destination DIB is ready to go!
-                dstDIB.ICCProfile.markSuccessfulProfileApplication
+                dstDIB.ICCProfile.MarkSuccessfulProfileApplication
                                 
             'Something went horribly wrong.  Use GDI+ to apply a generic CMYK -> RGB transform.
             Else
@@ -2210,7 +2210,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     End If
     
     'Request an encoder from GDI+ based on the type passed to this routine
-    Dim uEncCLSID As CLSID
+    Dim uEncCLSID As clsid
     Dim uEncParams As EncoderParameters
     Dim aEncParams() As Byte
 
@@ -2350,7 +2350,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
     getGdipBitmapHandleFromDIB hGdipBitmap, srcDIB
         
     'Request a PNG encoder from GDI+
-    Dim uEncCLSID As CLSID
+    Dim uEncCLSID As clsid
     Dim uEncParams As EncoderParameters
     Dim aEncParams() As Byte
         
@@ -2920,7 +2920,7 @@ End Function
 
 'Thanks to Carles P.V. for providing the following four functions, which are used as part of GDI+ image saving.
 ' You can download Carles's full project from http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
-Private Function pvGetEncoderClsID(strMimeType As String, ClassID As CLSID) As Long
+Private Function pvGetEncoderClsID(strMimeType As String, ClassID As clsid) As Long
 
   Dim Num      As Long
   Dim Size     As Long
@@ -2957,7 +2957,7 @@ Private Function pvGetEncoderClsID(strMimeType As String, ClassID As CLSID) As L
     Erase Buffer
 End Function
 
-Private Function pvDEFINE_GUID(ByVal sGuid As String) As CLSID
+Private Function pvDEFINE_GUID(ByVal sGuid As String) As clsid
 '-- Courtesy of: Dana Seaman
 '   Helper routine to convert a CLSID(aka GUID) string to a structure
 '   Example ImageFormatBMP = {B96B3CAB-0728-11D3-9D7B-0000F81EF32E}

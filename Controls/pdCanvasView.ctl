@@ -258,7 +258,7 @@ Public Function IsCanvasInteractionAllowed() As Boolean
     Else
         If Not pdImages(g_CurrentImage).IsActive Then IsCanvasInteractionAllowed = False
         If Not pdImages(g_CurrentImage).loadedSuccessfully Then IsCanvasInteractionAllowed = False
-        If pdImages(g_CurrentImage).getNumOfLayers = 0 Then IsCanvasInteractionAllowed = False
+        If pdImages(g_CurrentImage).GetNumOfLayers = 0 Then IsCanvasInteractionAllowed = False
     End If
     
     'If the central processor is active, exit
@@ -440,11 +440,6 @@ End Sub
 
 'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
 Private Sub RedrawBackBuffer()
-    
-    'We can improve shutdown performance by ignoring redraw requests
-    If g_ProgramShuttingDown Then
-        If (g_Themer Is Nothing) Then Exit Sub
-    End If
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long, bWidth As Long, bHeight As Long

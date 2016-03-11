@@ -781,19 +781,19 @@ Public Function writePackageToFile(ByVal dstFilename As String, Optional ByVal s
         totalWriteSize = LenB(m_FileHeader) + UBound(rawDirectoryBuffer) + 1 + UBound(rawDataBuffer) + 1
         
         If m_File.ConvertFileHandleToMMPtr(hFile, mmapHandle, mmapPtr, totalWriteSize) Then
-        
+
             'Write out the file data using good ol' CopyMemory!
             Dim mmapOffset As Long, netDirectorySize As Long
             mmapOffset = LenB(m_FileHeader)
             netDirectorySize = UBound(rawDirectoryBuffer) + 1
-            
+
             CopyMemory mmapPtr, VarPtr(m_FileHeader), mmapOffset
             CopyMemory mmapPtr + mmapOffset, VarPtr(rawDirectoryBuffer(0)), netDirectorySize
             CopyMemory mmapPtr + mmapOffset + netDirectorySize, VarPtr(rawDataBuffer(0)), UBound(rawDataBuffer) + 1
-            
+
             'Release the mapped view and allow the system to write the file at its leisure
             m_File.ReleaseMMHandle mmapHandle, mmapPtr
-            
+
         'If we failed to allocate sufficient memory for a memory-mapped write, fall back to default write techniques
         Else
     

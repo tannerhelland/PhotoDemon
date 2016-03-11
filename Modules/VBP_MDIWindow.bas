@@ -23,43 +23,50 @@ Attribute VB_Name = "Image_Canvas_Handler"
 
 Option Explicit
 
-'Create a new, blank MDI child
-Public Sub CreateNewPDImage(Optional ByVal forInternalUse As Boolean = False)
-
-    'The viewport automatically updates itself under various circumstances (such as a parent form resize).  We can forcibly disable
-    ' these automatic updates by setting g_AllowViewportRendering to FALSE.  (This is important, because we don't want it attempting
-    ' to refresh itself while we're still loading and processing an image.)  When we're finished, restore the value to TRUE, or the
-    ' primary viewport won't work.
-    g_AllowViewportRendering = False
-
-    'Increase the number of images we're tracking
-    If g_NumOfImagesLoaded > UBound(pdImages) Then
-        ReDim Preserve pdImages(0 To g_NumOfImagesLoaded * 2 - 1) As pdImage
+'Add an already-created pdImage object to the master pdImages() collection.  Do not pass empty objects!
+Public Function AddImageToMasterCollection(ByRef srcImage As pdImage) As Boolean
+    
+    If Not (srcImage Is Nothing) Then
+        
+        If g_NumOfImagesLoaded > UBound(pdImages) Then
+            ReDim Preserve pdImages(0 To g_NumOfImagesLoaded * 2 - 1) As pdImage
+        End If
+        
+        Set pdImages(g_NumOfImagesLoaded) = srcImage
+        
+        'Activate the image and assign it a unique ID.  (IMPORTANT: at present, the ID always correlates to the
+        ' image's position in the collection.  Do not change this behavior.)
+        pdImages(g_NumOfImagesLoaded).IsActive = True
+        pdImages(g_NumOfImagesLoaded).imageID = g_NumOfImagesLoaded
+        
+        'Newly loaded images are always auto-activated.
+        g_CurrentImage = g_NumOfImagesLoaded
+    
+        'Track how many images we've loaded and/or currently have open
+        g_NumOfImagesLoaded = g_NumOfImagesLoaded + 1
+        g_OpenImageCount = g_OpenImageCount + 1
+        
+        AddImageToMasterCollection = True
+        
+    Else
+        AddImageToMasterCollection = False
     End If
     
-    Set pdImages(g_NumOfImagesLoaded) = New pdImage
-    
-    'Remember this ID in the associated image class
-    pdImages(g_NumOfImagesLoaded).IsActive = True
-    pdImages(g_NumOfImagesLoaded).imageID = g_NumOfImagesLoaded
-    
-    'If this image wasn't loaded by the user (e.g. it's an internal PhotoDemon process), mark is as such
-    pdImages(g_NumOfImagesLoaded).forInternalUseOnly = forInternalUse
-    
-    'Set a default zoom of 100% (note: this is likely to change, assuming the user has auto-zoom enabled)
-    pdImages(g_NumOfImagesLoaded).currentZoomValue = g_Zoom.GetZoom100Index
-    
-    'Set this image as the current one
-    g_CurrentImage = g_NumOfImagesLoaded
-    
-    'Track how many images we've loaded and/or currently have open
-    g_NumOfImagesLoaded = g_NumOfImagesLoaded + 1
-    g_OpenImageCount = g_OpenImageCount + 1
-        
-    'Re-enable automatic viewport updates
-    g_AllowViewportRendering = True
-    
+End Function
+
+'Pass this function to obtain a default pdImage object, instantiated to match current UI settings and user preferences.
+' Note that this function *does not touch* the main pdImages object, and as such, the created image will not yet have
+' an imageID value.  That values is assigned when the object is added to the main pdImages() collection.
+Public Sub GetDefaultPDImageObject(ByRef dstImage As pdImage)
+    If (dstImage Is Nothing) Then Set dstImage = New pdImage
+    dstImage.currentZoomValue = g_Zoom.GetZoom100Index
 End Sub
+
+'When loading an image file, there's a chance we won't be able to load the image correctly.  Because of that, we start
+' with a "provisional" ID value for the image.  If the image fails to load, we can reuse this value on the next image.
+Public Function GetProvisionalImageID() As Long
+    GetProvisionalImageID = g_NumOfImagesLoaded
+End Function
 
 'Fit the current image onscreen at as large a size as possible (but never larger than 100% zoom)
 Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = False)
@@ -84,7 +91,7 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     g_AllowViewportRendering = True
         
     'Now fix scrollbars and everything
-    If Not suppressRendering Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
+    If (Not suppressRendering) Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
     
     'Notify external UI elements of the change
     FormMain.mainCanvas(0).RelayViewportChanges
@@ -203,7 +210,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
     End If
     
     'If the user wants to be prompted about unsaved images, do it now
-    If g_ConfirmClosingUnsaved And pdImages(imageID).IsActive And (Not pdImages(imageID).forInternalUseOnly) Then
+    If g_ConfirmClosingUnsaved And pdImages(imageID).IsActive Then
     
         'Check the .HasBeenSaved property of the image associated with this form
         If Not pdImages(imageID).getSaveState(pdSE_AnySave) Then
@@ -221,7 +228,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                     Dim i As Long
                     For i = LBound(pdImages) To UBound(pdImages)
                         If Not (pdImages(i) Is Nothing) Then
-                            If pdImages(i).IsActive And (Not pdImages(i).forInternalUseOnly) And (Not pdImages(i).getSaveState(pdSE_AnySave)) Then
+                            If pdImages(i).IsActive And (Not pdImages(i).getSaveState(pdSE_AnySave)) Then
                                 g_NumOfUnsavedImages = g_NumOfUnsavedImages + 1
                             End If
                         End If
@@ -295,8 +302,7 @@ End Function
 Public Function UnloadPDImage(Cancel As Integer, ByVal imageIndex As Long, Optional ByVal resyncInterface As Boolean = True)
 
     'Failsafe to make sure the image was properly initialized
-    If pdImages(imageIndex) Is Nothing Then Exit Function
-    
+    If (pdImages(imageIndex) Is Nothing) Then Exit Function
     If pdImages(imageIndex).loadedSuccessfully And resyncInterface Then Message "Closing image..."
     
     'Decrease the open image count
@@ -348,6 +354,7 @@ Public Function UnloadPDImage(Cancel As Integer, ByVal imageIndex As Long, Optio
     
     'Sync the interface to match the settings of whichever image is active (or disable a bunch of items if no images are active)
     If resyncInterface Then
+        FormMain.mainCanvas(0).AlignCanvasView
         SyncInterfaceToCurrentImage
         Message "Finished."
     End If
@@ -429,7 +436,7 @@ Public Function IsMouseOverLayer(ByVal imgX As Long, ByVal imgY As Long, ByRef s
         Exit Function
     End If
     
-    With srcImage.getLayerByIndex(srcLayerIndex)
+    With srcImage.GetLayerByIndex(srcLayerIndex)
     
         If (imgX >= .getLayerOffsetX) And (imgX <= .getLayerOffsetX + .getLayerWidth(False)) Then
             If (imgY >= .getLayerOffsetY) And (imgY <= .getLayerOffsetY + .getLayerHeight(False)) Then

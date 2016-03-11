@@ -1839,7 +1839,6 @@ End Function
 ' IMPORTANT!  It's assumed that the caller checked the file's existence PRIOR to calling this function.
 Public Function FileLenW(ByRef srcPath As String) As Long
     
-    'Get a handle to the file in question
     Dim hFile As Long
     If CreateFileHandle(srcPath, hFile, True) Then
         FileLenW = CLng(FileLengthLarge(hFile))

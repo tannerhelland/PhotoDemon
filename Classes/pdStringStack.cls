@@ -480,11 +480,20 @@ Public Sub CloneStack(ByRef stackToClone As pdStringStack)
     
 End Sub
 
+'Return our list of strings as a bare string array
 Public Sub GetCopyOfStringArray(ByRef dstStringArray() As String)
     ReDim dstStringArray(0 To m_NumOfStrings - 1) As String
     Dim i As Long
     For i = 0 To m_NumOfStrings - 1
         dstStringArray(i) = m_Strings(i)
+    Next i
+End Sub
+
+'Fill this stack with the contents of a bare string array.  Do not pass an uninitialized array.
+Public Sub CreateFromStringArray(ByRef srcStringArray() As String)
+    Dim i As Long
+    For i = LBound(srcStringArray) To UBound(srcStringArray)
+        Me.AddString srcStringArray(i)
     Next i
 End Sub
 

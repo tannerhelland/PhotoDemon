@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.Form FormMain 
    BackColor       =   &H80000010&
-   Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
+   Caption         =   "PhotoDemon by Tanner Helland - www.photodemon.org"
    ClientHeight    =   11130
    ClientLeft      =   1290
    ClientTop       =   1065
@@ -27,8 +27,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   2280
-      _ExtentX        =   661
-      _ExtentY        =   661
+      _extentx        =   661
+      _extenty        =   661
    End
    Begin VB.Timer tmrMetadata 
       Enabled         =   0   'False
@@ -49,22 +49,22 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   120
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   1680
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   1080
-      _ExtentX        =   635
-      _ExtentY        =   635
-      ErrAsOut        =   0   'False
-      PollInterval    =   5
+      _extentx        =   635
+      _extenty        =   635
+      errasout        =   0
+      pollinterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1624,8 +1624,8 @@ Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boo
     End If
     
     'Core program updates are handled specially, so their resources can be freed without question.
-    asyncDownloader.freeResourcesForItem "PROGRAM_UPDATE_CHECK"
-    asyncDownloader.freeResourcesForItem "PROGRAM_UPDATE_CHECK_USER"
+    asyncDownloader.FreeResourcesForItem "PROGRAM_UPDATE_CHECK"
+    asyncDownloader.FreeResourcesForItem "PROGRAM_UPDATE_CHECK_USER"
     'asyncDownloader.Reset
     
     FormMain.mainCanvas(0).SetNetworkState False
@@ -1680,7 +1680,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
             End If
             
         Else
-            Debug.Print "Update file was not downloaded.  asyncDownloader returned this error message: " & asyncDownloader.getLastErrorNumber & " - " & asyncDownloader.getLastErrorDescription
+            Debug.Print "Update file was not downloaded.  asyncDownloader returned this error message: " & asyncDownloader.GetLastErrorNumber & " - " & asyncDownloader.GetLastErrorDescription
         End If
     
     'Separate from the core program, we also check language file updates (if preferences allow).
@@ -1704,7 +1704,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
                 'Note that one or more language files has been patched.  If this value is true and all updates have completed, we'll hot-patch
                 ' the language engine on the next PD Processor call.
                 m_LanguagesUpdatedSuccessfully = True
-                Debug.Print "Successfully patched " & getFilenameWithoutExtension(savedToThisFile) & ".xml."
+                Debug.Print "Successfully patched " & GetFilenameWithoutExtension(savedToThisFile) & ".xml."
                 
             Else
                 Debug.Print "Patching of " & GetFilename(savedToThisFile) & " was unsuccessful."
@@ -1735,20 +1735,18 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
 End Sub
 
 'External functions can request asynchronous downloads via this function.
-Public Function requestAsynchronousDownload(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "", Optional ByVal checksumToVerify As Long = 0) As Boolean
+Public Function RequestAsynchronousDownload(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "", Optional ByVal checksumToVerify As Long = 0) As Boolean
     FormMain.mainCanvas(0).SetNetworkState True
-    requestAsynchronousDownload = Me.asyncDownloader.addToQueue(downloadKey, urlString, OptionalDownloadType, asyncFlags, startDownloadImmediately, saveToThisFileWhenComplete, checksumToVerify)
+    RequestAsynchronousDownload = Me.asyncDownloader.AddToQueue(downloadKey, urlString, OptionalDownloadType, asyncFlags, startDownloadImmediately, saveToThisFileWhenComplete, checksumToVerify)
 End Function
 
 'External functions can use this to initiate any pending downloads (e.g. downloads they may have added via requestAsynchronousDownload, above)
-Public Sub triggerPendingAsynchronousDownloads()
+Public Sub TriggerPendingAsynchronousDownloads()
     FormMain.mainCanvas(0).SetNetworkState True
-    Me.asyncDownloader.setAutoDownloadMode True
+    Me.asyncDownloader.SetAutoDownloadMode True
 End Sub
 
-'When the main form is resized, we must re-align the main canvas.
-' TODO: if the window manager is already calling UpdateMainLayout, we're repeating those steps twice. Confirm that this
-'       isn't happening prior to the 7.0 release.
+'When the main form is resized, we must re-align the main canvas to match
 Private Sub Form_Resize()
     If Not (g_WindowManager Is Nothing) Then
         If g_WindowManager.GetAutoRefreshMode Then UpdateMainLayout
@@ -1925,11 +1923,11 @@ Private Sub MnuLayer_Click(Index As Integer)
         
         'Merge up
         Case 3
-            Process "Merge layer up", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
+            Process "Merge layer up", False, buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE
         
         'Merge down
         Case 4
-            Process "Merge layer down", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
+            Process "Merge layer down", False, buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE
         
         'Order (top-level)
         Case 5
@@ -1981,7 +1979,7 @@ Private Sub MnuLayerDelete_Click(Index As Integer)
     
         'Delete current layer
         Case 0
-            Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
+            Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
         
         'Delete all hidden layers
         Case 1
@@ -1998,11 +1996,11 @@ Private Sub MnuLayerNew_Click(Index As Integer)
     
         'Blank layer
         Case 0
-            Process "Add blank layer", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
+            Process "Add blank layer", False, Str(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
         
         'Duplicate of current layer
         Case 1
-            Process "Duplicate Layer", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
+            Process "Duplicate Layer", False, Str(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
         
         '<separator>
         Case 2
@@ -2026,22 +2024,22 @@ Private Sub MnuLayerOrder_Click(Index As Integer)
     
         'Raise layer
         Case 0
-            Process "Raise layer", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Raise layer", False, Str(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
         
         'Lower layer
         Case 1
-            Process "Lower layer", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Lower layer", False, Str(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
         
         '<separator>
         Case 2
         
         'Raise to top
         Case 3
-            Process "Raise layer to top", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Raise layer to top", False, Str(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
         
         'Lower to bottom
         Case 4
-            Process "Lower layer to bottom", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Lower layer to bottom", False, Str(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
         
     End Select
 
@@ -2111,7 +2109,7 @@ Private Sub MnuLayerSize_Click(Index As Integer)
     
         'Reset to actual size
         Case 0
-            Process "Reset layer size", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYERHEADER
+            Process "Reset layer size", False, buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
         
         '<separator>
         Case 1
@@ -2403,7 +2401,7 @@ Private Sub shellPipeMain_DataArrival(ByVal CharsTotal As Long)
     
     If Len(receivedData) <> 0 Then
     
-        newMetadataReceived receivedData
+        NewMetadataReceived receivedData
     
         'DEBUG ONLY!
         #If DEBUGMODE = 1 Then
@@ -2441,7 +2439,7 @@ Private Sub tmrMetadata_Timer()
     ' images simultaneously.  Rather than bring down the whole program, I'd prefer to simply ignore metadata for the problematic image.
     On Error Resume Next
 
-    If isMetadataFinished Then
+    If IsMetadataFinished Then
     
         'Start by disabling this timer, lest it fire again while we're in the middle of parsing stuff
         tmrMetadata.Enabled = False
@@ -2454,7 +2452,7 @@ Private Sub tmrMetadata_Timer()
         
         'Retrieve the completed metadata string
         Dim mdString As String, tmpString As String
-        mdString = retrieveMetadataString()
+        mdString = RetrieveMetadataString()
         
         Dim curImageID As Long
         
@@ -2506,7 +2504,7 @@ Private Sub tmrMetadata_Timer()
                             
                                 'Create the imgMetadata object as necessary, and load the selected metadata into it!
                                 If pdImages(curImageID).imgMetadata Is Nothing Then Set pdImages(curImageID).imgMetadata = New pdMetadata
-                                pdImages(curImageID).imgMetadata.loadAllMetadata Mid$(mdString, startPosition, terminalPosition - startPosition), curImageID
+                                pdImages(curImageID).imgMetadata.LoadAllMetadata Mid$(mdString, startPosition, terminalPosition - startPosition), curImageID
                                 
                             End If
                         End If
@@ -2715,13 +2713,13 @@ Private Sub Form_Load()
         'Initiate an asynchronous download of the standard PD update file (photodemon.org/downloads/updates.xml).
         ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
         ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-        Me.asyncDownloader.addToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.getUpdatePath & "updates.xml"
+        Me.asyncDownloader.AddToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.getUpdatePath & "updates.xml"
         
         'As of v6.6, PhotoDemon now supports independent language file updates, separate from updating PD as a whole.
         ' Check that preference, and if allowed, initiate a separate language file check.  (If no core program update is found, but a language
         ' file update *is* found, we'll download and patch those separately.)
         If g_UserPreferences.GetPref_Boolean("Updates", "Update Languages Independently", True) Then
-            Me.asyncDownloader.addToQueue "LANGUAGE_UPDATE_CHECK", "http://photodemon.org/downloads/updates/langupdate.xml"
+            Me.asyncDownloader.AddToQueue "LANGUAGE_UPDATE_CHECK", "http://photodemon.org/downloads/updates/langupdate.xml"
         End If
         
         'As of v6.6, PhotoDemon also supports independent plugin file updates, separate from updating PD as a whole.
@@ -2734,7 +2732,7 @@ Private Sub Form_Load()
     End If
     
     'With all potentially required downloads added to the queue, we can now begin downloading everything
-    Me.asyncDownloader.setAutoDownloadMode True
+    Me.asyncDownloader.SetAutoDownloadMode True
     
     
     
@@ -2746,7 +2744,7 @@ Private Sub Form_Load()
     ' detect this state and offer to download the plugins for the user.
     ' (NOTE: this check is superceded by the update check - since a full program update will include the missing plugins -
     '        so we ignore this request if the user was already notified of a program update.)
-    If (Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not IsFreeImageAvailable) Or (Not isPngQuantAvailable) Or (Not isExifToolAvailable) Then
+    If (Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not IsFreeImageAvailable) Or (Not isPngQuantAvailable) Or (Not IsExifToolAvailable) Then
     
         'TODO: rework this to scan for missing plugins in the current application folder.  Some .zip clients - e.g. WinZip - may not
         '      preserve folders during extraction.  PD should automatically detect and repair this situation.
@@ -2948,7 +2946,7 @@ Private Sub Form_Unload(Cancel As Integer)
     ' no images are loaded by this point.  Because it also takes a moment to shut down, trigger it first.
     If g_ExifToolEnabled Then
         
-        terminateExifTool
+        TerminateExifTool
     
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "ExifTool terminated"
@@ -2961,7 +2959,7 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Removing printer temp files..."
     #End If
     
-    Printing.performPrinterCleanup
+    Printing.PerformPrinterCleanup
     
     'Stop tracking hotkeys
     #If DEBUGMODE = 1 Then
@@ -3615,7 +3613,7 @@ Private Sub MnuHelp_Click(Index As Integer)
             'Initiate an asynchronous download of the standard PD update file (photodemon.org/downloads/updates.xml).
             ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
             ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-            Me.asyncDownloader.addToQueue "PROGRAM_UPDATE_CHECK_USER", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.getUpdatePath & "updates.xml"
+            Me.asyncDownloader.AddToQueue "PROGRAM_UPDATE_CHECK_USER", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.getUpdatePath & "updates.xml"
             
         
         'Submit feedback
@@ -3717,7 +3715,7 @@ Private Sub MnuImage_Click(Index As Integer)
             
         'Fit canvas to active layer
         Case 6
-            Process "Fit canvas to layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Fit canvas to layer", False, buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
         
         'Fit canvas around all layers
         Case 7
@@ -3854,20 +3852,19 @@ End Sub
 'Load all images in the current "Recent Files" menu
 Private Sub MnuLoadAllMRU_Click()
     
-    'Fill a string array with all current MRU entries
-    Dim sFile() As String
-    ReDim sFile(0 To g_RecentFiles.MRU_ReturnCount() - 1) As String
+    Dim listOfFiles As pdStringStack
+    Set listOfFiles = New pdStringStack
     
     Dim i As Long
-    For i = 0 To UBound(sFile)
-        sFile(i) = g_RecentFiles.getSpecificMRU(i)
+    For i = 0 To g_RecentFiles.MRU_ReturnCount() - 1
+        listOfFiles.AddString g_RecentFiles.getSpecificMRU(i)
     Next i
     
-    'Load all images in the list
-    LoadFileAsNewImage sFile
+    Loading.LoadMultipleImageFiles listOfFiles, False
     
-    'If the image loaded successfully, activate it and bring it to the foreground
-    If (g_OpenImageCount > 0) Then ActivatePDImage g_CurrentImage, "finished loading all recent images"
+    'Bring the last-loaded image to the foreground.
+    ' (TODO 7.0: thanks to the new window manager, this should no longer be necessary)
+    ' If (g_OpenImageCount > 0) Then ActivatePDImage g_CurrentImage, "finished loading all recent images"
     
 End Sub
 
@@ -4059,23 +4056,14 @@ End Sub
 Public Sub mnuRecDocs_Click(Index As Integer)
     
     'Load the MRU path that correlates to this index.  (If one is not found, a null string is returned)
-    Dim tmpString As String
-    tmpString = g_RecentFiles.getSpecificMRU(Index)
-    
-    'Check - just in case - to make sure the path isn't empty
-    If tmpString <> "" Then
+    If Len(g_RecentFiles.getSpecificMRU(Index)) <> 0 Then
+        LoadFileAsNewImage g_RecentFiles.getSpecificMRU(Index)
         
-        'Message "Preparing to load recent file entry..."
+        'If the image loaded successfully, activate it and bring it to the foreground
+        ' TODO 7.0: thanks to the new window manager, this should no longer be necessary - check it!
+        If (g_OpenImageCount > 0) Then ActivatePDImage g_CurrentImage, "MRU entry finished loading"
         
-        'Because LoadFileAsNewImage requires a string array, create an array to pass it
-        Dim sFile(0) As String
-        sFile(0) = tmpString
-        
-        LoadFileAsNewImage sFile
     End If
-    
-    'If the image loaded successfully, activate it and bring it to the foreground
-    If (g_OpenImageCount > 0) Then ActivatePDImage g_CurrentImage, "MRU entry finished loading"
     
 End Sub
 
@@ -4164,7 +4152,7 @@ Private Sub MnuSelect_Click(Index As Integer)
         
         'Erase selected area
         Case 10
-            Process "Erase selected area", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYER
+            Process "Erase selected area", False, buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
         
         '<separator>
         Case 11

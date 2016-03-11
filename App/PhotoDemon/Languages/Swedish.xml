@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.146</langversion>
+<langversion>6.7.147</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -15,7 +15,92 @@
 
 <!-- BEGIN text for VBP_Main.bas -->
 
-<!-- VBP_Main.bas contains 0 phrases. -->
+<phrase>
+<original>Detecting Windows® version</original>
+<translation>Upptäcka Windows '-version</translation>
+</phrase>
+
+<phrase>
+<original>Initializing all program directories</original>
+<translation>Initiera alla programkataloger</translation>
+</phrase>
+
+<phrase>
+<original>Loading all user settings</original>
+<translation>Laddar alla användarinställningar</translation>
+</phrase>
+
+<phrase>
+<original>Scanning for language files</original>
+<translation>Söker efter språkfiler</translation>
+</phrase>
+
+<phrase>
+<original>Determining which language to use</original>
+<translation>Avgöra vilket språk som ska användas</translation>
+</phrase>
+
+<phrase>
+<original>Applying selected language</original>
+<translation>Tillämpa valda språket</translation>
+</phrase>
+
+<phrase>
+<original>Analyzing current monitor setup</original>
+<translation>Analysera nuvarande bildskärmar</translation>
+</phrase>
+
+<phrase>
+<original>Loading plugins</original>
+<translation>Laddar plugins</translation>
+</phrase>
+
+<phrase>
+<original>Loading import/export libraries</original>
+<translation>Bibliotek Loading import/export</translation>
+</phrase>
+
+<phrase>
+<original>Initializing theme engine</original>
+<translation>Initierar tema motor</translation>
+</phrase>
+
+<phrase>
+<original>Building font cache</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Initializing clipboard interface</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Initializing viewport engine</original>
+<translation>Initierar vyport motor</translation>
+</phrase>
+
+<phrase>
+<original>Initializing window manager</original>
+<translation>Initierar fönsterhanterare</translation>
+</phrase>
+
+<phrase>
+<original>Initializing image tools</original>
+<translation>Initiera bildverktyg</translation>
+</phrase>
+
+<phrase>
+<original>Initializing user interface</original>
+<translation>Initierar användargränssnitt</translation>
+</phrase>
+
+<phrase>
+<original>Preparing program menus</original>
+<translation>Förbereda programmenyer</translation>
+</phrase>
+
+<!-- VBP_Main.bas contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
 
 <!-- END text for VBP_Main.bas-->
 
@@ -622,6 +707,51 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 
 <!-- END text for VBP_MDIWindow.bas-->
 
+<!-- BEGIN text for ImageLoader.bas -->
+
+<phrase>
+<original>Selected file is not in PDI format.  Load abandoned.</original>
+<translation>Vald fil inte är i PDI-format. Ladda övergiven.</translation>
+</phrase>
+
+<phrase>
+<original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
+
+To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
+<translation>Den PDI filen " %1" innehåller komprimerade data, men zlib plugin saknas eller disabled.
+
+To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter uppdateringar, och när du uppmanas göra det möjligt PhotoDemon att hämta alla rekommenderade plugins.</translation>
+</phrase>
+
+<phrase>
+<original>zLib plugin missing</original>
+<translation>ZLIB plugin saknas</translation>
+</phrase>
+
+<phrase>
+<original>PDI node could not be read; file may be invalid or corrupted.  Load abandoned.</original>
+<translation>PDI nod kunde inte läsas; Filen kan vara ogiltigt eller skadat. Ladda övergiven.</translation>
+</phrase>
+
+<phrase>
+<original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
+<translation>Ett fel har uppstått (# %1 - %2). PDI belastning övergiven.</translation>
+</phrase>
+
+<phrase>
+<original>An error has occurred (#</original>
+<translation>Ett fel har uppstått (#</translation>
+</phrase>
+
+<phrase>
+<original>GDI+ refused to load image.  Dropping back to internal routines and trying again</original>
+<translation>GDI vägrade att ladda bilden. Släppa tillbaka till interna rutiner och försöker igen</translation>
+</phrase>
+
+<!-- ImageLoader.bas contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<!-- END text for ImageLoader.bas-->
+
 <!-- BEGIN text for VBP_MiscInterface.bas -->
 
 <phrase>
@@ -945,106 +1075,31 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 <translation></translation>
 </phrase>
 
-<!-- VBP_LayerHandler.bas contains 34 phrases. 18 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<phrase>
+<original>frame %1</original>
+<translation>ram %1</translation>
+</phrase>
+
+<phrase>
+<original>icon (%1x%2)</original>
+<translation>Ikonen ( %1x %2)</translation>
+</phrase>
+
+<phrase>
+<original>icon (%1x%2, %3 bpp)</original>
+<translation>Ikonen ( %1x %2, %3 bpp)</translation>
+</phrase>
+
+<phrase>
+<original>page %1</original>
+<translation>sida %1</translation>
+</phrase>
+
+<!-- VBP_LayerHandler.bas contains 42 phrases. 22 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for VBP_LayerHandler.bas-->
 
 <!-- BEGIN text for VBP_LoadModule.bas -->
-
-<phrase>
-<original>Detecting Windows® version</original>
-<translation>Upptäcka Windows '-version</translation>
-</phrase>
-
-<phrase>
-<original>Initializing all program directories</original>
-<translation>Initiera alla programkataloger</translation>
-</phrase>
-
-<phrase>
-<original>Loading all user settings</original>
-<translation>Laddar alla användarinställningar</translation>
-</phrase>
-
-<phrase>
-<original>Scanning for language files</original>
-<translation>Söker efter språkfiler</translation>
-</phrase>
-
-<phrase>
-<original>Determining which language to use</original>
-<translation>Avgöra vilket språk som ska användas</translation>
-</phrase>
-
-<phrase>
-<original>Applying selected language</original>
-<translation>Tillämpa valda språket</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing current monitor setup</original>
-<translation>Analysera nuvarande bildskärmar</translation>
-</phrase>
-
-<phrase>
-<original>Loading plugins</original>
-<translation>Laddar plugins</translation>
-</phrase>
-
-<phrase>
-<original>Loading import/export libraries</original>
-<translation>Bibliotek Loading import/export</translation>
-</phrase>
-
-<phrase>
-<original>Initializing theme engine</original>
-<translation>Initierar tema motor</translation>
-</phrase>
-
-<phrase>
-<original>Building font cache</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Initializing clipboard interface</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Initializing viewport engine</original>
-<translation>Initierar vyport motor</translation>
-</phrase>
-
-<phrase>
-<original>Initializing window manager</original>
-<translation>Initierar fönsterhanterare</translation>
-</phrase>
-
-<phrase>
-<original>Initializing image tools</original>
-<translation>Initiera bildverktyg</translation>
-</phrase>
-
-<phrase>
-<original>Initializing user interface</original>
-<translation>Initierar användargränssnitt</translation>
-</phrase>
-
-<phrase>
-<original>Preparing program menus</original>
-<translation>Förbereda programmenyer</translation>
-</phrase>
-
-<phrase>
-<original>Loading image(s)</original>
-<translation>Laddar bild (er)</translation>
-</phrase>
-
-<phrase>
-<original>Finishing final program initialization steps</original>
-<translation>Efterbehandling sista programmet initiering steg</translation>
-</phrase>
 
 <phrase>
 <original>Unfortunately, the image '%1' could not be found.
@@ -1061,23 +1116,32 @@ If här bilden ursprungligen placerad på flyttbara media (DVD, USB-enhet, etc.)
 </phrase>
 
 <phrase>
-<original>Loading image %1 of %2</original>
-<translation>Laddar bild %1 av %2</translation>
-</phrase>
-
-<phrase>
 <original>Loading image</original>
 <translation>Laddar bild</translation>
 </phrase>
 
 <phrase>
-<original>GDI+ refused to load image.  Dropping back to internal routines and trying again</original>
-<translation>GDI vägrade att ladda bilden. Släppa tillbaka till interna rutiner och försöker igen</translation>
+<original>Image loaded successfully.</original>
+<translation>Bild inlästa.</translation>
 </phrase>
 
 <phrase>
 <original>Failed to load %1</original>
 <translation>Det gick inte att läsa in %1</translation>
+</phrase>
+
+<phrase>
+<original>Unfortunately, PhotoDemon was unable to load the following image:
+
+%1
+
+Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Image import failed</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1099,128 +1163,31 @@ Please använda ett annat program för att spara denna bild i ett generiskt form
 </phrase>
 
 <phrase>
-<original>frame %1</original>
-<translation>ram %1</translation>
+<original>Layer import canceled.</original>
+<translation>Import Layer annulleras.</translation>
 </phrase>
 
 <phrase>
-<original>icon (%1x%2)</original>
-<translation>Ikonen ( %1x %2)</translation>
+<original>Loading image(s)</original>
+<translation>Laddar bild (er)</translation>
 </phrase>
 
 <phrase>
-<original>icon (%1x%2, %3 bpp)</original>
-<translation>Ikonen ( %1x %2, %3 bpp)</translation>
-</phrase>
-
-<phrase>
-<original>page %1</original>
-<translation>sida %1</translation>
-</phrase>
-
-<phrase>
-<original>frame</original>
-<translation>ram</translation>
-</phrase>
-
-<phrase>
-<original>page</original>
-<translation>sida</translation>
-</phrase>
-
-<phrase>
-<original>All images loaded successfully.</original>
-<translation>Alla bilder inlästa.</translation>
-</phrase>
-
-<phrase>
-<original>Image loaded successfully.</original>
-<translation>Bild inlästa.</translation>
-</phrase>
-
-<phrase>
-<original>All images loaded, except for those that could not be found.</original>
-<translation>Alla bilder lastas, med undantag för dem som inte kunde hittas.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, PhotoDemon was unable to find the following image(s):
-
-%1
-
-If these images were originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
-<translation>Tyvärr PhotoDemon kunde inte hitta följande bild (er):
-
-%1
-
-If dessa bilder var ursprungligen placerad på flyttbara media (DVD, USB-enhet, etc.), var god insats eller åter fästa media och försök igen.</translation>
-</phrase>
-
-<phrase>
-<original>Image files missing</original>
-<translation>Bildfiler som saknas</translation>
-</phrase>
-
-<phrase>
-<original>All images loaded, except for those in invalid formats.</original>
-<translation>Alla bilder lastas, med undantag för dem som ogiltiga format.</translation>
+<original>%1 of %2 images loaded successfully</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, PhotoDemon was unable to load the following image(s):
 
 %1
-
-Please use another program to save these images in a generic format (such as JPEG or PNG) before loading them into PhotoDemon. Thanks!</original>
-<translation>Tyvärr PhotoDemon kunde inte läsa in följande bild (er):
-
-%1
-
-Please använda ett annat program för att spara dessa bilder i ett generiskt format (t.ex. JPEG eller PNG) innan du lägger dem i PhotoDemon. Tack!</translation>
+Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Image Formats Not Supported</original>
-<translation>Bildformat som inte stöds</translation>
-</phrase>
-
-<phrase>
-<original>Layer import canceled.</original>
-<translation>Import Layer annulleras.</translation>
-</phrase>
-
-<phrase>
-<original>Selected file is not in PDI format.  Load abandoned.</original>
-<translation>Vald fil inte är i PDI-format. Ladda övergiven.</translation>
-</phrase>
-
-<phrase>
-<original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
-
-To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
-<translation>Den PDI filen " %1" innehåller komprimerade data, men zlib plugin saknas eller disabled.
-
-To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter uppdateringar, och när du uppmanas göra det möjligt PhotoDemon att hämta alla rekommenderade plugins.</translation>
-</phrase>
-
-<phrase>
-<original>zLib plugin missing</original>
-<translation>ZLIB plugin saknas</translation>
-</phrase>
-
-<phrase>
-<original>PDI node could not be read; file may be invalid or corrupted.  Load abandoned.</original>
-<translation>PDI nod kunde inte läsas; Filen kan vara ogiltigt eller skadat. Ladda övergiven.</translation>
-</phrase>
-
-<phrase>
-<original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
-<translation>Ett fel har uppstått (# %1 - %2). PDI belastning övergiven.</translation>
-</phrase>
-
-<phrase>
-<original>An error has occurred (#</original>
-<translation>Ett fel har uppstått (#</translation>
+<original>Some images were not loaded</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1243,7 +1210,7 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 <translation>Bilddubbel komplett.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 81 phrases. 29 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -1417,7 +1384,12 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 <translation>Det gick inte att starta plugin tjänst (kunde inte skapa process: %1).</translation>
 </phrase>
 
-<!-- VBP_ExifToolInterface.bas contains 8 phrases.  One was a duplicate of an existing phrase, so only 7 new phrases were written to file. -->
+<phrase>
+<original>Finishing final program initialization steps</original>
+<translation>Efterbehandling sista programmet initiering steg</translation>
+</phrase>
+
+<!-- VBP_ExifToolInterface.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_ExifToolInterface.bas-->
 
@@ -1923,16 +1895,6 @@ When klar klickar du på knappen Skicka. Tack!</translation>
 <!-- BEGIN text for VBP_SaveModule.bas -->
 
 <phrase>
-<original>Original color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-<translation>Original färgdjup av %1 bpp stöds av detta format. Fortsätter med spar</translation>
-</phrase>
-
-<phrase>
-<original>Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
-<translation>Original färgdjup av %1 bpp stöds inte av det här formatet. Fortsätter att spara som %2 bpp</translation>
-</phrase>
-
-<phrase>
 <original>Counting image colors to determine optimal exported color depth</original>
 <translation>Räkna bildens färger för att bestämma optimal exporterade färgdjup</translation>
 </phrase>
@@ -2104,7 +2066,7 @@ To aktivera stöd för detta bildformat, vänligen kopiera FreeImage.dll filen (
 <translation>Miniatyr spara misslyckades (ospecificerat GDI fel).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 128 phrases. 94 were duplicates of existing phrases, so only 34 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 126 phrases. 94 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -2351,6 +2313,12 @@ Please ange ett numeriskt värde.</translation>
 <!-- VBP_ToolSupport.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolSupport.bas-->
+
+<!-- BEGIN text for Toolboxes.bas -->
+
+<!-- Toolboxes.bas contains 0 phrases. -->
+
+<!-- END text for Toolboxes.bas-->
 
 <!-- BEGIN text for VBP_UniscribeInterface.bas -->
 
@@ -3977,6 +3945,11 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <!-- END text for ShellPipe.ctl-->
 
 <!-- BEGIN text for MainWindow.frm (FormMain) -->
+
+<phrase>
+<original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>&File</original>
@@ -5885,7 +5858,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 566 phrases. 187 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -13529,141 +13502,6 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 </phrase>
 
 <phrase>
-<original>use the system color profile</original>
-<translation>använda systemet färgprofil</translation>
-</phrase>
-
-<phrase>
-<original>use one or more custom color profiles</original>
-<translation>Använd ett eller flera egna färgprofiler</translation>
-</phrase>
-
-<phrase>
-<original>color profile for selected monitor</original>
-<translation>färgprofil för vald bildskärm</translation>
-</phrase>
-
-<phrase>
-<original>available monitors</original>
-<translation>tillgängliga monitorer</translation>
-</phrase>
-
-<phrase>
-<original>when rendering images to the screen</original>
-<translation>vid rendering bilder till skärmen</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>färghantering</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard size</original>
-<translation>transparens checkerboard storlek</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard colors</original>
-<translation>transparens schackbrädes färger</translation>
-</phrase>
-
-<phrase>
-<original>transparency management</original>
-<translation>förvaltning transparens</translation>
-</phrase>
-
-<phrase>
-<original>please select a file type</original>
-<translation>vänligen välj en filtyp...</translation>
-</phrase>
-
-<phrase>
-<original>file format options</original>
-<translation>filformat alternativ</translation>
-</phrase>
-
-<phrase>
-<original>TIFF (Tagged Image File Format) options</original>
-<translation>TIFF (Tagged Image File Format) alternativ</translation>
-</phrase>
-
-<phrase>
-<original>PPM (Portable Pixmap) options</original>
-<translation>PPM (Bärbar pixmap) alternativ</translation>
-</phrase>
-
-<phrase>
-<original>PNG (Portable Network Graphic) options</original>
-<translation>PNG (Portable Network Graphic) alternativ</translation>
-</phrase>
-
-<phrase>
-<original>TGA (Truevision) options</original>
-<translation>TGA (Truevision) optioner</translation>
-</phrase>
-
-<phrase>
-<original>BMP (Bitmap) options</original>
-<translation>BMP (Bitmap) optioner</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>vid stängning bilder, varna mig mig om osparade ändringar</translation>
-</phrase>
-
-<phrase>
-<original>when saving images that originally contained metadata</original>
-<translation>när du sparar bilder som ursprungligen innehöll metadata...</translation>
-</phrase>
-
-<phrase>
-<original>metadata (EXIF, GPS, comments, etc.)</original>
-<translation>metadata (EXIF, GPS, kommentarer, etc.)</translation>
-</phrase>
-
-<phrase>
-<original>set outgoing color depth</original>
-<translation>ställa utgående färgdjup</translation>
-</phrase>
-
-<phrase>
-<original>color depth of saved images</original>
-<translation>färgdjup sparade bilder</translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>spara beteende: skriva över vs göra en kopia</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>när "Save" används</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>avslutas inte sparats bilder</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>när du använder "Spara som" kommandot, ange standardfilformat enligt...</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>standard filformat när du sparar</translation>
-</phrase>
-
-<phrase>
-<original>count unique colors in incoming images (to determine optimal color depth)</original>
-<translation>räkna unika färger i inkommande bilder (för att bestämma optimal färgdjup)</translation>
-</phrase>
-
-<phrase>
 <original>display tone mapping options when importing HDR and RAW images</original>
 <translation>display tonmappning alternativ när du importerar HDR och RAW-bilder</translation>
 </phrase>
@@ -13674,11 +13512,6 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 </phrase>
 
 <phrase>
-<original>color depth</original>
-<translation>färgdjup</translation>
-</phrase>
-
-<phrase>
 <original>high-dynamic range (HDR) images</original>
 <translation>högt dynamiskt omfång (HDR) bilder</translation>
 </phrase>
@@ -13686,6 +13519,11 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 <phrase>
 <original>when an image is first loaded, set its viewport zoom to</original>
 <translation>när en bild först laddas, ställa sin visnings zoom till</translation>
+</phrase>
+
+<phrase>
+<original>color management</original>
+<translation>färghantering</translation>
 </phrase>
 
 <phrase>
@@ -13844,6 +13682,131 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 </phrase>
 
 <phrase>
+<original>use the system color profile</original>
+<translation>använda systemet färgprofil</translation>
+</phrase>
+
+<phrase>
+<original>use one or more custom color profiles</original>
+<translation>Använd ett eller flera egna färgprofiler</translation>
+</phrase>
+
+<phrase>
+<original>color profile for selected monitor</original>
+<translation>färgprofil för vald bildskärm</translation>
+</phrase>
+
+<phrase>
+<original>available monitors</original>
+<translation>tillgängliga monitorer</translation>
+</phrase>
+
+<phrase>
+<original>when rendering images to the screen</original>
+<translation>vid rendering bilder till skärmen</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard size</original>
+<translation>transparens checkerboard storlek</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard colors</original>
+<translation>transparens schackbrädes färger</translation>
+</phrase>
+
+<phrase>
+<original>transparency management</original>
+<translation>förvaltning transparens</translation>
+</phrase>
+
+<phrase>
+<original>please select a file type</original>
+<translation>vänligen välj en filtyp...</translation>
+</phrase>
+
+<phrase>
+<original>file format options</original>
+<translation>filformat alternativ</translation>
+</phrase>
+
+<phrase>
+<original>TIFF (Tagged Image File Format) options</original>
+<translation>TIFF (Tagged Image File Format) alternativ</translation>
+</phrase>
+
+<phrase>
+<original>PPM (Portable Pixmap) options</original>
+<translation>PPM (Bärbar pixmap) alternativ</translation>
+</phrase>
+
+<phrase>
+<original>PNG (Portable Network Graphic) options</original>
+<translation>PNG (Portable Network Graphic) alternativ</translation>
+</phrase>
+
+<phrase>
+<original>TGA (Truevision) options</original>
+<translation>TGA (Truevision) optioner</translation>
+</phrase>
+
+<phrase>
+<original>BMP (Bitmap) options</original>
+<translation>BMP (Bitmap) optioner</translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn me me about unsaved changes</original>
+<translation>vid stängning bilder, varna mig mig om osparade ändringar</translation>
+</phrase>
+
+<phrase>
+<original>when saving images that originally contained metadata</original>
+<translation>när du sparar bilder som ursprungligen innehöll metadata...</translation>
+</phrase>
+
+<phrase>
+<original>metadata (EXIF, GPS, comments, etc.)</original>
+<translation>metadata (EXIF, GPS, kommentarer, etc.)</translation>
+</phrase>
+
+<phrase>
+<original>set outgoing color depth</original>
+<translation>ställa utgående färgdjup</translation>
+</phrase>
+
+<phrase>
+<original>color depth of saved images</original>
+<translation>färgdjup sparade bilder</translation>
+</phrase>
+
+<phrase>
+<original>save behavior: overwrite vs make a copy</original>
+<translation>spara beteende: skriva över vs göra en kopia</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>när "Save" används</translation>
+</phrase>
+
+<phrase>
+<original>closing unsaved images</original>
+<translation>avslutas inte sparats bilder</translation>
+</phrase>
+
+<phrase>
+<original>when using the "Save As" command, set the default file format according to</original>
+<translation>när du använder "Spara som" kommandot, ange standardfilformat enligt...</translation>
+</phrase>
+
+<phrase>
+<original>default file format when saving</original>
+<translation>standard filformat när du sparar</translation>
+</phrase>
+
+<phrase>
 <original>(none)</original>
 <translation>(ingen)</translation>
 </phrase>
@@ -13918,11 +13881,6 @@ Are du säker på att du vill fortsätta?</translation>
 </phrase>
 
 <phrase>
-<original>This option allows PhotoDemon to scan incoming images to determine the most appropriate color depth on a case-by-case basis (rather than relying on the source image file's color depth, which may have been chosen arbitrarily).</original>
-<translation>Det här alternativet kan PhotoDemon skanna inkommande bilder för att bestämma den mest lämpliga färgdjup på från fall till fall (snarare än att förlita sig på källbilden filens färgdjup, vilket kan ha valts godtyckligt).</translation>
-</phrase>
-
-<phrase>
 <original>feature disabled due to missing plugin</original>
 <translation>Funktionen avaktiverad på grund av saknad plugin</translation>
 </phrase>
@@ -13953,18 +13911,13 @@ Are du säker på att du vill fortsätta?</translation>
 </phrase>
 
 <phrase>
-<original>to match the image file's original color depth</original>
-<translation>att matcha bildfilen ursprungliga färgdjup...</translation>
+<original>by asking me what color depth I want to use</original>
+<translation>genom att fråga mig vad färgdjup jag vill använda</translation>
 </phrase>
 
 <phrase>
 <original>automatically</original>
 <translation>automatiskt</translation>
-</phrase>
-
-<phrase>
-<original>by asking me what color depth I want to use</original>
-<translation>genom att fråga mig vad färgdjup jag vill använda</translation>
 </phrase>
 
 <phrase>
@@ -14381,7 +14334,7 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <translation>VARNING: denna mapp är ogiltigt (tillträde förbjudet). Ange en giltig mapp. Om ingen ny mapp lämnas kommer PhotoDemon använda systemets standard temp plats.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 234 phrases. 64 were duplicates of existing phrases, so only 170 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 230 phrases. 64 were duplicates of existing phrases, so only 166 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14636,18 +14589,12 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Toolboxes.bas -->
-
-<!-- Toolboxes.bas contains 0 phrases. -->
-
-<!-- END text for Toolboxes.bas-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2505</phrasecount>
+<phrasecount>2495</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4308 phrases. -->
-<!-- 1803 are duplicates, so only 2505 unique phrases have been written to file. -->
-<!-- These 2505 phrases contain approximately 13373 total words. -->
+<!-- As of this build, PhotoDemon contains 4290 phrases. -->
+<!-- 1795 are duplicates, so only 2495 unique phrases have been written to file. -->
+<!-- These 2495 phrases contain approximately 13266 total words. -->
 
 </pdData>

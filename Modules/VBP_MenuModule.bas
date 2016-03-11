@@ -17,21 +17,19 @@ Option Explicit
 
 'This subroutine loads an image - note that the interesting stuff actually happens in PhotoDemon_OpenImageDialog, below
 Public Sub MenuOpen()
-    
-    'String returned from the common dialog wrapper
-    Dim sFile() As String
-    
-    If PhotoDemon_OpenImageDialog(sFile, GetModalOwner().hWnd) Then LoadFileAsNewImage sFile
-    
+    Dim listOfFiles As pdStringStack
+    If PhotoDemon_OpenImageDialog(listOfFiles, GetModalOwner().hWnd) Then Loading.LoadMultipleImageFiles listOfFiles
 End Sub
 
 'Pass this function a string array, and it will fill it with a list of files selected by the user.
 ' The commondialog filters are automatically set according to image formats supported by the program.
-Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal ownerHwnd As Long) As Boolean
-
+Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack, ByVal ownerHwnd As Long) As Boolean
+    
+    If (dstStringStack Is Nothing) Then Set dstStringStack = New pdStringStack
+    
     'Disable user input until the dialog closes
     Interface.DisableUserInput
-        
+    
     'Get the last "open image" path from the preferences file
     Dim tempPathString As String
     tempPathString = g_UserPreferences.GetPref_String("Paths", "Open Image", "")
@@ -48,6 +46,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
         'Message "Preparing to load image..."
         
         'Take the return string (a null-delimited list of filenames) and split it out into a string array
+        Dim listOfFiles() As String
         listOfFiles = Split(sFileList, vbNullChar)
         
         Dim i As Long
@@ -58,7 +57,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
         
             'Remove all empty strings from the array (which are a byproduct of the aforementioned buffering)
             For i = UBound(listOfFiles) To 0 Step -1
-                If listOfFiles(i) <> "" Then Exit For
+                If Len(listOfFiles(i)) <> 0 Then Exit For
             Next
             
             'With all the empty strings removed, all that's left is legitimate file paths
@@ -78,10 +77,8 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
             ' append the path from (0) to the start of each filename.  This will relieve the burden on
             ' whatever function called us - it can simply loop through the full paths, loading files as it goes
             For i = 1 To UBound(listOfFiles)
-                listOfFiles(i - 1) = imagesPath & listOfFiles(i)
+                dstStringStack.AddString imagesPath & listOfFiles(i)
             Next i
-            
-            ReDim Preserve listOfFiles(0 To UBound(listOfFiles) - 1)
             
             'Save the new directory as the default path for future usage
             g_UserPreferences.SetPref_String "Paths", "Open Image", imagesPath
@@ -93,10 +90,13 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
             'Save the new directory as the default path for future usage
             tempPathString = listOfFiles(0)
             StripDirectory tempPathString
-        
             g_UserPreferences.SetPref_String "Paths", "Open Image", tempPathString
             
+            dstStringStack.AddString listOfFiles(0)
+            
         End If
+        
+        'Copy the raw string array into an iteration-friendly string stack
         
         'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
         g_UserPreferences.SetPref_Long "Core", "Last Open Filter", g_LastOpenFilter
@@ -454,12 +454,14 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     FormMain.Enabled = False
     
     'Create a new entry in the pdImages() array.  This will update g_CurrentImage as well.
-    CreateNewPDImage
-    pdImages(g_CurrentImage).loadedSuccessfully = True
+    Dim newImage As pdImage
+    Image_Canvas_Handler.GetDefaultPDImageObject newImage
+    Image_Canvas_Handler.AddImageToMasterCollection newImage
+    newImage.loadedSuccessfully = True
     
     'We can now address our new image via pdImages(g_CurrentImage).  Create a blank layer.
     Dim newLayerID As Long
-    newLayerID = pdImages(g_CurrentImage).createBlankLayer()
+    newLayerID = newImage.createBlankLayer()
     
     'The parameters passed to the new DIB vary according to layer type.  Use the specified type to determine how we
     ' initialize the new layer.
@@ -487,16 +489,16 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     End Select
     
     'Assign the newly created DIB to the layer object
-    pdImages(g_CurrentImage).getLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Background"), tmpDIB
+    newImage.getLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Background"), tmpDIB
     
     'Make the newly created layer the active layer
     setActiveLayerByID newLayerID, False
     
     'Update the pdImage container to be the same size as its (newly created) base layer
-    pdImages(g_CurrentImage).updateSize
+    newImage.updateSize
     
     'Assign the requested DPI to the new image
-    pdImages(g_CurrentImage).setDPI imgDPI, imgDPI, False
+    newImage.setDPI imgDPI, imgDPI, False
     
     'Disable viewport rendering, then reset the main viewport
     g_AllowViewportRendering = False
@@ -504,19 +506,19 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     
     'By default, set this image to use the program's default metadata setting (settable from Tools -> Options).
     ' The user may override this setting later, but by default we always start with the user's program-wide setting.
-    pdImages(g_CurrentImage).imgMetadata.setMetadataExportPreference g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1)
+    newImage.imgMetadata.setMetadataExportPreference g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1)
     
     'Default to JPEGs, for convenience.  Note that a different format will be suggested at save-time, contingent on the image's state,
-    pdImages(g_CurrentImage).originalFileFormat = FIF_JPEG
-    pdImages(g_CurrentImage).currentFileFormat = pdImages(g_CurrentImage).originalFileFormat
-    pdImages(g_CurrentImage).originalColorDepth = 32
+    newImage.originalFileFormat = FIF_JPEG
+    newImage.currentFileFormat = pdImages(g_CurrentImage).originalFileFormat
+    newImage.originalColorDepth = 32
     
     'Because this image does not exist on the user's hard-drive, we will force use of a full Save As dialog in the future.
     ' (PD detects this state if a pdImage object does not supply a location on disk)
-    pdImages(g_CurrentImage).locationOnDisk = ""
-    pdImages(g_CurrentImage).originalFileNameAndExtension = g_Language.TranslateMessage("New image")
-    pdImages(g_CurrentImage).originalFileName = pdImages(g_CurrentImage).originalFileNameAndExtension
-    pdImages(g_CurrentImage).setSaveState False, pdSE_AnySave
+    newImage.locationOnDisk = ""
+    newImage.originalFileNameAndExtension = g_Language.TranslateMessage("New image")
+    newImage.originalFileName = pdImages(g_CurrentImage).originalFileNameAndExtension
+    newImage.setSaveState False, pdSE_AnySave
     
     'Make any interface changes related to the presence of a new image
     Interface.NotifyImageAdded g_CurrentImage
@@ -530,11 +532,11 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
     ' update the zoom combo box to match the zoom assigned by the window-fit function.
     g_AllowViewportRendering = False
-    FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = pdImages(g_CurrentImage).currentZoomValue
+    FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = newImage.currentZoomValue
 
     'Now that the image's window has been fully sized and moved around, use Viewport_Engine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
     g_AllowViewportRendering = True
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
+    Viewport_Engine.Stage1_InitializeBuffer newImage, FormMain.mainCanvas(0), VSR_ResetToZero
     
     'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
     FormMain.mainCanvas(0).UpdateCanvasLayout
@@ -542,7 +544,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     'Force an immediate Undo/Redo write to file.  This serves multiple purposes: it is our baseline for calculating future
     ' Undo/Redo diffs, and it can be used to recover the original file if something goes wrong before the user performs a
     ' manual save (e.g. AutoSave).
-    pdImages(g_CurrentImage).undoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
+    newImage.undoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
     
     'Re-enable the main form
     FormMain.Enabled = True
