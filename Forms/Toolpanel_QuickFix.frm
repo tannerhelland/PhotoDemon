@@ -248,8 +248,8 @@ End Sub
 Private Sub cmdQuickFix_Click(Index As Integer)
 
     'Do nothing unless an image has been loaded
-    If pdImages(g_CurrentImage) Is Nothing Then Exit Sub
-    If Not pdImages(g_CurrentImage).loadedSuccessfully Then Exit Sub
+    If (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
+    If Not pdImages(g_CurrentImage).IsActive Then Exit Sub
 
     Dim i As Long
 
@@ -265,7 +265,7 @@ Private Sub cmdQuickFix_Click(Index As Integer)
             For i = 0 To sltQuickFix.Count - 1
                 
                 sltQuickFix(i).Value = 0
-                pdImages(g_CurrentImage).getActiveLayer.setLayerNonDestructiveFXState i, 0
+                pdImages(g_CurrentImage).GetActiveLayer.setLayerNonDestructiveFXState i, 0
                 
             Next i
             
@@ -273,7 +273,7 @@ Private Sub cmdQuickFix_Click(Index As Integer)
         Case 1
             
             'First, make sure at least one or more quick-fixes are active
-            If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState Then
+            If pdImages(g_CurrentImage).GetActiveLayer.getLayerNonDestructiveFXState Then
                 
                 'Now we do something odd; we reset all sliders, then forcibly set an image checkpoint.  This prevents PD's internal
                 ' processor from auto-detecting the slider resets and applying *another* entry to the Undo/Redo chain.
@@ -312,8 +312,8 @@ Private Sub Form_Load()
     
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
-    lastUsedSettings.setParentForm Me
-    lastUsedSettings.loadAllControlValues
+    lastUsedSettings.SetParentForm Me
+    lastUsedSettings.LoadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
     UpdateAgainstCurrentTheme
@@ -326,8 +326,8 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'Save all last-used settings to file
-    lastUsedSettings.saveAllControlValues
-    lastUsedSettings.setParentForm Nothing
+    lastUsedSettings.SaveAllControlValues
+    lastUsedSettings.SetParentForm Nothing
 
 End Sub
 
@@ -338,10 +338,10 @@ Private Sub sltQuickFix_Change(Index As Integer)
         
         'Check the state of the layer's non-destructive FX tracker before making any changes
         Dim initFXState As Boolean
-        initFXState = pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState
+        initFXState = pdImages(g_CurrentImage).GetActiveLayer.getLayerNonDestructiveFXState
         
         'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
-        pdImages(g_CurrentImage).getActiveLayer.setLayerNonDestructiveFXState Index, sltQuickFix(Index).Value
+        pdImages(g_CurrentImage).GetActiveLayer.setLayerNonDestructiveFXState Index, sltQuickFix(Index).Value
         
         'Redraw the viewport
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -349,7 +349,7 @@ Private Sub sltQuickFix_Change(Index As Integer)
         'If the layer now has non-destructive effects active, enable the quick fix buttons (if they aren't already)
         Dim i As Long
         
-        If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState Then
+        If pdImages(g_CurrentImage).GetActiveLayer.getLayerNonDestructiveFXState Then
         
             For i = 0 To cmdQuickFix.Count - 1
                 If Not cmdQuickFix(i).Enabled Then cmdQuickFix(i).Enabled = True
@@ -364,8 +364,8 @@ Private Sub sltQuickFix_Change(Index As Integer)
         End If
         
         'Even though this action is not destructive, we want to allow the user to save after making non-destructive changes.
-        If pdImages(g_CurrentImage).getSaveState(pdSE_AnySave) And (pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState <> initFXState) Then
-            pdImages(g_CurrentImage).setSaveState False, pdSE_AnySave
+        If pdImages(g_CurrentImage).getSaveState(pdSE_AnySave) And (pdImages(g_CurrentImage).GetActiveLayer.getLayerNonDestructiveFXState <> initFXState) Then
+            pdImages(g_CurrentImage).SetSaveState False, pdSE_AnySave
             SyncInterfaceToCurrentImage
         End If
         
@@ -389,7 +389,7 @@ End Sub
 
 Private Sub sltQuickFix_GotFocusAPI(Index As Integer)
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_NDFX Index, sltQuickFix(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_NDFX Index, sltQuickFix(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltQuickFix_LostFocusAPI(Index As Integer)

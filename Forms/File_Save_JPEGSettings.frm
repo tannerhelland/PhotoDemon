@@ -29,9 +29,9 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   1
       Top             =   120
       Width           =   7095
-      _extentx        =   12515
-      _extenty        =   1085
-      fontsize        =   11
+      _ExtentX        =   12515
+      _ExtentY        =   1085
+      FontSize        =   11
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -40,9 +40,9 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   0
       Top             =   5790
       Width           =   13110
-      _extentx        =   23125
-      _extenty        =   1323
-      dontautounloadparent=   -1
+      _ExtentX        =   23125
+      _ExtentY        =   1323
+      DontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -50,87 +50,8 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   2
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4695
-      Index           =   1
-      Left            =   5880
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   481
-      TabIndex        =   10
-      Top             =   1080
-      Width           =   7215
-      Begin PhotoDemon.pdDropDown cboMetadata 
-         Height          =   375
-         Left            =   360
-         TabIndex        =   12
-         Top             =   1020
-         Width           =   6735
-         _extentx        =   11880
-         _extenty        =   661
-      End
-      Begin PhotoDemon.pdHyperlink lblReviewMetadata 
-         Height          =   255
-         Left            =   240
-         Top             =   30
-         Width           =   6780
-         _extentx        =   11959
-         _extenty        =   503
-         alignment       =   1
-         caption         =   "click here to review the image's metadata"
-         raiseclickevent =   -1
-      End
-      Begin PhotoDemon.pdCheckBox chkThumbnail 
-         Height          =   330
-         Left            =   360
-         TabIndex        =   11
-         Top             =   3240
-         Width           =   6690
-         _extentx        =   11800
-         _extenty        =   582
-         caption         =   "embed thumbnail image"
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   2
-         Left            =   120
-         Top             =   2820
-         Width           =   6975
-         _extentx        =   12303
-         _extenty        =   503
-         caption         =   "other metadata options"
-         fontsize        =   12
-         forecolor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblCurMetadata 
-         Height          =   1080
-         Left            =   360
-         Top             =   1560
-         Width           =   6615
-         _extentx        =   0
-         _extenty        =   503
-         forecolor       =   4210752
-         layout          =   1
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         Top             =   540
-         Width           =   6885
-         _extentx        =   12144
-         _extenty        =   503
-         caption         =   "general metadata setting for this image"
-         fontsize        =   12
-         forecolor       =   4210752
-      End
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -152,8 +73,8 @@ Begin VB.Form dialog_ExportJPEG
          TabIndex        =   14
          Top             =   240
          Width           =   2730
-         _extentx        =   4815
-         _extenty        =   661
+         _ExtentX        =   4815
+         _ExtentY        =   661
       End
       Begin PhotoDemon.pdDropDown cboSubsample 
          Height          =   375
@@ -161,8 +82,8 @@ Begin VB.Form dialog_ExportJPEG
          TabIndex        =   13
          Top             =   2910
          Width           =   6375
-         _extentx        =   11245
-         _extenty        =   661
+         _ExtentX        =   11245
+         _ExtentY        =   661
       End
       Begin VB.ComboBox cmbAutoQuality 
          BeginProperty Font 
@@ -189,9 +110,9 @@ Begin VB.Form dialog_ExportJPEG
          TabIndex        =   5
          Top             =   1350
          Width           =   6690
-         _extentx        =   11800
-         _extenty        =   582
-         caption         =   "optimize compression tables"
+         _ExtentX        =   11800
+         _ExtentY        =   582
+         Caption         =   "optimize compression tables"
       End
       Begin PhotoDemon.pdCheckBox chkProgressive 
          Height          =   330
@@ -199,9 +120,9 @@ Begin VB.Form dialog_ExportJPEG
          TabIndex        =   6
          Top             =   1830
          Width           =   6690
-         _extentx        =   11800
-         _extenty        =   582
-         caption         =   "use progressive encoding"
+         _ExtentX        =   11800
+         _ExtentY        =   582
+         Caption         =   "use progressive encoding"
       End
       Begin PhotoDemon.pdCheckBox chkSubsample 
          Height          =   330
@@ -209,9 +130,9 @@ Begin VB.Form dialog_ExportJPEG
          TabIndex        =   7
          Top             =   2310
          Width           =   6690
-         _extentx        =   11800
-         _extenty        =   582
-         caption         =   "use specific subsampling:"
+         _ExtentX        =   11800
+         _ExtentY        =   582
+         Caption         =   "use specific subsampling:"
       End
       Begin PhotoDemon.pdSlider sltQuality 
          Height          =   405
@@ -219,12 +140,12 @@ Begin VB.Form dialog_ExportJPEG
          TabIndex        =   8
          Top             =   180
          Width           =   4335
-         _extentx        =   7223
-         _extenty        =   873
-         max             =   99
-         min             =   1
-         value           =   90
-         notchposition   =   1
+         _ExtentX        =   7223
+         _ExtentY        =   873
+         Min             =   1
+         Max             =   99
+         Value           =   90
+         NotchPosition   =   1
       End
       Begin PhotoDemon.pdCheckBox chkColorMatching 
          Height          =   300
@@ -233,9 +154,9 @@ Begin VB.Form dialog_ExportJPEG
          Top             =   4440
          Visible         =   0   'False
          Width           =   6690
-         _extentx        =   11800
-         _extenty        =   582
-         caption         =   "use perceptive color matching (slower, more accurate)"
+         _ExtentX        =   11800
+         _ExtentY        =   582
+         Caption         =   "use perceptive color matching (slower, more accurate)"
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
@@ -244,11 +165,11 @@ Begin VB.Form dialog_ExportJPEG
          Top             =   3570
          Visible         =   0   'False
          Width           =   6900
-         _extentx        =   0
-         _extenty        =   503
-         caption         =   "automatic quality detection"
-         fontsize        =   12
-         forecolor       =   4210752
+         _ExtentX        =   0
+         _ExtentY        =   503
+         Caption         =   "automatic quality detection"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
@@ -256,11 +177,90 @@ Begin VB.Form dialog_ExportJPEG
          Left            =   120
          Top             =   900
          Width           =   6945
-         _extentx        =   0
-         _extenty        =   503
-         caption         =   "advanced quality settings"
-         fontsize        =   12
-         forecolor       =   4210752
+         _ExtentX        =   0
+         _ExtentY        =   503
+         Caption         =   "advanced quality settings"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4695
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   313
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   481
+      TabIndex        =   10
+      Top             =   1080
+      Width           =   7215
+      Begin PhotoDemon.pdDropDown cboMetadata 
+         Height          =   375
+         Left            =   360
+         TabIndex        =   12
+         Top             =   1020
+         Width           =   6735
+         _ExtentX        =   11880
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdHyperlink lblReviewMetadata 
+         Height          =   255
+         Left            =   240
+         Top             =   30
+         Width           =   6780
+         _ExtentX        =   11959
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "click here to review the image's metadata"
+         RaiseClickEvent =   -1  'True
+      End
+      Begin PhotoDemon.pdCheckBox chkThumbnail 
+         Height          =   330
+         Left            =   360
+         TabIndex        =   11
+         Top             =   3240
+         Width           =   6690
+         _ExtentX        =   11800
+         _ExtentY        =   582
+         Caption         =   "embed thumbnail image"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   2
+         Left            =   120
+         Top             =   2820
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   503
+         Caption         =   "other metadata options"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblCurMetadata 
+         Height          =   1080
+         Left            =   360
+         Top             =   1560
+         Width           =   6615
+         _ExtentX        =   0
+         _ExtentY        =   503
+         ForeColor       =   4210752
+         Layout          =   1
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   0
+         Left            =   120
+         Top             =   540
+         Width           =   6885
+         _ExtentX        =   12144
+         _ExtentY        =   503
+         Caption         =   "general metadata setting for this image"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
    End
 End
@@ -280,6 +280,9 @@ Attribute VB_Exposed = False
 'Dialog for presenting the user various options related to JPEG exporting.  The advanced features all currently
 ' rely on FreeImage for implementation, and will be disabled and/or ignored if FreeImage cannot be found.
 '
+'IMPORTANT NOTE MARCH 2016: this dialog is being blown to bits while I sort out PD's new export engine.
+'  Please ignore the dust!
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
@@ -294,8 +297,11 @@ Private userAnswer As VbMsgBoxResult
 Public imageBeingExported As pdImage
 
 'The quality checkboxes work as toggles.  To prevent infinite looping while they update each other, a module-level
-' variable is used to control access to the toggle code.
+' variable controls access to the toggle code.
 Private m_CheckBoxUpdatingDisabled As Boolean
+
+'Final XML packet, with all JPEG settings defined as tag+value pairs
+Public xmlParamString As String
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -386,32 +392,25 @@ End Sub
 Private Sub cmdBar_OKClick()
     
     'Determine the compression quality for the quantization tables
-    If sltQuality.IsValid Then
-        g_JPEGQuality = sltQuality.Value
-    Else
-        Exit Sub
-    End If
-            
-    'Determine any extra flags based on the advanced settings
-    g_JPEGFlags = 0
-        
-    'Optimize
-    If CBool(chkOptimize) Then g_JPEGFlags = g_JPEGFlags Or JPEG_OPTIMIZE
-        
-    'Progressive scan
-    If CBool(chkProgressive) Then g_JPEGFlags = g_JPEGFlags Or JPEG_PROGRESSIVE
-        
-    'Subsampling
-    If CBool(chkSubsample) Then g_JPEGFlags = g_JPEGFlags Or getSubsampleConstantFromComboBox()
+    If (Not sltQuality.IsValid) Then Exit Sub
     
-    'Determine whether or not a thumbnail copy of the file should be embedded
-    If CBool(chkThumbnail) Then g_JPEGThumbnail = 1 Else g_JPEGThumbnail = 0
-    
+    'Auto-compare mode is currently deactivated for performance and reliability reasons
     'If the user has requested that PD choose a quality value for them, do so now
-    g_JPEGAutoQuality = cmbAutoQuality.ListIndex
-    
+    'm_JPEGAutoQuality = cmbAutoQuality.ListIndex
     'Also pass along the color matching technique, which may or may not be useful
-    g_JPEGAdvancedColorMatching = CBool(chkColorMatching)
+    'm_JPEGAdvancedColorMatching = CBool(chkColorMatching)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.AddParam "JPEGQuality", sltQuality.Value
+    cParams.AddParam "JPEGOptimizeTables", CBool(chkOptimize)
+    cParams.AddParam "JPEGProgressive", CBool(chkProgressive)
+    cParams.AddParam "JPEGCustomSubsampling", CBool(chkSubsample)
+    cParams.AddParam "JPEGCustomSubsamplingValue", GetSubsampleConstantFromComboBox()
+    cParams.AddParam "JPEGThumbnail", CBool(chkThumbnail)
+    
+    'Cache the final parameter list; the calling function will retrieve this before unloading the form
+    xmlParamString = cParams.GetParamString
     
     'Metadata handling is stored inside the image object itself.  Set that value now.
     imageBeingExported.imgMetadata.setMetadataExportPreference cboMetadata.ListIndex
@@ -668,7 +667,7 @@ Private Sub UpdatePreview()
         'Retrieve a composited version of the target image
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
-        imageBeingExported.getCompositedImage tmpDIB, True
+        imageBeingExported.GetCompositedImage tmpDIB, True
         
         'Start by retrieving the relevant portion of the image, according to the preview window
         Dim tmpSafeArray As SAFEARRAY2D
@@ -691,7 +690,7 @@ Private Sub UpdatePreview()
         
         'The public workingDIB object now contains the relevant portion of the preview window.  Use that to
         ' obtain a JPEG-ified version of the image data.
-        fillDIBWithJPEGVersion workingDIB, workingDIB, JPEGQuality, IIf(CBool(chkSubsample), getSubsampleConstantFromComboBox(), JPEG_SUBSAMPLING_422)
+        fillDIBWithJPEGVersion workingDIB, workingDIB, JPEGQuality, IIf(CBool(chkSubsample), GetSubsampleConstantFromComboBox(), JPEG_SUBSAMPLING_422)
         
         'Paint the final image to screen and release all temporary objects
         finalizeNonstandardPreview pdFxPreview
@@ -700,26 +699,19 @@ Private Sub UpdatePreview()
     
 End Sub
 
-Private Function getSubsampleConstantFromComboBox() As Long
+Private Function GetSubsampleConstantFromComboBox() As Long
     
     Select Case cboSubsample.ListIndex
             
         Case 0
-            getSubsampleConstantFromComboBox = JPEG_SUBSAMPLING_444
+            GetSubsampleConstantFromComboBox = JPEG_SUBSAMPLING_444
         Case 1
-            getSubsampleConstantFromComboBox = JPEG_SUBSAMPLING_422
+            GetSubsampleConstantFromComboBox = JPEG_SUBSAMPLING_422
         Case 2
-            getSubsampleConstantFromComboBox = JPEG_SUBSAMPLING_420
+            GetSubsampleConstantFromComboBox = JPEG_SUBSAMPLING_420
         Case 3
-            getSubsampleConstantFromComboBox = JPEG_SUBSAMPLING_411
+            GetSubsampleConstantFromComboBox = JPEG_SUBSAMPLING_411
                     
     End Select
     
 End Function
-
-
-
-
-
-
-

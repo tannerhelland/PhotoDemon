@@ -37,8 +37,8 @@ Public Const PDP_GENERIC_ERROR As Long = 9001
 Public Const EXPECTED_FREEIMAGE_VERSION As String = "3.18.0"
 Public Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
 Public Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
-Public Const EXPECTED_PNGQUANT_VERSION As String = "2.3.1"
-Public Const EXPECTED_EXIFTOOL_VERSION As String = "10.01"
+Public Const EXPECTED_PNGQUANT_VERSION As String = "2.5.2"
+Public Const EXPECTED_EXIFTOOL_VERSION As String = "10.12"
 
 'Some constants used for general program changes (better to leave them as constants here, then to
 ' have to manually change them when I think up better or more appropriate ones)
@@ -83,17 +83,6 @@ Public Const PD_MAX_TOOLTIP_WIDTH As Long = 400
 Public Const BIF_RETURNONLYFSDIRS = 1
 Public Const BFFM_INITIALIZED = 1
 Public Const MAX_PATH_LEN = 260
-
-'PhotoDemon's internal PDI format identifier.  We preface this with FIF_ because PhotoDemon uses FreeImage's format constants
-' to track save state.  However, FreeImage does not include PDI support, and because their VB6 interface may change between
-' versions, we don't want to store our constant in the FreeImage modules - so we keep it here!
-Public Const FIF_PDI As Long = 100
-Public Const FIF_RAWBUFFER As Long = 101
-Public Const FIF_TMPFILE As Long = 102
-
-'Some other FIF_ formats supported by PhotoDemon, but not by FreeImage
-Public Const FIF_WMF As Long = 110
-Public Const FIF_EMF As Long = 111
 
 'When a UC with an image is hovered, we typically reflect this via some kind of "glow" state.  This constant controls
 ' the amount of brightness added to the image during a hover state.

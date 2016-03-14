@@ -624,10 +624,10 @@ Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
         If suspendRedraw Then Exit Sub
         
         'If no images have been loaded, exit
-        If pdImages(g_CurrentImage) Is Nothing Then Exit Sub
+        If (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
         
         'If an image has been loaded, and it is valid, redraw it now
-        If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.GetClientWidth(FormMain.hWnd) > 0) And pdImages(g_CurrentImage).loadedSuccessfully Then
+        If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.GetClientWidth(FormMain.hWnd) > 0) And pdImages(g_CurrentImage).IsActive Then
             Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
         

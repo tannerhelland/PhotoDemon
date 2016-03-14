@@ -29,8 +29,8 @@ Begin VB.Form dialog_ExportJP2
       TabIndex        =   3
       Top             =   2520
       Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
+      _extentx        =   9975
+      _extenty        =   661
    End
    Begin PhotoDemon.pdSlider sltQuality 
       Height          =   405
@@ -38,12 +38,12 @@ Begin VB.Form dialog_ExportJP2
       TabIndex        =   0
       Top             =   3120
       Width           =   5775
-      _ExtentX        =   15055
-      _ExtentY        =   873
-      Min             =   1
-      Max             =   256
-      Value           =   16
-      NotchPosition   =   1
+      _extentx        =   15055
+      _extenty        =   873
+      max             =   256
+      min             =   1
+      value           =   16
+      notchposition   =   1
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -52,10 +52,9 @@ Begin VB.Form dialog_ExportJP2
       TabIndex        =   1
       Top             =   5835
       Width           =   12135
-      _ExtentX        =   21405
-      _ExtentY        =   1323
-      BackColor       =   14802140
-      dontAutoUnloadParent=   -1  'True
+      _extentx        =   21405
+      _extenty        =   1323
+      dontautounloadparent=   -1
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -63,35 +62,35 @@ Begin VB.Form dialog_ExportJP2
       TabIndex        =   2
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.pdLabel lblBefore 
       Height          =   435
       Left            =   6240
       Top             =   3600
       Width           =   2265
-      _ExtentX        =   3995
-      _ExtentY        =   767
-      Caption         =   "high quality, large file"
-      FontItalic      =   -1  'True
-      FontSize        =   8
-      ForeColor       =   4210752
-      Layout          =   1
+      _extentx        =   3995
+      _extenty        =   767
+      caption         =   "high quality, large file"
+      fontitalic      =   -1
+      fontsize        =   8
+      forecolor       =   4210752
+      layout          =   1
    End
    Begin PhotoDemon.pdLabel lblAfter 
       Height          =   435
       Left            =   8520
       Top             =   3600
       Width           =   2190
-      _ExtentX        =   3863
-      _ExtentY        =   767
-      Alignment       =   1
-      Caption         =   "low quality, small file"
-      FontItalic      =   -1  'True
-      FontSize        =   8
-      ForeColor       =   4210752
-      Layout          =   1
+      _extentx        =   3863
+      _extenty        =   767
+      alignment       =   1
+      caption         =   "low quality, small file"
+      fontitalic      =   -1
+      fontsize        =   8
+      forecolor       =   4210752
+      layout          =   1
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   360
@@ -99,11 +98,11 @@ Begin VB.Form dialog_ExportJP2
       Left            =   6000
       Top             =   2160
       Width           =   5850
-      _ExtentX        =   10319
-      _ExtentY        =   635
-      Caption         =   "image compression ratio"
-      FontSize        =   12
-      ForeColor       =   4210752
+      _extentx        =   10319
+      _extenty        =   635
+      caption         =   "image compression ratio"
+      fontsize        =   12
+      forecolor       =   4210752
    End
 End
 Attribute VB_Name = "dialog_ExportJP2"
@@ -137,6 +136,9 @@ Public imageBeingExported As pdImage
 'When rendering the preview, we don't want to always re-request a copy of the main image.  Instead, we
 ' store one in this DIB (at the size of the preview) and simply re-use it when we need to render a preview.
 Private origImageCopy As pdDIB
+
+'Final XML packet, with all JPEG-2000 settings defined as tag+value pairs
+Public xmlParamString As String
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -175,12 +177,15 @@ End Sub
 Private Sub cmdBar_OKClick()
 
     'Determine the compression ratio for the JPEG2000 wavelet transformation
-    If sltQuality.IsValid Then
-        g_JP2Compression = Abs(sltQuality)
-    Else
-        Exit Sub
-    End If
-     
+    If Not sltQuality.IsValid Then Exit Sub
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.AddParam "JP2Quality", Abs(sltQuality)
+    
+    'Cache the final parameter list; the calling function will retrieve this before unloading the form
+    xmlParamString = cParams.GetParamString
+    
     userAnswer = vbOK
     Me.Hide
 
@@ -256,7 +261,7 @@ Public Sub showDialog()
     
     'Make a copy of the current image
     Set origImageCopy = New pdDIB
-    imageBeingExported.getCompositedImage origImageCopy, True
+    imageBeingExported.GetCompositedImage origImageCopy, True
     
     'Update the preview
     UpdatePreview
@@ -269,7 +274,7 @@ End Sub
 'Render a new JPEG-2000 preview
 Private Sub UpdatePreview()
 
-    If cmdBar.previewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
+    If cmdBar.PreviewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
         
         'Start by retrieving the relevant portion of the image, according to the preview window
         Dim tmpSafeArray As SAFEARRAY2D

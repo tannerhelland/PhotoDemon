@@ -855,7 +855,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
             dstImage.setDPI dstDIB.getDPI, dstDIB.getDPI
             dstImage.originalColorDepth = dstDIB.getOriginalColorDepth
             
-            If (dstImage.originalFileFormat = FIF_PNG) And (dstDIB.getBackgroundColor <> -1) Then
+            If (dstImage.originalFileFormat = PDIF_PNG) And (dstDIB.getBackgroundColor <> -1) Then
                 dstImage.imgStorage.AddEntry "pngBackgroundColor", dstDIB.getBackgroundColor
             End If
             
@@ -913,43 +913,38 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
     
     Select Case internalFormatID
         
-        Case FIF_PDI
+        Case PDIF_PDI
         
             'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
             CascadeLoadInternalImage = LoadPhotoDemonImage(srcFile, dstDIB, dstImage)
             
-            dstImage.originalFileFormat = FIF_PDI
+            dstImage.originalFileFormat = PDIF_PDI
             dstImage.originalColorDepth = 32
             dstImage.NotifyImageChanged UNDO_EVERYTHING
-            
             decoderUsed = PDIDE_INTERNAL
             
         'TMPDIB files are raw pdDIB objects dumped directly to file.  In some cases, this is faster and easier for PD than wrapping
         ' the pdDIB object inside a pdPackage layer (e.g. during clipboard interactions, since we start with a raw pdDIB object
         ' after selections and such are applied to the base layer/image, so we may as well just use the raw pdDIB data we've cached).
-        Case FIF_RAWBUFFER
+        Case PDIF_RAWBUFFER
             
             'These raw pdDIB objects may require zLib for parsing (compression is optional), so it is possible for the load function
             ' to fail if zLib goes missing.
             CascadeLoadInternalImage = LoadRawImageBuffer(srcFile, dstDIB, dstImage)
             
-            dstImage.originalFileFormat = FIF_JPEG
+            dstImage.originalFileFormat = PDIF_UNKNOWN
             dstImage.originalColorDepth = 32
             dstImage.NotifyImageChanged UNDO_EVERYTHING
-            
             decoderUsed = PDIDE_INTERNAL
             
         'Straight TMP files are internal files (BMP, typically) used by PhotoDemon.  As ridiculous as it sounds, we must
-        ' default to the generic load engine list, as the format of a TMP file is not guaranteed in advance.
-        ' (TODO: settle on a single tmp file format, so we don't have to play this game!)
-        Case FIF_TMPFILE
-            
+        ' default to the generic load engine list, as the format of a TMP file is not guaranteed in advance.  Because of this,
+        ' we can rely on the generic load engine to properly set things like "original color depth".
+        '
+        '(TODO: settle on a single tmp file format, so we don't have to play this game??)
+        Case PDIF_TMPFILE
             CascadeLoadInternalImage = ImageLoader.CascadeLoadGenericImage(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
-                
-            'Lie and say that the original file format of this image was JPEG.  We do this because tmp images are typically images
-            ' captured via non-traditional means (screenshots, scans), and when the user tries to save the file, they should not
-            ' be prompted to save it as a BMP.
-            dstImage.originalFileFormat = FIF_JPEG
+            dstImage.originalFileFormat = PDIF_UNKNOWN
             
     End Select
     
@@ -963,29 +958,29 @@ Private Sub EstimateMissingMetadata(ByRef dstImage As pdImage, ByRef srcFileExte
     Select Case srcFileExtension
                 
         Case "GIF"
-            dstImage.originalFileFormat = FIF_GIF
+            dstImage.originalFileFormat = PDIF_GIF
             dstImage.originalColorDepth = 8
             
         Case "ICO"
             dstImage.originalFileFormat = FIF_ICO
         
         Case "JIF", "JFIF", "JPG", "JPEG", "JPE"
-            dstImage.originalFileFormat = FIF_JPEG
+            dstImage.originalFileFormat = PDIF_JPEG
             dstImage.originalColorDepth = 24
             
         Case "PNG"
-            dstImage.originalFileFormat = FIF_PNG
+            dstImage.originalFileFormat = PDIF_PNG
         
         Case "TIF", "TIFF"
-            dstImage.originalFileFormat = FIF_TIFF
+            dstImage.originalFileFormat = PDIF_TIFF
         
         Case "PDI", "TMP", "PDTMP", "TMPDIB", "PDTMPDIB"
-            dstImage.originalFileFormat = FIF_JPEG
+            dstImage.originalFileFormat = PDIF_JPEG
             dstImage.originalColorDepth = 24
         
         'Treat anything else as a BMP file
         Case Else
-            dstImage.originalFileFormat = FIF_BMP
+            dstImage.originalFileFormat = PDIF_BMP
             
     End Select
     
@@ -1043,7 +1038,7 @@ Public Function SyncRecoveredAutosaveImage(ByRef srcFile As String, ByRef srcIma
         pdDebug.LogAction "SyncRecoveredAutosaveImage invoked; attempting to recover usable data from the Autosave database..."
     #End If
     
-    srcImage.locationOnDisk = srcFile
+    srcImage.imgStorage.AddEntry "CurrentLocationOnDisk", srcFile
             
     'Ask the AutoSave engine to synchronize this image's data against whatever it can recover from the Autosave database
     Autosave_Handler.AlignLoadedImageWithAutosave srcImage
@@ -1051,7 +1046,7 @@ Public Function SyncRecoveredAutosaveImage(ByRef srcFile As String, ByRef srcIma
     'This is a bit wacky, but - the Autosave engine will automatically update the "locationOnDisk" attribute based on
     ' information inside the Autosave recovery database.  We thus want to overwrite the original srcFile value (which points
     ' at a temp file copy of whatever we're attempting to recover), with the new, recovered srcFile value.
-    srcFile = srcImage.locationOnDisk
+    srcFile = srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
     
     SyncRecoveredAutosaveImage = True
     
@@ -1078,12 +1073,12 @@ Public Function GenerateExtraPDImageAttributes(ByRef srcFile As String, ByRef ta
     
         'The calling routine didn't specify a custom image name, so we can assume this is a normal image file.
         'Prep all default attributes using the filename itself.
-        targetImage.locationOnDisk = srcFile
-        targetImage.originalFileNameAndExtension = cFile.GetFilename(srcFile, False)
-        targetImage.originalFileName = cFile.GetFilename(srcFile, True)
+        targetImage.imgStorage.AddEntry "CurrentLocationOnDisk", srcFile
+        targetImage.imgStorage.AddEntry "OriginalFileName", cFile.GetFilename(srcFile, True)
+        targetImage.imgStorage.AddEntry "OriginalFileExtension", cFile.GetFileExtension(srcFile)
         
         'Note the image's save state; PDI files are specially marked as having been "saved losslessly".
-        If targetImage.currentFileFormat = FIF_PDI Then
+        If targetImage.currentFileFormat = PDIF_PDI Then
             targetImage.SetSaveState True, pdSE_SavePDI
         Else
             targetImage.SetSaveState True, pdSE_SaveFlat
@@ -1093,9 +1088,9 @@ Public Function GenerateExtraPDImageAttributes(ByRef srcFile As String, ByRef ta
     
         'The calling routine has specified a file name.  Assume this is a special case, and force a Save As...
         ' dialog in the future by not specifying a location on disk
-        targetImage.locationOnDisk = vbNullString
-        targetImage.originalFileNameAndExtension = suggestedFilename
-        targetImage.originalFileName = cFile.GetFilename(suggestedFilename, True)
+        targetImage.imgStorage.AddEntry "CurrentLocationOnDisk", ""
+        targetImage.imgStorage.AddEntry "OriginalFileName", suggestedFilename
+        targetImage.imgStorage.AddEntry "OriginalFileExtension", ""
         
         'For this special case, mark the image as being totally unsaved; this forces us to eventually show a save prompt
         targetImage.SetSaveState False, pdSE_AnySave

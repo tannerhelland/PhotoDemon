@@ -200,8 +200,8 @@ Private Sub Form_Load()
     
     'Load any last-used settings for this form
     Set m_lastUsedSettings = New pdLastUsedSettings
-    m_lastUsedSettings.setParentForm Me
-    m_lastUsedSettings.loadAllControlValues
+    m_lastUsedSettings.SetParentForm Me
+    m_lastUsedSettings.LoadAllControlValues
     
     'Theme everything
     UpdateAgainstCurrentTheme
@@ -214,7 +214,7 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
     'Save all last-used settings to file
-    m_lastUsedSettings.saveAllControlValues
+    m_lastUsedSettings.SaveAllControlValues
     
 End Sub
 
@@ -277,10 +277,10 @@ Private Sub ReflowInterface()
     For i = 0 To m_numOfPanels - 1
         
         'Move the titlebar of this panel into position
-        ttlPanel(i).Move xOffset, yOffset, xWidth - xOffset + FixDPI(2)
+        ttlPanel(i).SetPositionAndSize xOffset, yOffset, xWidth - xOffset + FixDPI(2), ttlPanel(i).GetHeight
         
         'Move the yOffset beneath the panel
-        yOffset = yOffset + ttlPanel(i).Height + FixDPI(2)
+        yOffset = yOffset + ttlPanel(i).GetHeight + FixDPI(2)
         
         'If the title bar state is TRUE, open its corresponding panel.
         If ttlPanel(i).Value Then

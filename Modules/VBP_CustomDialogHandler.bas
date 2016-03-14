@@ -66,13 +66,14 @@ Public Function PromptMultiImage(ByVal srcFilename As String, ByVal numOfPages A
 End Function
 
 'Present a dialog box to ask the user for various JPEG export settings
-Public Function PromptJPEGSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
+Public Function PromptJPEGSettings(ByRef srcImage As pdImage, ByRef dstXMLParams As String) As VbMsgBoxResult
 
     Load dialog_ExportJPEG
     Set dialog_ExportJPEG.imageBeingExported = srcImage
     dialog_ExportJPEG.showDialog
 
     PromptJPEGSettings = dialog_ExportJPEG.DialogResult
+    dstXMLParams = dialog_ExportJPEG.xmlParamString
     
     Set dialog_ExportJPEG.imageBeingExported = Nothing
     
@@ -82,13 +83,14 @@ Public Function PromptJPEGSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
 End Function
 
 'Present a dialog box to ask the user for various JPEG-2000 (JP2) export settings
-Public Function PromptJP2Settings(ByRef srcImage As pdImage) As VbMsgBoxResult
+Public Function PromptJP2Settings(ByRef srcImage As pdImage, ByRef dstXMLParams As String) As VbMsgBoxResult
 
     Load dialog_ExportJP2
     Set dialog_ExportJP2.imageBeingExported = srcImage
     dialog_ExportJP2.showDialog
 
     PromptJP2Settings = dialog_ExportJP2.DialogResult
+    dstXMLParams = dialog_ExportJP2.xmlParamString
     
     Set dialog_ExportJP2.imageBeingExported = Nothing
     
@@ -98,13 +100,14 @@ Public Function PromptJP2Settings(ByRef srcImage As pdImage) As VbMsgBoxResult
 End Function
 
 'Present a dialog box to ask the user for various WebP export settings
-Public Function PromptWebPSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
+Public Function PromptWebPSettings(ByRef srcImage As pdImage, ByRef dstXMLParams As String) As VbMsgBoxResult
 
     Load dialog_ExportWebP
     Set dialog_ExportWebP.imageBeingExported = srcImage
     dialog_ExportWebP.showDialog
 
     PromptWebPSettings = dialog_ExportWebP.DialogResult
+    dstXMLParams = dialog_ExportWebP.xmlParamString
     
     Set dialog_ExportWebP.imageBeingExported = Nothing
     
@@ -114,13 +117,14 @@ Public Function PromptWebPSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
 End Function
 
 'Present a dialog box to ask the user for various JPEG XR export settings
-Public Function PromptJXRSettings(ByRef srcImage As pdImage) As VbMsgBoxResult
+Public Function PromptJXRSettings(ByRef srcImage As pdImage, ByRef dstXMLParams As String) As VbMsgBoxResult
 
     Load dialog_ExportJXR
     Set dialog_ExportJXR.imageBeingExported = srcImage
     dialog_ExportJXR.showDialog
 
     PromptJXRSettings = dialog_ExportJXR.DialogResult
+    dstXMLParams = dialog_ExportJXR.xmlParamString
     
     Set dialog_ExportJXR.imageBeingExported = Nothing
     
@@ -350,9 +354,9 @@ Public Function PromptGenericYesNoDialog(ByVal questionID As String, ByVal quest
 
 End Function
 
-'Identical to promptGenericYesNoDialog(), above, with the caveat that only ONE possible outcome can be remembered.  This is relevant for
-' Yes/No/Cancel situations where No and Cancel prevent a workflow from proceeding.  If we allowed those values to be stored, the user
-' could never proceed with an operation in the future!
+'Identical to promptGenericYesNoDialog(), above, with the caveat that only ONE possible outcome can be remembered.
+' This is relevant for Yes/No/Cancel situations where No and Cancel prevent a workflow from proceeding.  If we allowed
+' those values to be stored, the user could never proceed with an operation in the future!
 Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As String, ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal rememberCheckBoxText As String, ByVal dialogTitleText As String, Optional ByVal choiceAllowedToRemember As VbMsgBoxResult = vbYes, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False) As VbMsgBoxResult
 
     'Convert the questionID to its XML-safe equivalent
@@ -394,14 +398,8 @@ End Function
 '             (This reference will be used to provide live updates as the user plays with the brush dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function ShowBrushDialog(ByRef newBrush As String, Optional ByVal initialBrush As String = "", Optional ByRef callingControl As pdBrushSelector) As Boolean
-    
-    If ChoosePDBrush(initialBrush, newBrush, callingControl) = vbOK Then
-        ShowBrushDialog = True
-    Else
-        ShowBrushDialog = False
-    End If
-    
+Public Function ShowBrushDialog(ByRef newBrush As String, Optional ByVal initialBrush As String = vbNullString, Optional ByRef callingControl As pdBrushSelector) As Boolean
+    ShowBrushDialog = CBool(ChoosePDBrush(initialBrush, newBrush, callingControl) = vbOK)
 End Function
 
 'Display a custom brush selection dialog
@@ -425,14 +423,8 @@ End Function
 '             (This reference will be used to provide live updates as the user plays with the pen dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function ShowPenDialog(ByRef newPen As String, Optional ByVal initialPen As String = "", Optional ByRef callingControl As pdPenSelector) As Boolean
-    
-    If ChoosePDPen(initialPen, newPen, callingControl) = vbOK Then
-        ShowPenDialog = True
-    Else
-        ShowPenDialog = False
-    End If
-    
+Public Function ShowPenDialog(ByRef newPen As String, Optional ByVal initialPen As String = vbNullString, Optional ByRef callingControl As pdPenSelector) As Boolean
+    ShowPenDialog = CBool(ChoosePDPen(initialPen, newPen, callingControl) = vbOK)
 End Function
 
 'Display a custom pen selection dialog
@@ -456,14 +448,8 @@ End Function
 '             (This reference will be used to provide live updates as the user plays with the dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function ShowGradientDialog(ByRef newGradient As String, Optional ByVal initialGradient As String = "", Optional ByRef callingControl As pdGradientSelector) As Boolean
-    
-    If ChoosePDGradient(initialGradient, newGradient, callingControl) = vbOK Then
-        ShowGradientDialog = True
-    Else
-        ShowGradientDialog = False
-    End If
-    
+Public Function ShowGradientDialog(ByRef newGradient As String, Optional ByVal initialGradient As String = vbNullString, Optional ByRef callingControl As pdGradientSelector) As Boolean
+    ShowGradientDialog = CBool(ChoosePDGradient(initialGradient, newGradient, callingControl) = vbOK)
 End Function
 
 'Display a custom gradient selection dialog

@@ -240,10 +240,10 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
     
     If cutMerged Then
         startLayer = 0
-        endLayer = pdImages(g_CurrentImage).getNumOfLayers - 1
+        endLayer = pdImages(g_CurrentImage).GetNumOfLayers - 1
     Else
-        startLayer = pdImages(g_CurrentImage).getActiveLayerIndex
-        endLayer = pdImages(g_CurrentImage).getActiveLayerIndex
+        startLayer = pdImages(g_CurrentImage).GetActiveLayerIndex
+        endLayer = pdImages(g_CurrentImage).GetActiveLayerIndex
     End If
     
     Dim i As Long
@@ -252,13 +252,13 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
         'For "cut merged", ignore transparent layers
         If cutMerged Then
         
-            If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility Then
+            If pdImages(g_CurrentImage).GetLayerByIndex(i).getLayerVisibility Then
                 
                 'If a selection is active, erase the selected area.  Otherwise, wipe the whole layer.
                 If pdImages(g_CurrentImage).selectionActive Then
                     pdImages(g_CurrentImage).eraseProcessedSelection i
                 Else
-                    Layer_Handler.eraseLayerByIndex i
+                    Layer_Handler.EraseLayerByIndex i
                 End If
                 
             End If
@@ -270,7 +270,7 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
             If pdImages(g_CurrentImage).selectionActive Then
                 pdImages(g_CurrentImage).eraseProcessedSelection i
             Else
-                Layer_Handler.deleteLayer i
+                Layer_Handler.DeleteLayer i
             End If
             
         End If
@@ -415,7 +415,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     'If a paste operation was successful, switch the current tool to the layer move/resize tool, which is most likely needed after a
     ' new layer has been pasted.
     If pasteWasSuccessful Then
-        If srcIsMeantAsLayer Then toolbar_Toolbox.selectNewTool NAV_MOVE
+        If srcIsMeantAsLayer Then toolbar_Toolbox.SelectNewTool NAV_MOVE
     Else
         PDMsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation + vbOKOnly + vbApplicationModal, "Windows Clipboard Error"
     End If
@@ -1585,10 +1585,10 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
         
         'If a selection is NOT active, just make a copy of the full layer or image, depending on the merged request
         If copyMerged Then
-            pdImages(g_CurrentImage).getCompositedImage m_ClipboardDIB, True
+            pdImages(g_CurrentImage).GetCompositedImage m_ClipboardDIB, True
         Else
             If (m_ClipboardDIB Is Nothing) Then Set m_ClipboardDIB = New pdDIB
-            m_ClipboardDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveLayer.layerDIB
+            m_ClipboardDIB.createFromExistingDIB pdImages(g_CurrentImage).GetActiveLayer.layerDIB
         End If
         
     End If
@@ -1824,7 +1824,7 @@ Private Sub RenderClipboard_PNG()
             
             Dim pngArray() As Byte
             Dim fi_Check As Long
-            fi_Check = FreeImage_SaveToMemoryEx(FIF_PNG, fi_DIB, pngArray, FISO_PNG_Z_DEFAULT_COMPRESSION, False)
+            fi_Check = FreeImage_SaveToMemoryEx(PDIF_PNG, fi_DIB, pngArray, FISO_PNG_Z_DEFAULT_COMPRESSION, False)
             
             'If the save was successful, hand the new PNG byte array to the clipboard
             If fi_Check Then

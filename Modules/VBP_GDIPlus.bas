@@ -1670,7 +1670,7 @@ Public Function fillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte)
     dstQuad.Red = Colors.ExtractR(vbRGB)
     dstQuad.Green = Colors.ExtractG(vbRGB)
     dstQuad.Blue = Colors.ExtractB(vbRGB)
-    dstQuad.Alpha = alphaValue
+    dstQuad.alpha = alphaValue
     
     Dim placeHolder As tmpLong
     LSet placeHolder = dstQuad
@@ -1759,7 +1759,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'Metafiles require special consideration; set that flag in advance
     Dim isMetafile As Boolean
-    If (imgFormatFIF = FIF_EMF) Or (imgFormatFIF = FIF_WMF) Then
+    If (imgFormatFIF = PDIF_EMF) Or (imgFormatFIF = PDIF_WMF) Then
         isMetafile = True
     Else
         isMetafile = False
@@ -1869,7 +1869,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         
         'EMF dimensions are already reported identical to those programs, but WMF files are not.  The following code will make WMF sizes
         ' align with other software.
-        If (imgFormatFIF = FIF_WMF) Then
+        If (imgFormatFIF = PDIF_WMF) Then
         
             'I assume 96 is used because it's the default DPI value in Windows.  I have not tested if different system DPI values affect
             ' the way GDI+ reports metafile size.
@@ -2114,7 +2114,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     'If the output format is 24bpp (e.g. JPEG) but the input image is 32bpp, composite it against white
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    srcPDImage.getCompositedImage tmpDIB, False
+    srcPDImage.GetCompositedImage tmpDIB, False
     If tmpDIB.getDIBColorDepth <> 24 And imgFormat = [ImageJPEG] Then tmpDIB.CompositeBackgroundColor 255, 255, 255
 
     'Begin by creating a generic bitmap header for the current DIB
@@ -2985,25 +2985,25 @@ Private Function getFIFFromGUID(ByRef srcGUID As String) As Long
     Select Case srcGUID
     
         Case "{B96B3CAB-0728-11D3-9D7B-0000F81EF32E}"
-            getFIFFromGUID = FIF_BMP
+            getFIFFromGUID = PDIF_BMP
             
         Case "{B96B3CAC-0728-11D3-9D7B-0000F81EF32E}"
-            getFIFFromGUID = FIF_EMF
+            getFIFFromGUID = PDIF_EMF
             
         Case "{B96B3CAD-0728-11D3-9D7B-0000F81EF32E}"
-            getFIFFromGUID = FIF_WMF
+            getFIFFromGUID = PDIF_WMF
         
         Case "{B96B3CAE-0728-11D3-9D7B-0000F81EF32E}"
-            getFIFFromGUID = FIF_JPEG
+            getFIFFromGUID = PDIF_JPEG
             
         Case "{B96B3CAF-0728-11D3-9D7B-0000F81EF32E}"
-            getFIFFromGUID = FIF_PNG
+            getFIFFromGUID = PDIF_PNG
             
         Case "{B96B3CB0-0728-11D3-9D7B-0000F81EF32E}"
-            getFIFFromGUID = FIF_GIF
+            getFIFFromGUID = PDIF_GIF
             
         Case "{B96B3CB1-0728-11D3-9D7B-0000F81EF32E}"
-            getFIFFromGUID = FIF_TIFF
+            getFIFFromGUID = PDIF_TIFF
             
         Case "{B96B3CB5-0728-11D3-9D7B-0000F81EF32E}"
             getFIFFromGUID = FIF_ICO

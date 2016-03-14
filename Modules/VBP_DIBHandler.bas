@@ -17,83 +17,21 @@ Attribute VB_Name = "DIB_Handler"
 
 Option Explicit
 
-'Check to see if a 32bpp DIB is really 32bpp. (Basically, scan all pixels in the alpha channel. If all values are set to
-' 255 or all values are set to 0, the caller can opt to rebuild the DIB in 24bpp mode.)
-Public Function verifyDIBAlphaChannel(ByRef srcDIB As pdDIB) As Boolean
-
-    'Make sure the DIB exists
-    If srcDIB Is Nothing Then Exit Function
-
-    'This is only useful for images with alpha channels. Exit if no alpha channel is present.
-    If srcDIB.getDIBColorDepth <> 32 Then
-        verifyDIBAlphaChannel = True
-        Exit Function
-    End If
-    
-    'This routine will fail if the width or height of a DIB is 0
-    If srcDIB.getDIBWidth = 0 Or srcDIB.getDIBHeight = 0 Then
-        verifyDIBAlphaChannel = True
-        Exit Function
-    End If
-
-    'Start, as always, with a SafeArray
-    Dim iData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-    
-    Dim x As Long, y As Long, quickX As Long
-    Dim checkAlpha As Boolean, initAlpha As Double
-    checkAlpha = False
-    
-    'Determine the alpha value of the top-left pixel. This will be used as our baseline value.
-    initAlpha = iData(3, 0)
-    
-    'If initAlpha is something other than 255 or 0, we don't need to check the image
-    If (initAlpha <> 0) And (initAlpha <> 255) Then
-        
-        CopyMemory ByVal VarPtrArray(iData), 0&, 4
-        Erase iData
-        
-        verifyDIBAlphaChannel = True
-        Exit Function
-        
-    End If
-        
-    'Loop through the image, comparing colors as we go
-    For x = 0 To srcDIB.getDIBWidth - 1
-        quickX = x * 4
-    For y = 0 To srcDIB.getDIBHeight - 1
-        
-        'Compare the alpha data for this pixel to the initial pixel. If they DO NOT match, this is a valid alpha channel.
-        If initAlpha <> iData(quickX + 3, y) Then
-            checkAlpha = True
-            Exit For
-        End If
-        
-    Next y
-    
-        'If the alpha channel has been verified, exit this loop
-        If checkAlpha Then Exit For
-        
-    Next x
-    
-    'With our check complete, point iData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(iData), 0&, 4
-    Erase iData
-
-    'Return checkAlpha. If varying alpha values were found, this function returns TRUE. If all values were the same,
-    ' this function returns FALSE.
-    verifyDIBAlphaChannel = checkAlpha
-
-End Function
-
 'Does a given DIB have "binary" transparency, e.g. does it have alpha values of only 0 or 255?
-' (This is used to determine how transparency is handled when exporting to file formats like GIF, which do not support variable alpha.)
-Public Function isDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZero As Boolean = True) As Boolean
-
+'
+'As a convenience, if you want to confirm that an image has a fully opaque alpha channel (all alpha = 255),
+' you can set checkForZero to FALSE.  This allows you to quickly validate an alpha channel, which is helpful
+' for knowing if you can save time by converting an image to 24-bpp for some operation.
+'
+'If, on the other hand, you are exporting to a file format like GIF, you probably want to leave checkForZero to TRUE.
+' This will actually check for binary alpha values, e.g. TRUE will be returned if the image contains only
+' 255 and/or 0 values, both of which are valid for a GIF file.
+Public Function IsDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZero As Boolean = True) As Boolean
+    
+    IsDIBAlphaBinary = False
+    
     'Make sure the DIB exists
-    If srcDIB Is Nothing Then Exit Function
+    If (srcDIB Is Nothing) Then Exit Function
 
     'Make sure this DIB is 32bpp. If it isn't, running this function is pointless.
     If srcDIB.getDIBColorDepth = 32 Then
@@ -126,11 +64,11 @@ Public Function isDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZ
                 chkAlpha = iData(quickX + 3, y)
                 
                 'For optimization reasons, this is stated as two IFs instead of an OR.
-                If chkAlpha <> 255 Then
+                If (chkAlpha <> 255) Then
                 
                     If checkForZero Then
                     
-                        If chkAlpha <> 0 Then
+                        If (chkAlpha <> 0) Then
                             notBinary = True
                             Exit For
                         End If
@@ -149,20 +87,12 @@ Public Function isDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZ
             'With our alpha channel complete, point iData() away from the DIB and deallocate it
             CopyMemory ByVal VarPtrArray(iData), 0&, 4
             
-            Erase iData
-                
-            'Exit
-            isDIBAlphaBinary = Not notBinary
-            Exit Function
+            IsDIBAlphaBinary = Not notBinary
                 
         End If
         
     End If
     
-    'If we made it to this line, something went horribly wrong or the user used this function incorrectly
-    ' (e.g. calling it on a 24-bpp DIB).
-    isDIBAlphaBinary = False
-
 End Function
 
 'Is a given DIB grayscale?  Determination is made by scanning each pixel and comparing RGB values to see if they match.

@@ -41,7 +41,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
     Dim sFileList As String
         
     'Retrieve one (or more) files to open
-    If openDialog.GetOpenFileName(sFileList, , True, True, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), , ownerHwnd) Then
+    If openDialog.GetOpenFileName(sFileList, , True, True, g_ImageFormats.GetCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), , ownerHwnd) Then
         
         'Message "Preparing to load image..."
         
@@ -130,7 +130,7 @@ Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String,
     tempPathString = g_UserPreferences.GetPref_String("Paths", "Open Image", "")
         
     'Use Steve McMahon's excellent Common Dialog class to launch a dialog (this way, no OCX is required)
-    If openDialog.GetOpenFileName(userImagePath, , True, False, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Select an image"), , ownerHwnd) Then
+    If openDialog.GetOpenFileName(userImagePath, , True, False, g_ImageFormats.GetCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Select an image"), , ownerHwnd) Then
         
         'Save the new directory as the default path for future usage
         tempPathString = userImagePath
@@ -159,70 +159,49 @@ End Function
 ' being replaced; if the file does not exist on disk, this routine will automatically transfer control to Save As...
 ' The imageToSave is a reference to an ID in the pdImages() array.  It can be grabbed from the form.Tag value as well.
 Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
-
+    
     'Certain criteria make is impossible to blindly save an image to disk (such as the image being loaded from a
     ' non-disk source, like the clipbord).  When this happens, we'll silently switch to a Save As... dialog.
-    If Saving.IsSaveAsRequired(srcImage) Then
+    If Saving.IsCommonDialogRequired(srcImage) Then
         MenuSave = MenuSaveAs(srcImage)
-        
-    Else
     
-        'This image has been saved before.
+    'This image has been saved before, meaning it already exists on disk.
+    Else
         
         Dim dstFilename As String
-                
-        'If the user has requested that we only save copies of current images, we need to come up with a new filename
-        If g_UserPreferences.GetPref_Long("Saving", "Overwrite Or Copy", 0) = 0 Then
-            dstFilename = srcImage.locationOnDisk
-        Else
         
-            'Determine the destination directory
-            Dim tempPathString As String
-            tempPathString = srcImage.locationOnDisk
-            StripDirectory tempPathString
+        'PhotoDemon supports two different save modes (controlled via the Tools > Options dialog):
+        ' 1) Default mode.  When the user clicks "save", overwrite the copy on disk.
+        ' 2) "Safe" mode.  When the user clicks "save", save a new copy of the image, auto-incremented with a trailing number.
+        '    (e.g. old copies are never overwritten).
+        Dim safeSaveModeActive As Boolean
+        safeSaveModeActive = CBool(g_UserPreferences.GetPref_Long("Saving", "Overwrite Or Copy", 0) <> 0)
+        
+        If safeSaveModeActive Then
+        
+            Dim cFile As pdFSO
+            Set cFile = New pdFSO
             
-            'Perform a failsafe check for a filename of some sort.  If this parameter is missing, the common dialog request will fail.
-            If Len(srcImage.originalFileName) = 0 Then
-                srcImage.originalFileName = g_Language.TranslateMessage("New image")
-            End If
-            
-            'Next, determine the target filename
-            Dim tempFilename As String
-            tempFilename = srcImage.originalFileName
-            
-            'Finally, determine the target file extension
-            Dim tempExtension As String
-            tempExtension = GetExtension(srcImage.locationOnDisk)
+            'File name incrementation requires help from an outside function.  We must pass it the folder, filename, and extension
+            ' we want it to search against.
+            Dim tmpFolder As String, tmpFilename As String, tmpExtension As String
+            tmpFolder = cFile.GetPathOnly(srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString))
+            If Len(srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)) = 0 Then srcImage.imgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("New image")
+            tmpFilename = srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)
+            tmpExtension = srcImage.imgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
             
             'Now, call the incrementFilename function to find a unique filename of the "filename (n+1)" variety
-            dstFilename = tempPathString & incrementFilename(tempPathString, tempFilename, tempExtension) & "." & tempExtension
+            dstFilename = tmpFolder & IncrementFilename(tmpFolder, tmpFilename, tmpExtension) & "." & tmpExtension
         
-        End If
-        
-        'Check to see if the image is in a format that potentially provides an "additional settings" prompt.
-        ' If it is, the user needs to be prompted at least once for those settings.
-        
-        'JPEG
-        If (srcImage.currentFileFormat = FIF_JPEG) And (Not srcImage.imgStorage.GetEntry_Boolean("hasSeenJPEGPrompt")) Then
-            MenuSave = PhotoDemon_SaveImage(srcImage, dstFilename, True)
-        
-        'JPEG-2000
-        ElseIf (srcImage.currentFileFormat = FIF_JP2) And (Not srcImage.imgStorage.GetEntry_Boolean("hasSeenJP2Prompt")) Then
-            MenuSave = PhotoDemon_SaveImage(srcImage, dstFilename, True)
-            
-        'WebP
-        ElseIf (srcImage.currentFileFormat = FIF_WEBP) And (Not srcImage.imgStorage.GetEntry_Boolean("hasSeenWebPPrompt")) Then
-            MenuSave = PhotoDemon_SaveImage(srcImage, dstFilename, True)
-        
-        'JXR
-        ElseIf (srcImage.currentFileFormat = FIF_WEBP) And (Not srcImage.imgStorage.GetEntry_Boolean("hasSeenJXRPrompt")) Then
-            MenuSave = PhotoDemon_SaveImage(srcImage, dstFilename, True)
-        
-        'All other formats
         Else
-            MenuSave = PhotoDemon_SaveImage(srcImage, dstFilename, False, srcImage.saveParameters)
-            
+            dstFilename = srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
         End If
+        
+        'New to v7.0 is the way save option dialogs work.  PD's primary save function is now responsible for displaying save dialogs.
+        ' (We can forcibly request a dialog, as we do in the "Save As" function, but in this function, we leave it up to the primary
+        ' save function to determine if a dialog is necessary.)
+        MenuSave = PhotoDemon_SaveImage(srcImage, dstFilename, False)
+        
     End If
 
 End Function
@@ -233,78 +212,116 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     Dim saveFileDialog As pdOpenSaveDialog
     Set saveFileDialog = New pdOpenSaveDialog
     
-    'Get the last "save image" path from the preferences file
-    Dim tempPathString As String
-    tempPathString = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
+    'Prior to showing the "save image" dialog, we need to determine three things:
+    ' 1) An initial folder
+    ' 2) What file format to suggest
+    ' 3) What filename to suggest (*without* a file extension)
+    ' 4) What filename + extension to suggest, based on the results of 2 and 3
+    
+    'Each of these will be handled in turn
+    
+    '1) Determine an initial folder.  This is easy, as we will just grab the last "save image" path from the preferences file.
+    '   (The preferences engine will automatically pass us the user's Pictures folder if no "last path" entry exists.)
+    Dim initialSaveFolder As String
+    initialSaveFolder = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
+    
+    '2) What file format to suggest.  There is a user preference for persistently defaulting not to the current image's suggested format,
+    '   but to the last format used in the Save screen.  (This is useful when mass-converting RAW files to JPEG, for example.)
+    '   If that preference is selected, it takes precedence, unless the user has not yet saved any images, in which case we default to
+    '   the standard method (of using heuristics on the current image, and suggesting the most appropriate format accordingly).
+    Dim cdFormatIndex As Long
+    If (g_UserPreferences.GetPref_Long("Saving", "Suggested Format", 0) = 1) And (g_LastSaveFilter <> -1) Then
+        cdFormatIndex = g_LastSaveFilter
         
-    'g_LastSaveFilter will be set to "-1" if the user has never saved a file before.  If that happens, default to JPEG
-    If g_LastSaveFilter = -1 Then
-    
-        g_LastSaveFilter = g_ImageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
-    
-    'Otherwise, set g_LastSaveFilter to this image's current file format, or optionally the last-used format
+    'The user's preference is the default value (0) or no previous saves have occurred, meaning we need to suggest a Save As format based
+    ' on the current image contents.  This is a fairly complex process, so we offload it to a separate function.
     Else
-    
-        'There is a user preference for defaulting to either:
-        ' 1) The current image's format (standard behavior)
-        ' 2) The last format the user specified in the Save As screen (my preferred behavior)
-        ' Use that preference to determine which save filter we select.
-        If g_UserPreferences.GetPref_Long("Saving", "Suggested Format", 0) = 0 Then
+        Dim suggestedSaveFormat As PHOTODEMON_IMAGE_FORMAT, suggestedFileExtension As String
+        suggestedSaveFormat = GetSuggestedSaveFormatAndExtension(srcImage, suggestedFileExtension)
         
-            g_LastSaveFilter = g_ImageFormats.getIndexOfOutputFIF(srcImage.currentFileFormat) + 1
-    
-            'The user may have loaded a file format where INPUT is supported but OUTPUT is not.  If this happens,
-            ' we need to suggest an alternative format.  Use the color-depth of the current image as our guide.
-            If g_LastSaveFilter = 0 Then
-                
-                '24bpp DIBs default to JPEG
-                If srcImage.getCompositeImageColorDepth() = 24 Then
-                    g_LastSaveFilter = g_ImageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
-                
-                '32bpp DIBs default to PNG
-                Else
-                    g_LastSaveFilter = g_ImageFormats.getIndexOfOutputFIF(FIF_PNG) + 1
-                End If
-            
-            End If
-                    
-        'Note that we don't need an "Else" here - the g_LastSaveFilter value will already be present
-        End If
-    
+        'Now that we have a suggested save format, we need to convert that into its matching Common Dialog filter index.
+        ' (Note that the common dialog filter is 1-based, so we manually increment the retrieved index.)
+        cdFormatIndex = g_ImageFormats.GetIndexOfOutputPDIF(suggestedSaveFormat) + 1
     End If
     
-    'Perform a failsafe check for a filename of some sort.  If this parameter is missing, the common dialog request will fail.
-    If Len(srcImage.originalFileName) = 0 Then
-        srcImage.originalFileName = g_Language.TranslateMessage("New image")
-    End If
+    '3) What filename to suggest.  This value is pulled from the image storage object; if this file came from a non-file location
+    '   (like the clipboard), that function will have supplied a meaningful name at load-time.  Note that we have to supply a non-null
+    '   string to the common dialog function for it to work, so some kind of name needs to be suggested.
+    Dim suggestedFilename As String
+    suggestedFilename = srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    If Len(suggestedFilename) = 0 Then suggestedFilename = g_Language.TranslateMessage("New image")
     
-    'Check to see if an image with this filename appears in the save location. If it does, use the incrementFilename
-    ' function to append ascending numbers (of the format "_(#)") to the filename until a unique filename is found.
+    '4) What filename + extension to suggest, based on the results of 2 and 3.  Most programs would just toss together the
+    ' calculated filename + extension, but I like PD to be a bit smarter.  What we're going to do next is scan the default output
+    ' folder to see if any files already match this name and extension.  If they do, we're going to append a number to the end of
+    ' the filename, e.g. "New Image (2)", and we're going to auto-increment that number until we find a number that isn't in use.
+    ' (If auto-incrementing isn't necessary, this function will return the filename we pass it, as-is.)
     Dim sFile As String
-    sFile = tempPathString & incrementFilename(tempPathString, srcImage.originalFileName, g_ImageFormats.getOutputFormatExtension(g_LastSaveFilter - 1))
+    sFile = initialSaveFolder & IncrementFilename(initialSaveFolder, suggestedFilename, suggestedFileExtension)
+    
+    'With all our inputs complete, we can finally raise the damn common dialog
+    If saveFileDialog.GetSaveFileName(sFile, , True, g_ImageFormats.GetCommonDialogOutputFormats, cdFormatIndex, initialSaveFolder, g_Language.TranslateMessage("Save an image"), g_ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
         
-    If saveFileDialog.GetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, g_LastSaveFilter, tempPathString, g_Language.TranslateMessage("Save an image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd) Then
-                
-        'Store the selected file format to the image object
-        srcImage.currentFileFormat = g_ImageFormats.getOutputFIF(g_LastSaveFilter - 1)
+        'The common dialog results affect two different objects:
+        ' 1) the current image (which needs to store things like the format the user chose)
+        ' 2) the global user preferences manager (which needs to remember things like the output folder, so we can remember it)
         
-        'Save the new directory as the default path for future usage
-        tempPathString = sFile
-        StripDirectory tempPathString
-        g_UserPreferences.SetPref_String "Paths", "Save Image", tempPathString
+        'Store all image-level attributes
+        srcImage.currentFileFormat = g_ImageFormats.GetOutputPDIF(g_LastSaveFilter - 1)
         
-        'Also, remember the file filter for future use (in case the user tends to use the same filter repeatedly)
+        'Store all global-preference attributes
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        
+        g_LastSaveFilter = cdFormatIndex
         g_UserPreferences.SetPref_Long "Core", "Last Save Filter", g_LastSaveFilter
-                        
-        'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
+        g_UserPreferences.SetPref_String "Paths", "Save Image", cFile.GetPathOnly(sFile)
+        
+        'Our work here is done!  Transfer control to the core SaveImage routine, which will handle the actual export process.
         MenuSaveAs = PhotoDemon_SaveImage(srcImage, sFile, True)
         
     Else
         MenuSaveAs = False
     End If
+    
+End Function
+
+Private Function GetSuggestedSaveFormatAndExtension(ByRef srcImage As pdImage, ByRef dstSuggestedExtension As String) As PHOTODEMON_IMAGE_FORMAT
+    
+    'First, see if the image has a file format already.  If it does, we need to suggest that preferentially
+    GetSuggestedSaveFormatAndExtension = srcImage.currentFileFormat
+    If (GetSuggestedSaveFormatAndExtension = PDIF_UNKNOWN) Then
+    
+        'This image must have come from a source where the best save format isn't clear (like a generic clipboard DIB).
+        ' As such, we need to suggest an appropriate format.
+        
+        'Start with the most obvious criteria: does the image have multiple layers?  If so, PDI is best.
+        If srcImage.GetNumOfLayers > 1 Then
+            GetSuggestedSaveFormatAndExtension = PDIF_PDI
+        Else
+        
+            'Query the only layer in the image.  If it has meaningful alpha values, we'll suggest PNG; otherwise, JPEG.
+            If DIB_Handler.IsDIBAlphaBinary(srcImage.GetActiveDIB, False) Then
+                GetSuggestedSaveFormatAndExtension = PDIF_JPEG
+            Else
+                GetSuggestedSaveFormatAndExtension = PDIF_PNG
+            End If
+        
+        End If
+        
+        'Also return a proper extension that matches the selected format
+        dstSuggestedExtension = g_ImageFormats.GetExtensionFromPDIF(GetSuggestedSaveFormatAndExtension)
+        
+    'If the image already has a format, let's reuse its existing file extension instead of suggesting a new one.  This is relevant
+    ' for formats with ill-defined extensions, like JPEG (e.g. JPE, JPG, JPEG)
+    Else
+        dstSuggestedExtension = srcImage.imgStorage.GetEntry_String("OriginalFileExtension")
+        If Len(dstSuggestedExtension) = 0 Then dstSuggestedExtension = g_ImageFormats.GetExtensionFromPDIF(GetSuggestedSaveFormatAndExtension)
+    End If
             
 End Function
 
+'TODO 7.0: review this function to make sure it works with the new save engine!
 'Save a lossless copy of the current image.  I've debated a lot of small details about how to best implement this (e.g. how to
 ' "most intuitively" implement this), and I've settled on the following:
 ' 1) Save the copy to the same folder as the current image (if available).  If it's not available, we have no choice but to
@@ -317,7 +334,7 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
 
     'First things first: see if the image currently exists on-disk.  If it doesn't, we have no choice but to provide a save
     ' prompt.
-    If Len(srcImage.locationOnDisk) = 0 Then
+    If Len(srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) = 0 Then
         
         'TODO: make this a dialog with a "check to remember" option.  I'm waiting on this because I want a generic solution
         '       for these types of dialogs, because they would be helpful in many places throughout PD.
@@ -335,28 +352,28 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
     Dim dstFilename As String, tmpPathString As String
     
     'Determine the destination directory now
-    tmpPathString = srcImage.locationOnDisk
+    tmpPathString = srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
     StripDirectory tmpPathString
     
     'Next, let's determine the target filename.  This is the current filename, auto-incremented to whatever number is
     ' available next.
     Dim tmpFilename As String
-    tmpFilename = srcImage.originalFileName
+    tmpFilename = srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)
     
     'Now, call the incrementFilename function to find a unique filename of the "filename (n+1)" variety, with the PDI
     ' file extension forcibly applied.
-    dstFilename = tmpPathString & incrementFilename(tmpPathString, tmpFilename, "pdi") & "." & "pdi"
+    dstFilename = tmpPathString & IncrementFilename(tmpPathString, tmpFilename, "pdi") & "." & "pdi"
     
     'dstFilename now contains the full path and filename where our image copy should go.  Save it!
     If g_ZLibEnabled Then
-        Saving.beginSaveProcess
+        Saving.BeginSaveProcess
         MenuSaveLosslessCopy = SavePhotoDemonImage(srcImage, dstFilename, , , , , , True)
     Else
     
         'If zLib doesn't exist...
         PDMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, " PDI Interface Error", PROGRAMNAME
         Message "No %1 encoder found. Save aborted.", "PDI"
-        Saving.endSaveProcess
+        Saving.EndSaveProcess
         MenuSaveLosslessCopy = False
         
         Exit Function
@@ -364,7 +381,7 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
     End If
         
     'At this point, it's safe to re-enable the main form and restore the default cursor
-    Saving.endSaveProcess
+    Saving.EndSaveProcess
     
     'MenuSaveLosslessCopy should only be true if the save was successful
     If MenuSaveLosslessCopy Then
@@ -457,7 +474,6 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     Dim newImage As pdImage
     Image_Canvas_Handler.GetDefaultPDImageObject newImage
     Image_Canvas_Handler.AddImageToMasterCollection newImage
-    newImage.loadedSuccessfully = True
     
     'We can now address our new image via pdImages(g_CurrentImage).  Create a blank layer.
     Dim newLayerID As Long
@@ -489,13 +505,13 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     End Select
     
     'Assign the newly created DIB to the layer object
-    newImage.getLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Background"), tmpDIB
+    newImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Background"), tmpDIB
     
     'Make the newly created layer the active layer
-    setActiveLayerByID newLayerID, False
+    SetActiveLayerByID newLayerID, False
     
     'Update the pdImage container to be the same size as its (newly created) base layer
-    newImage.updateSize
+    newImage.UpdateSize
     
     'Assign the requested DPI to the new image
     newImage.setDPI imgDPI, imgDPI, False
@@ -508,17 +524,17 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     ' The user may override this setting later, but by default we always start with the user's program-wide setting.
     newImage.imgMetadata.setMetadataExportPreference g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1)
     
-    'Default to JPEGs, for convenience.  Note that a different format will be suggested at save-time, contingent on the image's state,
-    newImage.originalFileFormat = FIF_JPEG
-    newImage.currentFileFormat = pdImages(g_CurrentImage).originalFileFormat
+    'Reset the file format markers; at save-time engine, PD will run heuristics on the image's contents and suggest a better format accordingly.
+    newImage.originalFileFormat = PDIF_UNKNOWN
+    newImage.currentFileFormat = PDIF_UNKNOWN
     newImage.originalColorDepth = 32
     
     'Because this image does not exist on the user's hard-drive, we will force use of a full Save As dialog in the future.
     ' (PD detects this state if a pdImage object does not supply a location on disk)
-    newImage.locationOnDisk = ""
-    newImage.originalFileNameAndExtension = g_Language.TranslateMessage("New image")
-    newImage.originalFileName = pdImages(g_CurrentImage).originalFileNameAndExtension
-    newImage.setSaveState False, pdSE_AnySave
+    newImage.imgStorage.AddEntry "CurrentLocationOnDisk", ""
+    newImage.imgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("New image")
+    newImage.imgStorage.AddEntry "OriginalFileExtension", ""
+    newImage.SetSaveState False, pdSE_AnySave
     
     'Make any interface changes related to the presence of a new image
     Interface.NotifyImageAdded g_CurrentImage

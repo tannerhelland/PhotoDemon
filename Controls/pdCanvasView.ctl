@@ -257,7 +257,6 @@ Public Function IsCanvasInteractionAllowed() As Boolean
         IsCanvasInteractionAllowed = False
     Else
         If Not pdImages(g_CurrentImage).IsActive Then IsCanvasInteractionAllowed = False
-        If Not pdImages(g_CurrentImage).loadedSuccessfully Then IsCanvasInteractionAllowed = False
         If pdImages(g_CurrentImage).GetNumOfLayers = 0 Then IsCanvasInteractionAllowed = False
     End If
     

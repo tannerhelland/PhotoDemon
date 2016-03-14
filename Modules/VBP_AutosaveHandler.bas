@@ -308,7 +308,7 @@ Public Sub AlignLoadedImageWithAutosave(ByRef srcPDImage As pdImage)
             
                 'If this file's location on disk matches the binary buffer associated with a given XML entry,
                 ' ask the pdImage object to rewrite its internal data to match the XML file.
-                If StrComp(srcPDImage.locationOnDisk, m_XmlEntries(i).xmlPath, vbTextCompare) = 0 Then
+                If StrComp(srcPDImage.imgStorage.GetEntry_String("CurrentLocationOnDisk"), m_XmlEntries(i).xmlPath, vbTextCompare) = 0 Then
                     srcPDImage.ReadExternalData m_XmlEntries(i).xmlPath
                     Exit For
                 End If
@@ -336,6 +336,9 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
     ' state of its original Undo/Redo engine.
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
+    
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
     
     'Process each XML entry in turn.  Because of the way we are reconstructing the Undo entries, we can't load
     ' all the files in a single request (despite PD's load function supporting a stack of filenames).
@@ -369,11 +372,12 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
             'The new image has been successfully noted, but we must now overwrite some of the data PD has assigned it with
             ' its original data (such as its "location on disk", which should reflect its original location - not its
             ' temporary file location!)
-            pdImages(g_CurrentImage).locationOnDisk = ""
-            pdImages(g_CurrentImage).originalFileNameAndExtension = fullXMLList(i).friendlyName
+            pdImages(g_CurrentImage).imgStorage.AddEntry "CurrentLocationOnDisk", ""
+            pdImages(g_CurrentImage).imgStorage.AddEntry "OriginalFileName", cFile.GetFilename(fullXMLList(i).friendlyName, True)
+            pdImages(g_CurrentImage).imgStorage.AddEntry "OriginalFileExtension", cFile.GetFileExtension(fullXMLList(i).friendlyName)
             
             'Mark the image as unsaved
-            pdImages(g_CurrentImage).setSaveState False, pdSE_AnySave
+            pdImages(g_CurrentImage).SetSaveState False, pdSE_AnySave
             
             'Reset all save dialog flags (as they should be re-displayed after autosave recovery)
             pdImages(g_CurrentImage).imgStorage.AddEntry "hasSeenJPEGPrompt", False
@@ -388,7 +392,6 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
                 'The Undo stack was reconstructed successfully.  Ask it to advance the stack pointer to its location from
                 ' the last session.
                 pdImages(g_CurrentImage).undoManager.moveToSpecificUndoPoint fullXMLList(i).undoStackPointer
-                
                 Message "Autosave reconstruction complete for %1", fullXMLList(i).friendlyName
             
             Else

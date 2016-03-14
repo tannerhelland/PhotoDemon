@@ -453,8 +453,8 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
             'If the cursor is over a thumbnail, update the tooltip to display that image's filename
             If m_CurrentThumbHover <> -1 Then
                         
-                If Len(pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).locationOnDisk) <> 0 Then
-                    Me.AssignTooltip pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).locationOnDisk, pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).originalFileNameAndExtension
+                If Len(pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).imgStorage.GetEntry_String("CurrentLocationOnDisk")) <> 0 Then
+                    Me.AssignTooltip pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).imgStorage.GetEntry_String("CurrentLocationOnDisk"), pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).imgStorage.GetEntry_String("OriginalFileName")
                 Else
                     Me.AssignTooltip "Once this image has been saved to disk, its filename will appear here.", "This image does not have a filename."
                 End If

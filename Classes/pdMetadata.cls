@@ -755,7 +755,7 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
         ' of operations for PNG chunk processing is: ICC, sRGB, cHRM, gAMA.  ICC handling will happen separately, away from the load process,
         ' and if an ICC profile was found, this whole section can be skipped.
         
-        If (pdImages(parentImageID).originalFileFormat = FIF_PNG) And (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData) Then
+        If (pdImages(parentImageID).originalFileFormat = PDIF_PNG) And (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData) Then
         
             Dim srcGamma As Double
             srcGamma = 0

@@ -272,7 +272,7 @@ Private Sub StopVerificationMode()
         
         'Write the completed technical report out to a temp file
         Dim tmpFilename As String
-        tmpFilename = g_UserPreferences.GetTempPath & "MetadataReport_" & getFilenameWithoutExtension(technicalReportSrcImage) & ".html"
+        tmpFilename = g_UserPreferences.GetTempPath & "MetadataReport_" & GetFilenameWithoutExtension(technicalReportSrcImage) & ".html"
         
         cFile.SaveStringToTextFile verificationString, tmpFilename  ', True, False
         
@@ -456,7 +456,7 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
     End If
     
     'TEST! On JPEGs, request a digest as well
-    'If srcFormat = FIF_JPEG Then cmdParams = cmdParams & "-jpegdigest" & vbCrLf
+    'If srcFormat = PDIF_JPEG Then cmdParams = cmdParams & "-jpegdigest" & vbCrLf
     
     'Request that binary data be processed.  We have no use for this data within PD, but when it comes time to write
     ' our metadata back out to file, we may want to have a copy of it.
@@ -510,7 +510,7 @@ Public Function CreateTechnicalMetadataReport(ByRef srcImage As pdImage) As Bool
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If cFile.FileExist(srcImage.locationOnDisk) Then
+    If cFile.FileExist(srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
     
         Dim cmdParams As String
         cmdParams = ""
@@ -525,8 +525,8 @@ Public Function CreateTechnicalMetadataReport(ByRef srcImage As pdImage) As Bool
         cmdParams = cmdParams & "-charset" & vbCrLf & "filename=UTF8" & vbCrLf
                 
         'Add the source image to the list
-        technicalReportSrcImage = srcImage.locationOnDisk
-        cmdParams = cmdParams & srcImage.locationOnDisk & vbCrLf
+        technicalReportSrcImage = srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk")
+        cmdParams = cmdParams & srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk") & vbCrLf
         
         'Finally, add the special command "-execute" which tells ExifTool to start operations
         cmdParams = cmdParams & "-execute" & vbCrLf
@@ -603,7 +603,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     'See if the output file format supports metadata.  If it doesn't, exit now.
     ' (Note that we return TRUE despite not writing any metadata - this lets the caller know that there were no errors.)
     Dim outputMetadataFormat As PD_METADATA_FORMAT
-    outputMetadataFormat = g_ImageFormats.getIdealMetadataFormatFromFIF(srcPDImage.currentFileFormat)
+    outputMetadataFormat = g_ImageFormats.GetIdealMetadataFormatFromPDIF(srcPDImage.currentFileFormat)
     
     If outputMetadataFormat = PDMF_NONE Then
         Message "This file format does not support metadata.  Metadata processing skipped."
@@ -691,7 +691,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'Size tags are written to different areas based on the type of metadata being written.  JPEGs require special rules; see the spec
     ' for details: http://www.cipa.jp/std/documents/e/DC-008-2012_E.pdf
-    If srcPDImage.currentFileFormat = FIF_JPEG Then
+    If srcPDImage.currentFileFormat = PDIF_JPEG Then
         cmdParams = cmdParams & "--" & tagGroupPrefix & "ImageWidth" & vbCrLf
         cmdParams = cmdParams & "--" & tagGroupPrefix & "ImageHeight" & vbCrLf
     Else
@@ -711,7 +711,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'JPEGs have the unique issue of needing their resolution values also updated in the JFIF header, so we make
     ' an additional request here for JPEGs specifically.
-    If srcPDImage.currentFileFormat = FIF_JPEG Then
+    If srcPDImage.currentFileFormat = PDIF_JPEG Then
         cmdParams = cmdParams & "-JFIF:XResolution=" & srcPDImage.getDPI() & vbCrLf
         cmdParams = cmdParams & "-JFIF:YResolution=" & srcPDImage.getDPI() & vbCrLf
         cmdParams = cmdParams & "-JFIF:ResolutionUnit=inches" & vbCrLf
@@ -730,7 +730,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
         
     'If the output format does not support Exif whatsoever, we can ask ExifTool to forcibly remove any remaining Exif tags.
     ' (This includes any tags it was unable to convert to XMP or IPTC format.)
-    If Not g_ImageFormats.isExifAllowedForFIF(srcPDImage.currentFileFormat) Then
+    If Not g_ImageFormats.IsExifAllowedForPDIF(srcPDImage.currentFileFormat) Then
         cmdParams = cmdParams & "-exif:all=" & vbCrLf
     End If
         

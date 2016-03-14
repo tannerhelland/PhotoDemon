@@ -32,8 +32,7 @@ Begin VB.Form dialog_ExportColorDepth
       Width           =   6435
       _ExtentX        =   11351
       _ExtentY        =   1323
-      BackColor       =   14802140
-      dontAutoUnloadParent=   -1  'True
+      DontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.pdRadioButton optColorDepth 
       CausesValidation=   0   'False
@@ -166,11 +165,11 @@ Public Sub showDialog()
     End If
         
     'Based on the supplied image format, disable invalid color depths
-    If g_ImageFormats.isColorDepthSupported(outputFormat, 1) Then optColorDepth(0).Enabled = True Else optColorDepth(0).Enabled = False
-    If g_ImageFormats.isColorDepthSupported(outputFormat, 4) Then optColorDepth(1).Enabled = True Else optColorDepth(1).Enabled = False
-    If g_ImageFormats.isColorDepthSupported(outputFormat, 8) Then optColorDepth(2).Enabled = True Else optColorDepth(2).Enabled = False
-    If g_ImageFormats.isColorDepthSupported(outputFormat, 24) Then optColorDepth(3).Enabled = True Else optColorDepth(3).Enabled = False
-    If g_ImageFormats.isColorDepthSupported(outputFormat, 32) Then optColorDepth(4).Enabled = True Else optColorDepth(4).Enabled = False
+    If g_ImageFormats.IsColorDepthSupported(outputFormat, 1) Then optColorDepth(0).Enabled = True Else optColorDepth(0).Enabled = False
+    If g_ImageFormats.IsColorDepthSupported(outputFormat, 4) Then optColorDepth(1).Enabled = True Else optColorDepth(1).Enabled = False
+    If g_ImageFormats.IsColorDepthSupported(outputFormat, 8) Then optColorDepth(2).Enabled = True Else optColorDepth(2).Enabled = False
+    If g_ImageFormats.IsColorDepthSupported(outputFormat, 24) Then optColorDepth(3).Enabled = True Else optColorDepth(3).Enabled = False
+    If g_ImageFormats.IsColorDepthSupported(outputFormat, 32) Then optColorDepth(4).Enabled = True Else optColorDepth(4).Enabled = False
         
     'Out of politeness, set the default color depth to the current image's color depth
     Dim tmpDIB As pdDIB
@@ -180,15 +179,15 @@ Public Sub showDialog()
     If pdImages(g_CurrentImage).Width > 512 Or pdImages(g_CurrentImage).Height > 512 Then
         
         Dim imgWidth As Long, imgHeight As Long
-        convertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 512, 512, imgWidth, imgHeight
-        pdImages(g_CurrentImage).getCompositedRect tmpDIB, 0, 0, imgWidth, imgHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, InterpolationModeHighQualityBicubic, , CLC_Generic
+        ConvertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 512, 512, imgWidth, imgHeight
+        pdImages(g_CurrentImage).GetCompositedRect tmpDIB, 0, 0, imgWidth, imgHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, InterpolationModeHighQualityBicubic, , CLC_Generic
         
     Else
-        pdImages(g_CurrentImage).getCompositedImage tmpDIB
+        pdImages(g_CurrentImage).GetCompositedImage tmpDIB
     End If
     
     'If the image has a useless alpha channel, blank it out now.
-    If Not DIB_Handler.verifyDIBAlphaChannel(tmpDIB) Then tmpDIB.convertTo24bpp
+    If Not DIB_Handler.IsDIBAlphaBinary(tmpDIB, False) Then tmpDIB.convertTo24bpp
     
     'Select 24bpp or 32bpp by default, depending on the alpha channel status of the composited DIB.
     If (tmpDIB.getDIBColorDepth = 24) And (optColorDepth(3).Enabled) Then

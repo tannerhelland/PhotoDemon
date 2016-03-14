@@ -233,16 +233,16 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, False, True
     
     'If the selected area has a blank alpha channel, convert it to 24bpp
-    If Not DIB_Handler.verifyDIBAlphaChannel(tmpDIB) Then tmpDIB.convertTo24bpp
+    If Not DIB_Handler.IsDIBAlphaBinary(tmpDIB, False) Then tmpDIB.convertTo24bpp
     
     'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
     newLayerID = tmpImage.createBlankLayer
-    tmpImage.getLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, , tmpDIB
-    tmpImage.updateSize
+    tmpImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, , tmpDIB
+    tmpImage.UpdateSize
         
     'Give the selection a basic filename
-    tmpImage.originalFileName = g_Language.TranslateMessage("PhotoDemon selection")
+    tmpImage.imgStorage.AddEntry "OriginalFileName", "PhotoDemon selection"
         
     'Get the last "save image" path from the preferences file
     Dim tempPathString As String
@@ -251,9 +251,9 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     'By default, recommend JPEG for 24bpp selections, and PNG for 32bpp selections
     Dim saveFormat As Long
     If tmpDIB.getDIBColorDepth = 24 Then
-        saveFormat = g_ImageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
+        saveFormat = g_ImageFormats.GetIndexOfOutputPDIF(PDIF_JPEG) + 1
     Else
-        saveFormat = g_ImageFormats.getIndexOfOutputFIF(FIF_PNG) + 1
+        saveFormat = g_ImageFormats.GetIndexOfOutputPDIF(PDIF_PNG) + 1
     End If
     
     'Now it's time to prepare a standard Save Image common dialog
@@ -262,13 +262,13 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     
     'Provide a string to the common dialog; it will fill this with the user's chosen path + filename
     Dim sFile As String
-    sFile = tempPathString & incrementFilename(tempPathString, tmpImage.originalFileName, g_ImageFormats.getOutputFormatExtension(saveFormat - 1))
+    sFile = tempPathString & incrementFilename(tempPathString, tmpImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString), g_ImageFormats.GetOutputFormatExtension(saveFormat - 1))
     
     'Present a common dialog to the user
-    If saveDialog.GetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd) Then
+    If saveDialog.GetSaveFileName(sFile, , True, g_ImageFormats.GetCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
                 
         'Store the selected file format to the image object
-        tmpImage.currentFileFormat = g_ImageFormats.getOutputFIF(saveFormat - 1)
+        tmpImage.currentFileFormat = g_ImageFormats.GetOutputPDIF(saveFormat - 1)
                                 
         'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
         ExportSelectedAreaAsImage = PhotoDemon_SaveImage(tmpImage, sFile, True)
@@ -309,11 +309,11 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
     newLayerID = tmpImage.createBlankLayer
-    tmpImage.getLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, , tmpDIB
-    tmpImage.updateSize
+    tmpImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, , tmpDIB
+    tmpImage.UpdateSize
     
     'Give the selection a basic filename
-    tmpImage.originalFileName = g_Language.TranslateMessage("PhotoDemon selection")
+    tmpImage.imgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("PhotoDemon selection")
         
     'Get the last "save image" path from the preferences file
     Dim tempPathString As String
@@ -321,21 +321,21 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     
     'By default, recommend PNG as the save format
     Dim saveFormat As Long
-    saveFormat = g_ImageFormats.getIndexOfOutputFIF(FIF_PNG) + 1
+    saveFormat = g_ImageFormats.GetIndexOfOutputPDIF(PDIF_PNG) + 1
     
     'Provide a string to the common dialog; it will fill this with the user's chosen path + filename
     Dim sFile As String
-    sFile = tempPathString & incrementFilename(tempPathString, tmpImage.originalFileName, "png")
+    sFile = tempPathString & incrementFilename(tempPathString, tmpImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString), "png")
     
     'Now it's time to prepare a standard Save Image common dialog
     Dim saveDialog As pdOpenSaveDialog
     Set saveDialog = New pdOpenSaveDialog
     
     'Present a common dialog to the user
-    If saveDialog.GetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd) Then
+    If saveDialog.GetSaveFileName(sFile, , True, g_ImageFormats.GetCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
                 
         'Store the selected file format to the image object
-        tmpImage.currentFileFormat = g_ImageFormats.getOutputFIF(saveFormat - 1)
+        tmpImage.currentFileFormat = g_ImageFormats.GetOutputPDIF(saveFormat - 1)
                                 
         'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
         ExportSelectionMaskAsImage = PhotoDemon_SaveImage(tmpImage, sFile, True)

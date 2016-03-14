@@ -27,8 +27,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   2280
-      _extentx        =   661
-      _extenty        =   661
+      _ExtentX        =   661
+      _ExtentY        =   661
    End
    Begin VB.Timer tmrMetadata 
       Enabled         =   0   'False
@@ -49,22 +49,22 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   120
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   1680
-      _extentx        =   873
-      _extenty        =   873
+      _ExtentX        =   873
+      _ExtentY        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   1080
-      _extentx        =   635
-      _extenty        =   635
-      errasout        =   0
-      pollinterval    =   5
+      _ExtentX        =   635
+      _ExtentY        =   635
+      ErrAsOut        =   0   'False
+      PollInterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -3907,19 +3907,6 @@ Private Sub MnuMetadata_Click(Index As Integer)
         
         'Map photo location
         Case 3
-            
-            'Note that mapping can only be performed if GPS metadata exists for this image.  If the user clicks this option while
-            ' using the on-demand model for metadata caching, we must now attempt to load metadata.
-            If Not pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata Then
-            
-                'Attempt to load it now...
-                Message "Loading metadata for this image..."
-                'pdImages(g_CurrentImage).imgMetadata.loadAllMetadata pdImages(g_CurrentImage).locationOnDisk, pdImages(g_CurrentImage).originalFileFormat
-                
-                'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-                SyncInterfaceToCurrentImage
-            
-            End If
             
             If Not pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata Then
                 PDMsgBox "This image does not contain any GPS metadata.", vbOKOnly + vbApplicationModal + vbInformation, "No GPS data found"

@@ -13,7 +13,7 @@ Attribute VB_Name = "Saving"
 'The most important sub is PhotoDemon_SaveImage at the top of the module.  This sub is responsible for a multitude of
 ' decision-making related to saving an image, including tasks like raising format-specific save dialogs, determining
 ' what color-depth to use, and requesting MRU updates post-save.  Note that the raising of export dialogs can be
-' manually controlled by the loadRelevantForm parameter.
+' manually controlled by the forceOptionsDialog parameter.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -25,15 +25,13 @@ Option Explicit
 'When a Save request is invoked, call this function to determine if Save As is needed instead.  (Several factors can
 ' affect whether Save is okay; for example, if an image has never been saved before, we must raise a dialog to ask
 ' for a save location and filename.)
-Public Function IsSaveAsRequired(ByRef srcImage As pdImage) As Boolean
-
-    'TODO: if an image started with 1 layer, but now has multiple layers, we should prompt for PDI saving instead.
+Public Function IsCommonDialogRequired(ByRef srcImage As pdImage) As Boolean
     
     'At present, this heuristic is pretty simple: if the image hasn't been saved to disk before, require a Save As instead.
-    If Len(srcImage.locationOnDisk) = 0 Then
-        IsSaveAsRequired = True
+    If Len(srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) = 0 Then
+        IsCommonDialogRequired = True
     Else
-        IsSaveAsRequired = False
+        IsCommonDialogRequired = False
     End If
 
 End Function
@@ -45,41 +43,192 @@ End Function
 'INPUTS:
 '   1) pdImage to be saved
 '   2) Destination file path
-'   3) Optional: whether to display a form for the user to input additional save options (JPEG quality, etc)
-'   4) Optional: a string of relevant save parameters.  If this is not provided, relevant parameters will be loaded from the preferences file.
-Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath As String, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal saveParamString As String = "", Optional ByVal forceColorDepthMethod As Long = -1, Optional ByVal suspendMetadataActions As Boolean = False, Optional ByVal suspendMRUUpdating As Boolean = False) As Boolean
+'   3) Optional: whether to force display of an "additional save options" dialog (JPEG quality, etc)
+'   4) Optional: a string of relevant save parameters.  This is only used during batch conversion
+Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As String, Optional ByVal forceOptionsDialog As Boolean = False) As Boolean
     
-    'PD will only update the MRU list if the following criteria are met:
-    ' 1) no save dialog with extra options is required OR
-    ' 1a) a dialog is shown and the user successfully navigates it (e.g. didn't cancel it)
-    ' 2) no errors occured during the export process.
-    '
-    'It's not ideal, but this updateMRU is also used to determine some other non-MRU behaviors in this function - see below for details.
-    Dim updateMRU As Boolean
-    updateMRU = False
+    'There are a few different ways the save process can "fail":
+    ' 1) a save dialog with extra options is required, and the user cancels it
+    ' 2) file-system errors (folder not writable, not enough free space, etc)
+    ' 3) save engine errors (e.g. FreeImage explodes mid-save)
     
-    'This function requires the caller to specify a target format in advance.  PD does this by updating the .currentFileFormat property
-    ' of the source pdImage object.  We must know this in advance so we can figure out what dialogs to display, and what encoder to use.
-    Dim saveFormat As Long
-    saveFormat = srcPDImage.currentFileFormat
+    'These have varying degrees of severity, but I mention this in advance because a number of post-save behaviors (like updating
+    ' the Recent Files list) are abandoned under *any* of these occurrences.  As such, a lot of this function postpones various
+    ' tasks until after all possible failure states have been dealt with.
+    Dim saveSuccessful As Boolean: saveSuccessful = False
     
+    'The caller must tell us which format they want us to use.  This value is stored in the .currentFileFormat property of the pdImage object.
+    Dim saveFormat As PHOTODEMON_IMAGE_FORMAT
+    saveFormat = srcImage.currentFileFormat
+    
+    'Retrieve a string representation as well; settings related to this format may be stored inside the pdImage's settings dictionary
+    Dim saveExtension As String
+    saveExtension = UCase$(g_ImageFormats.GetExtensionFromPDIF(saveFormat))
+    
+    Dim dictEntry As String
+    
+    'The first major task this function deals with is save prompts.  The formula for showing these is hierarchical:
+    
+    ' 0) SPECIAL STEP: if we are in the midst of a batch process, *never* display a dialog.
+    ' 1) If the caller has forcibly requested an options dialog (as "Save As" does), display a dialog.
+    ' 2) If the caller hasn't forcibly requested a dialog...
+        '3) See if this output format even supports dialogs.  If it doesn't, proceed with saving.
+        '4) If this output format does support a dialog...
+            '5) If the user has already seen a dialog for this format, don't show one again
+            '6) If the user hasn't already seen a dialog for this format, it's time to show them one!
+    
+    'We'll deal with each of these in turn.
+    Dim needToDisplayDialog As Boolean: needToDisplayDialog = forceOptionsDialog
+    
+    'Make sure we're not in the midst of a batch process operation
+    If (MacroStatus <> MacroBATCH) Then
+        
+        'If the caller did *not* specifically request a dialog, run some heuristics to see if we need one anyway
+        ' (e.g. if this the first time saving a JPEG file, we need to query the user for a Quality value)
+        If (Not forceOptionsDialog) Then
+            
+            'See if this format even supports dialogs...
+            If g_ImageFormats.IsExportDialogSupported(saveFormat) Then
+            
+                'See if the user has already seen this dialog...
+                dictEntry = "HasSeenExportDialog" & saveExtension
+                needToDisplayDialog = Not srcImage.imgStorage.GetEntry_Boolean(dictEntry, False)
+                
+                'If the user has seen a dialog, we'll perform one last failsafe check.  Make sure that the exported format's
+                ' parameter string exists; if it doesn't, we need to prompt them again.
+                dictEntry = "ExportParams" & saveExtension
+                If (Not needToDisplayDialog) And (Len(srcImage.imgStorage.GetEntry_String(dictEntry, vbNullString)) = 0) Then
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "WARNING!  PhotoDemon_SaveImage found an image where HasSeenExportDialog = TRUE, but ExportParams = null.  Fix this!"
+                    #End If
+                    needToDisplayDialog = True
+                End If
+                
+            End If
+        End If
+        
+    Else
+        needToDisplayDialog = False
+    End If
+    
+    'All export dialogs fulfill the same purpose: they fill an XML string with a list of key+value pairs detailing setting relevant
+    ' to that format.  This XML string is then passed to the respective save function, which applies the settings as relevant.
+    
+    'Upon a successful save, we cache that format-specific parameter string inside the parent image; the same settings are then
+    ' reused on subsequent saves, instead of re-prompting the user.
+    
+    'It is now time to retrieve said parameter string, either from a dialog, or from the pdImage settings dictionary.
+    Dim saveParameters As String
+    If needToDisplayDialog Then
+        
+        'If the user cancels the dialog, exit immediately
+        If Not Saving.GetExportParamsFromDialog(srcImage, saveFormat, saveParameters) Then
+            Message "Save canceled."
+            PhotoDemon_SaveImage = False
+            Exit Function
+        End If
+        
+    Else
+        dictEntry = "ExportParams" & saveExtension
+        saveParameters = srcImage.imgStorage.GetEntry_String(dictEntry, vbNullString)
+    End If
+    
+    'As saving can be somewhat lengthy for large images and/or complex formats, lock the UI now.  Note that we *must* call
+    ' the "EndSaveProcess" function to release the UI lock.
+    BeginSaveProcess
+    
+    'With all save parameters collected, we can offload the rest of the save process to per-format save functions.
+    saveSuccessful = ExportToSpecificFormat(srcImage, dstPath, saveFormat, saveParameters)
+    
+    If saveSuccessful Then
+        
+        'The file was saved successfully!  Copy the save parameters into the parent pdImage object; subsequent "save" actions
+        ' can use these instead of querying the user again.
+        dictEntry = "ExportParams" & saveExtension
+        srcImage.imgStorage.AddEntry dictEntry, saveParameters
+        
+        'Similarly, remember the file's location and selected name for future saves
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        srcImage.imgStorage.AddEntry "CurrentLocationOnDisk", dstPath
+        srcImage.imgStorage.AddEntry "OriginalFileName", cFile.GetFilename(dstPath, True)
+        srcImage.imgStorage.AddEntry "OriginalFileExtension", cFile.GetFileExtension(dstPath)
+        
+        'Update the parent image's save state.
+        If saveFormat = PDIF_PDI Then srcImage.SetSaveState True, pdSE_SavePDI Else srcImage.SetSaveState True, pdSE_SaveFlat
+        
+        'If the file was successfully written, we can now embed any additional metadata.
+        ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
+        ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant metadata file
+        ' to be used as its source.  It cannot operate purely in-memory - but hey, that's why it's asynchronous!)
+        If g_ExifToolEnabled Then
+            
+            'Only attempt to export metadata if ExifTool was able to successfully cache and parse metadata prior to saving
+            If Not (srcImage.imgMetadata Is Nothing) Then
+                If srcImage.imgMetadata.hasXMLMetadata Then
+                    srcImage.imgMetadata.writeAllMetadata dstPath, srcImage
+                Else
+                    Message "No metadata to export.  Continuing save..."
+                End If
+            End If
+            
+        End If
+        
+        'With all save work complete, we can now update various UI bits to reflect the new image.  Note that these changes are
+        ' only applied if we are *not* in the midst  of a batch conversion.
+        If (MacroStatus <> MacroBATCH) Then
+            g_RecentFiles.MRU_AddNewFile dstPath, srcImage
+            SyncInterfaceToCurrentImage
+            Interface.NotifyImageChanged g_CurrentImage
+        End If
+        
+        'At this point, it's safe to re-enable the main form and restore the default cursor
+        EndSaveProcess
+        
+        Message "Save complete."
+    
+    'If something went wrong during the save process, the exporter likely provided its own error report.  Attempt to assemble
+    ' a meaningful message for the user.
+    Else
+    
+        Message "Save canceled."
+        
+        'If FreeImage failed, it should have provided detailed information on the problem.  Present it to the user, in hopes that
+        ' they might use it to rectify the situation (or least notify us of what went wrong!)
+        If Plugin_FreeImage.FreeImageErrorState Then
+            
+            Dim fiErrorList As String
+            fiErrorList = Plugin_FreeImage.GetFreeImageErrors
+            
+            'Display the error message
+            EndSaveProcess
+            PDMsgBox "An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: " & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.", vbCritical Or vbApplicationModal Or vbOKOnly, "Image save error", fiErrorList
+            
+        Else
+            EndSaveProcess
+            PDMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbApplicationModal Or vbOKOnly, "Image save error"
+        End If
+        
+    End If
+    
+    
+    PhotoDemon_SaveImage = saveSuccessful
+    
+    
+    'END OF FUNCTION!
     
     '****************************************************************************************************
     ' Determine exported color depth (for non-PDI formats)
     '****************************************************************************************************
 
     'The user is allowed to set a persistent preference for output color depth.  The available preferences are:
-    ' 0) Mimic the file's original color depth (if available; this may not always be possible, e.g. saving a 32bpp PNG as JPEG)
     ' 1) Count the number of colors used, and save the file based on that (again, if possible).  This is the PD default.
     ' 2) Prompt the user for their desired export color depth
     '
-    'Note that the caller can override the preference check by supplying the "forceColorDepthMethod" parameter.  This is primarily
-    ' used by the batch processor, because the "prompt for color depth" method is not suitable there, even if the user requests it.
-    
     Dim outputColorDepth As Long
     
     'PDI files do not need color depth checked, as the writer auto-detects color depth for each layer regardless of preference.
-    If saveFormat = FIF_PDI Then
+    If saveFormat = PDIF_PDI Then
         outputColorDepth = 32
         
     'The save format is not PDI.  Determine the ideal color depth.
@@ -87,15 +236,11 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     
         'Finally, note that JPEG exporting, on account of it being somewhat specialized, ignores this step completely.
         ' The JPEG routine will do its own scan for grayscale/color and save the proper format automatically.
-        If saveFormat <> FIF_JPEG Then
+        If saveFormat <> PDIF_JPEG Then
         
             Dim colorDepthMode As Long
-            If forceColorDepthMethod = -1 Then
-                colorDepthMode = g_UserPreferences.GetPref_Long("Saving", "Outgoing Color Depth", 1)
-            Else
-                colorDepthMode = forceColorDepthMethod
-            End If
-        
+            colorDepthMode = g_UserPreferences.GetPref_Long("Saving", "Outgoing Color Depth", 1)
+            
             Select Case colorDepthMode
             
                 'Prompt the user (but only if necessary).  (NOTE: only the value (0) should be used; 2 is
@@ -103,7 +248,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 Case 0, 2
                 
                     'First, check to see if the save format in question supports multiple color depths
-                    If g_ImageFormats.doesFIFSupportMultipleColorDepths(saveFormat) Then
+                    If g_ImageFormats.DoesPDIFSupportMultipleColorDepths(saveFormat) Then
                         
                         'If it does, provide the user with a prompt to choose whatever color depth they'd like
                         Dim dCheck As VbMsgBoxResult
@@ -121,7 +266,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     'If this format only supports a single output color depth, don't bother the user with a prompt
                     Else
                 
-                        outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, srcPDImage.originalColorDepth)
+                        outputColorDepth = g_ImageFormats.GetClosestColorDepth(saveFormat, srcImage.originalColorDepth)
                 
                     End If
                 
@@ -132,18 +277,18 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     Dim tmpCompositeDIB As pdDIB
                     Set tmpCompositeDIB = New pdDIB
                     
-                    srcPDImage.GetCompositedImage tmpCompositeDIB, False
+                    srcImage.GetCompositedImage tmpCompositeDIB, False
                     
                     'Validate the composited image's alpha channel; if it is pointless, we can request 24bpp output depth.
-                    If Not DIB_Handler.verifyDIBAlphaChannel(tmpCompositeDIB) Then tmpCompositeDIB.convertTo24bpp
+                    If Not DIB_Handler.IsDIBAlphaBinary(tmpCompositeDIB, False) Then tmpCompositeDIB.convertTo24bpp
                     
                     'Count the number of colors in the image.  (The function will automatically cease if it hits 257 colors,
                     ' as anything above 256 colors is treated as 24bpp.)
                     Dim colorCountCheck As Long
                     Message "Counting image colors to determine optimal exported color depth..."
                     
-                    If srcPDImage.imageID <> -1 Then
-                        colorCountCheck = getQuickColorCount(tmpCompositeDIB, srcPDImage.imageID)
+                    If srcImage.imageID <> -1 Then
+                        colorCountCheck = getQuickColorCount(tmpCompositeDIB, srcImage.imageID)
                     Else
                         colorCountCheck = getQuickColorCount(tmpCompositeDIB)
                     End If
@@ -156,13 +301,13 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     ' images to be exported as 32bpp.
                     If (outputColorDepth <= 8) And (tmpCompositeDIB.getDIBColorDepth = 32) Then
                         
-                        If Not DIB_Handler.isDIBAlphaBinary(tmpCompositeDIB) Then
+                        If Not DIB_Handler.IsDIBAlphaBinary(tmpCompositeDIB) Then
                             outputColorDepth = 32
                         
                         'PNG and GIF can write 8bpp images with a binary alpha channel.  Other formats (e.g. BMP) require 32bpp
                         ' if any alpha whatsoever is present.
                         Else
-                            If (saveFormat <> FIF_GIF) And (saveFormat <> FIF_PNG) Then outputColorDepth = 32
+                            If (saveFormat <> PDIF_GIF) And (saveFormat <> PDIF_PNG) Then outputColorDepth = 32
                         End If
                         
                     End If
@@ -170,37 +315,37 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     Message "Color count successful (%1 bpp recommended)", outputColorDepth
                     
                     'As with case 0, we now need to see if this format supports the suggested color depth
-                    If g_ImageFormats.isColorDepthSupported(saveFormat, outputColorDepth) Then
+                    If g_ImageFormats.IsColorDepthSupported(saveFormat, outputColorDepth) Then
                         
                         'If it IS supported, set the original color depth as the output color depth for this save
                         Message "Recommended color depth of %1 bpp is supported by this format.  Proceeding with save...", outputColorDepth
                     
                     'If it IS NOT supported, we need to find the closest available color depth for this format.
                     Else
-                        outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, outputColorDepth)
-                        Message "Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcPDImage.originalColorDepth, outputColorDepth
+                        outputColorDepth = g_ImageFormats.GetClosestColorDepth(saveFormat, outputColorDepth)
+                        Message "Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcImage.originalColorDepth, outputColorDepth
                     
                     End If
                 
                     
-                'A color depth has been explicitly specified by the forceColorDepthMethod parameter.  We can find the color depth
-                ' by subtracting 16 from the parameter value.
-                Case Else
-                
-                    outputColorDepth = forceColorDepthMethod - 16
-                    
-                    'As a failsafe, make sure this format supports the suggested color depth
-                    If g_ImageFormats.isColorDepthSupported(saveFormat, outputColorDepth) Then
-                        
-                        'If it IS supported, set the original color depth as the output color depth for this save
-                        Message "Requested color depth of %1 bpp is supported by this format.  Proceeding with save...", outputColorDepth
-                    
-                    'If it IS NOT supported, we need to find the closest available color depth for this format.
-                    Else
-                        outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, outputColorDepth)
-                        Message "Requested color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcPDImage.originalColorDepth, outputColorDepth
-                    
-                    End If
+'                'A color depth has been explicitly specified by the forceColorDepthMethod parameter.  We can find the color depth
+'                ' by subtracting 16 from the parameter value.
+'                Case Else
+'
+'                    outputColorDepth = forceColorDepthMethod - 16
+'
+'                    'As a failsafe, make sure this format supports the suggested color depth
+'                    If g_ImageFormats.IsColorDepthSupported(saveFormat, outputColorDepth) Then
+'
+'                        'If it IS supported, set the original color depth as the output color depth for this save
+'                        Message "Requested color depth of %1 bpp is supported by this format.  Proceeding with save...", outputColorDepth
+'
+'                    'If it IS NOT supported, we need to find the closest available color depth for this format.
+'                    Else
+'                        outputColorDepth = g_ImageFormats.GetClosestColorDepth(saveFormat, outputColorDepth)
+'                        Message "Requested color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcImage.originalColorDepth, outputColorDepth
+'
+'                    End If
                 
             End Select
         
@@ -208,431 +353,148 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         
     End If
     
+End Function
+
+'Given a source image, a desired export format, and a destination string, fill the destination string with format-specific parameters
+' returned from the associated format-specific dialog.
+'
+'Returns: TRUE if dialog was closed via OK button; FALSE otherwise.
+Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT, ByRef dstParamString As String) As Boolean
     
-    '****************************************************************************************************
-    ' If additional save parameters have been provided, we may need to access them prior to saving.  Parse them now.
-    '****************************************************************************************************
+    'As a failsafe, make sure the requested format even *has* an export dialog!
+    If g_ImageFormats.IsExportDialogSupported(outputPDIF) Then
+        
+        Select Case outputPDIF
+        
+            Case PDIF_JPEG
+                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptJPEGSettings(srcImage, dstParamString) = vbOK)
+                
+            Case PDIF_JP2
+                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptJP2Settings(srcImage, dstParamString) = vbOK)
+                
+            Case PDIF_WEBP
+                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptWebPSettings(srcImage, dstParamString) = vbOK)
+                
+            Case PDIF_JXR
+                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptJXRSettings(srcImage, dstParamString) = vbOK)
+        
+        End Select
+        
+    Else
+        GetExportParamsFromDialog = False
+        dstParamString = vbNullString
+    End If
+        
+End Function
+
+'Already have a save parameter string assembled?  Call this function to export directly to a given format, with no UI prompts.
+' (I *DO NOT* recommend calling this function directly.  PD only uses it from within the main _SaveImage function, which also applies
+'  a number of failsafe checks against things like path accessibility and format compatibility.)
+Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath As String, ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString) As Boolean
+
+    'As a convenience, load the current set of parameters into an XML parser; some formats use this data to select an
+    ' appropriate export engine (if multiples are available, e.g. both FreeImage and GDI+).
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString saveParameters
     
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    cParams.setParamString saveParamString
-    
-    'NOTE: If explicit save parameters were not provided, relevant values will be loaded from the preferences file
-    '      on a per-format basis.
+    Select Case outputPDIF
         
-    
-    '****************************************************************************************************
-    ' Based on the requested file type and color depth, call the appropriate save function
-    '****************************************************************************************************
-        
-    Select Case saveFormat
-        
-        'JPEG
-        Case FIF_JPEG
-        
-            'JPEG files may need to display a dialog box so the user can set compression quality
-            If loadRelevantForm Then
-                
-                Dim gotSettings As VbMsgBoxResult
-                gotSettings = PromptJPEGSettings(srcPDImage)
-                
-                'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
-                If gotSettings = vbOK Then
-                    srcPDImage.imgStorage.AddEntry "hasSeenJPEGPrompt", True
-                    PhotoDemon_SaveImage = True
-                Else
-                    PhotoDemon_SaveImage = False
-                    Message "Save canceled."
-                    
-                    Exit Function
-                End If
-                
-                'If the user clicked OK, replace the function's save parameters with the ones set by the user
-                cParams.setParamString buildParams(g_JPEGQuality, g_JPEGFlags, g_JPEGThumbnail, g_JPEGAutoQuality, g_JPEGAdvancedColorMatching)
-                
-            End If
+        'I've commented the JPEG section as a sort of "tutorial".  Other sections should be self-explanatory.
+        Case PDIF_JPEG
             
-            'Store these JPEG settings in the image object so we don't have to pester the user for it if they save again
-            srcPDImage.saveParameters = cParams.getParamString
-                            
-            'I implement two separate save functions for JPEG images: FreeImage and GDI+.  GDI+ does not need to make a copy
-            ' of the image before saving it - which makes it much faster - but FreeImage provides a number of additional
-            ' parameters, like optimization, thumbnail embedding, and custom subsampling.  If no optional parameters are in use
-            ' (or if FreeImage is unavailable), use GDI+.  Otherwise, use FreeImage.
-            BeginSaveProcess
+            'JPEG is a somewhat strange format because its export functionality is implemented twice: one interface for FreeImage,
+            ' and another for GDI+.  GDI+ does not need to make a copy of the image before saving it - which makes it much faster -
+            ' but FreeImage supports more advanced parameters, like optimization, thumbnail embedding, and custom subsampling.
             
-            If g_ImageFormats.FreeImageEnabled And (cParams.doesParamExist(2) Or cParams.doesParamExist(3)) Then
-                updateMRU = SaveJPEGImage(srcPDImage, dstPath, cParams.getParamString)
-                
+            'If no optional parameters are in use (or if FreeImage is unavailable), we preferentially use the GDI+ encoder.
+            If g_ImageFormats.FreeImageEnabled And (cParams.GetBool("JPEGOptimizeTables") Or cParams.GetBool("JPEGProgressive") Or cParams.GetBool("JPEGCustomSubsampling") Or cParams.GetBool("JPEGThumbnail")) Then
+                ExportToSpecificFormat = SaveJPEGImage(srcImage, dstPath, saveParameters)
             ElseIf g_ImageFormats.GDIPlusEnabled Then
-                updateMRU = GDIPlusSavePicture(srcPDImage, dstPath, ImageJPEG, 24, cParams.GetLong(1, 92))
+                ExportToSpecificFormat = GDIPlusSavePicture(srcImage, dstPath, ImageJPEG, 24, cParams.GetLong("JPEGQuality", 92))
             Else
-                
-                Message "No %1 encoder found. Save aborted.", "JPEG"
-                PhotoDemon_SaveImage = False
-                EndSaveProcess
-                
-                Exit Function
-                
+                ExportToSpecificFormat = False
             End If
             
-            
-        'PDI, PhotoDemon's internal format
-        Case FIF_PDI
-        
+        Case PDIF_PDI
             If g_ZLibEnabled Then
-                BeginSaveProcess
-                updateMRU = SavePhotoDemonImage(srcPDImage, dstPath, , , , , , True)
+                ExportToSpecificFormat = SavePhotoDemonImage(srcImage, dstPath, , , , , , True)
             Else
-            
-                'If zLib doesn't exist...
-                PDMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, " PDI Interface Error", PROGRAMNAME
-                Message "No %1 encoder found. Save aborted.", "PDI"
-                EndSaveProcess
-                
-                Exit Function
-                
+                ExportToSpecificFormat = False
             End If
         
-        'GIF
-        Case FIF_GIF
-        
-            'GIFs are preferentially exported by FreeImage, then GDI+ (if available)
+        'GIFs are preferentially exported by FreeImage, then GDI+ (if available).  I don't know how to control the algorithm
+        ' GDI+ uses for 8-bpp color reduction, so the results of its encoder are likely to be poor.
+        Case PDIF_GIF
             If g_ImageFormats.FreeImageEnabled Then
-                
-                BeginSaveProcess
-                
-                If Not cParams.doesParamExist(1) Then
-                    updateMRU = SaveGIFImage(srcPDImage, dstPath)
-                Else
-                    updateMRU = SaveGIFImage(srcPDImage, dstPath, cParams.GetLong(1))
-                End If
-                
+                ExportToSpecificFormat = SaveGIFImage(srcImage, dstPath)
             ElseIf g_ImageFormats.GDIPlusEnabled Then
-                BeginSaveProcess
-                updateMRU = GDIPlusSavePicture(srcPDImage, dstPath, ImageGIF, 8)
+                ExportToSpecificFormat = GDIPlusSavePicture(srcImage, dstPath, ImageGIF, 8)
             Else
-            
-                Message "No %1 encoder found. Save aborted.", "GIF"
-                PhotoDemon_SaveImage = False
-                EndSaveProcess
-                
+                ExportToSpecificFormat = False
                 Exit Function
-                
             End If
             
-        'PNG
-        Case FIF_PNG
-            
-            'PNGs support a number of specialized parameters.  If we weren't passed any, retrieve corresponding values from the preferences
-            ' file (specifically, the parameters include: PNG compression level (0-9), interlacing (bool), BKGD preservation (bool).)
-            If Not cParams.doesParamExist(1) Then
-                cParams.setParamString buildParams(g_UserPreferences.GetPref_Long("File Formats", "PNG Compression", 9), g_UserPreferences.GetPref_Boolean("File Formats", "PNG Interlacing", False), g_UserPreferences.GetPref_Boolean("File Formats", "PNG Background Color", True))
-            End If
-            
-            'PNGs are preferentially exported by FreeImage, then GDI+ (if available)
-            BeginSaveProcess
-            
+        Case PDIF_PNG
             If g_ImageFormats.FreeImageEnabled Then
-                updateMRU = SavePNGImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
+                ExportToSpecificFormat = SavePNGImage(srcImage, dstPath, , saveParameters)
             ElseIf g_ImageFormats.GDIPlusEnabled Then
-                updateMRU = GDIPlusSavePicture(srcPDImage, dstPath, ImagePNG, outputColorDepth)
+                ExportToSpecificFormat = GDIPlusSavePicture(srcImage, dstPath, ImagePNG, 32)
             Else
-            
-                Message "No %1 encoder found. Save aborted.", "PNG"
-                PhotoDemon_SaveImage = False
-                EndSaveProcess
-                
-                Exit Function
-                
+                ExportToSpecificFormat = False
             End If
             
-        'PPM
-        Case FIF_PPM
-            BeginSaveProcess
-            If Not cParams.doesParamExist(1) Then cParams.setParamString buildParams(g_UserPreferences.GetPref_Long("File Formats", "PPM Export Format", 0))
-            updateMRU = SavePPMImage(srcPDImage, dstPath, cParams.getParamString)
-                
-        'TGA
-        Case FIF_TARGA
-            BeginSaveProcess
-            If Not cParams.doesParamExist(1) Then cParams.setParamString buildParams(g_UserPreferences.GetPref_Boolean("File Formats", "TGA RLE", False))
-            updateMRU = SaveTGAImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
+        Case PDIF_PPM
+            ExportToSpecificFormat = SavePPMImage(srcImage, dstPath, saveParameters)
             
-        'JPEG-2000
-        Case FIF_JP2
-        
-            If loadRelevantForm Then
-                
-                Dim gotJP2Settings As VbMsgBoxResult
-                gotJP2Settings = PromptJP2Settings(srcPDImage)
-                
-                'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
-                If gotJP2Settings = vbOK Then
-                    srcPDImage.imgStorage.AddEntry "hasSeenJP2Prompt", True
-                    PhotoDemon_SaveImage = True
-                Else
-                
-                    PhotoDemon_SaveImage = False
-                    Message "Save canceled."
-                    EndSaveProcess
-                    
-                    Exit Function
-                    
-                End If
-                
-                'If the user clicked OK, replace the functions save parameters with the ones set by the user
-                cParams.setParamString buildParams(g_JP2Compression)
-                
-            End If
+        Case PDIF_TARGA
+            ExportToSpecificFormat = SaveTGAImage(srcImage, dstPath, , saveParameters)
             
-            'Store the JPEG-2000 quality in the image object so we don't have to pester the user for it if they save again
-            srcPDImage.saveParameters = cParams.getParamString
+        Case PDIF_JP2
+            ExportToSpecificFormat = SaveJP2Image(srcImage, dstPath, , saveParameters)
             
-            BeginSaveProcess
-            updateMRU = SaveJP2Image(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
-            
-        'TIFF
-        Case FIF_TIFF
-            
-            'TIFFs use two parameters - compression type, and CMYK encoding (true/false)
-            If Not cParams.doesParamExist(1) Then
-                cParams.setParamString buildParams(g_UserPreferences.GetPref_Long("File Formats", "TIFF Compression", 0), g_UserPreferences.GetPref_Boolean("File Formats", "TIFF CMYK", False))
-            End If
-            
-            'TIFFs are preferentially exported by FreeImage, then GDI+ (if available)
-            BeginSaveProcess
-            
+        'TIFFs are preferentially exported by FreeImage, then GDI+ (if available)
+        Case PDIF_TIFF
             If g_ImageFormats.FreeImageEnabled Then
-                updateMRU = SaveTIFImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
+                ExportToSpecificFormat = SaveTIFImage(srcImage, dstPath, , saveParameters)
             ElseIf g_ImageFormats.GDIPlusEnabled Then
-                updateMRU = GDIPlusSavePicture(srcPDImage, dstPath, ImageTIFF, outputColorDepth)
+                ExportToSpecificFormat = GDIPlusSavePicture(srcImage, dstPath, ImageTIFF, 32)
             Else
-            
-                Message "No %1 encoder found. Save aborted.", "TIFF"
-                PhotoDemon_SaveImage = False
-                EndSaveProcess
-                
-                Exit Function
-                
+                ExportToSpecificFormat = False
             End If
         
-        'WebP
-        Case FIF_WEBP
+        Case PDIF_WEBP
+            ExportToSpecificFormat = SaveWebPImage(srcImage, dstPath, , saveParameters)
         
-            If loadRelevantForm Then
-                
-                Dim gotWebPSettings As VbMsgBoxResult
-                gotWebPSettings = PromptWebPSettings(srcPDImage)
-                
-                'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
-                If gotWebPSettings = vbOK Then
-                    srcPDImage.imgStorage.AddEntry "hasSeenWebPPrompt", True
-                    PhotoDemon_SaveImage = True
-                Else
-                
-                    PhotoDemon_SaveImage = False
-                    Message "Save canceled."
-                    EndSaveProcess
-                    
-                    Exit Function
-                    
-                End If
-                
-                'If the user clicked OK, replace the functions save parameters with the ones set by the user
-                cParams.setParamString buildParams(g_WebPCompression)
-                
-            End If
+        Case PDIF_JXR
+            ExportToSpecificFormat = SaveJXRImage(srcImage, dstPath, , saveParameters)
             
-            'Store the JPEG-2000 quality in the image object so we don't have to pester the user for it if they save again
-            srcPDImage.saveParameters = cParams.getParamString
-            
-            BeginSaveProcess
-            updateMRU = SaveWebPImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
+        Case PDIF_BMP
+            ExportToSpecificFormat = SaveBMP(srcImage, dstPath, , saveParameters)
         
-        'JPEG XR
-        Case FIF_JXR
+        Case PDIF_HDR
+            ExportToSpecificFormat = SaveHDRImage(srcImage, dstPath)
         
-            If loadRelevantForm Then
-                
-                Dim gotJXRSettings As VbMsgBoxResult
-                gotJXRSettings = PromptJXRSettings(srcPDImage)
-                
-                'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
-                If gotJXRSettings = vbOK Then
-                    srcPDImage.imgStorage.AddEntry "hasSeenJXRPrompt", True
-                    PhotoDemon_SaveImage = True
-                Else
-                
-                    PhotoDemon_SaveImage = False
-                    Message "Save canceled."
-                    EndSaveProcess
-                    
-                    Exit Function
-                    
-                End If
-                
-                'If the user clicked OK, replace the functions save parameters with the ones set by the user
-                cParams.setParamString buildParams(g_JXRCompression, g_JXRProgressive)
-                
-            End If
-            
-            'Store the JPEG-2000 quality in the image object so we don't have to pester the user for it if they save again
-            srcPDImage.saveParameters = cParams.getParamString
-            
-            BeginSaveProcess
-            updateMRU = SaveJXRImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
-            
-        'BMP
-        Case FIF_BMP
-            
-            'If the user has not provided explicit BMP parameters, load their default values from the preferences file
-            If Not cParams.doesParamExist(1) Then cParams.setParamString buildParams(g_UserPreferences.GetPref_Boolean("File Formats", "Bitmap RLE", False))
-            
-            BeginSaveProcess
-            updateMRU = SaveBMP(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
-        
-        'HDR
-        Case FIF_HDR
-            BeginSaveProcess
-            updateMRU = SaveHDRImage(srcPDImage, dstPath)
-        
-        'PSD/PSB
-        Case FIF_PSD
-            BeginSaveProcess
-            updateMRU = SavePSDImage(srcPDImage, dstPath, outputColorDepth)
+        Case PDIF_PSD
+            ExportToSpecificFormat = SavePSDImage(srcImage, dstPath)
         
         Case Else
-        
             Message "Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident."
-            PhotoDemon_SaveImage = False
-            EndSaveProcess
+            ExportToSpecificFormat = False
             
-            Exit Function
-        
     End Select
-    
-    
-    '****************************************************************************************************
-    ' If the file was successfully written, we can now embed any additional metadata.
-    '****************************************************************************************************
-    
-    'Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
-    ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant metadata file
-    ' to be used as its source.
-    
-    'Note that updateMRU is used to track save file success, so it will only be TRUE if the image file was written successfully.
-    ' If the file was not written successfully, abandon any attempts at metadata embedding.
-    If updateMRU And g_ExifToolEnabled And (Not suspendMetadataActions) Then
-        
-        'Only attempt to export metadata if ExifTool was able to successfully cache and parse metadata prior to saving
-        If Not (srcPDImage.imgMetadata Is Nothing) Then
-            If srcPDImage.imgMetadata.hasXMLMetadata Then
-                updateMRU = srcPDImage.imgMetadata.writeAllMetadata(dstPath, srcPDImage)
-            Else
-                Message "No metadata to export.  Continuing save..."
-            End If
-        End If
-        
-    End If
-    
-    'At this point, it's safe to re-enable the main form and restore the default cursor
-    EndSaveProcess
-    
-    'UpdateMRU should only be true if the save was successful
-    If updateMRU And (Not suspendMRUUpdating) Then
-    
-        'Additionally, only add this MRU to the list (and generate an accompanying icon) if we are not in the midst
-        ' of a batch conversion.
-        If MacroStatus <> MacroBATCH Then
-        
-            'Add this file to the MRU list
-            g_RecentFiles.MRU_AddNewFile dstPath, srcPDImage
-        
-            'Remember the file's location for future saves
-            srcPDImage.locationOnDisk = dstPath
-            
-            'Remember the file's filename
-            Dim tmpFilename As String
-            tmpFilename = dstPath
-            StripFilename tmpFilename
-            srcPDImage.originalFileNameAndExtension = tmpFilename
-            StripOffExtension tmpFilename
-            srcPDImage.originalFileName = tmpFilename
-            
-            'Mark this file as having been saved.
-            If saveFormat = FIF_PDI Then
-                srcPDImage.SetSaveState True, pdSE_SavePDI
-            Else
-                srcPDImage.SetSaveState True, pdSE_SaveFlat
-            End If
-            
-            PhotoDemon_SaveImage = True
-            
-            'Update the interface to match the newly saved image (e.g. disable the Save button)
-            SyncInterfaceToCurrentImage
-                        
-            'Notify the thumbnail window that this image has been updated (so it can show/hide the save icon)
-            Interface.NotifyImageChanged g_CurrentImage
-            
-        End If
-    
-    Else
-        
-        'If we aren't updating the MRU, something went wrong.  Display that the save was canceled and exit.
-        ' (One exception to this is if the user requested us to not update the MRU; in this case, there is no error!)
-        If Not suspendMRUUpdating Then
-            Message "Save canceled."
-            
-            'If FreeImage failed, report its message back to the user.  Otherwise, display a generic warning.
-            If Len(g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages))) <> 0 Then
-                
-                Dim listOfFreeImageErrors As String
-                listOfFreeImageErrors = """"
-                
-                'Condense all recorded errors into a single string
-                If UBound(g_FreeImageErrorMessages) > 0 Then
-                    Dim i As Long
-                    For i = 0 To UBound(g_FreeImageErrorMessages)
-                        listOfFreeImageErrors = listOfFreeImageErrors & g_FreeImageErrorMessages(i)
-                        If i < UBound(g_FreeImageErrorMessages) Then listOfFreeImageErrors = listOfFreeImageErrors & vbCrLf
-                    Next i
-                Else
-                    listOfFreeImageErrors = listOfFreeImageErrors & g_FreeImageErrorMessages(0)
-                End If
-                
-                listOfFreeImageErrors = listOfFreeImageErrors & """"
-                
-                'Display the error message
-                PDMsgBox "An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: " & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.", vbCritical Or vbApplicationModal Or vbOKOnly, "Image save error", listOfFreeImageErrors
-                
-                'Clear the FreeImage error tracking array
-                ReDim g_FreeImageErrorMessage(0) As String
-                
-            Else
-                PDMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbApplicationModal Or vbOKOnly, "Image save error"
-            End If
-            
-            PhotoDemon_SaveImage = False
-            Exit Function
-        End If
-        
-    End If
-
-    If Not suspendMRUUpdating Then Message "Save complete."
 
 End Function
 
-
 'Save the current image to BMP format
-Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, ByVal outputColorDepth As Long, Optional ByVal bmpParams As String = "") As Boolean
+Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, Optional ByVal outputColorDepth As Long = 24, Optional ByVal bmpParams As String = "") As Boolean
     
     On Error GoTo SaveBMPError
     
     'Parse all possible BMP parameters (at present there is only one possible parameter, which specifies RLE compression for 8bpp images)
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(bmpParams) <> 0 Then cParams.setParamString bmpParams
+    If Len(bmpParams) <> 0 Then cParams.SetParamString bmpParams
     Dim BMPCompression As Boolean
     BMPCompression = cParams.GetBool(1, False)
     
@@ -688,7 +550,7 @@ Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, By
             If fi_DIB <> 0 Then
                 
                 Dim fi_Check As Long
-                fi_Check = FreeImage_SaveEx(fi_DIB, BMPPath, FIF_BMP, BMPflags, outputColorDepth, , , , , True)
+                fi_Check = FreeImage_SaveEx(fi_DIB, BMPPath, PDIF_BMP, BMPflags, outputColorDepth, , , , , True)
                 
                 If fi_Check Then
                     Message "%1 save complete.", sFileType
@@ -952,7 +814,7 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
     If handleAlpha Then
     
         'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
-        If DIB_Handler.isDIBAlphaBinary(tmpDIB) Then
+        If DIB_Handler.IsDIBAlphaBinary(tmpDIB) Then
             tmpDIB.applyAlphaCutoff
         Else
             If forceAlphaConvert = -1 Then
@@ -1018,7 +880,7 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
     If fi_DIB <> 0 Then
         
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, GIFPath, FIF_GIF, , FICD_8BPP, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, GIFPath, PDIF_GIF, , FICD_8BPP, , , , , True)
         
         If fi_Check Then
             Message "%1 save complete.", sFileType
@@ -1048,7 +910,7 @@ End Function
 'Save a PNG (Portable Network Graphic) file.  GDI+ can also do this.  Note that this function is enormous and quite complicated,
 ' owing to the many interactions between color spaces, bit-depth, custom PNG features (like compression quality), and the
 ' availability of plugins like PNGQuant that further compress saved PNG files.
-Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As String, ByVal outputColorDepth As Long, Optional ByVal pngParams As String = "") As Boolean
+Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As String, Optional ByVal outputColorDepth As Long = 32, Optional ByVal pngParams As String = "") As Boolean
 
     On Error GoTo SavePNGError
 
@@ -1056,7 +918,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     ' (At present, three are possible: compression level, interlacing, BKGD chunk preservation (background color)
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(pngParams) <> 0 Then cParams.setParamString pngParams
+    If Len(pngParams) <> 0 Then cParams.SetParamString pngParams
     Dim pngCompressionLevel As Long
     pngCompressionLevel = cParams.GetLong(1, 9)
     Dim pngUseInterlacing As Boolean, pngPreserveBKGD As Boolean
@@ -1111,7 +973,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         If Not g_ImageFormats.pngQuantEnabled Then
         
             'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
-            If DIB_Handler.isDIBAlphaBinary(tmpDIB) Then
+            If DIB_Handler.IsDIBAlphaBinary(tmpDIB) Then
                 tmpDIB.applyAlphaCutoff
             Else
             
@@ -1220,7 +1082,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         If pngUseInterlacing Then PNGFlags = (PNGFlags Or PNG_INTERLACED)
     
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, FIF_PNG, PNGFlags, outputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, PDIF_PNG, PNGFlags, outputColorDepth, , , , , True)
         
         If Not fi_Check Then
             
@@ -1338,7 +1200,7 @@ Public Function SavePPMImage(ByRef srcPDImage As pdImage, ByVal PPMPath As Strin
     'Parse all possible PPM parameters (at present there is only one possible parameter, which sets RAW vs ASCII encoding)
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(ppmParams) <> 0 Then cParams.setParamString ppmParams
+    If Len(ppmParams) <> 0 Then cParams.SetParamString ppmParams
     Dim ppmFormat As Long
     ppmFormat = cParams.GetLong(1, 0)
 
@@ -1375,7 +1237,7 @@ Public Function SavePPMImage(ByRef srcPDImage As pdImage, ByVal PPMPath As Strin
     If fi_DIB <> 0 Then
     
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, PPMPath, FIF_PPM, ppm_Encoding, FICD_24BPP, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, PPMPath, PDIF_PPM, ppm_Encoding, FICD_24BPP, , , , , True)
         
         If fi_Check Then
             Message "%1 save complete.", sFileType
@@ -1405,14 +1267,14 @@ SavePPMError:
 End Function
 
 'Save to Targa (TGA) format.
-Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As String, ByVal outputColorDepth As Long, Optional ByVal tgaParams As String = "") As Boolean
+Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As String, Optional ByVal outputColorDepth As Long = 32, Optional ByVal tgaParams As String = "") As Boolean
     
     On Error GoTo SaveTGAError
     
     'Parse all possible TGA parameters (at present there is only one possible parameter, which specifies RLE compression)
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(tgaParams) <> 0 Then cParams.setParamString tgaParams
+    If Len(tgaParams) <> 0 Then cParams.SetParamString tgaParams
     Dim TGACompression As Boolean
     TGACompression = cParams.GetBool(1, False)
     
@@ -1442,7 +1304,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     If handleAlpha Then
         
         'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
-        If DIB_Handler.isDIBAlphaBinary(tmpDIB) Then
+        If DIB_Handler.IsDIBAlphaBinary(tmpDIB) Then
             tmpDIB.applyAlphaCutoff
         Else
         
@@ -1520,16 +1382,14 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     If fi_DIB <> 0 Then
         
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, TGAPath, FIF_TARGA, TGAflags, outputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, TGAPath, PDIF_TARGA, TGAflags, outputColorDepth, , , , , True)
         
         If fi_Check Then
             Message "%1 save complete.", sFileType
         Else
-        
             Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
             SaveTGAImage = False
             Exit Function
-            
         End If
         
     Else
@@ -1554,79 +1414,82 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
     
     On Error GoTo SaveJPEGError
     
+    SaveJPEGImage = False
+    
     Dim sFileType As String
     sFileType = "JPEG"
     
+    Message "Preparing %1 image...", sFileType
+    
     'Parse all possible JPEG parameters
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    If Len(jpegParams) <> 0 Then cParams.setParamString jpegParams
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString jpegParams
+    
     Dim jpegFlags As Long
+    jpegFlags = cParams.GetLong("JPEGQuality", 92)
     
-    'Start by retrieving quality
-    jpegFlags = cParams.GetLong(1, 92)
+    'NOTE!  Auto JPEG quality is currently disabled, as I'm not pleased with its performance or quality.
+'    'If FreeImage is enabled, check for an "automatically determine quality" request.
+'    If g_ImageFormats.FreeImageEnabled Then
+'
+'        Dim autoQualityCheck As jpegAutoQualityMode
+'        autoQualityCheck = cParams.GetLong(4, 0)
+'
+'        If autoQualityCheck <> doNotUseAutoQuality Then
+'
+'            'The user has requested that we determine a proper quality value for them.  Do so now!
+'            Message "Testing JPEG quality values to determine best setting..."
+'
+'            'Large images take a veeeery long time to search.  Force a max value of 1024x1024, and search the smaller image.
+'            ' (This should still result in a good value, but at a much smaller time investment.)
+'            Dim testDIB As pdDIB
+'            Set testDIB = New pdDIB
+'            srcPDImage.GetCompositedImage testDIB, False
+'            If testDIB.getDIBColorDepth = 32 Then testDIB.convertTo24bpp
+'
+'            If (testDIB.getDIBWidth > 1024) Or (testDIB.getDIBHeight > 1024) Then
+'
+'                'Find new dimensions
+'                Dim newWidth As Long, newHeight As Long
+'                ConvertAspectRatio testDIB.getDIBWidth, testDIB.getDIBHeight, 1024, 1024, newWidth, newHeight
+'
+'                'Create a temporary source image (resizing requires separate source and destination images)
+'                Dim tmpSourceDIB As pdDIB
+'                Set tmpSourceDIB = New pdDIB
+'                tmpSourceDIB.createFromExistingDIB testDIB
+'
+'                'Resize the temp image and continue
+'                testDIB.createFromExistingDIB tmpSourceDIB, newWidth, newHeight
+'                Set tmpSourceDIB = Nothing
+'
+'            End If
+'
+'            jpegFlags = findQualityForDesiredJPEGPerception(testDIB, autoQualityCheck, cParams.GetBool(5, False))
+'            Message "Ideal quality of %1 found.  Continuing with save...", jpegFlags
+'
+'            Set testDIB = Nothing
+'
+'        Else
+'            Message "Preparing %1 image...", sFileType
+'        End If
+'
+'    Else
+'        Message "Preparing %1 image...", sFileType
+'    End If
     
-    'If FreeImage is enabled, check for an "automatically determine quality" request.
-    If g_ImageFormats.FreeImageEnabled Then
-    
-        Dim autoQualityCheck As jpegAutoQualityMode
-        autoQualityCheck = cParams.GetLong(4, 0)
-        
-        If autoQualityCheck <> doNotUseAutoQuality Then
-        
-            'The user has requested that we determine a proper quality value for them.  Do so now!
-            Message "Testing JPEG quality values to determine best setting..."
-            
-            'Large images take a veeeery long time to search.  Force a max value of 1024x1024, and search the smaller image.
-            ' (This should still result in a good value, but at a much smaller time investment.)
-            Dim testDIB As pdDIB
-            Set testDIB = New pdDIB
-            srcPDImage.GetCompositedImage testDIB, False
-            If testDIB.getDIBColorDepth = 32 Then testDIB.convertTo24bpp
-            
-            If (testDIB.getDIBWidth > 1024) Or (testDIB.getDIBHeight > 1024) Then
-            
-                'Find new dimensions
-                Dim newWidth As Long, newHeight As Long
-                ConvertAspectRatio testDIB.getDIBWidth, testDIB.getDIBHeight, 1024, 1024, newWidth, newHeight
-                
-                'Create a temporary source image (resizing requires separate source and destination images)
-                Dim tmpSourceDIB As pdDIB
-                Set tmpSourceDIB = New pdDIB
-                tmpSourceDIB.createFromExistingDIB testDIB
-                
-                'Resize the temp image and continue
-                testDIB.createFromExistingDIB tmpSourceDIB, newWidth, newHeight
-                Set tmpSourceDIB = Nothing
-            
-            End If
-            
-            jpegFlags = findQualityForDesiredJPEGPerception(testDIB, autoQualityCheck, cParams.GetBool(5, False))
-            Message "Ideal quality of %1 found.  Continuing with save...", jpegFlags
-            
-            Set testDIB = Nothing
-        
-        Else
-            Message "Preparing %1 image...", sFileType
-        End If
-    
-    Else
-        Message "Preparing %1 image...", sFileType
-    End If
-    
-    'If FreeImage is not available, fall back to GDI+.  If that is not available, fail the function.
-    If Not g_ImageFormats.FreeImageEnabled Then
-    
+    'As a failsafe check, make sure FreeImage available.  If it isn't, silently fall back to GDI+.
+    If (Not g_ImageFormats.FreeImageEnabled) Then
         If g_ImageFormats.GDIPlusEnabled Then
             SaveJPEGImage = GDIPlusSavePicture(srcPDImage, JPEGPath, ImageJPEG, 24, jpegFlags)
         Else
             SaveJPEGImage = False
             Message "No %1 encoder found. Save aborted.", "JPEG"
         End If
-        
         Exit Function
-        
     End If
+    
+    'Normal, FreeImage-based encoding starts here.
     
     'Retrieve a composited copy of the image, at full size
     Dim tmpDIB As pdDIB
@@ -1634,7 +1497,7 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
     srcPDImage.GetCompositedImage tmpDIB, False
     
     'JPEGs can only save 24bpp images, so flatten the alpha as necessary
-    If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.convertTo24bpp
+    If (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
         
     'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
@@ -1645,34 +1508,25 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
     Message "Analyzing image color content..."
     
     If DIB_Handler.isDIBGrayscale(tmpDIB) Then
-    
         Message "No color found.  Saving 8bpp grayscale JPEG."
         outputColorDepth = 8
         fi_DIB = FreeImage_ConvertToGreyscale(fi_DIB)
-        
     Else
-    
         Message "Color found.  Saving 24bpp full-color JPEG."
         outputColorDepth = 24
-        
     End If
         
     'Combine all received flags into one
-    jpegFlags = jpegFlags Or cParams.GetLong(2, 0)
+    If cParams.GetBool("JPEGOptimizeTables") Then jpegFlags = jpegFlags Or JPEG_OPTIMIZE
+    If cParams.GetBool("JPEGProgressive") Then jpegFlags = jpegFlags Or JPEG_PROGRESSIVE
+    If cParams.GetBool("JPEGCustomSubsampling") Then jpegFlags = jpegFlags Or cParams.GetLong("JPEGCustomSubsamplingValue", JPEG_SUBSAMPLING_420)
     
     'If a thumbnail has been requested, generate that now
-    If cParams.GetLong(3, 0) <> 0 Then
-    
-        'Create the thumbnail using default settings (100x100px)
+    If cParams.GetBool("JPEGThumbnail") Then
         Dim fThumbnail As Long
         fThumbnail = FreeImage_MakeThumbnail(fi_DIB, 100)
-        
-        'Embed the thumbnail into the main DIB
         FreeImage_SetThumbnail fi_DIB, fThumbnail
-        
-        'Erase the thumbnail
         FreeImage_Unload fThumbnail
-        
     End If
         
     'Use that handle to save the image to JPEG format
@@ -1682,38 +1536,32 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
         FreeImage_SetResolutionX fi_DIB, srcPDImage.getDPI
         FreeImage_SetResolutionY fi_DIB, srcPDImage.getDPI
         
-        Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, JPEGPath, FIF_JPEG, jpegFlags, outputColorDepth, , , , , True)
+        SaveJPEGImage = FreeImage_SaveEx(fi_DIB, JPEGPath, PDIF_JPEG, jpegFlags, outputColorDepth, , , , , True)
         
-        If fi_Check Then
+        If SaveJPEGImage Then
             Message "%1 save complete.", sFileType
         Else
-            
             Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-            SaveJPEGImage = False
-            Exit Function
-            
         End If
         
     Else
-    
         Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-        SaveJPEGImage = False
-        Exit Function
-        
     End If
     
-    SaveJPEGImage = True
     Exit Function
     
 SaveJPEGError:
-
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  Saving.SaveJPEGImage() encountered VB error #" & Err.Number & ": " & Err.Description
+    #End If
+    
     SaveJPEGImage = False
     
 End Function
 
 'Save a TIFF (Tagged Image File Format) image via FreeImage.  GDI+ can also do this.
-Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As String, ByVal outputColorDepth As Long, Optional ByVal tiffParams As String = "") As Boolean
+Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As String, Optional ByVal outputColorDepth As Long = 32, Optional ByVal tiffParams As String = "") As Boolean
     
     On Error GoTo SaveTIFError
     
@@ -1721,7 +1569,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     ' (At present, two are possible: one for compression type, and another for CMYK encoding)
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(tiffParams) <> 0 Then cParams.setParamString tiffParams
+    If Len(tiffParams) <> 0 Then cParams.SetParamString tiffParams
     Dim tiffEncoding As Long
     tiffEncoding = cParams.GetLong(1, 0)
     Dim tiffUseCMYK As Boolean
@@ -1773,7 +1621,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     If handleAlpha Then
         
         'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
-        If DIB_Handler.isDIBAlphaBinary(tmpDIB) Then
+        If DIB_Handler.IsDIBAlphaBinary(tmpDIB) Then
             tmpDIB.applyAlphaCutoff
         Else
             
@@ -1908,7 +1756,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
         End If
         
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, FIF_TIFF, TIFFFlags, outputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, PDIF_TIFF, TIFFFlags, outputColorDepth, , , , , True)
         
         If fi_Check Then
             Message "%1 save complete.", sFileType
@@ -1938,28 +1786,27 @@ SaveTIFError:
 End Function
 
 'Save to JPEG-2000 format using the FreeImage library.
-Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As String, ByVal outputColorDepth As Long, Optional ByVal jp2Params As String = "") As Boolean
+Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As String, Optional ByVal outputColorDepth As Long = 32, Optional ByVal jp2Params As String = "") As Boolean
     
     On Error GoTo SaveJP2Error
     
     'Parse all possible JPEG-2000 params
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    If Len(jp2Params) <> 0 Then cParams.setParamString jp2Params
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString jp2Params
+    
     Dim JP2Quality As Long
-    If cParams.doesParamExist(1) Then JP2Quality = cParams.GetLong(1) Else JP2Quality = 1
+    JP2Quality = cParams.GetLong("JP2Quality", 1)
     
     Dim sFileType As String
     sFileType = "JPEG-2000"
     
     'Make sure we found the plug-in when we loaded the program
-    If Not g_ImageFormats.FreeImageEnabled Then
-        
+    If (Not g_ImageFormats.FreeImageEnabled) Then
         PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save cannot be completed without FreeImage library."
         SaveJP2Image = False
         Exit Function
-        
     End If
     
     Message "Preparing %1 image...", sFileType
@@ -1980,24 +1827,20 @@ Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As Strin
     If fi_DIB <> 0 Then
                 
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, FIF_JP2, JP2Quality, outputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, PDIF_JP2, JP2Quality, outputColorDepth, , , , , True)
         
         If fi_Check Then
             Message "%1 save complete.", sFileType
         Else
-            
             Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
             SaveJP2Image = False
             Exit Function
-            
         End If
         
     Else
-    
         Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
         SaveJP2Image = False
         Exit Function
-        
     End If
     
     SaveJP2Image = True
@@ -2010,36 +1853,28 @@ SaveJP2Error:
 End Function
 
 'Save to JPEG XR format using the FreeImage library.
-Public Function SaveJXRImage(ByRef srcPDImage As pdImage, ByVal jxrPath As String, ByVal outputColorDepth As Long, Optional ByVal jxrParams As String = "") As Boolean
+Public Function SaveJXRImage(ByRef srcPDImage As pdImage, ByVal jxrPath As String, Optional ByVal outputColorDepth As Long = 32, Optional ByVal jxrParams As String = "") As Boolean
     
     On Error GoTo SaveJXRError
     
     'Parse all possible JXR params
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    If Len(jxrParams) <> 0 Then cParams.setParamString jxrParams
-    Dim jxrQuality As Long, jxrProgressive As Boolean
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString jxrParams
     
-    'Quality is the first parameter
-    If cParams.doesParamExist(1) Then jxrQuality = cParams.GetLong(1) Else jxrQuality = 0
-    
-    'Progressive encoding is the second parameter
-    If cParams.doesParamExist(2) Then jxrProgressive = cParams.GetBool(2) Else jxrProgressive = False
-    
-    'FreeImage just accepts a single Long-type set of flags, so merge the progressive setting with the quality one
-    If jxrProgressive Then jxrQuality = jxrQuality Or JXR_PROGRESSIVE
+    Dim jxrFlags As Long
+    jxrFlags = cParams.GetLong("JXRQuality", 0)
+    If cParams.GetBool("JXRProgressive", False) Then jxrFlags = jxrFlags Or JXR_PROGRESSIVE
     
     Dim sFileType As String
     sFileType = "JPEG XR"
     
     'Make sure we found the plug-in when we loaded the program
     If Not g_ImageFormats.FreeImageEnabled Then
-        
         PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save cannot be completed without FreeImage library."
         SaveJXRImage = False
         Exit Function
-        
     End If
     
     Message "Preparing %1 image...", sFileType
@@ -2060,58 +1895,51 @@ Public Function SaveJXRImage(ByRef srcPDImage As pdImage, ByVal jxrPath As Strin
     If fi_DIB <> 0 Then
                 
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, jxrPath, FIF_JXR, jxrQuality, outputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, jxrPath, PDIF_JXR, jxrFlags, outputColorDepth, , , , , True)
         
         If fi_Check Then
             Message "%1 save complete.", sFileType
         Else
-            
             Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
             SaveJXRImage = False
             Exit Function
-            
         End If
-        
     Else
-    
         Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
         SaveJXRImage = False
         Exit Function
-        
     End If
     
     SaveJXRImage = True
     Exit Function
     
 SaveJXRError:
-
     SaveJXRImage = False
     
 End Function
 
 'Save to WebP format using the FreeImage library.
-Public Function SaveWebPImage(ByRef srcPDImage As pdImage, ByVal WebPPath As String, ByVal outputColorDepth As Long, Optional ByVal WebPParams As String = "") As Boolean
+Public Function SaveWebPImage(ByRef srcPDImage As pdImage, ByVal WebPPath As String, Optional ByVal outputColorDepth As Long = 32, Optional ByVal WebPParams As String = "") As Boolean
     
     On Error GoTo SaveWebPError
     
     'Parse all possible WebP params
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    If Len(WebPParams) <> 0 Then cParams.setParamString WebPParams
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString WebPParams
+    
     Dim WebPQuality As Long
-    If cParams.doesParamExist(1) Then WebPQuality = cParams.GetLong(1) Else WebPQuality = 0
+    WebPQuality = cParams.GetLong("WebPQuality", 0)
     
     Dim sFileType As String
     sFileType = "WebP"
     
     'Make sure we found the plug-in when we loaded the program
     If Not g_ImageFormats.FreeImageEnabled Then
-        
         PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
         Message "Save cannot be completed without FreeImage library."
         SaveWebPImage = False
         Exit Function
-        
     End If
     
     Message "Preparing %1 image...", sFileType
@@ -2132,31 +1960,26 @@ Public Function SaveWebPImage(ByRef srcPDImage As pdImage, ByVal WebPPath As Str
     If fi_DIB <> 0 Then
                 
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, WebPPath, FIF_WEBP, WebPQuality, outputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, WebPPath, PDIF_WEBP, WebPQuality, outputColorDepth, , , , , True)
         
         If fi_Check Then
             Message "%1 save complete.", sFileType
         Else
-            
             Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
             SaveWebPImage = False
             Exit Function
-            
         End If
         
     Else
-    
         Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
         SaveWebPImage = False
         Exit Function
-        
     End If
     
     SaveWebPImage = True
     Exit Function
     
 SaveWebPError:
-
     SaveWebPImage = False
     
 End Function
@@ -2184,7 +2007,7 @@ Public Function SaveHDRImage(ByRef srcPDImage As pdImage, ByVal HDRPath As Strin
     Set tmpDIB = New pdDIB
     srcPDImage.GetCompositedImage tmpDIB, False
     
-    'HDR only supports 24bpp
+    'HDR does not currently support alpha-channels, to my knowledge
     If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.convertTo24bpp
         
     'Convert our current DIB to a FreeImage-type DIB
@@ -2263,7 +2086,7 @@ Public Function SaveHDRImage(ByRef srcPDImage As pdImage, ByVal HDRPath As Strin
         
         'With gamma properly accounted for, we can now write the image out to file.
         Dim fi_Check As Long
-        fi_Check = FreeImage_Save(FIF_HDR, fi_FloatDIB, HDRPath, 0)
+        fi_Check = FreeImage_Save(PDIF_HDR, fi_FloatDIB, HDRPath, 0)
         
         If fi_Check Then
             Message "%1 save complete.", sFileType
@@ -2296,14 +2119,11 @@ SaveHDRError:
 End Function
 
 'Save to PSD (or PSB) format using the FreeImage library
-Public Function SavePSDImage(ByRef srcPDImage As pdImage, ByVal psdPath As String, ByVal outputColorDepth As Long, Optional ByVal psdParams As String = "") As Boolean
+Public Function SavePSDImage(ByRef srcPDImage As pdImage, ByVal psdPath As String, Optional ByVal outputColorDepth As Long = 32, Optional ByVal psdParams As String = "") As Boolean
     
     On Error GoTo SavePSDError
     
     'Parse all possible PSD params (unused at present; may be added someday to allow control over compression and PSB format)
-    'Dim cParams As pdParamString
-    'Set cParams = New pdParamString
-    'If Len(psdParams) <> 0 Then cParams.setParamString psdParams
     Dim compressRLE As Boolean, usePSBFormat As Boolean
     compressRLE = True
     usePSBFormat = False
@@ -2344,7 +2164,7 @@ Public Function SavePSDImage(ByRef srcPDImage As pdImage, ByVal psdPath As Strin
         If usePSBFormat Then fi_Flags = fi_Flags Or PSD_PSB
         
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, psdPath, FIF_PSD, fi_Flags, outputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, psdPath, PDIF_PSD, fi_Flags, outputColorDepth, , , , , True)
         
         If fi_Check Then
             Message "%1 save complete.", sFileType
@@ -2375,7 +2195,7 @@ End Function
 
 'Given a source and destination DIB reference, fill the destination with a post-JPEG-compression of the original.  This
 ' is used to generate the live preview used in PhotoDemon's "export JPEG" dialog.
-Public Sub fillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal JPEGQuality As Long, Optional ByVal jpegSubsample As Long = JPEG_SUBSAMPLING_422)
+Public Sub FillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal JPEGQuality As Long, Optional ByVal jpegSubsample As Long = JPEG_SUBSAMPLING_422)
 
     'srcDIB may be 32bpp.  Convert it to 24bpp if necessary.
     If srcDIB.getDIBColorDepth = 32 Then srcDIB.convertTo24bpp
@@ -2392,7 +2212,7 @@ Public Sub fillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     ' the image in JPEG format to a byte array; we then hand that byte array back to it and request a decompression.
     Dim jpegArray() As Byte
     Dim fi_Check As Long
-    fi_Check = FreeImage_SaveToMemoryEx(FIF_JPEG, fi_DIB, jpegArray, jpegFlags, True)
+    fi_Check = FreeImage_SaveToMemoryEx(PDIF_JPEG, fi_DIB, jpegArray, jpegFlags, True)
     
     fi_DIB = FreeImage_LoadFromMemoryEx(jpegArray, FILO_JPEG_FAST)
     
@@ -2406,11 +2226,11 @@ Public Sub fillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
 End Sub
 
 'Given a source image and a desired JPEG perception quality, test various JPEG quality values until an ideal one is found
-Public Function findQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByVal desiredPerception As jpegAutoQualityMode, Optional ByVal useHighQualityColorMatching As Boolean = False) As Long
+Public Function FindQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByVal desiredPerception As jpegAutoQualityMode, Optional ByVal useHighQualityColorMatching As Boolean = False) As Long
 
     'If desiredPerception is 0 ("do not use auto check"), exit
     If desiredPerception = doNotUseAutoQuality Then
-        findQualityForDesiredJPEGPerception = 0
+        FindQualityForDesiredJPEGPerception = 0
         Exit Function
     End If
     
@@ -2470,7 +2290,7 @@ Public Function findQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByV
     
         'Retrieve a copy of the original image at the current JPEG quality
         tmpJPEGImage.createFromExistingDIB srcImage
-        fillDIBWithJPEGVersion tmpJPEGImage, tmpJPEGImage, curJPEGQuality
+        FillDIBWithJPEGVersion tmpJPEGImage, tmpJPEGImage, curJPEGQuality
         
         'Here is where high-quality and low-quality color-matching diverge.
         If useHighQualityColorMatching Then
@@ -2479,11 +2299,11 @@ Public Function findQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByV
             convertEntireDIBToLabColor tmpJPEGImage, dstImageData
             
             'Retrieve a mean RMSD for the two images
-            rmsdCheck = findMeanRMSDForTwoArrays(srcImageData, dstImageData, srcImage.getDIBWidth - 1, srcImage.getDIBHeight - 1)
+            rmsdCheck = FindMeanRMSDForTwoArrays(srcImageData, dstImageData, srcImage.getDIBWidth - 1, srcImage.getDIBHeight - 1)
             
         Else
         
-            rmsdCheck = findMeanRMSDForTwoDIBs(srcImage, tmpJPEGImage)
+            rmsdCheck = FindMeanRMSDForTwoDIBs(srcImage, tmpJPEGImage)
         
         End If
         
@@ -2510,7 +2330,7 @@ Public Function findQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByV
     
         'Retrieve a copy of the original image at the current JPEG quality
         tmpJPEGImage.createFromExistingDIB srcImage
-        fillDIBWithJPEGVersion tmpJPEGImage, tmpJPEGImage, curJPEGQuality
+        FillDIBWithJPEGVersion tmpJPEGImage, tmpJPEGImage, curJPEGQuality
         
         'Here is where high-quality and low-quality color-matching diverge.
         If useHighQualityColorMatching Then
@@ -2519,11 +2339,11 @@ Public Function findQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByV
             convertEntireDIBToLabColor tmpJPEGImage, dstImageData
             
             'Retrieve a mean RMSD for the two images
-            rmsdCheck = findMeanRMSDForTwoArrays(srcImageData, dstImageData, srcImage.getDIBWidth - 1, srcImage.getDIBHeight - 1)
+            rmsdCheck = FindMeanRMSDForTwoArrays(srcImageData, dstImageData, srcImage.getDIBWidth - 1, srcImage.getDIBHeight - 1)
             
         Else
         
-            rmsdCheck = findMeanRMSDForTwoDIBs(srcImage, tmpJPEGImage)
+            rmsdCheck = FindMeanRMSDForTwoDIBs(srcImage, tmpJPEGImage)
         
         End If
         
@@ -2541,12 +2361,12 @@ Public Function findQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByV
     If curJPEGQuality = 100 Then curJPEGQuality = 99
     
     'We now have a quality value!  Return it.
-    findQualityForDesiredJPEGPerception = curJPEGQuality
+    FindQualityForDesiredJPEGPerception = curJPEGQuality
 
 End Function
 
 'This function takes two 24bpp DIBs and compares them, returning a single mean RMSD.
-Public Function findMeanRMSDForTwoDIBs(ByRef srcDib1 As pdDIB, ByRef srcDib2 As pdDIB) As Double
+Public Function FindMeanRMSDForTwoDIBs(ByRef srcDib1 As pdDIB, ByRef srcDib2 As pdDIB) As Double
 
     Dim totalRMSD As Double
     totalRMSD = 0
@@ -2599,14 +2419,13 @@ Public Function findMeanRMSDForTwoDIBs(ByRef srcDib1 As pdDIB, ByRef srcDib2 As 
     CopyMemory ByVal VarPtrArray(srcArray2), 0&, 4
     
     'Divide the total RMSD by the number of pixels in the image, then exit
-    findMeanRMSDForTwoDIBs = totalRMSD / (imgWidth * imgHeight)
+    FindMeanRMSDForTwoDIBs = totalRMSD / (imgWidth * imgHeight)
 
 End Function
 
-
 'This function assumes two 24bpp DIBs have been pre-converted to Single-type L*a*b* arrays.  Use the L*a*b* data to return
 ' a mean RMSD for the two images.
-Public Function findMeanRMSDForTwoArrays(ByRef srcArray1() As Single, ByRef srcArray2() As Single, ByVal imgWidth As Long, ByVal imgHeight As Long) As Double
+Public Function FindMeanRMSDForTwoArrays(ByRef srcArray1() As Single, ByRef srcArray2() As Single, ByVal imgWidth As Long, ByVal imgHeight As Long) As Double
 
     Dim totalRMSD As Double
     totalRMSD = 0
@@ -2636,13 +2455,13 @@ Public Function findMeanRMSDForTwoArrays(ByRef srcArray1() As Single, ByRef srcA
     Next x
     
     'Divide the total RMSD by the number of pixels in the image, then exit
-    findMeanRMSDForTwoArrays = totalRMSD / (imgWidth * imgHeight)
+    FindMeanRMSDForTwoArrays = totalRMSD / (imgWidth * imgHeight)
 
 End Function
 
 'Given a source and destination DIB reference, fill the destination with a post-JPEG-2000-compression of the original.  This
 ' is used to generate the live preview used in PhotoDemon's "export JPEG-2000" dialog.
-Public Sub fillDIBWithJP2Version(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal JP2Quality As Long)
+Public Sub FillDIBWithJP2Version(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal JP2Quality As Long)
     
     'Pass the DIB to FreeImage, which will make a copy for itself.
     Dim fi_DIB As Long
@@ -2652,9 +2471,9 @@ Public Sub fillDIBWithJP2Version(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
     ' the image in JPEG-2000 format to a byte array; we then hand that byte array back to it and request a decompression.
     Dim jp2Array() As Byte
     Dim fi_Check As Long
-    fi_Check = FreeImage_SaveToMemoryEx(FIF_JP2, fi_DIB, jp2Array, JP2Quality, True)
+    fi_Check = FreeImage_SaveToMemoryEx(PDIF_JP2, fi_DIB, jp2Array, JP2Quality, True)
     
-    fi_DIB = FreeImage_LoadFromMemoryEx(jp2Array, 0, , FIF_JP2)
+    fi_DIB = FreeImage_LoadFromMemoryEx(jp2Array, 0, , PDIF_JP2)
     
     'Copy the newly decompressed JPEG-2000 into the destination pdDIB object.
     SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
@@ -2667,7 +2486,7 @@ End Sub
 
 'Given a source and destination DIB reference, fill the destination with a post-WebP-compression of the original.  This
 ' is used to generate the live preview used in PhotoDemon's "export WebP" dialog.
-Public Sub fillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal WebPQuality As Long)
+Public Sub FillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal WebPQuality As Long)
     
     'Pass the DIB to FreeImage, which will make a copy for itself.
     Dim fi_DIB As Long
@@ -2677,9 +2496,9 @@ Public Sub fillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     ' the image in WebP format to a byte array; we then hand that byte array back to it and request a decompression.
     Dim webPArray() As Byte
     Dim fi_Check As Long
-    fi_Check = FreeImage_SaveToMemoryEx(FIF_WEBP, fi_DIB, webPArray, WebPQuality, True)
+    fi_Check = FreeImage_SaveToMemoryEx(PDIF_WEBP, fi_DIB, webPArray, WebPQuality, True)
     
-    fi_DIB = FreeImage_LoadFromMemoryEx(webPArray, , , FIF_WEBP)
+    fi_DIB = FreeImage_LoadFromMemoryEx(webPArray, , , PDIF_WEBP)
     
     'Random fact: the WebP encoder will automatically downsample 32-bit images with pointless alpha channels to 24-bit.  This causes problems when
     ' we try to preview WebP files prior to encoding, as it may randomly change the bit-depth on us.  Check for this case, and recreate the target
@@ -2697,7 +2516,7 @@ End Sub
 
 'Given a source and destination DIB reference, fill the destination with a post-JXR-compression of the original.  This
 ' is used to generate the live preview used in PhotoDemon's "export JXR" dialog.
-Public Sub fillDIBWithJXRVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal jxrQuality As Long)
+Public Sub FillDIBWithJXRVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal jxrQuality As Long)
     
     'Pass the DIB to FreeImage, which will make a copy for itself.
     Dim fi_DIB As Long
@@ -2707,12 +2526,12 @@ Public Sub fillDIBWithJXRVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
     ' the image in JPEG XR format to a byte array; we then hand that byte array back to it and request a decompression.
     Dim jxrArray() As Byte
     Dim fi_Check As Boolean
-    fi_Check = FreeImage_SaveToMemoryEx(FIF_JXR, fi_DIB, jxrArray, jxrQuality, True)
+    fi_Check = FreeImage_SaveToMemoryEx(PDIF_JXR, fi_DIB, jxrArray, jxrQuality, True)
     Debug.Print "JXR live previews have been problematic; size of returned array is: " & UBound(jxrArray)
     
     If fi_Check Then
     
-        fi_DIB = FreeImage_LoadFromMemoryEx(jxrArray, 0, UBound(jxrArray) + 1, FIF_JXR, VarPtr(jxrArray(0)))
+        fi_DIB = FreeImage_LoadFromMemoryEx(jxrArray, 0, UBound(jxrArray) + 1, PDIF_JXR, VarPtr(jxrArray(0)))
         
         'Copy the newly decompressed image into the destination pdDIB object.
         If fi_DIB <> 0 Then
@@ -2819,7 +2638,7 @@ Public Function QuickSaveDIBAsPNG(ByVal dstFilename As String, ByRef srcDIB As p
             End If
             
             'Ask FreeImage to write the thumbnail out to file
-            fi_Check = FreeImage_SaveEx(fi_DIB, dstFilename, FIF_PNG, FISO_PNG_Z_BEST_SPEED, fi_OutputColorDepth, , , , , True)
+            fi_Check = FreeImage_SaveEx(fi_DIB, dstFilename, PDIF_PNG, FISO_PNG_Z_BEST_SPEED, fi_OutputColorDepth, , , , , True)
             If Not fi_Check Then Message "Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
             
         Else

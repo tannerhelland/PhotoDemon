@@ -253,7 +253,7 @@ Public Sub SyncInterfaceToCurrentImage()
             
         'Finally, synchronize various tool settings.  I've optimized this so that only the settings relative to the current tool
         ' are updated; others will be modified if/when the active tool is changed.
-        Tool_Support.syncToolOptionsUIToCurrentLayer
+        Tool_Support.SyncToolOptionsUIToCurrentLayer
         
     End If
         
@@ -586,7 +586,7 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
     If (g_OpenImageCount <> 0) Then
     
         'Save is a bit funny, because if the image HAS been saved to file, we DISABLE the save button.
-        SetUIGroupState PDUI_Save, Not pdImages(g_CurrentImage).getSaveState(pdSE_AnySave)
+        SetUIGroupState PDUI_Save, Not pdImages(g_CurrentImage).GetSaveState(pdSE_AnySave)
         
         'Undo, Redo, Repeat and Fade are all closely related
         If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then
@@ -1343,7 +1343,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     Else
         'The main from is a bit different - if it has been translated or changed, it needs menu icons reassigned, because they are
         ' inadvertently dropped when the menu captions change.
-        If FormMain.Visible Then applyAllMenuIcons
+        If FormMain.Visible Then ApplyAllMenuIcons
     End If
     
 End Sub
@@ -1417,25 +1417,27 @@ End Sub
 Private Function GetWindowCaption(ByRef srcImage As pdImage) As String
 
     Dim captionBase As String
-    captionBase = ""
+    Dim appendFileFormat As Boolean: appendFileFormat = False
     
     'Start by seeing if this image has some kind of filename.  This field should always be populated by the load function,
     ' but better safe than sorry!
-    If Len(srcImage.originalFileNameAndExtension) <> 0 Then
+    If Len(srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)) <> 0 Then
     
         'This image has a filename!  Next, check the user's preference for long or short window captions
+        
+        'The user prefers short captions.  Use just the filename and extension (no folders ) as the base.
         If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0 Then
-            
-            'The user prefers short captions.  Use just the filename and extension (no folders ) as the base.
-            captionBase = srcImage.originalFileNameAndExtension
+            captionBase = srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)
+            appendFileFormat = True
         Else
         
             'The user prefers long captions.  Make sure this image has such a location; if they do not, fallback
             ' and use just the filename.
-            If Len(srcImage.locationOnDisk) <> 0 Then
-                captionBase = srcImage.locationOnDisk
+            If Len(srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0 Then
+                captionBase = srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
             Else
-                captionBase = srcImage.originalFileNameAndExtension
+                captionBase = srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)
+                appendFileFormat = True
             End If
             
         End If
@@ -1443,6 +1445,11 @@ Private Function GetWindowCaption(ByRef srcImage As pdImage) As String
     'This image does not have a filename.  Assign it a default title.
     Else
         captionBase = g_Language.TranslateMessage("[untitled image]")
+    End If
+    
+    'File format can be useful when working with multiple copies of the same image; PD tries to append it, as relevant
+    If appendFileFormat And (Len(srcImage.imgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) <> 0) Then
+        captionBase = captionBase & " [" & UCase(srcImage.imgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) & "]"
     End If
     
     'Append the current PhotoDemon version number and exit

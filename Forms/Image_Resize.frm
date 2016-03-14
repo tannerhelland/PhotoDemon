@@ -274,21 +274,6 @@ Private Sub chkNames_Click()
     SwitchResampleOption
 End Sub
 
-Private Sub cmbFit_Click()
-    
-    'NOTE: as of April '14 (version 6.4), layers support dictates that all images are treated as 32bpp by default.
-    '      As such, there's no longer a reason to display a color selector, because transparency will always be
-    '      available (regardless of actual layer contents).
-    
-    'Hide the color picker as necessary
-    'If (cmbFit.ListIndex = 1) And (pdImages(g_CurrentImage).getCompositeImageColorDepth <> 32) Then
-    '    colorPicker.Visible = True
-    'Else
-    '    colorPicker.Visible = False
-    'End If
-    
-End Sub
-
 Private Sub cmdBar_ExtraValidations()
     If Not ucResize.IsValid(True) Then cmdBar.ValidationFailed
 End Sub
@@ -338,7 +323,7 @@ Private Sub cmdBar_ResetClick()
             ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
         
     End Select
     
@@ -379,7 +364,7 @@ Private Sub Form_Activate()
             ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
         
     End Select
     
@@ -396,11 +381,7 @@ Private Sub Form_Load()
     'Populate the "fit" options
     cmbFit.Clear
     cmbFit.AddItem " stretching to new size  (default)", 0
-    If pdImages(g_CurrentImage).getCompositeImageColorDepth = 32 Then
-        cmbFit.AddItem " fitting inclusively, with transparent borders as necessary", 1
-    Else
-        cmbFit.AddItem " fitting inclusively, with colored borders as necessary", 1
-    End If
+    cmbFit.AddItem " fitting inclusively, with transparent borders as necessary", 1
     cmbFit.AddItem " fitting exclusively, and cropping as necessary", 2
     cmbFit.ListIndex = 0
     
@@ -414,7 +395,7 @@ Private Sub Form_Load()
             ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
         
     End Select
     
@@ -494,8 +475,8 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
             srcHeight = pdImages(g_CurrentImage).Height
         
         Case PD_AT_SINGLELAYER
-            srcWidth = pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False)
-            srcHeight = pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False)
+            srcWidth = pdImages(g_CurrentImage).GetActiveLayer.getLayerWidth(False)
+            srcHeight = pdImages(g_CurrentImage).GetActiveLayer.getLayerHeight(False)
         
     End Select
     
@@ -539,7 +520,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     ' detailed progress of the actions.  Instead, let the user know when a layer has been resized by using
     ' the number of layers as our progress guide.
     If (thingToResize = PD_AT_WHOLEIMAGE) Then
-        SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers
+        SetProgBarMax pdImages(g_CurrentImage).GetNumOfLayers
         Message "Resizing image..."
     Else
         SetProgBarMax 1
@@ -562,11 +543,11 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     
         Case PD_AT_WHOLEIMAGE
             lInit = 0
-            lFinal = pdImages(g_CurrentImage).getNumOfLayers - 1
+            lFinal = pdImages(g_CurrentImage).GetNumOfLayers - 1
         
         Case PD_AT_SINGLELAYER
-            lInit = pdImages(g_CurrentImage).getActiveLayerIndex
-            lFinal = pdImages(g_CurrentImage).getActiveLayerIndex
+            lInit = pdImages(g_CurrentImage).GetActiveLayerIndex
+            lFinal = pdImages(g_CurrentImage).GetActiveLayerIndex
     
     End Select
     
@@ -576,10 +557,10 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
         If thingToResize = PD_AT_WHOLEIMAGE Then SetProgBarVal i
         
         'Retrieve a pointer to the layer of interest
-        Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
+        Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(i)
         
         'Null-pad the layer
-        If thingToResize = PD_AT_WHOLEIMAGE Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, False
+        If thingToResize = PD_AT_WHOLEIMAGE Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, False
         
         'Call the appropriate external function, based on the user's resize selection.  Each function will
         ' place a resized version of tmpLayerRef.layerDIB into tmpDIB.
@@ -701,10 +682,10 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
         End Select
         
         'With the layer now successfully resized, we can remove any null-padding that may still exist
-        If thingToResize = PD_AT_WHOLEIMAGE Then tmpLayerRef.cropNullPaddedLayer
+        If thingToResize = PD_AT_WHOLEIMAGE Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent image of the change
-        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
         
     'Move on to the next layer
     Next i
@@ -714,7 +695,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     
     'Update the main image's size and DPI values
     If thingToResize = PD_AT_WHOLEIMAGE Then
-        pdImages(g_CurrentImage).updateSize False, iWidth, iHeight
+        pdImages(g_CurrentImage).UpdateSize False, iWidth, iHeight
         pdImages(g_CurrentImage).setDPI iDPI, iDPI
         DisplaySize pdImages(g_CurrentImage)
     End If

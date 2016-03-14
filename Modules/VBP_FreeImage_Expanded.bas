@@ -108,7 +108,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     fi_ImportFlags = 0
     
     'For JPEGs, specify a preference for accuracy and quality over load speed.
-    If fileFIF = FIF_JPEG Then
+    If fileFIF = PDIF_JPEG Then
         fi_ImportFlags = fi_ImportFlags Or FILO_JPEG_ACCURATE
         
         'If the user has not suspended EXIF auto-rotation, request it from FreeImage
@@ -116,7 +116,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     End If
     
     'For PNG files, request that gamma is ignored (we will handle it ourselves, later in the load process)
-    If fileFIF = FIF_PNG Then
+    If fileFIF = PDIF_PNG Then
         fi_ImportFlags = fi_ImportFlags Or FILO_PNG_IGNOREGAMMA
     End If
     
@@ -125,7 +125,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     Dim isCMYK As Boolean
     isCMYK = False
     
-    If (fileFIF = FIF_JPEG) Or (fileFIF = FIF_PSD) Or (fileFIF = FIF_TIFF) Then
+    If (fileFIF = PDIF_JPEG) Or (fileFIF = PDIF_PSD) Or (fileFIF = PDIF_TIFF) Then
     
         'To speed up the load process, only load the file header, and explicitly instruct FreeImage to leave CMYK images
         ' in CMYK format (otherwise we can't detect CMYK, as it will be auto-converted to RGB!).
@@ -134,13 +134,13 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         
         Select Case fileFIF
         
-            Case FIF_JPEG
+            Case PDIF_JPEG
                 additionalFlags = additionalFlags Or FILO_JPEG_CMYK
             
-            Case FIF_PSD
+            Case PDIF_PSD
                 additionalFlags = additionalFlags Or FILO_PSD_CMYK
             
-            Case FIF_TIFF
+            Case PDIF_TIFF
                 additionalFlags = additionalFlags Or TIFF_CMYK
         
         End Select
@@ -159,13 +159,13 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
                 
                 Select Case fileFIF
         
-                    Case FIF_JPEG
+                    Case PDIF_JPEG
                         fi_ImportFlags = fi_ImportFlags Or FILO_JPEG_CMYK
                     
-                    Case FIF_PSD
+                    Case PDIF_PSD
                         fi_ImportFlags = fi_ImportFlags Or FILO_PSD_CMYK
                     
-                    Case FIF_TIFF
+                    Case PDIF_TIFF
                         fi_ImportFlags = fi_ImportFlags Or TIFF_CMYK
                 
                 End Select
@@ -221,7 +221,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         
         #If DEBUGMODE = 1 Then
             
-            If fileFIF = FIF_GIF Then
+            If fileFIF = PDIF_GIF Then
                 pdDebug.LogAction "Importing frame # " & pageToLoad + 1 & " from animated GIF file..."
             ElseIf fileFIF = FIF_ICO Then
                 pdDebug.LogAction "Importing icon # " & pageToLoad + 1 & " from ICO file...", pageToLoad + 1
@@ -231,12 +231,12 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             
         #End If
         
-        If fileFIF = FIF_GIF Then
-            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, srcFilename, , , , FILO_GIF_PLAYBACK)
+        If fileFIF = PDIF_GIF Then
+            fi_multi_hDIB = FreeImage_OpenMultiBitmap(PDIF_GIF, srcFilename, , , , FILO_GIF_PLAYBACK)
         ElseIf fileFIF = FIF_ICO Then
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename, , , , 0)
         Else
-            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, srcFilename, , , , 0)
+            fi_multi_hDIB = FreeImage_OpenMultiBitmap(PDIF_TIFF, srcFilename, , , , 0)
         End If
         
         fi_hDIB = FreeImage_LockPage(fi_multi_hDIB, pageToLoad)
@@ -303,7 +303,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     If FreeImage_HasICCProfile(fi_hDIB) Then
     
         'This image has an attached profile.  Retrieve it and stick it inside the image.
-        dstDIB.ICCProfile.loadICCFromFreeImage fi_hDIB
+        dstDIB.ICCProfile.LoadICCFromFreeImage fi_hDIB
         
     End If
             
@@ -321,10 +321,10 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         
             'Normally, we can reassemble the .r/g/b values in the object, but paletted images work a bit differently - the
             ' palette index is stored in .rgbReserved.  Check for that, and if it's non-zero, retrieve the palette value instead.
-            If rQuad.Alpha <> 0 Then
+            If rQuad.alpha <> 0 Then
                 Dim fi_Palette() As Long
                 fi_Palette = FreeImage_GetPaletteExLong(fi_hDIB)
-                dstDIB.setBackgroundColor fi_Palette(rQuad.Alpha)
+                dstDIB.setBackgroundColor fi_Palette(rQuad.alpha)
                 
             'Otherwise it's easy - just reassemble the RGB values from the quad
             Else
@@ -602,7 +602,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         tmpRGBDIB.createBlank tmpCMYKDIB.getDIBWidth, tmpCMYKDIB.getDIBHeight, 24
         
         'Apply the transformation using the dedicated CMYK transform handler
-        If Color_Management.ApplyCMYKTransform(dstDIB.ICCProfile.getICCDataPointer, dstDIB.ICCProfile.getICCDataSize, tmpCMYKDIB, tmpRGBDIB, dstDIB.ICCProfile.getSourceRenderIntent) Then
+        If Color_Management.ApplyCMYKTransform(dstDIB.ICCProfile.GetICCDataPointer, dstDIB.ICCProfile.GetICCDataSize, tmpCMYKDIB, tmpRGBDIB, dstDIB.ICCProfile.GetSourceRenderIntent) Then
         
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Copying newly transformed sRGB data..."
@@ -612,7 +612,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             FreeImage_Unload fi_hDIB
             fi_hDIB = FreeImage_CreateFromDC(tmpRGBDIB.getDIBDC)
             fi_BPP = FreeImage_GetBPP(fi_hDIB)
-            dstDIB.ICCProfile.markSuccessfulProfileApplication
+            dstDIB.ICCProfile.MarkSuccessfulProfileApplication
             
         'Something went horribly wrong.  Re-load the image and use FreeImage to apply the CMYK -> RGB transform.
         Else
@@ -825,7 +825,7 @@ Public Function IsMultiImage(ByVal srcFilename As String) As Long
     If fileFIF = FIF_UNKNOWN Then fileFIF = FreeImage_GetFIFFromFilenameU(StrPtr(srcFilename))
     
     'If FreeImage can't determine the file type, or if the filetype is not GIF or TIF, return False
-    If (Not FreeImage_FIFSupportsReading(fileFIF)) Or ((fileFIF <> FIF_GIF) And (fileFIF <> FIF_TIFF) And (fileFIF <> FIF_ICO)) Then
+    If (Not FreeImage_FIFSupportsReading(fileFIF)) Or ((fileFIF <> PDIF_GIF) And (fileFIF <> PDIF_TIFF) And (fileFIF <> FIF_ICO)) Then
         IsMultiImage = 0
         Exit Function
     End If
@@ -833,12 +833,12 @@ Public Function IsMultiImage(ByVal srcFilename As String) As Long
     'At this point, we are guaranteed that the image is a GIF, TIFF, or icon file.
     ' Open the file using the multipage function
     Dim fi_multi_hDIB As Long
-    If fileFIF = FIF_GIF Then
-        fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, srcFilename)
+    If fileFIF = PDIF_GIF Then
+        fi_multi_hDIB = FreeImage_OpenMultiBitmap(PDIF_GIF, srcFilename)
     ElseIf fileFIF = FIF_ICO Then
         fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename)
     Else
-        fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, srcFilename)
+        fi_multi_hDIB = FreeImage_OpenMultiBitmap(PDIF_TIFF, srcFilename)
     End If
     
     'Get the page count, then close the file
@@ -948,7 +948,7 @@ Private Function RaiseToneMapDialog(ByVal fi_Handle As Long, ByRef dst_fiHandle 
     ' use previous settings."  If that happens, it will retrieve the proper conversion settings for us, and return a dummy
     ' value of OK (as if the dialog were actually raised).
     Dim howToProceed As VbMsgBoxResult, toneMapSettings As String
-    howToProceed = Dialog_Handler.promptToneMapSettings(fi_Handle, toneMapSettings)
+    howToProceed = Dialog_Handler.PromptToneMapSettings(fi_Handle, toneMapSettings)
     
     'Check for a cancellation state; if encountered, abandon ship now.
     If howToProceed <> vbOK Then
@@ -1002,7 +1002,7 @@ Public Function ApplyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
     'toneMapSettings contains all conversion instructions.  Parse it to determine which tone-map function to use.
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.setParamString toneMapSettings
+    cParams.SetParamString toneMapSettings
     
     'The first parameter contains the requested tone-mapping operation.
     Select Case cParams.GetLong(1)
@@ -1874,5 +1874,32 @@ Public Function FreeImageRotateDIBFast(ByRef srcDIB As pdDIB, ByRef dstDIB As pd
     
     'Uncomment the line below to receive timing reports
     'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
+    
+End Function
+
+Public Function FreeImageErrorState() As Boolean
+    FreeImageErrorState = CBool(Len(g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages))) <> 0)
+End Function
+
+Public Function GetFreeImageErrors(Optional ByVal eraseListUponReturn As Boolean = True) As String
+    
+    Dim listOfFreeImageErrors As String
+    listOfFreeImageErrors = """"
+    
+    'Condense all recorded errors into a single string
+    If UBound(g_FreeImageErrorMessages) > 0 Then
+        Dim i As Long
+        For i = 0 To UBound(g_FreeImageErrorMessages)
+            listOfFreeImageErrors = listOfFreeImageErrors & g_FreeImageErrorMessages(i)
+            If i < UBound(g_FreeImageErrorMessages) Then listOfFreeImageErrors = listOfFreeImageErrors & vbCrLf
+        Next i
+    Else
+        listOfFreeImageErrors = listOfFreeImageErrors & g_FreeImageErrorMessages(0)
+    End If
+    
+    listOfFreeImageErrors = listOfFreeImageErrors & """"
+    GetFreeImageErrors = listOfFreeImageErrors
+    
+    If eraseListUponReturn Then ReDim g_FreeImageErrorMessage(0) As String
     
 End Function

@@ -32,8 +32,7 @@ Begin VB.Form dialog_ExportWebP
       Width           =   12135
       _ExtentX        =   21405
       _ExtentY        =   1323
-      BackColor       =   14802140
-      dontAutoUnloadParent=   -1  'True
+      DontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -138,6 +137,9 @@ Public imageBeingExported As pdImage
 ' store one in this DIB (at the size of the preview) and simply re-use it when we need to render a preview.
 Private origImageCopy As pdDIB
 
+'Final XML packet, with all WebP settings defined as tag+value pairs
+Public xmlParamString As String
+
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
@@ -175,12 +177,15 @@ End Sub
 Private Sub cmdBar_OKClick()
 
     'Determine the compression ratio for the WebP transform
-    If sltQuality.IsValid Then
-        g_WebPCompression = Abs(sltQuality)
-    Else
-        Exit Sub
-    End If
-     
+    If Not sltQuality.IsValid Then Exit Sub
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.AddParam "WebPQuality", Abs(sltQuality)
+    
+    'Cache the final parameter list; the calling function will retrieve this before unloading the form
+    xmlParamString = cParams.GetParamString
+    
     userAnswer = vbOK
     Me.Hide
 
@@ -260,7 +265,7 @@ Public Sub showDialog()
     
     'Retrieve a composited version of the target image
     Set origImageCopy = New pdDIB
-    imageBeingExported.getCompositedImage origImageCopy, True
+    imageBeingExported.GetCompositedImage origImageCopy, True
     
     'Update the preview
     UpdatePreview
@@ -273,7 +278,7 @@ End Sub
 'Render a new WebP preview
 Private Sub UpdatePreview()
 
-    If cmdBar.previewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
+    If cmdBar.PreviewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
         
         'Start by retrieving the relevant portion of the image, according to the preview window
         Dim tmpSafeArray As SAFEARRAY2D
