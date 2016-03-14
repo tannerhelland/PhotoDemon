@@ -187,7 +187,7 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     
     'Forward a save request to the actual saveUndoData function.  It handles the messy business of actually writing the correct
     ' filetypes (which it determines based on the current processType and targetLayer)
-    Saving.saveUndoData parentPDImage, getCurrentUndoFilename(), processType, targetLayerID
+    Saving.SaveUndoData parentPDImage, getCurrentUndoFilename(), processType, targetLayerID
     
     'Previously, we notified the user when undo/redo data was saved.  This was stupid, but it is sometimes helpful to
     ' display that info in the debug window.
@@ -218,25 +218,25 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     Select Case processType
     
         Case UNDO_NOTHING
-            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.RequestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
         
         Case UNDO_EVERYTHING
-            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.RequestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
             
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
-            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.RequestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
         
         Case UNDO_IMAGEHEADER
-            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.RequestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
         
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
-            parentPDImage.getLayerByID(targetLayerID).requestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.GetLayerByID(targetLayerID).RequestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
         
         Case UNDO_LAYERHEADER
-            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.RequestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
         
         Case UNDO_SELECTION
-            parentPDImage.mainSelection.requestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.mainSelection.RequestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
             
     End Select
     
@@ -256,7 +256,7 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     
     'If this action changed pixel data, mark the image as NOT being saved in its current state.
     If (processType <> UNDO_NOTHING) And (processType <> UNDO_SELECTION) And (undoNum > 1) Then
-        parentPDImage.setSaveState False, pdSE_AnySave
+        parentPDImage.SetSaveState False, pdSE_AnySave
     End If
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
@@ -281,7 +281,7 @@ Public Sub forceLastUndoDataToIncludeEverything()
     
     'Overwrite the previous action's Undo data with a full image backup.  Note that all the settings from the previous
     ' action are retained; the only thing we're doing differently is specifying the Undo type as UNDO_EVERYTHING.
-    Saving.saveUndoData parentPDImage, generateUndoFilename(undoNum - 1), UNDO_EVERYTHING, -1
+    Saving.SaveUndoData parentPDImage, generateUndoFilename(undoNum - 1), UNDO_EVERYTHING, -1
     
     'Update the stack entry at that point to reflect the UNDO_EVERYTHING usage
     With undoStack(undoNum - 1)
@@ -345,9 +345,9 @@ Public Sub moveToSpecificUndoPoint(ByVal undoIndex As Long)
     undoNum = undoIndex
     
     'Allow saving contingent on the image's state
-    parentPDImage.setSaveState False, pdSE_AnySave
-    If undoNum = undoNumAtLastSave_PDI Then parentPDImage.setSaveState True, pdSE_SavePDI
-    If undoNum = undoNumAtLastSave_Flat Then parentPDImage.setSaveState True, pdSE_SaveFlat
+    parentPDImage.SetSaveState False, pdSE_AnySave
+    If undoNum = undoNumAtLastSave_PDI Then parentPDImage.SetSaveState True, pdSE_SavePDI
+    If undoNum = undoNumAtLastSave_Flat Then parentPDImage.SetSaveState True, pdSE_SaveFlat
     
     'See if Undoing is allowed
     If undoNum > 1 Then undoState = True Else undoState = False
@@ -356,7 +356,7 @@ Public Sub moveToSpecificUndoPoint(ByVal undoIndex As Long)
     If undoNum = undoMax Then redoState = False Else redoState = True
     
     'Select the relevant tool for this action, if one is provided
-    If getUndoTool > -1 Then toolbar_Toolbox.selectNewTool getUndoTool
+    If getUndoTool > -1 Then toolbar_Toolbox.SelectNewTool getUndoTool
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     'debugUndo "Undo pointer moved by request to a specific location"
@@ -404,27 +404,27 @@ Public Sub RestoreUndoData()
     If (undoNum = undoNumAtLastSave_Flat) Or (undoNum = undoNumAtLastSave_PDI) Then
     
         'In the special case of UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
-        If Len(parentPDImage.locationOnDisk) <> 0 Then
+        If Len(parentPDImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0 Then
             
-            If parentPDImage.currentFileFormat = FIF_PDI Then
-                parentPDImage.setSaveState True, pdSE_SavePDI
+            If parentPDImage.currentFileFormat = PDIF_PDI Then
+                parentPDImage.SetSaveState True, pdSE_SavePDI
             Else
-                parentPDImage.setSaveState True, pdSE_SaveFlat
+                parentPDImage.SetSaveState True, pdSE_SaveFlat
             End If
             
         Else
-            parentPDImage.setSaveState False, pdSE_AnySave
+            parentPDImage.SetSaveState False, pdSE_AnySave
         End If
         
     'If the image was imported (e.g. from a scanner or the clipboard), note that it has NOT BEEN SAVED just because
     ' the user Undo'd all the way back to its original state.
     Else
-        parentPDImage.setSaveState False, pdSE_AnySave
+        parentPDImage.SetSaveState False, pdSE_AnySave
     End If
     
     'Select the relevant tool for this action, if we were supplied one previously
     If getUndoTool > -1 Then
-        toolbar_Toolbox.selectNewTool getUndoTool
+        toolbar_Toolbox.SelectNewTool getUndoTool
     End If
     
     'With all prep work complete, we now need to figure out the most recent diff file that possesses data we need.  We handle
@@ -500,10 +500,10 @@ Public Sub RestoreUndoData()
             'Now we know that the layer stack has the correct number of layers, in the correct order.
             ' Loop through each layer in the image, searching for more recent diffs for either the layer itself or the
             ' layer header (relevant if the user has made on-canvas changes that don't necessarily affect the layer DIB).
-            For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+            For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
             
                 'Grab the current layer ID (all undo functions operate on layer ID, not index, as index may change unexpectedly)
-                curLayerID = pdImages(g_CurrentImage).getLayerByIndex(i).getLayerID
+                curLayerID = pdImages(g_CurrentImage).GetLayerByIndex(i).getLayerID
             
                 'Start by reconstructing a layer DIB using the default UNDO_LAYER type
                 nearestLayerDiffDIB = findNearestDiffIndex(undoNum, UNDO_LAYER, curLayerID)
@@ -691,9 +691,9 @@ Public Sub RestoreRedoData()
         undoNum = undoNum + 1
         
         'Allow saving contingent on the image's state
-        parentPDImage.setSaveState False, pdSE_AnySave
-        If undoNum = undoNumAtLastSave_PDI Then parentPDImage.setSaveState True, pdSE_SavePDI
-        If undoNum = undoNumAtLastSave_Flat Then parentPDImage.setSaveState True, pdSE_SaveFlat
+        parentPDImage.SetSaveState False, pdSE_AnySave
+        If undoNum = undoNumAtLastSave_PDI Then parentPDImage.SetSaveState True, pdSE_SavePDI
+        If undoNum = undoNumAtLastSave_Flat Then parentPDImage.SetSaveState True, pdSE_SaveFlat
     
     End If
     
@@ -704,7 +704,7 @@ Public Sub RestoreRedoData()
     If undoNum = undoMax Then redoState = False Else redoState = True
     
     'Select the relevant tool for this action, if one is provided
-    If getUndoTool > -1 Then toolbar_Toolbox.selectNewTool getUndoTool
+    If getUndoTool > -1 Then toolbar_Toolbox.SelectNewTool getUndoTool
     
     'The great thing about Redo is that it chronogically moves in the same direction as PD's Undo diff files.  So unlike
     ' Undo - which requires us to traverse the undo timeline in reverse, looking for a relevant diff file - we can simply
@@ -1009,8 +1009,8 @@ Public Sub writeUndoDataToXML(ByVal dstFilename As String)
     'Write out some basic information about our parent pdImage object.  In the event of a critical program crash,
     ' the AutoSave engine can use this information to reconstruct any missing images.
     xmlEngine.writeTag "imageID", parentPDImage.imageID
-    xmlEngine.writeTag "friendlyName", parentPDImage.originalFileNameAndExtension
-    xmlEngine.writeTag "originalPath", parentPDImage.locationOnDisk
+    xmlEngine.writeTag "friendlyName", parentPDImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString) & "." & parentPDImage.imgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
+    xmlEngine.writeTag "originalPath", parentPDImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
     xmlEngine.writeBlankLine
     
     'Write out the size of the current Undo stack, including the Max and Total values

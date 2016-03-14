@@ -992,7 +992,7 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal x As Long,
                 .Red = tmpData(quickX + 2, y)
                 .Green = tmpData(quickX + 1, y)
                 .Blue = tmpData(quickX, y)
-                If tmpLayerRef.layerDIB.getDIBColorDepth = 32 Then .Alpha = tmpData(quickX + 3, y)
+                If tmpLayerRef.layerDIB.getDIBColorDepth = 32 Then .alpha = tmpData(quickX + 3, y)
             End With
             
         End If
@@ -1085,7 +1085,7 @@ Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, O
                     Exit Function
                 Else
                 
-                    If tmpRGBA.Alpha > 0 Then
+                    If tmpRGBA.alpha > 0 Then
                         GetLayerUnderMouse = i
                         Exit Function
                     End If
@@ -1225,7 +1225,7 @@ Public Function GenerateInitialLayerName(ByRef srcFile As String, Optional ByVal
         Select Case srcImage.originalFileFormat
         
             'GIFs are called "frames" instead of pages
-            Case FIF_GIF
+            Case PDIF_GIF
                 layerNameAddon = "(" & g_Language.TranslateMessage("frame %1", CStr(currentPageIndex)) & ")"
                 
             'Icons have their actual dimensions added to the layer name

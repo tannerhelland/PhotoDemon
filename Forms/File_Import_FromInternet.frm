@@ -119,7 +119,10 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
         
         'Unique to this particular import is remembering the full filename + extension (because this method of import
         ' actually supplies a file extension, unlike scanning or screen capturing or something else)
-        If Not (pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).originalFileNameAndExtension = tmpFilename
+        If Not (pdImages(g_CurrentImage) Is Nothing) Then
+            pdImages(g_CurrentImage).imgStorage.AddEntry "OriginalFileName", cFile.GetFilename(downloadedFilename, True)
+            pdImages(g_CurrentImage).imgStorage.AddEntry "OriginalFileExtension", cFile.GetFileExtension(downloadedFilename)
+        End If
         
         'Delete the temporary file
         If cFile.FileExist(downloadedFilename) Then cFile.KillFile downloadedFilename

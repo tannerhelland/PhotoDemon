@@ -190,7 +190,7 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
         
         'Allow any tool panels to redraw themselves.  (Some tool panels dynamically change their contents based on the current image, so if no
         ' images are loaded, their contents may shift.)
-        Tool_Support.syncToolOptionsUIToCurrentLayer
+        Tool_Support.SyncToolOptionsUIToCurrentLayer
         
     End If
     
@@ -303,7 +303,7 @@ Public Function UnloadPDImage(Cancel As Integer, ByVal imageIndex As Long, Optio
 
     'Failsafe to make sure the image was properly initialized
     If (pdImages(imageIndex) Is Nothing) Then Exit Function
-    If pdImages(imageIndex).loadedSuccessfully And resyncInterface Then Message "Closing image..."
+    If pdImages(imageIndex).IsActive And resyncInterface Then Message "Closing image..."
     
     'Decrease the open image count
     g_OpenImageCount = g_OpenImageCount - 1

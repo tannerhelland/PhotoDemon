@@ -5,7 +5,7 @@ Public Type RGBQUAD
    Blue As Byte
    Green As Byte
    Red As Byte
-   Alpha As Byte
+   alpha As Byte
 End Type
 
 Public Type RECTL
@@ -512,3 +512,73 @@ Public Type PDCachedColor
     OrigColorName As String
     OrigColorValues As PDThemeColor
 End Type
+
+'Supported file formats.  Note that the import/export/feature availability of these formats is complex, and not
+' always symmetrical (e.g. just because we can read a given format doesn't mean we can also write it).  You will need
+' to refer to the pdFormats class for specific details on each format.
+'
+'This list of formats is based heavily off the matching list of FIF_ constants in the FreeImage module.  Changes there
+' should ideally be reflected here, to avoid problems when offloading esoteric formats to FreeImage.
+Public Enum PHOTODEMON_IMAGE_FORMAT
+    PDIF_UNKNOWN = -1
+    PDIF_BMP = 0
+    PDIF_ICO = 1
+    PDIF_JPEG = 2
+    PDIF_JNG = 3
+    PDIF_KOALA = 4
+    PDIF_LBM = 5
+    PDIF_IFF = PDIF_LBM
+    PDIF_MNG = 6
+    PDIF_PBM = 7
+    PDIF_PBMRAW = 8
+    PDIF_PCD = 9
+    PDIF_PCX = 10
+    PDIF_PGM = 11
+    PDIF_PGMRAW = 12
+    PDIF_PNG = 13
+    PDIF_PPM = 14
+    PDIF_PPMRAW = 15
+    PDIF_RAS = 16
+    PDIF_TARGA = 17
+    PDIF_TIFF = 18
+    PDIF_WBMP = 19
+    PDIF_PSD = 20
+    PDIF_CUT = 21
+    PDIF_XBM = 22
+    PDIF_XPM = 23
+    PDIF_DDS = 24
+    PDIF_GIF = 25
+    PDIF_HDR = 26
+    PDIF_FAXG3 = 27
+    PDIF_SGI = 28
+    PDIF_EXR = 29
+    PDIF_J2K = 30
+    PDIF_JP2 = 31
+    PDIF_PFM = 32
+    PDIF_PICT = 33
+    PDIF_RAW = 34
+    PDIF_WEBP = 35
+    PDIF_JXR = 36
+   
+    'PhotoDemon's internal PDI format identifier(s).
+    PDIF_PDI = 100
+    PDIF_RAWBUFFER = 101
+    PDIF_TMPFILE = 102
+    
+    'Other image formats supported by PhotoDemon, but not by FreeImage
+    PDIF_WMF = 110
+    PDIF_EMF = 111
+    
+End Enum
+
+#If False Then
+    Const PDIF_UNKNOWN = -1, PDIF_BMP = 0, PDIF_ICO = 1, PDIF_JPEG = 2, PDIF_JNG = 3, PDIF_KOALA = 4, PDIF_LBM = 5
+    Const PDIF_IFF = PDIF_LBM, PDIF_MNG = 6, PDIF_PBM = 7, PDIF_PBMRAW = 8, PDIF_PCD = 9, PDIF_PCX = 10, PDIF_PGM = 11
+    Const PDIF_PGMRAW = 12, PDIF_PNG = 13, PDIF_PPM = 14, PDIF_PPMRAW = 15, PDIF_RAS = 16, PDIF_TARGA = 17, PDIF_TIFF = 18
+    Const PDIF_WBMP = 19, PDIF_PSD = 20, PDIF_CUT = 21, PDIF_XBM = 22, PDIF_XPM = 23, PDIF_DDS = 24, PDIF_GIF = 25
+    Const PDIF_HDR = 26, PDIF_FAXG3 = 27, PDIF_SGI = 28, PDIF_EXR = 29, PDIF_J2K = 30, PDIF_JP2 = 31, PDIF_PFM = 32
+    Const PDIF_PICT = 33, PDIF_RAW = 34, PDIF_WEBP = 35, PDIF_JXR = 36
+    Const PDIF_PDI = 100, PDIF_RAWBUFFER = 101, PDIF_TMPFILE = 102
+    Const PDIF_WMF = 110, PDIF_EMF = 111
+#End If
+

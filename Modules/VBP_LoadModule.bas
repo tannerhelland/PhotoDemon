@@ -175,7 +175,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     ' The user may override this setting later, but we initially assume they want to use the program-wide setting.
     targetImage.imgMetadata.setMetadataExportPreference g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1)
         
-    If g_ExifToolEnabled And (internalFormatID <> FIF_PDI) And (internalFormatID <> FIF_RAWBUFFER) Then
+    If g_ExifToolEnabled And (internalFormatID <> PDIF_PDI) And (internalFormatID <> PDIF_RAWBUFFER) Then
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "Starting separate metadata extraction thread..."
@@ -295,7 +295,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 
             End Select
             
-            pdDebug.LogAction vbTab & "Detected format: " & g_ImageFormats.getInputFormatDescription(g_ImageFormats.getIndexOfInputFIF(targetImage.originalFileFormat)), , True
+            pdDebug.LogAction vbTab & "Detected format: " & g_ImageFormats.GetInputFormatDescription(g_ImageFormats.GetIndexOfInputPDIF(targetImage.originalFileFormat)), , True
             pdDebug.LogAction vbTab & "Image dimensions: " & targetImage.Width & "x" & targetImage.Height, , True
             pdDebug.LogAction vbTab & "Image size (original file): " & Format(CStr(targetImage.imgStorage.GetEntry_Long("OriginalFileSize")), "###,###,###,###") & " Bytes", , True
             pdDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format(CStr(targetImage.estimateRAMUsage), "###,###,###,###") & " Bytes", , True
@@ -443,11 +443,10 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         ' Image loaded successfully.  Carry on.
         '*************************************************************************************************************************************
         
-        targetImage.loadedSuccessfully = True
+        loadSuccessful = True
         
         'In debug mode, note the new memory baseline, post-load
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "targetImage.loadedSuccessfully set to TRUE"
             pdDebug.LogAction "New memory report after loading image """ & GetFilename(srcFile) & """:"
             pdDebug.LogAction "", PDM_MEM_REPORT
             
@@ -486,11 +485,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     If handleUIDisabling Then Processor.MarkProgramBusyState False, True, CBool(g_OpenImageCount > 1)
         
     'Report success/failure back to the user
-    If loadSuccessful And (Not (targetImage Is Nothing)) Then
-        LoadFileAsNewImage = targetImage.loadedSuccessfully
-    Else
-        LoadFileAsNewImage = False
-    End If
+    LoadFileAsNewImage = CBool(loadSuccessful And (Not (targetImage Is Nothing)))
     
     If LoadFileAsNewImage Then
         Message "Image loaded successfully."
@@ -645,18 +640,18 @@ Private Function CheckForInternalFiles(ByRef srcFileExtension As String) As Long
     
         'Well-formatted PDI files
         Case "PDI", "PDTMP"
-            CheckForInternalFiles = FIF_PDI
+            CheckForInternalFiles = PDIF_PDI
             
         'TMPDIB files are raw pdDIB objects dumped directly to file.  In some cases, this is faster and easier for PD than wrapping
         ' the pdDIB object inside a pdPackage layer (e.g. during clipboard interactions, since we start with a raw pdDIB object
         ' after selections and such are applied to the base layer/image, so we may as well just use the raw pdDIB data we've cached).
         Case "TMPDIB", "PDTMPDIB"
-            CheckForInternalFiles = FIF_RAWBUFFER
+            CheckForInternalFiles = PDIF_RAWBUFFER
             
         'Straight TMP files are internal files (BMP, typically) used by PhotoDemon.  These are typically older conversion functions,
         ' created before PDIs were finalized.
         Case "TMP"
-            CheckForInternalFiles = FIF_TMPFILE
+            CheckForInternalFiles = PDIF_TMPFILE
             
     End Select
     
@@ -1001,7 +996,10 @@ Public Sub DuplicateCurrentImage()
     
     'We can now use the standard image load routine to import the temporary file
     Dim sTitle As String
-    sTitle = pdImages(g_CurrentImage).originalFileName & " - " & g_Language.TranslateMessage("Copy")
+    sTitle = pdImages(g_CurrentImage).imgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    If Len(sTitle) = 0 Then sTitle = g_Language.TranslateMessage("[untitled image]")
+    sTitle = sTitle & " - " & g_Language.TranslateMessage("Copy")
+    
     LoadFileAsNewImage tmpDuplicationFile, sTitle, False
                     
     'Be polite and remove the temporary file

@@ -433,7 +433,7 @@ Private Sub Form_Load()
     btsGroup_Click 0
     
     'Technical metadata reports are only available for images that actually exist on disk (vs clipboard or scanned images)
-    If Len(pdImages(g_CurrentImage).locationOnDisk) <> 0 Then
+    If Len(pdImages(g_CurrentImage).imgStorage.GetEntry_String("CurrentLocationOnDisk")) <> 0 Then
         lblTechnicalReport.Visible = True
         cmdTechnicalReport.Visible = True
     Else

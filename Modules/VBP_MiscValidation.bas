@@ -163,25 +163,25 @@ End Function
 Public Function IncrementTrailingNumber(ByVal srcString As String) As String
 
     'Start by figuring out if the string is already in the format: "text (#)"
-    srcString = Trim(srcString)
+    srcString = Trim$(srcString)
     
     Dim numToAppend As Long
     
     'Check the trailing character.  If it is a closing parentheses ")", we need to analyze more
-    If Right(srcString, 1) = ")" Then
+    If StrComp(Right$(srcString, 1), ")", vbBinaryCompare) = 0 Then
     
         Dim i As Long
         For i = Len(srcString) - 2 To 1 Step -1
             
             'If this char isn't a number, see if it's an initial parentheses: "("
-            If Not (IsNumeric(Mid(srcString, i, 1))) Then
+            If Not (IsNumeric(Mid$(srcString, i, 1))) Then
                 
                 'If it is a parentheses, then this string already has a "(#)" appended to it.  Figure out what
                 ' the number inside the parentheses is, and strip that entire block from the string.
-                If Mid(srcString, i, 1) = "(" Then
+                If StrComp(Mid$(srcString, i, 1), "(", vbBinaryCompare) = 0 Then
                 
-                    numToAppend = CLng(Val(Mid(srcString, i + 1, Len(srcString) - i - 1)))
-                    srcString = Left(srcString, i - 2)
+                    numToAppend = CLng(Mid$(srcString, i + 1, Len(srcString) - i - 1))
+                    srcString = Left$(srcString, i - 2)
                     Exit For
                 
                 'If this character is non-numeric and NOT an initial parentheses, this string does not already have a
@@ -201,7 +201,7 @@ Public Function IncrementTrailingNumber(ByVal srcString As String) As String
         numToAppend = 2
     End If
     
-    IncrementTrailingNumber = srcString & " (" & Trim$(CStr(numToAppend)) & ")"
+    IncrementTrailingNumber = srcString & " (" & CStr(numToAppend) & ")"
 
 End Function
 
@@ -299,13 +299,13 @@ Public Function BuildParamList(ParamArray allParams() As Variant) As String
             End If
             
             'Add this key/value pair to the current running param string
-            cParams.addParam tmpName, tmpValue
+            cParams.AddParam tmpName, tmpValue
             
         Next i
     
     End If
     
-    BuildParamList = cParams.getParamString
+    BuildParamList = cParams.GetParamString
     
     Exit Function
     

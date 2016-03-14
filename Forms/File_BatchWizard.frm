@@ -1886,19 +1886,19 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
             ' contains all of the user's selected image format options (JPEG quality, etc)
             If optFormat(1) Then
             
-                Select Case g_ImageFormats.getOutputFIF(cmbOutputFormat.ListIndex)
+                Select Case g_ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)
                 
-                    Case FIF_BMP
+                    Case PDIF_BMP
                         m_FormatParams = buildParams(CBool(chkBMPRLE))
                     
-                    Case FIF_GIF
+                    Case PDIF_GIF
                         If sltThreshold.IsValid Then
                             m_FormatParams = buildParams(sltThreshold.Value)
                         Else
                             Exit Sub
                         End If
                     
-                    Case FIF_JP2
+                    Case PDIF_JP2
                             'Determine the compression ratio for the JPEG-2000 wavelet transformation
                             If sltJP2Quality.IsValid Then
                                 m_FormatParams = buildParams(sltQuality.Value)
@@ -1906,7 +1906,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                                 Exit Sub
                             End If
                     
-                    Case FIF_JPEG
+                    Case PDIF_JPEG
                         
                         'JPEG options are complicated, on account of some params being required (quality) but others not (thumbnail, etc)
                         
@@ -1955,18 +1955,18 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                         'FOR NOW, disable automatic JPEG quality calculations.  This must be done manually on a per-image basis.
                         m_FormatParams = m_FormatParams & "|0"
                                         
-                    Case FIF_PNG
+                    Case PDIF_PNG
                         m_FormatParams = Trim$(Str(hsPNGCompression))
                         m_FormatParams = m_FormatParams & "|" & Trim$(Str(chkPNGInterlacing))
                         m_FormatParams = m_FormatParams & "|" & Trim$(Str(chkPNGBackground))
                     
-                    Case FIF_PPM
+                    Case PDIF_PPM
                         m_FormatParams = Trim$(Str(cmbPPMFormat.ListIndex))
                         
-                    Case FIF_TARGA
+                    Case PDIF_TARGA
                         m_FormatParams = Trim$(Str(CBool(chkTGARLE)))
                     
-                    Case FIF_TIFF
+                    Case PDIF_TIFF
                         m_FormatParams = Trim$(Str(cmbTIFFCompression.ListIndex))
                         m_FormatParams = m_FormatParams & "|" & Trim$(Str(CBool(chkTIFFCMYK)))
                 
@@ -2442,19 +2442,19 @@ Private Sub Form_Load()
         
     'Populate a combo box that will display user-friendly summaries of all possible input image types
     Dim x As Long
-    For x = 0 To g_ImageFormats.getNumOfInputFormats
-        cmbPattern.AddItem g_ImageFormats.getInputFormatDescription(x), x
+    For x = 0 To g_ImageFormats.GetNumOfInputFormats
+        cmbPattern.AddItem g_ImageFormats.GetInputFormatDescription(x), x
     Next x
     cmbPattern.ListIndex = 0
     
     'Populate a combo box that displays user-friendly summaries of all possible output filetypes
-    For x = 0 To g_ImageFormats.getNumOfOutputFormats
-        cmbOutputFormat.AddItem g_ImageFormats.getOutputFormatDescription(x), x
+    For x = 0 To g_ImageFormats.GetNumOfOutputFormats
+        cmbOutputFormat.AddItem g_ImageFormats.GetOutputFormatDescription(x), x
     Next x
     
     'Save JPEGs by default
     For x = 0 To cmbOutputFormat.ListCount
-        If g_ImageFormats.getOutputFormatExtension(x) = "jpg" Then
+        If g_ImageFormats.GetOutputFormatExtension(x) = "jpg" Then
             cmbOutputFormat.ListIndex = x
             Exit For
         End If
@@ -2520,7 +2520,7 @@ Private Sub updateSourceImageList()
     'Parse the incoming list according to the current pattern specified by the user.  Because that pattern can be quite
     ' complex, a file listbox won't suffice - instead, we use a regular listbox and populate it ourselves.
     Dim validExtensions As String
-    validExtensions = g_ImageFormats.getInputFormatExtensions(cmbPattern.ListIndex)
+    validExtensions = g_ImageFormats.GetInputFormatExtensions(cmbPattern.ListIndex)
     
     Dim chkFile As String, chkFileExt As String
     chkFile = Dir(Dir1 & "\" & "*.*", vbNormal)
@@ -2949,12 +2949,8 @@ Private Sub prepareForBatchConversion()
             ' PD will only load the first page/frame of a multipage file during conversion.
             
             'Load the current image
-            LoadFileAsNewImage tmpFilename, , False
+            If LoadFileAsNewImage(tmpFilename, , False) Then
             
-            'Make sure the image loaded correctly
-            If Not (pdImages(g_CurrentImage) Is Nothing) Then
-            If pdImages(g_CurrentImage).loadedSuccessfully Then
-                
                 'With the image loaded, it is time to apply any requested photo editing actions.
                 If optActions(1) Then
                 
@@ -3025,32 +3021,24 @@ Private Sub prepareForBatchConversion()
                     m_FormatParams = ""
                     
                     'See if this image's file format is supported by the export engine
-                    If g_ImageFormats.getIndexOfOutputFIF(pdImages(g_CurrentImage).currentFileFormat) = -1 Then
+                    If g_ImageFormats.GetIndexOfOutputPDIF(pdImages(g_CurrentImage).currentFileFormat) = -1 Then
                         
-                        'If it isn't, save as JPEG or PNG contingent on color depth
-                        
-                        '24bpp images default to JPEG
-                        If pdImages(g_CurrentImage).getCompositeImageColorDepth = 24 Then
-                            tmpFileExtension = g_ImageFormats.getExtensionFromFIF(FIF_JPEG)
-                            pdImages(g_CurrentImage).currentFileFormat = FIF_JPEG
-                        
-                        '32bpp images default to PNG
-                        Else
-                            tmpFileExtension = g_ImageFormats.getExtensionFromFIF(FIF_JPEG)
-                            pdImages(g_CurrentImage).currentFileFormat = FIF_PNG
-                        End If
+                        'The current format isn't supported.  Use PNG as it's the best compromise of
+                        ' lossless, well-supported, and reasonably well-compressed.
+                        tmpFileExtension = g_ImageFormats.GetExtensionFromPDIF(PDIF_PNG)
+                        pdImages(g_CurrentImage).currentFileFormat = PDIF_PNG
                         
                     Else
                         
                         'This format IS supported, so use the default extension
-                        tmpFileExtension = g_ImageFormats.getExtensionFromFIF(pdImages(g_CurrentImage).currentFileFormat)
+                        tmpFileExtension = g_ImageFormats.GetExtensionFromPDIF(pdImages(g_CurrentImage).currentFileFormat)
                     
                     End If
                     
                 'Possibility 2: force all images to a single file format
                 Else
-                    tmpFileExtension = g_ImageFormats.getOutputFormatExtension(cmbOutputFormat.ListIndex)
-                    pdImages(g_CurrentImage).currentFileFormat = g_ImageFormats.getOutputFIF(cmbOutputFormat.ListIndex)
+                    tmpFileExtension = g_ImageFormats.GetOutputFormatExtension(cmbOutputFormat.ListIndex)
+                    pdImages(g_CurrentImage).currentFileFormat = g_ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)
                 End If
                 
                 'If the user has requested lower- or upper-case, we now need to convert the extension as well
@@ -3061,22 +3049,25 @@ Private Sub prepareForBatchConversion()
                 'Because removing specified text from filenames may lead to files with the same name, call the incrementFilename
                 ' function to find a unique filename of the "filename (n+1)" variety if necessary.  This will also prepend the
                 ' drive and directory structure.
-                tmpFilename = outputPath & incrementFilename(outputPath, tmpFilename, tmpFileExtension) & "." & tmpFileExtension
+                tmpFilename = outputPath & IncrementFilename(outputPath, tmpFilename, tmpFileExtension) & "." & tmpFileExtension
                                 
                 'Request a save from the PhotoDemon_SaveImage method, and pass it a specialized string containing
-                ' any extra information for the requested format (JPEG quality, etc)
+                ' any extra information for the requested format (JPEG quality, etc).
+                
+                'TODO AS OF 7.0: the save function no longer supports bare parameter strings.  Instead, place the desired
+                ' parameter string *inside the parent pdImage object*, and mark the pdImage object as having seen a
+                ' matching format dialog already.  (If you don't do this, a dialog may be forcibly raised!)
                 If Len(m_FormatParams) <> 0 Then
-                    PhotoDemon_SaveImage pdImages(CLng(g_CurrentImage)), tmpFilename, False, m_FormatParams
+                    PhotoDemon_SaveImage pdImages(g_CurrentImage), tmpFilename, False   ', m_FormatParams 'NOTE: this no longer works!  See TODO, above!
                 Else
-                    PhotoDemon_SaveImage pdImages(CLng(g_CurrentImage)), tmpFilename, False
+                    PhotoDemon_SaveImage pdImages(g_CurrentImage), tmpFilename, False
                 End If
             
+                'Unload the finished image
+                FullPDImageUnload g_CurrentImage
+            
             End If
-            End If
-        
-            'Unload the active form
-            FullPDImageUnload g_CurrentImage
-                
+            
             'If a good number of images have been processed, start estimating the amount of time remaining
             If (curBatchFile > 10) Then
             

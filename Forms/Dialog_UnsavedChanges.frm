@@ -167,7 +167,7 @@ Public Sub showDialog(ByRef ownerForm As Form)
     cmdAnswer(2).AssignImage "LRGUNDO"
         
     'If the image has been saved before, update the tooltip text on the "Save" button accordingly
-    If Len(pdImages(imageBeingClosed).locationOnDisk) <> 0 Then
+    If Len(pdImages(imageBeingClosed).imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0 Then
         cmdAnswer(0).AssignTooltip "NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item."
     Else
         cmdAnswer(0).AssignTooltip "Because this image has not been saved before, you will be prompted to provide a file name for it."
@@ -181,9 +181,9 @@ Public Sub showDialog(ByRef ownerForm As Form)
         
     'Adjust the save message to match this image's name
     Dim imageName As String
-    imageName = pdImages(imageBeingClosed).originalFileNameAndExtension
+    imageName = pdImages(imageBeingClosed).imgStorage.GetEntry_String("OriginalFileName", vbNullString)
     If Len(Trim$(imageName)) = 0 Then imageName = g_Language.TranslateMessage("This image")
-    lblWarning.Caption = g_Language.TranslateMessage("%1 has unsaved changes.  What would you like to do?", imageName)
+    lblWarning.Caption = g_Language.TranslateMessage("%1 has unsaved changes.  What would you like to do?", """ & imageName & """)
     lblWarning.RequestRefresh
     
     'Make some measurements of the form size.  We need these if we choose to display the check box at the bottom of the form
@@ -275,7 +275,7 @@ Private Sub Form_Activate()
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     If (Not pdImages(imageBeingClosed) Is Nothing) Then
-        pdImages(imageBeingClosed).requestThumbnail tmpDIB, IIf(picPreview.ScaleWidth > picPreview.ScaleHeight, picPreview.ScaleHeight, picPreview.ScaleWidth)
+        pdImages(imageBeingClosed).RequestThumbnail tmpDIB, IIf(picPreview.ScaleWidth > picPreview.ScaleHeight, picPreview.ScaleHeight, picPreview.ScaleWidth)
     End If
     
     If (Not pdImages(imageBeingClosed) Is Nothing) And (Not tmpDIB Is Nothing) Then

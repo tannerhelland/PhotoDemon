@@ -126,23 +126,6 @@ Public g_ProgramShuttingDown As Boolean
 'The user is attempting to close all images (necessary for handling the "repeat for all images" check box)
 Public g_ClosingAllImages As Boolean
 
-'JPEG export options; these are set by the JPEG export dialog if the user clicks "OK" (not Cancel)
-Public g_JPEGQuality As Long
-Public g_JPEGFlags As Long
-Public g_JPEGThumbnail As Long
-Public g_JPEGAutoQuality As jpegAutoQualityMode
-Public g_JPEGAdvancedColorMatching As Boolean
-
-'JPEG-2000 export compression ratio; this is set by the JP2 export dialog if the user clicks "OK" (not Cancel)
-Public g_JP2Compression As Long
-
-'WebP export compression ratio; this is set by the WebP export dialog if the user clicks "OK" (not Cancel)
-Public g_WebPCompression As Long
-
-'JPEG XR export settings; these are set by the JPEG XR export dialog if the user clicks "OK" (not Cancel)
-Public g_JXRCompression As Long
-Public g_JXRProgressive As Boolean
-
 'Exported color depth
 Public g_ColorDepth As Long
 

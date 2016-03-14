@@ -42,107 +42,99 @@ Option Explicit
 'Each active image in the program exists within one of these pdImage objects.  This class stores all relevant information
 ' about the image, including references to its layers, metadata, Undo/Redo, and much more.
 
-    'This ID number matches the .Tag value of the containing form.
-    Public imageID As Long
+'Canonical image ID value.  This matches the image's position in the main pdImages array.
+Public imageID As Long
 
-    'Is the form associated with this image still loaded?
-    Public IsActive As Boolean
+'The main pdImages array isn't resized when images are deleted (unless *all* images are deleted).  Images that have
+' been unloaded are marked as "not active" via this variable.
+Public IsActive As Boolean
 
-    'Was the image loaded successfully?
-    Public loadedSuccessfully As Boolean
+'Image dimensions
+Public Width As Long
+Public Height As Long
+
+'Image resolution (in DPI).  In general, we don't deal with differing x/y resolutions - in that case,
+' use the imageDPI value, which will return the average resolution of the two.
+Private xResolution As Double
+Private yResolution As Double
+Private imageDPI As Double
+
+'Current index of the zoom combo box; this must be stored so we can support MDI
+Public currentZoomValue As Long
+
+'Original image format.  This is derived from the equivalent FreeImage constant - see the enum for FREE_IMAGE_FORMAT for details
+Public originalFileFormat As PHOTODEMON_IMAGE_FORMAT
+
+'Current file format.  For example, if the user loads a .BMP file and uses "Save As" to save it as a .JPG, this variable will
+' represent "JPG" - while OriginalFileFormat will still represent "BMP".  (OriginalFileFormat is only set once, at load-time.)
+Public currentFileFormat As PHOTODEMON_IMAGE_FORMAT
+
+'Original color depth (a BPP value, most commonly 24 or 32, may be 8)
+Public originalColorDepth As Long
+
+'saveParameters let us save the image using settings the user has already specified (so we don't have to pester
+' them every time they save)
+Public saveParameters As String
+
+'Any random data relevant to the image can be stored in this Dictionary object.  It replaces the wide array of specific
+' public variables we previously used.  Currently stored values include, but are not limited to:
+' - "OriginalFileName"
+' - "OriginalFileExtension"
+' - "CurrentLocationOnDisk"
+Public imgStorage As pdDictionary
     
-    'Image dimensions
-    Public Width As Long
-    Public Height As Long
+'Has this image been saved?  Access this variable via the getSaveState and setSaveState functions.
+Private hasBeenSavedPDI As Boolean, hasBeenSavedFlat As Boolean
     
-    'Image resolution (in DPI).  In general, we don't deal with differing x/y resolutions - in that case,
-    ' use the imageDPI value, which will return the average resolution of the two.
-    Private xResolution As Double
-    Private yResolution As Double
-    Private imageDPI As Double
+'A copy of the image's current icon (at 16 and 32px sizes)
+Public curFormIcon32 As Long, curFormIcon16 As Long
+
+'Persistent buffer, for storing the fully composited image.  This composite is only updated when absolutely necessary;
+' otherwise, look at grabbing the dedicated canvasBuffer, below.
+Public compositeBuffer As pdDIB
+
+'Image's canvas buffer.  This holds a composited version of the image, extracted and cropped to reflect the current viewport.
+' It is cached here to make viewport rendering faster and more reliable.
+Public canvasBuffer As pdDIB
     
-    'Current index of the zoom combo box
-    Public currentZoomValue As Long
+'Image's selection data (stored and handled by a mainSelection object)
+Public mainSelection As pdSelection
+Public selectionActive As Boolean
+
+'Metadata handler/storage class.  This class is automatically filled with an image file's metadata at load-time.
+' NOTE: THE EXIFTOOL PLUGIN IS REQUIRED FOR METADATA HANDLING.
+Public imgMetadata As pdMetadata
+
+'All Undo/Redo actions are handled through this publicly available Undo/Redo handler class
+Public undoManager As pdUndo
     
-    'Original name of the image
-    Public originalFileName As String
-    
-    'Original name of the image AND its extension
-    Public originalFileNameAndExtension As String
-    
-    'Original path of the image (full path, including filename); blank if image does not exist on disk
-    Public locationOnDisk As String
-    
-    'Original image format.  This is derived from the equivalent FreeImage constant - see the enum for FREE_IMAGE_FORMAT for details
-    Public originalFileFormat As Long
-    
-    'Current file format.  For example, if the user loads a .BMP file and uses "Save As" to save it as a .JPG, this variable will
-    ' represent "JPG" - while OriginalFileFormat will still represent "BMP".  (OriginalFileFormat is only set once, at load-time.)
-    Public currentFileFormat As Long
-    
-    'Original color depth (a BPP value, most commonly 24 or 32, may be 8)
-    Public originalColorDepth As Long
-    
-    'saveParameters let us save the image using settings the user has already specified (so we don't have to pester
-    ' them every time they save)
-    Public saveParameters As String
-    
-    'Any random data relevant to the image can be stored in this Dictionary object.  It replaces the wide array of specific
-    ' public variables we previously used.
-    Public imgStorage As pdDictionary
-        
-    'Has this image been saved?  Access this variable via the getSaveState and setSaveState functions.
-    Private hasBeenSavedPDI As Boolean, hasBeenSavedFlat As Boolean
-        
-    'A copy of the image's current icon (at 16 and 32px sizes)
-    Public curFormIcon32 As Long, curFormIcon16 As Long
-    
-    'Persistent buffer, for storing the fully composited image.  This composite is only updated when absolutely necessary;
-    ' otherwise, look at grabbing the dedicated canvasBuffer, below.
-    Public compositeBuffer As pdDIB
-    
-    'Image's canvas buffer.  This holds a composited version of the image, extracted and cropped to reflect the current viewport.
-    ' It is cached here to make viewport rendering faster and more reliable.
-    Public canvasBuffer As pdDIB
-        
-    'Image's selection data (stored and handled by a mainSelection object)
-    Public mainSelection As pdSelection
-    Public selectionActive As Boolean
-    
-    'Metadata handler/storage class.  This class is automatically filled with an image file's metadata at load-time.
-    ' NOTE: THE EXIFTOOL PLUGIN IS REQUIRED FOR METADATA HANDLING.
-    Public imgMetadata As pdMetadata
-    
-    'All Undo/Redo actions are handled through this publicly available Undo/Redo handler class
-    Public undoManager As pdUndo
-        
-    'Various viewport actions are now handled through a separate pdViewport class
-    Public imgViewport As pdViewport
-    
-    'Image layers!  All layers are stored in this array.
-    Private imgLayers() As pdLayer
-    
-    'Current layer.  Layers in PD are zero-based, with the 0 layer being created by default when a pdImage is created.
-    ' To ensure proper behavior for things like caching viewports, this value is not publicly accessible - you must access
-    ' it via the relevant get/set functions.
-    Private m_curLayer As Long
-    
-    'Total number of layers EVER created for this image.  This is used to assign canonical layer IDs to individual layers.
-    ' It has no relation to layer position or order, and will be constant for the life of both the layer itself, and this
-    ' pdImage object (including persistence when saving to/from file).
-    Private m_numOfLayersEverCreated As Long
-    
-    'Number of ACTIVE layers in the current image.  This is equal to or less than m_numOfLayers, above.  Note that it is not
-    ' zero-based; e.g. right after an image file is loaded, this will be set to 1.
-    Private m_numOfLayers As Long
-    
-    'Image compositor.  Previously, all compositing was done internally, but as compositing has grown more complex, I have decided
-    ' to move all compositing work to an external class (to keep pdImage from getting too bloated).
-    Private imgCompositor As pdCompositor
-    
-    'As of April 2015, each pdImage object now maintains a persistent copy of its fully composited layer stack (inside the
-    ' compositeBuffer pdDIB).  To avoid recompositing the image unless absolutely necessary, new trackers were required.
-    Private m_CompositeCacheClean As Boolean
+'Various viewport actions are now handled through a separate pdViewport class
+Public imgViewport As pdViewport
+
+'Image layers!  All layers are stored in this array.
+Private imgLayers() As pdLayer
+
+'Current layer.  Layers in PD are zero-based, with the 0 layer being created by default when a pdImage is created.
+' To ensure proper behavior for things like caching viewports, this value is not publicly accessible - you must access
+' it via the relevant get/set functions.
+Private m_curLayer As Long
+
+'Total number of layers EVER created for this image.  This is used to assign canonical layer IDs to individual layers.
+' It has no relation to layer position or order, and will be constant for the life of both the layer itself, and this
+' pdImage object (including persistence when saving to/from file).
+Private m_numOfLayersEverCreated As Long
+
+'Number of ACTIVE layers in the current image.  This is equal to or less than m_numOfLayers, above.  Note that it is not
+' zero-based; e.g. right after an image file is loaded, this will be set to 1.
+Private m_numOfLayers As Long
+
+'Image compositor.  Previously, all compositing was done internally, but as compositing has grown more complex, I have decided
+' to move all compositing work to an external class (to keep pdImage from getting too bloated).
+Private imgCompositor As pdCompositor
+
+'As of April 2015, each pdImage object now maintains a persistent copy of its fully composited layer stack (inside the
+' compositeBuffer pdDIB).  To avoid recompositing the image unless absolutely necessary, new trackers were required.
+Private m_CompositeCacheClean As Boolean
     
     
 'Create a new, blank layer in this image.  Note that layer type is not provided - that is handled separately, via the
@@ -250,23 +242,6 @@ Public Function NotifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional 
             Debug.Print "WARNING!  pdImage.notifyImageChanged received an unknown change request: " & typeOfChange
     
     End Select
-
-End Function
-
-'Some functions (like saving the image) need to know whether to present the user with 24 or 32bpp options.  Because the composited
-' image's color depth depends on a variety of factors, the calling function can simply rely on this function to determine the
-' appropriate color depth for us.
-Public Function getCompositeImageColorDepth() As Long
-
-    'NOTE: as of April '14 (v6.4) newly added layer support dictates that all layers are 32bpp by default.
-    getCompositeImageColorDepth = 32
-    
-    'Single-layer images are much easier to deal with!
-    'If m_numOfLayers = 0 Then
-    '    getCompositeImageColorDepth = imgLayers(m_curLayer).layerDIB.getDIBColorDepth
-    'Else
-        'Use magic to determine the ideal color depth of the composited image??
-    'End If
 
 End Function
 
@@ -569,9 +544,6 @@ Public Function WriteExternalData(ByRef dstFilename As String, Optional ByVal fi
     xmlEngine.writeTag "xResolution", xResolution
     xmlEngine.writeTag "yResolution", yResolution
     xmlEngine.writeTag "DPI", imageDPI
-    xmlEngine.writeTag "OriginalFileName", originalFileName
-    xmlEngine.writeTag "OriginalFileNameAndExtension", originalFileNameAndExtension
-    xmlEngine.writeTag "LocationOnDisk", locationOnDisk
     xmlEngine.writeTag "OriginalFileFormat", originalFileFormat
     xmlEngine.writeTag "CurrentFileFormat", currentFileFormat
     xmlEngine.writeTag "OriginalColorDepth", originalColorDepth
@@ -654,11 +626,6 @@ Public Function ReadExternalData(ByRef srcFilename As String, Optional ByVal fil
             'These values are all stored in the PDI file, but they're not really relevant.  I will look at not storing
             ' them in the first place, but for now, just ignore them.
             'TODO: make a firm decision on what data does not belong in PDI files!
-            'Me.originalFileName = xmlEngine.getUniqueTag_String("originalFileName")
-            'Me.originalFileNameAndExtension = xmlEngine.getUniqueTag_String("originalFileNameAndExtension")
-            'Me.locationOnDisk = xmlEngine.getUniqueTag_String("locationOnDisk")
-            'Me.originalFileFormat = xmlEngine.getUniqueTag_Long("originalFileFormat")
-            'Me.currentFileFormat = xmlEngine.getUniqueTag_Long("currentFileFormat")
             Me.originalColorDepth = xmlEngine.getUniqueTag_Long("originalColorDepth")
             
             'Dictionary tags are conditional, and may not exist in the PDI file.  Check for their existence, and load them
@@ -741,18 +708,18 @@ End Sub
 
 'If the image has been saved to file in its current state, this will return TRUE.  Use this value to determine
 ' whether to enable a Save button, for example.
-Public Function getSaveState(ByVal desiredSaveType As PD_SAVE_EVENT) As Boolean
+Public Function GetSaveState(ByVal desiredSaveType As PD_SAVE_EVENT) As Boolean
     
     Select Case desiredSaveType
     
         Case pdSE_AnySave
-            getSaveState = hasBeenSavedPDI Or hasBeenSavedFlat
+            GetSaveState = hasBeenSavedPDI Or hasBeenSavedFlat
         
         Case pdSE_SavePDI
-            getSaveState = hasBeenSavedPDI
+            GetSaveState = hasBeenSavedPDI
         
         Case pdSE_SaveFlat
-            getSaveState = hasBeenSavedFlat
+            GetSaveState = hasBeenSavedFlat
     
     End Select
     
@@ -847,9 +814,9 @@ Public Sub DeactivateImage()
     End If
     
     'It doesn't make a big difference, but we can also empty out this image's String-type variables to save a bit of space.
-    originalFileName = vbNullString
-    originalFileNameAndExtension = vbNullString
-    locationOnDisk = vbNullString
+    imgStorage.DeleteEntry "OriginalFileName"
+    imgStorage.DeleteEntry "OriginalFileExtension"
+    imgStorage.DeleteEntry "CurrentLocationOnDisk"
     
     'Mark this image as inactive
     IsActive = False
@@ -919,7 +886,6 @@ Private Sub Class_Initialize()
 
     'Initially, mark the image as *not* having been saved
     IsActive = False
-    loadedSuccessfully = False
     hasBeenSavedPDI = False
     hasBeenSavedFlat = False
     
