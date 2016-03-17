@@ -175,7 +175,7 @@ Public Sub DisplayColorSelection()
     oldColor = Color
     
     'Use the default color dialog to select a new color
-    If showColorDialog(newColor, CLng(curColor), Me) Then
+    If ShowColorDialog(newColor, CLng(curColor), Me) Then
         Color = newColor
     Else
         Color = oldColor
@@ -441,27 +441,31 @@ Private Sub MakeNewTooltip()
     
         Dim toolString As String, hexString As String, rgbString As String, targetColor As Long
         
-        If m_MouseInPrimaryButton Then
-            targetColor = Me.Color
-        ElseIf m_MouseInSecondaryButton And m_ShowMainWindowColor Then
-            targetColor = layerpanel_Colors.clrVariants.Color
-        End If
+        If m_MouseInPrimaryButton Or (m_MouseInSecondaryButton And m_ShowMainWindowColor) Then
         
-        'Make sure the color is an actual RGB triplet, and not an OLE color constant
-        targetColor = Colors.ConvertSystemColor(targetColor)
-        
-        'Construct hex and RGB string representations of the target color
-        hexString = "#" & UCase(Colors.GetHexStringFromRGB(targetColor))
-        rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", Colors.ExtractR(targetColor), Colors.ExtractG(targetColor), Colors.ExtractB(targetColor))
-        toolString = hexString & vbCrLf & rgbString
-        
-        'Append a description string to the color data
-        If m_MouseInPrimaryButton Then
-            toolString = toolString & vbCrLf & g_Language.TranslateMessage("Click to enter a full color selection screen.")
-            Me.AssignTooltip toolString, "Active color"
-        ElseIf m_MouseInSecondaryButton Then
-            toolString = toolString & vbCrLf & g_Language.TranslateMessage("Click to make the main screen's paint color the active color.")
-            Me.AssignTooltip toolString, "Main screen paint color"
+            If m_MouseInPrimaryButton Then
+                targetColor = Me.Color
+            ElseIf m_MouseInSecondaryButton And m_ShowMainWindowColor Then
+                targetColor = layerpanel_Colors.clrVariants.Color
+            End If
+            
+            'Make sure the color is an actual RGB triplet, and not an OLE color constant
+            targetColor = Colors.ConvertSystemColor(targetColor)
+            
+            'Construct hex and RGB string representations of the target color
+            hexString = "#" & UCase(Colors.GetHexStringFromRGB(targetColor))
+            rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", Colors.ExtractR(targetColor), Colors.ExtractG(targetColor), Colors.ExtractB(targetColor))
+            toolString = hexString & vbCrLf & rgbString
+            
+            'Append a description string to the color data
+            If m_MouseInPrimaryButton Then
+                toolString = toolString & vbCrLf & g_Language.TranslateMessage("Click to enter a full color selection screen.")
+                Me.AssignTooltip toolString, "Active color"
+            ElseIf m_MouseInSecondaryButton Then
+                toolString = toolString & vbCrLf & g_Language.TranslateMessage("Click to make the main screen's paint color the active color.")
+                Me.AssignTooltip toolString, "Main screen paint color"
+            End If
+            
         End If
         
     End If
