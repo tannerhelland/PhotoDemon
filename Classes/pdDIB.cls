@@ -37,7 +37,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'DIB Types
-Private Type BITMAP
+Private Type Bitmap
     Type As Long
     Width As Long
     Height As Long
@@ -276,8 +276,8 @@ Public Sub setOriginalFormat(ByVal origFIF As Long)
 End Sub
 
 'Return the original transparent color (set as part of the MarkAlpha routine).
-Public Function getOriginalTransparentColor() As Long
-    getOriginalTransparentColor = m_OriginalTransparentColor
+Public Function GetOriginalTransparentColor() As Long
+    GetOriginalTransparentColor = m_OriginalTransparentColor
 End Function
 
 'Return the location of a transparent pixel. This will be set as part of the applyAlphaCutoff routine.
@@ -311,7 +311,7 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
                 .Red = tmpData(quickX + 2, y)
                 .Green = tmpData(quickX + 1, y)
                 .Blue = tmpData(quickX, y)
-                If m_DibColorDepth = 32 Then .Alpha = tmpData(quickX + 3, y)
+                If m_DibColorDepth = 32 Then .alpha = tmpData(quickX + 3, y)
             End With
             
         End If
@@ -325,14 +325,12 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
 
 End Function
 
-'This function will apply an "alpha-cutoff" to a 32bpp image. Any alpha values above the cutoff will be replaced with
-' magic magenta (253,0,253) and the location of a transparent pixel (m_trnsX, m_trnsY) will be marked.
-Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal forceColor As Boolean = True, Optional ByVal newBackgroundColor As Long = 16777215)
+'This function will apply an "alpha-cutoff" to a 32bpp image.  The location of a transparent pixel (m_trnsX, m_trnsY)
+' will be memorized, and if forceColor is TRUE, any alpha values above the cutoff will be replaced with magic
+' magenta (253,0,253) to make subsequent palettization easier.
+Public Sub ApplyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal forceColor As Boolean = True, Optional ByVal newBackgroundColor As Long = 16777215)
 
-    'Make sure this DIB is 32bpp. If it isn't, running this function is pointless.
-    If m_DibColorDepth = 32 Then
-
-        'Make sure this DIB isn't empty
+    If (m_DibColorDepth = 32) Then
         If (m_dibDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
             
             If cutOff = 0 Then
@@ -340,18 +338,19 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
                 Exit Sub
             End If
             
-            'Loop through the image and force each alpha value to 0 and 255 based on the supplied cutoff.
             Dim iData() As Byte
             Dim tmpSA As SAFEARRAY2D
             prepInternalSafeArray tmpSA
             CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
-            Dim x As Long, y As Long, quickX As Long
+            Dim x As Long, y As Long, finalX As Long, finalY As Long
+            finalX = (m_dibWidth - 1) * 4
+            finalY = (m_dibHeight - 1)
             
             Dim chkAlpha As Byte
             Dim tmpAlpha As Double
             
-            m_trnsX = -1
+            Dim stillLookingForTransPixel As Boolean: stillLookingForTransPixel = True
             
             'Retrieve RGB values from the new background color, which we'll use to composite semi-transparent pixels
             Dim backR As Byte, backG As Byte, backB As Byte
@@ -360,61 +359,104 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
             backB = CByte(ExtractB(newBackgroundColor))
                 
             'Loop through the image, checking alphas as we go
-            For x = 0 To m_dibWidth - 1
-                quickX = x * 4
-            For y = 0 To m_dibHeight - 1
+            For y = 0 To finalY
+            For x = 0 To finalX Step 4
                 
-                chkAlpha = iData(quickX + 3, y)
+                chkAlpha = iData(x + 3, y)
                 
-                'If the alpha value is less than the cutoff, mark this pixel
-                If chkAlpha < cutOff Then
+                'If the alpha value is less than the cutoff, mark this pixel for exploration
+                If (chkAlpha < cutOff) Then
                 
                     'Remember this location if we haven't already
-                    If m_trnsX = -1 Then
-                        m_trnsX = x
+                    If stillLookingForTransPixel Then
+                        stillLookingForTransPixel = False
+                        m_trnsX = (x \ 4)
                         m_trnsY = y
-                        m_OriginalTransparentColor = RGB(iData(quickX + 2, y), iData(quickX + 1, y), iData(quickX, y))
+                        m_OriginalTransparentColor = RGB(iData(x + 2, y), iData(x + 1, y), iData(x, y))
                     End If
                     
-                    'When previewing this effect, we don't actually want to change pixel colors. Otherwise,
-                    ' HALFTONE-mode resampling may bleed the magenta into the preview and give poor results.
+                    'Color this pixel with magic magenta - RGB(253, 0, 253)
+                    ' (NOTE: when previewing this effect, we don't actually want to change pixel colors. Otherwise,
+                    '  HALFTONE-mode resampling may bleed the magenta into the preview and give poor results.
+                    '  That's why this option can be toggled.)
                     If forceColor Then
-                        'Color this pixel with magic magenta (253,0,253)
-                        iData(quickX + 2, y) = 253
-                        iData(quickX + 1, y) = 0
-                        iData(quickX, y) = 253
+                        iData(x + 2, y) = 253
+                        iData(x + 1, y) = 0
+                        iData(x, y) = 253
                     End If
                     
                     'Blank the alpha channel
-                    iData(quickX + 3, y) = 0
+                    iData(x + 3, y) = 0
                     
-                'If the pixel is not beneath the cut-off, and not fully opaque, composite it against white
-                ElseIf chkAlpha < 255 Then
+                'If the pixel is not beneath the cut-off, and not fully opaque, composite it against the requested background
+                Else
                 
-                    'Convert the alpha value to a floating-point variable
-                    tmpAlpha = CDbl(chkAlpha) / 255
-            
-                    'Use that alpha value to blend the current color against white
-                    iData(quickX + 2, y) = Blend2Colors(iData(quickX + 2, y), backR, tmpAlpha)
-                    iData(quickX + 1, y) = Blend2Colors(iData(quickX + 1, y), backG, tmpAlpha)
-                    iData(quickX, y) = Blend2Colors(iData(quickX, y), backB, tmpAlpha)
+                    If (chkAlpha < 255) Then
+                
+                        'Convert the alpha value to a floating-point variable
+                        tmpAlpha = CDbl(chkAlpha) / 255
+                
+                        'Use that alpha value to blend the current color against white
+                        iData(x + 2, y) = Blend2Colors(iData(x + 2, y), backR, tmpAlpha)
+                        iData(x + 1, y) = Blend2Colors(iData(x + 1, y), backG, tmpAlpha)
+                        iData(x, y) = Blend2Colors(iData(x, y), backB, tmpAlpha)
+                        
+                        'Opaque-ify the alpha channel
+                        iData(x + 3, y) = 255
                     
-                    'Opaque-ify the alpha channel
-                    iData(quickX + 3, y) = 255
+                    End If
                 
                 End If
                 
-            Next y
-                
             Next x
+            Next y
     
             'With our alpha channel complete, point iData() away from the DIB and deallocate it
             CopyMemory ByVal VarPtrArray(iData), 0&, 4
             
-            Erase iData
-                
         End If
-        
+    End If
+    
+End Sub
+
+'If an image already has binary alpha, don't waste your time with ApplyAlphaCutoff(), above.  Instead, call this
+' function to memorize the same data without scanning the entire image from scratch.
+Public Sub MemorizeBinaryAlphaData()
+    
+    If m_DibColorDepth = 32 Then
+        If (m_dibDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
+            
+            Dim iData() As Byte
+            Dim tmpSA As SAFEARRAY2D
+            prepInternalSafeArray tmpSA
+            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+            
+            Dim x As Long, y As Long, finalX As Long, finalY As Long
+            finalX = (m_dibWidth - 1) * 4
+            finalY = m_dibHeight - 1
+            
+            Dim transPixelFound As Boolean: transPixelFound = False
+            
+            'Loop through the image, checking alphas as we go
+            For y = 0 To finalY
+            For x = 0 To finalX Step 4
+                
+                'If the pixel is transparent, use it as our transparent pixel reference
+                If iData(x + 3, y) = 0 Then
+                    transPixelFound = True
+                    m_trnsX = (x \ 4)
+                    m_trnsY = y
+                    m_OriginalTransparentColor = RGB(iData(x + 2, y), iData(x + 1, y), iData(x, y))
+                End If
+                
+                If transPixelFound Then Exit For
+            Next x
+                If transPixelFound Then Exit For
+            Next y
+            
+            CopyMemory ByVal VarPtrArray(iData), 0&, 4
+            
+        End If
     End If
     
 End Sub
@@ -762,7 +804,7 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
         If GetObjectType(srcPicture) = OBJ_BITMAP Then
         
             'Select the picture's attributes into a bitmap object
-            Dim tmpBitmap As BITMAP
+            Dim tmpBitmap As Bitmap
             GetObject srcPicture.Handle, Len(tmpBitmap), tmpBitmap
             
             'Use that bitmap object to create a new, blank DIB of the same size
@@ -1440,7 +1482,6 @@ Public Sub WriteToBitmapFile(ByRef dstFilename As String)
     'With all our information in place, check to see if that file already exists. Delete it if necessary.
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    
     If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename
     
     'Writing the file is easy; just dump the two headers and image data into it!

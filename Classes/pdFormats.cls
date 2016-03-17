@@ -1042,7 +1042,7 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PHOTODEMON_IMAGE_FOR
     Select Case outputPDIF
     
         Case PDIF_BMP
-            IsExportDialogSupported = False
+            IsExportDialogSupported = True
         
         Case PDIF_GIF
             IsExportDialogSupported = False

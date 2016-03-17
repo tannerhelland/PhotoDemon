@@ -31,8 +31,8 @@ Begin VB.Form FormMetadata
       TabIndex        =   2
       Top             =   7095
       Width           =   12015
-      _ExtentX        =   21193
-      _ExtentY        =   1323
+      _extentx        =   21193
+      _extenty        =   1323
    End
    Begin PhotoDemon.pdButton cmdTechnicalReport 
       Height          =   735
@@ -40,9 +40,9 @@ Begin VB.Form FormMetadata
       TabIndex        =   3
       Top             =   4380
       Width           =   4410
-      _ExtentX        =   7779
-      _ExtentY        =   1296
-      Caption         =   "Generate full metadata report (HTML)..."
+      _extentx        =   7779
+      _extenty        =   1296
+      caption         =   "Generate full metadata report (HTML)..."
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
@@ -64,9 +64,9 @@ Begin VB.Form FormMetadata
       TabIndex        =   1
       Top             =   120
       Width           =   11760
-      _ExtentX        =   20743
-      _ExtentY        =   1931
-      Caption         =   "metadata groups in this image"
+      _extentx        =   20743
+      _extenty        =   1931
+      caption         =   "metadata groups in this image"
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
@@ -89,9 +89,9 @@ Begin VB.Form FormMetadata
       TabIndex        =   6
       Top             =   1800
       Width           =   4410
-      _ExtentX        =   7779
-      _ExtentY        =   1720
-      Caption         =   "tag names"
+      _extentx        =   7779
+      _extenty        =   1720
+      caption         =   "tag names"
    End
    Begin PhotoDemon.pdButtonStrip btsTechnical 
       Height          =   975
@@ -100,32 +100,32 @@ Begin VB.Form FormMetadata
       TabIndex        =   5
       Top             =   2880
       Width           =   4410
-      _ExtentX        =   7779
-      _ExtentY        =   1720
-      Caption         =   "tag values"
+      _extentx        =   7779
+      _extenty        =   1720
+      caption         =   "tag values"
    End
    Begin PhotoDemon.pdLabel lblTechnicalReport 
       Height          =   270
       Left            =   7440
       Top             =   3960
       Width           =   4425
-      _ExtentX        =   7805
-      _ExtentY        =   476
-      Caption         =   "advanced"
-      FontSize        =   11
-      ForeColor       =   4210752
+      _extentx        =   7805
+      _extenty        =   476
+      caption         =   "advanced"
+      fontsize        =   11
+      forecolor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblExifTool 
       Height          =   735
       Left            =   7320
       Top             =   6120
       Width           =   4575
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   ""
-      FontSize        =   9
-      ForeColor       =   -2147483640
-      Layout          =   1
+      _extentx        =   0
+      _extenty        =   0
+      caption         =   ""
+      fontsize        =   9
+      forecolor       =   -2147483640
+      layout          =   1
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -133,11 +133,11 @@ Begin VB.Form FormMetadata
       Left            =   7320
       Top             =   1320
       Width           =   4575
-      _ExtentX        =   8070
-      _ExtentY        =   503
-      Caption         =   "metadata options"
-      FontSize        =   12
-      ForeColor       =   4210752
+      _extentx        =   8070
+      _extenty        =   503
+      caption         =   "metadata options"
+      fontsize        =   12
+      forecolor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -145,11 +145,11 @@ Begin VB.Form FormMetadata
       Left            =   120
       Top             =   1320
       Width           =   6810
-      _ExtentX        =   12012
-      _ExtentY        =   503
-      Caption         =   "tags in this category"
-      FontSize        =   12
-      ForeColor       =   4210752
+      _extentx        =   12012
+      _extenty        =   503
+      caption         =   "tags in this category"
+      fontsize        =   12
+      forecolor       =   4210752
    End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
@@ -262,6 +262,10 @@ End Sub
 
 Private Sub cmdTechnicalReport_Click()
     ExifTool.CreateTechnicalMetadataReport pdImages(g_CurrentImage)
+End Sub
+
+Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    cMouseEvents.SetSystemCursor IDC_ARROW
 End Sub
 
 Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)

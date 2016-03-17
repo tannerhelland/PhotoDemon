@@ -10,7 +10,7 @@ Attribute VB_Name = "Loading"
 ' for example, loading a user-facing image file is a horrifically complex affair, with lots of messy work involved in metadata parsing,
 ' UI prep, Undo/Redo stuff, and more.  Conversely, loading an image file as a resource or internal image can bypass a lot of those steps.
 '
-'Note that these high-level functions call into a number of lower-level functions inside the ImageLoader module, and potentially various
+'Note that these high-level functions call into a number of lower-level functions inside the ImageImporter module, and potentially various
 ' plugin-specific interfaces (e.g. FreeImage).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -25,7 +25,7 @@ Option Explicit
 '
 'Note that this function will use one of several backends to load a given image; different filetypes are preferentially handled by
 ' different means, so portions of this function may call into external DLLs for parts of its functionality.  (The interaction between
-' this function and various plugins is complex; I recommend studying the separate ImageLoader module for details.)
+' this function and various plugins is complex; I recommend studying the separate ImageImporter module for details.)
 '
 'INPUTS:
 ' 1) srcFile: fully qualified, absolute path to the source image.  Unicode is fully supported.
@@ -195,12 +195,12 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
         'Note that FreeImage may raise additional dialogs (e.g. for HDR/RAW images), so it does not return a binary pass/fail.
         ' If the function fails due to user cancellation, we will suppress subsequent error message boxes.
-        loadSuccessful = ImageLoader.CascadeLoadGenericImage(srcFile, targetImage, targetDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+        loadSuccessful = ImageImporter.CascadeLoadGenericImage(srcFile, targetImage, targetDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
         
     'PD-specific files use their own load function, which bypasses a lot of tedious format-detection heuristics
     Else
     
-        loadSuccessful = ImageLoader.CascadeLoadInternalImage(internalFormatID, srcFile, targetImage, targetDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+        loadSuccessful = ImageImporter.CascadeLoadInternalImage(internalFormatID, srcFile, targetImage, targetDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
     
         #If DEBUGMODE = 1 Then
             If (Not loadSuccessful) Then
@@ -244,13 +244,13 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             ' If the image contains an embedded ICC profile, apply it now
             '*************************************************************************************************************************************
             
-            If ImageLoader.ApplyPostLoadICCHandling(targetDIB) Then DoEvents
+            If ImageImporter.ApplyPostLoadICCHandling(targetDIB) Then DoEvents
             
             '*************************************************************************************************************************************
             ' If the incoming image is 24bpp, convert it to 32bpp.  (PD assumes an available alpha channel for all layers.)
             '*************************************************************************************************************************************
             
-            If ImageLoader.ForceTo32bppMode(targetDIB) Then DoEvents
+            If ImageImporter.ForceTo32bppMode(targetDIB) Then DoEvents
             
             '*************************************************************************************************************************************
             ' The target DIB has been loaded successfully, so copy its contents into the main layer of the targetImage
@@ -315,9 +315,9 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         'First, see if this image is being restored from PD's "autosave" engine.  Autosaved images require special handling, because their
         ' state must be reconstructed from whatever bits we can dredge up from the temp file.
         If srcFileExtension = "PDTMP" Then
-            ImageLoader.SyncRecoveredAutosaveImage srcFile, targetImage
+            ImageImporter.SyncRecoveredAutosaveImage srcFile, targetImage
         Else
-            ImageLoader.GenerateExtraPDImageAttributes srcFile, targetImage, suggestedFilename
+            ImageImporter.GenerateExtraPDImageAttributes srcFile, targetImage, suggestedFilename
         End If
         
         'Because ExifTool is sending us data in the background, we periodically yield for metadata piping.
@@ -336,7 +336,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         ' automatically update g_CurrentImage to point to the new image.
         Image_Canvas_Handler.AddImageToMasterCollection targetImage
         
-        ImageLoader.ApplyPostLoadUIChanges srcFile, targetImage, addToRecentFiles
+        ImageImporter.ApplyPostLoadUIChanges srcFile, targetImage, addToRecentFiles
         
         'Because ExifTool is sending us data in the background, we periodically yield for metadata piping.
         If (decoderUsed <> PDIDE_INTERNAL) Then DoEvents
@@ -367,7 +367,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 If loadSuccessful Then
                 
                     'Copy the newly loaded DIB into the target pdImage object
-                    ImageLoader.ForceTo32bppMode targetDIB
+                    ImageImporter.ForceTo32bppMode targetDIB
                     newLayerName = Layer_Handler.GenerateInitialLayerName(srcFile, suggestedFilename, imageHasMultiplePages, targetImage, targetDIB, pageTracker)
                     targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, targetDIB, targetImage
                     
@@ -620,7 +620,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     End If
     
     'If the image contained an embedded ICC profile, apply it now.
-    ImageLoader.ApplyPostLoadICCHandling targetDIB
+    ImageImporter.ApplyPostLoadICCHandling targetDIB
     
     'Restore the main interface
     If applyUIChanges Then Processor.MarkProgramBusyState False, True

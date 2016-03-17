@@ -149,7 +149,7 @@ End Function
 
 'When images are loaded, this function is used to quickly determine the image's color count. It stops once 257 is reached,
 ' as at that point the program will automatically treat the image as 24 or 32bpp (contingent on presence of an alpha channel).
-Public Function getQuickColorCount(ByRef srcDIB As pdDIB, Optional ByVal imageID As Long = -1) As Long
+Public Function GetQuickColorCount(ByRef srcDIB As pdDIB, Optional ByVal imageID As Long = -1) As Long
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Verifying image color count..."
@@ -250,7 +250,7 @@ Public Function getQuickColorCount(ByRef srcDIB As pdDIB, Optional ByVal imageID
                 g_IsImageMonochrome = True
                 Erase UniqueColors
                 g_LastColorCount = totalCount
-                getQuickColorCount = totalCount
+                GetQuickColorCount = totalCount
                 Exit Function
             End If
             
@@ -287,7 +287,7 @@ Public Function getQuickColorCount(ByRef srcDIB As pdDIB, Optional ByVal imageID
     Erase UniqueColors
     
     g_LastColorCount = totalCount
-    getQuickColorCount = totalCount
+    GetQuickColorCount = totalCount
         
 End Function
 

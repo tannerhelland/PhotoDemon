@@ -881,10 +881,10 @@ End Enum
 Public Enum FREE_IMAGE_QUANTIZE
    FIQ_WUQUANT = 0           ' Xiaolin Wu color quantization algorithm
    FIQ_NNQUANT = 1           ' NeuQuant neural-net quantization algorithm by Anthony Dekker
+   FIQ_LFPQUANT = 2          ' Lossless Fast Pseudo-Quantization Algorithm by Carsten Klein
 End Enum
 #If False Then
-   Const FIQ_WUQUANT = 0
-   Const FIQ_NNQUANT = 1
+   Const FIQ_WUQUANT = 0, FIQ_NNQUANT = 1, FIQ_LFPQUANT = 2
 #End If
 
 Public Enum FREE_IMAGE_DITHER
@@ -1426,7 +1426,7 @@ Public Declare Function FreeImage_AllocateT Lib "FreeImage.dll" Alias "_FreeImag
   Optional ByVal BlueMask As Long) As Long
   
 Public Declare Function FreeImage_HasPixelsInt Lib "FreeImage.dll" Alias "_FreeImage_HasPixels@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_Load Lib "FreeImage.dll" Alias "_FreeImage_Load@12" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
@@ -1446,135 +1446,135 @@ Public Declare Function FreeImage_LoadFromHandle Lib "FreeImage.dll" Alias "_Fre
 
 Private Declare Function FreeImage_SaveInt Lib "FreeImage.dll" Alias "_FreeImage_Save@16" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal FileName As String, _
   Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Long
 
 Private Declare Function FreeImage_SaveUInt Lib "FreeImage.dll" Alias "_FreeImage_SaveU@16" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal FileName As Long, _
   Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Long
 
 Private Declare Function FreeImage_SaveToHandleInt Lib "FreeImage.dll" Alias "_FreeImage_SaveToHandle@20" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal IO As Long, _
            ByVal Handle As Long, _
   Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Long
 
 Public Declare Function FreeImage_Clone Lib "FreeImage.dll" Alias "_FreeImage_Clone@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Sub FreeImage_Unload Lib "FreeImage.dll" Alias "_FreeImage_Unload@4" ( _
-           ByVal BITMAP As Long)
+           ByVal Bitmap As Long)
 
 
 ' Bitmap information functions
 Public Declare Function FreeImage_GetImageType Lib "FreeImage.dll" Alias "_FreeImage_GetImageType@4" ( _
-           ByVal BITMAP As Long) As FREE_IMAGE_TYPE
+           ByVal Bitmap As Long) As FREE_IMAGE_TYPE
 
 Public Declare Function FreeImage_GetColorsUsed Lib "FreeImage.dll" Alias "_FreeImage_GetColorsUsed@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetBPP Lib "FreeImage.dll" Alias "_FreeImage_GetBPP@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetWidth Lib "FreeImage.dll" Alias "_FreeImage_GetWidth@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetHeight Lib "FreeImage.dll" Alias "_FreeImage_GetHeight@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetLine Lib "FreeImage.dll" Alias "_FreeImage_GetLine@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetPitch Lib "FreeImage.dll" Alias "_FreeImage_GetPitch@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetDIBSize Lib "FreeImage.dll" Alias "_FreeImage_GetDIBSize@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetPalette Lib "FreeImage.dll" Alias "_FreeImage_GetPalette@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetDotsPerMeterX Lib "FreeImage.dll" Alias "_FreeImage_GetDotsPerMeterX@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetDotsPerMeterY Lib "FreeImage.dll" Alias "_FreeImage_GetDotsPerMeterY@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Sub FreeImage_SetDotsPerMeterX Lib "FreeImage.dll" Alias "_FreeImage_SetDotsPerMeterX@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Resolution As Long)
 
 Public Declare Sub FreeImage_SetDotsPerMeterY Lib "FreeImage.dll" Alias "_FreeImage_SetDotsPerMeterY@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Resolution As Long)
 
 Public Declare Function FreeImage_GetInfoHeader Lib "FreeImage.dll" Alias "_FreeImage_GetInfoHeader@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetInfo Lib "FreeImage.dll" Alias "_FreeImage_GetInfo@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetColorType Lib "FreeImage.dll" Alias "_FreeImage_GetColorType@4" ( _
-           ByVal BITMAP As Long) As FREE_IMAGE_COLOR_TYPE
+           ByVal Bitmap As Long) As FREE_IMAGE_COLOR_TYPE
 
 Public Declare Function FreeImage_GetRedMask Lib "FreeImage.dll" Alias "_FreeImage_GetRedMask@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetGreenMask Lib "FreeImage.dll" Alias "_FreeImage_GetGreenMask@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetBlueMask Lib "FreeImage.dll" Alias "_FreeImage_GetBlueMask@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetTransparencyCount Lib "FreeImage.dll" Alias "_FreeImage_GetTransparencyCount@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetTransparencyTable Lib "FreeImage.dll" Alias "_FreeImage_GetTransparencyTable@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Sub FreeImage_SetTransparencyTable Lib "FreeImage.dll" Alias "_FreeImage_SetTransparencyTable@12" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal TransTablePtr As Long, _
            ByVal Count As Long)
 
 Private Declare Function FreeImage_IsTransparentInt Lib "FreeImage.dll" Alias "_FreeImage_IsTransparent@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
            
 Public Declare Function FreeImage_GetTransparentIndex Lib "FreeImage.dll" Alias "_FreeImage_GetTransparentIndex@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
            
 Public Declare Function FreeImage_SetTransparentIndex Lib "FreeImage.dll" Alias "_FreeImage_SetTransparentIndex@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Index As Long) As Long
 
 Private Declare Function FreeImage_HasBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_HasBackgroundColor@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
            
 Private Declare Function FreeImage_GetBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_GetBackgroundColor@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByRef BackColor As RGBQUAD) As Long
 
 Private Declare Function FreeImage_GetBackgroundColorAsLongInt Lib "FreeImage.dll" Alias "_FreeImage_GetBackgroundColor@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByRef BackColor As Long) As Long
 
 Private Declare Function FreeImage_SetBackgroundColorInt Lib "FreeImage.dll" Alias "_FreeImage_SetBackgroundColor@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByRef BackColor As RGBQUAD) As Long
            
 Private Declare Function FreeImage_SetBackgroundColorAsLongInt Lib "FreeImage.dll" Alias "_FreeImage_SetBackgroundColor@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByRef BackColor As Long) As Long
 
 Public Declare Function FreeImage_GetThumbnail Lib "FreeImage.dll" Alias "_FreeImage_GetThumbnail@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
            
 Private Declare Function FreeImage_SetThumbnailInt Lib "FreeImage.dll" Alias "_FreeImage_SetThumbnail@8" ( _
-           ByVal BITMAP As Long, ByVal Thumbnail As Long) As Long
+           ByVal Bitmap As Long, ByVal Thumbnail As Long) As Long
 
 
 ' Filetype functions
@@ -1598,14 +1598,14 @@ Public Declare Function FreeImage_GetFileTypeFromMemory Lib "FreeImage.dll" Alia
 
 ' Pixel access functions
 Public Declare Function FreeImage_GetBits Lib "FreeImage.dll" Alias "_FreeImage_GetBits@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_GetScanline Lib "FreeImage.dll" Alias "_FreeImage_GetScanLine@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Scanline As Long) As Long
 
 Private Declare Function FreeImage_GetPixelIndexInt Lib "FreeImage.dll" Alias "_FreeImage_GetPixelIndex@16" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal x As Long, _
            ByVal y As Long, _
            ByRef Value As Byte) As Long
@@ -1613,51 +1613,51 @@ Private Declare Function FreeImage_GetPixelIndexInt Lib "FreeImage.dll" Alias "_
         
 ' Conversion functions
 Public Declare Function FreeImage_ConvertTo4Bits Lib "FreeImage.dll" Alias "_FreeImage_ConvertTo4Bits@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_ConvertTo8Bits Lib "FreeImage.dll" Alias "_FreeImage_ConvertTo8Bits@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
            
 Public Declare Function FreeImage_ConvertToGreyscale Lib "FreeImage.dll" Alias "_FreeImage_ConvertToGreyscale@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_ConvertTo16Bits555 Lib "FreeImage.dll" Alias "_FreeImage_ConvertTo16Bits555@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_ConvertTo16Bits565 Lib "FreeImage.dll" Alias "_FreeImage_ConvertTo16Bits565@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_ConvertTo24Bits Lib "FreeImage.dll" Alias "_FreeImage_ConvertTo24Bits@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_ConvertTo32Bits Lib "FreeImage.dll" Alias "_FreeImage_ConvertTo32Bits@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_ColorQuantize Lib "FreeImage.dll" Alias "_FreeImage_ColorQuantize@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal QuantizeMethod As FREE_IMAGE_QUANTIZE) As Long
            
 Private Declare Function FreeImage_ColorQuantizeExInt Lib "FreeImage.dll" Alias "_FreeImage_ColorQuantizeEx@20" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
   Optional ByVal QuantizeMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT, _
   Optional ByVal PaletteSize As Long = 256, _
   Optional ByVal ReserveSize As Long = 0, _
   Optional ByVal ReservePalettePtr As Long = 0) As Long
 
 Public Declare Function FreeImage_Threshold Lib "FreeImage.dll" Alias "_FreeImage_Threshold@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Threshold As Byte) As Long
 
 Public Declare Function FreeImage_Dither Lib "FreeImage.dll" Alias "_FreeImage_Dither@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal DitherMethod As FREE_IMAGE_DITHER) As Long
 
 Private Declare Function FreeImage_ConvertToStandardTypeInt Lib "FreeImage.dll" Alias "_FreeImage_ConvertToStandardType@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal ScaleLinear As Long) As Long
 
 Private Declare Function FreeImage_ConvertToTypeInt Lib "FreeImage.dll" Alias "_FreeImage_ConvertToType@12" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal DestinationType As FREE_IMAGE_TYPE, _
            ByVal ScaleLinear As Long) As Long
 
@@ -1687,7 +1687,7 @@ Private Declare Function FreeImage_ConvertFromRawBitsExInt Lib "FreeImage.dll" A
 
 Private Declare Sub FreeImage_ConvertToRawBitsInt Lib "FreeImage.dll" Alias "_FreeImage_ConvertToRawBits@32" ( _
            ByVal BitsPtr As Long, _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Pitch As Long, _
            ByVal BitsPerPixel As Long, _
            ByVal RedMask As Long, _
@@ -1696,62 +1696,65 @@ Private Declare Sub FreeImage_ConvertToRawBitsInt Lib "FreeImage.dll" Alias "_Fr
            ByVal TopDown As Long)
 
 Public Declare Function FreeImage_ConvertToFloat Lib "FreeImage.dll" Alias "_FreeImage_ConvertToFloat@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_ConvertToRGBF Lib "FreeImage.dll" Alias "_FreeImage_ConvertToRGBF@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 'Manually patched by Tanner:
 Public Declare Function FreeImage_ConvertToRGBAF Lib "FreeImage.dll" Alias "_FreeImage_ConvertToRGBAF@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_ConvertToUINT16 Lib "FreeImage.dll" Alias "_FreeImage_ConvertToUINT16@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_ConvertToRGB16 Lib "FreeImage.dll" Alias "_FreeImage_ConvertToRGB16@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
+
+Public Declare Function FreeImage_ConvertToRGBA16 Lib "FreeImage.dll" Alias "_FreeImage_ConvertToRGBA16@4" ( _
+           ByVal Bitmap As Long) As Long
 
 ' Tone mapping operators
 Public Declare Function FreeImage_ToneMapping Lib "FreeImage.dll" Alias "_FreeImage_ToneMapping@24" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Operator As FREE_IMAGE_TMO, _
   Optional ByVal FirstArgument As Double, _
   Optional ByVal SecondArgument As Double) As Long
   
 Public Declare Function FreeImage_TmoDrago03 Lib "FreeImage.dll" Alias "_FreeImage_TmoDrago03@20" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
   Optional ByVal Gamma As Double = 2.2, _
   Optional ByVal Exposure As Double) As Long
   
 Public Declare Function FreeImage_TmoReinhard05 Lib "FreeImage.dll" Alias "_FreeImage_TmoReinhard05@20" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
   Optional ByVal Intensity As Double, _
   Optional ByVal Contrast As Double) As Long
 
 Public Declare Function FreeImage_TmoReinhard05Ex Lib "FreeImage.dll" Alias "_FreeImage_TmoReinhard05Ex@36" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
   Optional ByVal Intensity As Double, _
   Optional ByVal Contrast As Double, _
   Optional ByVal Adaptation As Double = 1, _
   Optional ByVal ColorCorrection As Double) As Long
 
 Public Declare Function FreeImage_TmoFattal02 Lib "FreeImage.dll" Alias "_FreeImage_TmoFattal02@20" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
   Optional ByVal ColorSaturation As Double = 0.5, _
   Optional ByVal Attenuation As Double = 0.85) As Long
 
 
 ' ICC profile functions
 Private Declare Function FreeImage_GetICCProfileInt Lib "FreeImage.dll" Alias "_FreeImage_GetICCProfile@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Function FreeImage_CreateICCProfile Lib "FreeImage.dll" Alias "_FreeImage_CreateICCProfile@12" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByRef Data As Long, _
            ByVal Size As Long) As Long
 
 Public Declare Sub FreeImage_DestroyICCProfile Lib "FreeImage.dll" Alias "_FreeImage_DestroyICCProfile@4" ( _
-           ByVal BITMAP As Long)
+           ByVal Bitmap As Long)
 
 
 ' Plugin functions
@@ -1833,31 +1836,31 @@ Private Declare Function FreeImage_OpenMultiBitmapInt Lib "FreeImage.dll" Alias 
            ByVal Flags As FREE_IMAGE_LOAD_OPTIONS) As Long
 
 Private Declare Function FreeImage_CloseMultiBitmapInt Lib "FreeImage.dll" Alias "_FreeImage_CloseMultiBitmap@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
   Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Long
 
 Public Declare Function FreeImage_GetPageCount Lib "FreeImage.dll" Alias "_FreeImage_GetPageCount@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 Public Declare Sub FreeImage_AppendPage Lib "FreeImage.dll" Alias "_FreeImage_AppendPage@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal PageBitmap As Long)
 
 Public Declare Sub FreeImage_InsertPage Lib "FreeImage.dll" Alias "_FreeImage_InsertPage@12" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Page As Long, _
            ByVal PageBitmap As Long)
 
 Public Declare Sub FreeImage_DeletePage Lib "FreeImage.dll" Alias "_FreeImage_DeletePage@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Page As Long)
 
 Public Declare Function FreeImage_LockPage Lib "FreeImage.dll" Alias "_FreeImage_LockPage@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Page As Long) As Long
 
 Private Declare Sub FreeImage_UnlockPageInt Lib "FreeImage.dll" Alias "_FreeImage_UnlockPage@12" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal PageBitmap As Long, _
            ByVal ApplyChanges As Long)
 
@@ -1880,7 +1883,7 @@ Public Declare Function FreeImage_LoadFromMemory Lib "FreeImage.dll" Alias "_Fre
 
 Private Declare Function FreeImage_SaveToMemoryInt Lib "FreeImage.dll" Alias "_FreeImage_SaveToMemory@16" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Stream As Long, _
   Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Long
 
@@ -1916,7 +1919,7 @@ Public Declare Function FreeImage_LoadMultiBitmapFromMemory Lib "FreeImage.dll" 
 
 Public Declare Function FreeImage_SaveMultiBitmapToMemory Lib "FreeImage.dll" Alias "_FreeImage_SaveMultiBitmapToMemory@16" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Stream As Long, _
   Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Long
 
@@ -1975,7 +1978,7 @@ Private Declare Function FreeImage_LookupSVGColorInt Lib "FreeImage.dll" Alias "
 ' Metadata iterator
 Public Declare Function FreeImage_FindFirstMetadata Lib "FreeImage.dll" Alias "_FreeImage_FindFirstMetadata@12" ( _
            ByVal Model As FREE_IMAGE_MDMODEL, _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByRef Tag As Long) As Long
 
 Public Declare Function FreeImage_FindNextMetadataInt Lib "FreeImage.dll" Alias "_FreeImage_FindNextMetadata@8" ( _
@@ -1992,7 +1995,7 @@ Public Declare Function FreeImage_CloneMetadataInt Lib "FreeImage.dll" Alias "_F
 ' Metadata helper functions
 Public Declare Function FreeImage_GetMetadataCount Lib "FreeImage.dll" Alias "_FreeImage_GetMetadataCount@8" ( _
            ByVal Model As Long, _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
 
 
 '--------------------------------------------------------------------------------
@@ -2001,16 +2004,16 @@ Public Declare Function FreeImage_GetMetadataCount Lib "FreeImage.dll" Alias "_F
 
 ' Rotating and flipping
 Public Declare Function FreeImage_RotateClassic Lib "FreeImage.dll" Alias "_FreeImage_RotateClassic@12" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Angle As Double) As Long
 
 Public Declare Function FreeImage_Rotate Lib "FreeImage.dll" Alias "_FreeImage_Rotate@16" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Angle As Double, _
   Optional ByRef Color As Any = 0) As Long
 
 Private Declare Function FreeImage_RotateExInt Lib "FreeImage.dll" Alias "_FreeImage_RotateEx@48" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Angle As Double, _
            ByVal ShiftX As Double, _
            ByVal ShiftY As Double, _
@@ -2018,16 +2021,18 @@ Private Declare Function FreeImage_RotateExInt Lib "FreeImage.dll" Alias "_FreeI
            ByVal OriginY As Double, _
            ByVal UseMask As Long) As Long
 
+Private Declare Function FreeImage_FlipHorizontal Lib "FreeImage.dll" Alias "_FreeImage_FlipHorizontal@4" (ByVal fiBitmap As Long) As Long
+Private Declare Function FreeImage_FlipVertical Lib "FreeImage.dll" Alias "_FreeImage_FlipVertical@4" (ByVal fiBitmap As Long) As Long
 
 ' Upsampling and downsampling
 Public Declare Function FreeImage_Rescale Lib "FreeImage.dll" Alias "_FreeImage_Rescale@16" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Width As Long, _
            ByVal Height As Long, _
            ByVal Filter As FREE_IMAGE_FILTER) As Long
            
 Public Declare Function FreeImage_RescaleRect Lib "FreeImage.dll" Alias "_FreeImage_RescaleRect@32" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Left As Long, _
            ByVal Top As Long, _
            ByVal Right As Long, _
@@ -2037,48 +2042,48 @@ Public Declare Function FreeImage_RescaleRect Lib "FreeImage.dll" Alias "_FreeIm
            ByVal Filter As FREE_IMAGE_FILTER) As Long
            
 Private Declare Function FreeImage_MakeThumbnailInt Lib "FreeImage.dll" Alias "_FreeImage_MakeThumbnail@12" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal MaxPixelSize As Long, _
   Optional ByVal Convert As Long) As Long
 
 Public Declare Function FreeImage_SwapPaletteIndices Lib "FreeImage.dll" Alias "_FreeImage_SwapPaletteIndices@12" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByRef IndexA As Byte, _
            ByRef IndexB As Byte) As Long
 
 ' Channel processing
 Public Declare Function FreeImage_GetChannel Lib "FreeImage.dll" Alias "_FreeImage_GetChannel@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Channel As FREE_IMAGE_COLOR_CHANNEL) As Long
 
 Public Declare Function FreeImage_GetComplexChannel Lib "FreeImage.dll" Alias "_FreeImage_GetComplexChannel@8" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Channel As FREE_IMAGE_COLOR_CHANNEL) As Long
 
 ' Copy / Paste / Composite routines
 Public Declare Function FreeImage_Copy Lib "FreeImage.dll" Alias "_FreeImage_Copy@20" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Left As Long, _
            ByVal Top As Long, _
            ByVal Right As Long, _
            ByVal Bottom As Long) As Long
 
 Public Declare Function FreeImage_Composite Lib "FreeImage.dll" Alias "_FreeImage_Composite@16" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
   Optional ByVal UseFileBackColor As Long, _
   Optional ByRef AppBackColor As Any, _
   Optional ByVal BackgroundBitmap As Long) As Long
 
 Private Declare Function FreeImage_PreMultiplyWithAlphaInt Lib "FreeImage.dll" Alias "_FreeImage_PreMultiplyWithAlpha@4" ( _
-           ByVal BITMAP As Long) As Long
+           ByVal Bitmap As Long) As Long
            
 Public Declare Function FreeImage_FillBackground Lib "FreeImage.dll" Alias "_FreeImage_FillBackground@12" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByRef Color As Any, _
   Optional ByVal Options As FREE_IMAGE_COLOR_OPTIONS = FI_COLOR_IS_RGB_COLOR) As Long
 
 Public Declare Function FreeImage_EnlargeCanvas Lib "FreeImage.dll" Alias "_FreeImage_EnlargeCanvas@28" ( _
-           ByVal BITMAP As Long, _
+           ByVal Bitmap As Long, _
            ByVal Left As Long, _
            ByVal Top As Long, _
            ByVal Right As Long, _
@@ -2409,19 +2414,33 @@ Public Function FreeImage_GetFIFMimeType(ByVal Format As FREE_IMAGE_FORMAT) As S
    
 End Function
 
-Public Function FreeImage_GetPixelIndex(ByVal BITMAP As Long, _
+Public Function FreeImage_GetPixelIndex(ByVal Bitmap As Long, _
                                         ByVal x As Long, _
                                         ByVal y As Long, _
                                         ByRef Value As Byte) As Boolean
 
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_GetPixelIndex = (FreeImage_GetPixelIndexInt(BITMAP, x, y, Value) = 1)
+   FreeImage_GetPixelIndex = (FreeImage_GetPixelIndexInt(Bitmap, x, y, Value) = 1)
 
 End Function
 
+Public Sub FreeImage_GetInfoHeaderEx(ByVal Bitmap As Long, ByVal ptrToBitmapInfoHeader As Long)
 
-Public Function FreeImage_GetPaletteExLong(ByVal BITMAP As Long) As Long()
+Dim lpInfoHeader As Long
+
+   ' This function is a wrapper around FreeImage_GetInfoHeader() and returns a fully
+   ' populated BITMAPINFOHEADER structure for a given bitmap.
+
+   lpInfoHeader = FreeImage_GetInfoHeader(Bitmap)
+   
+   If (lpInfoHeader) Then
+      Call CopyMemory(ByVal ptrToBitmapInfoHeader, ByVal lpInfoHeader, 40&)
+   End If
+
+End Sub
+
+Public Function FreeImage_GetPaletteExLong(ByVal Bitmap As Long) As Long()
 
 Dim tSA As SAVEARRAY1D
 Dim lpSA As Long
@@ -2477,19 +2496,19 @@ Dim lpSA As Long
    ' the 'FreeImage_DestroyLockedArray' function.
 
    
-   If (BITMAP) Then
+   If (Bitmap) Then
       
       ' create a proper SAVEARRAY descriptor
       With tSA
          .cbElements = 4                              ' size in bytes of RGBQUAD structure
          .cDims = 1                                   ' the array has only 1 dimension
-         .cElements = FreeImage_GetColorsUsed(BITMAP) ' the number of elements in the array is
+         .cElements = FreeImage_GetColorsUsed(Bitmap) ' the number of elements in the array is
                                                       ' the number of used colors in the Bitmap
          .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE     ' need AUTO and FIXEDSIZE for safety issues,
                                                       ' so the array can not be modified in size
                                                       ' or erased; according to Matthew Curland never
                                                       ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetPalette(BITMAP)       ' let the array point to the memory block, the
+         .pvData = FreeImage_GetPalette(Bitmap)       ' let the array point to the memory block, the
                                                       ' FreeImage palette pointer points to
       End With
       
@@ -2519,73 +2538,73 @@ End Function
 ' BOOL/Boolean returning functions wrappers
 '--------------------------------------------------------------------------------
 
-Public Function FreeImage_HasPixels(ByVal BITMAP As Long) As Boolean
+Public Function FreeImage_HasPixels(ByVal Bitmap As Long) As Boolean
 
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_HasPixels = (FreeImage_HasPixelsInt(BITMAP) = 1)
+   FreeImage_HasPixels = (FreeImage_HasPixelsInt(Bitmap) = 1)
 
 End Function
 
 Public Function FreeImage_Save(ByVal Format As FREE_IMAGE_FORMAT, _
-                               ByVal BITMAP As Long, _
+                               ByVal Bitmap As Long, _
                                ByVal FileName As String, _
                       Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
 
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_Save = (FreeImage_SaveUInt(Format, BITMAP, StrPtr(FileName), Flags) = 1)
+   FreeImage_Save = (FreeImage_SaveUInt(Format, Bitmap, StrPtr(FileName), Flags) = 1)
 
 End Function
 
 Public Function FreeImage_SaveToHandle(ByVal Format As FREE_IMAGE_FORMAT, _
-                                       ByVal BITMAP As Long, _
+                                       ByVal Bitmap As Long, _
                                        ByVal IO As Long, _
                                        ByVal Handle As Long, _
                               Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
 
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_SaveToHandle = (FreeImage_SaveToHandleInt(Format, BITMAP, IO, Handle, Flags) = 1)
+   FreeImage_SaveToHandle = (FreeImage_SaveToHandleInt(Format, Bitmap, IO, Handle, Flags) = 1)
 
 End Function
 
-Public Function FreeImage_IsTransparent(ByVal BITMAP As Long) As Boolean
+Public Function FreeImage_IsTransparent(ByVal Bitmap As Long) As Boolean
 
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_IsTransparent = (FreeImage_IsTransparentInt(BITMAP) = 1)
+   FreeImage_IsTransparent = (FreeImage_IsTransparentInt(Bitmap) = 1)
 
 End Function
            
-Public Function FreeImage_HasBackgroundColor(ByVal BITMAP As Long) As Boolean
+Public Function FreeImage_HasBackgroundColor(ByVal Bitmap As Long) As Boolean
 
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_HasBackgroundColor = (FreeImage_HasBackgroundColorInt(BITMAP) = 1)
+   FreeImage_HasBackgroundColor = (FreeImage_HasBackgroundColorInt(Bitmap) = 1)
 
 End Function
 
-Public Function FreeImage_GetBackgroundColor(ByVal BITMAP As Long, _
+Public Function FreeImage_GetBackgroundColor(ByVal Bitmap As Long, _
                                              ByRef BackColor As RGBQUAD) As Boolean
    
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(BITMAP, BackColor) = 1)
+   FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(Bitmap, BackColor) = 1)
    
 End Function
 
-Public Function FreeImage_GetBackgroundColorAsLong(ByVal BITMAP As Long, _
+Public Function FreeImage_GetBackgroundColorAsLong(ByVal Bitmap As Long, _
                                                    ByRef BackColor As Long) As Boolean
    
    ' This function gets the background color of an image as FreeImage_GetBackgroundColor() does but
    ' provides it's result as a Long value.
 
-   FreeImage_GetBackgroundColorAsLong = (FreeImage_GetBackgroundColorAsLongInt(BITMAP, BackColor) = 1)
+   FreeImage_GetBackgroundColorAsLong = (FreeImage_GetBackgroundColorAsLongInt(Bitmap, BackColor) = 1)
    
 End Function
 
-Public Function FreeImage_GetBackgroundColorEx(ByVal BITMAP As Long, _
+Public Function FreeImage_GetBackgroundColorEx(ByVal Bitmap As Long, _
                                                ByRef alpha As Byte, _
                                                ByRef Red As Byte, _
                                                ByRef Green As Byte, _
@@ -2596,7 +2615,7 @@ Dim bkcolor As RGBQUAD
    ' This function gets the background color of an image as FreeImage_GetBackgroundColor() does but
    ' provides it's result as four different byte values, one for each color component.
                                               
-   FreeImage_GetBackgroundColorEx = (FreeImage_GetBackgroundColorInt(BITMAP, bkcolor) = 1)
+   FreeImage_GetBackgroundColorEx = (FreeImage_GetBackgroundColorInt(Bitmap, bkcolor) = 1)
    With bkcolor
       alpha = .alpha
       Red = .Red
@@ -2606,26 +2625,26 @@ Dim bkcolor As RGBQUAD
 
 End Function
 
-Public Function FreeImage_SetBackgroundColor(ByVal BITMAP As Long, _
+Public Function FreeImage_SetBackgroundColor(ByVal Bitmap As Long, _
                                              ByRef BackColor As RGBQUAD) As Boolean
                                              
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_SetBackgroundColor = (FreeImage_SetBackgroundColorInt(BITMAP, BackColor) = 1)
+   FreeImage_SetBackgroundColor = (FreeImage_SetBackgroundColorInt(Bitmap, BackColor) = 1)
                                              
 End Function
 
-Public Function FreeImage_SetBackgroundColorAsLong(ByVal BITMAP As Long, _
+Public Function FreeImage_SetBackgroundColorAsLong(ByVal Bitmap As Long, _
                                                    ByVal BackColor As Long) As Boolean
                                              
    ' This function sets the background color of an image as FreeImage_SetBackgroundColor() does but
    ' the color value to set must be provided as a Long value.
 
-   FreeImage_SetBackgroundColorAsLong = (FreeImage_SetBackgroundColorAsLongInt(BITMAP, BackColor) = 1)
+   FreeImage_SetBackgroundColorAsLong = (FreeImage_SetBackgroundColorAsLongInt(Bitmap, BackColor) = 1)
                                              
 End Function
 
-Public Function FreeImage_SetBackgroundColorEx(ByVal BITMAP As Long, _
+Public Function FreeImage_SetBackgroundColorEx(ByVal Bitmap As Long, _
                                                ByVal alpha As Byte, _
                                                ByVal Red As Byte, _
                                                ByVal Green As Byte, _
@@ -2643,7 +2662,7 @@ Dim tColor As RGBQUAD
       .Green = Green
       .Blue = Blue
    End With
-   FreeImage_SetBackgroundColorEx = (FreeImage_SetBackgroundColorInt(BITMAP, tColor) = 1)
+   FreeImage_SetBackgroundColorEx = (FreeImage_SetBackgroundColorInt(Bitmap, tColor) = 1)
 
 End Function
 
@@ -2697,23 +2716,23 @@ Public Function FreeImage_FIFSupportsNoPixels(ByVal Format As FREE_IMAGE_FORMAT)
 
 End Function
 
-Public Function FreeImage_CloseMultiBitmap(ByVal BITMAP As Long, _
+Public Function FreeImage_CloseMultiBitmap(ByVal Bitmap As Long, _
                                   Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
 
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_CloseMultiBitmap = (FreeImage_CloseMultiBitmapInt(BITMAP, Flags) = 1)
+   FreeImage_CloseMultiBitmap = (FreeImage_CloseMultiBitmapInt(Bitmap, Flags) = 1)
 
 End Function
 
 Public Function FreeImage_SaveToMemory(ByVal Format As FREE_IMAGE_FORMAT, _
-                                       ByVal BITMAP As Long, _
+                                       ByVal Bitmap As Long, _
                                        ByVal Stream As Long, _
                               Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
                               
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_SaveToMemory = (FreeImage_SaveToMemoryInt(Format, BITMAP, Stream, Flags) = 1)
+   FreeImage_SaveToMemory = (FreeImage_SaveToMemoryInt(Format, Bitmap, Stream, Flags) = 1)
   
 End Function
 
@@ -2767,19 +2786,19 @@ Public Function FreeImage_LookupSVGColor(ByVal Color As String, _
          
 End Function
 
-Public Function FreeImage_PreMultiplyWithAlpha(ByVal BITMAP As Long) As Boolean
+Public Function FreeImage_PreMultiplyWithAlpha(ByVal Bitmap As Long) As Boolean
 
    ' Thin wrapper function returning a real VB Boolean value
    
-   FreeImage_PreMultiplyWithAlpha = (FreeImage_PreMultiplyWithAlphaInt(BITMAP) = 1)
+   FreeImage_PreMultiplyWithAlpha = (FreeImage_PreMultiplyWithAlphaInt(Bitmap) = 1)
 
 End Function
 
-Public Function FreeImage_SetThumbnail(ByVal BITMAP As Long, ByVal Thumbnail As Long) As Boolean
+Public Function FreeImage_SetThumbnail(ByVal Bitmap As Long, ByVal Thumbnail As Long) As Boolean
 
    ' Thin wrapper function returning a real VB Boolean value
    
-   FreeImage_SetThumbnail = (FreeImage_SetThumbnailInt(BITMAP, Thumbnail) = 1)
+   FreeImage_SetThumbnail = (FreeImage_SetThumbnailInt(Bitmap, Thumbnail) = 1)
 
 End Function
 
@@ -2796,18 +2815,18 @@ Public Function FreeImage_OpenMultiBitmap(ByVal Format As FREE_IMAGE_FORMAT, _
 
 End Function
 
-Public Sub FreeImage_UnlockPage(ByVal BITMAP As Long, ByVal PageBitmap As Long, ByVal ApplyChanges As Boolean)
+Public Sub FreeImage_UnlockPage(ByVal Bitmap As Long, ByVal PageBitmap As Long, ByVal ApplyChanges As Boolean)
 
 Dim lApplyChanges As Long
 
    If (ApplyChanges) Then
       lApplyChanges = 1
    End If
-   Call FreeImage_UnlockPageInt(BITMAP, PageBitmap, lApplyChanges)
+   Call FreeImage_UnlockPageInt(Bitmap, PageBitmap, lApplyChanges)
 
 End Sub
 
-Public Function FreeImage_RotateEx(ByVal BITMAP As Long, _
+Public Function FreeImage_RotateEx(ByVal Bitmap As Long, _
                                    ByVal Angle As Double, _
                           Optional ByVal ShiftX As Double, _
                           Optional ByVal ShiftY As Double, _
@@ -2818,11 +2837,11 @@ Public Function FreeImage_RotateEx(ByVal BITMAP As Long, _
     Dim lUseMask As Long
 
     If UseMask Then lUseMask = 1 Else lUseMask = 0
-    FreeImage_RotateEx = FreeImage_RotateExInt(BITMAP, Angle, ShiftX, ShiftY, OriginX, OriginY, lUseMask)
+    FreeImage_RotateEx = FreeImage_RotateExInt(Bitmap, Angle, ShiftX, ShiftY, OriginX, OriginY, lUseMask)
 
 End Function
 
-Public Function FreeImage_MakeThumbnail(ByVal BITMAP As Long, _
+Public Function FreeImage_MakeThumbnail(ByVal Bitmap As Long, _
                                         ByVal MaxPixelSize As Long, _
                                Optional ByVal Convert As Boolean) As Long
 
@@ -2831,7 +2850,7 @@ Dim lConvert As Long
    If (Convert) Then
       lConvert = 1
    End If
-   FreeImage_MakeThumbnail = FreeImage_MakeThumbnailInt(BITMAP, MaxPixelSize, lConvert)
+   FreeImage_MakeThumbnail = FreeImage_MakeThumbnailInt(Bitmap, MaxPixelSize, lConvert)
 
 End Function
 
@@ -2846,7 +2865,7 @@ Public Function FreeImage_ConvertFromRawBitsEx(ByVal CopySource As Boolean, _
                                       Optional ByVal RedMask As Long, _
                                       Optional ByVal GreenMask As Long, _
                                       Optional ByVal BlueMask As Long, _
-                                      Optional ByVal TopDown As Boolean) As Long
+                                      Optional ByVal TopDown As Boolean = False) As Long
     
     'Convert incoming VB booleans to C-style booleans
     Dim lCopySource As Long, lTopDown As Long
@@ -2859,25 +2878,25 @@ Public Function FreeImage_ConvertFromRawBitsEx(ByVal CopySource As Boolean, _
 
 End Function
 
-Public Function FreeImage_ConvertToStandardType(ByVal BITMAP As Long, _
+Public Function FreeImage_ConvertToStandardType(ByVal Bitmap As Long, _
                                        Optional ByVal ScaleLinear As Boolean = True) As Long
                                        
    If (ScaleLinear) Then
-      FreeImage_ConvertToStandardType = FreeImage_ConvertToStandardTypeInt(BITMAP, 1)
+      FreeImage_ConvertToStandardType = FreeImage_ConvertToStandardTypeInt(Bitmap, 1)
    Else
-      FreeImage_ConvertToStandardType = FreeImage_ConvertToStandardTypeInt(BITMAP, 0)
+      FreeImage_ConvertToStandardType = FreeImage_ConvertToStandardTypeInt(Bitmap, 0)
    End If
    
 End Function
 
-Public Function FreeImage_ConvertToType(ByVal BITMAP As Long, _
+Public Function FreeImage_ConvertToType(ByVal Bitmap As Long, _
                                         ByVal DestinationType As FREE_IMAGE_TYPE, _
                                Optional ByVal ScaleLinear As Boolean = True) As Long
                                        
    If (ScaleLinear) Then
-      FreeImage_ConvertToType = FreeImage_ConvertToTypeInt(BITMAP, DestinationType, 1)
+      FreeImage_ConvertToType = FreeImage_ConvertToTypeInt(Bitmap, DestinationType, 1)
    Else
-      FreeImage_ConvertToType = FreeImage_ConvertToTypeInt(BITMAP, DestinationType, 0)
+      FreeImage_ConvertToType = FreeImage_ConvertToTypeInt(Bitmap, DestinationType, 0)
    End If
    
 End Function
@@ -2930,14 +2949,14 @@ End Function
 ' with arrays
 '--------------------------------------------------------------------------------
 
-Public Sub FreeImage_UnloadEx(ByRef BITMAP As Long)
+Public Sub FreeImage_UnloadEx(ByRef Bitmap As Long)
 
    ' Extended version of FreeImage_Unload, which additionally sets the
    ' passed Bitmap handle to zero after unloading.
 
-   If (BITMAP <> 0) Then
-      Call FreeImage_Unload(BITMAP)
-      BITMAP = 0
+   If (Bitmap <> 0) Then
+      Call FreeImage_Unload(Bitmap)
+      Bitmap = 0
    End If
 
 End Sub
@@ -3078,7 +3097,7 @@ Public Function FreeImage_LoadFromMemoryEx_Tanner(ByVal DataPtr As Long, ByVal s
 End Function
 
 Public Function FreeImage_SaveToMemoryEx(ByVal Format As FREE_IMAGE_FORMAT, _
-                                         ByVal BITMAP As Long, _
+                                         ByVal Bitmap As Long, _
                                          ByRef Data() As Byte, _
                                 Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS, _
                                 Optional ByVal UnloadSource As Boolean) As Boolean
@@ -3104,16 +3123,16 @@ Dim lSizeInBytes As Long
    ' The function returns True on success and False otherwise.
    
    
-   If (BITMAP) Then
+   If (Bitmap) Then
    
-      If (Not FreeImage_HasPixels(BITMAP)) Then
+      If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                         "Unable to save a 'header-only' bitmap.")
       End If
    
       hStream = FreeImage_OpenMemory()
       If (hStream) Then
-         FreeImage_SaveToMemoryEx = FreeImage_SaveToMemory(Format, BITMAP, hStream, Flags)
+         FreeImage_SaveToMemoryEx = FreeImage_SaveToMemory(Format, Bitmap, hStream, Flags)
          
          If (FreeImage_SaveToMemoryEx) Then
             If (FreeImage_AcquireMemoryInt(hStream, lpData, lSizeInBytes)) Then
@@ -3143,14 +3162,14 @@ Dim lSizeInBytes As Long
       End If
       
       If (UnloadSource) Then
-         Call FreeImage_Unload(BITMAP)
+         Call FreeImage_Unload(Bitmap)
       End If
    End If
 
 End Function
 
 Public Function FreeImage_SaveToMemoryEx2(ByVal Format As FREE_IMAGE_FORMAT, _
-                                          ByVal BITMAP As Long, _
+                                          ByVal Bitmap As Long, _
                                           ByRef Data() As Byte, _
                                           ByRef Stream As Long, _
                                  Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS, _
@@ -3188,9 +3207,9 @@ Public Function FreeImage_SaveToMemoryEx2(ByVal Format As FREE_IMAGE_FORMAT, _
    ' The function returns True on success and False otherwise.
 
    
-   If (BITMAP) Then
+   If (Bitmap) Then
    
-      If (Not FreeImage_HasPixels(BITMAP)) Then
+      If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                         "Unable to save a 'header-only' bitmap.")
       End If
@@ -3199,7 +3218,7 @@ Public Function FreeImage_SaveToMemoryEx2(ByVal Format As FREE_IMAGE_FORMAT, _
          Stream = FreeImage_OpenMemory()
       End If
       If (Stream) Then
-         FreeImage_SaveToMemoryEx2 = FreeImage_SaveToMemory(Format, BITMAP, Stream, Flags)
+         FreeImage_SaveToMemoryEx2 = FreeImage_SaveToMemory(Format, Bitmap, Stream, Flags)
          If (FreeImage_SaveToMemoryEx2) Then
             FreeImage_SaveToMemoryEx2 = FreeImage_AcquireMemoryEx(Stream, Data)
          End If
@@ -3213,7 +3232,7 @@ Public Function FreeImage_SaveToMemoryEx2(ByVal Format As FREE_IMAGE_FORMAT, _
       End If
       
       If (UnloadSource) Then
-         Call FreeImage_Unload(BITMAP)
+         Call FreeImage_Unload(Bitmap)
       End If
    End If
 
@@ -3583,45 +3602,45 @@ End Function
 
 ' Bitmap resolution functions
 
-Public Function FreeImage_GetResolutionX(ByVal BITMAP As Long) As Long
+Public Function FreeImage_GetResolutionX(ByVal Bitmap As Long) As Long
 
    ' This function gets a DIB's resolution in X-direction measured
    ' in 'dots per inch' (DPI) and not in 'dots per meter'.
    
-   FreeImage_GetResolutionX = Int(0.5 + 0.0254 * FreeImage_GetDotsPerMeterX(BITMAP))
+   FreeImage_GetResolutionX = Int(0.5 + 0.0254 * FreeImage_GetDotsPerMeterX(Bitmap))
 
 End Function
 
-Public Sub FreeImage_SetResolutionX(ByVal BITMAP As Long, ByVal Resolution As Long)
+Public Sub FreeImage_SetResolutionX(ByVal Bitmap As Long, ByVal Resolution As Long)
 
    ' This function sets a DIB's resolution in X-direction measured
    ' in 'dots per inch' (DPI) and not in 'dots per meter'.
 
-   Call FreeImage_SetDotsPerMeterX(BITMAP, Int(Resolution / 0.0254 + 0.5))
+   Call FreeImage_SetDotsPerMeterX(Bitmap, Int(Resolution / 0.0254 + 0.5))
 
 End Sub
 
-Public Function FreeImage_GetResolutionY(ByVal BITMAP As Long) As Long
+Public Function FreeImage_GetResolutionY(ByVal Bitmap As Long) As Long
 
    ' This function gets a DIB's resolution in Y-direction measured
    ' in 'dots per inch' (DPI) and not in 'dots per meter'.
 
-   FreeImage_GetResolutionY = Int(0.5 + 0.0254 * FreeImage_GetDotsPerMeterY(BITMAP))
+   FreeImage_GetResolutionY = Int(0.5 + 0.0254 * FreeImage_GetDotsPerMeterY(Bitmap))
 
 End Function
 
-Public Sub FreeImage_SetResolutionY(ByVal BITMAP As Long, ByVal Resolution As Long)
+Public Sub FreeImage_SetResolutionY(ByVal Bitmap As Long, ByVal Resolution As Long)
 
    ' This function sets a DIB's resolution in Y-direction measured
    ' in 'dots per inch' (DPI) and not in 'dots per meter'.
 
-   Call FreeImage_SetDotsPerMeterY(BITMAP, Int(Resolution / 0.0254 + 0.5))
+   Call FreeImage_SetDotsPerMeterY(Bitmap, Int(Resolution / 0.0254 + 0.5))
 
 End Sub
 
 ' ICC Color Profile functions
 
-Public Function FreeImage_GetICCProfile(ByVal BITMAP As Long) As FIICCPROFILE
+Public Function FreeImage_GetICCProfile(ByVal Bitmap As Long) As FIICCPROFILE
 
    ' This function is a wrapper for the FreeImage_GetICCProfile() function, returning
    ' a real FIICCPROFILE structure.
@@ -3634,12 +3653,12 @@ Public Function FreeImage_GetICCProfile(ByVal BITMAP As Long) As FIICCPROFILE
    ' wrapper function.
 
    Call CopyMemory(FreeImage_GetICCProfile, _
-                   ByVal FreeImage_GetICCProfileInt(BITMAP), _
+                   ByVal FreeImage_GetICCProfileInt(Bitmap), _
                    LenB(FreeImage_GetICCProfile))
 
 End Function
 
-Public Function FreeImage_GetICCProfileColorModel(ByVal BITMAP As Long) As FREE_IMAGE_ICC_COLOR_MODEL
+Public Function FreeImage_GetICCProfileColorModel(ByVal Bitmap As Long) As FREE_IMAGE_ICC_COLOR_MODEL
 
    ' This function is a thin wrapper around FreeImage_GetICCProfile() returning
    ' the color model in which the ICC color profile data is in, if there is actually
@@ -3649,12 +3668,12 @@ Public Function FreeImage_GetICCProfileColorModel(ByVal BITMAP As Long) As FREE_
    ' model that should (or must) be used for any color profile data to be assigned to the
    ' Bitmap. That depends on the bitmap's color type.
 
-   If (FreeImage_HasICCProfile(BITMAP)) Then
-      FreeImage_GetICCProfileColorModel = (pDeref(FreeImage_GetICCProfileInt(BITMAP)) _
+   If (FreeImage_HasICCProfile(Bitmap)) Then
+      FreeImage_GetICCProfileColorModel = (pDeref(FreeImage_GetICCProfileInt(Bitmap)) _
             And FREE_IMAGE_ICC_COLOR_MODEL_MASK)
    Else
       ' use FreeImage_GetColorType() to determine, whether this is a CMYK bitmap or not
-      If (FreeImage_GetColorType(BITMAP) = FIC_CMYK) Then
+      If (FreeImage_GetColorType(Bitmap) = FIC_CMYK) Then
          FreeImage_GetICCProfileColorModel = FIICC_COLOR_MODEL_CMYK
       Else
          FreeImage_GetICCProfileColorModel = FIICC_COLOR_MODEL_RGB
@@ -3663,39 +3682,39 @@ Public Function FreeImage_GetICCProfileColorModel(ByVal BITMAP As Long) As FREE_
 
 End Function
 
-Public Function FreeImage_GetICCProfileSize(ByVal BITMAP As Long) As Long
+Public Function FreeImage_GetICCProfileSize(ByVal Bitmap As Long) As Long
 
    ' This function is a thin wrapper around FreeImage_GetICCProfile() returning
    ' only the size in bytes of the ICC profile data for the Bitmap specified or zero,
    ' if there is no ICC profile data for the Bitmap.
 
-   FreeImage_GetICCProfileSize = pDeref(FreeImage_GetICCProfileInt(BITMAP) + 4)
+   FreeImage_GetICCProfileSize = pDeref(FreeImage_GetICCProfileInt(Bitmap) + 4)
 
 End Function
 
-Public Function FreeImage_GetICCProfileDataPointer(ByVal BITMAP As Long) As Long
+Public Function FreeImage_GetICCProfileDataPointer(ByVal Bitmap As Long) As Long
 
    ' This function is a thin wrapper around FreeImage_GetICCProfile() returning
    ' only the pointer (the address) of the ICC profile data for the Bitmap specified,
    ' or zero if there is no ICC profile data for the Bitmap.
 
-   FreeImage_GetICCProfileDataPointer = pDeref(FreeImage_GetICCProfileInt(BITMAP) + 8)
+   FreeImage_GetICCProfileDataPointer = pDeref(FreeImage_GetICCProfileInt(Bitmap) + 8)
 
 End Function
 
-Public Function FreeImage_HasICCProfile(ByVal BITMAP As Long) As Boolean
+Public Function FreeImage_HasICCProfile(ByVal Bitmap As Long) As Boolean
 
    ' This function is a thin wrapper around FreeImage_GetICCProfile() returning
    ' True, if there is an ICC color profile available for the Bitmap specified or
    ' returns False otherwise.
 
-   FreeImage_HasICCProfile = (FreeImage_GetICCProfileSize(BITMAP) <> 0)
+   FreeImage_HasICCProfile = (FreeImage_GetICCProfileSize(Bitmap) <> 0)
 
 End Function
 
 ' Image color depth conversion wrapper
 
-Public Function FreeImage_GetPaletteEx(ByVal BITMAP As Long) As RGBQUAD()
+Public Function FreeImage_GetPaletteEx(ByVal Bitmap As Long) As RGBQUAD()
 
 Dim tSA As SAVEARRAY1D
 Dim lpSA As Long
@@ -3744,19 +3763,19 @@ Dim lpSA As Long
    ' the FreeImage_DestroyLockedArrayRGBQUAD() function.
    
    
-   If (BITMAP) Then
+   If (Bitmap) Then
       
       ' create a proper SAVEARRAY descriptor
       With tSA
          .cbElements = 4                              ' size in bytes of RGBQUAD structure
          .cDims = 1                                   ' the array has only 1 dimension
-         .cElements = FreeImage_GetColorsUsed(BITMAP) ' the number of elements in the array is
+         .cElements = FreeImage_GetColorsUsed(Bitmap) ' the number of elements in the array is
                                                       ' the number of used colors in the Bitmap
          .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE     ' need AUTO and FIXEDSIZE for safety issues,
                                                       ' so the array can not be modified in size
                                                       ' or erased; according to Matthew Curland never
                                                       ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetPalette(BITMAP)       ' let the array point to the memory block, the
+         .pvData = FreeImage_GetPalette(Bitmap)       ' let the array point to the memory block, the
                                                       ' FreeImage palette pointer points to
       End With
       
@@ -3782,7 +3801,7 @@ Dim lpSA As Long
 
 End Function
 
-Public Function FreeImage_IsGreyscaleImage(ByVal BITMAP As Long) As Boolean
+Public Function FreeImage_IsGreyscaleImage(ByVal Bitmap As Long) As Boolean
 
 Dim atRGB() As RGBQUAD
 Dim i As Long
@@ -3806,10 +3825,10 @@ Dim i As Long
    ' an image in greyscale fashion. Maybe the problem will be solved in the
    ' FreeImage library one day.
 
-   Select Case FreeImage_GetBPP(BITMAP)
+   Select Case FreeImage_GetBPP(Bitmap)
    
    Case 1, 4, 8
-      atRGB = FreeImage_GetPaletteEx(BITMAP)
+      atRGB = FreeImage_GetPaletteEx(Bitmap)
       FreeImage_IsGreyscaleImage = True
       For i = 0 To UBound(atRGB)
          With atRGB(i)
@@ -3824,7 +3843,7 @@ Dim i As Long
 
 End Function
 
-Public Function FreeImage_ConvertColorDepth(ByVal BITMAP As Long, _
+Public Function FreeImage_ConvertColorDepth(ByVal Bitmap As Long, _
                                             ByVal Conversion As FREE_IMAGE_CONVERSION_FLAGS, _
                                    Optional ByVal UnloadSource As Boolean, _
                                    Optional ByVal Threshold As Byte = 128, _
@@ -3854,11 +3873,11 @@ Dim bForceLinearRamp As Boolean
    ' pointer. There is no more need for a second DIB variable at the caller's site.
    
    bForceLinearRamp = ((Conversion And FICF_REORDER_GREYSCALE_PALETTE) = 0)
-   lBPP = FreeImage_GetBPP(BITMAP)
+   lBPP = FreeImage_GetBPP(Bitmap)
 
-   If (BITMAP) Then
+   If (Bitmap) Then
    
-      If (Not FreeImage_HasPixels(BITMAP)) Then
+      If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                         "Unable to convert a 'header-only' bitmap.")
       End If
@@ -3867,12 +3886,12 @@ Dim bForceLinearRamp As Boolean
       
       Case FICF_MONOCHROME_THRESHOLD
          If (lBPP > 1) Then
-            hDIBNew = FreeImage_Threshold(BITMAP, Threshold)
+            hDIBNew = FreeImage_Threshold(Bitmap, Threshold)
          End If
 
       Case FICF_MONOCHROME_DITHER
          If (lBPP > 1) Then
-            hDIBNew = FreeImage_Dither(BITMAP, DitherMethod)
+            hDIBNew = FreeImage_Dither(Bitmap, DitherMethod)
          End If
       
       Case FICF_GREYSCALE_4BPP
@@ -3880,19 +3899,19 @@ Dim bForceLinearRamp As Boolean
             ' If the color depth is 1 bpp and the we don't have a linear ramp palette
             ' the bitmap is first converted to an 8 bpp greyscale bitmap with a linear
             ' ramp palette and then to 4 bpp.
-            If ((lBPP = 1) And (FreeImage_GetColorType(BITMAP) = FIC_PALETTE)) Then
-               hDIBTemp = BITMAP
-               BITMAP = FreeImage_ConvertToGreyscale(BITMAP)
+            If ((lBPP = 1) And (FreeImage_GetColorType(Bitmap) = FIC_PALETTE)) Then
+               hDIBTemp = Bitmap
+               Bitmap = FreeImage_ConvertToGreyscale(Bitmap)
                Call FreeImage_Unload(hDIBTemp)
             End If
-            hDIBNew = FreeImage_ConvertTo4Bits(BITMAP)
+            hDIBNew = FreeImage_ConvertTo4Bits(Bitmap)
          Else
             ' The bitmap is already 4 bpp but may not have a linear ramp.
             ' If we force a linear ramp the bitmap is converted to 8 bpp with a linear ramp
             ' and then back to 4 bpp.
-            If (((Not bForceLinearRamp) And (Not FreeImage_IsGreyscaleImage(BITMAP))) Or _
-                (bForceLinearRamp And (FreeImage_GetColorType(BITMAP) = FIC_PALETTE))) Then
-               hDIBTemp = FreeImage_ConvertToGreyscale(BITMAP)
+            If (((Not bForceLinearRamp) And (Not FreeImage_IsGreyscaleImage(Bitmap))) Or _
+                (bForceLinearRamp And (FreeImage_GetColorType(Bitmap) = FIC_PALETTE))) Then
+               hDIBTemp = FreeImage_ConvertToGreyscale(Bitmap)
                hDIBNew = FreeImage_ConvertTo4Bits(hDIBTemp)
                Call FreeImage_Unload(hDIBTemp)
             End If
@@ -3900,9 +3919,9 @@ Dim bForceLinearRamp As Boolean
             
       Case FICF_GREYSCALE_8BPP
          ' Convert, if the bitmap is not at 8 bpp or does not have a linear ramp palette.
-         If ((lBPP <> 8) Or (((Not bForceLinearRamp) And (Not FreeImage_IsGreyscaleImage(BITMAP))) Or _
-                             (bForceLinearRamp And (FreeImage_GetColorType(BITMAP) = FIC_PALETTE)))) Then
-            hDIBNew = FreeImage_ConvertToGreyscale(BITMAP)
+         If ((lBPP <> 8) Or (((Not bForceLinearRamp) And (Not FreeImage_IsGreyscaleImage(Bitmap))) Or _
+                             (bForceLinearRamp And (FreeImage_GetColorType(Bitmap) = FIC_PALETTE)))) Then
+            hDIBNew = FreeImage_ConvertToGreyscale(Bitmap)
          End If
          
       Case FICF_PALLETISED_8BPP
@@ -3913,9 +3932,9 @@ Dim bForceLinearRamp As Boolean
             ' converted with the FreeImage_ColorQuantize function;
             ' other images need to be converted to 24 bits first
             If (lBPP = 24) Then
-               hDIBNew = FreeImage_ColorQuantize(BITMAP, QuantizeMethod)
+               hDIBNew = FreeImage_ColorQuantize(Bitmap, QuantizeMethod)
             Else
-               hDIBTemp = FreeImage_ConvertTo24Bits(BITMAP)
+               hDIBTemp = FreeImage_ConvertTo24Bits(Bitmap)
                hDIBNew = FreeImage_ColorQuantize(hDIBTemp, QuantizeMethod)
                Call FreeImage_Unload(hDIBTemp)
             End If
@@ -3923,22 +3942,22 @@ Dim bForceLinearRamp As Boolean
          
       Case FICF_RGB_15BPP
          If (lBPP <> 15) Then
-            hDIBNew = FreeImage_ConvertTo16Bits555(BITMAP)
+            hDIBNew = FreeImage_ConvertTo16Bits555(Bitmap)
          End If
       
       Case FICF_RGB_16BPP
          If (lBPP <> 16) Then
-            hDIBNew = FreeImage_ConvertTo16Bits565(BITMAP)
+            hDIBNew = FreeImage_ConvertTo16Bits565(Bitmap)
          End If
       
       Case FICF_RGB_24BPP
          If (lBPP <> 24) Then
-            hDIBNew = FreeImage_ConvertTo24Bits(BITMAP)
+            hDIBNew = FreeImage_ConvertTo24Bits(Bitmap)
          End If
       
       Case FICF_RGB_32BPP
          If (lBPP <> 32) Then
-            hDIBNew = FreeImage_ConvertTo32Bits(BITMAP)
+            hDIBNew = FreeImage_ConvertTo32Bits(Bitmap)
          End If
       
       End Select
@@ -3946,17 +3965,17 @@ Dim bForceLinearRamp As Boolean
       If (hDIBNew) Then
          FreeImage_ConvertColorDepth = hDIBNew
          If (UnloadSource) Then
-            Call FreeImage_Unload(BITMAP)
+            Call FreeImage_Unload(Bitmap)
          End If
       Else
-         FreeImage_ConvertColorDepth = BITMAP
+         FreeImage_ConvertColorDepth = Bitmap
       End If
    
    End If
 
 End Function
 
-Public Function FreeImage_ColorQuantizeEx(ByVal BITMAP As Long, _
+Public Function FreeImage_ColorQuantizeEx(ByVal Bitmap As Long, _
                                  Optional ByVal QuantizeMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT, _
                                  Optional ByVal UnloadSource As Boolean, _
                                  Optional ByVal PaletteSize As Long = 256, _
@@ -3996,16 +4015,16 @@ Dim lElementSize As Long
    '       FIQ_NNQUANT. This seems to be either a bug or an undocumented
    '       limitation of the FreeImage library (up to version 3.11.0).
 
-   If (BITMAP) Then
+   If (Bitmap) Then
    
-      If (Not FreeImage_HasPixels(BITMAP)) Then
+      If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                         "Unable to quantize a 'header-only' bitmap.")
       End If
       
-      If (FreeImage_GetBPP(BITMAP) <> 24) Then
-         hTmp = BITMAP
-         BITMAP = FreeImage_ConvertTo24Bits(BITMAP)
+      If (FreeImage_GetBPP(Bitmap) <> 24) Then
+         hTmp = Bitmap
+         Bitmap = FreeImage_ConvertTo24Bits(Bitmap)
          If (UnloadSource) Then
             Call FreeImage_Unload(hTmp)
          End If
@@ -4020,11 +4039,11 @@ Dim lElementSize As Long
       End If
       
       lpPalette = pGetMemoryBlockPtrFromVariant(ReservePalette, lBlockSize, lElementSize)
-      FreeImage_ColorQuantizeEx = FreeImage_ColorQuantizeExInt(BITMAP, QuantizeMethod, _
+      FreeImage_ColorQuantizeEx = FreeImage_ColorQuantizeExInt(Bitmap, QuantizeMethod, _
             PaletteSize, ReserveSize, lpPalette)
       
       If (UnloadSource) Then
-         Call FreeImage_Unload(BITMAP)
+         Call FreeImage_Unload(Bitmap)
       End If
    End If
 
@@ -4032,7 +4051,7 @@ End Function
 
 ' Image Rescale wrapper functions
 
-Public Function FreeImage_RescaleEx(ByVal BITMAP As Long, _
+Public Function FreeImage_RescaleEx(ByVal Bitmap As Long, _
                            Optional ByVal Width As Variant, _
                            Optional ByVal Height As Variant, _
                            Optional ByVal IsPercentValue As Boolean, _
@@ -4094,9 +4113,9 @@ Dim hDIBNew As Long
    ' callable through three different functions called 'FreeImage_RescaleByPixel',
    ' 'FreeImage_RescaleByPercent' and 'FreeImage_RescaleByFactor'.
    
-   If (BITMAP) Then
+   If (Bitmap) Then
    
-      If (Not FreeImage_HasPixels(BITMAP)) Then
+      If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                         "Unable to rescale a 'header-only' bitmap.")
       End If
@@ -4105,7 +4124,7 @@ Dim hDIBNew As Long
          Select Case VarType(Width)
          
          Case vbDouble, vbSingle, vbDecimal, vbCurrency
-            lNewWidth = FreeImage_GetWidth(BITMAP) * Width
+            lNewWidth = FreeImage_GetWidth(Bitmap) * Width
             If (IsPercentValue) Then
                lNewWidth = lNewWidth / 100
             End If
@@ -4120,7 +4139,7 @@ Dim hDIBNew As Long
          Select Case VarType(Height)
          
          Case vbDouble, vbSingle, vbDecimal
-            lNewHeight = FreeImage_GetHeight(BITMAP) * Height
+            lNewHeight = FreeImage_GetHeight(Bitmap) * Height
             If (IsPercentValue) Then
                lNewHeight = lNewHeight / 100
             End If
@@ -4133,26 +4152,26 @@ Dim hDIBNew As Long
       
       If ((lNewWidth > 0) And (lNewHeight > 0)) Then
          If (ForceCloneCreation) Then
-            hDIBNew = FreeImage_Rescale(BITMAP, lNewWidth, lNewHeight, Filter)
+            hDIBNew = FreeImage_Rescale(Bitmap, lNewWidth, lNewHeight, Filter)
          
-         ElseIf ((lNewWidth <> FreeImage_GetWidth(BITMAP)) Or _
-                 (lNewHeight <> FreeImage_GetHeight(BITMAP))) Then
-            hDIBNew = FreeImage_Rescale(BITMAP, lNewWidth, lNewHeight, Filter)
+         ElseIf ((lNewWidth <> FreeImage_GetWidth(Bitmap)) Or _
+                 (lNewHeight <> FreeImage_GetHeight(Bitmap))) Then
+            hDIBNew = FreeImage_Rescale(Bitmap, lNewWidth, lNewHeight, Filter)
          
          End If
           
       ElseIf (lNewWidth > 0) Then
-         If ((lNewWidth <> FreeImage_GetWidth(BITMAP)) Or _
+         If ((lNewWidth <> FreeImage_GetWidth(Bitmap)) Or _
              (ForceCloneCreation)) Then
-            lNewHeight = lNewWidth / (FreeImage_GetWidth(BITMAP) / FreeImage_GetHeight(BITMAP))
-            hDIBNew = FreeImage_Rescale(BITMAP, lNewWidth, lNewHeight, Filter)
+            lNewHeight = lNewWidth / (FreeImage_GetWidth(Bitmap) / FreeImage_GetHeight(Bitmap))
+            hDIBNew = FreeImage_Rescale(Bitmap, lNewWidth, lNewHeight, Filter)
          End If
       
       ElseIf (lNewHeight > 0) Then
-         If ((lNewHeight <> FreeImage_GetHeight(BITMAP)) Or _
+         If ((lNewHeight <> FreeImage_GetHeight(Bitmap)) Or _
              (ForceCloneCreation)) Then
-            lNewWidth = lNewHeight * (FreeImage_GetWidth(BITMAP) / FreeImage_GetHeight(BITMAP))
-            hDIBNew = FreeImage_Rescale(BITMAP, lNewWidth, lNewHeight, Filter)
+            lNewWidth = lNewHeight * (FreeImage_GetWidth(Bitmap) / FreeImage_GetHeight(Bitmap))
+            hDIBNew = FreeImage_Rescale(Bitmap, lNewWidth, lNewHeight, Filter)
          End If
       
       End If
@@ -4160,16 +4179,16 @@ Dim hDIBNew As Long
       If (hDIBNew) Then
          FreeImage_RescaleEx = hDIBNew
          If (UnloadSource) Then
-            Call FreeImage_Unload(BITMAP)
+            Call FreeImage_Unload(Bitmap)
          End If
       Else
-         FreeImage_RescaleEx = BITMAP
+         FreeImage_RescaleEx = Bitmap
       End If
    End If
                      
 End Function
 
-Public Function FreeImage_RescaleByPixel(ByVal BITMAP As Long, _
+Public Function FreeImage_RescaleByPixel(ByVal Bitmap As Long, _
                                 Optional ByVal WidthInPixels As Long, _
                                 Optional ByVal HeightInPixels As Long, _
                                 Optional ByVal UnloadSource As Boolean, _
@@ -4180,7 +4199,7 @@ Public Function FreeImage_RescaleByPixel(ByVal BITMAP As Long, _
    ' overload fake. This function rescales the image directly to the size
    ' specified by the 'WidthInPixels' and 'HeightInPixels' parameters.
 
-   FreeImage_RescaleByPixel = FreeImage_RescaleEx(BITMAP, WidthInPixels, HeightInPixels, False, _
+   FreeImage_RescaleByPixel = FreeImage_RescaleEx(Bitmap, WidthInPixels, HeightInPixels, False, _
          UnloadSource, Filter, ForceCloneCreation)
 
 End Function
@@ -4189,7 +4208,7 @@ End Function
 ' Painting functions
 
 Public Function FreeImage_PaintDC(ByVal hDC As Long, _
-                                  ByVal BITMAP As Long, _
+                                  ByVal Bitmap As Long, _
                          Optional ByVal xDst As Long, _
                          Optional ByVal yDst As Long, _
                          Optional ByVal xSrc As Long, _
@@ -4207,29 +4226,29 @@ Public Function FreeImage_PaintDC(ByVal hDC As Long, _
    ' If any of parameters 'Width' and 'Height' is zero, it is transparently substituted
    ' by the width or height of teh bitmap to be drawn, resprectively.
    
-   If ((hDC <> 0) And (BITMAP <> 0)) Then
+   If ((hDC <> 0) And (Bitmap <> 0)) Then
    
-      If (Not FreeImage_HasPixels(BITMAP)) Then
+      If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                         "Unable to paint a 'header-only' bitmap.")
       End If
             
       If (Width = 0) Then
-         Width = FreeImage_GetWidth(BITMAP)
+         Width = FreeImage_GetWidth(Bitmap)
       End If
       
       If (Height = 0) Then
-         Height = FreeImage_GetHeight(BITMAP)
+         Height = FreeImage_GetHeight(Bitmap)
       End If
       
       FreeImage_PaintDC = SetDIBitsToDevice(hDC, xDst, yDst - ySrc, Width, Height, xSrc, ySrc, 0, _
-            Height, FreeImage_GetBits(BITMAP), FreeImage_GetInfo(BITMAP), DIB_RGB_COLORS)
+            Height, FreeImage_GetBits(Bitmap), FreeImage_GetInfo(Bitmap), DIB_RGB_COLORS)
    End If
 
 End Function
 
 Public Function FreeImage_PaintDCEx(ByVal hDC As Long, _
-                                    ByVal BITMAP As Long, _
+                                    ByVal Bitmap As Long, _
                            Optional ByVal xDst As Long, _
                            Optional ByVal yDst As Long, _
                            Optional ByVal WidthDst As Long, _
@@ -4251,9 +4270,9 @@ Dim eLastStretchMode As STRETCH_MODE
    ' that this function supports both mirroring and stretching of the image to be
    ' painted and so, is somewhat slower than 'FreeImage_PaintDC'.
    
-   If ((hDC <> 0) And (BITMAP <> 0)) Then
+   If ((hDC <> 0) And (Bitmap <> 0)) Then
    
-      If (Not FreeImage_HasPixels(BITMAP)) Then
+      If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                         "Unable to paint a 'header-only' bitmap.")
       End If
@@ -4262,14 +4281,14 @@ Dim eLastStretchMode As STRETCH_MODE
       Call SetStretchBltMode(hDC, StretchMode)
       
       If (WidthSrc = 0) Then
-         WidthSrc = FreeImage_GetWidth(BITMAP)
+         WidthSrc = FreeImage_GetWidth(Bitmap)
       End If
       If (WidthDst = 0) Then
          WidthDst = WidthSrc
       End If
       
       If (HeightSrc = 0) Then
-         HeightSrc = FreeImage_GetHeight(BITMAP)
+         HeightSrc = FreeImage_GetHeight(Bitmap)
       End If
       If (HeightDst = 0) Then
          HeightDst = HeightSrc
@@ -4286,7 +4305,7 @@ Dim eLastStretchMode As STRETCH_MODE
       End If
 
       Call StretchDIBits(hDC, xDst, yDst, WidthDst, HeightDst, xSrc, ySrc, WidthSrc, HeightSrc, _
-            FreeImage_GetBits(BITMAP), FreeImage_GetInfo(BITMAP), DIB_RGB_COLORS, _
+            FreeImage_GetBits(Bitmap), FreeImage_GetInfo(Bitmap), DIB_RGB_COLORS, _
             RasterOperator)
       
       ' restore last mode
@@ -4296,7 +4315,7 @@ Dim eLastStretchMode As STRETCH_MODE
 End Function
 
 
-Public Function FreeImage_GetTransparencyTableEx(ByVal BITMAP As Long) As Byte()
+Public Function FreeImage_GetTransparencyTableEx(ByVal Bitmap As Long) As Byte()
 
 Dim tSA As SAVEARRAY1D
 Dim lpSA As Long
@@ -4342,19 +4361,19 @@ Dim lpSA As Long
    ' the FreeImage_DestroyLockedArray() function.
    
    
-   If (BITMAP) Then
+   If (Bitmap) Then
       
       ' create a proper SAVEARRAY descriptor
       With tSA
          .cbElements = 1                                     ' size in bytes of a byte element
          .cDims = 1                                          ' the array has only 1 dimension
-         .cElements = FreeImage_GetTransparencyCount(BITMAP) ' the number of elements in the array is
+         .cElements = FreeImage_GetTransparencyCount(Bitmap) ' the number of elements in the array is
                                                              ' equal to the number transparency table entries
          .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE            ' need AUTO and FIXEDSIZE for safety issues,
                                                              ' so the array can not be modified in size
                                                              ' or erased; according to Matthew Curland never
                                                              ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetTransparencyTable(BITMAP)    ' let the array point to the memory block, the
+         .pvData = FreeImage_GetTransparencyTable(Bitmap)    ' let the array point to the memory block, the
                                                              ' FreeImage transparency table pointer points to
       End With
       
@@ -4381,7 +4400,7 @@ Dim lpSA As Long
 End Function
 
 Public Function FreeImage_PaintTransparent(ByVal hDC As Long, _
-                                           ByVal BITMAP As Long, _
+                                           ByVal Bitmap As Long, _
                                   Optional ByVal xDst As Long = 0, _
                                   Optional ByVal yDst As Long = 0, _
                                   Optional ByVal WidthDst As Long, _
@@ -4434,16 +4453,16 @@ Dim bIsTransparent As Boolean
    ' paint the image fully opaque. The 'Alpha' value controls, how the non per-pixel
    ' portions of the image will be drawn.
                                   
-   If ((hDC <> 0) And (BITMAP <> 0)) Then
+   If ((hDC <> 0) And (Bitmap <> 0)) Then
    
-      If (Not FreeImage_HasPixels(BITMAP)) Then
+      If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                         "Unable to paint a 'header-only' bitmap.")
       End If
    
       ' get image width if not specified
       If (WidthSrc = 0) Then
-         WidthSrc = FreeImage_GetWidth(BITMAP)
+         WidthSrc = FreeImage_GetWidth(Bitmap)
       End If
       If (WidthDst = 0) Then
          WidthDst = WidthSrc
@@ -4451,13 +4470,13 @@ Dim bIsTransparent As Boolean
       
       ' get image height if not specified
       If (HeightSrc = 0) Then
-         HeightSrc = FreeImage_GetHeight(BITMAP)
+         HeightSrc = FreeImage_GetHeight(Bitmap)
       End If
       If (HeightDst = 0) Then
          HeightDst = HeightSrc
       End If
       
-      lpPalette = FreeImage_GetPalette(BITMAP)
+      lpPalette = FreeImage_GetPalette(Bitmap)
       If (lpPalette) Then
       
          Dim lPaletteSize As Long
@@ -4467,10 +4486,10 @@ Dim bIsTransparent As Boolean
          Dim abTT() As Byte
          Dim i As Long
          
-         lPaletteSize = FreeImage_GetColorsUsed(BITMAP) * 4
+         lPaletteSize = FreeImage_GetColorsUsed(Bitmap) * 4
          Call CopyMemory(alPalOrg(0), ByVal lpPalette, lPaletteSize)
          Call CopyMemory(alPalMod(0), ByVal lpPalette, lPaletteSize)
-         abTT = FreeImage_GetTransparencyTableEx(BITMAP)
+         abTT = FreeImage_GetTransparencyTableEx(Bitmap)
          
          If ((alpha = 255) And _
              (HeightDst >= HeightSrc) And (WidthDst >= WidthSrc)) Then
@@ -4492,8 +4511,8 @@ Dim bIsTransparent As Boolean
                Call StretchDIBits(hDC, _
                                   xDst, yDst, WidthDst, HeightDst, _
                                   xSrc, ySrc, WidthSrc, HeightSrc, _
-                                  FreeImage_GetBits(BITMAP), _
-                                  FreeImage_GetInfo(BITMAP), _
+                                  FreeImage_GetBits(Bitmap), _
+                                  FreeImage_GetInfo(Bitmap), _
                                   DIB_RGB_COLORS, SRCCOPY)
             Else
             
@@ -4502,8 +4521,8 @@ Dim bIsTransparent As Boolean
                Call StretchDIBits(hDC, _
                                   xDst, yDst, WidthDst, HeightDst, _
                                   xSrc, ySrc, WidthSrc, HeightSrc, _
-                                  FreeImage_GetBits(BITMAP), _
-                                  FreeImage_GetInfo(BITMAP), _
+                                  FreeImage_GetBits(Bitmap), _
+                                  FreeImage_GetInfo(Bitmap), _
                                   DIB_RGB_COLORS, SRCAND)
                
                ' set mask modified and paint with SRCPAINT
@@ -4511,8 +4530,8 @@ Dim bIsTransparent As Boolean
                Call StretchDIBits(hDC, _
                                   xDst, yDst, WidthDst, HeightDst, _
                                   xSrc, ySrc, WidthSrc, HeightSrc, _
-                                  FreeImage_GetBits(BITMAP), _
-                                  FreeImage_GetInfo(BITMAP), _
+                                  FreeImage_GetBits(Bitmap), _
+                                  FreeImage_GetInfo(Bitmap), _
                                   DIB_RGB_COLORS, SRCPAINT)
                                   
                ' restore original palette
@@ -4520,7 +4539,7 @@ Dim bIsTransparent As Boolean
             End If
             
             ' we are done, do not paint with AlphaBlend() any more
-            BITMAP = 0
+            Bitmap = 0
          Else
             
             ' create a premultiplied palette
@@ -4534,14 +4553,14 @@ Dim bIsTransparent As Boolean
             
             ' set premultiplied palette and convert to 32 bits
             Call CopyMemory(ByVal lpPalette, alPalMod(0), lPaletteSize)
-            BITMAP = FreeImage_ConvertTo32Bits(BITMAP)
+            Bitmap = FreeImage_ConvertTo32Bits(Bitmap)
             
             ' restore original palette
             Call CopyMemory(ByVal lpPalette, alPalOrg(0), lPaletteSize)
          End If
       End If
 
-      If (BITMAP) Then
+      If (Bitmap) Then
          Dim hMemDC As Long
          Dim hBitmap As Long
          Dim hBitmapOld As Long
@@ -4550,13 +4569,13 @@ Dim bIsTransparent As Boolean
          
          hMemDC = Drawing.GetMemoryDC()
          If (hMemDC) Then
-            hBitmap = FreeImage_GetBitmap(BITMAP, hMemDC)
+            hBitmap = FreeImage_GetBitmap(Bitmap, hMemDC)
             hBitmapOld = SelectObject(hMemDC, hBitmap)
             
             With tBF
                .BlendOp = AC_SRC_OVER
                .SourceConstantAlpha = alpha
-               If (FreeImage_GetBPP(BITMAP) = 32) Then
+               If (FreeImage_GetBPP(Bitmap) = 32) Then
                   .AlphaFormat = AC_SRC_ALPHA
                End If
             End With
@@ -4570,7 +4589,7 @@ Dim bIsTransparent As Boolean
             Call DeleteObject(hBitmap)
             Drawing.FreeMemoryDC hMemDC
             If (lpPalette) Then
-               Call FreeImage_Unload(BITMAP)
+               Call FreeImage_Unload(Bitmap)
             End If
          End If
       End If
@@ -4582,7 +4601,7 @@ End Function
 ' Pixel access functions
 '--------------------------------------------------------------------------------
 
-Public Function FreeImage_GetBitsEx(ByVal BITMAP As Long) As Byte()
+Public Function FreeImage_GetBitsEx(ByVal Bitmap As Long) As Byte()
 
 Dim tSA As SAVEARRAY2D
 Dim lpSA As Long
@@ -4596,19 +4615,19 @@ Dim lpSA As Long
    ' before it goes out of scope, the caller's array variable must be destroyed with
    ' the FreeImage_DestroyLockedArray() function.
 
-   If (BITMAP) Then
+   If (Bitmap) Then
       
       ' create a proper SAVEARRAY descriptor
       With tSA
          .cbElements = 1                           ' size in bytes per array element
          .cDims = 2                                ' the array has 2 dimensions
-         .cElements1 = FreeImage_GetHeight(BITMAP) ' the number of elements in y direction (height of Bitmap)
-         .cElements2 = FreeImage_GetPitch(BITMAP)  ' the number of elements in x direction (byte width of Bitmap)
+         .cElements1 = FreeImage_GetHeight(Bitmap) ' the number of elements in y direction (height of Bitmap)
+         .cElements2 = FreeImage_GetPitch(Bitmap)  ' the number of elements in x direction (byte width of Bitmap)
          .fFeatures = FADF_AUTO Or FADF_FIXEDSIZE  ' need AUTO and FIXEDSIZE for safety issues,
                                                    ' so the array can not be modified in size
                                                    ' or erased; according to Matthew Curland never
                                                    ' use FIXEDSIZE alone
-         .pvData = FreeImage_GetBits(BITMAP)       ' let the array point to the memory block, the
+         .pvData = FreeImage_GetBits(Bitmap)       ' let the array point to the memory block, the
                                                    ' FreeImage scanline data pointer points to
       End With
       
@@ -4640,7 +4659,7 @@ End Function
 ' HBitmap conversion functions
 '--------------------------------------------------------------------------------
 
-Public Function FreeImage_GetBitmap(ByVal BITMAP As Long, _
+Public Function FreeImage_GetBitmap(ByVal Bitmap As Long, _
                            Optional ByVal hDC As Long, _
                            Optional ByVal UnloadSource As Boolean) As Long
                                
@@ -4652,9 +4671,9 @@ Dim ppvBits As Long
    ' through the 'hDC' parameter. The desktop DC will be used, if no reference DC is
    ' specified.
 
-   If (BITMAP) Then
+   If (Bitmap) Then
    
-      If (Not FreeImage_HasPixels(BITMAP)) Then
+      If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                         "Unable to create a bitmap from a 'header-only' bitmap.")
       End If
@@ -4664,14 +4683,14 @@ Dim ppvBits As Long
          bReleaseDC = True
       End If
       If (hDC) Then
-         FreeImage_GetBitmap = CreateDIBSection(hDC, FreeImage_GetInfo(BITMAP), _
+         FreeImage_GetBitmap = CreateDIBSection(hDC, FreeImage_GetInfo(Bitmap), _
                DIB_RGB_COLORS, ppvBits, 0, 0)
          If ((FreeImage_GetBitmap <> 0) And (ppvBits <> 0)) Then
-            Call CopyMemory(ByVal ppvBits, ByVal FreeImage_GetBits(BITMAP), _
-                  FreeImage_GetHeight(BITMAP) * FreeImage_GetPitch(BITMAP))
+            Call CopyMemory(ByVal ppvBits, ByVal FreeImage_GetBits(Bitmap), _
+                  FreeImage_GetHeight(Bitmap) * FreeImage_GetPitch(Bitmap))
          End If
          If (UnloadSource) Then
-            Call FreeImage_Unload(BITMAP)
+            Call FreeImage_Unload(Bitmap)
          End If
          If (bReleaseDC) Then
             Call ReleaseDC(0, hDC)
@@ -4682,7 +4701,7 @@ Dim ppvBits As Long
 End Function
 
 
-Public Function FreeImage_GetBitmapForDevice(ByVal BITMAP As Long, _
+Public Function FreeImage_GetBitmapForDevice(ByVal Bitmap As Long, _
                                     Optional ByVal hDC As Long, _
                                     Optional ByVal UnloadSource As Boolean) As Long
                                     
@@ -4693,9 +4712,9 @@ Dim bReleaseDC As Boolean
    ' through the 'hDC' parameter. The desktop DC will be used, if no reference DC is
    ' specified.
                               
-   If (BITMAP) Then
+   If (Bitmap) Then
    
-      If (Not FreeImage_HasPixels(BITMAP)) Then
+      If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                         "Unable to create a bitmap from a 'header-only' bitmap.")
       End If
@@ -4706,11 +4725,11 @@ Dim bReleaseDC As Boolean
       End If
       If (hDC) Then
          FreeImage_GetBitmapForDevice = _
-               CreateDIBitmap(hDC, FreeImage_GetInfoHeader(BITMAP), CBM_INIT, _
-                     FreeImage_GetBits(BITMAP), FreeImage_GetInfo(BITMAP), _
+               CreateDIBitmap(hDC, FreeImage_GetInfoHeader(Bitmap), CBM_INIT, _
+                     FreeImage_GetBits(Bitmap), FreeImage_GetInfo(Bitmap), _
                            DIB_RGB_COLORS)
          If (UnloadSource) Then
-            Call FreeImage_Unload(BITMAP)
+            Call FreeImage_Unload(Bitmap)
          End If
          If (bReleaseDC) Then
             Call ReleaseDC(0, hDC)
@@ -4724,7 +4743,7 @@ End Function
 ' OlePicture conversion functions
 '--------------------------------------------------------------------------------
 
-Public Function FreeImage_GetOlePicture(ByVal BITMAP As Long, _
+Public Function FreeImage_GetOlePicture(ByVal Bitmap As Long, _
                                Optional ByVal hDC As Long, _
                                Optional ByVal UnloadSource As Boolean) As IPicture
 
@@ -4749,14 +4768,14 @@ Dim cPictureDisp As IPictureDisp
    ' FreeImage DIB to a VB Picture object. There is no need to unload the DIB
    ' at the caller's site if this argument is True.
    
-   If (BITMAP) Then
+   If (Bitmap) Then
    
-      If (Not FreeImage_HasPixels(BITMAP)) Then
+      If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                         "Unable to create a picture from a 'header-only' bitmap.")
       End If
    
-      hBitmap = FreeImage_GetBitmapForDevice(BITMAP, hDC, UnloadSource)
+      hBitmap = FreeImage_GetBitmapForDevice(Bitmap, hDC, UnloadSource)
       If (hBitmap) Then
          ' fill tPictDesc structure with necessary parts
          With tPicDesc
@@ -4994,7 +5013,7 @@ Dim hDIB As Long
 
 End Function
 
-Public Function FreeImage_SaveEx(ByVal BITMAP As Long, _
+Public Function FreeImage_SaveEx(ByVal Bitmap As Long, _
                                  ByVal FileName As String, _
                         Optional ByVal Format As FREE_IMAGE_FORMAT = FIF_UNKNOWN, _
                         Optional ByVal Options As FREE_IMAGE_SAVE_OPTIONS, _
@@ -5059,9 +5078,9 @@ Dim strExtension As String
    '          saved correctly!
 
    
-   If (BITMAP) Then
+   If (Bitmap) Then
    
-      If (Not FreeImage_HasPixels(BITMAP)) Then
+      If (Not FreeImage_HasPixels(Bitmap)) Then
          Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _
                         "Unable to save 'header-only' bitmaps.")
       End If
@@ -5069,11 +5088,11 @@ Dim strExtension As String
       If ((Not IsMissing(Width)) Or _
           (Not IsMissing(Height))) Then
           
-         lBPP = FreeImage_GetBPP(BITMAP)
-         hDIBRescale = FreeImage_RescaleEx(BITMAP, Width, Height, InPercent, UnloadSource, Filter)
-         bIsNewDIB = (hDIBRescale <> BITMAP)
-         BITMAP = hDIBRescale
-         bConvertedOnRescale = (lBPP <> FreeImage_GetBPP(BITMAP))
+         lBPP = FreeImage_GetBPP(Bitmap)
+         hDIBRescale = FreeImage_RescaleEx(Bitmap, Width, Height, InPercent, UnloadSource, Filter)
+         bIsNewDIB = (hDIBRescale <> Bitmap)
+         Bitmap = hDIBRescale
+         bConvertedOnRescale = (lBPP <> FreeImage_GetBPP(Bitmap))
       End If
       
       If (Format = FIF_UNKNOWN) Then
@@ -5101,16 +5120,16 @@ Dim strExtension As String
                                  "is unable to write images with a color depth " & _
                                  "of " & colorDepth & " bpp.")
                
-               ElseIf (FreeImage_GetBPP(BITMAP) <> colorDepth) Then
+               ElseIf (FreeImage_GetBPP(Bitmap) <> colorDepth) Then
                
-                  BITMAP = FreeImage_ConvertColorDepth(BITMAP, colorDepth, (UnloadSource Or bIsNewDIB))
+                  Bitmap = FreeImage_ConvertColorDepth(Bitmap, colorDepth, (UnloadSource Or bIsNewDIB))
                   bIsNewDIB = True
                
                End If
             Else
             
                If (lBPP = 0) Then
-                  lBPP = FreeImage_GetBPP(BITMAP)
+                  lBPP = FreeImage_GetBPP(Bitmap)
                End If
                
                If (Not FreeImage_FIFSupportsExportBPP(Format, lBPP)) Then
@@ -5128,21 +5147,21 @@ Dim strExtension As String
                   End If
                   
                   If (lBPP <> 0) Then
-                     BITMAP = FreeImage_ConvertColorDepth(BITMAP, lBPP, (UnloadSource Or bIsNewDIB))
+                     Bitmap = FreeImage_ConvertColorDepth(Bitmap, lBPP, (UnloadSource Or bIsNewDIB))
                      bIsNewDIB = True
                   End If
                
                ElseIf (bConvertedOnRescale) Then
                   ' restore original color depth
                   ' always unload current DIB here, since 'bIsNewDIB' is True
-                  BITMAP = FreeImage_ConvertColorDepth(BITMAP, lBPP, True)
+                  Bitmap = FreeImage_ConvertColorDepth(Bitmap, lBPP, True)
                   
                End If
             End If
             
-            FreeImage_SaveEx = FreeImage_Save(Format, BITMAP, FileName & strExtension, Options)
+            FreeImage_SaveEx = FreeImage_Save(Format, Bitmap, FileName & strExtension, Options)
             If ((bIsNewDIB) Or (UnloadSource)) Then
-               Call FreeImage_Unload(BITMAP)
+               Call FreeImage_Unload(Bitmap)
             End If
          Else
             Call Err.Raise(5, "MFreeImage", Error$(5) & vbCrLf & vbCrLf & _

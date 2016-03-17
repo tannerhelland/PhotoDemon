@@ -1,4 +1,4 @@
-Attribute VB_Name = "ImageLoader"
+Attribute VB_Name = "ImageImporter"
 '***************************************************************************
 'Low-level image import interfaces
 'Copyright 2001-2016 by Tanner Helland
@@ -6,10 +6,10 @@ Attribute VB_Name = "ImageLoader"
 'Last updated: 09/March/16
 'Last update: migrate various functions out of the high-level "Loading" module and into this new, format-specific module
 '
-'This module provides low-level "load" functionality for importing image files into PD.  You will not generally want
+'This module provides low-level "import" functionality for importing image files into PD.  You will not generally want
 ' to interface with this module directly; instead, rely on the high-level functions in the "Loading" module.
 ' They will intelligently drop into this module as necessary, sparing you the messy work of having to handle
-' format-specific details.
+' format-specific details (which are many).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -697,7 +697,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     
         'UNDO_EVERYTHING: a full copy of both the pdImage stack and all selection data is wanted
         Case UNDO_EVERYTHING
-            ImageLoader.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
+            ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
             pdImages(g_CurrentImage).mainSelection.readSelectionFromFile undoFile & ".selection"
             selectionDataLoaded = True
             
@@ -705,7 +705,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         '             Because the underlying file data must be of type UNDO_EVERYTHING or UNDO_IMAGE/_VECTORSAFE, we
         '             don't have to do any special processing to the file - just load the whole damn thing.
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
-            ImageLoader.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
+            ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
             
             'Once the full image has been loaded, we now know that at least the *existence* of all layers is correct.
             ' Unfortunately, subsequent changes to the pdImage header (or individual layers/layer headers) still need
@@ -719,7 +719,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         '             required, due to the messy business of non-destructively aligning the current layer stack with
         '             the layer stack described by the file.
         Case UNDO_IMAGEHEADER
-            ImageLoader.LoadPhotoDemonImageHeaderOnly undoFile, pdImages(g_CurrentImage)
+            ImageImporter.LoadPhotoDemonImageHeaderOnly undoFile, pdImages(g_CurrentImage)
             
             'Once the full image has been loaded, we now know that at least the *existence* of all layers is correct.
             ' Unfortunately, subsequent changes to the pdImage header (or individual layers/layer headers) still need
@@ -742,11 +742,11 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
             
                 'The underlying save file is a standalone layer entry.  Simply overwrite the target layer with the data from the file.
                 Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
-                    ImageLoader.LoadPhotoDemonLayer undoFile & ".layer", customLayerDestination, False
+                    ImageImporter.LoadPhotoDemonLayer undoFile & ".layer", customLayerDestination, False
             
                 'The underlying save file is a full pdImage stack.  Extract only the relevant layer data from the stack.
                 Case UNDO_EVERYTHING, UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
-                    ImageLoader.LoadSingleLayerFromPDI undoFile, customLayerDestination, targetLayerID, False
+                    ImageImporter.LoadSingleLayerFromPDI undoFile, customLayerDestination, targetLayerID, False
                 
             End Select
         
@@ -762,11 +762,11 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
                 'The underlying save file is a standalone layer entry.  Simply overwrite the target layer header with the
                 ' header data from this file.
                 Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE, UNDO_LAYERHEADER
-                    ImageLoader.LoadPhotoDemonLayer undoFile & ".layer", pdImages(g_CurrentImage).GetLayerByID(targetLayerID), True
+                    ImageImporter.LoadPhotoDemonLayer undoFile & ".layer", pdImages(g_CurrentImage).GetLayerByID(targetLayerID), True
             
                 'The underlying save file is a full pdImage stack.  Extract only the relevant layer data from the stack.
                 Case UNDO_EVERYTHING, UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE, UNDO_IMAGEHEADER
-                    ImageLoader.LoadSingleLayerFromPDI undoFile, pdImages(g_CurrentImage).GetLayerByID(targetLayerID), targetLayerID, True
+                    ImageImporter.LoadSingleLayerFromPDI undoFile, pdImages(g_CurrentImage).GetLayerByID(targetLayerID), targetLayerID, True
                 
             End Select
         
@@ -781,7 +781,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         'For now, any unhandled Undo types result in a request for the full pdImage stack.  This line can be removed when
         ' all Undo types finally have their own custom handling implemented.
         Case Else
-            ImageLoader.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
+            ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
             
         
     End Select
@@ -943,7 +943,7 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
         '
         '(TODO: settle on a single tmp file format, so we don't have to play this game??)
         Case PDIF_TMPFILE
-            CascadeLoadInternalImage = ImageLoader.CascadeLoadGenericImage(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+            CascadeLoadInternalImage = ImageImporter.CascadeLoadGenericImage(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
             dstImage.originalFileFormat = PDIF_UNKNOWN
             
     End Select

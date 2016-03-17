@@ -126,9 +126,6 @@ Public g_ProgramShuttingDown As Boolean
 'The user is attempting to close all images (necessary for handling the "repeat for all images" check box)
 Public g_ClosingAllImages As Boolean
 
-'Exported color depth
-Public g_ColorDepth As Long
-
 'Color count
 Public g_LastColorCount As Long
 
