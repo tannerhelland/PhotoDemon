@@ -2115,7 +2115,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     srcPDImage.GetCompositedImage tmpDIB, False
-    If tmpDIB.getDIBColorDepth <> 24 And imgFormat = [ImageJPEG] Then tmpDIB.CompositeBackgroundColor 255, 255, 255
+    If (tmpDIB.getDIBColorDepth <> 24) And imgFormat = [ImageJPEG] Then tmpDIB.CompositeBackgroundColor 255, 255, 255
 
     'Begin by creating a generic bitmap header for the current DIB
     Dim imgHeader As BITMAPINFO

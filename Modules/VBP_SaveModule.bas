@@ -83,12 +83,12 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     'Make sure we're not in the midst of a batch process operation
     If (MacroStatus <> MacroBATCH) Then
         
-        'If the caller did *not* specifically request a dialog, run some heuristics to see if we need one anyway
-        ' (e.g. if this the first time saving a JPEG file, we need to query the user for a Quality value)
-        If (Not forceOptionsDialog) Then
-            
-            'See if this format even supports dialogs...
-            If g_ImageFormats.IsExportDialogSupported(saveFormat) Then
+        'See if this format even supports dialogs...
+        If g_ImageFormats.IsExportDialogSupported(saveFormat) Then
+        
+            'If the caller did *not* specifically request a dialog, run some heuristics to see if we need one anyway
+            ' (e.g. if this the first time saving a JPEG file, we need to query the user for a Quality value)
+            If (Not forceOptionsDialog) Then
             
                 'See if the user has already seen this dialog...
                 dictEntry = "HasSeenExportDialog" & saveExtension
@@ -105,6 +105,10 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
                 End If
                 
             End If
+        
+        'If this format doesn't support an export dialog, forcibly reset the forceOptionsDialog parameter to match
+        Else
+            needToDisplayDialog = False
         End If
         
     Else
@@ -136,10 +140,10 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     'As saving can be somewhat lengthy for large images and/or complex formats, lock the UI now.  Note that we *must* call
     ' the "EndSaveProcess" function to release the UI lock.
     BeginSaveProcess
+    Message "Saving %1 file...", saveExtension
     
     'With all save parameters collected, we can offload the rest of the save process to per-format save functions.
     saveSuccessful = ExportToSpecificFormat(srcImage, dstPath, saveFormat, saveParameters)
-    
     If saveSuccessful Then
         
         'The file was saved successfully!  Copy the save parameters into the parent pdImage object; subsequent "save" actions
@@ -211,147 +215,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         
     End If
     
-    
     PhotoDemon_SaveImage = saveSuccessful
-    
-    
-    'END OF FUNCTION!
-    
-    '****************************************************************************************************
-    ' Determine exported color depth (for non-PDI formats)
-    '****************************************************************************************************
-
-    'The user is allowed to set a persistent preference for output color depth.  The available preferences are:
-    ' 1) Count the number of colors used, and save the file based on that (again, if possible).  This is the PD default.
-    ' 2) Prompt the user for their desired export color depth
-    '
-    Dim outputColorDepth As Long
-    
-    'PDI files do not need color depth checked, as the writer auto-detects color depth for each layer regardless of preference.
-    If saveFormat = PDIF_PDI Then
-        outputColorDepth = 32
-        
-    'The save format is not PDI.  Determine the ideal color depth.
-    Else
-    
-        'Finally, note that JPEG exporting, on account of it being somewhat specialized, ignores this step completely.
-        ' The JPEG routine will do its own scan for grayscale/color and save the proper format automatically.
-        If saveFormat <> PDIF_JPEG Then
-        
-            Dim colorDepthMode As Long
-            colorDepthMode = g_UserPreferences.GetPref_Long("Saving", "Outgoing Color Depth", 1)
-            
-            Select Case colorDepthMode
-            
-                'Prompt the user (but only if necessary).  (NOTE: only the value (0) should be used; 2 is
-                ' provided here for temporary backwards compatibility while I overhaul PD's save techniques)
-                Case 0, 2
-                
-                    'First, check to see if the save format in question supports multiple color depths
-                    If g_ImageFormats.DoesPDIFSupportMultipleColorDepths(saveFormat) Then
-                        
-                        'If it does, provide the user with a prompt to choose whatever color depth they'd like
-                        Dim dCheck As VbMsgBoxResult
-                        dCheck = PromptColorDepth(saveFormat)
-                        
-                        If dCheck = vbOK Then
-                            outputColorDepth = g_ColorDepth
-                        Else
-                            PhotoDemon_SaveImage = False
-                            Message "Save canceled."
-                            
-                            Exit Function
-                        End If
-                    
-                    'If this format only supports a single output color depth, don't bother the user with a prompt
-                    Else
-                
-                        outputColorDepth = g_ImageFormats.GetClosestColorDepth(saveFormat, srcImage.originalColorDepth)
-                
-                    End If
-                
-                'Count colors used
-                Case 1
-                
-                    'Retrieve a composited copy of the current image, which we will use to determine output color depth.
-                    Dim tmpCompositeDIB As pdDIB
-                    Set tmpCompositeDIB = New pdDIB
-                    
-                    srcImage.GetCompositedImage tmpCompositeDIB, False
-                    
-                    'Validate the composited image's alpha channel; if it is pointless, we can request 24bpp output depth.
-                    If Not DIB_Handler.IsDIBAlphaBinary(tmpCompositeDIB, False) Then tmpCompositeDIB.convertTo24bpp
-                    
-                    'Count the number of colors in the image.  (The function will automatically cease if it hits 257 colors,
-                    ' as anything above 256 colors is treated as 24bpp.)
-                    Dim colorCountCheck As Long
-                    Message "Counting image colors to determine optimal exported color depth..."
-                    
-                    If srcImage.imageID <> -1 Then
-                        colorCountCheck = getQuickColorCount(tmpCompositeDIB, srcImage.imageID)
-                    Else
-                        colorCountCheck = getQuickColorCount(tmpCompositeDIB)
-                    End If
-                    
-                    'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
-                    outputColorDepth = getColorDepthFromColorCount(colorCountCheck, tmpCompositeDIB)
-                    
-                    'A special case arises when an image has <= 256 colors, but a non-binary alpha channel.  PNG allows for
-                    ' this, but other formats do not.  Because even the PNG transformation is not lossless, set these types of
-                    ' images to be exported as 32bpp.
-                    If (outputColorDepth <= 8) And (tmpCompositeDIB.getDIBColorDepth = 32) Then
-                        
-                        If Not DIB_Handler.IsDIBAlphaBinary(tmpCompositeDIB) Then
-                            outputColorDepth = 32
-                        
-                        'PNG and GIF can write 8bpp images with a binary alpha channel.  Other formats (e.g. BMP) require 32bpp
-                        ' if any alpha whatsoever is present.
-                        Else
-                            If (saveFormat <> PDIF_GIF) And (saveFormat <> PDIF_PNG) Then outputColorDepth = 32
-                        End If
-                        
-                    End If
-                    
-                    Message "Color count successful (%1 bpp recommended)", outputColorDepth
-                    
-                    'As with case 0, we now need to see if this format supports the suggested color depth
-                    If g_ImageFormats.IsColorDepthSupported(saveFormat, outputColorDepth) Then
-                        
-                        'If it IS supported, set the original color depth as the output color depth for this save
-                        Message "Recommended color depth of %1 bpp is supported by this format.  Proceeding with save...", outputColorDepth
-                    
-                    'If it IS NOT supported, we need to find the closest available color depth for this format.
-                    Else
-                        outputColorDepth = g_ImageFormats.GetClosestColorDepth(saveFormat, outputColorDepth)
-                        Message "Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcImage.originalColorDepth, outputColorDepth
-                    
-                    End If
-                
-                    
-'                'A color depth has been explicitly specified by the forceColorDepthMethod parameter.  We can find the color depth
-'                ' by subtracting 16 from the parameter value.
-'                Case Else
-'
-'                    outputColorDepth = forceColorDepthMethod - 16
-'
-'                    'As a failsafe, make sure this format supports the suggested color depth
-'                    If g_ImageFormats.IsColorDepthSupported(saveFormat, outputColorDepth) Then
-'
-'                        'If it IS supported, set the original color depth as the output color depth for this save
-'                        Message "Requested color depth of %1 bpp is supported by this format.  Proceeding with save...", outputColorDepth
-'
-'                    'If it IS NOT supported, we need to find the closest available color depth for this format.
-'                    Else
-'                        outputColorDepth = g_ImageFormats.GetClosestColorDepth(saveFormat, outputColorDepth)
-'                        Message "Requested color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcImage.originalColorDepth, outputColorDepth
-'
-'                    End If
-                
-            End Select
-        
-        End If
-        
-    End If
     
 End Function
 
@@ -365,7 +229,10 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
     If g_ImageFormats.IsExportDialogSupported(outputPDIF) Then
         
         Select Case outputPDIF
-        
+            
+            Case PDIF_BMP
+                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptBMPSettings(srcImage, dstParamString) = vbOK)
+            
             Case PDIF_JPEG
                 GetExportParamsFromDialog = CBool(Dialog_Handler.PromptJPEGSettings(srcImage, dstParamString) = vbOK)
                 
@@ -400,6 +267,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
     
     Select Case outputPDIF
         
+        Case PDIF_BMP
+            ExportToSpecificFormat = ImageExporter.ExportBMP(srcImage, dstPath, saveParameters)
+            
         'I've commented the JPEG section as a sort of "tutorial".  Other sections should be self-explanatory.
         Case PDIF_JPEG
             
@@ -469,14 +339,11 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         Case PDIF_JXR
             ExportToSpecificFormat = SaveJXRImage(srcImage, dstPath, , saveParameters)
             
-        Case PDIF_BMP
-            ExportToSpecificFormat = SaveBMP(srcImage, dstPath, , saveParameters)
-        
         Case PDIF_HDR
-            ExportToSpecificFormat = SaveHDRImage(srcImage, dstPath)
+            ExportToSpecificFormat = ImageExporter.ExportHDR(srcImage, dstPath, saveParameters)
         
         Case PDIF_PSD
-            ExportToSpecificFormat = SavePSDImage(srcImage, dstPath)
+            ExportToSpecificFormat = ImageExporter.ExportPSD(srcImage, dstPath, saveParameters)
         
         Case Else
             Message "Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident."
@@ -486,102 +353,6 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
 
 End Function
 
-'Save the current image to BMP format
-Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, Optional ByVal outputColorDepth As Long = 24, Optional ByVal bmpParams As String = "") As Boolean
-    
-    On Error GoTo SaveBMPError
-    
-    'Parse all possible BMP parameters (at present there is only one possible parameter, which specifies RLE compression for 8bpp images)
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    If Len(bmpParams) <> 0 Then cParams.SetParamString bmpParams
-    Dim BMPCompression As Boolean
-    BMPCompression = cParams.GetBool(1, False)
-    
-    Dim sFileType As String
-    sFileType = "BMP"
-    
-    'Retrieve a composited copy of the image, at full size
-    Dim tmpImageCopy As pdDIB
-    Set tmpImageCopy = New pdDIB
-    srcPDImage.GetCompositedImage tmpImageCopy, False
-    
-    'If the output color depth is 24 or 32bpp, or if both GDI+ and FreeImage are missing, use our own internal methods
-    ' to save the BMP file.
-    If ((outputColorDepth = 24) And (tmpImageCopy.getDIBColorDepth = 24)) Or ((outputColorDepth = 32) And (tmpImageCopy.getDIBColorDepth = 32)) Or ((Not g_ImageFormats.GDIPlusEnabled) And (Not g_ImageFormats.FreeImageEnabled)) Then
-    
-        Message "Saving %1 file...", sFileType
-    
-        'The DIB class is capable of doing this without any outside help.
-        tmpImageCopy.WriteToBitmapFile BMPPath
-        
-        Message "%1 save complete.", sFileType
-        
-    'If some other color depth is specified, use FreeImage or GDI+ to write the file
-    Else
-    
-        If g_ImageFormats.FreeImageEnabled Then
-            
-            Message "Preparing %1 image...", sFileType
-            
-            'Copy the image into a temporary DIB
-            Dim tmpDIB As pdDIB
-            Set tmpDIB = New pdDIB
-            tmpDIB.createFromExistingDIB tmpImageCopy
-            
-            'If the output color depth is 24 but the current image is 32, composite the image against a white background
-            If (outputColorDepth < 32) And (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
-            
-            'Convert our current DIB to a FreeImage-type DIB
-            Dim fi_DIB As Long
-            fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
-                        
-            'If the image is being reduced from some higher bit-depth to 1bpp, manually force a conversion with dithering
-            If outputColorDepth = 1 Then fi_DIB = FreeImage_Dither(fi_DIB, FID_FS)
-            
-            'Finally, prepare some BMP save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,
-            ' request RLE encoding from FreeImage.
-            Dim BMPflags As Long
-            BMPflags = BMP_DEFAULT
-            
-            If outputColorDepth = 8 And BMPCompression Then BMPflags = BMP_SAVE_RLE
-            
-            'Use that handle to save the image to BMP format, with required color conversion based on the outgoing color depth
-            If fi_DIB <> 0 Then
-                
-                Dim fi_Check As Long
-                fi_Check = FreeImage_SaveEx(fi_DIB, BMPPath, PDIF_BMP, BMPflags, outputColorDepth, , , , , True)
-                
-                If fi_Check Then
-                    Message "%1 save complete.", sFileType
-                Else
-                    Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-                    SaveBMP = False
-                    Exit Function
-                End If
-                
-            Else
-            
-                Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-                SaveBMP = False
-                Exit Function
-                
-            End If
-            
-        Else
-            GDIPlusSavePicture srcPDImage, BMPPath, ImageBMP, outputColorDepth
-        End If
-    
-    End If
-    
-    SaveBMP = True
-    Exit Function
-    
-SaveBMPError:
-
-    SaveBMP = False
-    
-End Function
 
 'Save the current image to PhotoDemon's native PDI format
 ' TODO:
@@ -815,7 +586,7 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
     
         'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
         If DIB_Handler.IsDIBAlphaBinary(tmpDIB) Then
-            tmpDIB.applyAlphaCutoff
+            tmpDIB.ApplyAlphaCutoff
         Else
             If forceAlphaConvert = -1 Then
                 Dim alphaCheck As VbMsgBoxResult
@@ -831,14 +602,14 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
                 
                 'If it wasn't canceled, use the value it provided to apply our alpha cut-off
                 Else
-                    tmpDIB.applyAlphaCutoff g_AlphaCutoff, , g_AlphaCompositeColor
+                    tmpDIB.ApplyAlphaCutoff g_AlphaCutoff, , g_AlphaCompositeColor
                 End If
                 
                 'If the user decided to completely remove the image's alpha values, change handleAlpha to FALSE
                 If g_AlphaCutoff = 0 Then handleAlpha = False
                 
             Else
-                tmpDIB.applyAlphaCutoff forceAlphaConvert
+                tmpDIB.ApplyAlphaCutoff forceAlphaConvert
             End If
             
         End If
@@ -872,7 +643,7 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
         Dim fi_Palette() As Long
         fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
         
-        fi_Palette(palIndex) = tmpDIB.getOriginalTransparentColor()
+        fi_Palette(palIndex) = tmpDIB.GetOriginalTransparentColor()
         
     End If
     
@@ -964,23 +735,23 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         'Check to see if the current image had its colors counted before coming here.  If not, count it.
         Dim numColors As Long
         If g_LastImageScanned <> srcPDImage.imageID Then
-            numColors = getQuickColorCount(tmpDIB, srcPDImage.imageID)
+            numColors = GetQuickColorCount(tmpDIB, srcPDImage.imageID)
         Else
             numColors = g_LastColorCount
         End If
         
         'PNGQuant can handle all types of transparency for us, but if it doesn't exist, we must rely on our own routines.
-        If Not g_ImageFormats.pngQuantEnabled Then
+        If (Not g_ImageFormats.pngQuantEnabled) Then
         
             'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
             If DIB_Handler.IsDIBAlphaBinary(tmpDIB) Then
-                tmpDIB.applyAlphaCutoff
+                tmpDIB.ApplyAlphaCutoff
             Else
             
                 'If we are in the midst of a batch conversion, we don't want to bother the user with alpha dialogs.
                 ' Thus, use a default cut-off of 127 and continue on.
-                If MacroStatus = MacroBATCH Then
-                    tmpDIB.applyAlphaCutoff
+                If (MacroStatus = MacroBATCH) Then
+                    tmpDIB.ApplyAlphaCutoff
                 
                 'We're not in a batch conversion, so ask the user which cut-off they would like to use.
                 Else
@@ -998,7 +769,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
                     
                     'If it wasn't canceled, use the value it provided to apply our alpha cut-off
                     Else
-                        tmpDIB.applyAlphaCutoff g_AlphaCutoff, , g_AlphaCompositeColor
+                        tmpDIB.ApplyAlphaCutoff g_AlphaCutoff, , g_AlphaCompositeColor
                     End If
                 
                 End If
@@ -1053,7 +824,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         Dim fi_Palette() As Long
         fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
         
-        fi_Palette(palIndex) = tmpDIB.getOriginalTransparentColor()
+        fi_Palette(palIndex) = tmpDIB.GetOriginalTransparentColor()
         
     End If
         
@@ -1305,13 +1076,13 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
         
         'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
         If DIB_Handler.IsDIBAlphaBinary(tmpDIB) Then
-            tmpDIB.applyAlphaCutoff
+            tmpDIB.ApplyAlphaCutoff
         Else
         
             'If we are in the midst of a batch conversion, we don't want to bother the user with alpha dialogs.
             ' Thus, use a default cut-off of 127 and continue on.
             If MacroStatus = MacroBATCH Then
-                tmpDIB.applyAlphaCutoff
+                tmpDIB.ApplyAlphaCutoff
             
             'We're not in a batch conversion, so ask the user which cut-off they would like to use.
             Else
@@ -1329,7 +1100,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
                 
                 'If it wasn't canceled, use the value it provided to apply our alpha cut-off
                 Else
-                    tmpDIB.applyAlphaCutoff g_AlphaCutoff, , g_AlphaCompositeColor
+                    tmpDIB.ApplyAlphaCutoff g_AlphaCutoff, , g_AlphaCompositeColor
                 End If
             End If
             
@@ -1368,7 +1139,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
         Dim fi_Palette() As Long
         fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
         
-        fi_Palette(palIndex) = tmpDIB.getOriginalTransparentColor()
+        fi_Palette(palIndex) = tmpDIB.GetOriginalTransparentColor()
         
     End If
     
@@ -1622,13 +1393,13 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
         
         'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
         If DIB_Handler.IsDIBAlphaBinary(tmpDIB) Then
-            tmpDIB.applyAlphaCutoff
+            tmpDIB.ApplyAlphaCutoff
         Else
             
             'If we are in the midst of a batch conversion, we don't want to bother the user with alpha dialogs.
             ' Thus, use a default cut-off of 127 and continue on.
             If MacroStatus = MacroBATCH Then
-                tmpDIB.applyAlphaCutoff
+                tmpDIB.ApplyAlphaCutoff
             
             'We're not in a batch conversion, so ask the user which cut-off they would like to use.
             Else
@@ -1645,7 +1416,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
                 
                 'If it wasn't canceled, use the value it provided to apply our alpha cut-off
                 Else
-                    tmpDIB.applyAlphaCutoff g_AlphaCutoff, , g_AlphaCompositeColor
+                    tmpDIB.ApplyAlphaCutoff g_AlphaCutoff, , g_AlphaCompositeColor
                 End If
             End If
             
@@ -1687,7 +1458,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
         Dim fi_Palette() As Long
         fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
         
-        fi_Palette(palIndex) = tmpDIB.getOriginalTransparentColor()
+        fi_Palette(palIndex) = tmpDIB.GetOriginalTransparentColor()
         
     End If
     
@@ -1984,215 +1755,6 @@ SaveWebPError:
     
 End Function
 
-'Save an HDR (High-Dynamic Range) image
-Public Function SaveHDRImage(ByRef srcPDImage As pdImage, ByVal HDRPath As String) As Boolean
-
-    On Error GoTo SaveHDRError
-
-    Dim sFileType As String
-    sFileType = "HDR"
-
-    'Make sure we found the plug-in when we loaded the program
-    If Not g_ImageFormats.FreeImageEnabled Then
-        PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save cannot be completed without FreeImage library."
-        SaveHDRImage = False
-        Exit Function
-    End If
-    
-    Message "Preparing %1 image...", sFileType
-    
-    'Retrieve a composited copy of the image, at full size
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    srcPDImage.GetCompositedImage tmpDIB, False
-    
-    'HDR does not currently support alpha-channels, to my knowledge
-    If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.convertTo24bpp
-        
-    'Convert our current DIB to a FreeImage-type DIB
-    Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
-        
-    'Use that handle to save the image to HDR format
-    If fi_DIB <> 0 Then
-        
-        'Convert the image data to RGBF format
-        Dim fi_FloatDIB As Long
-        fi_FloatDIB = FreeImage_ConvertToRGBF(fi_DIB)
-        
-        'Unload the FreeImage copy of our DIB
-        FreeImage_Unload fi_DIB
-        
-        'If successful, save the converted image to file
-        If fi_FloatDIB = 0 Then
-            Debug.Print "HDR save failed; could not convert to RGBF"
-            SaveHDRImage = False
-            Exit Function
-        End If
-        
-        'Prior to saving, we must account for default 2.2 gamma correction.  We do this by iterating through the source, and modifying gamma
-        ' values as we go.  (If we reduce gamma prior to RGBF conversion, quality will obviously be impacted due to clipping.)
-        
-        'This Single-type array will consistently be updated to point to the current line of pixels in the image (RGBF format, remember!)
-        Dim srcImageData() As Single
-        Dim srcSA As SAFEARRAY1D
-        
-        'Iterate through each scanline in the source image, copying it to destination as we go.
-        Dim iWidth As Long, iHeight As Long, iScanWidth As Long, iLoopWidth As Long
-        iWidth = FreeImage_GetWidth(fi_FloatDIB) - 1
-        iHeight = FreeImage_GetHeight(fi_FloatDIB) - 1
-        iScanWidth = FreeImage_GetPitch(fi_FloatDIB)
-        iLoopWidth = FreeImage_GetWidth(fi_FloatDIB) * 3 - 1
-        
-        Dim srcF As Single
-        
-        Dim gammaCorrection As Double
-        gammaCorrection = 1# / (1# / 2.2)
-        
-        Dim x As Long, y As Long
-        
-        For y = 0 To iHeight
-            
-            'Point a 1D VB array at this scanline
-            With srcSA
-                .cbElements = 4
-                .cDims = 1
-                .lBound = 0
-                .cElements = iScanWidth
-                .pvData = FreeImage_GetScanline(fi_FloatDIB, y)
-            End With
-            CopyMemory ByVal VarPtrArray(srcImageData), VarPtr(srcSA), 4
-            
-            'Iterate through this line, converting values as we go
-            For x = 0 To iLoopWidth
-                
-                'Retrieve the source values
-                srcF = srcImageData(x)
-                
-                'Apply 1/2.2 gamma correction
-                If srcF > 0 Then
-                    srcF = srcF ^ gammaCorrection
-                    srcImageData(x) = srcF
-                End If
-                
-            Next x
-            
-            'Free our 1D array reference
-            CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-            
-        Next y
-        
-        
-        'With gamma properly accounted for, we can now write the image out to file.
-        Dim fi_Check As Long
-        fi_Check = FreeImage_Save(PDIF_HDR, fi_FloatDIB, HDRPath, 0)
-        
-        If fi_Check Then
-            Message "%1 save complete.", sFileType
-        Else
-        
-            Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-            SaveHDRImage = False
-            Exit Function
-            
-        End If
-        
-        'Unload the FreeImage copy of our DIB
-        FreeImage_Unload fi_FloatDIB
-        
-    Else
-    
-        Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-        SaveHDRImage = False
-        Exit Function
-        
-    End If
-    
-    SaveHDRImage = True
-    Exit Function
-        
-SaveHDRError:
-
-    SaveHDRImage = False
-        
-End Function
-
-'Save to PSD (or PSB) format using the FreeImage library
-Public Function SavePSDImage(ByRef srcPDImage As pdImage, ByVal psdPath As String, Optional ByVal outputColorDepth As Long = 32, Optional ByVal psdParams As String = "") As Boolean
-    
-    On Error GoTo SavePSDError
-    
-    'Parse all possible PSD params (unused at present; may be added someday to allow control over compression and PSB format)
-    Dim compressRLE As Boolean, usePSBFormat As Boolean
-    compressRLE = True
-    usePSBFormat = False
-    
-    Dim sFileType As String
-    If usePSBFormat Then sFileType = "PSB" Else sFileType = "PSD"
-    
-    'Make sure we found the plug-in when we loaded the program
-    If Not g_ImageFormats.FreeImageEnabled Then
-        
-        PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save cannot be completed without FreeImage library."
-        SavePSDImage = False
-        Exit Function
-        
-    End If
-    
-    Message "Preparing %1 image...", sFileType
-    
-    'Retrieve a composited copy of the image, at full size
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    srcPDImage.GetCompositedImage tmpDIB, False
-    
-    'If the output color depth is 24 but the current image is 32, composite the image against a white background
-    If (outputColorDepth < 32) And (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
-    
-    'Convert our current DIB to a FreeImage-type DIB
-    Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
-    
-    'Use that handle to export the image
-    If fi_DIB <> 0 Then
-        
-        Dim fi_Flags As Long
-        fi_Flags = 0&
-        If compressRLE Then fi_Flags = fi_Flags Or PSD_RLE Else fi_Flags = fi_Flags Or PSD_NONE
-        If usePSBFormat Then fi_Flags = fi_Flags Or PSD_PSB
-        
-        Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, psdPath, PDIF_PSD, fi_Flags, outputColorDepth, , , , , True)
-        
-        If fi_Check Then
-            Message "%1 save complete.", sFileType
-        Else
-            
-            Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-            SavePSDImage = False
-            Exit Function
-            
-        End If
-        
-    Else
-    
-        Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-        SavePSDImage = False
-        Exit Function
-        
-    End If
-    
-    SavePSDImage = True
-    Exit Function
-    
-SavePSDError:
-
-    SavePSDImage = False
-    
-End Function
-
 'Given a source and destination DIB reference, fill the destination with a post-JPEG-compression of the original.  This
 ' is used to generate the live preview used in PhotoDemon's "export JPEG" dialog.
 Public Sub FillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal JPEGQuality As Long, Optional ByVal jpegSubsample As Long = JPEG_SUBSAMPLING_422)
@@ -2202,7 +1764,7 @@ Public Sub FillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
 
     'Pass the DIB to FreeImage, which will make a copy for itself.
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+    fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB)
     
     'Prepare matching flags for FreeImage's JPEG encoder
     Dim jpegFlags As Long
@@ -2217,7 +1779,7 @@ Public Sub FillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     fi_DIB = FreeImage_LoadFromMemoryEx(jpegArray, FILO_JPEG_FAST)
     
     'Copy the newly decompressed JPEG into the destination pdDIB object.
-    SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
+    Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight
     
     'Release the FreeImage copy of the DIB
     FreeImage_Unload fi_DIB
@@ -2465,7 +2027,7 @@ Public Sub FillDIBWithJP2Version(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
     
     'Pass the DIB to FreeImage, which will make a copy for itself.
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+    fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB)
         
     'Now comes the actual JPEG-2000 conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save
     ' the image in JPEG-2000 format to a byte array; we then hand that byte array back to it and request a decompression.
@@ -2476,12 +2038,11 @@ Public Sub FillDIBWithJP2Version(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
     fi_DIB = FreeImage_LoadFromMemoryEx(jp2Array, 0, , PDIF_JP2)
     
     'Copy the newly decompressed JPEG-2000 into the destination pdDIB object.
-    SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
+    Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight
     
     'Release the FreeImage copy of the DIB.
     FreeImage_Unload fi_DIB
-    Erase jp2Array
-
+    
 End Sub
 
 'Given a source and destination DIB reference, fill the destination with a post-WebP-compression of the original.  This
@@ -2490,7 +2051,7 @@ Public Sub FillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     
     'Pass the DIB to FreeImage, which will make a copy for itself.
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+    fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB)
         
     'Now comes the actual WebP conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save
     ' the image in WebP format to a byte array; we then hand that byte array back to it and request a decompression.
@@ -2506,12 +2067,11 @@ Public Sub FillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     If FreeImage_GetBPP(fi_DIB) <> dstDIB.getDIBColorDepth Then dstDIB.createBlank dstDIB.getDIBWidth, dstDIB.getDIBHeight, FreeImage_GetBPP(fi_DIB)
         
     'Copy the newly decompressed image into the destination pdDIB object.
-    SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
-        
+    Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight
+    
     'Release the FreeImage copy of the DIB.
     FreeImage_Unload fi_DIB
-    Erase webPArray
-
+    
 End Sub
 
 'Given a source and destination DIB reference, fill the destination with a post-JXR-compression of the original.  This
@@ -2520,7 +2080,7 @@ Public Sub FillDIBWithJXRVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
     
     'Pass the DIB to FreeImage, which will make a copy for itself.
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+    fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB)
         
     'Now comes the actual JPEG XR conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save
     ' the image in JPEG XR format to a byte array; we then hand that byte array back to it and request a decompression.
@@ -2535,7 +2095,7 @@ Public Sub FillDIBWithJXRVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
         
         'Copy the newly decompressed image into the destination pdDIB object.
         If fi_DIB <> 0 Then
-            SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
+            Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight
         Else
             Debug.Print "Failed to load JXR from memory; FreeImage didn't return a DIB from FreeImage_LoadFromMemoryEx()"
         End If
@@ -2546,8 +2106,7 @@ Public Sub FillDIBWithJXRVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
     
     'Release the FreeImage copy of the DIB.
     If fi_DIB <> 0 Then FreeImage_Unload fi_DIB
-    Erase jxrArray
-
+    
 End Sub
 
 'Save a new Undo/Redo entry to file.  This function is only called by the createUndoData function in the pdUndo class.

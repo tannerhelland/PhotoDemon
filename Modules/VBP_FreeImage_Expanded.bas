@@ -21,6 +21,26 @@ Attribute VB_Name = "Plugin_FreeImage"
 
 Option Explicit
 
+
+Private Type BITMAPINFOHEADER
+    biSize As Long
+    biWidth As Long
+    biHeight As Long
+    biPlanes As Integer
+    biBitCount As Integer
+    biCompression As Long
+    biSizeImage As Long
+    biXPelsPerMeter As Long
+    biYPelsPerMeter As Long
+    biClrUsed As Long
+    biClrImportant As Long
+End Type
+
+Private Type BITMAPINFO
+    bmiHeader As BITMAPINFOHEADER
+    bmiColors As Long
+End Type
+
 Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
 
 'Additional variables for PD-specific tone-mapping functions
@@ -925,14 +945,28 @@ End Function
 ' (like saving a DIB to file in some non-BMP format), please use this function.
 '
 'ALSO NOTE!  This function does not affect alpha premultiplication.  It's assumed that the caller sets that value in advance.
+'ALSO NOTE!  The reverseScanlines parameter will be applied to the underlying pdDIB object - plan accordingly!
 'ALSO NOTE!  This function does not free the outgoing FreeImage handle, by design.  Make sure to free it manually!
 'ALSO NOTE!  The function returns zero for failure state; please check the return value before trying to use it!
-Public Function GetFIHandleFromPDDib_NoCopy(ByRef srcDIB As pdDIB, Optional ByVal howToHandleTopDown As Boolean = False) As Long
+Public Function GetFIHandleFromPDDib_NoCopy(ByRef srcDIB As pdDIB, Optional ByVal reverseScanlines As Boolean = False) As Long
     With srcDIB
-        GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .getActualDIBBits, FIT_Bitmap, .getDIBWidth, .getDIBHeight, .getDIBArrayWidth, .getDIBColorDepth, , , , howToHandleTopDown)
+        GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .getActualDIBBits, FIT_Bitmap, .getDIBWidth, .getDIBHeight, .getDIBArrayWidth, .getDIBColorDepth, , , , reverseScanlines)
     End With
 End Function
 
+'Paint a FreeImage DIB to an arbitrary clipping rect on some target pdDIB.  This does not free or otherwise modify the source FreeImage object
+Public Function PaintFIDibToPDDib(ByRef dstDIB As pdDIB, ByVal fi_Handle As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long) As Boolean
+    
+    If (Not (dstDIB Is Nothing)) And (fi_Handle <> 0) Then
+        Dim bmpInfo As BITMAPINFO
+        Outside_FreeImageV3.FreeImage_GetInfoHeaderEx fi_Handle, VarPtr(bmpInfo.bmiHeader)
+        If dstDIB.IsDIBTopDown Then bmpInfo.bmiHeader.biHeight = -1 * (bmpInfo.bmiHeader.biHeight)
+        
+        Dim iHeight As Long: iHeight = Abs(bmpInfo.bmiHeader.biHeight)
+        PaintFIDibToPDDib = (SetDIBitsToDevice(dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, 0, 0, 0, iHeight, ByVal FreeImage_GetBits(fi_Handle), bmpInfo, 0&) <> 0)
+    End If
+    
+End Function
 'Prior to applying tone-mapping settings, query the user for their preferred behavior.  If the user doesn't want this dialog raised, this
 ' function will silently retrieve the proper settings from the preference file, and proceed with tone-mapping automatically.
 '
@@ -1714,7 +1748,7 @@ Public Function FreeImageResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, By
                         
             'Copy the bits from the FreeImage DIB to our DIB
             tmpDIB.createBlank dstWidth, dstHeight, 32, 0
-            SetDIBitsToDevice tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 0, 0, 0, srcHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+            Plugin_FreeImage.PaintFIDibToPDDib tmpDIB, returnDIB, 0, 0, dstWidth, dstHeight
             
             'If the destinationIsBlank flag is true, we can use BitBlt in place of AlphaBlend to copy the result
             ' onto the destination DIB; this shaves off a tiny bit of time.
@@ -1766,12 +1800,12 @@ Public Function FreeImageResizeDIBFast(ByRef dstDIB As pdDIB, ByVal dstX As Long
             'If the destinationIsBlank flag is TRUE, we can copy the bits directly from the FreeImage bytes to the
             ' destination bytes, skipping the need for an intermediary DIB.
             If destinationIsBlank Then
-                SetDIBitsToDevice dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, 0, 0, 0, dstHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                Plugin_FreeImage.PaintFIDibToPDDib dstDIB, returnDIB, dstX, dstY, dstWidth, dstHeight
             Else
                 Dim tmpDIB As pdDIB
                 Set tmpDIB = New pdDIB
                 tmpDIB.createBlank dstWidth, dstHeight, 32, 0
-                SetDIBitsToDevice tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 0, 0, 0, dstHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                Plugin_FreeImage.PaintFIDibToPDDib tmpDIB, returnDIB, 0, 0, dstWidth, dstHeight
                 AlphaBlend dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 255 * &H10000 Or &H1000000
                 Set tmpDIB = Nothing
             End If
@@ -1818,7 +1852,7 @@ Public Function FreeImageRotateDIBFast(ByRef srcDIB As pdDIB, ByRef dstDIB As pd
         cy = srcDIB.getDIBHeight / 2
             
         'Give FreeImage a handle to our temporary rotation image
-        fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB)
         
         If fi_DIB <> 0 Then
             
@@ -1851,7 +1885,7 @@ Public Function FreeImageRotateDIBFast(ByRef srcDIB As pdDIB, ByRef dstDIB As pd
                 dstDIB.createBlank nWidth, nHeight, 32
                             
                 'Copy the bits from the FreeImage DIB to our DIB
-                SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                Plugin_FreeImage.PaintFIDibToPDDib dstDIB, returnDIB, 0, 0, nWidth, nHeight
                 
                 'With the transfer complete, release any remaining FreeImage DIBs and exit
                 FreeImage_UnloadEx returnDIB
@@ -1901,5 +1935,311 @@ Public Function GetFreeImageErrors(Optional ByVal eraseListUponReturn As Boolean
     GetFreeImageErrors = listOfFreeImageErrors
     
     If eraseListUponReturn Then ReDim g_FreeImageErrorMessage(0) As String
+    
+End Function
+
+'Need a FreeImage object at a specific color depth?  Use this function.  Note that the source DIB is not touched or freed,
+' and obviously you must manually free the returned FreeImage handle when you're done with it.
+'
+'Some combinations of values are not valid (e.g. alphaState and outputColorDepth must be mixed carefully); refer to the
+' ImageExporter module for specific details on supported color modes.
+'
+'Finally, this function does not run heuristics on the incoming image.  For example, if you tell it to create a
+' grayscale image, it *will* create a grayscale image, regardless of the input.  As such, you must run any
+' intelligent heuristics *prior* to calling this function!
+'
+'Returns: a non-zero FI handle if successful; 0 if something goes horribly wrong
+Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputColorDepth As Long, Optional ByVal desiredAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal currentAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal alphaCutoff As Long = 127, Optional ByVal BackgroundColor As Long = vbWhite, Optional ByVal forceGrayscale As Boolean = False, Optional ByVal paletteCount As Long = 256, Optional ByVal RGB16bppUse565 As Boolean = True) As Long
+
+    'The order of operations here is a bit tricky.  First, we need to deal with the problem of binary alpha values.
+    ' Binary alpha values require us to leave the image in 32-bpp mode, but force it to use only "0" or "255" alpha
+    ' values.  As part of this process, transparent pixels will have their color forcibly changed to magic magenta.
+    ' This allows us to easily detect them post-quantization.  (Also, if the alpha cutoff is set to 0, we mark the
+    ' image as *not* using alpha at all.)
+    If (desiredAlphaState = PDAS_BinaryAlpha) Then
+        
+        If (currentAlphaState = PDAS_ComplicatedAlpha) Then
+            srcDIB.ApplyAlphaCutoff alphaCutoff, , BackgroundColor
+            If alphaCutoff = 0 Then desiredAlphaState = PDAS_NoAlpha
+        
+        'If the image already has binary alpha, don't waste time re-applying it.  Instead, make sure we're tracking
+        ' the image's current transparent color, as well as the location of a known transparent pixel.  We'll need
+        ' these if the caller requested additional quantization options or a wacky bit-depth.
+        
+        'TODO: see if we still need to use magic magenta here.  There's a chance that it's still relevant, as the
+        ' source image may be using black as both a color, and a transparent marker.  The best solution may be
+        ' to expose an optional parameter in MemorizeBinaryAlphaData, that still requests a magic magenta conversion.
+        ElseIf (currentAlphaState = PDAS_BinaryAlpha) Then
+            srcDIB.MemorizeBinaryAlphaData
+        End If
+        
+    End If
+    
+    'Next, if the caller doesn't want us to use alpha at all, reduce to 24-bpp internally.
+    If (desiredAlphaState = PDAS_NoAlpha) Or (outputColorDepth = 24) Or (outputColorDepth = 48) Or (outputColorDepth = 96) Then
+        If (srcDIB.getDIBColorDepth = 32) Then srcDIB.convertTo24bpp BackgroundColor
+    End If
+    
+    'Create a default FreeImage handle now
+    Dim fi_DIB As Long, tmpFIHandle As Long
+    fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+    
+    '1-bpp is easy; handle it now
+    If (outputColorDepth = 1) Then
+        tmpFIHandle = FreeImage_Dither(fi_DIB, FID_FS)
+        If (tmpFIHandle <> fi_DIB) Then
+            FreeImage_Unload fi_DIB
+            fi_DIB = tmpFIHandle
+        End If
+    
+    'Non-1-bpp is harder
+    Else
+        
+        'Handle grayscale variants first; they use their own dedicated conversion functions
+        If forceGrayscale Then
+            fi_DIB = GetGrayscaleFIDib(fi_DIB, outputColorDepth)
+        
+        'Non-grayscale variants are more complicated
+        Else
+        
+            'Start with non-alpha color modes.  They are easier to handle.
+            If (desiredAlphaState = PDAS_NoAlpha) Then
+            
+                'Walk down the list of valid outputs, starting at the low end
+                If (outputColorDepth <= 8) Then
+                    
+                    'FreeImage supports a new "lossless" quantization method that is perfect for images that already
+                    ' have 256 colors or less.  This method is basically just a hash table, and it lets us avoid
+                    ' lossy quantization if at all possible.
+                    If (paletteCount = 256) Then
+                        tmpFIHandle = FreeImage_ColorQuantize(fi_DIB, FIQ_LFPQUANT)
+                    Else
+                        tmpFIHandle = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_LFPQUANT, False, paletteCount)
+                    End If
+                    
+                    '0 means the image has > 256 colors, and must be quantized via lossy means
+                    If (tmpFIHandle = 0) Then
+                        
+                        'If we're going straight to 4-bits, ignore the user's palette count in favor of a 16-bit one.
+                        If (outputColorDepth = 4) Then
+                            tmpFIHandle = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_WUQUANT, False, 16)
+                        Else
+                            If (paletteCount = 256) Then
+                                tmpFIHandle = FreeImage_ColorQuantize(fi_DIB, FIQ_WUQUANT)
+                            Else
+                                tmpFIHandle = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_WUQUANT, False, paletteCount)
+                            End If
+                        End If
+                        
+                    End If
+                    
+                    If (tmpFIHandle <> fi_DIB) Then
+                        FreeImage_Unload fi_DIB
+                        fi_DIB = tmpFIHandle
+                    End If
+                    
+                    'We now have an 8-bpp image.  Forcibly convert to 4-bpp if necessary.
+                    If (outputColorDepth = 4) Then
+                        tmpFIHandle = FreeImage_ConvertTo4Bits(fi_DIB)
+                        If (tmpFIHandle <> fi_DIB) Then
+                            FreeImage_Unload fi_DIB
+                            fi_DIB = tmpFIHandle
+                        End If
+                    End If
+                    
+                'Some bit-depth > 8
+                Else
+                
+                    '15- and 16- are handled similarly
+                    If (outputColorDepth = 15) Or (outputColorDepth = 16) Then
+                        
+                        If (outputColorDepth = 15) Then
+                            tmpFIHandle = FreeImage_ConvertTo16Bits555(fi_DIB)
+                        Else
+                            If RGB16bppUse565 Then
+                                tmpFIHandle = FreeImage_ConvertTo16Bits565(fi_DIB)
+                            Else
+                                tmpFIHandle = FreeImage_ConvertTo16Bits555(fi_DIB)
+                            End If
+                        End If
+                        
+                        If (tmpFIHandle <> fi_DIB) Then
+                            FreeImage_Unload fi_DIB
+                            fi_DIB = tmpFIHandle
+                        End If
+                        
+                    'Some bit-depth > 16
+                    Else
+                        
+                        '24-bpp doesn't need to be handled, because it is the default entry point for PD images
+                        If (outputColorDepth > 24) Then
+                        
+                            'High bit-depth variants are covered last
+                            If (outputColorDepth = 48) Then
+                                tmpFIHandle = FreeImage_ConvertToRGB16(fi_DIB)
+                                If (tmpFIHandle <> fi_DIB) Then
+                                    FreeImage_Unload fi_DIB
+                                    fi_DIB = tmpFIHandle
+                                End If
+                                
+                            '96-bpp is the only other possibility
+                            Else
+                                tmpFIHandle = FreeImage_ConvertToRGBF(fi_DIB)
+                                If (tmpFIHandle <> fi_DIB) Then
+                                    FreeImage_Unload fi_DIB
+                                    fi_DIB = tmpFIHandle
+                                End If
+                            End If
+                        
+                        End If
+                        
+                    End If
+                
+                End If
+            
+            'The image contains alpha, and the caller wants it preserved.  AAARRRGGGHHH
+            Else
+            
+                'Skip 32-bpp, as it's already standardized
+                If (outputColorDepth <> 32) Then
+                
+                    '< 8-bpp is the ugliest, so it comes first!
+                    If (outputColorDepth < 32) Then
+                    
+                        'Technically, PNG supports the concept of a single "transparent color" for any bit-depth,
+                        ' including high bit-depth images.  FreeImage, however, doesn't have that level of granularity.
+                        ' As such, any transparency under 8-bpp is handled via a transparent palette index.
+                        
+                        'Start by getting the image into 8-bpp color mode.
+                        
+                        'FreeImage supports a new "lossless" quantization method that is perfect for images that already
+                        ' have 256 colors or less.  This method is basically just a hash table, and it lets us avoid
+                        ' lossy quantization if at all possible.
+                        If (paletteCount = 256) Then
+                            tmpFIHandle = FreeImage_ColorQuantize(fi_DIB, FIQ_LFPQUANT)
+                        Else
+                            tmpFIHandle = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_LFPQUANT, False, paletteCount)
+                        End If
+                    
+                        '0 means the image has > 256 colors, and must be quantized via lossy means
+                        If (tmpFIHandle = 0) Then
+                            
+                            'If we're going straight to 4-bits, ignore the user's palette count in favor of a 16-bit one.
+                            If (outputColorDepth = 4) Then
+                                tmpFIHandle = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_WUQUANT, False, 16)
+                            Else
+                                If (paletteCount = 256) Then
+                                    tmpFIHandle = FreeImage_ColorQuantize(fi_DIB, FIQ_WUQUANT)
+                                Else
+                                    tmpFIHandle = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_WUQUANT, False, paletteCount)
+                                End If
+                            End If
+                            
+                        End If
+                    
+                        If (tmpFIHandle <> fi_DIB) Then
+                            FreeImage_Unload fi_DIB
+                            fi_DIB = tmpFIHandle
+                        End If
+                    
+                        'fi_DIB now contains an 8-bpp image.  We next need to find the palette index of a known transparent pixel
+                        Dim transpX As Long, transpY As Long
+                        srcDIB.getTransparentLocation transpX, transpY
+                        
+                        'Use that location to retrieve the matching transparent index
+                        Dim palIndex As Byte
+                        FreeImage_GetPixelIndex fi_DIB, transpX, transpY, palIndex
+                        FreeImage_SetTransparentIndex fi_DIB, palIndex
+            
+                        'Finally, because some software may not display the transparency correctly, we need to set that
+                        ' palette index color to its original value.  To do that, we must make a copy of the palette and
+                        ' update the transparency index accordingly.
+                        Dim fi_Palette() As Long
+                        fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
+                        fi_Palette(palIndex) = srcDIB.GetOriginalTransparentColor()
+                        
+                        'We now have an < 8-bpp image with a transparent index correctly marked.  Whew!
+                    
+                    'Output is > 32-bpp with transparency
+                    Else
+                        
+                        'High bit-depth variants are covered last
+                        If (outputColorDepth = 64) Then
+                            tmpFIHandle = FreeImage_ConvertToRGBA16(fi_DIB)
+                            If (tmpFIHandle <> fi_DIB) Then
+                                FreeImage_Unload fi_DIB
+                                fi_DIB = tmpFIHandle
+                            End If
+                        '128-bpp is the only other possibility
+                        Else
+                            tmpFIHandle = FreeImage_ConvertToRGBAF(fi_DIB)
+                            If (tmpFIHandle <> fi_DIB) Then
+                                FreeImage_Unload fi_DIB
+                                fi_DIB = tmpFIHandle
+                            End If
+                        End If
+                        
+                    End If
+                
+                'End 32-bpp requests
+                End If
+            'End alpha vs non-alpha
+            End If
+        'End grayscale vs non-grayscale
+        End If
+    'End 1-bpp vs > 1-bpp
+    End If
+    
+    GetFIDib_SpecificColorMode = fi_DIB
+
+End Function
+
+'Convert an incoming FreeImage handle to a grayscale FI variant.  The source handle will be unloaded as necessary.
+Private Function GetGrayscaleFIDib(ByVal fi_DIB As Long, ByVal outputColorDepth As Long) As Long
+    
+    Dim tmpFIHandle As Long
+    
+    'Output color depth is important here.  16-bpp and 32-bpp grayscale are actually high bit-depth modes!
+    If (outputColorDepth <= 8) Then
+        
+        'Create an 8-bpp palette
+        tmpFIHandle = FreeImage_ConvertToGreyscale(fi_DIB)
+        If (tmpFIHandle <> fi_DIB) And (tmpFIHandle <> 0) Then
+            FreeImage_Unload fi_DIB
+            fi_DIB = tmpFIHandle
+        End If
+        
+        'If the caller wants a 4-bpp palette, do that now.
+        If (outputColorDepth = 4) And (tmpFIHandle <> 0) Then
+            tmpFIHandle = FreeImage_ConvertTo4Bits(fi_DIB)
+                If (tmpFIHandle <> fi_DIB) Then
+                FreeImage_Unload fi_DIB
+                fi_DIB = tmpFIHandle
+            End If
+        End If
+    
+    'Forcing to grayscale and using an outputColorDepth > 8 means you want a high bit-depth copy!
+    Else
+    
+        '32-bpp
+        If (outputColorDepth = 32) Then
+            tmpFIHandle = FreeImage_ConvertToFloat(fi_DIB)
+            If (tmpFIHandle <> fi_DIB) And (tmpFIHandle <> 0) Then
+                FreeImage_Unload fi_DIB
+                fi_DIB = tmpFIHandle
+            End If
+        
+        'Output colordepth must be 16; any other values are invalid
+        Else
+            tmpFIHandle = FreeImage_ConvertToUINT16(fi_DIB)
+            If (tmpFIHandle <> fi_DIB) And (tmpFIHandle <> 0) Then
+                FreeImage_Unload fi_DIB
+                fi_DIB = tmpFIHandle
+            End If
+        End If
+        
+    End If
+    
+    GetGrayscaleFIDib = fi_DIB
     
 End Function

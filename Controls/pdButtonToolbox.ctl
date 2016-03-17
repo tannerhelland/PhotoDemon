@@ -272,8 +272,8 @@ Private Sub GenerateVariantButtonImages(Optional ByVal hoverGlowAmount As Long =
     If hoverGlowAmount = 0 Then hoverGlowAmount = UC_HOVER_BRIGHTNESS
     
     'Start by building two lookup tables: one for the hovered image, and a second one for the grayscale image
-    Dim hLookup() As Byte, gLookup() As Byte
-    ReDim hLookup(0 To 255) As Byte: ReDim gLookup(0 To 765) As Byte
+    Dim hLookup() As Byte, gLookUp() As Byte
+    ReDim hLookup(0 To 255) As Byte: ReDim gLookUp(0 To 765) As Byte
     
     Dim newColor As Long
     Dim x As Long, y As Long
@@ -286,7 +286,7 @@ Private Sub GenerateVariantButtonImages(Optional ByVal hoverGlowAmount As Long =
     For x = 0 To 765
         newColor = (x \ 3) + disabledGlowAmount
         If newColor > 255 Then newColor = 255
-        gLookup(x) = newColor
+        gLookUp(x) = newColor
     Next x
     
     'Grab direct access to the spritesheet's bytes
@@ -331,7 +331,7 @@ Private Sub GenerateVariantButtonImages(Optional ByVal hoverGlowAmount As Long =
             b = srcPixels(x, y - offsetY)
             g = srcPixels(x + 1, y - offsetY)
             r = srcPixels(x + 2, y - offsetY)
-            gray = gLookup(r + g + b)
+            gray = gLookUp(r + g + b)
             srcPixels(x, y) = gray
             srcPixels(x + 1, y) = gray
             srcPixels(x + 2, y) = gray
@@ -434,6 +434,13 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
                     Value = True
                     RedrawBackBuffer
                     RaiseEvent Click
+                    
+                    'During auto-toggle mode, immediately reverse the value after the Click() event is raised
+                    If m_AutoToggle Then
+                        m_ButtonState = False
+                        RedrawBackBuffer
+                    End If
+                    
                 End If
             
             End If
@@ -471,6 +478,12 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
         
         RedrawBackBuffer True
         RaiseEvent Click
+        
+        'During auto-toggle mode, immediately reverse the value after the Click() event is raised
+        If m_AutoToggle Then
+            m_ButtonState = False
+            RedrawBackBuffer
+        End If
         
     End If
         

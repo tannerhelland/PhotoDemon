@@ -157,7 +157,7 @@ Public Property Let formID(formID As Long)
 End Property
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
-Public Sub showDialog(ByRef ownerForm As Form)
+Public Sub ShowDialog(ByRef ownerForm As Form)
     
     Dim i As Long
     
@@ -183,7 +183,7 @@ Public Sub showDialog(ByRef ownerForm As Form)
     Dim imageName As String
     imageName = pdImages(imageBeingClosed).imgStorage.GetEntry_String("OriginalFileName", vbNullString)
     If Len(Trim$(imageName)) = 0 Then imageName = g_Language.TranslateMessage("This image")
-    lblWarning.Caption = g_Language.TranslateMessage("%1 has unsaved changes.  What would you like to do?", """ & imageName & """)
+    lblWarning.Caption = g_Language.TranslateMessage("%1 has unsaved changes.  What would you like to do?", """" & imageName & """")
     lblWarning.RequestRefresh
     
     'Make some measurements of the form size.  We need these if we choose to display the check box at the bottom of the form

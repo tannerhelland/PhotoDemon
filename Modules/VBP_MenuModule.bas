@@ -267,7 +267,7 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
         ' 2) the global user preferences manager (which needs to remember things like the output folder, so we can remember it)
         
         'Store all image-level attributes
-        srcImage.currentFileFormat = g_ImageFormats.GetOutputPDIF(g_LastSaveFilter - 1)
+        srcImage.currentFileFormat = g_ImageFormats.GetOutputPDIF(cdFormatIndex - 1)
         
         'Store all global-preference attributes
         Dim cFile As pdFSO
@@ -462,7 +462,7 @@ Public Sub MenuCloseAll()
 End Sub
 
 'Create a new, blank image from scratch
-Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal imgDPI As Long, ByVal defaultBackground As Long, ByVal BackgroundColor As Long)
+Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal imgDPI As Long, ByVal defaultBackground As Long, ByVal backgroundColor As Long)
 
     'Display a busy cursor
     If Screen.MousePointer <> vbHourglass Then Screen.MousePointer = vbHourglass
@@ -500,7 +500,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
         
         'Custom color
         Case 3
-            tmpDIB.createBlank imgWidth, imgHeight, 32, BackgroundColor, 255
+            tmpDIB.createBlank imgWidth, imgHeight, 32, backgroundColor, 255
     
     End Select
     

@@ -1102,7 +1102,7 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
                         
                         'Initialize the param string object as necessary
                         If (cParam Is Nothing) Then Set cParam = New pdParamString
-                        cParam.setParamString controlValue
+                        cParam.SetParamString controlValue
                         
                         'Kind of funny, but we must always set the lockAspectRatio to FALSE in order to apply a new size
                         ' to the image.  (If we don't do this, the new sizes will be clamped to the current image's
@@ -1180,7 +1180,8 @@ End Sub
 'The command bar's layout is all handled programmatically.  This lets it look good, regardless of the parent form's size or
 ' the current monitor's DPI setting.
 Private Sub UpdateControlLayout()
-
+    
+    'Note that error handling is relevant for this control, as the parent hWnd may not be available under all circumstances
     On Error GoTo skipUpdateLayout
     
     'Retrieve DPI-aware control dimensions from the support class

@@ -428,7 +428,7 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
         
         'Convert the current image to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB, True)
+        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB, False)
         
         'Use that handle to request an image resize
         If fi_DIB <> 0 Then
@@ -446,8 +446,8 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
             dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
             
             'Copy the bits from the FreeImage DIB to our DIB
-            SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, iWidth, iHeight, 0, 0, 0, iHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
-     
+            Plugin_FreeImage.PaintFIDibToPDDib dstDIB, returnDIB, 0, 0, iWidth, iHeight
+            
             'With the transfer complete, release the FreeImage DIB and unload the library
             If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
             
@@ -710,10 +710,4 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     Message "Finished."
     
 End Sub
-
-
-
-
-
-
 

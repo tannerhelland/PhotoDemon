@@ -33,7 +33,6 @@ Begin VB.Form FormStraighten
       Width           =   12105
       _ExtentX        =   21352
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -140,8 +139,8 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
                     cy = pdImages(g_CurrentImage).Height / 2
                     
                 Case PD_AT_SINGLELAYER
-                    cx = pdImages(g_CurrentImage).getActiveDIB.getDIBWidth / 2
-                    cy = pdImages(g_CurrentImage).getActiveDIB.getDIBHeight / 2
+                    cx = pdImages(g_CurrentImage).GetActiveDIB.getDIBWidth / 2
+                    cy = pdImages(g_CurrentImage).GetActiveDIB.getDIBHeight / 2
                     
             End Select
                     
@@ -157,7 +156,7 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
         If isPreview Then
             
             'Give FreeImage a handle to our temporary rotation image
-            fi_DIB = FreeImage_CreateFromDC(smallDIB.getDIBDC)
+            fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(smallDIB)
             
             'Ask it to rotate the image
             returnDIB = FreeImage_RotateEx(fi_DIB, rotationAngle, 0, 0, cx, cy, True)
@@ -173,11 +172,11 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
             FreeImage_PreMultiplyWithAlpha returnDIB
             
             'Copy the bits from the FreeImage DIB to our DIB
-            SetDIBitsToDevice tmpDIB.getDIBDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+            Plugin_FreeImage.PaintFIDibToPDDib tmpDIB, returnDIB, 0, 0, nWidth, nHeight
             
             'With the transfer complete, release the FreeImage DIB and unload the library
-            If fi_DIB <> 0 Then FreeImage_UnloadEx fi_DIB
-            If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
+            If (fi_DIB <> 0) Then FreeImage_UnloadEx fi_DIB
+            If (returnDIB <> 0) Then FreeImage_UnloadEx returnDIB
             
             'Next, we need to calculate a scaling factor for the image.  Straightening applies a sort of auto-crop
             ' to the image to remove empty corners; by solving a triangle equation using the image diagonal, we
@@ -234,7 +233,7 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
             ' a stand-in progress parameter.
             If thingToRotate = PD_AT_WHOLEIMAGE Then
                 Message "Straightening image..."
-                SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers
+                SetProgBarMax pdImages(g_CurrentImage).GetNumOfLayers
             Else
                 Message "Straightening layer..."
                 SetProgBarMax 1
@@ -251,11 +250,11 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
             
                 Case PD_AT_WHOLEIMAGE
                     lInit = 0
-                    lFinal = pdImages(g_CurrentImage).getNumOfLayers - 1
+                    lFinal = pdImages(g_CurrentImage).GetNumOfLayers - 1
                 
                 Case PD_AT_SINGLELAYER
-                    lInit = pdImages(g_CurrentImage).getActiveLayerIndex
-                    lFinal = pdImages(g_CurrentImage).getActiveLayerIndex
+                    lInit = pdImages(g_CurrentImage).GetActiveLayerIndex
+                    lFinal = pdImages(g_CurrentImage).GetActiveLayerIndex
             
             End Select
             
@@ -265,17 +264,17 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
                 If thingToRotate = PD_AT_WHOLEIMAGE Then SetProgBarVal i
             
                 'Retrieve a pointer to the layer of interest
-                Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
+                Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(i)
                 
                 'Remove premultiplied alpha, if any
                 tmpLayerRef.layerDIB.SetAlphaPremultiplication False
                 
                 'Null-pad the layer
-                If thingToRotate = PD_AT_WHOLEIMAGE Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+                If thingToRotate = PD_AT_WHOLEIMAGE Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
                                 
                 'Give FreeImage a handle to the layer's pixel data
-                fi_DIB = FreeImage_CreateFromDC(tmpLayerRef.layerDIB.getDIBDC)
-            
+                fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(tmpLayerRef.layerDIB)
+                
                 'Ask FreeImage to rotate the DIB
                 returnDIB = FreeImage_RotateEx(fi_DIB, rotationAngle, 0, 0, cx, cy, True)
                 
@@ -290,11 +289,11 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
                 FreeImage_PreMultiplyWithAlpha returnDIB
                 
                 'Copy the bits from the FreeImage DIB to our DIB
-                SetDIBitsToDevice tmpLayerRef.layerDIB.getDIBDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                Plugin_FreeImage.PaintFIDibToPDDib tmpLayerRef.layerDIB, returnDIB, 0, 0, nWidth, nHeight
                 
                 'With the transfer complete, release the FreeImage DIB and unload the library
-                If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
-                If fi_DIB <> 0 Then FreeImage_UnloadEx fi_DIB
+                If (returnDIB <> 0) Then FreeImage_UnloadEx returnDIB
+                If (fi_DIB <> 0) Then FreeImage_UnloadEx fi_DIB
                 
                 'Next, we need to calculate a scaling factor for the image.  Straightening applies a sort of auto-crop
                 ' to the image to remove empty corners; by solving a triangle equation using the image diagonal, we
@@ -319,6 +318,7 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
                 
                 'Prepare a final DIB to receive the resized image
                 finalDIB.createBlank nWidth, nHeight, 32, 0
+                finalDIB.setInitialAlphaPremultiplicationState True
                 
                 'Use GDI+ to copy the relevant source rectangle into the final DIB
                 GDIPlusResizeDIB finalDIB, 0, 0, nWidth, nHeight, tmpLayerRef.layerDIB, (nWidth - sourceCropWidth) / 2, (nHeight - sourceCropHeight) / 2, sourceCropWidth, sourceCropHeight, InterpolationModeHighQualityBicubic
@@ -327,10 +327,10 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
                 tmpLayerRef.layerDIB.createFromExistingDIB finalDIB
                 
                 'If resizing the entire image, remove any null-padding now
-                If thingToRotate = PD_AT_WHOLEIMAGE Then tmpLayerRef.cropNullPaddedLayer
+                If thingToRotate = PD_AT_WHOLEIMAGE Then tmpLayerRef.CropNullPaddedLayer
                 
                 'Notify the parent of the change
-                pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
+                pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
                                 
             'Continue with the next layer
             Next i
@@ -339,7 +339,7 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
             
             'Update the image's size
             If thingToRotate = PD_AT_WHOLEIMAGE Then
-                pdImages(g_CurrentImage).updateSize False, nWidth, nHeight
+                pdImages(g_CurrentImage).UpdateSize False, nWidth, nHeight
                 DisplaySize pdImages(g_CurrentImage)
             End If
             
@@ -406,12 +406,12 @@ Private Sub Form_Activate()
             srcHeight = pdImages(g_CurrentImage).Height
         
         Case PD_AT_SINGLELAYER
-            srcWidth = pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False)
-            srcHeight = pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False)
+            srcWidth = pdImages(g_CurrentImage).GetActiveLayer.getLayerWidth(False)
+            srcHeight = pdImages(g_CurrentImage).GetActiveLayer.getLayerHeight(False)
         
     End Select
     
-    convertAspectRatio srcWidth, srcHeight, pdFxPreview.getPreviewWidth, pdFxPreview.GetPreviewHeight, dWidth, dHeight
+    ConvertAspectRatio srcWidth, srcHeight, pdFxPreview.GetPreviewWidth, pdFxPreview.GetPreviewHeight, dWidth, dHeight
     
     'Create a new, smaller image at those dimensions
     If (dWidth < srcWidth) Or (dHeight < srcHeight) Then
@@ -421,10 +421,10 @@ Private Sub Form_Activate()
         Select Case m_StraightenTarget
         
             Case PD_AT_WHOLEIMAGE
-                pdImages(g_CurrentImage).getCompositedRect smallDIB, 0, 0, dWidth, dHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, InterpolationModeHighQualityBicubic, , CLC_Generic
+                pdImages(g_CurrentImage).GetCompositedRect smallDIB, 0, 0, dWidth, dHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, InterpolationModeHighQualityBicubic, , CLC_Generic
             
             Case PD_AT_SINGLELAYER
-                GDIPlusResizeDIB smallDIB, 0, 0, dWidth, dHeight, pdImages(g_CurrentImage).getActiveDIB, 0, 0, pdImages(g_CurrentImage).getActiveDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+                GDIPlusResizeDIB smallDIB, 0, 0, dWidth, dHeight, pdImages(g_CurrentImage).GetActiveDIB, 0, 0, pdImages(g_CurrentImage).GetActiveDIB.getDIBWidth, pdImages(g_CurrentImage).GetActiveDIB.getDIBHeight, InterpolationModeHighQualityBicubic
             
         End Select
         
@@ -434,10 +434,10 @@ Private Sub Form_Activate()
         Select Case m_StraightenTarget
         
             Case PD_AT_WHOLEIMAGE
-                pdImages(g_CurrentImage).getCompositedImage smallDIB
+                pdImages(g_CurrentImage).GetCompositedImage smallDIB
             
             Case PD_AT_SINGLELAYER
-                smallDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB
+                smallDIB.createFromExistingDIB pdImages(g_CurrentImage).GetActiveDIB
             
         End Select
         
@@ -453,7 +453,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
         
     'Render a preview
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
         
 End Sub
@@ -461,7 +461,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previewing until the dialog is fully initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
         
 End Sub
 
@@ -471,7 +471,7 @@ End Sub
 
 'Redraw the on-screen preview of the rotated image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then StraightenImage sltAngle, m_StraightenTarget, True
+    If cmdBar.PreviewsAllowed Then StraightenImage sltAngle, m_StraightenTarget, True
 End Sub
 
 Private Sub sltAngle_Change()
