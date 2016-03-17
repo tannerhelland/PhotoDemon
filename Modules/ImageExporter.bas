@@ -572,6 +572,10 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, 
     bmp16bpp_555Mode = cParams.GetBool("BMP16bpp555", False)
     bmpCustomColors = cParams.GetLong("BMPIndexedColorCount", 256)
     
+    Dim bmpBackgroundColor As Long, bmpFlipRowOrder As Boolean
+    bmpBackgroundColor = cParams.GetLong("BMPBackgroundColor", vbWhite)
+    bmpFlipRowOrder = cParams.GetBool("BMPFlipRowOrder", False)
+    
     'Generate a composited image copy, with alpha automatically un-premultiplied
     Dim tmpImageCopy As pdDIB
     Set tmpImageCopy = New pdDIB
@@ -603,7 +607,7 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, 
     'Because bitmaps do not support transparency < 32-bpp, remove transparency immediately if the output depth is < 32-bpp,
     ' and forgo any further alpha handling.
     Else
-        tmpImageCopy.convertTo24bpp
+        tmpImageCopy.convertTo24bpp bmpBackgroundColor
         desiredAlphaStatus = PDAS_NoAlpha
     End If
     
@@ -617,7 +621,8 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, 
         If g_ImageFormats.FreeImageEnabled Then
             
             Dim fi_DIB As Long
-            fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, , , isGrayscale Or bmpForceGrayscale, bmpCustomColors, Not bmp16bpp_555Mode)
+            fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, , bmpBackgroundColor, isGrayscale Or bmpForceGrayscale, bmpCustomColors, Not bmp16bpp_555Mode)
+            If bmpFlipRowOrder Then Outside_FreeImageV3.FreeImage_FlipVertically fi_DIB
             
             'Finally, prepare some BMP save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,
             ' request RLE encoding from FreeImage.

@@ -6402,6 +6402,11 @@ Dim lDataPtr As Long
 
 End Function
 
+'Added by Tanner: wrapper to flip a FI DIB by handle
+Public Function FreeImage_FlipVertically(ByVal fi_DIB As Long) As Boolean
+    FreeImage_FlipVertically = CBool(FreeImage_FlipVertical(fi_DIB) <> 0)
+End Function
+
 '--------------------------------------------------------------------------------
 ' Error handling functions
 '--------------------------------------------------------------------------------
