@@ -60,6 +60,14 @@ End Function
 Public Sub GetDefaultPDImageObject(ByRef dstImage As pdImage)
     If (dstImage Is Nothing) Then Set dstImage = New pdImage
     dstImage.currentZoomValue = g_Zoom.GetZoom100Index
+    
+    'Also, set default metadata handling values (which vary according to user preference)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.AddParam "MetadataExportAllowed", g_UserPreferences.GetPref_Boolean("Saving", "PreserveMetadata", True)
+    cParams.AddParam "MetadataAnonymize", g_UserPreferences.GetPref_Boolean("Saving", "AnonymizeMetadata", True)
+    dstImage.imgStorage.AddEntry "MetadataSettings", cParams.GetParamString
+    
 End Sub
 
 'When loading an image file, there's a chance we won't be able to load the image correctly.  Because of that, we start
@@ -213,7 +221,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
     If g_ConfirmClosingUnsaved And pdImages(imageID).IsActive Then
     
         'Check the .HasBeenSaved property of the image associated with this form
-        If Not pdImages(imageID).getSaveState(pdSE_AnySave) Then
+        If Not pdImages(imageID).GetSaveState(pdSE_AnySave) Then
             
             'If the user hasn't already told us to deal with all unsaved images in the same fashion, run some checks
             If Not g_DealWithAllUnsavedImages Then
@@ -228,7 +236,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                     Dim i As Long
                     For i = LBound(pdImages) To UBound(pdImages)
                         If Not (pdImages(i) Is Nothing) Then
-                            If pdImages(i).IsActive And (Not pdImages(i).getSaveState(pdSE_AnySave)) Then
+                            If pdImages(i).IsActive And (Not pdImages(i).GetSaveState(pdSE_AnySave)) Then
                                 g_NumOfUnsavedImages = g_NumOfUnsavedImages + 1
                             End If
                         End If

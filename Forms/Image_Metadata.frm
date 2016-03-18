@@ -31,8 +31,8 @@ Begin VB.Form FormMetadata
       TabIndex        =   2
       Top             =   7095
       Width           =   12015
-      _extentx        =   21193
-      _extenty        =   1323
+      _ExtentX        =   21193
+      _ExtentY        =   1323
    End
    Begin PhotoDemon.pdButton cmdTechnicalReport 
       Height          =   735
@@ -40,9 +40,9 @@ Begin VB.Form FormMetadata
       TabIndex        =   3
       Top             =   4380
       Width           =   4410
-      _extentx        =   7779
-      _extenty        =   1296
-      caption         =   "Generate full metadata report (HTML)..."
+      _ExtentX        =   7779
+      _ExtentY        =   1296
+      Caption         =   "Generate full metadata report (HTML)..."
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
@@ -64,9 +64,9 @@ Begin VB.Form FormMetadata
       TabIndex        =   1
       Top             =   120
       Width           =   11760
-      _extentx        =   20743
-      _extenty        =   1931
-      caption         =   "metadata groups in this image"
+      _ExtentX        =   20743
+      _ExtentY        =   1931
+      Caption         =   "metadata groups in this image"
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
@@ -89,9 +89,9 @@ Begin VB.Form FormMetadata
       TabIndex        =   6
       Top             =   1800
       Width           =   4410
-      _extentx        =   7779
-      _extenty        =   1720
-      caption         =   "tag names"
+      _ExtentX        =   7779
+      _ExtentY        =   1720
+      Caption         =   "tag names"
    End
    Begin PhotoDemon.pdButtonStrip btsTechnical 
       Height          =   975
@@ -100,32 +100,32 @@ Begin VB.Form FormMetadata
       TabIndex        =   5
       Top             =   2880
       Width           =   4410
-      _extentx        =   7779
-      _extenty        =   1720
-      caption         =   "tag values"
+      _ExtentX        =   7779
+      _ExtentY        =   1720
+      Caption         =   "tag values"
    End
    Begin PhotoDemon.pdLabel lblTechnicalReport 
       Height          =   270
       Left            =   7440
       Top             =   3960
       Width           =   4425
-      _extentx        =   7805
-      _extenty        =   476
-      caption         =   "advanced"
-      fontsize        =   11
-      forecolor       =   4210752
+      _ExtentX        =   7805
+      _ExtentY        =   476
+      Caption         =   "advanced"
+      FontSize        =   11
+      ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblExifTool 
       Height          =   735
       Left            =   7320
       Top             =   6120
       Width           =   4575
-      _extentx        =   0
-      _extenty        =   0
-      caption         =   ""
-      fontsize        =   9
-      forecolor       =   -2147483640
-      layout          =   1
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   ""
+      FontSize        =   9
+      ForeColor       =   -2147483640
+      Layout          =   1
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -133,11 +133,11 @@ Begin VB.Form FormMetadata
       Left            =   7320
       Top             =   1320
       Width           =   4575
-      _extentx        =   8070
-      _extenty        =   503
-      caption         =   "metadata options"
-      fontsize        =   12
-      forecolor       =   4210752
+      _ExtentX        =   8070
+      _ExtentY        =   503
+      Caption         =   "metadata options"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -145,11 +145,11 @@ Begin VB.Form FormMetadata
       Left            =   120
       Top             =   1320
       Width           =   6810
-      _extentx        =   12012
-      _extenty        =   503
-      caption         =   "tags in this category"
-      fontsize        =   12
-      forecolor       =   4210752
+      _ExtentX        =   12012
+      _ExtentY        =   503
+      Caption         =   "tags in this category"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
@@ -201,7 +201,7 @@ Private numOfCategories As Long
 Private highestCategoryCount As Long
 
 'This array will hold all tags currently in storage, but sorted into categories
-Private allTags() As mdItem
+Private allTags() As PDMetadataItem
 Private curTagCount() As Long
 
 'Height of each metadata content block
@@ -350,16 +350,16 @@ Private Sub Form_Load()
     
     'Start by tallying up information on the various metadata types within this image
     Dim chkGroup As String
-    Dim curMetadata As mdItem
+    Dim curMetadata As PDMetadataItem
     Dim categoryFound As Boolean
     
     Dim i As Long, j As Long
-    For i = 0 To pdImages(g_CurrentImage).imgMetadata.getMetadataCount - 1
+    For i = 0 To pdImages(g_CurrentImage).imgMetadata.GetMetadataCount - 1
     
         categoryFound = False
     
         'Retrieve the next metadata entry
-        curMetadata = pdImages(g_CurrentImage).imgMetadata.getMetadataEntry(i)
+        curMetadata = pdImages(g_CurrentImage).imgMetadata.GetMetadataEntry(i)
         chkGroup = curMetadata.Group
         
         'Search the current list of known categories for this metadata object's category
@@ -401,13 +401,13 @@ Private Sub Form_Load()
     'We can now build a 2D array that contains all tags, sorted by category.  Why not do this above?  Because
     ' it's computationally expensive to constantly redim arrays in VB, and this technique allows us to redim
     ' the main tag array only once, after all values have been tallied.
-    ReDim allTags(0 To numOfCategories - 1, 0 To highestCategoryCount - 1) As mdItem
+    ReDim allTags(0 To numOfCategories - 1, 0 To highestCategoryCount - 1) As PDMetadataItem
     ReDim curTagCount(0 To numOfCategories - 1) As Long
     
-    For i = 0 To pdImages(g_CurrentImage).imgMetadata.getMetadataCount - 1
+    For i = 0 To pdImages(g_CurrentImage).imgMetadata.GetMetadataCount - 1
         
         'As above, retrieve the next metadata entry
-        curMetadata = pdImages(g_CurrentImage).imgMetadata.getMetadataEntry(i)
+        curMetadata = pdImages(g_CurrentImage).imgMetadata.GetMetadataEntry(i)
         chkGroup = curMetadata.Group
         
         'Find the matching group in the Group array, then insert this tag into place
@@ -491,7 +491,7 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
         
         offsetY = offsetY + FixDPI(9)
         
-        Dim thisTag As mdItem
+        Dim thisTag As PDMetadataItem
         thisTag = allTags(blockCategory, blockIndex)
         
         Dim linePadding As Long

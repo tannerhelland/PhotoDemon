@@ -395,8 +395,8 @@ Private Sub SyncUI_CurrentImageSettings()
             
     'Determine whether metadata is present, and dis/enable metadata menu items accordingly
     If Not pdImages(g_CurrentImage).imgMetadata Is Nothing Then
-        SetUIGroupState PDUI_Metadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
-        SetUIGroupState PDUI_GPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
+        SetUIGroupState PDUI_Metadata, pdImages(g_CurrentImage).imgMetadata.HasMetadata
+        SetUIGroupState PDUI_GPSMetadata, pdImages(g_CurrentImage).imgMetadata.HasGPSMetadata()
     Else
         SetUIGroupState PDUI_Metadata, False
         SetUIGroupState PDUI_GPSMetadata, False
@@ -1212,7 +1212,6 @@ End Function
 Public Sub DisplayWaitScreen(ByVal waitTitle As String, ByRef ownerForm As Form)
     
     FormWait.Visible = False
-    
     FormWait.lblWaitTitle.Caption = waitTitle
     FormWait.lblWaitTitle.Visible = True
     FormWait.lblWaitTitle.RequestRefresh
@@ -1285,24 +1284,43 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         isPDControl = False
         
         'These controls are fully compatible with PD's theming and translation engines:
-        If (TypeOf eControl Is pdButtonStrip) Or (TypeOf eControl Is pdButtonStripVertical) Then isPDControl = True
-        If (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Then isPDControl = True
-        If (TypeOf eControl Is pdColorSelector) Or (TypeOf eControl Is pdBrushSelector) Then isPDControl = True
-        If (TypeOf eControl Is pdGradientSelector) Or (TypeOf eControl Is pdPenSelector) Then isPDControl = True
-        If (TypeOf eControl Is pdButton) Or (TypeOf eControl Is pdButtonToolbox) Then isPDControl = True
-        If (TypeOf eControl Is pdScrollBar) Then isPDControl = True
-        If (TypeOf eControl Is pdTextBox) Or (TypeOf eControl Is pdSpinner) Then isPDControl = True
-        If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSliderStandalone) Then isPDControl = True
-        If (TypeOf eControl Is pdTitle) Then isPDControl = True
-        If (TypeOf eControl Is pdFxPreviewCtl) Or (TypeOf eControl Is pdPreview) Then isPDControl = True
-        If (TypeOf eControl Is pdCheckBox) Or (TypeOf eControl Is pdRadioButton) Then isPDControl = True
-        If (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then isPDControl = True
-        If (TypeOf eControl Is pdNavigator) Or (TypeOf eControl Is pdNavigatorInner) Then isPDControl = True
-        If (TypeOf eControl Is pdCommandBar) Or (TypeOf eControl Is pdCommandBarMini) Then isPDControl = True
-        If (TypeOf eControl Is pdResize) Then isPDControl = True
-        If (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is pdCanvasView) Then isPDControl = True
-        If (TypeOf eControl Is pdListBox) Or (TypeOf eControl Is pdListBoxView) Then isPDControl = True
-        If (TypeOf eControl Is pdDropDown) Then isPDControl = True
+        If (TypeOf eControl Is pdButtonStrip) Or (TypeOf eControl Is pdButtonStripVertical) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdColorSelector) Or (TypeOf eControl Is pdBrushSelector) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdGradientSelector) Or (TypeOf eControl Is pdPenSelector) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdButton) Or (TypeOf eControl Is pdButtonToolbox) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdScrollBar) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdTextBox) Or (TypeOf eControl Is pdSpinner) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSliderStandalone) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdTitle) Or (TypeOf eControl Is pdMetadataExport) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdFxPreviewCtl) Or (TypeOf eControl Is pdPreview) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdCheckBox) Or (TypeOf eControl Is pdRadioButton) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdNavigator) Or (TypeOf eControl Is pdNavigatorInner) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdCommandBar) Or (TypeOf eControl Is pdCommandBarMini) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdResize) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is pdCanvasView) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdListBox) Or (TypeOf eControl Is pdListBoxView) Then
+            isPDControl = True
+        ElseIf (TypeOf eControl Is pdDropDown) Then
+            isPDControl = True
+        End If
         
         'Combo boxes are hopelessly broken in their current incarnation.  They will shortly be rewritten, so please ignore
         ' their problematic behavior at present.

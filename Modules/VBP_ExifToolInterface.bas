@@ -137,10 +137,9 @@ Type PROCESSENTRY32
     szExeFile As String * MAX_PATH_LEN
 End Type
 
-
-'This type is what PhotoDemon uses internally for storing and displaying metadata.  Its complexity is a testament to the nightmare
-' that is metadata management.
-Public Type mdItem
+'This type is what PhotoDemon uses internally for storing and displaying metadata.  Its complexity is a testament to the
+' nightmare that is metadata management.
+Public Type PDMetadataItem
     FullGroupAndName As String
     Group As String
     SubGroup As String
@@ -542,11 +541,49 @@ Public Function CreateTechnicalMetadataReport(ByRef srcImage As pdImage) As Bool
         CreateTechnicalMetadataReport = True
     
     Else
-    
         CreateTechnicalMetadataReport = False
-    
     End If
 
+End Function
+
+Public Function DoesTagDatabaseExist() As Boolean
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    DoesTagDatabaseExist = cFile.FileExist(g_PluginPath & "exifToolDatabase.xml")
+End Function
+
+Public Function ShowMetadataDialog(ByRef srcImage As pdImage) As Boolean
+
+    'Perform a failsafe check to make sure the metadata object exists.  (If ExifTool is missing, it may
+    ' not be present!)
+    If Not (srcImage.imgMetadata Is Nothing) Then
+        
+        'In the future, we'll allow the user to add their own metadata to the current image.  At present,
+        ' however, there's not much point in displaying a dialog if the image doesn't have metadata.
+        If srcImage.imgMetadata.HasMetadata Then
+            
+            'Make sure the metadata database exists.  If it doesn't, create it.
+            If (Not ExifTool.DoesTagDatabaseExist) Or ExifTool.IsDatabaseModeActive Then
+                 
+                If (Not ExifTool.DoesTagDatabaseExist) Then ExifTool.WriteTagDatabase
+                Interface.DisplayWaitScreen "Please wait while the tag database is created for the first time...", FormMain
+                Do
+                    DoEvents
+                Loop While ExifTool.IsDatabaseModeActive
+                Interface.HideWaitScreen
+                
+            End If
+            
+            ShowPDDialog vbModal, FormMetadata
+        
+        'TODO 7.0: still raise the form, and allow the user to add their own metadata to the image
+        Else
+            Message "No metadata available."
+            PDMsgBox "This image does not contain any metadata.", vbInformation + vbOKOnly + vbApplicationModal, "No metadata available"
+        End If
+        
+    End If
+            
 End Function
 
 'If the user wants to edit an image's metadata, we need to know which tags are writeable and which are not.  Also, it's helpful to
@@ -558,11 +595,10 @@ Public Function WriteTagDatabase() As Boolean
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
+    'If the database already exists, there's no need to recreate it
+    ' (TODO: check the database version number, as new tags may be added between releases...)
     If cFile.FileExist(g_PluginPath & "exifToolDatabase.xml") Then
-    
-        'Database already exists - no need to recreate it!
         WriteTagDatabase = True
-    
     Else
     
         'Database wasn't found.  Generate a new copy now.

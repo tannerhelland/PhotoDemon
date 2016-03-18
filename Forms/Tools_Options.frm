@@ -28,7 +28,7 @@ Begin VB.Form FormPreferences
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   59
+      TabIndex        =   57
       Top             =   6870
       Width           =   11505
       _ExtentX        =   20294
@@ -37,11 +37,157 @@ Begin VB.Form FormPreferences
    Begin PhotoDemon.pdButtonStripVertical btsvCategory 
       Height          =   6675
       Left            =   120
-      TabIndex        =   55
+      TabIndex        =   53
       Top             =   120
       Width           =   2625
       _ExtentX        =   4630
       _ExtentY        =   11774
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6660
+      Index           =   2
+      Left            =   3000
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   444
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   19
+      Top             =   120
+      Width           =   8295
+      Begin PhotoDemon.pdCheckBox chkSaveMetadata 
+         Height          =   375
+         Left            =   240
+         TabIndex        =   58
+         Top             =   4560
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   661
+         Caption         =   "copy all relevant metadata to the new file"
+      End
+      Begin PhotoDemon.pdCheckBox chkConfirmUnsaved 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   25
+         Top             =   360
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "when closing images, warn me me about unsaved changes"
+      End
+      Begin PhotoDemon.pdDropDown cboDefaultSaveFormat 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   26
+         Top             =   3135
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdDropDown cboSaveBehavior 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   27
+         Top             =   1725
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdLabel lblSubheader 
+         Height          =   240
+         Index           =   3
+         Left            =   240
+         Top             =   4140
+         Width           =   7950
+         _ExtentX        =   14023
+         _ExtentY        =   503
+         Caption         =   "when saving images that originally contained metadata:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+         Height          =   285
+         Index           =   1
+         Left            =   0
+         Top             =   3690
+         Width           =   8265
+         _ExtentX        =   14579
+         _ExtentY        =   503
+         Caption         =   "metadata (EXIF, GPS, comments, etc.)"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+         Height          =   285
+         Index           =   16
+         Left            =   0
+         Top             =   885
+         Width           =   8175
+         _ExtentX        =   14420
+         _ExtentY        =   503
+         Caption         =   "save behavior: overwrite vs make a copy"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdLabel lblSubheader 
+         Height          =   240
+         Index           =   2
+         Left            =   240
+         Top             =   1335
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   503
+         Caption         =   "when ""Save"" is used:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+         Height          =   285
+         Index           =   11
+         Left            =   0
+         Top             =   0
+         Width           =   8145
+         _ExtentX        =   14367
+         _ExtentY        =   503
+         Caption         =   "closing unsaved images"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdLabel lblSubheader 
+         Height          =   240
+         Index           =   1
+         Left            =   240
+         Top             =   2730
+         Width           =   7950
+         _ExtentX        =   14023
+         _ExtentY        =   503
+         Caption         =   "when using the ""Save As"" command, set the default file format according to:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+         Height          =   285
+         Index           =   10
+         Left            =   0
+         Top             =   2310
+         Width           =   8205
+         _ExtentX        =   14473
+         _ExtentY        =   503
+         Caption         =   "default file format when saving"
+         FontSize        =   12
+         ForeColor       =   5263440
+      End
+      Begin PhotoDemon.pdCheckBox chkAnonymizeMetadata 
+         Height          =   375
+         Left            =   240
+         TabIndex        =   59
+         Top             =   4920
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   661
+         Caption         =   "erase tags that might be personal (including GPS and location)"
+         Value           =   0
+      End
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -61,7 +207,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkToneMapping 
          Height          =   330
          Left            =   240
-         TabIndex        =   30
+         TabIndex        =   28
          Top             =   360
          Width           =   7920
          _ExtentX        =   13970
@@ -71,7 +217,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkLoadingOrientation 
          Height          =   330
          Left            =   240
-         TabIndex        =   31
+         TabIndex        =   29
          Top             =   1320
          Width           =   7920
          _ExtentX        =   13970
@@ -81,7 +227,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdDropDown cboLargeImages 
          Height          =   330
          Left            =   240
-         TabIndex        =   33
+         TabIndex        =   31
          Top             =   2640
          Width           =   7980
          _ExtentX        =   14076
@@ -163,7 +309,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdSlider sltUndoCompression 
          Height          =   405
          Left            =   240
-         TabIndex        =   35
+         TabIndex        =   33
          Top             =   5730
          Width           =   7980
          _ExtentX        =   14076
@@ -176,7 +322,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   0
          Left            =   180
-         TabIndex        =   36
+         TabIndex        =   34
          Top             =   720
          Width           =   7920
          _ExtentX        =   14076
@@ -186,7 +332,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   1
          Left            =   180
-         TabIndex        =   37
+         TabIndex        =   35
          Top             =   1980
          Width           =   7920
          _ExtentX        =   14076
@@ -196,7 +342,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   2
          Left            =   180
-         TabIndex        =   38
+         TabIndex        =   36
          Top             =   3240
          Width           =   7920
          _ExtentX        =   14076
@@ -206,7 +352,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   3
          Left            =   180
-         TabIndex        =   39
+         TabIndex        =   37
          Top             =   4470
          Width           =   7920
          _ExtentX        =   14076
@@ -371,7 +517,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButton cmdReset 
          Height          =   600
          Left            =   240
-         TabIndex        =   58
+         TabIndex        =   56
          Top             =   6000
          Width           =   7935
          _ExtentX        =   13996
@@ -381,7 +527,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButton cmdTmpPath 
          Height          =   450
          Left            =   7680
-         TabIndex        =   57
+         TabIndex        =   55
          Top             =   435
          Width           =   525
          _ExtentX        =   926
@@ -391,7 +537,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButtonToolbox cmdCopyReportClipboard 
          Height          =   570
          Left            =   7650
-         TabIndex        =   53
+         TabIndex        =   51
          Top             =   3315
          Width           =   570
          _ExtentX        =   1005
@@ -401,7 +547,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdTextBox txtHardware 
          Height          =   1785
          Left            =   240
-         TabIndex        =   41
+         TabIndex        =   39
          Top             =   2040
          Width           =   7335
          _ExtentX        =   12938
@@ -412,7 +558,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdTextBox txtTempPath 
          Height          =   315
          Left            =   240
-         TabIndex        =   43
+         TabIndex        =   41
          Top             =   510
          Width           =   7335
          _ExtentX        =   12938
@@ -535,7 +681,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   0
          Left            =   240
-         TabIndex        =   45
+         TabIndex        =   43
          Top             =   2280
          Width           =   7935
          _ExtentX        =   13996
@@ -556,7 +702,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Index           =   0
          Left            =   240
-         TabIndex        =   46
+         TabIndex        =   44
          Top             =   840
          Width           =   7935
          _ExtentX        =   13996
@@ -566,7 +712,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   1
          Left            =   240
-         TabIndex        =   48
+         TabIndex        =   46
          Top             =   2760
          Width           =   7935
          _ExtentX        =   13996
@@ -577,7 +723,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Index           =   1
          Left            =   240
-         TabIndex        =   49
+         TabIndex        =   47
          Top             =   1710
          Width           =   7935
          _ExtentX        =   13996
@@ -609,7 +755,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   2
          Left            =   240
-         TabIndex        =   54
+         TabIndex        =   52
          Top             =   3240
          Width           =   7935
          _ExtentX        =   13996
@@ -758,7 +904,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButton cmdColorProfilePath 
          Height          =   375
          Left            =   7380
-         TabIndex        =   56
+         TabIndex        =   54
          Top             =   2760
          Width           =   810
          _ExtentX        =   1429
@@ -993,7 +1139,7 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   34
+         TabIndex        =   32
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.pdDropDown cboTiffCompression 
@@ -1008,7 +1154,7 @@ Begin VB.Form FormPreferences
          Begin PhotoDemon.pdCheckBox chkTIFFCMYK 
             Height          =   330
             Left            =   360
-            TabIndex        =   50
+            TabIndex        =   48
             Top             =   1560
             Width           =   7500
             _ExtentX        =   13229
@@ -1050,7 +1196,7 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   257
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   32
+         TabIndex        =   30
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.pdDropDown cboPPMFormat 
@@ -1096,13 +1242,13 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   42
+         TabIndex        =   40
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.pdCheckBox chkPNGBackground 
             Height          =   330
             Left            =   360
-            TabIndex        =   52
+            TabIndex        =   50
             Top             =   2520
             Width           =   7500
             _ExtentX        =   13229
@@ -1112,7 +1258,7 @@ Begin VB.Form FormPreferences
          Begin PhotoDemon.pdCheckBox chkPNGInterlacing 
             Height          =   330
             Left            =   360
-            TabIndex        =   51
+            TabIndex        =   49
             Top             =   2040
             Width           =   7500
             _ExtentX        =   13229
@@ -1123,7 +1269,7 @@ Begin VB.Form FormPreferences
             Height          =   330
             Left            =   360
             Max             =   9
-            TabIndex        =   44
+            TabIndex        =   42
             Top             =   1080
             Value           =   9
             Width           =   7095
@@ -1188,7 +1334,7 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   47
+         TabIndex        =   45
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.pdCheckBox chkTGARLE 
@@ -1225,7 +1371,7 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   40
+         TabIndex        =   38
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.pdCheckBox chkBMPRLE 
@@ -1257,172 +1403,6 @@ Begin VB.Form FormPreferences
          X2              =   16
          Y1              =   103
          Y2              =   103
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   6660
-      Index           =   2
-      Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   444
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   19
-      Top             =   120
-      Width           =   8295
-      Begin PhotoDemon.pdDropDown cboExportColorDepth 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   25
-         Top             =   1740
-         Width           =   7980
-         _ExtentX        =   14076
-         _ExtentY        =   582
-      End
-      Begin PhotoDemon.pdCheckBox chkConfirmUnsaved 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   26
-         Top             =   360
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "when closing images, warn me me about unsaved changes"
-      End
-      Begin PhotoDemon.pdDropDown cboDefaultSaveFormat 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   27
-         Top             =   3135
-         Width           =   7980
-         _ExtentX        =   14076
-         _ExtentY        =   582
-      End
-      Begin PhotoDemon.pdDropDown cboMetadata 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   28
-         Top             =   4530
-         Width           =   7980
-         _ExtentX        =   14076
-         _ExtentY        =   582
-      End
-      Begin PhotoDemon.pdDropDown cboSaveBehavior 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   29
-         Top             =   5925
-         Width           =   7980
-         _ExtentX        =   14076
-         _ExtentY        =   582
-      End
-      Begin PhotoDemon.pdLabel lblSubheader 
-         Height          =   240
-         Index           =   3
-         Left            =   240
-         Top             =   4140
-         Width           =   7950
-         _ExtentX        =   14023
-         _ExtentY        =   503
-         Caption         =   "when saving images that originally contained metadata:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   1
-         Left            =   0
-         Top             =   3690
-         Width           =   8265
-         _ExtentX        =   14579
-         _ExtentY        =   503
-         Caption         =   "metadata (EXIF, GPS, comments, etc.)"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdLabel lblSubheader 
-         Height          =   240
-         Index           =   0
-         Left            =   240
-         Top             =   1350
-         Width           =   7905
-         _ExtentX        =   13944
-         _ExtentY        =   503
-         Caption         =   "set outgoing color depth:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   17
-         Left            =   0
-         Top             =   930
-         Width           =   8145
-         _ExtentX        =   14367
-         _ExtentY        =   503
-         Caption         =   "color depth of saved images"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   16
-         Left            =   0
-         Top             =   5085
-         Width           =   8175
-         _ExtentX        =   14420
-         _ExtentY        =   503
-         Caption         =   "save behavior: overwrite vs make a copy"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdLabel lblSubheader 
-         Height          =   240
-         Index           =   2
-         Left            =   240
-         Top             =   5535
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   503
-         Caption         =   "when ""Save"" is used:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   11
-         Left            =   0
-         Top             =   0
-         Width           =   8145
-         _ExtentX        =   14367
-         _ExtentY        =   503
-         Caption         =   "closing unsaved images"
-         FontSize        =   12
-         ForeColor       =   5263440
-      End
-      Begin PhotoDemon.pdLabel lblSubheader 
-         Height          =   240
-         Index           =   1
-         Left            =   240
-         Top             =   2730
-         Width           =   7950
-         _ExtentX        =   14023
-         _ExtentY        =   503
-         Caption         =   "when using the ""Save As"" command, set the default file format according to:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   10
-         Left            =   0
-         Top             =   2310
-         Width           =   8205
-         _ExtentX        =   14473
-         _ExtentY        =   503
-         Caption         =   "default file format when saving"
-         FontSize        =   12
-         ForeColor       =   5263440
       End
    End
 End
@@ -1664,20 +1644,17 @@ Private Sub cmdBarMini_OKClick()
             Else
                 toolbar_Toolbox.cmdFile(FILE_CLOSE).AssignTooltip "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.", "Close the current image"
             End If
+            
+            g_UserPreferences.SetPref_Boolean "Saving", "PreserveMetadata", CBool(chkSaveMetadata.Value)
+            g_UserPreferences.SetPref_Boolean "Saving", "AnonymizeMetadata", CBool(chkAnonymizeMetadata.Value)
     
         'END prompt on unsaved images
-    
-        'START/END outgoing color depth selection
-            g_UserPreferences.SetPref_Long "Saving", "Outgoing Color Depth", cboExportColorDepth.ListIndex
-    
+        
         'START/END Save behavior (overwrite or copy)
             g_UserPreferences.SetPref_Long "Saving", "Overwrite Or Copy", cboSaveBehavior.ListIndex
         
         'START/END "Save As" dialog's suggested file format
             g_UserPreferences.SetPref_Long "Saving", "Suggested Format", cboDefaultSaveFormat.ListIndex
-    
-        'START/END metadata export behavior
-            g_UserPreferences.SetPref_Long "Saving", "Metadata Export", cboMetadata.ListIndex + 1
     
     'END Saving preferences
     
@@ -1999,15 +1976,6 @@ Private Sub LoadAllPreferences()
     
         'START/END prompt about unsaved images
             If g_ConfirmClosingUnsaved Then chkConfirmUnsaved.Value = vbChecked Else chkConfirmUnsaved.Value = vbUnchecked
-    
-        'START exported color depth handling
-            cboExportColorDepth.Clear
-            cboExportColorDepth.AddItem " by asking me what color depth I want to use", 0
-            cboExportColorDepth.AddItem " automatically", 1
-            cboExportColorDepth.ListIndex = g_UserPreferences.GetPref_Long("Saving", "Outgoing Color Depth", 1)
-        
-            cboExportColorDepth.AssignTooltip "Some image file types support multiple color depths.  PhotoDemon's developers suggest letting the software choose the best color depth for you, unless you have reason to choose otherwise."
-        'END exported color depth handling
             
         'START suggested save as format
             cboDefaultSaveFormat.Clear
@@ -2028,20 +1996,8 @@ Private Sub LoadAllPreferences()
         'END overwrite vs copy when saving
                
         'START metadata export
-            cboMetadata.Clear
-            cboMetadata.AddItem " preserve all relevant metadata", 0
-            cboMetadata.AddItem " preserve all relevant metadata, but remove personal tags (GPS coords, serial #'s, etc)", 1
-            cboMetadata.AddItem " do not preserve metadata", 2
-            
-            'Previously we provided an option for "preserve all metadata" at position 0.  This option is no longer available
-            ' (for a huge variety of reasons).  To compensate for the removal of position 0, we apply some special handling
-            ' to this preference.
-            Dim tmpPreferenceLong As Long
-            tmpPreferenceLong = g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 0)
-            If tmpPreferenceLong > 0 Then tmpPreferenceLong = tmpPreferenceLong - 1
-            cboMetadata.ListIndex = tmpPreferenceLong
-            
-            cboMetadata.AssignTooltip "Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, the GPS coordinates where a photo was taken, or many other items.  To view an image's metadata, use the Image -> Metadata menu."
+            If g_UserPreferences.GetPref_Boolean("Saving", "PreserveMetadata", True) Then chkSaveMetadata.Value = vbChecked Else chkSaveMetadata.Value = vbUnchecked
+            If g_UserPreferences.GetPref_Boolean("Saving", "AnonymizeMetadata", True) Then chkAnonymizeMetadata.Value = vbChecked Else chkAnonymizeMetadata.Value = vbUnchecked
         'END metadata export
     
     'END Saving preferences

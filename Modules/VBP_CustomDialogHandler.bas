@@ -65,13 +65,14 @@ Public Function PromptMultiImage(ByVal srcFilename As String, ByVal numOfPages A
 
 End Function
 
-Public Function PromptBMPSettings(ByRef srcImage As pdImage, ByRef dstXMLParams As String) As VbMsgBoxResult
+Public Function PromptBMPSettings(ByRef srcImage As pdImage, ByRef dstXMLParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
 
     Load dialog_ExportBMP
     dialog_ExportBMP.ShowDialog
     
     PromptBMPSettings = dialog_ExportBMP.DialogResult
     dstXMLParams = dialog_ExportBMP.m_OutputParamString
+    dstMetadataParams = vbNullString
     
     Unload dialog_ExportBMP
     Set dialog_ExportBMP = Nothing
@@ -79,7 +80,7 @@ Public Function PromptBMPSettings(ByRef srcImage As pdImage, ByRef dstXMLParams 
 End Function
 
 'Present a dialog box to ask the user for various JPEG export settings
-Public Function PromptJPEGSettings(ByRef srcImage As pdImage, ByRef dstXMLParams As String) As VbMsgBoxResult
+Public Function PromptJPEGSettings(ByRef srcImage As pdImage, ByRef dstXMLParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
 
     Load dialog_ExportJPEG
     Set dialog_ExportJPEG.imageBeingExported = srcImage
@@ -87,6 +88,7 @@ Public Function PromptJPEGSettings(ByRef srcImage As pdImage, ByRef dstXMLParams
 
     PromptJPEGSettings = dialog_ExportJPEG.DialogResult
     dstXMLParams = dialog_ExportJPEG.xmlParamString
+    dstMetadataParams = dialog_ExportJPEG.metadataParamString
     
     Set dialog_ExportJPEG.imageBeingExported = Nothing
     

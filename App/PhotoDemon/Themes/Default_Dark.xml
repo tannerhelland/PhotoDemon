@@ -257,6 +257,10 @@
 				<SeparatorLine>GrayLight</SeparatorLine>
 			</PDListBoxView>
 			
+			<PDMetadataExport>
+				<Background>BackgroundDefault</Background>
+			</PDMetadataExport>
+			
 			<PDNavigator>
 				<Background>BackgroundDefault</Background>
 			</PDNavigator>

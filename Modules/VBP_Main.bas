@@ -334,14 +334,6 @@ Public Sub ContinueLoadingProgram()
     Plugin_Management.LoadAllPlugins
     
     
-    'If ExifTool was enabled successfully, ask it to double-check that its tag database has been created
-    ' successfully at some point in the past.  If it hasn't, generate a new copy now.
-    '
-    'Now that this has been thoroughly tested, I'm postponing actual enabling of it until PD supports metadata editing.
-    'If g_ExifToolEnabled Then writeTagDatabase
-    
-    
-    
     '*************************************************************************************************************************************
     ' If this is not a production build, initialize PhotoDemon's central debugger
     '*************************************************************************************************************************************
@@ -369,8 +361,8 @@ Public Sub ContinueLoadingProgram()
     g_ImageFormats.GDIPlusEnabled = g_GDIPlusAvailable
     
     'Generate a list of currently supported input/output formats, which may vary based on plugin version and availability
-    g_ImageFormats.generateInputFormats
-    g_ImageFormats.generateOutputFormats
+    g_ImageFormats.GenerateInputFormats
+    g_ImageFormats.GenerateOutputFormats
     
     
     

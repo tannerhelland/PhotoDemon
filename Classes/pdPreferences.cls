@@ -518,10 +518,10 @@ Private Sub CreateNewPreferencesFile()
     
     xmlEngine.writeTag "Saving", "", True
         xmlEngine.writeTag "ConfirmClosingUnsaved", "True"
-        xmlEngine.writeTag "MetadataExport", "1"
-        xmlEngine.writeTag "OutgoingColorDepth", "1"
         xmlEngine.writeTag "OverwriteOrCopy", "0"
         xmlEngine.writeTag "SuggestedFormat", "0"
+        xmlEngine.writeTag "PreserveMetadata", "True"
+        xmlEngine.writeTag "AnonymizeMetadata", "True"
     xmlEngine.closeTag "Saving"
     xmlEngine.writeBlankLine
     
