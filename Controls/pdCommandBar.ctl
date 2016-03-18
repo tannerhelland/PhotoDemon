@@ -659,6 +659,10 @@ Private Sub ResetSettings()
             'Text boxes are set to 0
             Case "TextBox", "pdTextBox"
                 eControl.Text = "0"
+                
+            'A metadata management control has its own "reset" function
+            Case "pdMetadata"
+                eControl.Reset
         
         End Select
         
@@ -910,6 +914,10 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
             Case "pdResize"
                 controlValue = buildParams(eControl.imgWidth, eControl.imgHeight, eControl.LockAspectRatio, eControl.unitOfMeasurement, eControl.imgDPI, eControl.UnitOfResolution)
                 
+            'Metadata management controls provide their own XML string
+            Case "pdMetadata"
+                controlValue = eControl.GetMetadataSettings
+                
         End Select
         
         'Remove VB's default padding from the generated string.  (Str() prepends positive numbers with a space)
@@ -1117,6 +1125,10 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
                         eControl.imgDPI = cParam.GetLong(5, 96)
                         eControl.imgWidth = cParam.GetDouble(1, 1920)
                         eControl.imgHeight = cParam.GetDouble(2, 1080)
+                        
+                    'Metadata management controls handle their own XML string parsing
+                    Case "pdMetadata"
+                        eControl.SetMetadataSettings controlValue
                         
                 End Select
     

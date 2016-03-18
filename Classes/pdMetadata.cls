@@ -42,7 +42,7 @@ Option Explicit
 Private maxMetadataCount As Long
 
 'Array that contains the metadata itself
-Private iMetadata() As mdItem
+Private iMetadata() As PDMetadataItem
 
 'When extracting metadata, we request a full XML dump from ExifTool.  This XML file is stored - in its entirety - in memory,
 ' as it is the only way to precisely restore the XML data in its *exact* form when save-time comes.
@@ -52,19 +52,16 @@ Private originalMetadataXML As String
 Private hasGPSCoordinates As Boolean
 Private gpsIndex As Long
 
-'Current metadata export setting for this image
-Private metadataExportPreference As Long
-
 'Return the original metadata XML string.  Note that aside from some minimal processing (e.g. removing ExifTool's {ready} marker),
 ' this will be the unmodified XML string originally passed to this class, e.g. without any parsing or validation of the data!
-Public Function getOriginalXMLMetadataString() As String
-    getOriginalXMLMetadataString = originalMetadataXML
+Public Function GetOriginalXMLMetadataString() As String
+    GetOriginalXMLMetadataString = originalMetadataXML
 End Function
 
 'Retrieve resolution data from the metadata collection, if it exists.  Returns TRUE if resolution metadata entrist exist; FALSE
 ' if they do not.  Note that this function always returns resolution in inches.  Pixels per CM measurements will be automatically
 ' converted to PPI.
-Public Function getResolution(ByRef xResolution As Double, ByRef yResolution As Double) As Boolean
+Public Function GetResolution(ByRef xResolution As Double, ByRef yResolution As Double) As Boolean
 
     On Error GoTo mdResolutionError
 
@@ -96,12 +93,12 @@ Public Function getResolution(ByRef xResolution As Double, ByRef yResolution As 
         End If
         
         'Return TRUE!
-        getResolution = True
+        GetResolution = True
     
     'Resolution tags don't exist.  Return FALSE.
     Else
     
-        getResolution = False
+        GetResolution = False
     
     End If
     
@@ -110,7 +107,7 @@ Public Function getResolution(ByRef xResolution As Double, ByRef yResolution As 
 'If an error occurs, return FALSE
 mdResolutionError:
 
-    getResolution = False
+    GetResolution = False
 
 End Function
 
@@ -142,9 +139,9 @@ End Function
 
 'Does a given tag exist in the metadata collection?  Returns TRUE if yes, FALSE, if no.
 ' If the tag does exist, the optional byref tagIndex will be set to the index.  It will be set to -1 if the tag is not found.
-Private Function doesTagExistFullName(ByVal tagNameAndGroup As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
+Private Function DoesTagExistFullName(ByVal tagNameAndGroup As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
 
-    doesTagExistFullName = False
+    DoesTagExistFullName = False
     
     'If this image has no metadata, exit now
     If maxMetadataCount <= 0 Then Exit Function
@@ -156,7 +153,7 @@ Private Function doesTagExistFullName(ByVal tagNameAndGroup As String, Optional 
         'Tag name found!  Mark the index and exit.
         If StrComp(iMetadata(i).FullGroupAndName, tagNameAndGroup, searchMode) = 0 Then
         
-            doesTagExistFullName = True
+            DoesTagExistFullName = True
             tagIndex = i
             Exit For
         
@@ -169,67 +166,49 @@ End Function
 'Return the actual value of a given tag.  If the tag is not found, a null string is returned.
 ' It is assumed that the caller has used doesTagExistFullName() before calling this function, so they know whether a null string is
 ' the actual return value of the given metadata entry, or a fail state.
-Private Function getTagValue(ByVal tagNameAndGroup As String, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As String
+Private Function GetTagValue(ByVal tagNameAndGroup As String, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As String
 
     Dim tagIndex As Long
     
-    If doesTagExistFullName(tagNameAndGroup, tagIndex, searchMode) Then
-        getTagValue = getMetadataEntry(tagIndex).Value
+    If DoesTagExistFullName(tagNameAndGroup, tagIndex, searchMode) Then
+        GetTagValue = GetMetadataEntry(tagIndex).Value
     Else
-        getTagValue = ""
+        GetTagValue = ""
     End If
 
 End Function
 
-'Metadata export preferences are typically handled according a global user setting (settable via Tools -> Options).  When a
-' new image is loaded, its metadata handling preference will be set to that.  However, some dialogs (e.g. JPEG) allow the user
-' to override metadata handling for a given image.  In that case, this preference may deviate from the global setting.
-Public Sub setMetadataExportPreference(ByVal newExportPreference As Long)
-    metadataExportPreference = newExportPreference
-End Sub
-
 'Given an index and a source metadata object, fill that object with the contents of the matching entry in the iMetadata() array
-Friend Function getMetadataEntry(ByVal objIndex As Long) As mdItem
-
-    'Make sure the passed index is valid
-    If (objIndex < maxMetadataCount) And (objIndex >= 0) Then getMetadataEntry = iMetadata(objIndex)
-
+Friend Function GetMetadataEntry(ByVal objIndex As Long) As PDMetadataItem
+    If (objIndex < maxMetadataCount) And (objIndex >= 0) Then GetMetadataEntry = iMetadata(objIndex)
 End Function
 
 'Return the total metadata count for this object.  Note that binary and list items ARE included in this count.
-Public Function getMetadataCount() As Long
-    getMetadataCount = maxMetadataCount
+Public Function GetMetadataCount() As Long
+    GetMetadataCount = maxMetadataCount
 End Function
 
-'PD now supports a few different metadata storage methods.  This will return TRUE if XML metadata is present.
-Public Function hasXMLMetadata() As Boolean
-    
-    'If metadata has been loaded in XML format, maxMetadataCount will be > 0.
-    If maxMetadataCount = 0 Then
-        hasXMLMetadata = False
-    Else
-        hasXMLMetadata = True
-    End If
-    
+Public Function HasMetadata() As Boolean
+    HasMetadata = CBool(maxMetadataCount <> 0)
 End Function
 
 'It can be desirable to know if we have checked for GPS data and not found any, vs we have NOT looked for GPS data and we have no
 ' idea if the image contains any.
-Public Function haveAttemptedToFindGPSData() As Boolean
+Public Function HaveAttemptedToFindGPSData() As Boolean
     If maxMetadataCount = 0 Then
-        haveAttemptedToFindGPSData = False
+        HaveAttemptedToFindGPSData = False
     Else
-        haveAttemptedToFindGPSData = True
+        HaveAttemptedToFindGPSData = True
     End If
 End Function
 
 'Some metadata options require the presence of GPS data in the photo.  If a GPS entry was found at metadata load-time, return TRUE.
-Public Function hasGPSMetadata() As Boolean
-    hasGPSMetadata = hasGPSCoordinates
+Public Function HasGPSMetadata() As Boolean
+    HasGPSMetadata = hasGPSCoordinates
 End Function
 
 'If GPS metadata exists, this function can be used to retrieve the exact latitude and longitude values
-Public Function fillLatitudeLongitude(ByRef latString As String, ByRef lonString As String) As Boolean
+Public Function FillLatitudeLongitude(ByRef latString As String, ByRef lonString As String) As Boolean
     
     If hasGPSCoordinates Then
     
@@ -238,20 +217,20 @@ Public Function fillLatitudeLongitude(ByRef latString As String, ByRef lonString
         latString = tmpSplit(0)
         lonString = tmpSplit(1)
     
-        fillLatitudeLongitude = True
+        FillLatitudeLongitude = True
     
     Else
-        fillLatitudeLongitude = False
+        FillLatitudeLongitude = False
     End If
     
 End Function
 
 'This function will return a new XML file string with all "marked for removal" entries removed
-Private Function retrieveModifiedXMLString() As String
+Private Function RetrieveModifiedXMLString() As String
     
     'If this image has no metadata, exit now
     If maxMetadataCount <= 0 Then
-        retrieveModifiedXMLString = ""
+        RetrieveModifiedXMLString = ""
         Exit Function
     End If
     
@@ -280,7 +259,7 @@ Private Function retrieveModifiedXMLString() As String
     
     Next i
         
-    retrieveModifiedXMLString = newXMLString
+    RetrieveModifiedXMLString = newXMLString
     
 End Function
 
@@ -361,7 +340,7 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     Set uniHelper = New pdUnicode
     Dim tmpBytes() As Byte
     
-    ReDim iMetadata(0) As mdItem
+    ReDim iMetadata(0) As PDMetadataItem
     
     Do
     
@@ -726,7 +705,7 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             'Increment the max metadata count, and redim our metadata array as necessary
             If (Not ignoreThisTag) Then
                 maxMetadataCount = maxMetadataCount + 1
-                ReDim Preserve iMetadata(0 To maxMetadataCount) As mdItem
+                ReDim Preserve iMetadata(0 To maxMetadataCount) As PDMetadataItem
             End If
         
         'If this line doesn't contain a tag, move to the next one
@@ -765,7 +744,7 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             
             'First, we check for an sRGB chunk.  Technically, we should use the transform requested by the chunk value, but I don't have
             ' source code for all possible transform modes, so we're just going to do the default one (absolute colorimetric).
-            If doesTagExistFullName("PNG:SRGBRendering", tagIndex, vbBinaryCompare) Then
+            If DoesTagExistFullName("PNG:SRGBRendering", tagIndex, vbBinaryCompare) Then
             
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "PNG file contains sRGB chunk. Applying color conversion now..."
@@ -782,25 +761,25 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             ' been superceded by use of ICC profiles and/or sRGB identifiers, but cHRM is much more compact and may still be used by
             ' websites obsessed with file size.  (The chunk also provides a nice way to test our custom gamut code, which is why I
             ' implemented this feature in the first place!)
-            If (Not sRGBHandled) And doesTagExistFullName("PNG:WhitePointX", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:WhitePointY", tagIndex, vbBinaryCompare) Then
+            If (Not sRGBHandled) And DoesTagExistFullName("PNG:WhitePointX", tagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:WhitePointY", tagIndex, vbBinaryCompare) Then
             
                 'Those two tags were found.  Use of an sRGB tag or ICC profile supercedes the use of specific cHRM values, so check for
                 ' those next.  If either are found, ignore further processing.
-                If (Not doesTagExistFullName("PNG:ProfileName", tagIndex, vbBinaryCompare)) And (Not doesTagExistFullName("PNG:SRGBRendering", tagIndex, vbBinaryCompare)) Then
+                If (Not DoesTagExistFullName("PNG:ProfileName", tagIndex, vbBinaryCompare)) And (Not DoesTagExistFullName("PNG:SRGBRendering", tagIndex, vbBinaryCompare)) Then
                 
                     'White point values alone are not enough to properly handle color conversion.  We also need RGB tags.
-                    If doesTagExistFullName("PNG:RedX", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:RedY", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:GreenX", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:GreenY", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:BlueX", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:BlueY", tagIndex, vbBinaryCompare) Then
+                    If DoesTagExistFullName("PNG:RedX", tagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:RedY", tagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:GreenX", tagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:GreenY", tagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:BlueX", tagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:BlueY", tagIndex, vbBinaryCompare) Then
                     
                         'All tags exist.  Retrieve their values now.
                         Dim WhiteX As Double, WhiteY As Double, RedX As Double, RedY As Double, GreenX As Double, GreenY As Double, BlueX As Double, BlueY As Double
-                        WhiteX = CDblCustom(getTagValue("PNG:WhitePointX", vbBinaryCompare))
-                        WhiteY = CDblCustom(getTagValue("PNG:WhitePointY", vbBinaryCompare))
-                        RedX = CDblCustom(getTagValue("PNG:RedX", vbBinaryCompare))
-                        RedY = CDblCustom(getTagValue("PNG:RedY", vbBinaryCompare))
-                        GreenX = CDblCustom(getTagValue("PNG:GreenX", vbBinaryCompare))
-                        GreenY = CDblCustom(getTagValue("PNG:GreenY", vbBinaryCompare))
-                        BlueX = CDblCustom(getTagValue("PNG:BlueX", vbBinaryCompare))
-                        BlueY = CDblCustom(getTagValue("PNG:BlueY", vbBinaryCompare))
+                        WhiteX = CDblCustom(GetTagValue("PNG:WhitePointX", vbBinaryCompare))
+                        WhiteY = CDblCustom(GetTagValue("PNG:WhitePointY", vbBinaryCompare))
+                        RedX = CDblCustom(GetTagValue("PNG:RedX", vbBinaryCompare))
+                        RedY = CDblCustom(GetTagValue("PNG:RedY", vbBinaryCompare))
+                        GreenX = CDblCustom(GetTagValue("PNG:GreenX", vbBinaryCompare))
+                        GreenY = CDblCustom(GetTagValue("PNG:GreenY", vbBinaryCompare))
+                        BlueX = CDblCustom(GetTagValue("PNG:BlueX", vbBinaryCompare))
+                        BlueY = CDblCustom(GetTagValue("PNG:BlueY", vbBinaryCompare))
                         
                         'Check for matching inputs, including zeroes.  These indicate a writer error.
                         If ((WhiteX = 0) And (WhiteY = 0)) Or ((RedX = 0) And (RedY = 0)) Or ((GreenX = 0) And (GreenY = 0)) Or ((BlueX = 0) And (BlueY = 0)) Then
@@ -816,7 +795,7 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
                             'Per the spec, files using the cHRM chunk are also supposed to provide a gamma value.  Without it, we have to
                             ' guess at the right gamma value, which defeats the whole purpose of providing color correction data.
                             ' Look for gamma now.
-                            If doesTagExistFullName("PNG:Gamma", tagIndex, vbBinaryCompare) Then srcGamma = CDblCustom(getTagValue("PNG:Gamma", vbBinaryCompare))
+                            If DoesTagExistFullName("PNG:Gamma", tagIndex, vbBinaryCompare) Then srcGamma = CDblCustom(GetTagValue("PNG:Gamma", vbBinaryCompare))
                             
                             'If gamma does not exist in the file, or it does exist but it is encoded incorrectly, we'll still proceed with
                             ' the conversion, but we have no choice but to assume a default gamma value.
@@ -886,9 +865,9 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             ' but they do not handle it correctly (by "correctly" I mean, "like web browsers, for better or worse").  Handling gamma
             ' here also allows us to provide gamma correction when GDI+ is used.  Note that this behavior should probably be tied to
             ' a preference, because gamma handling may screw up some images that were encoded incorrectly.
-            If (Not cHRMHandled) And (Not sRGBHandled) And doesTagExistFullName("PNG:Gamma", tagIndex, vbBinaryCompare) Then
+            If (Not cHRMHandled) And (Not sRGBHandled) And DoesTagExistFullName("PNG:Gamma", tagIndex, vbBinaryCompare) Then
             
-                srcGamma = CDblCustom(getTagValue("PNG:Gamma", vbBinaryCompare))
+                srcGamma = CDblCustom(GetTagValue("PNG:Gamma", vbBinaryCompare))
                 
                 'If gamma does not exist in the file, or it does exist but it is encoded incorrectly, we obviously won't make use of it.
                 If srcGamma <= 0 Then
@@ -944,13 +923,14 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     
 End Function
 
-'Given a path to a saved image (yes, that's right - make certain it is already saved!) and a Long-type value specifying what metadata to save,
-' embed all relevant metadata.  (Note: this needs to be done immediately following a save, and is generally handled by the
-' PhotoDemon_SaveImage function.)
-Public Function writeAllMetadata(ByVal outputPath As String, ByRef srcPDImage As pdImage) As Boolean
+'Given a path to a saved image (yes, that's right - make certain it is already saved!) and a reference to the image in question,
+' embed as much or as little metadata as the image's settings specify.
+' (Note: this absolutely needs to be done *after* the destination file has been saved, because ExifTool requires an on-disk
+'  source for writing.  In PD, this function is generally called only by the PhotoDemon_SaveImage function.)
+Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As pdImage) As Boolean
     
     'Metadata only needs to be written out if it exists (obviously)
-    If hasXMLMetadata Then
+    If HasMetadata Then
         
         'XML writing is handled by PD's master XML engine
         Dim xmlEngine As pdXML
@@ -962,43 +942,22 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByRef srcPDImage As
         Dim cSHA2 As CSHA256
         Set cSHA2 = New CSHA256
         
-        'The user has three choices for metadata handling, settable from the Tools -> Preferences -> Saving panel.
-        ' (Note: some export dialogs (e.g. JPEG) also allow the user to override the global metadata preference for a given image.)
-        Select Case metadataExportPreference
+        'Retrieve the XML setting, if any, from the target image object, and write metadata accordingly.
+        Dim metadataParams As String
+        metadataParams = srcImage.imgStorage.GetEntry_String("MetadataSettings", vbNullString)
+        
+        Dim cParams As pdParamXML
+        Set cParams = New pdParamXML
+        cParams.SetParamString metadataParams
+        
+        'First, see if metadata export is even allowed
+        If cParams.GetBool("MetadataExportAllowed", True) Then
+        
+            'See if the caller wants their metadata anonymized prior to export
+            Dim forciblyAnonymize As Boolean
+            forciblyAnonymize = cParams.GetBool("MetadataAnonymize", True)
             
-            'Save all relevant metadata.  Previously, we provided an option for "save all metadata, regardless of relevance",
-            ' but that has since been removed (for a variety of reasons).  If someone previously specified that option, we
-            ' treat it the same as "save all relevant metadata".
-            
-            'Save as much relevant metadata as possible (default action)
-            Case 0, 1
-            
-                Message "Embedding metadata..."
-                
-                'In the future, we will do some preprocessing to the XML string to remove invalid entries, etc.  But for now,
-                ' simply dump the full original XML contents to a temp file.
-                newXMLString = originalMetadataXML
-                
-                ' Since we can assume the user has rights to the output directory, write the temporary XML file there
-                tmpXMLPath = g_UserPreferences.GetTempPath
-                
-                'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
-                tmpXMLPath = tmpXMLPath & "metadata_" & Left$(cSHA2.SHA256(outputPath), 16) & ".xml"
-                
-                'Write the XML file
-                xmlEngine.loadXMLFromString newXMLString
-                xmlEngine.writeXMLToFile tmpXMLPath, True
-                                
-                'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
-                If WriteMetadata(tmpXMLPath, outputPath, srcPDImage) Then
-                    Message "Metadata embedded successfully."
-                    
-                Else
-                    Message "Metadata may not have been embedded (but saved image still written successfully)."
-                End If
-                
-            'Save metadata, but remove items with potential privacy concerns (GPS coordinates, serial numbers, etc)
-            Case 2
+            If forciblyAnonymize Then
             
                 Message "Removing metadata with potential privacy concerns..."
             
@@ -1018,75 +977,98 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByRef srcPDImage As
         
                     If InStr(1, sMetadataName, "FIRMWARE", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "SERIAL", vbBinaryCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "ABOUT", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "NAME", vbBinaryCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "ARTIST", vbBinaryCompare) > 0 Then
                         removeThisTag = True
                     ElseIf InStr(1, sMetadataName, "BABY", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "SOFTWARE", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "ABOUT", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "CREATOR", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "COUNTRY", vbBinaryCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "BY-LINE", vbBinaryCompare) > 0 Then
                         removeThisTag = True
                     ElseIf InStr(1, sMetadataName, "CITY", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "LOCATION", vbBinaryCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "COMMENT", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "BY-LINE", vbBinaryCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "COPYRIGHT", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "TOOLKIT", vbBinaryCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "COUNTRY", vbBinaryCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, sMetadataName, "CREATOR", vbBinaryCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, sMetadataName, "DATE", vbBinaryCompare) > 0 Then
                         removeThisTag = True
                     ElseIf InStr(1, sMetadataName, "HISTORY", vbBinaryCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, sMetadataName, "LOCATION", vbBinaryCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, sMetadataName, "MAKE", vbBinaryCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, sMetadataName, "MODEL", vbBinaryCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, sMetadataName, "NAME", vbBinaryCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, sMetadataName, "RIGHTS", vbBinaryCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, sMetadataName, "SERIAL", vbBinaryCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, sMetadataName, "SOFTWARE", vbBinaryCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, sMetadataName, "TIME", vbBinaryCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, sMetadataName, "TOOL", vbBinaryCompare) > 0 Then
+                        removeThisTag = True
+                    ElseIf InStr(1, sMetadataName, "VERSION", vbBinaryCompare) > 0 Then
                         removeThisTag = True
                     ElseIf InStr(1, UCase$(iMetadata(i).Value), "XMP.IID", vbBinaryCompare) > 0 Then
                         removeThisTag = True
                     ElseIf InStr(1, UCase$(iMetadata(i).Value), "XMP.DID", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                        
                     End If
                     
                     iMetadata(i).markedForRemoval = removeThisTag
-                    
+                
                 Next i
                 
                 'Now that all problematic tags have been identified, we need to generate a modified XML string without those entries.
-                newXMLString = retrieveModifiedXMLString
+                newXMLString = RetrieveModifiedXMLString
+            
+            'The caller doesn't want metadata anonymized, so just retrieve the current string as-is
+            Else
+                newXMLString = originalMetadataXML
+            End If
+            
+            Message "Embedding metadata..."
                 
-                Message "Embedding metadata..."
+            'Since we can assume the user has rights to the output directory, write the temporary XML file there
+            tmpXMLPath = GetDirectory(outputPath)
                 
-                ' Since we can assume the user has rights to the output directory, write the temporary XML file there
-                tmpXMLPath = getDirectory(outputPath)
+            'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
+            tmpXMLPath = tmpXMLPath & "metadata_" & Left$(cSHA2.SHA256(CStr(Timer) & outputPath), 16) & ".xml"
+            
+            'Write the XML file
+            xmlEngine.loadXMLFromString newXMLString
+            xmlEngine.writeXMLToFile tmpXMLPath, True
                 
-                'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
-                tmpXMLPath = tmpXMLPath & "metadata_" & Left$(cSHA2.SHA256(outputPath), 16) & ".xml"
-                
-                'Write the XML file
-                xmlEngine.loadXMLFromString newXMLString
-                xmlEngine.writeXMLToFile tmpXMLPath, True
-                
-                'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
-                If WriteMetadata(tmpXMLPath, outputPath, srcPDImage, True) Then
-                    Message "Metadata embedded successfully."
-                Else
-                    Message "Metadata may not have been embedded (but saved image still written successfully)."
-                End If
-                            
-            'Do not save metadata.  This is by far the easiest method.  :)
-            Case 3
+            'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
+            WriteAllMetadata = WriteMetadata(tmpXMLPath, outputPath, srcImage, forciblyAnonymize)
+            If WriteAllMetadata Then
+                Message "Metadata embedded successfully."
+            Else
+                Message "Metadata may not have been embedded (but saved image still written successfully)."
+            End If
+            
+        'If metadata export is *not* allowed, we don't have to do a thing!
+        Else
+            WriteAllMetadata = True
+        End If
         
-        End Select
-        
+    Else
+        WriteAllMetadata = True
     End If
-    
-    writeAllMetadata = True
     
 End Function
 
 Private Sub Class_Initialize()
     maxMetadataCount = 0
-    ReDim iMetadata(0) As mdItem
+    ReDim iMetadata(0) As PDMetadataItem
 End Sub

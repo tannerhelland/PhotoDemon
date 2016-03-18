@@ -122,11 +122,16 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     ' reused on subsequent saves, instead of re-prompting the user.
     
     'It is now time to retrieve said parameter string, either from a dialog, or from the pdImage settings dictionary.
-    Dim saveParameters As String
+    Dim saveParameters As String, metadataParameters As String
     If needToDisplayDialog Then
+                
+        'After a successful dialog invocation, immediately save the metadata parameters to the parent pdImage object.
+        ' ExifTool will handle those settings separately, independent of the format-specific export engine.
+        If Saving.GetExportParamsFromDialog(srcImage, saveFormat, saveParameters, metadataParameters) Then
+            srcImage.imgStorage.AddEntry "MetadataSettings", metadataParameters
         
         'If the user cancels the dialog, exit immediately
-        If Not Saving.GetExportParamsFromDialog(srcImage, saveFormat, saveParameters) Then
+        Else
             Message "Save canceled."
             PhotoDemon_SaveImage = False
             Exit Function
@@ -135,6 +140,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     Else
         dictEntry = "ExportParams" & saveExtension
         saveParameters = srcImage.imgStorage.GetEntry_String(dictEntry, vbNullString)
+        metadataParameters = srcImage.imgStorage.GetEntry_String("MetadataSettings", vbNullString)
     End If
     
     'As saving can be somewhat lengthy for large images and/or complex formats, lock the UI now.  Note that we *must* call
@@ -169,8 +175,8 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
             
             'Only attempt to export metadata if ExifTool was able to successfully cache and parse metadata prior to saving
             If Not (srcImage.imgMetadata Is Nothing) Then
-                If srcImage.imgMetadata.hasXMLMetadata Then
-                    srcImage.imgMetadata.writeAllMetadata dstPath, srcImage
+                If srcImage.imgMetadata.HasMetadata Then
+                    srcImage.imgMetadata.WriteAllMetadata dstPath, srcImage
                 Else
                     Message "No metadata to export.  Continuing save..."
                 End If
@@ -223,7 +229,7 @@ End Function
 ' returned from the associated format-specific dialog.
 '
 'Returns: TRUE if dialog was closed via OK button; FALSE otherwise.
-Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT, ByRef dstParamString As String) As Boolean
+Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT, ByRef dstParamString As String, ByRef dstMetadataString As String) As Boolean
     
     'As a failsafe, make sure the requested format even *has* an export dialog!
     If g_ImageFormats.IsExportDialogSupported(outputPDIF) Then
@@ -231,10 +237,10 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
         Select Case outputPDIF
             
             Case PDIF_BMP
-                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptBMPSettings(srcImage, dstParamString) = vbOK)
+                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptBMPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
             Case PDIF_JPEG
-                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptJPEGSettings(srcImage, dstParamString) = vbOK)
+                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptJPEGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 
             Case PDIF_JP2
                 GetExportParamsFromDialog = CBool(Dialog_Handler.PromptJP2Settings(srcImage, dstParamString) = vbOK)
@@ -454,9 +460,9 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     'Next, if the "write metadata" flag has been set, and the image has metadata, add a metadata entry to the file.
     If (Not writeHeaderOnlyFile) And WriteMetadata And Not (srcPDImage.imgMetadata Is Nothing) Then
     
-        If srcPDImage.imgMetadata.hasXMLMetadata Then
+        If srcPDImage.imgMetadata.HasMetadata Then
             nodeIndex = pdiWriter.addNode("pdMetadata_Raw", -1, 2)
-            pdiWriter.addNodeDataFromString nodeIndex, True, srcPDImage.imgMetadata.getOriginalXMLMetadataString, compressHeaders, , embedChecksums
+            pdiWriter.addNodeDataFromString nodeIndex, True, srcPDImage.imgMetadata.GetOriginalXMLMetadataString, compressHeaders, , embedChecksums
         End If
     
     End If

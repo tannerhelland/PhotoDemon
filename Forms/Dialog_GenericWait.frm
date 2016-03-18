@@ -4,7 +4,7 @@ Begin VB.Form FormWait
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Applying changes..."
+   Caption         =   " Please wait a moment..."
    ClientHeight    =   1590
    ClientLeft      =   45
    ClientTop       =   315
@@ -79,9 +79,16 @@ Private Sub Form_Load()
     sysProgBar.Marquee = True
     sysProgBar.Value = 0
     
-    'Turn on the progress bar timer, which is used to move the marquee progress bar
+    Interface.ApplyThemeAndTranslations Me
+    
+    'Turn on the progress bar timer, which is used to move the marquee progress bar.
+    ' (This is no longer required, thankfully.)
     'tmrProgBar.Enabled = True
     
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    tmrProgBar.Enabled = False
 End Sub
 
 Private Sub tmrProgBar_Timer()

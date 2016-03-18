@@ -462,7 +462,7 @@ Public Sub MenuCloseAll()
 End Sub
 
 'Create a new, blank image from scratch
-Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal imgDPI As Long, ByVal defaultBackground As Long, ByVal backgroundColor As Long)
+Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal imgDPI As Long, ByVal defaultBackground As Long, ByVal BackgroundColor As Long)
 
     'Display a busy cursor
     If Screen.MousePointer <> vbHourglass Then Screen.MousePointer = vbHourglass
@@ -500,7 +500,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
         
         'Custom color
         Case 3
-            tmpDIB.createBlank imgWidth, imgHeight, 32, backgroundColor, 255
+            tmpDIB.createBlank imgWidth, imgHeight, 32, BackgroundColor, 255
     
     End Select
     
@@ -519,10 +519,6 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     'Disable viewport rendering, then reset the main viewport
     g_AllowViewportRendering = False
     FormMain.mainCanvas(0).SetScrollValue PD_BOTH, 0
-    
-    'By default, set this image to use the program's default metadata setting (settable from Tools -> Options).
-    ' The user may override this setting later, but by default we always start with the user's program-wide setting.
-    newImage.imgMetadata.setMetadataExportPreference g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1)
     
     'Reset the file format markers; at save-time engine, PD will run heuristics on the image's contents and suggest a better format accordingly.
     newImage.originalFileFormat = PDIF_UNKNOWN

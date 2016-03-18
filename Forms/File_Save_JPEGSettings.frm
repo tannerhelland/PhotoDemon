@@ -58,6 +58,31 @@ Begin VB.Form dialog_ExportJPEG
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
+      HasDC           =   0   'False
+      Height          =   4695
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   313
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   481
+      TabIndex        =   10
+      Top             =   1080
+      Width           =   7215
+      Begin PhotoDemon.pdMetadataExport mtdManager 
+         Height          =   4215
+         Left            =   240
+         TabIndex        =   13
+         Top             =   120
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   7435
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
       Height          =   4695
       Index           =   0
       Left            =   5880
@@ -70,7 +95,7 @@ Begin VB.Form dialog_ExportJPEG
       Begin PhotoDemon.pdDropDown cboSaveQuality 
          Height          =   375
          Left            =   120
-         TabIndex        =   14
+         TabIndex        =   12
          Top             =   240
          Width           =   2730
          _ExtentX        =   4815
@@ -79,7 +104,7 @@ Begin VB.Form dialog_ExportJPEG
       Begin PhotoDemon.pdDropDown cboSubsample 
          Height          =   375
          Left            =   720
-         TabIndex        =   13
+         TabIndex        =   11
          Top             =   2910
          Width           =   6375
          _ExtentX        =   11245
@@ -184,85 +209,6 @@ Begin VB.Form dialog_ExportJPEG
          ForeColor       =   4210752
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4695
-      Index           =   1
-      Left            =   5880
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   481
-      TabIndex        =   10
-      Top             =   1080
-      Width           =   7215
-      Begin PhotoDemon.pdDropDown cboMetadata 
-         Height          =   375
-         Left            =   360
-         TabIndex        =   12
-         Top             =   1020
-         Width           =   6735
-         _ExtentX        =   11880
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdHyperlink lblReviewMetadata 
-         Height          =   255
-         Left            =   240
-         Top             =   30
-         Width           =   6780
-         _ExtentX        =   11959
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "click here to review the image's metadata"
-         RaiseClickEvent =   -1  'True
-      End
-      Begin PhotoDemon.pdCheckBox chkThumbnail 
-         Height          =   330
-         Left            =   360
-         TabIndex        =   11
-         Top             =   3240
-         Width           =   6690
-         _ExtentX        =   11800
-         _ExtentY        =   582
-         Caption         =   "embed thumbnail image"
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   2
-         Left            =   120
-         Top             =   2820
-         Width           =   6975
-         _ExtentX        =   12303
-         _ExtentY        =   503
-         Caption         =   "other metadata options"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblCurMetadata 
-         Height          =   1080
-         Left            =   360
-         Top             =   1560
-         Width           =   6615
-         _ExtentX        =   0
-         _ExtentY        =   503
-         ForeColor       =   4210752
-         Layout          =   1
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         Top             =   540
-         Width           =   6885
-         _ExtentX        =   12144
-         _ExtentY        =   503
-         Caption         =   "general metadata setting for this image"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-   End
 End
 Attribute VB_Name = "dialog_ExportJPEG"
 Attribute VB_GlobalNameSpace = False
@@ -300,8 +246,11 @@ Public imageBeingExported As pdImage
 ' variable controls access to the toggle code.
 Private m_CheckBoxUpdatingDisabled As Boolean
 
-'Final XML packet, with all JPEG settings defined as tag+value pairs
+'Final JPEG XML packet, with all JPEG settings defined as tag+value pairs
 Public xmlParamString As String
+
+'Final metadata XML packet, with all metadata settings defined as tag+value pairs
+Public metadataParamString As String
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -407,14 +356,14 @@ Private Sub cmdBar_OKClick()
     cParams.AddParam "JPEGProgressive", CBool(chkProgressive)
     cParams.AddParam "JPEGCustomSubsampling", CBool(chkSubsample)
     cParams.AddParam "JPEGCustomSubsamplingValue", GetSubsampleConstantFromComboBox()
-    cParams.AddParam "JPEGThumbnail", CBool(chkThumbnail)
-    
-    'Cache the final parameter list; the calling function will retrieve this before unloading the form
     xmlParamString = cParams.GetParamString
     
-    'Metadata handling is stored inside the image object itself.  Set that value now.
-    imageBeingExported.imgMetadata.setMetadataExportPreference cboMetadata.ListIndex
+    'cParams.AddParam "JPEGThumbnail", CBool(chkThumbnail)
     
+    'The metadata panel manages its own XML string
+    metadataParamString = mtdManager.GetMetadataSettings
+    
+    'Hide but *DO NOT UNLOAD* the form.  The dialog manager needs to retrieve the setting strings before unloading us
     userAnswer = vbOK
     Me.Hide
     
@@ -434,20 +383,18 @@ Private Sub cmdBar_ResetClick()
     
     'By default, the only advanced setting is Optimize compression tables
     chkOptimize.Value = vbChecked
-    chkThumbnail.Value = vbUnchecked
+    'chkThumbnail.Value = vbUnchecked
     chkProgressive.Value = vbUnchecked
     chkSubsample.Value = vbUnchecked
     
     'By default, automatic color matching prefers speed over accuracy
     chkColorMatching.Value = vbUnchecked
     
-    'By default, the global metadata setting is used
-    cboMetadata.ListIndex = 0
+    mtdManager.Reset
     
 End Sub
 
 Private Sub Form_Activate()
-    'Draw a preview of the effect
     UpdatePreview
 End Sub
 
@@ -485,7 +432,7 @@ Private Sub updateComboBox()
 End Sub
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog()
+Public Sub ShowDialog()
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
@@ -532,45 +479,7 @@ Public Sub showDialog()
     cboSubsample.ListIndex = 2
     
     'Next, prepare various controls on the metadata panel
-    
-    'Populate the metadata handling combo box
-    cboMetadata.Clear
-    cboMetadata.AddItem " use program-wide setting (default)", 0
-    cboMetadata.AddItem " preserve all relevant metadata", 1
-    cboMetadata.AddItem " preserve all relevant metadata, but remove personal tags", 2
-    cboMetadata.AddItem " do not preserve metadata", 3
-    cboMetadata.ListIndex = 0
-    
-    'As a convenience to the user, let them know what their current metadata setting is.
-    Dim curMDString As String
-    curMDString = g_Language.TranslateMessage("The current program-wide setting is:") & " """
-    
-    Select Case g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1)
-    
-        Case 0, 1
-            curMDString = curMDString & g_Language.TranslateMessage("preserve all relevant metadata")
-            
-        Case 2
-            curMDString = curMDString & g_Language.TranslateMessage("preserve all relevant metadata, but remove personal tags (GPS coords, serial #'s, etc)")
-        
-        Case 3
-            curMDString = curMDString & g_Language.TranslateMessage("do not preserve metadata")
-        
-    End Select
-    
-    curMDString = curMDString & """. "
-    curMDString = curMDString & g_Language.TranslateMessage("You can change the program-wide setting from the Tools -> Options menu.")
-    
-    lblCurMetadata.Caption = curMDString
-    
-    cboMetadata.AssignTooltip "Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, the GPS coordinates where a photo was taken, or many other items.  To view an image's metadata, use the Image -> Metadata menu."
-    
-    'If the image being saved is the primary image in the main PhotoDemon window, the user can choose to review the image's metadata
-    If imageBeingExported.imageID = g_CurrentImage Then
-        lblCurMetadata.Visible = True
-    Else
-        lblCurMetadata.Visible = False
-    End If
+    mtdManager.SetParentImage imageBeingExported
     
     'By default, the quality panel is always shown.
     btsCategory.ListIndex = 0
@@ -588,7 +497,7 @@ Public Sub showDialog()
         chkOptimize.Enabled = False
         chkProgressive.Enabled = False
         chkSubsample.Enabled = False
-        chkThumbnail.Enabled = False
+        'chkThumbnail.Enabled = False
         cboSubsample.AddItem "n/a", 4
         cboSubsample.ListIndex = 4
         cboSubsample.Enabled = False
@@ -598,7 +507,7 @@ Public Sub showDialog()
     'Apply some checkbox tooltips manually (so the translation engine can find them)
     chkOptimize.AssignTooltip "Optimization is highly recommended.  This option allows the JPEG encoder to compute an optimal Huffman coding table for the file.  It does not affect image quality - only file size."
     chkProgressive.AssignTooltip "Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection."
-    chkThumbnail.AssignTooltip "Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer)."
+    'chkThumbnail.AssignTooltip "Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer)."
     chkSubsample.AssignTooltip "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
     
     'FreeImage is required to perform the JPEG transformation.  We could use GDI+, but FreeImage is
@@ -643,19 +552,6 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-'When clicked, allow the user to view metadata for the current image
-Private Sub lblReviewMetadata_Click()
-
-    'If the current image does not have metadata, warn the user and exit.
-    If Not imageBeingExported.imgMetadata.hasXMLMetadata Then
-        PDMsgBox "This image does not contain any metadata.", vbInformation + vbOKOnly + vbApplicationModal, "No metadata available"
-        Exit Sub
-    End If
-    
-    ShowPDDialog vbModal, FormMetadata
-
-End Sub
-
 Private Sub sltQuality_Change()
     If Not m_CheckBoxUpdatingDisabled Then updateComboBox
 End Sub
@@ -681,7 +577,7 @@ Private Sub UpdatePreview()
         'If the user wants PhotoDemon to determine a save value for them, let's do that now for the working copy.
         ' While not 100% true to the final image, it should give them a good idea of how far the compressor can go.
         If cmbAutoQuality.ListIndex > 0 Then
-            JPEGQuality = findQualityForDesiredJPEGPerception(workingDIB, cmbAutoQuality.ListIndex, CBool(chkColorMatching))
+            JPEGQuality = FindQualityForDesiredJPEGPerception(workingDIB, cmbAutoQuality.ListIndex, CBool(chkColorMatching))
             m_CheckBoxUpdatingDisabled = True
             sltQuality.Value = JPEGQuality
             updateComboBox
@@ -690,7 +586,7 @@ Private Sub UpdatePreview()
         
         'The public workingDIB object now contains the relevant portion of the preview window.  Use that to
         ' obtain a JPEG-ified version of the image data.
-        fillDIBWithJPEGVersion workingDIB, workingDIB, JPEGQuality, IIf(CBool(chkSubsample), GetSubsampleConstantFromComboBox(), JPEG_SUBSAMPLING_422)
+        FillDIBWithJPEGVersion workingDIB, workingDIB, JPEGQuality, IIf(CBool(chkSubsample), GetSubsampleConstantFromComboBox(), JPEG_SUBSAMPLING_422)
         
         'Paint the final image to screen and release all temporary objects
         finalizeNonstandardPreview pdFxPreview

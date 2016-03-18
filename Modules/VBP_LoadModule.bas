@@ -170,11 +170,6 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     '*************************************************************************************************************************************
     ' If the ExifTool plugin is available and this is a non-PD-specific file, initiate a separate thread for metadata extraction
     '*************************************************************************************************************************************
-    
-    'By default, set this image to use the program's default metadata setting (settable from Tools -> Options).
-    ' The user may override this setting later, but we initially assume they want to use the program-wide setting.
-    targetImage.imgMetadata.setMetadataExportPreference g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1)
-        
     If g_ExifToolEnabled And (internalFormatID <> PDIF_PDI) And (internalFormatID <> PDIF_RAWBUFFER) Then
         
         #If DEBUGMODE = 1 Then
@@ -412,7 +407,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
             'Next, retrieve any specific metadata-related entries that may be useful to further processing, like image resolution
             Dim xResolution As Double, yResolution As Double
-            If targetImage.imgMetadata.getResolution(xResolution, yResolution) Then
+            If targetImage.imgMetadata.GetResolution(xResolution, yResolution) Then
                 targetImage.setDPI xResolution, yResolution
             End If
         

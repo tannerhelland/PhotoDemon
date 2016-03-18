@@ -797,7 +797,7 @@ Private Sub m_Painter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, B
             BackgroundColor = m_BackColor
         End If
         
-        Drawing.FillRectToDC targetDC, winLeft, winTop, winWidth, winHeight, BackgroundColor
+        Drawing.FillRectToDC targetDC, winLeft - 1, winTop - 1, winWidth + 2, winHeight + 2, BackgroundColor
     
     'If backbuffering is active (as it is with most PD controls), copy the relevant portion of the buffer into place.
     Else

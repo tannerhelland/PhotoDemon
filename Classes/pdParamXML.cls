@@ -324,6 +324,12 @@ multiParamFailure:
 
 End Function
 
+'Add an existing XML string to this one.  The incoming string is not modified in any way, so please make sure it contains
+' valid XML!
+Public Sub AddXMLString(ByRef srcString As String)
+    m_ParamString = m_ParamString & srcString
+End Sub
+
 'Update a given parameter.  If the parameter is not found, it will be added to the string. (Create-if-missing behavior can be toggled.)
 Public Function UpdateParam(ByVal paramName As String, ByVal paramValue As String, Optional ByVal createIfMissing As Boolean = True) As Boolean
     
@@ -343,7 +349,7 @@ Public Function UpdateParam(ByVal paramName As String, ByVal paramValue As Strin
         'Split the XML file into two halves: the half before the relevant tag, and the half after
         Dim paramCloseLocation As Long
         paramCloseLocation = InStr(paramLocation, m_ParamString, "</" & paramName & ">")
-        SplitStringIn2 m_ParamString, paramCloseLocation - 1, topHalf, bottomHalf
+        splitStringIn2 m_ParamString, paramCloseLocation - 1, topHalf, bottomHalf
         
         'The "topHalf" string now includes everything before the closing tag.  Chop it off at the end of the start tag (e.g. after
         ' the closing bracket), add the new contents, then add the bottom half of the original XML string.
@@ -374,7 +380,7 @@ Public Function UpdateParam(ByVal paramName As String, ByVal paramValue As Strin
 End Function
 
 'Given a string and a position, split it into two strings at that position
-Private Function SplitStringIn2(ByRef srcString As String, ByVal splitPosition As Long, ByRef dstFirstHalf As String, ByRef dstSecondHalf As String)
+Private Function splitStringIn2(ByRef srcString As String, ByVal splitPosition As Long, ByRef dstFirstHalf As String, ByRef dstSecondHalf As String)
     dstFirstHalf = Left$(srcString, splitPosition)
     dstSecondHalf = Right$(srcString, Len(srcString) - splitPosition)
 End Function
