@@ -2759,9 +2759,11 @@ Private Sub Form_Load()
     '*************************************************************************************************************************************
         
     Message ""
+    FormMain.Refresh
     
-    'TODO: As of 27 April '14, I have removed the warning below.
-    'MsgBox "WARNING!  I am currently adding Layers support to PhotoDemon.  Because Layers are only partially complete, the program is extremely unstable, with many features completely broken." & vbCrLf & vbCrLf & "As long as this message remains, PhotoDemon may not function properly (or at all).  I've suspended nightly builds until things are stable.  If you've manually downloaded this build from GitHub, consider yourself warned." & vbCrLf & vbCrLf & "(Seriously: please do any editing with with the 6.2 stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "6.4 Development Warning"
+    'As of 18 March '16, I have added a warning to nightly builds.  Current work on image exporting means that saving
+    ' image files via PD is really not recommended.
+    PDMsgBox "WARNING!  I am currently overhauling PhotoDemon's image export capabilities.  Because this work impacts the reliability of the File > Save and File > Save As commands, I DO NOT RECOMMEND using this build for serious work." & vbCrLf & vbCrLf & "(Seriously: please do any serious editing with with the last stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "7.0 Development Warning"
     
     
     '*************************************************************************************************************************************
