@@ -10,6 +10,7 @@ Begin VB.UserControl pdMetadataExport
    ScaleHeight     =   300
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   350
+   ToolboxBitmap   =   "pdMetadataExport.ctx":0000
    Begin PhotoDemon.pdLabel lblInfo 
       Height          =   375
       Index           =   0

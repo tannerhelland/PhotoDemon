@@ -132,8 +132,8 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     
     'Next, we need to find the union rect of the two layers.  This is the smallest rectangle that holds both layers.
     Dim bottomRect As RECTF, topRect As RECTF, finalRect As RECTF
-    Layer_Handler.fillRectForLayerF bottomLayer, bottomRect, True, True
-    Layer_Handler.fillRectForLayerF topLayer, topRect, True, True
+    Layer_Handler.FillRectForLayerF bottomLayer, bottomRect, True, True
+    Layer_Handler.FillRectForLayerF topLayer, topRect, True, True
     UnionRectF finalRect, topRect, bottomRect
     
     'finalRect now contains the coordinates of the union rect.  (Note that some settings allow us to bypass this rect entirely, e.g. if the
@@ -296,7 +296,7 @@ End Sub
 ' object references, we ask the calling function to supply the DIB they want filled.  Optionally, they can also request a
 ' particular premultiplication status of the composited DIB's alpha values.  (This is helpful for save functions, which
 ' require non-premultiplied alpha, vs viewport functions, which require premultiplied alpha).
-Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True)
+Friend Sub GetCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True)
     
     'TODO: perform special pre-check for 24bpp single-layer images.  For these, we can simply copy the current layer out,
     '       saving a lot of time!
@@ -318,13 +318,13 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     'If the image has additional layers, proceed to merge the rest of them, starting from the bottom and working our way up.
     ' Note that if a layer is invisible, we simply skip it - this is the most performance-friendly way to handle them.
     Dim i As Long
-    For i = 0 To srcImage.getNumOfLayers - 1
+    For i = 0 To srcImage.GetNumOfLayers - 1
         
         'Make sure the layer is visible
-        If srcImage.getLayerByIndex(i).getLayerVisibility Then
+        If srcImage.GetLayerByIndex(i).getLayerVisibility Then
             
             'Pass this layer to the helper function.  It will take care of the compositing step for us.
-            getCompositedImage_LayerHelper dstDIB, srcImage.getLayerByIndex(i), i
+            getCompositedImage_LayerHelper dstDIB, srcImage.GetLayerByIndex(i), i
         
         'End layer visibility check
         End If
@@ -503,7 +503,7 @@ End Sub
 'This function is large, complicated, and unfortunately tricky, as we must resize and composite each layer in turn.  However, it's the secret
 ' to PD's incredible viewport performance.  (e.g., this function is how we can outperform both GIMP and Paint.NET despite being single-threaded
 ' and heavily CPU-bound)
-Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic)
+Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic)
     
     'Before doing anything else, fill two rects with the coordinates we were passed.  We will use these rects to calculate the
     ' boundary regions for all individual layers.
@@ -558,13 +558,13 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     'Now our work is pretty simple: iterate layers, and pass visible ones off to the helper function (which handles the messy
     ' work of solving all the coordinate math)
     Dim i As Long
-    For i = 0 To srcImage.getNumOfLayers - 1
+    For i = 0 To srcImage.GetNumOfLayers - 1
         
         'Only process a layer if it is currently visible.
-        If srcImage.getLayerByIndex(i).getLayerVisibility Then
+        If srcImage.GetLayerByIndex(i).getLayerVisibility Then
             
             'The helper function handles the actual compositing
-            getCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.getLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless, CBool(i = 0), ignoreInternalCaches, levelOfDetail
+            getCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.GetLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless, CBool(i = 0), ignoreInternalCaches, levelOfDetail
         
         'END block for layer visibility toggle
         End If
@@ -669,12 +669,12 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
     'TODO: some kind of fancy function that finds the intersection between a rotated/skewed image's boundary polygon instead of its full rect.
     '      The full rect may indicate overlap, but if the overlap is only a transparent corner region, we can still skip this layer.
     If srcLayer.affineTransformsActive(False) Then
-        Layer_Handler.fillRectForLayerF srcLayer, layerRectAffine, True, True
+        Layer_Handler.FillRectForLayerF srcLayer, layerRectAffine, True, True
         layerAndViewportIntersect = GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRectAffine)
     
     'Layers without affine transforms use a shortcut intersection approach.
     Else
-        Layer_Handler.fillRectForLayerF srcLayer, layerRect, True, False
+        Layer_Handler.FillRectForLayerF srcLayer, layerRect, True, False
         layerAndViewportIntersect = GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRect)
     End If
     
@@ -911,7 +911,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                     
                     'When zoomed in, nearest neighbor is preferred.  This is fast enough that we don't need to use a temporary DIB cache.
                     If srcImageRect.Width < dstViewportRect.Width Then
-                        GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, InterpolationModeNearestNeighbor
+                        GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, InterpolationModeNearestNeighbor, , , True
                     
                     'When zoomed out, use the supplied interpolation mode.  The caller typically toggles this according to PD's global
                     ' performance settings.
