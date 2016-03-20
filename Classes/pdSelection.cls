@@ -299,7 +299,7 @@ Public Sub initFromParamString(ByVal paramString As String)
     ' as specific data types upon request.
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(paramString) <> 0 Then cParams.setParamString paramString
+    If Len(paramString) <> 0 Then cParams.SetParamString paramString
     
     'The order of param string values is HARD-CODED per the following table:
     
@@ -1775,9 +1775,9 @@ Private Sub createSelectionMask()
             Set tmpDIB = New pdDIB
             
             If getSelectionProperty_Long(SP_WAND_SAMPLE_MERGED) = 0 Then
-                containingPDImage.getCompositedImage tmpDIB
+                containingPDImage.GetCompositedImage tmpDIB
             Else
-                tmpLayer.CopyExistingLayer containingPDImage.getActiveLayer
+                tmpLayer.CopyExistingLayer containingPDImage.GetActiveLayer
                 tmpLayer.ConvertToNullPaddedLayer containingPDImage.Width, containingPDImage.Height
                 Set tmpDIB = tmpLayer.layerDIB
             End If
@@ -2180,14 +2180,14 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     ReDim xLookup(imgLeft To rightBound) As Long
     For x = imgLeft To rightBound
         Drawing.ConvertCanvasCoordsToImageCoords FormMain.mainCanvas(0), srcImage, x, imgTop, newX, newY, True
-        newXInt = newX
+        newXInt = Int(newX)
         xLookup(x) = newXInt * 3&
     Next x
     
     ReDim yLookup(imgTop To bottomBound) As Long
     For y = imgTop To bottomBound
         Drawing.ConvertCanvasCoordsToImageCoords FormMain.mainCanvas(0), srcImage, imgLeft, y, newX, newY, True
-        yLookup(y) = newY
+        yLookup(y) = Int(newY)
     Next y
     
     Dim tmpSelHolder As Byte
@@ -2635,7 +2635,7 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
 
     Dim tmpParser As pdParamString
     Set tmpParser = New pdParamString
-    tmpParser.setParamString paramString
+    tmpParser.SetParamString paramString
     
     Dim i As Long
     
@@ -2730,7 +2730,7 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
     tmpParser.reassembleModifiedParamString
     
     'Return the modified string
-    translateParamStringToRelativeFormat = tmpParser.getParamString
+    translateParamStringToRelativeFormat = tmpParser.GetParamString
 
 End Function
 
