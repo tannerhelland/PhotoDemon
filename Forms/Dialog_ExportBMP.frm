@@ -193,10 +193,10 @@ Public Sub ShowDialog()
     
     Message "Waiting for user to specify export options... "
     
-    btsColorModel.AddItem "Auto", 0
-    btsColorModel.AddItem "Color + Transparency", 1
-    btsColorModel.AddItem "Color only", 2
-    btsColorModel.AddItem "Grayscale", 3
+    btsColorModel.AddItem "auto", 0
+    btsColorModel.AddItem "color + transparency", 1
+    btsColorModel.AddItem "color only", 2
+    btsColorModel.AddItem "grayscale", 3
     
     btsDepthRGB.AddItem "32-bpp XRGB (X8-R8-G8-B8)", 0
     btsDepthRGB.AddItem "24-bpp RGB (R8-G8-B8)", 1

@@ -95,7 +95,7 @@ Private m_PreviousPreviewID As Double
 Private m_PreviousPreviewCopy As pdDIB
 
 'This function can be used to populate a valid SAFEARRAY2D structure against any DIB
-Public Sub prepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcDIB As pdDIB)
+Public Sub PrepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcDIB As pdDIB)
     
     'Populate a relevant SafeArray variable for the supplied DIB
     With srcSA
@@ -113,84 +113,104 @@ End Sub
 'For some odd functions (e.g. export JPEG dialog), it's helpful to have the full power of prepImageData, but against
 ' a target other than the current image's main layer.  This function is roughly equivalent to prepImageData, below, but
 ' stripped down and specifically designed for PREVIEWS ONLY.  A source image must be explicitly supplied.
-Public Sub previewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As pdDIB, ByRef previewTarget As pdFxPreviewCtl, Optional ByVal leaveAlphaPremultiplied As Boolean = False)
+Public Sub PreviewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As pdDIB, ByRef previewTarget As pdFxPreviewCtl, Optional ByVal leaveAlphaPremultiplied As Boolean = False)
     
-    'Prepare our temporary DIB
-    Set workingDIB = New pdDIB
+    'Before doing anything else, see if we can simply re-use our previous preview image
+    If (m_PreviousPreviewID = previewTarget.GetUniqueID) And (Not workingDIB Is Nothing) And (Not m_PreviousPreviewCopy Is Nothing) Then
+    
+        'We know workingDIB and m_PreviousPreviewCopy are NOT nothing, thanks to the check above, so no DIB instantation is required.
+        'Simply copy m_PreviousPreviewCopy into workingDIB
+        workingDIB.createFromExistingDIB m_PreviousPreviewCopy
         
-    'We know this is a preview, so new width and height values need to be calculated against the size of the preview window.
-    Dim dstWidth As Double, dstHeight As Double
-    Dim srcWidth As Double, srcHeight As Double
-    Dim newWidth As Long, newHeight As Long
-    
-    'Start by calculating the source area for the preview.  This changes based on several criteria:
-    ' 1) Is the preview area set to "fit full image" or "100% zoom"?
-    ' 2) Is a selection is active?  If so, we only want to preview the selected area.  (I may change this behavior in the future,
-    '     so the user can actually see the fully composited result of any changes.)
-    
-    'The full image is being previewed.  Retrieve the entire thing, so we can shrink it down to size.
-    If previewTarget.viewportFitFullImage Then
-    
-        srcWidth = srcDIB.getDIBWidth
-        srcHeight = srcDIB.getDIBHeight
-        
-    'Only a section of the image is being preview (at 100% zoom).  Retrieve just that section.
+    'Something has changed, so we must regenerate our preview image from scratch.  (This is time-consuming and complicated, so we try
+    ' to avoid it whenever possible.)
     Else
     
-        srcWidth = previewTarget.getPreviewWidth
-        srcHeight = previewTarget.getPreviewHeight
+        If (workingDIB Is Nothing) Then Set workingDIB = New pdDIB
         
-        If srcDIB.getDIBWidth < srcWidth Then
+        'We know this is a preview, so new width and height values need to be calculated against the size of the preview window.
+        Dim dstWidth As Double, dstHeight As Double
+        Dim srcWidth As Double, srcHeight As Double
+        Dim newWidth As Long, newHeight As Long
+        
+        'The full image is being previewed.  Retrieve the entire thing.
+        If previewTarget.ViewportFitFullImage Then
             srcWidth = srcDIB.getDIBWidth
-        ElseIf srcDIB.getDIBHeight < srcHeight Then
             srcHeight = srcDIB.getDIBHeight
+            
+        'Only a section of the image is being preview (at 100% zoom).  Retrieve just that section.
+        Else
+        
+            srcWidth = previewTarget.GetPreviewWidth
+            srcHeight = previewTarget.GetPreviewHeight
+                
+            If srcDIB.getDIBWidth < srcWidth Then
+                srcWidth = srcDIB.getDIBWidth
+                If srcDIB.getDIBHeight < srcHeight Then srcHeight = srcDIB.getDIBHeight
+            ElseIf srcDIB.getDIBHeight < srcHeight Then
+                srcHeight = srcDIB.getDIBHeight
+            End If
+            
         End If
         
-    End If
-    
-    'Destination width/height are generally the dimensions of the preview box, taking into account aspect ratio.  The only
-    ' exception to this is when the image is actually smaller than the preview area - in that case use the whole image.
-    dstWidth = previewTarget.getPreviewWidth
-    dstHeight = previewTarget.getPreviewHeight
+        'Destination width/height are generally the dimensions of the preview box, taking into account aspect ratio.  The only
+        ' exception to this is when the image is actually smaller than the preview area - in that case use the whole image.
+        dstWidth = previewTarget.GetPreviewWidth
+        dstHeight = previewTarget.GetPreviewHeight
+                
+        If (srcWidth > dstWidth) Or (srcHeight > dstHeight) Then
+            ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
+        Else
+            newWidth = srcWidth
+            newHeight = srcHeight
+        End If
+        
+        'The area may be offset from the (0, 0) position if the user has elected to drag the preview area
+        Dim hOffset As Long, vOffset As Long
+        
+        'Next, we will create the temporary object (called "workingDIB") at the calculated preview dimensions.  All editing
+        ' actions are applied to this DIB; if the user does not cancel the action, that DIB will be copied over the
+        ' primary image.  If they cancel, we'll simply discard the temporary DIB.
             
-    If (srcWidth > dstWidth) Or (srcHeight > dstHeight) Then
-        convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
-    Else
-        newWidth = srcWidth
-        newHeight = srcHeight
+        'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the image
+        If previewTarget.ViewportFitFullImage Then
+            workingDIB.createFromExistingDIB srcDIB, newWidth, newHeight, True
+            
+        'The user is operating at 100% zoom.  Retrieve a subsection of the image, but do not scale it.
+        Else
+        
+            'Calculate offsets, if any, for the image
+            hOffset = previewTarget.OffsetX
+            vOffset = previewTarget.OffsetY
+            
+            If (workingDIB.getDIBWidth <> newWidth) Or (workingDIB.getDIBHeight <> newHeight) Or (workingDIB.getDIBColorDepth <> srcDIB.getDIBColorDepth) Then
+                workingDIB.createBlank newWidth, newHeight, srcDIB.getDIBColorDepth
+            Else
+                workingDIB.resetDIB
+            End If
+            
+            BitBlt workingDIB.getDIBDC, 0, 0, newWidth, newHeight, srcDIB.getDIBDC, hOffset, vOffset, vbSrcCopy
+            workingDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
+            
+        End If
+        
+        'Give the preview object a copy of this original, unmodified image data so it can show it to the user if requested
+        If Not previewTarget.HasOriginalImage Then previewTarget.SetOriginalImage workingDIB
+        
+        'Make a note of this preview target's unique ID value.  We can use this in the future to avoid regenerating workingDIB
+        ' from scratch.
+        m_PreviousPreviewID = previewTarget.GetUniqueID
+        
+        'Also, make a backup copy of our completed workingDIB
+        If (m_PreviousPreviewCopy Is Nothing) Then Set m_PreviousPreviewCopy = New pdDIB
+        m_PreviousPreviewCopy.createFromExistingDIB workingDIB
+        
     End If
     
-    'The area may be offset from the (0, 0) position if the user has elected to drag the preview area
-    Dim hOffset As Long, vOffset As Long
-    
-    'Next, we will create the temporary object (called "workingDIB") at the calculated preview dimensions.  All editing
-    ' actions are applied to this DIB.
-    
-    'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the image
-    If previewTarget.viewportFitFullImage Then
-        workingDIB.createFromExistingDIB srcDIB, newWidth, newHeight
-        
-    'The user is operating at 100% zoom.  Retrieve a subsection of the image, but do not scale it.
-    Else
-    
-        'Calculate offsets, if any, for the image
-        hOffset = previewTarget.offsetX
-        vOffset = previewTarget.offsetY
-        
-        workingDIB.createBlank newWidth, newHeight, srcDIB.getDIBColorDepth
-        BitBlt workingDIB.getDIBDC, 0, 0, dstWidth, dstHeight, srcDIB.getDIBDC, hOffset, vOffset, vbSrcCopy
-        
-    End If
-    
-    'Give the preview object a copy of this original, unmodified image data so it can show it to the user if requested
-    If Not previewTarget.hasOriginalImage Then previewTarget.setOriginalImage workingDIB
-    
-    'For 32bpp layers, fix premultiplication now, as all effects assume UN-premultiplied alpha
+    'We're also going to apply the requested alpha premultiplication in advance, which saves us some time on
+    ' subsequent requests (assuming the caller always wants the same alpha state for a given filter).
     If (workingDIB.getDIBColorDepth = 32) And (Not leaveAlphaPremultiplied) Then workingDIB.SetAlphaPremultiplication False
     
-    'With our temporary DIB successfully created, populate the relevant SafeArray variable
-    prepSafeArray tmpSA, workingDIB
-
     'Finally, populate the ubiquitous curDIBValues variable with everything a filter might want to know
     With curDIBValues
         .Left = 0
@@ -207,12 +227,15 @@ Public Sub previewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As p
         .BytesPerPixel = (workingDIB.getDIBColorDepth \ 8)
         .dibX = 0
         .dibY = 0
-        If previewTarget.viewportFitFullImage Then
+        If previewTarget.ViewportFitFullImage Then
             .previewModifier = workingDIB.getDIBWidth / srcDIB.getDIBWidth
         Else
             .previewModifier = 1#
         End If
     End With
+    
+    'With our temporary DIB successfully created, populate the relevant SafeArray variable
+    PrepSafeArray tmpSA, workingDIB
     
     'If desired, the statement below can be used to verify that the function created a working DIB at the proper dimensions
     'Debug.Print "previewNonStandardImage worked: " & workingDIB.getDIBHeight & ", " & workingDIB.getDIBWidth & " (" & workingDIB.getDIBArrayWidth & ")" & ", " & workingDIB.getActualDIBBits
@@ -220,18 +243,17 @@ Public Sub previewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As p
 End Sub
 
 'The counterpart to previewNonStandardImage, above
-Public Sub finalizeNonstandardPreview(ByRef previewTarget As pdFxPreviewCtl, Optional ByVal alphaAlreadyPremultiplied As Boolean = False)
-    
-    'Because is a preview, we only need to repaint a preview box
+Public Sub FinalizeNonstandardPreview(ByRef previewTarget As pdFxPreviewCtl, Optional ByVal alphaAlreadyPremultiplied As Boolean = False)
     
     'Fix premultiplied alpha if necessary
-    If (workingDIB.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIB.SetAlphaPremultiplication True
+    If (workingDIB.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
+        workingDIB.SetAlphaPremultiplication True
+    Else
+        workingDIB.setInitialAlphaPremultiplicationState True
+    End If
     
     'Pass the modified image on to the specified preview control
-    previewTarget.setFXImage workingDIB
-    
-    'workingDIB and its backup have served their purposes, so erase them from memory
-    Set workingDIB = Nothing
+    previewTarget.SetFXImage workingDIB
     
 End Sub
 
@@ -247,7 +269,7 @@ End Sub
 '
 'Finally, the calling routine can optionally specify a different maximum progress bar value.  By default, this is the current
 ' DIB's width, but some routines run vertically and the progress bar maximum needs to be changed accordingly.
-Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False, Optional ByVal doNotUnPremultiplyAlpha As Boolean = False)
+Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False, Optional ByVal doNotUnPremultiplyAlpha As Boolean = False)
 
     'Reset the public "cancel current action" tracker
     cancelCurrentAction = False
@@ -277,16 +299,16 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             
             'Before proceeding further, null-pad the layer in question.  This will allow any possible selection to work,
             ' regardless of the layer's actual area.
-            tmpLayer.CopyExistingLayer pdImages(g_CurrentImage).getActiveLayer
-            tmpLayer.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+            tmpLayer.CopyExistingLayer pdImages(g_CurrentImage).GetActiveLayer
+            tmpLayer.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
             
             'Now we can proceed to crop out the relevant parts of the layer from the selection boundary.
-            workingDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
+            workingDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).GetActiveDIB().getDIBColorDepth
             BitBlt workingDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, tmpLayer.layerDIB.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
-            workingDIB.setInitialAlphaPremultiplicationState pdImages(g_CurrentImage).getActiveLayer.layerDIB.getAlphaPremultiplication
+            workingDIB.setInitialAlphaPremultiplicationState pdImages(g_CurrentImage).GetActiveLayer.layerDIB.getAlphaPremultiplication
             
         Else
-            workingDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB()
+            workingDIB.createFromExistingDIB pdImages(g_CurrentImage).GetActiveDIB()
         End If
         
     'This IS a preview, meaning more work is involved.  We must prepare a unique copy of the active layer that matches
@@ -295,7 +317,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     Else
         
         'Before doing anything else, see if we can simply re-use our previous preview image
-        If (m_PreviousPreviewID = previewTarget.getUniqueID) And (Not workingDIB Is Nothing) And (Not m_PreviousPreviewCopy Is Nothing) Then
+        If (m_PreviousPreviewID = previewTarget.GetUniqueID) And (Not workingDIB Is Nothing) And (Not m_PreviousPreviewCopy Is Nothing) Then
         
             'We know workingDIB and m_PreviousPreviewCopy are NOT nothing, thanks to the check above, so no DIB instantation is required.
             
@@ -315,21 +337,21 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             '     so the user can actually see the fully composited result of any changes.)
             
             'The full image is being previewed.  Retrieve the entire thing.
-            If previewTarget.viewportFitFullImage Then
+            If previewTarget.ViewportFitFullImage Then
             
                 If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isLockedIn Then
                     srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
                     srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
                 Else
-                    srcWidth = pdImages(g_CurrentImage).getActiveDIB().getDIBWidth
-                    srcHeight = pdImages(g_CurrentImage).getActiveDIB().getDIBHeight
+                    srcWidth = pdImages(g_CurrentImage).GetActiveDIB().getDIBWidth
+                    srcHeight = pdImages(g_CurrentImage).GetActiveDIB().getDIBHeight
                 End If
             
             'Only a section of the image is being preview (at 100% zoom).  Retrieve just that section.
             Else
             
-                srcWidth = previewTarget.getPreviewWidth
-                srcHeight = previewTarget.getPreviewHeight
+                srcWidth = previewTarget.GetPreviewWidth
+                srcHeight = previewTarget.GetPreviewHeight
                 
                 'If a selection is active, and the selected area is smaller than the preview window, constrain the source area
                 ' to the selection boundaries.
@@ -344,11 +366,11 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                     
                 Else
                     
-                    If pdImages(g_CurrentImage).getActiveDIB().getDIBWidth < srcWidth Then
-                        srcWidth = pdImages(g_CurrentImage).getActiveDIB().getDIBWidth
-                        If pdImages(g_CurrentImage).getActiveDIB().getDIBHeight < srcHeight Then srcHeight = pdImages(g_CurrentImage).getActiveDIB().getDIBHeight
-                    ElseIf pdImages(g_CurrentImage).getActiveDIB().getDIBHeight < srcHeight Then
-                        srcHeight = pdImages(g_CurrentImage).getActiveDIB().getDIBHeight
+                    If pdImages(g_CurrentImage).GetActiveDIB().getDIBWidth < srcWidth Then
+                        srcWidth = pdImages(g_CurrentImage).GetActiveDIB().getDIBWidth
+                        If pdImages(g_CurrentImage).GetActiveDIB().getDIBHeight < srcHeight Then srcHeight = pdImages(g_CurrentImage).GetActiveDIB().getDIBHeight
+                    ElseIf pdImages(g_CurrentImage).GetActiveDIB().getDIBHeight < srcHeight Then
+                        srcHeight = pdImages(g_CurrentImage).GetActiveDIB().getDIBHeight
                     End If
                     
                 End If
@@ -357,11 +379,11 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             
             'Destination width/height are generally the dimensions of the preview box, taking into account aspect ratio.  The only
             ' exception to this is when the image is actually smaller than the preview area - in that case use the whole image.
-            dstWidth = previewTarget.getPreviewWidth
-            dstHeight = previewTarget.getPreviewHeight
+            dstWidth = previewTarget.GetPreviewWidth
+            dstHeight = previewTarget.GetPreviewHeight
                     
             If (srcWidth > dstWidth) Or (srcHeight > dstHeight) Then
-                convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
+                ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, newWidth, newHeight
             Else
                 newWidth = srcWidth
                 newHeight = srcHeight
@@ -383,35 +405,35 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 ' that we do any further processing.)
                 Dim tmpDIB As pdDIB
                 Set tmpDIB = New pdDIB
-                tmpDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
+                tmpDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).GetActiveDIB().getDIBColorDepth
                 
                 'Before proceeding further, make a copy of the active layer, and null-pad it to the size of the parent image.
                 ' This will allow any possible selection to work, regardless of a layer's actual area.
-                tmpLayer.CopyExistingLayer pdImages(g_CurrentImage).getActiveLayer
-                tmpLayer.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+                tmpLayer.CopyExistingLayer pdImages(g_CurrentImage).GetActiveLayer
+                tmpLayer.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
                 
                 'NOW we can copy over the active layer's data, within the bounding box of the active selection
                 BitBlt tmpDIB.getDIBDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayer.layerDIB.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
                 
                 'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the selection
-                If previewTarget.viewportFitFullImage Then
+                If previewTarget.ViewportFitFullImage Then
                     workingDIB.createFromExistingDIB tmpDIB, newWidth, newHeight
                 
                 'The user is operating at 100% zoom.  Retrieve a subsection of the selected area, but do not scale it.
                 Else
                 
                     'Calculate offsets, if any, for the selected area
-                    hOffset = previewTarget.offsetX
-                    vOffset = previewTarget.offsetY
+                    hOffset = previewTarget.OffsetX
+                    vOffset = previewTarget.OffsetY
                     
                     If workingDIB.getDIBWidth <> newWidth Or workingDIB.getDIBHeight <> newHeight Then
-                        workingDIB.createBlank newWidth, newHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
+                        workingDIB.createBlank newWidth, newHeight, pdImages(g_CurrentImage).GetActiveDIB().getDIBColorDepth
                     Else
                         workingDIB.resetDIB
                     End If
                     
                     BitBlt workingDIB.getDIBDC, 0, 0, dstWidth, dstHeight, tmpDIB.getDIBDC, hOffset, vOffset, vbSrcCopy
-                    workingDIB.setInitialAlphaPremultiplicationState pdImages(g_CurrentImage).getActiveDIB().getAlphaPremultiplication
+                    workingDIB.setInitialAlphaPremultiplicationState pdImages(g_CurrentImage).GetActiveDIB().getAlphaPremultiplication
                 
                 End If
                 
@@ -423,31 +445,31 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             Else
                 
                 'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the image
-                If previewTarget.viewportFitFullImage Then
-                    workingDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB(), newWidth, newHeight, True
+                If previewTarget.ViewportFitFullImage Then
+                    workingDIB.createFromExistingDIB pdImages(g_CurrentImage).GetActiveDIB(), newWidth, newHeight, True
                     
                 'The user is operating at 100% zoom.  Retrieve a subsection of the image, but do not scale it.
                 Else
                 
                     'Calculate offsets, if any, for the image
-                    hOffset = previewTarget.offsetX
-                    vOffset = previewTarget.offsetY
+                    hOffset = previewTarget.OffsetX
+                    vOffset = previewTarget.OffsetY
                     
                     If workingDIB.getDIBWidth <> newWidth Or workingDIB.getDIBHeight <> newHeight Then
-                        workingDIB.createBlank newWidth, newHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
+                        workingDIB.createBlank newWidth, newHeight, pdImages(g_CurrentImage).GetActiveDIB().getDIBColorDepth
                     Else
                         workingDIB.resetDIB
                     End If
                     
-                    BitBlt workingDIB.getDIBDC, 0, 0, dstWidth, dstHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBDC, hOffset, vOffset, vbSrcCopy
-                    workingDIB.setInitialAlphaPremultiplicationState pdImages(g_CurrentImage).getActiveDIB().getAlphaPremultiplication
+                    BitBlt workingDIB.getDIBDC, 0, 0, dstWidth, dstHeight, pdImages(g_CurrentImage).GetActiveDIB().getDIBDC, hOffset, vOffset, vbSrcCopy
+                    workingDIB.setInitialAlphaPremultiplicationState pdImages(g_CurrentImage).GetActiveDIB().getAlphaPremultiplication
                     
                 End If
                 
             End If
             
             'Give the preview object a copy of this original, unmodified image data so it can show it to the user if requested
-            If Not previewTarget.hasOriginalImage Then previewTarget.setOriginalImage workingDIB
+            If Not previewTarget.HasOriginalImage Then previewTarget.SetOriginalImage workingDIB
             
             'We're also going to apply the requested alpha premultiplication in advance, which saves us some time on
             ' subsequent requests (assuming the caller always wants the same alpha state for a given filter).
@@ -457,7 +479,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             
             'Make a note of this preview target's unique ID value.  We can use this in the future to avoid regenerating workingDIB
             ' from scratch.
-            m_PreviousPreviewID = previewTarget.getUniqueID
+            m_PreviousPreviewID = previewTarget.GetUniqueID
             
             'Also, make a backup copy of our completed workingDIB
             If (m_PreviousPreviewCopy Is Nothing) Then Set m_PreviousPreviewCopy = New pdDIB
@@ -499,8 +521,8 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         .dibX = 0
         .dibY = 0
         If isPreview Then
-            If previewTarget.viewportFitFullImage Then
-                .previewModifier = workingDIB.getDIBWidth / pdImages(g_CurrentImage).getActiveDIB().getDIBWidth
+            If previewTarget.ViewportFitFullImage Then
+                .previewModifier = workingDIB.getDIBWidth / pdImages(g_CurrentImage).GetActiveDIB().getDIBWidth
             Else
                 .previewModifier = 1#
             End If
@@ -510,7 +532,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     End With
     
     'With our temporary DIB successfully created, populate the relevant SafeArray variable, so the caller has direct access to the DIB
-    prepSafeArray tmpSA, workingDIB
+    PrepSafeArray tmpSA, workingDIB
     
     'Set up the progress bar (only if this is NOT a preview, mind you - during previews, the progress bar is not touched)
     If (Not isPreview) And (Not doNotTouchProgressBar) Then
@@ -534,7 +556,7 @@ End Sub
 'Unlike prepImageData, this function has to do quite a bit of processing when selections are active.  The selection
 ' mask must be scanned for each pixel, and the results blended with the original image as appropriate.  For 32bpp images
 ' this is especially ugly.  (This is the price we pay for full selection feathering support!)
-Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional ByVal alphaAlreadyPremultiplied As Boolean = False)
+Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional ByVal alphaAlreadyPremultiplied As Boolean = False)
 
     'If the user canceled the current action, disregard the working DIB and exit immediately.  The central processor
     ' will take care of additional clean-up.
@@ -574,7 +596,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
             tmpDIB.createFromExistingDIB selMaskCopy
             
             'The preview is a shrunk version of the full image.  Shrink the selection mask to match.
-            If previewTarget.viewportFitFullImage Then
+            If previewTarget.ViewportFitFullImage Then
                 GDIPlusResizeDIB selMaskCopy, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, InterpolationModeHighQualityBicubic
             
             'The preview is a 100% copy of the image.  Copy only the relevant part of the selection mask into the
@@ -582,8 +604,8 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
             Else
                 
                 Dim hOffset As Long, vOffset As Long
-                hOffset = previewTarget.offsetX
-                vOffset = previewTarget.offsetY
+                hOffset = previewTarget.OffsetX
+                vOffset = previewTarget.OffsetY
                 
                 selMaskCopy.createBlank workingDIB.getDIBWidth, workingDIB.getDIBHeight
                 BitBlt selMaskCopy.getDIBDC, 0, 0, selMaskCopy.getDIBWidth, selMaskCopy.getDIBHeight, pdImages(g_CurrentImage).mainSelection.selMask.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft + hOffset, pdImages(g_CurrentImage).mainSelection.boundTop + vOffset, vbSrcCopy
@@ -610,19 +632,19 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         'Before applying the selected area back onto the image, we need to null-pad the original layer.  (This is not done
         ' by prepImageData, because the user may elect to cancel a running action - and if they do that, we want to leave
         ' the original image untouched!  Thus, only the workingLayer has been null-padded.)
-        pdImages(g_CurrentImage).getActiveLayer.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        pdImages(g_CurrentImage).GetActiveLayer.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Next, point three arrays at three images: the original image, the newly modified image, and the selection mask copy
         ' we just created.
-        prepSafeArray wlSA, workingDIB
+        PrepSafeArray wlSA, workingDIB
         CopyMemory ByVal VarPtrArray(wlImageData()), VarPtr(wlSA), 4
         
-        prepSafeArray selSA, selMaskCopy
+        PrepSafeArray selSA, selMaskCopy
         CopyMemory ByVal VarPtrArray(selImageData()), VarPtr(selSA), 4
         
         Dim dstImageData() As Byte
         Dim dstSA As SAFEARRAY2D
-        prepSafeArray dstSA, workingDIBBackup
+        PrepSafeArray dstSA, workingDIBBackup
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
         Dim i As Long
@@ -630,7 +652,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         Dim blendAlpha As Double
         
         Dim dstQuickVal As Long, srcQuickX As Long
-        dstQuickVal = pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth \ 8
+        dstQuickVal = pdImages(g_CurrentImage).GetActiveDIB().getDIBColorDepth \ 8
             
         Dim workingDIBCD As Long
         workingDIBCD = workingDIB.getDIBColorDepth \ 8
@@ -688,10 +710,10 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isLockedIn Then
         
             If (workingDIBBackup.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIBBackup.SetAlphaPremultiplication True
-            BitBlt pdImages(g_CurrentImage).getActiveDIB().getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, workingDIBBackup.getDIBDC, 0, 0, vbSrcCopy
+            BitBlt pdImages(g_CurrentImage).GetActiveDIB().getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, workingDIBBackup.getDIBDC, 0, 0, vbSrcCopy
             
             'Un-pad any null pixels we may have added as part of the selection interaction
-            pdImages(g_CurrentImage).getActiveLayer.cropNullPaddedLayer
+            pdImages(g_CurrentImage).GetActiveLayer.CropNullPaddedLayer
         
         'If a selection is not active, replace the entire DIB with the contents of the working DIB
         Else
@@ -702,7 +724,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
                 workingDIB.setInitialAlphaPremultiplicationState True
             End If
             
-            pdImages(g_CurrentImage).getActiveDIB().createFromExistingDIB workingDIB
+            pdImages(g_CurrentImage).GetActiveDIB().createFromExistingDIB workingDIB
             
         End If
         
@@ -711,10 +733,10 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         Set workingDIBBackup = Nothing
         
         'If we're setting data to the screen, we can reasonably assume that the progress bar should be reset
-        releaseProgressBar
+        ReleaseProgressBar
         
         'Notify the parent of the target layer of our changes
-        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).getActiveLayerIndex
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetActiveLayerIndex
         
         'Pass control to the viewport renderer, which will perform the actual rendering
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -733,7 +755,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
                 workingDIBBackup.setInitialAlphaPremultiplicationState True
             End If
             
-            previewTarget.setFXImage workingDIBBackup
+            previewTarget.SetFXImage workingDIBBackup
         
         Else
             
@@ -743,12 +765,11 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
                 workingDIB.setInitialAlphaPremultiplicationState True
             End If
             
-            previewTarget.setFXImage workingDIB
+            previewTarget.SetFXImage workingDIB
         
         End If
         
     End If
     
 End Sub
-
 

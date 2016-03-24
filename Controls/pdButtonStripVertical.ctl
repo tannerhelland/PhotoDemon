@@ -804,8 +804,13 @@ Private Sub RedrawBackBuffer()
         Dim i As Long
         For i = 0 To m_numOfButtons - 1
             
-            isButtonSelected = CBool(i = m_ButtonIndex)
-            isButtonHovered = CBool(i = m_ButtonHoverIndex)
+            If enabledState Then
+                isButtonSelected = CBool(i = m_ButtonIndex)
+                isButtonHovered = CBool(i = m_ButtonHoverIndex)
+            Else
+                isButtonSelected = False
+                isButtonHovered = False
+            End If
             
             With m_Buttons(i)
                 

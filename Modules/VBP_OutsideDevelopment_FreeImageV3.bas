@@ -2569,39 +2569,25 @@ Public Function FreeImage_SaveToHandle(ByVal Format As FREE_IMAGE_FORMAT, _
 
 End Function
 
+' Thin wrapper function returning a real VB Boolean value
 Public Function FreeImage_IsTransparent(ByVal Bitmap As Long) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_IsTransparent = (FreeImage_IsTransparentInt(Bitmap) = 1)
-
+    FreeImage_IsTransparent = (FreeImage_IsTransparentInt(Bitmap) = 1)
 End Function
            
+' Thin wrapper function returning a real VB Boolean value
 Public Function FreeImage_HasBackgroundColor(ByVal Bitmap As Long) As Boolean
-
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_HasBackgroundColor = (FreeImage_HasBackgroundColorInt(Bitmap) = 1)
-
+    FreeImage_HasBackgroundColor = (FreeImage_HasBackgroundColorInt(Bitmap) = 1)
 End Function
 
-Public Function FreeImage_GetBackgroundColor(ByVal Bitmap As Long, _
-                                             ByRef BackColor As RGBQUAD) As Boolean
-   
-   ' Thin wrapper function returning a real VB Boolean value
-
-   FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(Bitmap, BackColor) = 1)
-   
+' Thin wrapper function returning a real VB Boolean value
+Public Function FreeImage_GetBackgroundColor(ByVal Bitmap As Long, ByRef BackColor As RGBQUAD) As Boolean
+    FreeImage_GetBackgroundColor = (FreeImage_GetBackgroundColorInt(Bitmap, BackColor) = 1)
 End Function
 
-Public Function FreeImage_GetBackgroundColorAsLong(ByVal Bitmap As Long, _
-                                                   ByRef BackColor As Long) As Boolean
-   
-   ' This function gets the background color of an image as FreeImage_GetBackgroundColor() does but
-   ' provides it's result as a Long value.
-
-   FreeImage_GetBackgroundColorAsLong = (FreeImage_GetBackgroundColorAsLongInt(Bitmap, BackColor) = 1)
-   
+' This function gets the background color of an image as FreeImage_GetBackgroundColor() does,
+' but provides its result as a Long value.
+Public Function FreeImage_GetBackgroundColorAsLong(ByVal Bitmap As Long, ByRef BackColor As Long) As Boolean
+    FreeImage_GetBackgroundColorAsLong = (FreeImage_GetBackgroundColorAsLongInt(Bitmap, BackColor) = 1)
 End Function
 
 Public Function FreeImage_GetBackgroundColorEx(ByVal Bitmap As Long, _
@@ -3100,7 +3086,8 @@ Public Function FreeImage_SaveToMemoryEx(ByVal Format As FREE_IMAGE_FORMAT, _
                                          ByVal Bitmap As Long, _
                                          ByRef Data() As Byte, _
                                 Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS, _
-                                Optional ByVal UnloadSource As Boolean) As Boolean
+                                Optional ByVal UnloadSource As Boolean, _
+                                Optional ByRef dstSizeInBytes As Long) As Boolean
 
 Dim hStream As Long
 Dim lpData As Long
@@ -3136,8 +3123,17 @@ Dim lSizeInBytes As Long
          
          If (FreeImage_SaveToMemoryEx) Then
             If (FreeImage_AcquireMemoryInt(hStream, lpData, lSizeInBytes)) Then
-               On Error Resume Next
-               ReDim Data(lSizeInBytes - 1) As Byte
+                On Error Resume Next
+                
+                'Change by Tanner: return the size in bytes, and only allocate new memory as necessary.
+                ' (This allows the caller to reuse allocations that may already exist.)
+                dstSizeInBytes = lSizeInBytes
+                If Not VB_Hacks.IsArrayInitialized(VarPtrArray(Data)) Then
+                    ReDim Data(lSizeInBytes - 1) As Byte
+                Else
+                    If UBound(Data) < (lSizeInBytes - 1) Then ReDim Data(0 To lSizeInBytes - 1)
+                End If
+               
                If (Err.Number = ERROR_SUCCESS) Then
                   On Error GoTo 0
                   Call CopyMemory(Data(0), ByVal lpData, lSizeInBytes)
@@ -3161,9 +3157,8 @@ Dim lSizeInBytes As Long
          FreeImage_SaveToMemoryEx = False
       End If
       
-      If (UnloadSource) Then
-         Call FreeImage_Unload(Bitmap)
-      End If
+      If (UnloadSource) Then Call FreeImage_Unload(Bitmap)
+      
    End If
 
 End Function

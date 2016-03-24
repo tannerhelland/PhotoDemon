@@ -46,6 +46,9 @@ Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal 
 'Additional variables for PD-specific tone-mapping functions
 Private m_shoulderStrength As Double, m_linearStrength As Double, m_linearAngle As Double, m_linearWhitePoint As Single
 Private m_toeStrength As Double, m_toeNumerator As Double, m_toeDenominator As Double, m_toeAngle As Double
+
+'Cache for post-export image previews.  This array can be safely freed, as it will be properly initialized on-demand.
+Private m_ExportPreviewBytes() As Byte
     
 'Is FreeImage available as a plugin?  (NOTE: this is now determined separately from FreeImageEnabled.)
 Public Function IsFreeImageAvailable() As Boolean
@@ -985,8 +988,9 @@ Private Function RaiseToneMapDialog(ByVal fi_Handle As Long, ByRef dst_fiHandle 
     howToProceed = Dialog_Handler.PromptToneMapSettings(fi_Handle, toneMapSettings)
     
     'Check for a cancellation state; if encountered, abandon ship now.
-    If howToProceed <> vbOK Then
-    
+    If (howToProceed <> vbOK) Then
+        
+        Debug.Print "Tone-map dialog appears to have been cancelled; result = " & howToProceed
         dst_fiHandle = 0
         RaiseToneMapDialog = PD_FAILURE_USER_CANCELED
         Exit Function
@@ -995,9 +999,12 @@ Private Function RaiseToneMapDialog(ByVal fi_Handle As Long, ByRef dst_fiHandle 
     ' central tone-mapping handler and use its success/fail state for this function as well.
     Else
         
+        Debug.Print "Tone-map dialog appears to have been successful; result = " & howToProceed
+        
         dst_fiHandle = ApplyToneMapping(fi_Handle, toneMapSettings)
         
         If dst_fiHandle = 0 Then
+            Debug.Print "WARNING!  ApplyToneMapping() failed for reasons unknown."
             RaiseToneMapDialog = PD_FAILURE_GENERIC
         Else
             RaiseToneMapDialog = PD_SUCCESS
@@ -1052,23 +1059,26 @@ Public Function ApplyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
                 
                 'In the future, a transparency-friendly conversion may become available.  For now, however, transparency
                 ' is sacrificed as part of the conversion function (as FreeImage does not provide an RGBAF cast).
-                If fi_DataType = FIT_RGBF Then
-                    rgbfHandle = FreeImage_ConvertToRGBF(fi_Handle)
-                Else
+                If hasTransparency Then
                     rgbfHandle = FreeImage_ConvertToRGBAF(fi_Handle)
+                Else
+                    rgbfHandle = FreeImage_ConvertToRGBF(fi_Handle)
                 End If
                 
                 If rgbfHandle = 0 Then
+                    Debug.Print "WARNING!  FreeImage_ConvertToRGBA/F failed for reasons unknown."
                     ApplyToneMapping = 0
                     Exit Function
+                Else
+                    Debug.Print "FreeImage_ConvertToRGBA/F successful.  Proceeding with manual tone-mapping operation."
                 End If
                 
                 newHandle = rgbfHandle
                 
             End If
             
-            'At this point, fi_Handle now represents a 24bpp RGBF type FreeImage DIB.  Apply manual tone-mapping now.
-            newHandle = ConvertFreeImageRGBFTo24bppDIB(newHandle, cParams.GetLong(3), cParams.GetLong(4), cParams.GetDouble(2))
+            'At this point, fi_Handle now represents a 32-bpc RGBF (or RGBAF) type FreeImage DIB.  Apply manual tone-mapping now.
+            newHandle = ConvertFreeImageRGBFTo24bppDIB(newHandle, cParams.GetLong(3), cParams.GetBool(4), cParams.GetDouble(2))
             
             'Unload the intermediate RGBF handle as necessary
             If rgbfHandle <> 0 Then FreeImage_Unload rgbfHandle
@@ -1086,15 +1096,18 @@ Public Function ApplyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
                 
                 'In the future, a transparency-friendly conversion may become available.  For now, however, transparency
                 ' is sacrificed as part of the conversion function (as FreeImage does not provide an RGBAF cast).
-                If fi_DataType = FIT_RGBF Then
-                    rgbfHandle = FreeImage_ConvertToRGBF(fi_Handle)
-                Else
+                If hasTransparency Then
                     rgbfHandle = FreeImage_ConvertToRGBAF(fi_Handle)
+                Else
+                    rgbfHandle = FreeImage_ConvertToRGBF(fi_Handle)
                 End If
                 
                 If rgbfHandle = 0 Then
+                    Debug.Print "WARNING!  FreeImage_ConvertToRGBA/F failed for reasons unknown."
                     ApplyToneMapping = 0
                     Exit Function
+                Else
+                    Debug.Print "FreeImage_ConvertToRGBA/F successful.  Proceeding with manual tone-mapping operation."
                 End If
                 
                 newHandle = rgbfHandle
@@ -1203,7 +1216,7 @@ Private Function ConvertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     'Point a byte array at the temporary DIB
     Dim dstImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, tmpDIB
+    PrepSafeArray tmpSA, tmpDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
         
     'Iterate through each scanline in the source image, copying it to destination as we go.
@@ -1437,7 +1450,7 @@ Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
     'Point a byte array at the temporary DIB
     Dim dstImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, tmpDIB
+    PrepSafeArray tmpSA, tmpDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
         
     'Iterate through each scanline in the source image, copying it to destination as we go.
@@ -2243,3 +2256,47 @@ Private Function GetGrayscaleFIDib(ByVal fi_DIB As Long, ByVal outputColorDepth 
     GetGrayscaleFIDib = fi_DIB
     
 End Function
+
+'Given a source FreeImage handle and FI format, fill a destination DIB with a post-"exported-to-that-format" version of the image.
+' This is used to generate the "live previews" used in various "export to lossy format" dialogs.
+'
+'(Note that you could technically pass a bare DIB to this function, but because different dialogs provide varying levels of control
+' over the source image, it's often easier to let the caller handle that step.  That way, they can cache a FI handle in the most
+' relevant color depth, shaving previous ms off the actual export+import step.)
+Public Function GetExportPreview(ByRef srcFI_Handle As Long, ByRef dstDIB As pdDIB, ByVal dstFormat As PHOTODEMON_IMAGE_FORMAT, Optional ByVal fi_SaveFlags As Long = 0, Optional ByVal fi_LoadFlags As Long = 0)
+    
+    Dim fi_Check As Long, fi_Size As Long
+    fi_Check = FreeImage_SaveToMemoryEx(dstFormat, srcFI_Handle, m_ExportPreviewBytes, fi_SaveFlags, False, fi_Size)
+    If fi_Check <> 0 Then
+        
+        Dim fi_DIB As Long
+        fi_DIB = FreeImage_LoadFromMemoryEx(Nothing, fi_LoadFlags, fi_Size, dstFormat, VarPtr(m_ExportPreviewBytes(0)))
+        
+        If (fi_DIB <> 0) Then
+            FreeImage_FlipVertically fi_DIB
+            If (FreeImage_GetBPP(fi_DIB) <> 24) And (FreeImage_GetBPP(fi_DIB) <> 32) Then
+                If FreeImage_IsTransparent(fi_DIB) Then
+                    fi_DIB = FreeImage_ConvertColorDepth(fi_DIB, FICF_RGB_32BPP, True)
+                Else
+                    fi_DIB = FreeImage_ConvertColorDepth(fi_DIB, FICF_RGB_24BPP, True)
+                End If
+            End If
+            Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight
+            FreeImage_Unload fi_DIB
+            GetExportPreview = True
+        Else
+            GetExportPreview = False
+        End If
+        
+    Else
+        GetExportPreview = False
+    End If
+    
+End Function
+
+'PD uses a persistent cache for generating post-export preview images.  This costs several MB of memory but greatly improves
+' responsiveness of export dialogs.  When such a dialog is unloaded, you can call this function to forcibly reclaim the memory
+' associated with that cache.
+Public Sub ReleasePreviewCache()
+    Erase m_ExportPreviewBytes
+End Sub

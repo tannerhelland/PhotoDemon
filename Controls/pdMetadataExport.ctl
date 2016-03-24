@@ -15,7 +15,7 @@ Begin VB.UserControl pdMetadataExport
       Height          =   375
       Index           =   0
       Left            =   0
-      Top             =   0
+      Top             =   1200
       Width           =   5055
       _ExtentX        =   8916
       _ExtentY        =   661
@@ -25,7 +25,7 @@ Begin VB.UserControl pdMetadataExport
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   495
       Left            =   120
-      Top             =   3360
+      Top             =   0
       Width           =   4935
       _ExtentX        =   8705
       _ExtentY        =   873
@@ -37,7 +37,7 @@ Begin VB.UserControl pdMetadataExport
    Begin PhotoDemon.pdHyperlink hplReviewMetadata 
       Height          =   375
       Left            =   120
-      Top             =   3960
+      Top             =   600
       Width           =   4935
       _ExtentX        =   8705
       _ExtentY        =   661
@@ -49,7 +49,7 @@ Begin VB.UserControl pdMetadataExport
       Height          =   375
       Left            =   120
       TabIndex        =   0
-      Top             =   480
+      Top             =   1680
       Width           =   4935
       _ExtentX        =   8705
       _ExtentY        =   661
@@ -59,11 +59,23 @@ Begin VB.UserControl pdMetadataExport
       Height          =   375
       Left            =   120
       TabIndex        =   1
-      Top             =   960
+      Top             =   2160
       Width           =   4935
       _ExtentX        =   8705
       _ExtentY        =   661
       Caption         =   "erase tags that might be personal (including GPS and location)"
+   End
+   Begin PhotoDemon.pdLabel lblInfo 
+      Height          =   375
+      Index           =   1
+      Left            =   0
+      Top             =   2640
+      Visible         =   0   'False
+      Width           =   5055
+      _ExtentX        =   8916
+      _ExtentY        =   661
+      Caption         =   ""
+      FontSize        =   12
    End
 End
 Attribute VB_Name = "pdMetadataExport"
@@ -80,6 +92,10 @@ Public Event LostFocusAPI()
 
 'Copy of the image being saved.  We need to probe this object for things like its current metadata state.
 Private m_ImageCopy As pdImage
+
+'Similarly, when setting the relevant pdImage reference, our parent dialog will also notify us of the destination
+' file format.  This affects what metadata settings we expose.
+Private m_DstFormat As PHOTODEMON_IMAGE_FORMAT
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -135,11 +151,20 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
 End Sub
 
 Private Sub UserControl_Initialize()
-
+    
+    m_DstFormat = PDIF_UNKNOWN
+    
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, , True
-        
+    
+'    'I'm still debating the merits of letting the user control the outgoing metadata format.  This can be powerful for
+'     formats like JPEG (where multiple metadata formats are available, and it's hard to know what a user "wants"),
+'     but it can also get them into trouble if they select an output format that doesn't support the full breadth of
+'     tags in the current image.
+'
+'    'At present, I'm still studying what other software does, to try and get a feel for how others have tackled this.
+
 '    btsMetadataFormat.AddItem "automatic", 0
 '    btsMetadataFormat.AddItem "IPTC", 1
 '    btsMetadataFormat.AddItem "EXIF", 2
@@ -183,7 +208,6 @@ Private Sub UpdateControlLayout()
     chkMetadata.SetWidth (bWidth - chkMetadata.Left)
     chkAnonymize.SetWidth (bWidth - chkAnonymize.Left)
     hplReviewMetadata.SetWidth (bWidth - (hplReviewMetadata.GetLeft * 2))
-    hplReviewMetadata.SetTop bHeight - hplReviewMetadata.GetHeight
     
     Dim i As Long
     For i = lblInfo.lBound To lblInfo.ubound
@@ -250,27 +274,30 @@ Public Sub Reset()
     chkAnonymize.Value = vbChecked
 End Sub
 
-Public Sub SetParentImage(ByRef srcImage As pdImage)
+Public Sub SetParentImage(ByRef srcImage As pdImage, ByVal destinationFormat As PHOTODEMON_IMAGE_FORMAT)
     Set m_ImageCopy = srcImage
+    m_DstFormat = destinationFormat
     EvaluatePresenceOfMetadata
-    UpdateComponentVisibility
+    UpdateMainComponentVisibility
+    UpdateFormatComponentVisibility
 End Sub
 
 Private Sub EvaluatePresenceOfMetadata()
     If Not (m_ImageCopy Is Nothing) Then
         If m_ImageCopy.imgMetadata.HasMetadata Then
-            lblTitle.Caption = g_Language.TranslateMessage("note: this image contains metadata")
+            lblTitle.Caption = g_Language.TranslateMessage("This image contains metadata.")
             lblTitle.FontBold = True
             hplReviewMetadata.Caption = g_Language.TranslateMessage("click to review this image's metadata")
         Else
-            lblTitle.Caption = g_Language.TranslateMessage("note: this image does not contain metadata")
+            lblTitle.Caption = g_Language.TranslateMessage("This image does not contain metadata.")
             lblTitle.FontBold = False
             hplReviewMetadata.Caption = g_Language.TranslateMessage("click to add metadata to this image")
         End If
     End If
 End Sub
 
-Private Sub UpdateComponentVisibility()
+'Show/hide the bottom label and hyperlink, contingent on the presence of metadata in the target image
+Private Sub UpdateMainComponentVisibility()
 
     Dim imgHasMetadata As Boolean: imgHasMetadata = False
     If Not (m_ImageCopy Is Nothing) Then
@@ -281,6 +308,26 @@ Private Sub UpdateComponentVisibility()
         hplReviewMetadata.Visible = False
     End If
 
+End Sub
+
+'Show/hide any format-specific parameters.  Make sure m_DstFormat is set before calling this, obviously!
+Private Sub UpdateFormatComponentVisibility()
+    
+    Select Case m_DstFormat
+    
+        Case PDIF_UNKNOWN
+            lblInfo(1).Visible = False
+        
+        Case PDIF_JPEG
+            lblInfo(1).Visible = True
+    
+    End Select
+    
+    'Title the format-specific settings region
+    If lblInfo(1).Visible Then
+        lblInfo(1).Caption = g_Language.TranslateMessage("%1 settings", UCase$(g_ImageFormats.GetExtensionFromPDIF(m_DstFormat)))
+    End If
+    
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.

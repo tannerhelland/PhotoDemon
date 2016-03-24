@@ -245,3 +245,9 @@ StreamConversionFailed:
         pdDebug.LogAction "WARNING!  ReadIStreamIntoVBArray() failed for unknown reasons.  Please investigate!"
     #End If
 End Function
+
+Public Function IsArrayInitialized(ByVal lpArray As Long) As Boolean
+    Dim saAddress As Long
+    CopyMemory saAddress, ByVal lpArray, 4&
+    IsArrayInitialized = Not CBool(saAddress = 0)
+End Function
