@@ -72,6 +72,7 @@ Private m_OffsetX As Long, m_OffsetY As Long
 
 'Various scroll-related settings, including booleans that determine whether the user is even allowed to pan the
 ' preview area.
+Private m_SrcImageWidth As Long, m_SrcImageHeight As Long
 Private m_HScrollMax As Single, m_HScrollValue As Single
 Private m_VScrollMax As Single, m_VScrollValue As Single
 Private m_HScrollAllowed As Boolean, m_VScrollAllowed As Boolean
@@ -163,12 +164,12 @@ Public Property Get hWnd() As Long
 End Property
 
 'OffsetX/Y are used when the preview is in 1:1 mode, and the user is allowed to scroll around the underlying image
-Public Property Get offsetX() As Long
-    If m_HScrollAllowed Then offsetX = ValidateXOffset(m_HScrollValue + m_OffsetX) Else offsetX = 0
+Public Property Get OffsetX() As Long
+    If m_HScrollAllowed Then OffsetX = ValidateXOffset(m_HScrollValue + m_OffsetX) Else OffsetX = 0
 End Property
 
-Public Property Get offsetY() As Long
-    If m_VScrollAllowed Then offsetY = ValidateYOffset(m_VScrollValue + m_OffsetY) Else offsetY = 0
+Public Property Get OffsetY() As Long
+    If m_VScrollAllowed Then OffsetY = ValidateYOffset(m_VScrollValue + m_OffsetY) Else OffsetY = 0
 End Property
 
 'External functions may need to access the color selected by the preview control
@@ -467,8 +468,8 @@ Private Sub GetDIBXYFromMouseXY(ByVal mouseX As Single, ByVal mouseY As Single, 
     'We now have an original DIB width/height pair, destination DIB width/height pair, preview (x, y) offset - all that's left
     ' is a source (x, y) offset.
     Dim srcX As Single, srcY As Single
-    srcX = Me.offsetX
-    srcY = Me.offsetY
+    srcX = Me.OffsetX
+    srcY = Me.OffsetY
     
     'Convert the destination (x, y) pair to the [0, 1] range.
     Dim dstX As Single, dstY As Single
@@ -547,44 +548,27 @@ Private Sub UserControl_Show()
     'Generate a unique ID for this session
     m_UniqueID = Timer
     
-    'Ensure the control is redrawn at least once
-    UpdateControlLayout
-    
     'Determine acceptable max/min scroll values for 100% zoom preview mode
     If g_IsProgramRunning Then
         
         ucSupport.RequestCursor IDC_DEFAULT
-    
-        Dim maxHOffset As Long, maxVOffset As Long
         
-        Dim srcWidth As Long, srcHeight As Long
-        If pdImages(g_CurrentImage).selectionActive Then
-            srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
-            srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
-        Else
-            srcWidth = pdImages(g_CurrentImage).getActiveDIB.getDIBWidth
-            srcHeight = pdImages(g_CurrentImage).getActiveDIB.getDIBHeight
+        'Some dialogs can use this control instance even without a loaded image in the main window.
+        ' (e.g. the JPEG export dialog, which can be raised from the batch processor).  On such dialogs,
+        ' a preview image - if any - will be loaded via the NotifyNonStandardSource function, which in turn
+        ' will modify m_SrcImageWidth/Height.  If those are non-zero, assume a non-standard source, and do not
+        ' auto-load dimensions from the active window.
+        If Not (pdImages(g_CurrentImage) Is Nothing) And (m_SrcImageWidth = 0) And (m_SrcImageWidth = 0) Then
+            If pdImages(g_CurrentImage).selectionActive Then
+                m_SrcImageWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
+                m_SrcImageHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
+            Else
+                m_SrcImageWidth = pdImages(g_CurrentImage).GetActiveDIB.getDIBWidth
+                m_SrcImageHeight = pdImages(g_CurrentImage).GetActiveDIB.getDIBHeight
+            End If
         End If
         
-        'Retrieve DPI-aware control dimensions from the support class
-        maxHOffset = srcWidth - m_PreviewAreaWidth
-        maxVOffset = srcHeight - m_PreviewAreaHeight
-        
-        If maxHOffset > 0 Then
-            m_HScrollMax = maxHOffset
-            m_HScrollAllowed = True
-        Else
-            m_HScrollMax = 1
-            m_HScrollAllowed = False
-        End If
-        
-        If maxVOffset > 0 Then
-            m_VScrollMax = maxVOffset
-            m_VScrollAllowed = True
-        Else
-            m_VScrollMax = 1
-            m_VScrollAllowed = False
-        End If
+        CalculateScrollMaxMin
         
         'TODO: solve color management for this control... it's messy without a persistent DC.
         'Enable color management
@@ -593,20 +577,14 @@ Private Sub UserControl_Show()
     
     End If
     
+    'Ensure the control is redrawn at least once
+    UpdateControlLayout
+    
 End Sub
 
 Private Sub UserControl_Terminate()
     If Not (m_OriginalImage Is Nothing) Then m_OriginalImage.eraseDIB
     If Not (m_fxImage Is Nothing) Then m_fxImage.eraseDIB
-End Sub
-
-'After a resize or paint request, update the layout of our control
-Private Sub UpdateControlLayout()
-    
-    'Cache DPI-aware control dimensions from the support class
-    m_PreviewAreaWidth = ucSupport.GetControlWidth - BORDER_PADDING * 2
-    m_PreviewAreaHeight = ucSupport.GetControlHeight - BORDER_PADDING * 2
-                
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -615,6 +593,47 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "DisableZoomPan", Not AllowZoomPan, False
         .WriteProperty "PointSelection", AllowPointSelection, False
     End With
+End Sub
+
+Public Sub NotifyNonStandardSource(ByVal srcWidth As Long, ByVal srcHeight As Long)
+    m_SrcImageWidth = srcWidth
+    m_SrcImageHeight = srcHeight
+    CalculateScrollMaxMin
+End Sub
+
+Private Sub CalculateScrollMaxMin()
+    
+    Dim maxHOffset As Long, maxVOffset As Long
+    maxHOffset = m_SrcImageWidth - m_PreviewAreaWidth
+    maxVOffset = m_SrcImageHeight - m_PreviewAreaHeight
+    
+    If maxHOffset > 0 Then
+        m_HScrollMax = maxHOffset
+        m_HScrollAllowed = True
+    Else
+        m_HScrollMax = 1
+        m_HScrollAllowed = False
+    End If
+    
+    If maxVOffset > 0 Then
+        m_VScrollMax = maxVOffset
+        m_VScrollAllowed = True
+    Else
+        m_VScrollMax = 1
+        m_VScrollAllowed = False
+    End If
+        
+End Sub
+
+'After a resize or paint request, update the layout of our control
+Private Sub UpdateControlLayout()
+    
+    'Cache DPI-aware control dimensions from the support class
+    m_PreviewAreaWidth = ucSupport.GetControlWidth - BORDER_PADDING * 2
+    m_PreviewAreaHeight = ucSupport.GetControlHeight - BORDER_PADDING * 2
+    
+    CalculateScrollMaxMin
+    
 End Sub
 
 'This control currently handles border rendering around the preview area, so it *does* maintain a backbuffer that

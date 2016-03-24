@@ -554,7 +554,27 @@ Private Sub ExportDebugMsg(ByVal debugMsg As String)
     #End If
 End Sub
 
-Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, Optional ByVal bmpParams As String = vbNullString) As Boolean
+'Format-specific export functions follow.  A few notes on how these functions work.
+' 1) All functions take four input parameters:
+'    - [required] srcPDImage: the image to be saved
+'    - [required] dstFile: destination path + filename + extension, as a single string
+'    - [optional] formatParams: format-specific parameters, in XML format (created via pdParamXML)
+'    - [optional] metadataParams: metadata-specific parameters, in XML format (created via pdParamXML)
+'
+' 2) Format-specific parameters must not be required for saving a proper image.  Default values must be intelligently
+'     applied if the format-specific parameter string is missing.
+'
+' 3) Most formats can ignore the metadataParams string, as metadata handling is typically handled via separate
+'     ExifTool-specific functions.  This string primarily exists for formats like JPEG, where metadata handling is
+'     messy since some functionality is easier to handle inside FreeImage (like thumbnail generation).  Either way,
+'     if a metadata string is generated for a given format, it will be supplied as a parameter, "just in case".
+'
+' 4) All functions return success/failure by boolean.  (FreeImage-specific errors are logged and processed externally.)
+'
+' 5) Because these export functions interface with multiple parts of the program (including the batch processor), it is
+'     very important that they maintain identical function signatures.  Any format-specific functionality needs to be
+'     handled via those XML parameter strings, and not via extra optional params.
+Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportBMPError
     
@@ -564,7 +584,7 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, 
     'Parse all relevant BMP parameters.  (See the BMP export dialog for details on how these are generated.)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    cParams.SetParamString bmpParams
+    cParams.SetParamString formatParams
     
     Dim bmpCompression As Boolean, bmpForceGrayscale As Boolean, bmp16bpp_555Mode As Boolean, bmpCustomColors As Long
     bmpCompression = cParams.GetBool("BMPRLECompression", False)
@@ -614,7 +634,7 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, 
     'If both GDI+ and FreeImage are missing, use our own internal methods to save the BMP file in its current state.
     ' (This is a measure of last resort, as the saved image is unlikely to match the requested output depth.)
     If (Not g_ImageFormats.GDIPlusEnabled) And (Not g_ImageFormats.FreeImageEnabled) Then
-        tmpImageCopy.WriteToBitmapFile BMPPath
+        tmpImageCopy.WriteToBitmapFile dstFile
         ExportBMP = True
     Else
     
@@ -631,7 +651,7 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, 
             
             'Use that handle to save the image to BMP format, with required color conversion based on the outgoing color depth
             If (fi_DIB <> 0) Then
-                ExportBMP = FreeImage_SaveEx(fi_DIB, BMPPath, PDIF_BMP, BMPflags, outputColorDepth, , , , , True)
+                ExportBMP = FreeImage_SaveEx(fi_DIB, dstFile, PDIF_BMP, BMPflags, outputColorDepth, , , , , True)
                 If ExportBMP Then
                     ExportDebugMsg "Export to " & sFileType & " appears successful."
                 Else
@@ -643,7 +663,7 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, 
             End If
             
         Else
-            ExportBMP = GDIPlusSavePicture(srcPDImage, BMPPath, ImageBMP, outputColorDepth)
+            ExportBMP = GDIPlusSavePicture(srcPDImage, dstFile, ImageBMP, outputColorDepth)
         End If
     
     End If
@@ -656,8 +676,125 @@ ExportBMPError:
     
 End Function
 
+Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportJPEGError
+    
+    ExportJPEG = False
+    Dim sFileType As String: sFileType = "JPEG"
+    
+    'Parse all relevant JPEG parameters.  (See the JPEG export dialog for details on how these are generated.)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString formatParams
+    
+    Dim jpegQuality As Long
+    jpegQuality = cParams.GetLong("JPEGQuality", 92)
+    
+    Dim jpegCompression As Long
+    Const JPG_CMP_BASELINE = 0, JPG_CMP_OPTIMIZED = 1, JPG_CMP_PROGRESSIVE = 2
+    Select Case cParams.GetLong("JPEGCompressionMode", JPG_CMP_OPTIMIZED)
+        Case JPG_CMP_BASELINE
+            jpegCompression = JPEG_BASELINE
+            
+        Case JPG_CMP_OPTIMIZED
+            jpegCompression = JPEG_OPTIMIZE
+            
+        Case JPG_CMP_PROGRESSIVE
+            jpegCompression = JPEG_OPTIMIZE Or JPEG_PROGRESSIVE
+        
+    End Select
+    
+    Dim jpegSubsampling As Long
+    Const JPG_SS_444 = 0, JPG_SS_422 = 1, JPG_SS_420 = 2, JPG_SS_411 = 3
+    Select Case cParams.GetLong("JPEGSubsampling", JPG_SS_422)
+        Case JPG_SS_444
+            jpegSubsampling = JPEG_SUBSAMPLING_444
+        Case JPG_SS_422
+            jpegSubsampling = JPEG_SUBSAMPLING_422
+        Case JPG_SS_420
+            jpegSubsampling = JPEG_SUBSAMPLING_420
+        Case JPG_SS_411
+            jpegSubsampling = JPEG_SUBSAMPLING_411
+    End Select
+    
+    'Combine all FreeImage-specific flags into one master flag
+    Dim jpegFlags As Long
+    jpegFlags = jpegQuality Or jpegCompression Or jpegSubsampling
+    
+    'Generate a composited image copy, with alpha premultiplied (as we're just going to composite it, anyway)
+    Dim tmpImageCopy As pdDIB
+    Set tmpImageCopy = New pdDIB
+    srcPDImage.GetCompositedImage tmpImageCopy, True
+    
+    'JPEGs do not support alpha, so forcibly flatten the image (regardless of output color depth).
+    ' We also apply a custom backcolor here (if one exists; white is used by default).
+    Dim jpegBackgroundColor As Long
+    jpegBackgroundColor = cParams.GetLong("JPEGBackgroundColor", vbWhite)
+    If (tmpImageCopy.getDIBColorDepth = 32) Then tmpImageCopy.convertTo24bpp jpegBackgroundColor
+    
+    'Retrieve the recommended output color depth of the image.
+    Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+    Dim forceGrayscale As Boolean
+    
+    If StrComp(LCase$(cParams.GetString("JPEGColorDepth", "Auto")), "auto", vbBinaryCompare) = 0 Then
+        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_JPEG, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+        ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
+    Else
+        outputColorDepth = cParams.GetLong("JPEGColorDepth", 24)
+        If outputColorDepth = 8 Then forceGrayscale = True
+    End If
+    
+    'FreeImage is our preferred export engine, but we can use GDI+ if we have to
+    If g_ImageFormats.FreeImageEnabled Then
+        
+        Dim fi_DIB As Long
+        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, PDAS_NoAlpha, PDAS_NoAlpha, , vbWhite, isGrayscale Or forceGrayscale)
+        
+        'Use that handle to save the image to JPEG format, with required color conversion based on the outgoing color depth
+        If (fi_DIB <> 0) Then
+            
+'            'If a thumbnail has been requested, embed it now
+'            If cParams.GetBool("JPEGThumbnail", False) Then
+'                Dim fThumbnail As Long
+'                fThumbnail = FreeImage_MakeThumbnail(fi_DIB, 100)
+'                FreeImage_SetThumbnail fi_DIB, fThumbnail
+'                FreeImage_Unload fThumbnail
+'            End If
+            
+            'Immediately prior to saving, pass this image's resolution values (if any) to FreeImage.
+            ' These values will be embedded in the JFIF header.
+            FreeImage_SetResolutionX fi_DIB, srcPDImage.getDPI
+            FreeImage_SetResolutionY fi_DIB, srcPDImage.getDPI
+            
+            ExportJPEG = FreeImage_SaveEx(fi_DIB, dstFile, PDIF_JPEG, jpegFlags, outputColorDepth, , , , , True)
+            If ExportJPEG Then
+                ExportDebugMsg "Export to " & sFileType & " appears successful."
+            Else
+                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+            End If
+        Else
+            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            ExportJPEG = False
+        End If
+        
+    ElseIf g_ImageFormats.GDIPlusEnabled Then
+        ExportJPEG = GDIPlusSavePicture(srcPDImage, dstFile, ImageJPEG, outputColorDepth, jpegQuality)
+    Else
+        ExportJPEG = False
+        Message "No %1 encoder found. Save aborted.", "JPEG"
+    End If
+    
+    Exit Function
+    
+ExportJPEGError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportJPEG = False
+    
+End Function
+
 'Save an HDR (High-Dynamic Range) image
-Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal HDRPath As String, Optional ByVal hdrParams As String = vbNullString) As Boolean
+Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportHDRError
     
@@ -670,7 +807,7 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal HDRPath As String, 
         ' options for things like gamma correction, background color for 32-bpp images, etc.)
         Dim cParams As pdParamXML
         Set cParams = New pdParamXML
-        cParams.SetParamString hdrParams
+        cParams.SetParamString formatParams
         
         'Generate a composited image copy, with alpha automatically un-premultiplied
         Dim tmpImageCopy As pdDIB
@@ -744,7 +881,7 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal HDRPath As String, 
                 Next y
                 
                 'With gamma properly accounted for, we can finally write the image out to file.
-                ExportHDR = FreeImage_Save(PDIF_HDR, fi_FloatDIB, HDRPath, 0)
+                ExportHDR = FreeImage_Save(PDIF_HDR, fi_FloatDIB, dstFile, 0)
                 If ExportHDR Then
                     ExportDebugMsg "Export to " & sFileType & " appears successful."
                 Else
@@ -778,7 +915,7 @@ ExportHDRError:
 End Function
 
 'Save to PSD (or PSB) format using the FreeImage library
-Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal psdPath As String, Optional ByVal psdParams As String = vbNullString) As Boolean
+Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportPSDError
     
@@ -787,10 +924,10 @@ Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal psdPath As String, 
     
     If g_ImageFormats.FreeImageEnabled Then
     
-        'TODO: parse incoming BMP parameters.  (This requires a BMP export dialog, which I haven't constructed yet...)
+        'TODO: parse incoming PSD parameters.  (This requires a PSD export dialog, which I haven't constructed yet...)
         Dim cParams As pdParamXML
         Set cParams = New pdParamXML
-        cParams.SetParamString psdParams
+        cParams.SetParamString formatParams
         
         Dim compressRLE As Boolean, usePSBFormat As Boolean
         compressRLE = True
@@ -824,7 +961,7 @@ Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal psdPath As String, 
             If compressRLE Then fi_Flags = fi_Flags Or PSD_RLE Else fi_Flags = fi_Flags Or PSD_NONE
             If usePSBFormat Then fi_Flags = fi_Flags Or PSD_PSB
             
-            ExportPSD = FreeImage_SaveEx(fi_DIB, psdPath, PDIF_PSD, fi_Flags, outputColorDepth, , , , , True)
+            ExportPSD = FreeImage_SaveEx(fi_DIB, dstFile, PDIF_PSD, fi_Flags, outputColorDepth, , , , , True)
             If ExportPSD Then
                 ExportDebugMsg "Export to " & sFileType & " appears successful."
             Else

@@ -149,7 +149,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     Message "Saving %1 file...", saveExtension
     
     'With all save parameters collected, we can offload the rest of the save process to per-format save functions.
-    saveSuccessful = ExportToSpecificFormat(srcImage, dstPath, saveFormat, saveParameters)
+    saveSuccessful = ExportToSpecificFormat(srcImage, dstPath, saveFormat, saveParameters, metadataParameters)
     If saveSuccessful Then
         
         'The file was saved successfully!  Copy the save parameters into the parent pdImage object; subsequent "save" actions
@@ -263,7 +263,7 @@ End Function
 'Already have a save parameter string assembled?  Call this function to export directly to a given format, with no UI prompts.
 ' (I *DO NOT* recommend calling this function directly.  PD only uses it from within the main _SaveImage function, which also applies
 '  a number of failsafe checks against things like path accessibility and format compatibility.)
-Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath As String, ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString) As Boolean
+Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath As String, ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString, Optional ByVal metadataParameters As String = vbNullString) As Boolean
 
     'As a convenience, load the current set of parameters into an XML parser; some formats use this data to select an
     ' appropriate export engine (if multiples are available, e.g. both FreeImage and GDI+).
@@ -274,23 +274,10 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
     Select Case outputPDIF
         
         Case PDIF_BMP
-            ExportToSpecificFormat = ImageExporter.ExportBMP(srcImage, dstPath, saveParameters)
+            ExportToSpecificFormat = ImageExporter.ExportBMP(srcImage, dstPath, saveParameters, metadataParameters)
             
-        'I've commented the JPEG section as a sort of "tutorial".  Other sections should be self-explanatory.
         Case PDIF_JPEG
-            
-            'JPEG is a somewhat strange format because its export functionality is implemented twice: one interface for FreeImage,
-            ' and another for GDI+.  GDI+ does not need to make a copy of the image before saving it - which makes it much faster -
-            ' but FreeImage supports more advanced parameters, like optimization, thumbnail embedding, and custom subsampling.
-            
-            'If no optional parameters are in use (or if FreeImage is unavailable), we preferentially use the GDI+ encoder.
-            If g_ImageFormats.FreeImageEnabled And (cParams.GetBool("JPEGOptimizeTables") Or cParams.GetBool("JPEGProgressive") Or cParams.GetBool("JPEGCustomSubsampling") Or cParams.GetBool("JPEGThumbnail")) Then
-                ExportToSpecificFormat = SaveJPEGImage(srcImage, dstPath, saveParameters)
-            ElseIf g_ImageFormats.GDIPlusEnabled Then
-                ExportToSpecificFormat = GDIPlusSavePicture(srcImage, dstPath, ImageJPEG, 24, cParams.GetLong("JPEGQuality", 92))
-            Else
-                ExportToSpecificFormat = False
-            End If
+            ExportToSpecificFormat = ImageExporter.ExportJPEG(srcImage, dstPath, saveParameters, metadataParameters)
             
         Case PDIF_PDI
             If g_ZLibEnabled Then
@@ -1186,157 +1173,6 @@ SaveTGAError:
 
 End Function
 
-'Save to JPEG using the FreeImage library.  FreeImage offers significantly more JPEG features than GDI+.
-Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As String, ByVal jpegParams As String) As Boolean
-    
-    On Error GoTo SaveJPEGError
-    
-    SaveJPEGImage = False
-    
-    Dim sFileType As String
-    sFileType = "JPEG"
-    
-    Message "Preparing %1 image...", sFileType
-    
-    'Parse all possible JPEG parameters
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
-    cParams.SetParamString jpegParams
-    
-    Dim jpegFlags As Long
-    jpegFlags = cParams.GetLong("JPEGQuality", 92)
-    
-    'NOTE!  Auto JPEG quality is currently disabled, as I'm not pleased with its performance or quality.
-'    'If FreeImage is enabled, check for an "automatically determine quality" request.
-'    If g_ImageFormats.FreeImageEnabled Then
-'
-'        Dim autoQualityCheck As jpegAutoQualityMode
-'        autoQualityCheck = cParams.GetLong(4, 0)
-'
-'        If autoQualityCheck <> doNotUseAutoQuality Then
-'
-'            'The user has requested that we determine a proper quality value for them.  Do so now!
-'            Message "Testing JPEG quality values to determine best setting..."
-'
-'            'Large images take a veeeery long time to search.  Force a max value of 1024x1024, and search the smaller image.
-'            ' (This should still result in a good value, but at a much smaller time investment.)
-'            Dim testDIB As pdDIB
-'            Set testDIB = New pdDIB
-'            srcPDImage.GetCompositedImage testDIB, False
-'            If testDIB.getDIBColorDepth = 32 Then testDIB.convertTo24bpp
-'
-'            If (testDIB.getDIBWidth > 1024) Or (testDIB.getDIBHeight > 1024) Then
-'
-'                'Find new dimensions
-'                Dim newWidth As Long, newHeight As Long
-'                ConvertAspectRatio testDIB.getDIBWidth, testDIB.getDIBHeight, 1024, 1024, newWidth, newHeight
-'
-'                'Create a temporary source image (resizing requires separate source and destination images)
-'                Dim tmpSourceDIB As pdDIB
-'                Set tmpSourceDIB = New pdDIB
-'                tmpSourceDIB.createFromExistingDIB testDIB
-'
-'                'Resize the temp image and continue
-'                testDIB.createFromExistingDIB tmpSourceDIB, newWidth, newHeight
-'                Set tmpSourceDIB = Nothing
-'
-'            End If
-'
-'            jpegFlags = findQualityForDesiredJPEGPerception(testDIB, autoQualityCheck, cParams.GetBool(5, False))
-'            Message "Ideal quality of %1 found.  Continuing with save...", jpegFlags
-'
-'            Set testDIB = Nothing
-'
-'        Else
-'            Message "Preparing %1 image...", sFileType
-'        End If
-'
-'    Else
-'        Message "Preparing %1 image...", sFileType
-'    End If
-    
-    'As a failsafe check, make sure FreeImage available.  If it isn't, silently fall back to GDI+.
-    If (Not g_ImageFormats.FreeImageEnabled) Then
-        If g_ImageFormats.GDIPlusEnabled Then
-            SaveJPEGImage = GDIPlusSavePicture(srcPDImage, JPEGPath, ImageJPEG, 24, jpegFlags)
-        Else
-            SaveJPEGImage = False
-            Message "No %1 encoder found. Save aborted.", "JPEG"
-        End If
-        Exit Function
-    End If
-    
-    'Normal, FreeImage-based encoding starts here.
-    
-    'Retrieve a composited copy of the image, at full size
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    srcPDImage.GetCompositedImage tmpDIB, False
-    
-    'JPEGs can only save 24bpp images, so flatten the alpha as necessary
-    If (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
-        
-    'Convert our current DIB to a FreeImage-type DIB
-    Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
-        
-    'If the image is grayscale, instruct FreeImage to internally mark the image as such
-    Dim outputColorDepth As Long
-    Message "Analyzing image color content..."
-    
-    If DIB_Handler.isDIBGrayscale(tmpDIB) Then
-        Message "No color found.  Saving 8bpp grayscale JPEG."
-        outputColorDepth = 8
-        fi_DIB = FreeImage_ConvertToGreyscale(fi_DIB)
-    Else
-        Message "Color found.  Saving 24bpp full-color JPEG."
-        outputColorDepth = 24
-    End If
-        
-    'Combine all received flags into one
-    If cParams.GetBool("JPEGOptimizeTables") Then jpegFlags = jpegFlags Or JPEG_OPTIMIZE
-    If cParams.GetBool("JPEGProgressive") Then jpegFlags = jpegFlags Or JPEG_PROGRESSIVE
-    If cParams.GetBool("JPEGCustomSubsampling") Then jpegFlags = jpegFlags Or cParams.GetLong("JPEGCustomSubsamplingValue", JPEG_SUBSAMPLING_420)
-    
-    'If a thumbnail has been requested, generate that now
-    If cParams.GetBool("JPEGThumbnail") Then
-        Dim fThumbnail As Long
-        fThumbnail = FreeImage_MakeThumbnail(fi_DIB, 100)
-        FreeImage_SetThumbnail fi_DIB, fThumbnail
-        FreeImage_Unload fThumbnail
-    End If
-        
-    'Use that handle to save the image to JPEG format
-    If fi_DIB <> 0 Then
-        
-        'Pass this image's resolution values, if any, to FreeImage; it will embed these values in the JFIF header
-        FreeImage_SetResolutionX fi_DIB, srcPDImage.getDPI
-        FreeImage_SetResolutionY fi_DIB, srcPDImage.getDPI
-        
-        SaveJPEGImage = FreeImage_SaveEx(fi_DIB, JPEGPath, PDIF_JPEG, jpegFlags, outputColorDepth, , , , , True)
-        
-        If SaveJPEGImage Then
-            Message "%1 save complete.", sFileType
-        Else
-            Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-        End If
-        
-    Else
-        Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-    End If
-    
-    Exit Function
-    
-SaveJPEGError:
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  Saving.SaveJPEGImage() encountered VB error #" & Err.Number & ": " & Err.Description
-    #End If
-    
-    SaveJPEGImage = False
-    
-End Function
-
 'Save a TIFF (Tagged Image File Format) image via FreeImage.  GDI+ can also do this.
 Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As String, Optional ByVal outputColorDepth As Long = 32, Optional ByVal tiffParams As String = "") As Boolean
     
@@ -1763,7 +1599,7 @@ End Function
 
 'Given a source and destination DIB reference, fill the destination with a post-JPEG-compression of the original.  This
 ' is used to generate the live preview used in PhotoDemon's "export JPEG" dialog.
-Public Sub FillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal JPEGQuality As Long, Optional ByVal jpegSubsample As Long = JPEG_SUBSAMPLING_422)
+Public Sub FillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal jpegQuality As Long, Optional ByVal jpegSubsample As Long = JPEG_SUBSAMPLING_422)
 
     'srcDIB may be 32bpp.  Convert it to 24bpp if necessary.
     If srcDIB.getDIBColorDepth = 32 Then srcDIB.convertTo24bpp
@@ -1774,7 +1610,7 @@ Public Sub FillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     
     'Prepare matching flags for FreeImage's JPEG encoder
     Dim jpegFlags As Long
-    jpegFlags = JPEGQuality Or jpegSubsample
+    jpegFlags = jpegQuality Or jpegSubsample
         
     'Now comes the actual JPEG conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save
     ' the image in JPEG format to a byte array; we then hand that byte array back to it and request a decompression.
@@ -1789,8 +1625,7 @@ Public Sub FillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     
     'Release the FreeImage copy of the DIB
     FreeImage_Unload fi_DIB
-    Erase jpegArray
-
+    
 End Sub
 
 'Given a source image and a desired JPEG perception quality, test various JPEG quality values until an ideal one is found

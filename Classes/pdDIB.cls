@@ -562,7 +562,7 @@ End Sub
 Public Function createFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newWidth As Long = -1, Optional ByVal newHeight As Long = -1, Optional useHalftoning As Boolean = True) As Boolean
 
     'Make sure the DIB we're passed isn't empty
-    If srcDIB.getDIBDC <> 0 Then
+    If (srcDIB.getDIBDC <> 0) Then
         
         'Prepare new width and height values as requested by the user
         If newWidth = -1 Then newWidth = srcDIB.getDIBWidth
@@ -1601,7 +1601,7 @@ Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     If m_DibColorDepth <> 32 Then Exit Sub
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Compositing DIB of size " & m_dibWidth & "x" & m_dibHeight & ".  Alpha premultiplication = " & m_IsAlphaPremultiplied & "."
+        Debug.Print "Compositing DIB of size " & m_dibWidth & "x" & m_dibHeight & ".  Alpha premultiplication = " & m_IsAlphaPremultiplied & "."
     #End If
     
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.

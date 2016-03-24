@@ -1926,3 +1926,30 @@ End Sub
 Public Sub RequestTabstripRedraw()
     FormMain.mainCanvas(0).NotifyTabstripTotalRedrawRequired
 End Sub
+
+'If a preview control won't be activated for a given dialog, call this function to display a persistent
+' "no preview available" message.  (Note: for this to work, you must not attempt to supply updated preview images
+' to the underlying control.  If you do, those images will obviously overwrite this warning!)
+Public Sub ShowDisabledPreviewImage(ByRef dstPreview As pdFxPreviewCtl)
+    
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createBlank dstPreview.GetPreviewWidth, dstPreview.GetPreviewHeight
+
+    Dim notifyFont As pdFont
+    Set notifyFont = New pdFont
+    notifyFont.SetFontFace g_InterfaceFont
+    notifyFont.SetFontSize 14
+    notifyFont.SetFontColor 0
+    notifyFont.SetFontBold True
+    notifyFont.SetTextAlignment vbCenter
+    notifyFont.CreateFontObject
+    notifyFont.AttachToDC tmpDIB.getDIBDC
+
+    notifyFont.FastRenderText tmpDIB.getDIBWidth \ 2, tmpDIB.getDIBHeight \ 2, g_Language.TranslateMessage("preview not available")
+    dstPreview.SetOriginalImage tmpDIB
+    dstPreview.SetFXImage tmpDIB
+    
+    notifyFont.ReleaseFromDC
+    
+End Sub
