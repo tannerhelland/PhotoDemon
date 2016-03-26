@@ -209,12 +209,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'The user input from the dialog
-Private m_UserDialogAnswer As VbMsgBoxResult
-
 'This form can (and should!) be notified of the image being exported.  The only exception to this rule is invoking
 ' the dialog from the batch process dialog, as no image is associated with that preview.
-Public imageBeingExported As pdImage
+Private m_SrcImage As pdImage
 
 'A composite of the current image, 32-bpp, fully composited.  This is only regenerated if the source image changes.
 Private m_CompositedImage As pdDIB
@@ -227,16 +224,27 @@ Private m_FIHandle As Long
 ' variable controls access to the toggle code.
 Private m_CheckBoxUpdatingDisabled As Boolean
 
-'Final JPEG XML packet, with all JPEG settings defined as tag+value pairs
-Public xmlParamString As String
+'OK or CANCEL result
+Private m_UserDialogAnswer As VbMsgBoxResult
+
+'Final format-specific XML packet, with all format-specific settings defined as tag+value pairs
+Private m_FormatParamString As String
 
 'Final metadata XML packet, with all metadata settings defined as tag+value pairs
-Public metadataParamString As String
+Private m_MetadataParamString As String
 
 'The user's answer is returned via this property
-Public Property Get DialogResult() As VbMsgBoxResult
-    DialogResult = m_UserDialogAnswer
-End Property
+Public Function GetDialogResult() As VbMsgBoxResult
+    GetDialogResult = m_UserDialogAnswer
+End Function
+
+Public Function GetFormatParams() As String
+    GetFormatParams = m_FormatParamString
+End Function
+
+Public Function GetMetadataParams() As String
+    GetMetadataParams = m_MetadataParamString
+End Function
 
 Private Sub btsCategory_Click(ByVal buttonIndex As Long)
     UpdatePanelVisibility
@@ -312,10 +320,12 @@ Private Sub cmdBar_OKClick()
             cParams.AddParam "JPEGColorDepth", "8"
     End Select
     
-    xmlParamString = cParams.GetParamString
+    m_FormatParamString = cParams.GetParamString
     
     'The metadata panel manages its own XML string
-    metadataParamString = mtdManager.GetMetadataSettings
+    m_MetadataParamString = mtdManager.GetMetadataSettings
+    
+    'TODO 7.0: solve the puzzle of proper thumbnail handling
     'cParams.AddParam "JPEGThumbnail", CBool(chkThumbnail)
     
     'Hide but *DO NOT UNLOAD* the form.  The dialog manager needs to retrieve the setting strings before unloading us
@@ -347,16 +357,13 @@ Private Sub cmdBar_ResetClick()
     
 End Sub
 
-Private Sub Form_Activate()
-    UpdatePreview
-End Sub
-
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+    Plugin_FreeImage.ReleasePreviewCache
 End Sub
 
 'Used to keep the "image quality" text box, scroll bar, and combo box in sync
-Private Sub updateComboBox()
+Private Sub UpdateComboBox()
     
     Select Case sltQuality.Value
         Case 40
@@ -378,8 +385,8 @@ Private Sub updateComboBox()
 End Sub
 
 'The ShowDialog routine presents the user with this form.
-Public Sub ShowDialog()
-
+Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
+    
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     m_UserDialogAnswer = vbCancel
     
@@ -420,7 +427,8 @@ Public Sub ShowDialog()
     btsDepth.ListIndex = 0
     
     'Next, prepare various controls on the metadata panel
-    mtdManager.SetParentImage imageBeingExported, PDIF_JPEG
+    Set m_SrcImage = srcImage
+    mtdManager.SetParentImage m_SrcImage, PDIF_JPEG
     
     'By default, the basic options panel is always shown.
     btsCategory.ListIndex = 0
@@ -428,8 +436,8 @@ Public Sub ShowDialog()
     
     'Make a copy of the composited image; it takes time to composite layers, so we don't want to redo this except
     ' when absolutely necessary.
-    If Not (imageBeingExported Is Nothing) Then
-        imageBeingExported.GetCompositedImage m_CompositedImage, True
+    If Not (m_SrcImage Is Nothing) Then
+        m_SrcImage.GetCompositedImage m_CompositedImage, True
         pdFxPreview.NotifyNonStandardSource m_CompositedImage.getDIBWidth, m_CompositedImage.getDIBHeight
     End If
     
@@ -439,13 +447,14 @@ Public Sub ShowDialog()
         btsDepth.Enabled = False
     End If
     
-    If (Not g_ImageFormats.FreeImageEnabled) Or (imageBeingExported Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
+    If (Not g_ImageFormats.FreeImageEnabled) Or (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
+    
+    'Update the preview
+    UpdatePreviewSource
+    UpdatePreview
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    
-    'Update the preview
-    UpdatePreview
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True
@@ -458,7 +467,31 @@ Private Sub pdFxPreview_ViewportChanged()
 End Sub
 
 Private Sub sltQuality_Change()
-    If Not m_CheckBoxUpdatingDisabled Then updateComboBox
+    If Not m_CheckBoxUpdatingDisabled Then UpdateComboBox
+End Sub
+
+'When a parameter changes that requires a new source DIB for the preview (e.g. changing the background composite color),
+' call this function to generate a new preview DIB.  Note that you *do not* need to call this function for format-specific
+' changes (like quality, subsampling, etc).
+Private Sub UpdatePreviewSource()
+    If Not (m_CompositedImage Is Nothing) Then
+        
+        'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
+        ' since the last preview.  Prep a new preview now.
+        Dim tmpSafeArray As SAFEARRAY2D
+        FastDrawing.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
+        
+        'JPEGs don't support transparency, so we can save some time by forcibly converting to 24-bpp in advance
+        If (workingDIB.getDIBColorDepth = 32) Then workingDIB.convertTo24bpp clsBackground.Color
+        
+        'Finally, convert that preview copy to a FreeImage-compatible handle.
+        If (btsDepth.ListIndex = 0) Or (btsDepth.ListIndex = 1) Then
+            m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 24, PDAS_NoAlpha)
+        Else
+            m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 8, PDAS_NoAlpha, , , , True)
+        End If
+        
+    End If
 End Sub
 
 Private Sub UpdatePreview()
@@ -498,27 +531,3 @@ Private Function GetFISubsampleConstant() As Long
             GetFISubsampleConstant = JPEG_SUBSAMPLING_411
     End Select
 End Function
-
-'When a parameter changes that requires a new source DIB for the preview (e.g. changing the background composite color),
-' call this function to generate a new preview DIB.  Note that you *do not* need to call this function for JPEG-specific
-' changes (like quality, subsampling, etc).
-Private Sub UpdatePreviewSource()
-    If Not (m_CompositedImage Is Nothing) Then
-        
-        'Because the user can change the JPEG viewport, we can't guarantee that the preview region hasn't changed
-        ' since the last preview.  Prep a new preview now.
-        Dim tmpSafeArray As SAFEARRAY2D
-        FastDrawing.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
-        
-        'JPEGs don't support transparency, so we can save some time by forcibly converting to 24-bpp in advance
-        If workingDIB.getDIBColorDepth = 32 Then workingDIB.convertTo24bpp clsBackground.Color
-        
-        'Finally, convert that preview copy to a FreeImage-compatible handle.
-        If (btsDepth.ListIndex = 0) Or (btsDepth.ListIndex = 1) Then
-            m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 24, PDAS_NoAlpha)
-        Else
-            m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 8, PDAS_NoAlpha, , , , True)
-        End If
-        
-    End If
-End Sub

@@ -1600,9 +1600,9 @@ Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
     If m_DibColorDepth <> 32 Then Exit Sub
     
-    #If DEBUGMODE = 1 Then
-        Debug.Print "Compositing DIB of size " & m_dibWidth & "x" & m_dibHeight & ".  Alpha premultiplication = " & m_IsAlphaPremultiplied & "."
-    #End If
+'    #If DEBUGMODE = 1 Then
+'        Debug.Print "Compositing DIB of size " & m_dibWidth & "x" & m_dibHeight & ".  Alpha premultiplication = " & m_IsAlphaPremultiplied & "."
+'    #End If
     
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
