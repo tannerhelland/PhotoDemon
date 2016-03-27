@@ -260,6 +260,19 @@
 				<Background>BackgroundDefault</Background>
 			</PDMetadataExport>
 			
+			<PDMetadataList>
+				<TitleSelected>TextInvert</TitleSelected> 
+				<TitleSelected-disabled>BackgroundDefault</TitleSelected-disabled> 
+				<TitleUnselected>TextDark</TitleUnselected>
+				<TitleUnselected-hover>TextHyperlink</TitleUnselected-hover>
+				<TitleUnselected-disabled>GrayDisabled</TitleUnselected-disabled>
+				<DescriptionSelected>TextInvert</DescriptionSelected> 
+				<DescriptionSelected-disabled>BackgroundDefault</DescriptionSelected-disabled> 
+				<DescriptionUnselected>TextDefault</DescriptionUnselected>
+				<DescriptionUnselected-hover>TextHyperlink</DescriptionUnselected-hover>
+				<DescriptionUnselected-disabled>GrayDisabled</DescriptionUnselected-disabled>
+			</PDMetadataList>
+			
 			<PDNavigator>
 				<Background>BackgroundDefault</Background>
 			</PDNavigator>

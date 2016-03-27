@@ -465,7 +465,7 @@ Public Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, 
     If m_SizeMode = PDLH_FIXED Then
         ListIndexByPosition = srcY \ m_DefaultHeight
         If ListIndexByPosition >= m_NumOfItems Then ListIndexByPosition = -1
-    
+        
     'On a variable-size list, this calculation is more complicated
     Else
         
@@ -741,14 +741,16 @@ End Sub
 ' parent relays those events to us, obviously).
 Private Sub UpdateHoveredIndex(ByVal x As Long, ByVal y As Long, Optional ByVal ensureRedrawEvent As Boolean = False)
     
+    Dim oldMouseInsideList As Boolean
+    oldMouseInsideList = m_MouseInsideList
     m_MouseInsideList = Math_Functions.IsPointInRectF(x, y, m_ListRectF)
     
     Dim tmpListIndex As Long
-    tmpListIndex = Me.ListIndexByPosition(x, y)
+    If m_MouseInsideList Then tmpListIndex = Me.ListIndexByPosition(x, y) Else tmpListIndex = -1
     
-    If (tmpListIndex <> m_ListIndexHover) Or ensureRedrawEvent Then
+    If (tmpListIndex <> m_ListIndexHover) Or (oldMouseInsideList <> m_MouseInsideList) Or ensureRedrawEvent Then
         m_ListIndexHover = tmpListIndex
-        If m_RedrawAutomatically Then
+        If m_RedrawAutomatically Or ensureRedrawEvent Then
             RaiseEvent RedrawNeeded
         Else
             m_RenderDataCorrect = False
