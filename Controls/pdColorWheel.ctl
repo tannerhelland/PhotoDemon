@@ -481,7 +481,7 @@ Private Sub CreateColorWheel()
     ' For convenience, we will place hue 0 at angle 0.
     Dim hPixels() As Byte
     Dim hueSA As SAFEARRAY2D
-    prepSafeArray hueSA, m_WheelBuffer
+    PrepSafeArray hueSA, m_WheelBuffer
     CopyMemory ByVal VarPtrArray(hPixels()), VarPtr(hueSA), 4
     
     Dim x As Long, y As Long
@@ -576,7 +576,7 @@ Private Sub CreateSVSquare()
     ' - The x-axis position determines saturation (1 -> 0)
     Dim svPixels() As Byte
     Dim svSA As SAFEARRAY2D
-    prepSafeArray svSA, m_SquareBuffer
+    PrepSafeArray svSA, m_SquareBuffer
     CopyMemory ByVal VarPtrArray(svPixels()), VarPtr(svSA), 4
     
     Dim x As Long, y As Long
@@ -746,9 +746,17 @@ Private Sub RedrawBackBuffer()
                 proposedColor = GetCurrentRGB
             Else
                 If m_MouseInsideBox Then
-                    proposedColor = GetHypotheticalRGB(m_Hue, m_SaturationHover, m_ValueHover)
+                    If (m_SaturationHover <> -1) And (m_ValueHover <> -1) Then
+                        proposedColor = GetHypotheticalRGB(m_Hue, m_SaturationHover, m_ValueHover)
+                    Else
+                        proposedColor = GetCurrentRGB
+                    End If
                 Else
-                    proposedColor = GetHypotheticalRGB(m_HueHover, m_Saturation, m_Value)
+                    If (m_HueHover <> -1) Then
+                        proposedColor = GetHypotheticalRGB(m_HueHover, m_Saturation, m_Value)
+                    Else
+                        proposedColor = GetCurrentRGB
+                    End If
                 End If
             End If
             
@@ -795,6 +803,8 @@ End Function
 
 'Given an arbitrary HSV triplet, return the corresponding RGB long
 Private Function GetHypotheticalRGB(ByVal h As Double, ByVal s As Double, ByVal v As Double) As Long
+    If (s < 0) Then s = 0:    If (s > 1) Then s = 1
+    If (v < 0) Then v = 0:    If (v > 1) Then v = 1
     Dim r As Long, g As Long, b As Long
     Colors.HSVtoRGB h, s, v, r, g, b
     GetHypotheticalRGB = RGB(r, g, b)
