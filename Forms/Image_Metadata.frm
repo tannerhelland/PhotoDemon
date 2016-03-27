@@ -409,7 +409,7 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     
     Dim offsetY As Single, offsetX As Single
     offsetX = tmpRectF.Left + FixDPI(8)
-    offsetY = tmpRectF.Top + FixDPI(9)
+    offsetY = tmpRectF.Top + FixDPI(7)
     
     Dim thisTag As PDMetadataItem
     thisTag = allTags(blockCategory, itemIndex)

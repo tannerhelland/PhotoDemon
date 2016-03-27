@@ -67,7 +67,7 @@ Public Function GetResolution(ByRef xResolution As Double, ByRef yResolution As 
 
     Dim xResTagIndex As Long, yResTagIndex As Long
 
-    If doesTagExist("XResolution", xResTagIndex) And doesTagExist("YResolution", yResTagIndex) Then
+    If DoesTagExist("XResolution", xResTagIndex) And DoesTagExist("YResolution", yResTagIndex) Then
     
         'Check for the presence of a resolution type.  If the resolution is in CM, we need to convert it to inches.
         ' Similarly, if no unit is specified, assume inches.
@@ -75,7 +75,7 @@ Public Function GetResolution(ByRef xResolution As Double, ByRef yResolution As 
         unitIsCentimeters = False
         
         Dim resUnitIndex As Long
-        If doesTagExist("ResolutionUnit", resUnitIndex) Then
+        If DoesTagExist("ResolutionUnit", resUnitIndex) Then
         
             'Note that 3 is a magic number used by EXIF to indicate CM.  See http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html
             If CLng(iMetadata(resUnitIndex).ActualValue) = 3 Then unitIsCentimeters = True
@@ -113,9 +113,9 @@ End Function
 
 'Does a given tag exist in the metadata collection?  Returns TRUE if yes, FALSE, if no.
 ' If the tag does exist, the optional byref tagIndex will be set to the index.  It will be set to -1 if the tag is not found.
-Private Function doesTagExist(ByVal tagName As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
+Private Function DoesTagExist(ByVal tagName As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
 
-    doesTagExist = False
+    DoesTagExist = False
     
     'If this image has no metadata, exit now
     If maxMetadataCount <= 0 Then Exit Function
@@ -123,16 +123,11 @@ Private Function doesTagExist(ByVal tagName As String, Optional ByRef tagIndex A
     'Scan the metadata collection, looking for the given tag name
     Dim i As Long
     For i = 0 To maxMetadataCount - 1
-    
-        'Tag name found!  Mark the index and exit.
         If StrComp(iMetadata(i).Name, tagName, searchMode) = 0 Then
-        
-            doesTagExist = True
+            DoesTagExist = True
             tagIndex = i
             Exit For
-        
         End If
-        
     Next i
 
 End Function
@@ -286,24 +281,10 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     
     Dim i As Long
     
-    'DEBUGGING ONLY: sometimes it is helpful to dump the full metadata text to the clipboard.  Uncomment as necessary.
-    
-    'This rather ungainly set of code is required to copy Unicode text to the clipboard
-    'Dim tmpUnicode As pdUnicode
-    'Set tmpUnicode = New pdUnicode
-    'Dim tmpBytes() As Byte
-    'ReDim tmpBytes(0 To Len(mdString) * 2) As Byte
-    'CopyMemory ByVal VarPtr(tmpBytes(0)), ByVal StrPtr(mdString), UBound(tmpBytes)
-    'Dim tmpClip As cCustomClipboard
-    'Set tmpClip = New cCustomClipboard
-    'tmpClip.ClearClipboard
-    'tmpClip.ClipboardOpen FormMain.hWnd
-    'tmpClip.SetBinaryData 13, tmpBytes      '13 is CF_UNICODE
-    'tmpClip.ClipboardClose
-    
-    'VB clipboard text copy is much easier (but note that a forcible ANSI conversion will be applied)
-    'Clipboard.Clear
-    'Clipboard.SetText mdString
+'    'DEBUGGING ONLY: sometimes it is helpful to dump the full metadata text to the clipboard.  Uncomment as necessary.
+'    ' (Also, note that a forcible ANSI conversion will be applied.)
+'    Clipboard.Clear
+'    Clipboard.SetText mdString
     
     'Due to recent changes to the way PD handles asynchronous metadata parsing, the returned string will contain text similar to
     ' {ready123}, where 123 is the ID number of this image.  Because we don't actually want to store that text, use the supplied

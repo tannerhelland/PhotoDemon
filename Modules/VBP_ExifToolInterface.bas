@@ -156,6 +156,12 @@ Public Type PDMetadataItem
     isValueMultiLine As Boolean
     isValueBase64 As Boolean
     markedForRemoval As Boolean
+    
+    'IMPORTANT NOTE!  All values past this line are *not* filled in automatically.  They must be manually filled by parsing
+    ' the ExifTool database file for the tag's matching attributes.  This is typically handled by the Metadata editing window.
+    AllAttributesLoaded As Boolean
+    TagIsWritable As Boolean
+    TagDataType As Boolean
 End Type
 
 'Once ExifTool has been run at least once, this will be set to TRUE.  If TRUE, this means that the shellPipeMain user control
@@ -566,7 +572,12 @@ Public Function ShowMetadataDialog(ByRef srcImage As pdImage) As Boolean
             If (Not ExifTool.DoesTagDatabaseExist) Or ExifTool.IsDatabaseModeActive Then
                  
                 If (Not ExifTool.DoesTagDatabaseExist) Then ExifTool.WriteTagDatabase
-                Interface.DisplayWaitScreen "Please wait while the tag database is created for the first time...", FormMain
+                
+                Dim waitTitle As String, waitDescription As String
+                waitTitle = g_Language.TranslateMessage("Please wait while the tag database is created...")
+                waitDescription = g_Language.TranslateMessage("The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.")
+                Interface.DisplayWaitScreen waitTitle, FormMain, waitDescription
+                
                 Do
                     DoEvents
                 Loop While ExifTool.IsDatabaseModeActive
@@ -612,7 +623,10 @@ Public Function WriteTagDatabase() As Boolean
         cmdParams = ""
         
         cmdParams = cmdParams & "-listx" & vbCrLf
-        cmdParams = cmdParams & "-s" & vbCrLf
+        'cmdParams = cmdParams & "-s" & vbCrLf
+        cmdParams = cmdParams & "-lang" & vbCrLf
+        cmdParams = cmdParams & "en" & vbCrLf
+        cmdParams = cmdParams & "-f" & vbCrLf
         cmdParams = cmdParams & "-execute" & vbCrLf
         
         FormMain.shellPipeMain.SendData cmdParams

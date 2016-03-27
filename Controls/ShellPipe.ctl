@@ -20,7 +20,7 @@ Begin VB.UserControl ShellPipe
    Windowless      =   -1  'True
    Begin VB.Timer tmrCheck 
       Enabled         =   0   'False
-      Interval        =   250
+      Interval        =   16
       Left            =   -240
       Top             =   0
    End
