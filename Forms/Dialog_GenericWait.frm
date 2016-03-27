@@ -5,7 +5,7 @@ Begin VB.Form FormWait
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Please wait a moment..."
-   ClientHeight    =   1590
+   ClientHeight    =   2535
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9015
@@ -21,7 +21,7 @@ Begin VB.Form FormWait
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   106
+   ScaleHeight     =   169
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   601
    ShowInTaskbar   =   0   'False
@@ -29,8 +29,8 @@ Begin VB.Form FormWait
    Visible         =   0   'False
    Begin VB.Timer tmrProgBar 
       Interval        =   50
-      Left            =   120
-      Top             =   1560
+      Left            =   8880
+      Top             =   120
    End
    Begin VB.PictureBox picProgBar 
       Appearance      =   0  'Flat
@@ -51,12 +51,26 @@ Begin VB.Form FormWait
       Left            =   240
       Top             =   240
       Width           =   8490
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Alignment       =   2
-      Caption         =   "please wait"
-      FontSize        =   12
-      ForeColor       =   9437184
+      _extentx        =   0
+      _extenty        =   0
+      alignment       =   2
+      caption         =   "please wait"
+      fontbold        =   -1  'True
+      fontsize        =   12
+      forecolor       =   9437184
+   End
+   Begin PhotoDemon.pdLabel lblWaitDescription 
+      Height          =   960
+      Left            =   240
+      Top             =   1560
+      Visible         =   0   'False
+      Width           =   8490
+      _extentx        =   14975
+      _extenty        =   1905
+      alignment       =   2
+      caption         =   ""
+      forecolor       =   9437184
+      layout          =   1
    End
 End
 Attribute VB_Name = "FormWait"
