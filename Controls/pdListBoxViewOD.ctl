@@ -455,17 +455,17 @@ Private Sub RedrawBackBuffer()
             Dim lineY As Single
             Dim tmpListItem As PD_LISTITEM, tmpRect As RECTF
             
-            'Left and Width are the same for all list entries
-            If listHasFocus Then
-                tmpRect.Left = m_ListRect.Left + 2
-                tmpRect.Width = m_ListRect.Width - 4
-            Else
-                tmpRect.Left = m_ListRect.Left + 1
-                tmpRect.Width = m_ListRect.Width - 2
-            End If
-            
             Dim i As Long
             For i = firstItemIndex To lastItemIndex
+            
+                'Left and Width start out the same for all list entries
+                If listHasFocus Then
+                    tmpRect.Left = m_ListRect.Left + 2
+                    tmpRect.Width = m_ListRect.Width - 4
+                Else
+                    tmpRect.Left = m_ListRect.Left + 1
+                    tmpRect.Width = m_ListRect.Width - 2
+                End If
                 
                 'For each list item, we follow a pretty standard formula: retrieve the item's data...
                 listSupport.GetRenderingItem i, tmpListItem, tmpTop, tmpHeight, tmpHeightWithoutSeparator
@@ -499,6 +499,10 @@ Private Sub RedrawBackBuffer()
                 GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRect, curColor, , , , LineJoinMiter
                 
                 '...then interject an event, so our parent can draw the remainder of this object
+                If listHasFocus Then
+                    tmpRect.Left = tmpRect.Left - 1
+                    tmpRect.Width = tmpRect.Width + 2
+                End If
                 RaiseEvent DrawListEntry(bufferDC, i, tmpListItem.textEn, itemIsSelected, itemIsHovered, VarPtr(tmpRect))
                 
                 'Finally, render a separator line, if any

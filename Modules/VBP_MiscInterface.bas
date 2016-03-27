@@ -1318,6 +1318,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
             isPDControl = True
         ElseIf (TypeOf eControl Is pdListBox) Or (TypeOf eControl Is pdListBoxView) Then
             isPDControl = True
+        ElseIf (TypeOf eControl Is pdListBoxOD) Or (TypeOf eControl Is pdListBoxViewOD) Then
+            isPDControl = True
         ElseIf (TypeOf eControl Is pdDropDown) Then
             isPDControl = True
         End If

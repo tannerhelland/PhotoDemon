@@ -24,11 +24,21 @@ Begin VB.Form FormMetadata
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   801
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdListBoxOD lstMetadata 
+      Height          =   5655
+      Left            =   120
+      TabIndex        =   5
+      Top             =   1320
+      Width           =   6855
+      _ExtentX        =   12091
+      _ExtentY        =   9975
+      Caption         =   "tags in this category"
+   End
    Begin PhotoDemon.pdCommandBarMini cmdBarMini 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   7095
       Width           =   12015
       _ExtentX        =   21193
@@ -37,56 +47,28 @@ Begin VB.Form FormMetadata
    Begin PhotoDemon.pdButton cmdTechnicalReport 
       Height          =   735
       Left            =   7440
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   4380
       Width           =   4410
       _ExtentX        =   7779
       _ExtentY        =   1296
       Caption         =   "Generate full metadata report (HTML)..."
    End
-   Begin VB.PictureBox picScroll 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   5115
-      Left            =   6615
-      ScaleHeight     =   341
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   17
-      TabIndex        =   4
-      Top             =   1740
-      Width           =   255
-   End
    Begin PhotoDemon.pdButtonStrip btsGroup 
       Height          =   1095
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   120
       Width           =   11760
       _ExtentX        =   20743
       _ExtentY        =   1931
       Caption         =   "metadata groups in this image"
    End
-   Begin VB.PictureBox picBuffer 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H00404040&
-      Height          =   5115
-      Left            =   120
-      ScaleHeight     =   339
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   431
-      TabIndex        =   0
-      Top             =   1740
-      Width           =   6495
-   End
    Begin PhotoDemon.pdButtonStrip btsTechnical 
       Height          =   975
       Index           =   0
       Left            =   7440
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   1800
       Width           =   4410
       _ExtentX        =   7779
@@ -97,7 +79,7 @@ Begin VB.Form FormMetadata
       Height          =   975
       Index           =   1
       Left            =   7440
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   2880
       Width           =   4410
       _ExtentX        =   7779
@@ -139,18 +121,6 @@ Begin VB.Form FormMetadata
       FontSize        =   12
       ForeColor       =   4210752
    End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   120
-      Top             =   1320
-      Width           =   6810
-      _ExtentX        =   12012
-      _ExtentY        =   503
-      Caption         =   "tags in this category"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
       X1              =   476
@@ -168,14 +138,14 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Browser
 'Copyright 2013-2016 by Tanner Helland
 'Created: 27/May/13
-'Last updated: 25/October/14
-'Last update: clean up render code, improve mousewheel behavior, use button strip for some interface elements
+'Last updated: 27/March/16
+'Last update: start overhaul required for metadata editing support
 '
 'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
 '
 'This dialog interacts heavily with the pdMetadata class to present users with a relatively simple interface for
-' perusing (and eventually, editing - didn't make the cut for 6.0 or 6.2 but maybe 6.4??) an image's metadata.
+' perusing (and eventually, editing) an image's metadata.
 '
 'Designing this dialog was quite difficult as it is impossible to predict what metadata types and entries might exist in
 ' an image file, so I've opted for the most flexible system I can.  No assumptions are made about present categories or
@@ -207,22 +177,27 @@ Private curTagCount() As Long
 'Height of each metadata content block
 Private Const BLOCKHEIGHT As Long = 54
 
-'An outside class provides access to mousewheel events for scrolling the filter view
-Private WithEvents cMouseEvents As pdInputMouse
-Attribute cMouseEvents.VB_VarHelpID = -1
-
-'The back buffer onto which the metadata list is rendered
-Private m_BackBuffer As pdDIB
-
 'Font objects for rendering
 Private m_TitleFont As pdFont, m_DescriptionFont As pdFont
 
-'Additional rendering values
-Private m_SeparatorColor As OLE_COLOR
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDMETADATA_COLOR_LIST
+    [_First] = 0
+    PDMD_TitleSelected = 0
+    PDMD_TitleUnselected = 1
+    PDMD_DescriptionSelected = 2
+    PDMD_DescriptionUnselected = 3
+    [_Last] = 3
+    [_Count] = 4
+End Enum
 
-'API scrollbar allows for larger scroll values
-Private WithEvents vsMetadata As pdScrollAPI
-Attribute vsMetadata.VB_VarHelpID = -1
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
 
 'When a new metadata category is selected, redraw all the metadata text currently on screen
 Private Sub btsGroup_Click(ByVal buttonIndex As Long)
@@ -231,118 +206,50 @@ Private Sub btsGroup_Click(ByVal buttonIndex As Long)
     curCategory = buttonIndex
     
     If mdCategories(curCategory).Count = 1 Then
-        lblTitle(1).Caption = g_Language.TranslateMessage("1 tag in this category:")
+        lstMetadata.Caption = g_Language.TranslateMessage("1 tag in this category:")
     Else
-        lblTitle(1).Caption = g_Language.TranslateMessage("%1 tags in this category:", mdCategories(curCategory).Count)
+        lstMetadata.Caption = g_Language.TranslateMessage("%1 tags in this category:", mdCategories(curCategory).Count)
     End If
     
-    'First, determine if the vertical scrollbar needs to be visible or not
-    Dim maxMDSize As Long
-    maxMDSize = FixDPIFloat(BLOCKHEIGHT) * mdCategories(curCategory).Count
-    
-    vsMetadata.Value = 0
-    If maxMDSize < picBuffer.Height Then
-        picScroll.Visible = False
-    Else
-        picScroll.Visible = True
-        vsMetadata.Max = maxMDSize - picBuffer.Height
-    End If
-    
-    redrawMetadataList
+    'Update the metadata list to reflect the new category
+    UpdateMetadataList
         
 End Sub
 
-Private Sub btsGroup_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-    cMouseEvents_MouseWheelVertical Button, Shift, x, y, scrollAmount
-End Sub
-
 Private Sub btsTechnical_Click(Index As Integer, ByVal buttonIndex As Long)
-    redrawMetadataList
+    Dim vScrollValue As Long, lstListIndex As Long
+    vScrollValue = lstMetadata.GetScrollValue
+    lstListIndex = lstMetadata.ListIndex
+    UpdateMetadataList
+    lstMetadata.SetScrollValue vScrollValue
+    lstMetadata.ListIndex = lstListIndex
 End Sub
 
 Private Sub cmdTechnicalReport_Click()
     ExifTool.CreateTechnicalMetadataReport pdImages(g_CurrentImage)
 End Sub
 
-Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    cMouseEvents.SetSystemCursor IDC_ARROW
-End Sub
-
-Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-
-    'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
-    If picScroll.Visible Then
-  
-        If scrollAmount < 0 Then
-            
-            If vsMetadata.Value + vsMetadata.LargeChange > vsMetadata.Max Then
-                vsMetadata.Value = vsMetadata.Max
-            Else
-                vsMetadata.Value = vsMetadata.Value + vsMetadata.LargeChange
-            End If
-            
-            redrawMetadataList
-        
-        ElseIf scrollAmount > 0 Then
-            
-            If vsMetadata.Value - vsMetadata.LargeChange < vsMetadata.Min Then
-                vsMetadata.Value = vsMetadata.Min
-            Else
-                vsMetadata.Value = vsMetadata.Value - vsMetadata.LargeChange
-            End If
-            
-            redrawMetadataList
-            
-        End If
-        
-    End If
-
-End Sub
-
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-End Sub
-
-'LOAD dialog
 Private Sub Form_Load()
     
-    'Create an API scroll bar for the main metadata window
-    Set vsMetadata = New pdScrollAPI
-    vsMetadata.initializeScrollBarWindow picScroll.hWnd, False, 0, 100, 0, 1, 32
+    lstMetadata.ListItemHeight = FixDPI(BLOCKHEIGHT)
     
-    'Note that this form will be interacting heavily with the current image's metadata container.
-    
-    'Enable mousewheel scrolling for the metadata box
-    Set cMouseEvents = New pdInputMouse
-    cMouseEvents.AddInputTracker picBuffer.hWnd, True, , , True
-    cMouseEvents.AddInputTracker Me.hWnd
-    cMouseEvents.SetSystemCursor IDC_ARROW
-    
-    'Prepare all rendering objects
-    Set m_BackBuffer = New pdDIB
-    m_BackBuffer.createBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight, 24
-    
-    m_SeparatorColor = vbActiveTitleBar
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDMETADATA_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDMetadataList", colorCount
+    UpdateColorList
     
     Set m_TitleFont = New pdFont
-    m_TitleFont.SetFontColor RGB(64, 64, 64)
     m_TitleFont.SetFontBold True
     m_TitleFont.SetFontSize 10
     m_TitleFont.CreateFontObject
     m_TitleFont.SetTextAlignment vbLeftJustify
     
     Set m_DescriptionFont = New pdFont
-    m_DescriptionFont.SetFontColor RGB(92, 92, 92)
     m_DescriptionFont.SetFontBold False
     m_DescriptionFont.SetFontSize 10
     m_DescriptionFont.CreateFontObject
     m_DescriptionFont.SetTextAlignment vbLeftJustify
-    
-    'Make the invisible buffer's font match the rest of PD
-    picBuffer.fontName = g_InterfaceFont
         
     'Initialize the category array
     ReDim mdCategories(0) As mdCategory
@@ -448,108 +355,106 @@ Private Sub Form_Load()
     'Give ExifTool credit for its amazing work!
     lblExifTool.Caption = g_Language.TranslateMessage("All metadata information is supplied by the ExifTool plugin.  You can learn more about ExifTool at http://www.sno.phy.queensu.ca/~phil/exiftool/")
     
-End Sub
-
-'UNLOAD form
-Private Sub Form_Unload(Cancel As Integer)
+    ApplyThemeAndTranslations Me
     
-    'Unload the mouse tracker
-    Set cMouseEvents = Nothing
-    ReleaseFormTheming Me
-
 End Sub
 
-'Redraw the full metadata list
-Private Sub redrawMetadataList()
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
+End Sub
 
+'Before the metadata list box does any painting, we need to retrieve relevant colors from PD's primary theming class.
+' Note that this step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    With m_Colors
+        .LoadThemeColor PDMD_TitleSelected, "TitleSelected", IDE_GRAY
+        .LoadThemeColor PDMD_TitleUnselected, "TitleUnselected", IDE_GRAY
+        .LoadThemeColor PDMD_DescriptionSelected, "TitleSelected", IDE_GRAY
+        .LoadThemeColor PDMD_DescriptionUnselected, "TitleUnselected", IDE_GRAY
+    End With
+End Sub
+
+'Fill the metadata list with all entries from the current category
+Private Sub UpdateMetadataList()
+    
     Dim curCategory As Long
     curCategory = btsGroup.ListIndex
-        
-    Dim scrollOffset As Long
-    scrollOffset = vsMetadata.Value
     
-    'Clear the back buffer
-    GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, vbWhite, 255
+    lstMetadata.Clear
     
-    'Render each block in turn
     Dim i As Long
     For i = 0 To mdCategories(curCategory).Count - 1
-        renderMDBlock curCategory, i, FixDPI(8), FixDPI(i * BLOCKHEIGHT) - scrollOffset - FixDPI(2)
+        lstMetadata.AddItem , i
     Next i
     
-    'Copy the buffer to the target picture box
-    BitBlt picBuffer.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
-    picBuffer.Picture = picBuffer.Image
-    
 End Sub
 
-'Render the given metadata index onto the background picture box at the specified offset
-Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
-
-    'Only draw the current block if it will be visible
-    If ((offsetY + BLOCKHEIGHT) > 0) And (offsetY < m_BackBuffer.getDIBHeight) Then
-        
-        offsetY = offsetY + FixDPI(9)
-        
-        Dim thisTag As PDMetadataItem
-        thisTag = allTags(blockCategory, blockIndex)
-        
-        Dim linePadding As Long
-        linePadding = FixDPI(4)
+Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
     
-        Dim mHeight As Single
-        Dim drawString As String, numericalPrefix As String
-        
-        numericalPrefix = CStr(blockIndex + 1) & " - "
-        
-        If (btsTechnical(0).ListIndex = 0) Then
-            drawString = thisTag.Description
-        Else
-            drawString = thisTag.FullGroupAndName
-        End If
-        
-        'Notify the user of text we were unable to manually convert
-        If thisTag.isValueBase64 Then
-            drawString = drawString & " " & g_Language.TranslateMessage("(encoding unknown)")
-        End If
-    
-        'Start with the simplest field: the tag title (readable form)
-        m_TitleFont.AttachToDC m_BackBuffer.getDIBDC
-        m_TitleFont.FastRenderText offsetX + 0, offsetY + 0, numericalPrefix & drawString
-                
-        'Below the tag title, add the human-friendly description
-        mHeight = m_TitleFont.GetHeightOfString(drawString) + linePadding
-        
-        If (btsTechnical(1).ListIndex = 0) Then
-            drawString = thisTag.Value
-        Else
-            If Len(thisTag.ActualValue) <> 0 Then
-                drawString = thisTag.ActualValue
-            Else
-                drawString = thisTag.Value
-            End If
-        End If
-        
-        m_TitleFont.ReleaseFromDC
-        m_DescriptionFont.AttachToDC m_BackBuffer.getDIBDC
-        m_DescriptionFont.FastRenderTextWithClipping offsetX + m_TitleFont.GetWidthOfString(numericalPrefix), offsetY + mHeight, m_BackBuffer.getDIBWidth - offsetX - FixDPI(17), m_DescriptionFont.GetHeightOfString(drawString), drawString
-        m_DescriptionFont.ReleaseFromDC
-        
-        'Draw a divider line near the bottom of the metadata block
-        Dim lineY As Long
-        'If blockIndex < mdCategories(blockCategory).Count - 1 Then
-            lineY = offsetY + FixDPI(BLOCKHEIGHT - 7)
-            GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, FixDPI(4), lineY, m_BackBuffer.getDIBWidth - FixDPI(4), lineY, m_SeparatorColor
-        'End If
-        
+    'Calculate colors
+    Dim titleColor As Long, descriptionColor As Long
+    If itemIsSelected Then
+        titleColor = m_Colors.RetrieveColor(PDMD_TitleSelected, lstMetadata.Enabled, , itemIsHovered)
+        descriptionColor = m_Colors.RetrieveColor(PDMD_DescriptionSelected, lstMetadata.Enabled, , itemIsHovered)
+    Else
+        titleColor = m_Colors.RetrieveColor(PDMD_TitleUnselected, lstMetadata.Enabled, , itemIsHovered)
+        descriptionColor = m_Colors.RetrieveColor(PDMD_DescriptionUnselected, lstMetadata.Enabled, , itemIsHovered)
     End If
-
+    
+    Dim blockCategory As Long
+    blockCategory = btsGroup.ListIndex
+    
+    Dim tmpRectF As RECTF
+    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    
+    Dim offsetY As Single, offsetX As Single
+    offsetX = tmpRectF.Left + FixDPI(8)
+    offsetY = tmpRectF.Top + FixDPI(9)
+    
+    Dim thisTag As PDMetadataItem
+    thisTag = allTags(blockCategory, itemIndex)
+    
+    Dim linePadding As Long
+    linePadding = FixDPI(4)
+    
+    Dim mHeight As Single
+    Dim drawString As String, numericalPrefix As String
+    
+    numericalPrefix = CStr(itemIndex + 1) & " - "
+        
+    If (btsTechnical(0).ListIndex = 0) Then
+        drawString = thisTag.Description
+    Else
+        drawString = thisTag.FullGroupAndName
+    End If
+        
+    'Notify the user of text we were unable to convert to a human-readable value
+    If thisTag.isValueBase64 Then
+        drawString = drawString & " " & g_Language.TranslateMessage("(encoding unknown)")
+    End If
+    
+    'Start with the simplest field: the tag title (readable form)
+    m_TitleFont.AttachToDC bufferDC
+    m_TitleFont.SetFontColor titleColor
+    m_TitleFont.FastRenderText offsetX + 0, offsetY + 0, numericalPrefix & drawString
+                
+    'Below the tag title, add the human-friendly description
+    mHeight = m_TitleFont.GetHeightOfString(drawString) + linePadding
+    m_TitleFont.ReleaseFromDC
+    
+    If (btsTechnical(1).ListIndex = 0) Then
+        drawString = thisTag.Value
+    Else
+        If Len(thisTag.ActualValue) <> 0 Then
+            drawString = thisTag.ActualValue
+        Else
+            drawString = thisTag.Value
+        End If
+    End If
+    
+    m_DescriptionFont.AttachToDC bufferDC
+    m_DescriptionFont.SetFontColor descriptionColor
+    m_DescriptionFont.FastRenderTextWithClipping offsetX + m_TitleFont.GetWidthOfString(numericalPrefix), offsetY + mHeight, (tmpRectF.Left + tmpRectF.Width) - offsetX - FixDPI(17), m_DescriptionFont.GetHeightOfString(drawString), drawString
+    m_DescriptionFont.ReleaseFromDC
+    
 End Sub
-
-'When the scrollbar is moved, redraw the metadata list
-Private Sub vsMetadata_Scroll()
-    redrawMetadataList
-End Sub
-
-
-
