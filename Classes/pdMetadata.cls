@@ -362,84 +362,20 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
                 Interface.SyncInterfaceToCurrentImage
             End If
             
+            'Next, we want to mark any tags that are not relevant to the user.  We will still preserve these tags internally,
+            ' but they will be forcibly hidden on the editor screen.
+            If StrComp(m_Tags(i).TagGroup, "ExifTool") = 0 Then m_Tags(i).InternalUseOnly = True
+            
+            'Next, we want to improve the grouping of tags.  ExifTool's grouping is somewhat erratic; for example, all software
+            ' treats ICC profiles as single, contiguous units, but ExifTool tends to group ICC properties into a bunch of
+            ' highly specific subcategories.  I prefer to use the same grouping as other software, to avoid confusing users.
+            CalculateIdealGroupName m_Tags(i)
+            
             
             'TODO: investigate these options again for 7.0
-'            'ANALYZE GROUP
-'
-'            'First, analyze the current Group.  Some groups can be ignored - check for those first.
-'            tmpString = m_Tags(m_NumOfTags).TagGroup
-'            If StrComp(tmpString, "ExifTool") = 0 Then ignoreThisTag = True
-'
-'            'Next, ExifTool provides VERY detailed group information.  I prefer to simplify its groups into something more manageable.
-'
-'            'First, there's no need for a distinction between "System" and "File".  Group these under a "General" heading.
-'            If StrComp(tmpString, "System") = 0 Then
-'                m_Tags(m_NumOfTags).SubGroup = g_Language.TranslateMessage("System")
-'                m_Tags(m_NumOfTags).TagGroup = g_Language.TranslateMessage("General")
-'            End If
-'            If StrComp(tmpString, "File") = 0 Then
-'                m_Tags(m_NumOfTags).SubGroup = g_Language.TranslateMessage("File")
-'                m_Tags(m_NumOfTags).TagGroup = g_Language.TranslateMessage("General")
-'            End If
-'
-'            'Next, ExifTool breaks down EXIF tags into their individual IFD blocks.  Simplify all those under a single "Exif" header.
-'            If InStr(1, UCase$(tmpString), "IFD1", vbBinaryCompare) > 0 Then
-'                m_Tags(m_NumOfTags).SubGroup = m_Tags(m_NumOfTags).TagGroup
-'                m_Tags(m_NumOfTags).TagGroup = "Exif (thumbnail)"
-'            ElseIf InStr(1, UCase$(tmpString), "IFD", vbBinaryCompare) > 0 Then
-'                m_Tags(m_NumOfTags).SubGroup = m_Tags(m_NumOfTags).TagGroup
-'                m_Tags(m_NumOfTags).TagGroup = "Exif"
-'            End If
-'
-'            'Next, ExifTool separates color profiles into header, profile, and measurement subcategories.  Condense these into
-'            ' a single "ICC Profile".
-'            If InStr(1, tmpString, "ICC", vbBinaryCompare) > 0 Then
-'                m_Tags(m_NumOfTags).SubGroup = m_Tags(m_NumOfTags).TagGroup
-'                m_Tags(m_NumOfTags).TagGroup = g_Language.TranslateMessage("ICC Profile")
-'            End If
-'
-'            'Next, XMP tags often contain an additional identifier, such as "XMP-photoshop".  Condense these into a single XMP group.
-'            If InStr(1, tmpString, "XMP", vbBinaryCompare) > 0 Then
-'                m_Tags(m_NumOfTags).SubGroup = m_Tags(m_NumOfTags).TagGroup
-'                m_Tags(m_NumOfTags).TagGroup = "XMP"
-'            End If
-'
-'            'Next, one of ExifTool's neatest features is its "Composite" tags - basically, tags that don't actually exist in the file,
-'            ' but which can be inferred from other information.  Let's add an asterisk to these, to denote that the tags are only
-'            ' inferred, not physically present.
-'            If StrComp(tmpString, "Composite") = 0 Then m_Tags(m_NumOfTags).TagGroup = g_Language.TranslateMessage("Composite") & "*"
+
 '
 '
-'
-'            'ANALYZE VALUE
-'
-'            'Next come .Value checks.  Certain values may be invalid - if so, ignore this tag.
-'            tmpString = m_Tags(m_NumOfTags).Value
-'
-'            'REMOVE JFIF DUPLICATES
-'
-'            'There is no technical prohibition against duplicate metadata tags - and in fact, some software may choose
-'            ' to deliberately add duplicate tags in multiple groups (IPTC, EXIF, XMP, etc) to maximize compatibility
-'            ' with other software packages.
-'
-'            'PhotoDemon allows the presence of multiple tags everywhere except in JFIF headers.  Embedded thumbnails may have
-'            ' their own JFIF header, which includes information like x/y resolution that is totally irrelevant.  Thus we check
-'            ' for duplicate JFIF tags, and remove them as necessary.
-'            If (InStr(1, UCase$(m_Tags(m_NumOfTags).TagGroup), "JFIF", vbBinaryCompare) > 0) And (Not ignoreThisTag) Then
-'
-'                'Check the metadata list up to this point.  If a matching group and technical tag name are found,
-'                ' move this tag into a separate "thumbnail" category.
-'                For i = 0 To m_NumOfTags - 1
-'                    If StrComp(m_Tags(i).TagGroupAndName, m_Tags(m_NumOfTags).TagGroupAndName, vbTextCompare) = 0 Then
-'
-'                        'Regroup this tag into a new group: JFIF (thumbnail)
-'                        m_Tags(m_NumOfTags).TagGroup = "JFIF (thumbnail)"
-'                        Exit For
-'
-'                    End If
-'                Next i
-'
-'            End If
 '
 '            'Binary data serves no purpose in the user interface part of our metadata handler.  Remove any binary tags.
 '            'If InStr(1, UCase$(tmpString), "BINARY DATA", vbBinaryCompare) > 0 Then ignoreThisTag = True
@@ -468,6 +404,56 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     
     
     LoadAllMetadata = CBool(m_NumOfTags <> 0)
+    
+End Function
+
+Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem) As Boolean
+    
+    Dim groupName As String
+    groupName = dstMetadata.TagGroup
+    
+    dstMetadata.TagGroupFriendly = groupName
+    
+    'First, there's no need for a distinction between "System" and "File".  Group these under a "General" heading.
+    If StrComp(groupName, "System", vbBinaryCompare) = 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("General")
+    If StrComp(groupName, "File", vbBinaryCompare) = 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("General")
+    
+    'Next, ExifTool breaks down EXIF tags into their individual IFD blocks.  Simplify all of these under a single "Exif" header.
+    If InStr(1, UCase$(groupName), "IFD1", vbBinaryCompare) > 0 Then
+        dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif (thumbnail)")
+    ElseIf InStr(1, UCase$(groupName), "IFD", vbBinaryCompare) > 0 Then
+        dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif")
+    End If
+
+    'Next, ExifTool separates color profiles into header, profile, and measurement subcategories.  Condense these into
+    ' a single "ICC Profile" group.
+    If InStr(1, groupName, "ICC", vbBinaryCompare) > 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("ICC Profile")
+    
+    'Next, XMP tags often contain an additional identifier, such as "XMP-photoshop".  Condense these into a single XMP group.
+    If InStr(1, groupName, "XMP", vbBinaryCompare) > 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP")
+    
+    'Next comes a tricky one.  There is no technical prohibition against duplicate metadata tags - and in fact, some software may
+    ' choose to deliberately add duplicate tags in multiple groups (IPTC, EXIF, XMP, etc) to maximize compatibility.
+    
+    'PhotoDemon allows the presence of multiple tags everywhere except in JFIF headers.  JPEG thumbnails embedded inside a JPEG
+    ' parent image will have their own JFIF header, which includes information like x/y resolution that is totally irrelevant
+    ' (and confusing, as it makes the image look like it has multiple headers!).  Here, we want to check for duplicate JFIF tags,
+    ' and place them into their own category as necessary.
+    If (InStr(1, UCase$(groupName), "JFIF", vbBinaryCompare) > 0) Then
+
+        'Check the metadata list up to this point.  If a matching group and technical tag name are found,
+        ' move this tag into a separate "thumbnail" category.
+        Dim i As Long
+        For i = 0 To m_NumOfTags - 1
+            If StrComp(dstMetadata.TagGroupAndName, m_Tags(i).TagGroupAndName, vbBinaryCompare) = 0 Then
+                dstMetadata.TagGroupFriendly = "JFIF (thumbnail)"
+                Exit For
+            End If
+        Next i
+
+    End If
+    
+    CalculateIdealGroupName = CBool(Len(dstMetadata.TagGroupFriendly) <> 0)
     
 End Function
 

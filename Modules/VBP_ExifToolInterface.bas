@@ -143,15 +143,17 @@ Public Type PDMetadataItem
     
     TagGroupAndName As String       'Something like "IFD0:ResolutionUnit".  This is the tag name used by ExifTool
     TagGroup As String              'The first half of FullGroupAndName
+    TagGroupFriendly As String      'The PhotoDemon-specific categoriziation of this tag.  Users do not generally need to know subgroups; instead, we use naming conventions similar to other photo editors.
     TagName As String               'The second half of FullGroupAndName
     TagNameFriendly As String       'The human-friendly tag name (supports spaces and special chars)
-    TagTable As String              'The primary group of this tag, e.g. "Exif::Main", "JPEG::Adobe", "ICC_Profile::Main"
+    TagTable As String              'The primary categorization of this tag, e.g. "Exif::Main", "JPEG::Adobe", "ICC_Profile::Main"
     TagID As String                 'The low-level, format-specific ID of a given tag.  For many tags, this is just a string matching the tag's Exiftool name.  For some tag types, however, (e.g. EXIF), this will be a numeric ID corresponding to the actual spec-defined "id" of a given tag.
     TagValueFriendly As String      'The human-readable version of a tag value, e.g. "YCbCr4:4:4 (1 1)" instead of "1 1".
     TagValue As String              'The low-level version of a tag value.  For many tags, this is the same as TagValueFriendly.
     HasIndex As Boolean             'Indicates the presence of an "et:index" identifier in the RDF description.  This is only supplied under rare circumstances, e.g. if the same tag appears in multiple groups.
     IsTagList As Boolean            'Indicates the presence of a list-type tag, common with XMP chunks coming from Photoshop.  The friendly tag name contains a semicolor-delimited list of tag values.
     IsTagBinary As Boolean          'Indicates the presence of a base64-encoded binary tag.
+    InternalUseOnly As Boolean      'Some tags (like ExifTool version) have no relevance to the end-user.  We still want to track these, but we tag them so that they are not exposed to the user.
     TagIndex As Long                'Only meaningful if HasIndex (above) is TRUE.
     TagBase64Value As String        'Only meaningful if IsTagBinary (above) is TRUE.
     
