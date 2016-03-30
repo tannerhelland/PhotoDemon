@@ -3128,7 +3128,7 @@ Dim lSizeInBytes As Long
                 'Change by Tanner: return the size in bytes, and only allocate new memory as necessary.
                 ' (This allows the caller to reuse allocations that may already exist.)
                 dstSizeInBytes = lSizeInBytes
-                If Not VB_Hacks.IsArrayInitialized(VarPtrArray(Data)) Then
+                If Not VB_Hacks.IsArrayInitialized(Data) Then
                     ReDim Data(lSizeInBytes - 1) As Byte
                 Else
                     If UBound(Data) < (lSizeInBytes - 1) Then ReDim Data(0 To lSizeInBytes - 1)

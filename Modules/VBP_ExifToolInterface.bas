@@ -140,28 +140,34 @@ End Type
 'This type is what PhotoDemon uses internally for storing and displaying metadata.  Its complexity is a testament to the
 ' nightmare that is metadata management.
 Public Type PDMetadataItem
-    FullGroupAndName As String
-    Group As String
-    SubGroup As String
-    Name As String
-    Description As String
-    Value As String
-    ActualValue As String
-    Base64Value As String
-    UserModified As Boolean
-    isValueBinary As Boolean
-    isValueList As Boolean
-    isActualValueBinary As Boolean
-    isActualValueList As Boolean
-    isValueMultiLine As Boolean
-    isValueBase64 As Boolean
-    markedForRemoval As Boolean
+    
+    TagGroupAndName As String       'Something like "IFD0:ResolutionUnit".  This is the tag name used by ExifTool
+    TagGroup As String              'The first half of FullGroupAndName
+    TagName As String               'The second half of FullGroupAndName
+    TagNameFriendly As String       'The human-friendly tag name (supports spaces and special chars)
+    TagTable As String              'The primary group of this tag, e.g. "Exif::Main", "JPEG::Adobe", "ICC_Profile::Main"
+    TagID As String                 'The low-level, format-specific ID of a given tag.  For many tags, this is just a string matching the tag's Exiftool name.  For some tag types, however, (e.g. EXIF), this will be a numeric ID corresponding to the actual spec-defined "id" of a given tag.
+    TagValueFriendly As String      'The human-readable version of a tag value, e.g. "YCbCr4:4:4 (1 1)" instead of "1 1".
+    TagValue As String              'The low-level version of a tag value.  For many tags, this is the same as TagValueFriendly.
+    HasIndex As Boolean             'Indicates the presence of an "et:index" identifier in the RDF description.  This is only supplied under rare circumstances, e.g. if the same tag appears in multiple groups.
+    IsTagList As Boolean            'Indicates the presence of a list-type tag, common with XMP chunks coming from Photoshop.  The friendly tag name contains a semicolor-delimited list of tag values.
+    IsTagBinary As Boolean          'Indicates the presence of a base64-encoded binary tag.
+    TagIndex As Long                'Only meaningful if HasIndex (above) is TRUE.
+    TagBase64Value As String        'Only meaningful if IsTagBinary (above) is TRUE.
+    
+    'Currently defined by PD, with questionable results - consider fixing
+    'SubGroup As String
+    
+    'Used to flag tags that need to be removed by the image export engine
+    TagMarkedForRemoval As Boolean
     
     'IMPORTANT NOTE!  All values past this line are *not* filled in automatically.  They must be manually filled by parsing
     ' the ExifTool database file for the tag's matching attributes.  This is typically handled by the Metadata editing window.
+    UserModified As Boolean
     AllAttributesLoaded As Boolean
     TagIsWritable As Boolean
     TagDataType As Boolean
+    
 End Type
 
 'Once ExifTool has been run at least once, this will be set to TRUE.  If TRUE, this means that the shellPipeMain user control
@@ -487,6 +493,10 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
     
     'Output XML data (a lot more complex, but the only way to retrieve descriptions and names simultaneously)
     cmdParams = cmdParams & "-X" & vbCrLf
+    
+    'Include tag table information (e.g. additional technical details on each tag).  Note that this setting affects the
+    ' XML parsing code, so you cannot comment it out without making matching changes inside pdMetadata.
+    cmdParams = cmdParams & "-t" & vbCrLf
     
     'Add the image path
     cmdParams = cmdParams & srcFile & vbCrLf
