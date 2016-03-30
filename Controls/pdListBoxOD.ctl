@@ -28,8 +28,8 @@ Begin VB.UserControl pdListBoxOD
       Top             =   360
       Visible         =   0   'False
       Width           =   255
-      _ExtentX        =   450
-      _ExtentY        =   2778
+      _extentx        =   450
+      _extenty        =   2778
    End
    Begin PhotoDemon.pdListBoxViewOD lbView 
       Height          =   1575
@@ -37,8 +37,8 @@ Begin VB.UserControl pdListBoxOD
       TabIndex        =   0
       Top             =   360
       Width           =   1575
-      _ExtentX        =   2778
-      _ExtentY        =   2778
+      _extentx        =   2778
+      _extenty        =   2778
    End
 End
 Attribute VB_Name = "pdListBoxOD"
@@ -248,6 +248,12 @@ End Function
 
 Public Sub RemoveItem(ByVal itemIndex As Long)
     lbView.RemoveItem itemIndex
+End Sub
+
+'The caller can suspend automatic redraws caused by things like adding an item to the list box.  Just make sure to enable redraws
+' once you're ready, or you'll never get rendering requests!
+Public Sub SetAutomaticRedraws(ByVal newState As Boolean, Optional ByVal raiseRedrawImmediately As Boolean = False)
+    lbView.SetAutomaticRedraws newState, raiseRedrawImmediately
 End Sub
 
 Private Sub lbView_Click()
