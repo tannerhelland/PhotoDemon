@@ -246,8 +246,11 @@ StreamConversionFailed:
     #End If
 End Function
 
-Public Function IsArrayInitialized(ByVal lpArray As Long) As Boolean
+'Check array initialization.  All array types supported.  Thank you to http://stackoverflow.com/questions/183353/how-do-i-determine-if-an-array-is-initialized-in-vb6
+Public Function IsArrayInitialized(arr) As Boolean
     Dim saAddress As Long
-    CopyMemory saAddress, ByVal lpArray, 4&
-    IsArrayInitialized = Not CBool(saAddress = 0)
+    GetMem4 VarPtr(arr) + 8, saAddress
+    GetMem4 saAddress, saAddress
+    IsArrayInitialized = (saAddress <> 0)
+    If IsArrayInitialized Then IsArrayInitialized = UBound(arr) >= LBound(arr)
 End Function

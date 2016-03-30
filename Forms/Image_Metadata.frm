@@ -4,10 +4,10 @@ Begin VB.Form FormMetadata
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Browse image metadata"
-   ClientHeight    =   7845
+   ClientHeight    =   8700
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   12015
+   ClientWidth     =   14070
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,16 +20,26 @@ Begin VB.Form FormMetadata
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   523
+   ScaleHeight     =   580
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   801
+   ScaleWidth      =   938
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdListBoxOD lstMetadata 
+   Begin PhotoDemon.pdListBox lstGroup 
       Height          =   5655
       Left            =   120
       TabIndex        =   5
-      Top             =   1320
-      Width           =   6855
+      Top             =   120
+      Width           =   3615
+      _ExtentX        =   5953
+      _ExtentY        =   9975
+      Caption         =   "metadata groups in this image"
+   End
+   Begin PhotoDemon.pdListBoxOD lstMetadata 
+      Height          =   5655
+      Left            =   3840
+      TabIndex        =   4
+      Top             =   120
+      Width           =   10095
       _ExtentX        =   12091
       _ExtentY        =   9975
       Caption         =   "tags in this category"
@@ -38,38 +48,28 @@ Begin VB.Form FormMetadata
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   1
-      Top             =   7095
-      Width           =   12015
-      _ExtentX        =   21193
+      TabIndex        =   0
+      Top             =   7950
+      Width           =   14070
+      _ExtentX        =   24818
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdButton cmdTechnicalReport 
-      Height          =   735
-      Left            =   7440
-      TabIndex        =   2
-      Top             =   4380
+      Height          =   555
+      Left            =   9480
+      TabIndex        =   1
+      Top             =   6780
       Width           =   4410
       _ExtentX        =   7779
-      _ExtentY        =   1296
+      _ExtentY        =   979
       Caption         =   "Generate full metadata report (HTML)..."
-   End
-   Begin PhotoDemon.pdButtonStrip btsGroup 
-      Height          =   1095
-      Left            =   120
-      TabIndex        =   0
-      Top             =   120
-      Width           =   11760
-      _ExtentX        =   20743
-      _ExtentY        =   1931
-      Caption         =   "metadata groups in this image"
    End
    Begin PhotoDemon.pdButtonStrip btsTechnical 
       Height          =   975
       Index           =   0
-      Left            =   7440
-      TabIndex        =   4
-      Top             =   1800
+      Left            =   360
+      TabIndex        =   3
+      Top             =   6360
       Width           =   4410
       _ExtentX        =   7779
       _ExtentY        =   1720
@@ -78,9 +78,9 @@ Begin VB.Form FormMetadata
    Begin PhotoDemon.pdButtonStrip btsTechnical 
       Height          =   975
       Index           =   1
-      Left            =   7440
-      TabIndex        =   3
-      Top             =   2880
+      Left            =   4920
+      TabIndex        =   2
+      Top             =   6360
       Width           =   4410
       _ExtentX        =   7779
       _ExtentY        =   1720
@@ -88,8 +88,8 @@ Begin VB.Form FormMetadata
    End
    Begin PhotoDemon.pdLabel lblTechnicalReport 
       Height          =   270
-      Left            =   7440
-      Top             =   3960
+      Left            =   9480
+      Top             =   6390
       Width           =   4425
       _ExtentX        =   7805
       _ExtentY        =   476
@@ -98,12 +98,13 @@ Begin VB.Form FormMetadata
       ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblExifTool 
-      Height          =   735
-      Left            =   7320
-      Top             =   6120
-      Width           =   4575
+      Height          =   375
+      Left            =   360
+      Top             =   7515
+      Width           =   13455
       _ExtentX        =   0
       _ExtentY        =   0
+      Alignment       =   2
       Caption         =   ""
       FontSize        =   9
       ForeColor       =   -2147483640
@@ -112,21 +113,14 @@ Begin VB.Form FormMetadata
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   1
-      Left            =   7320
-      Top             =   1320
+      Left            =   120
+      Top             =   6000
       Width           =   4575
       _ExtentX        =   8070
       _ExtentY        =   503
       Caption         =   "metadata options"
       FontSize        =   12
       ForeColor       =   4210752
-   End
-   Begin VB.Line Line1 
-      BorderColor     =   &H8000000D&
-      X1              =   476
-      X2              =   476
-      Y1              =   88
-      Y2              =   464
    End
 End
 Attribute VB_Name = "FormMetadata"
@@ -202,18 +196,6 @@ Private m_Colors As pdThemeColors
 'When a new metadata category is selected, redraw all the metadata text currently on screen
 Private Sub btsGroup_Click(ByVal buttonIndex As Long)
     
-    Dim curCategory As Long
-    curCategory = buttonIndex
-    
-    If mdCategories(curCategory).Count = 1 Then
-        lstMetadata.Caption = g_Language.TranslateMessage("1 tag in this category:")
-    Else
-        lstMetadata.Caption = g_Language.TranslateMessage("%1 tags in this category:", mdCategories(curCategory).Count)
-    End If
-    
-    'Update the metadata list to reflect the new category
-    UpdateMetadataList
-        
 End Sub
 
 Private Sub btsTechnical_Click(Index As Integer, ByVal buttonIndex As Long)
@@ -267,7 +249,7 @@ Private Sub Form_Load()
     
         'Retrieve the next metadata entry
         curMetadata = pdImages(g_CurrentImage).imgMetadata.GetMetadataEntry(i)
-        chkGroup = curMetadata.Group
+        chkGroup = curMetadata.TagGroup
         
         'Search the current list of known categories for this metadata object's category
         For j = 0 To numOfCategories
@@ -292,16 +274,8 @@ Private Sub Form_Load()
     ' the category with the highest tag count.
     highestCategoryCount = 0
     
-    'Prior to adding category names, set a relevant button strip font according to the number of metadata groups.
-    ' If an image has a ton of groups (10+ is not unheard of), reduce font size.
-    If numOfCategories > 5 Then
-        btsGroup.FontSize = 10
-    Else
-        btsGroup.FontSize = 12
-    End If
-    
     For i = 0 To numOfCategories - 1
-        btsGroup.AddItem mdCategories(i).Name, i
+        lstGroup.AddItem mdCategories(i).Name, i
         If mdCategories(i).Count > highestCategoryCount Then highestCategoryCount = mdCategories(i).Count
     Next i
     
@@ -315,7 +289,7 @@ Private Sub Form_Load()
         
         'As above, retrieve the next metadata entry
         curMetadata = pdImages(g_CurrentImage).imgMetadata.GetMetadataEntry(i)
-        chkGroup = curMetadata.Group
+        chkGroup = curMetadata.TagGroup
         
         'Find the matching group in the Group array, then insert this tag into place
         For j = 0 To numOfCategories - 1
@@ -340,8 +314,7 @@ Private Sub Form_Load()
     btsTechnical(1).ListIndex = 0
     
     'Select the first group by default
-    btsGroup.ListIndex = 0
-    btsGroup_Click 0
+    lstGroup.ListIndex = 0
     
     'Technical metadata reports are only available for images that actually exist on disk (vs clipboard or scanned images)
     If Len(pdImages(g_CurrentImage).imgStorage.GetEntry_String("CurrentLocationOnDisk")) <> 0 Then
@@ -378,14 +351,33 @@ End Sub
 Private Sub UpdateMetadataList()
     
     Dim curCategory As Long
-    curCategory = btsGroup.ListIndex
+    curCategory = lstGroup.ListIndex
     
+    lstMetadata.SetAutomaticRedraws False
     lstMetadata.Clear
     
     Dim i As Long
     For i = 0 To mdCategories(curCategory).Count - 1
         lstMetadata.AddItem , i
     Next i
+    
+    lstMetadata.SetAutomaticRedraws True, True
+    
+End Sub
+
+Private Sub lstGroup_Click()
+    
+    Dim curCategory As Long
+    curCategory = lstGroup.ListIndex
+    
+    If mdCategories(curCategory).Count = 1 Then
+        lstMetadata.Caption = g_Language.TranslateMessage("1 tag in this category:")
+    Else
+        lstMetadata.Caption = g_Language.TranslateMessage("%1 tags in this category:", mdCategories(curCategory).Count)
+    End If
+    
+    'Update the metadata list to reflect the new category
+    UpdateMetadataList
     
 End Sub
 
@@ -402,7 +394,7 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     End If
     
     Dim blockCategory As Long
-    blockCategory = btsGroup.ListIndex
+    blockCategory = lstGroup.ListIndex
     
     Dim tmpRectF As RECTF
     CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
@@ -423,13 +415,13 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     numericalPrefix = CStr(itemIndex + 1) & " - "
         
     If (btsTechnical(0).ListIndex = 0) Then
-        drawString = thisTag.Description
+        drawString = thisTag.TagNameFriendly
     Else
-        drawString = thisTag.FullGroupAndName
+        drawString = thisTag.TagGroupAndName
     End If
         
     'Notify the user of text we were unable to convert to a human-readable value
-    If thisTag.isValueBase64 Then
+    If thisTag.IsTagBinary Then
         drawString = drawString & " " & g_Language.TranslateMessage("(encoding unknown)")
     End If
     
@@ -443,13 +435,9 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     m_TitleFont.ReleaseFromDC
     
     If (btsTechnical(1).ListIndex = 0) Then
-        drawString = thisTag.Value
+        drawString = thisTag.TagValueFriendly
     Else
-        If Len(thisTag.ActualValue) <> 0 Then
-            drawString = thisTag.ActualValue
-        Else
-            drawString = thisTag.Value
-        End If
+        drawString = thisTag.TagValue
     End If
     
     m_DescriptionFont.AttachToDC bufferDC
