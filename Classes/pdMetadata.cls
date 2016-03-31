@@ -110,7 +110,7 @@ End Function
 
 'Does a given tag exist in the metadata collection?  Returns TRUE if yes, FALSE, if no.
 ' If the tag does exist, the optional byref tagIndex will be set to the index.  It will be set to -1 if the tag is not found.
-Private Function DoesTagExist(ByVal TagName As String, Optional ByRef TagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
+Private Function DoesTagExist(ByVal TagName As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
 
     DoesTagExist = False
     
@@ -122,7 +122,7 @@ Private Function DoesTagExist(ByVal TagName As String, Optional ByRef TagIndex A
     For i = 0 To m_NumOfTags - 1
         If StrComp(m_Tags(i).TagName, TagName, searchMode) = 0 Then
             DoesTagExist = True
-            TagIndex = i
+            tagIndex = i
             Exit For
         End If
     Next i
@@ -131,7 +131,7 @@ End Function
 
 'Does a given tag exist in the metadata collection?  Returns TRUE if yes, FALSE, if no.
 ' If the tag does exist, the optional byref tagIndex will be set to the index.  It will be set to -1 if the tag is not found.
-Private Function DoesTagExistFullName(ByVal tagNameAndGroup As String, Optional ByRef TagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
+Private Function DoesTagExistFullName(ByVal tagNameAndGroup As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
 
     DoesTagExistFullName = False
     
@@ -145,7 +145,7 @@ Private Function DoesTagExistFullName(ByVal tagNameAndGroup As String, Optional 
         'Tag name found!  Mark the index and exit.
         If StrComp(m_Tags(i).TagGroupAndName, tagNameAndGroup, searchMode) = 0 Then
             DoesTagExistFullName = True
-            TagIndex = i
+            tagIndex = i
             Exit For
         End If
         
@@ -159,10 +159,10 @@ End Function
 ' the actual return value of the given metadata entry, or a fail state.)
 Private Function GetTagValue(ByVal tagNameAndGroup As String, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As String
 
-    Dim TagIndex As Long
+    Dim tagIndex As Long
     
-    If DoesTagExistFullName(tagNameAndGroup, TagIndex, searchMode) Then
-        GetTagValue = GetMetadataEntry(TagIndex).TagValue       'Friendly?
+    If DoesTagExistFullName(tagNameAndGroup, tagIndex, searchMode) Then
+        GetTagValue = GetMetadataEntry(tagIndex).TagValue       'Friendly?
     Else
         GetTagValue = vbNullString
     End If
@@ -365,7 +365,7 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             'Next, we want to improve the grouping of tags.  ExifTool's grouping is somewhat erratic; for example, all software
             ' treats ICC profiles as single, contiguous units, but ExifTool tends to group ICC properties into a bunch of
             ' highly specific subcategories.  I prefer to use the same grouping as other software, to avoid confusing users.
-            CalculateIdealGroupName m_Tags(i)
+            CalculateIdealGroupName m_Tags(i), i
             
         Next i
     
@@ -385,7 +385,9 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     
 End Function
 
-Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem) As Boolean
+Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem, ByVal tagIndex As Long) As Boolean
+    
+    Dim i As Long
     
     Dim groupName As String, groupNameCheck As String
     groupName = dstMetadata.TagGroup
@@ -394,8 +396,13 @@ Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem) As
     dstMetadata.TagGroupFriendly = groupName
     
     'First, there's no need for a distinction between "System" and "File".  Group these under a "General" heading.
-    If StrComp(groupNameCheck, "SYSTEM", vbBinaryCompare) = 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("General")
-    If StrComp(groupNameCheck, "FILE", vbBinaryCompare) = 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("General")
+    ' (Pre-7.0's release I am experimenting with leaving these as-is.)
+    'If StrComp(groupNameCheck, "SYSTEM", vbBinaryCompare) = 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("General")
+    'If StrComp(groupNameCheck, "FILE", vbBinaryCompare) = 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("General")
+    
+    'Next, ExifTool provides "Composite" tags - basically, tags that do not exist in the file, but whose value can be inferred
+    ' from other pieces of information.  As "Composite" doesn't make much sense, we use "Inferred" instead.
+    If StrComp(groupNameCheck, "COMPOSITE", vbBinaryCompare) = 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Inferred")
     
     'Next, ExifTool breaks down EXIF tags into their individual IFD blocks.  Simplify all of these under a single "Exif" header.
     If InStr(1, groupNameCheck, "IFD1", vbBinaryCompare) > 0 Then
@@ -422,15 +429,17 @@ Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem) As
     If (InStr(1, groupNameCheck, "JFIF", vbBinaryCompare) > 0) Then
 
         'Check the metadata list up to this point.  If a matching group and technical tag name are found,
-        ' move this tag into a separate "thumbnail" category.
-        Dim i As Long
-        For i = 0 To m_NumOfTags - 1
-            If StrComp(dstMetadata.TagGroupAndName, m_Tags(i).TagGroupAndName, vbBinaryCompare) = 0 Then
-                dstMetadata.TagGroupFriendly = "JFIF (thumbnail)"
-                Exit For
-            End If
-        Next i
-
+        ' move this tag into a separate "thumbnail" category.  (Note that we want to avoid matching this tag against itself,
+        ' so we only search up to its *current* position.)
+        If (tagIndex > 0) Then
+            For i = 0 To tagIndex - 1
+                If StrComp(dstMetadata.TagGroupAndName, m_Tags(i).TagGroupAndName, vbBinaryCompare) = 0 Then
+                    dstMetadata.TagGroupFriendly = "JFIF (thumbnail)"
+                    Exit For
+                End If
+            Next i
+        End If
+    
     End If
     
     CalculateIdealGroupName = CBool(Len(dstMetadata.TagGroupFriendly) <> 0)
@@ -853,7 +862,6 @@ Private Function PARSE_LikelyTagLine(ByRef xmlLines() As String, ByRef linePoint
                     'With the tag's start and end line locations now known, we can commence with parsing all the lines in-between.
                     
                     'Start by storing the group and tag names
-                    Debug.Print curTagName
                     m_Tags(m_NumOfTags).TagGroupAndName = curTagName
                     PARSE_GetTagAndGroupName curTagName, m_Tags(m_NumOfTags)
                     
@@ -1065,7 +1073,7 @@ Private Function PARSE_RDFDescription(ByRef srcLine As String, ByRef dstMetadata
         etIndex = PARSE_GetNamedAttributeValue(srcLine, "et:index")
         If Len(etIndex) > 0 Then
             dstMetadata.HasIndex = True
-            dstMetadata.TagIndex = CLng(etIndex)
+            dstMetadata.TagIndexInternal = CLng(etIndex)
         End If
         
         PARSE_RDFDescription = True

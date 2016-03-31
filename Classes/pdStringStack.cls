@@ -193,11 +193,11 @@ Public Sub SortStackByLength(Optional ByVal sortAscending As Boolean = True)
                 
                 'Compare two entries, and if the longer one precedes the shorter one, swap them
                 If sortAscending Then
-                    If Len(m_Strings(i)) < Len(m_Strings(j)) Then SwapStrings i, j
+                    If Len(m_Strings(i)) < Len(m_Strings(j)) Then SwapIndices i, j
                 
                 'An opposite check is used for descending order.
                 Else
-                    If Len(m_Strings(i)) > Len(m_Strings(j)) Then SwapStrings i, j
+                    If Len(m_Strings(i)) > Len(m_Strings(j)) Then SwapIndices i, j
                 End If
                 
             Next j
@@ -208,145 +208,68 @@ Public Sub SortStackByLength(Optional ByVal sortAscending As Boolean = True)
 End Sub
 
 'Helper for string sorting, above.  This is not optimized at all, but it's sufficient for PD's current usage...
-Private Sub SwapStrings(ByVal strIndex1 As Long, ByVal strIndex2 As Long)
+Public Sub SwapIndices(ByVal strIndex1 As Long, ByVal strIndex2 As Long)
     Dim tmpString As String
     tmpString = m_Strings(strIndex1)
     m_Strings(strIndex1) = m_Strings(strIndex2)
     m_Strings(strIndex2) = tmpString
 End Sub
 
-'Modified sort function based off "Snake Sort" by Ellis Dee.  Original source here:
-' http://www.vbforums.com/showthread.php?473677-VB6-Sorting-algorithms-%28sort-array-sorting-arrays%29&p=2933240#post2933240
+'Instead of swapping two entries, this function will move a string to a new index, then shift all remaining strings
+' in the list to match.  Obviously there are performance issues with this, so use it sparingly!
+Public Sub MoveStringToNewPosition(ByVal srcStringIndex As Long, ByVal dstStringIndex As Long)
+    
+    If (srcStringIndex >= 0) And (srcStringIndex < m_NumOfStrings) And (dstStringIndex >= 0) And (dstStringIndex < m_NumOfStrings) And (srcStringIndex <> dstStringIndex) Then
+    
+        Dim i As Long, tmpString As String
+        tmpString = m_Strings(srcStringIndex)
+        
+        If (srcStringIndex < dstStringIndex) Then
+            For i = srcStringIndex To dstStringIndex - 1
+                m_Strings(i) = m_Strings(i + 1)
+            Next i
+        Else
+            For i = srcStringIndex To dstStringIndex + 1 Step -1
+                m_Strings(i) = m_Strings(i - 1)
+            Next i
+        End If
+        
+        m_Strings(dstStringIndex) = tmpString
+        
+    End If
+
+End Sub
+
+'Modified ShellSort function based off an original implementation by Ellis Dee.  Original source here:
+' http://www.vbforums.com/showthread.php?473677-VB6-Sorting-algorithms-(sort-array-sorting-arrays)&p=2933102&viewfull=1#post2933102
 Public Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False)
     
+    Dim lngHold As Long
+    Dim lngGap As Long
     Dim i As Long
     Dim iMin As Long
     Dim iMax As Long
-    Dim lngIndex() As Long
-    Dim lngLevel As Long
-    Dim lngOldLevel As Long
-    Dim lngNewLevel As Long
-    Dim varMirror As Variant
-    Dim lngDirection As Long
-    Dim blnMirror As Boolean
     Dim varSwap As String
     
-    iMin = LBound(m_Strings)
-    iMax = UBound(m_Strings)
-    
-    ReDim lngIndex((iMax - iMin + 3) \ 2)
-    lngIndex(0) = iMin
-    i = iMin
-    
-    'Initial loop: locate cutoffs for each ordered section
-    Do Until i >= iMax
-    
-        Select Case lngDirection
-            Case 1
-                Do Until i = iMax
-                    If StrComp(m_Strings(i), (i + 1)) = 1 Then Exit Do
-                    i = i + 1
-                Loop
-            Case -1
-                Do Until i = iMax
-                    If StrComp(m_Strings(i), m_Strings(i + 1)) = -1 Then Exit Do
-                    i = i + 1
-                Loop
-            Case Else
-                Do Until i = iMax
-                    If StrComp(m_Strings(i), m_Strings(i + 1)) <> 0 Then Exit Do
-                    i = i + 1
-                Loop
-                If i = iMax Then lngDirection = 1
-        End Select
-        
-        If lngDirection = 0 Then
-            If StrComp(m_Strings(i), m_Strings(i + 1)) = 1 Then
-                lngDirection = -1
-            Else
-                lngDirection = 1
-            End If
-        Else
-            lngLevel = lngLevel + 1
-            lngIndex(lngLevel) = i * lngDirection
-            lngDirection = 0
-        End If
-        
-        i = i + 1
-        
-    Loop
-    
-    If Abs(lngIndex(lngLevel)) < iMax Then
-        If lngDirection = 0 Then lngDirection = 1
-        lngLevel = lngLevel + 1
-        lngIndex(lngLevel) = i * lngDirection
-    End If
-    
-    'If the list is already sorted, exit
-    If lngLevel <= 1 Then
-    
-        'If sorted descending, reverse before exiting
-        If lngIndex(lngLevel) < 0 Then
-            For i = 0 To (iMax - iMin) \ 2
-                varSwap = m_Strings(iMin + i)
-                m_Strings(iMin + i) = m_Strings(iMax - i)
-                m_Strings(iMax - i) = varSwap
-            Next
-        End If
-        
-        Exit Sub
-        
-    End If
-    
-    'Main loop - merge section pairs together until only one section left
-    ReDim varMirror(iMin To iMax)
-    
-    Do Until lngLevel = 1
-    
-        lngOldLevel = lngLevel
-        
-        For lngLevel = 1 To lngLevel - 1 Step 2
-        
-            If blnMirror Then
-                SnakeSortMerge varMirror, lngIndex(lngLevel - 1), lngIndex(lngLevel), lngIndex(lngLevel + 1), m_Strings
-            Else
-                SnakeSortMerge m_Strings, lngIndex(lngLevel - 1), lngIndex(lngLevel), lngIndex(lngLevel + 1), varMirror
-            End If
-            
-            lngNewLevel = lngNewLevel + 1
-            lngIndex(lngNewLevel) = Abs(lngIndex(lngLevel + 1))
-            
-        Next
-        
-        If lngOldLevel Mod 2 = 1 Then
-        
-            If blnMirror Then
-                For i = lngIndex(lngNewLevel) + 1 To iMax
-                    m_Strings(i) = varMirror(i)
-                Next
-            Else
-                For i = lngIndex(lngNewLevel) + 1 To iMax
-                    varMirror(i) = m_Strings(i)
-                Next
-            End If
-            
-            lngNewLevel = lngNewLevel + 1
-            lngIndex(lngNewLevel) = lngIndex(lngOldLevel)
-            
-        End If
-        
-        lngLevel = lngNewLevel
-        lngNewLevel = 0
-        blnMirror = Not blnMirror
-        
-    Loop
-    
-    'Copy back to main array if necessary
-    If blnMirror Then
-        For i = iMin To iMax
-            m_Strings(i) = varMirror(i)
-        Next
-    End If
+    iMin = 0
+    iMax = m_NumOfStrings - 1
+    lngGap = iMin
+    Do
+        lngGap = 3 * lngGap + 1
+    Loop Until lngGap > iMax
+    Do
+        lngGap = lngGap \ 3
+        For i = lngGap + iMin To iMax
+            varSwap = m_Strings(i)
+            lngHold = i
+            Do While StrComp(m_Strings(lngHold - lngGap), varSwap) > 0
+                m_Strings(lngHold) = m_Strings(lngHold - lngGap)
+                lngHold = lngHold - lngGap
+                If lngHold < iMin + lngGap Then Exit Do
+            Loop
+            m_Strings(lngHold) = varSwap
+        Next i
+    Loop Until lngGap = 1
     
     'If the user wants duplicates removed, do so now
     If removeDuplicates Then
@@ -385,84 +308,6 @@ Public Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False
         If itemsRemoved > 0 Then m_NumOfStrings = m_NumOfStrings - itemsRemoved
         
     End If
-    
-End Sub
- 
-'Helper function to Snake Sort, above.  Modified version of a function originally written by Ellis Dee.  Original source here:
-' http://www.vbforums.com/showthread.php?473677-VB6-Sorting-algorithms-%28sort-array-sorting-arrays%29&p=2933240#post2933240
-Private Sub SnakeSortMerge(pvarSource As Variant, plngLeft As Long, plngMid As Long, plngRight As Long, pvarDest As Variant)
-    
-    Dim l As Long
-    Dim lMin As Long
-    Dim lMax As Long
-    Dim LStep As Long
-    Dim r As Long
-    Dim RMin As Long
-    Dim RMax As Long
-    Dim RStep As Long
-    Dim O As Long
-    
-    If plngLeft <> 0 Then O = Abs(plngLeft) + 1
-    
-    If plngMid > 0 Then
-        lMin = O
-        lMax = Abs(plngMid)
-        LStep = 1
-    Else
-        lMin = Abs(plngMid)
-        lMax = O
-        LStep = -1
-    End If
-    
-    If plngRight > 0 Then
-        RMin = Abs(plngMid) + 1
-        RMax = Abs(plngRight)
-        RStep = 1
-    Else
-        RMin = Abs(plngRight)
-        RMax = Abs(plngMid) + 1
-        RStep = -1
-    End If
-    
-    l = lMin
-    r = RMin
-    
-    Do
-    
-        If StrComp(pvarSource(l), pvarSource(r)) <= 0 Then
-            
-            pvarDest(O) = pvarSource(l)
-            
-            If l = lMax Then
-                For r = r To RMax Step RStep
-                    O = O + 1
-                    pvarDest(O) = pvarSource(r)
-                Next
-                Exit Do
-            
-            End If
-            
-            l = l + LStep
-            
-        Else
-        
-            pvarDest(O) = pvarSource(r)
-            
-            If r = RMax Then
-                For l = l To lMax Step LStep
-                    O = O + 1
-                    pvarDest(O) = pvarSource(l)
-                Next
-                Exit Do
-            End If
-            
-            r = r + RStep
-            
-        End If
-        
-        O = O + 1
-        
-    Loop
     
 End Sub
 
