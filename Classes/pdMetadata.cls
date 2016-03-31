@@ -307,13 +307,9 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     
     If VB_Hacks.IsArrayInitialized(xmlLines) Then
         
-        Debug.Print "Raw XML metadata string appears valid."
-        
         'With the data successfully split, we now want to advance the parser to the first valid tag entry.
         Dim curLine As Long: curLine = 0
         If PARSE_AdvanceToFirstMeaningfulLine(xmlLines, curLine) Then
-            
-            Debug.Print "First line appears at " & curLine
             
             'curLine now contains the line index of the first valid tag entry.  From here, all tags will be listed back-to-back,
             ' so we can simply keep iterating through the list until we hit an invalid entry.
@@ -321,7 +317,7 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             Loop
             
         Else
-            Debug.Print "No valid tag entries found; abandoning metadata processing."
+            Debug.Print "Metadata received successfully, but no valid tag entries were found; abandoning further processing."
         End If
         
     Else
@@ -371,24 +367,6 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             ' highly specific subcategories.  I prefer to use the same grouping as other software, to avoid confusing users.
             CalculateIdealGroupName m_Tags(i)
             
-            
-            'TODO: investigate these options again for 7.0
-
-'
-'
-'
-'            'Binary data serves no purpose in the user interface part of our metadata handler.  Remove any binary tags.
-'            'If InStr(1, UCase$(tmpString), "BINARY DATA", vbBinaryCompare) > 0 Then ignoreThisTag = True
-'
-'            'Increment the max metadata count, and redim our metadata array as necessary
-'            If (Not ignoreThisTag) Then
-'                m_NumOfTags = m_NumOfTags + 1
-'                ReDim Preserve m_Tags(0 To m_NumOfTags) As PDMetadataItem
-'            End If
-            
-            
-            
-            
         Next i
     
     End If
@@ -409,28 +387,30 @@ End Function
 
 Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem) As Boolean
     
-    Dim groupName As String
+    Dim groupName As String, groupNameCheck As String
     groupName = dstMetadata.TagGroup
+    groupNameCheck = UCase$(dstMetadata.TagGroup)
     
     dstMetadata.TagGroupFriendly = groupName
     
     'First, there's no need for a distinction between "System" and "File".  Group these under a "General" heading.
-    If StrComp(groupName, "System", vbBinaryCompare) = 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("General")
-    If StrComp(groupName, "File", vbBinaryCompare) = 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("General")
+    If StrComp(groupNameCheck, "SYSTEM", vbBinaryCompare) = 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("General")
+    If StrComp(groupNameCheck, "FILE", vbBinaryCompare) = 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("General")
     
     'Next, ExifTool breaks down EXIF tags into their individual IFD blocks.  Simplify all of these under a single "Exif" header.
-    If InStr(1, UCase$(groupName), "IFD1", vbBinaryCompare) > 0 Then
+    If InStr(1, groupNameCheck, "IFD1", vbBinaryCompare) > 0 Then
         dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif (thumbnail)")
-    ElseIf InStr(1, UCase$(groupName), "IFD", vbBinaryCompare) > 0 Then
+    ElseIf InStr(1, groupNameCheck, "IFD", vbBinaryCompare) > 0 Then
         dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif")
     End If
 
     'Next, ExifTool separates color profiles into header, profile, and measurement subcategories.  Condense these into
     ' a single "ICC Profile" group.
-    If InStr(1, groupName, "ICC", vbBinaryCompare) > 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("ICC Profile")
+    If InStr(1, groupNameCheck, "ICC", vbBinaryCompare) > 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("ICC Profile")
     
-    'Next, XMP tags often contain an additional identifier, such as "XMP-photoshop".  Condense these into a single XMP group.
-    If InStr(1, groupName, "XMP", vbBinaryCompare) > 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP")
+    'Next, XMP tags often contain an additional identifier, such as "XMP-photoshop".  We'll display names for a few of the most
+    ' common XMP groups, while everything else gets condensed under an "XMP (misc)" heading.
+    If InStr(1, groupNameCheck, "XMP", vbBinaryCompare) > 0 Then CalculateIdealXMPGroupName dstMetadata
     
     'Next comes a tricky one.  There is no technical prohibition against duplicate metadata tags - and in fact, some software may
     ' choose to deliberately add duplicate tags in multiple groups (IPTC, EXIF, XMP, etc) to maximize compatibility.
@@ -439,7 +419,7 @@ Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem) As
     ' parent image will have their own JFIF header, which includes information like x/y resolution that is totally irrelevant
     ' (and confusing, as it makes the image look like it has multiple headers!).  Here, we want to check for duplicate JFIF tags,
     ' and place them into their own category as necessary.
-    If (InStr(1, UCase$(groupName), "JFIF", vbBinaryCompare) > 0) Then
+    If (InStr(1, groupNameCheck, "JFIF", vbBinaryCompare) > 0) Then
 
         'Check the metadata list up to this point.  If a matching group and technical tag name are found,
         ' move this tag into a separate "thumbnail" category.
@@ -455,6 +435,138 @@ Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem) As
     
     CalculateIdealGroupName = CBool(Len(dstMetadata.TagGroupFriendly) <> 0)
     
+End Function
+
+Private Function CalculateIdealXMPGroupName(ByRef dstMetadata As PDMetadataItem) As Boolean
+    
+    Dim groupName As String
+    groupName = LCase$(dstMetadata.TagGroup)
+    
+    If InStr(1, groupName, "xmp", vbBinaryCompare) > 0 Then
+        
+        'There are hundreds of potential XMP namespaces.  Rather than try to convert all of them into human-readable versions,
+        ' PD just sorts through the most common ones.  Other coders are welcome to expand this list, using the reference at
+        ' http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/XMP.html
+        If StringsEqual(groupName, "xmp-aas") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Apple)")
+        ElseIf StringsEqual(groupName, "xmp-acdsee") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (ACD Systems)")
+        ElseIf StringsEqual(groupName, "xmp-album") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe Album)")
+        ElseIf StringsEqual(groupName, "xmp-apple-fi") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Apple)")
+        ElseIf StringsEqual(groupName, "xmp-aux") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe)")
+        ElseIf StringsEqual(groupName, "xmp-cc") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Creative Commons)")
+        ElseIf StringsEqual(groupName, "xmp-cell") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Sony Ericcson)")
+        ElseIf StringsEqual(groupName, "xmp-creatoratom") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe After Effects)")
+        ElseIf StringsEqual(groupName, "xmp-crs") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Photoshop Camera Raw)")
+        ElseIf StringsEqual(groupName, "xmp-dc") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Dublin Core)")
+        ElseIf StringsEqual(groupName, "xmp-dex") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Description Explorer)")
+        ElseIf StringsEqual(groupName, "xmp-dicom") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (DICOM)")
+        ElseIf StringsEqual(groupName, "xmp-digikam") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (DigiKam)")
+        ElseIf StringsEqual(groupName, "xmp-exif") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (EXIF)")
+        ElseIf StringsEqual(groupName, "xmp-exifex") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (EXIF 2.3)")
+        ElseIf StringsEqual(groupName, "xmp-expressionmedia") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Microsoft Expression Media)")
+        ElseIf StringsEqual(groupName, "xmp-extensis") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Extensis Portfolio)")
+        ElseIf StringsEqual(groupName, "xmp-fpv") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Fast Picture Viewer)")
+        ElseIf StringsEqual(groupName, "xmp-getty") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Getty Images)")
+        ElseIf StringsEqual(groupName, "xmp-gpano") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Google Photosphere)")
+        ElseIf StringsEqual(groupName, "xmp-ics") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (IDimager)")
+        ElseIf StringsEqual(groupName, "xmp-iptccore") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (IPTC Core)")
+        ElseIf StringsEqual(groupName, "xmp-iptcext") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (IPTC Extension)")
+        ElseIf StringsEqual(groupName, "xmp-lr") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe Lightroom)")
+        ElseIf StringsEqual(groupName, "xmp-mediapro") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (iView MediaPro)")
+        ElseIf StringsEqual(groupName, "xmp-microsoft") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Microsoft Photo 1.0)")
+        ElseIf StringsEqual(groupName, "xmp-mp") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Microsoft Photo 1.2)")
+        ElseIf StringsEqual(groupName, "xmp-mp1") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Microsoft Photo 1.1)")
+        ElseIf StringsEqual(groupName, "xmp-mwg-coll") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (MWG)")
+        ElseIf StringsEqual(groupName, "xmp-mwg-kw") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (MWG)")
+        ElseIf StringsEqual(groupName, "xmp-mwg-rs") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (MWG)")
+        ElseIf StringsEqual(groupName, "xmp-pdf") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe PDF)")
+        ElseIf StringsEqual(groupName, "xmp-pdfx") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe PDF extended)")
+        ElseIf StringsEqual(groupName, "xmp-photomech") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PhotoMechanic)")
+        ElseIf StringsEqual(groupName, "xmp-photoshop") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe Photoshop)")
+        ElseIf StringsEqual(groupName, "xmp-pixellive") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PixelLive)")
+        ElseIf StringsEqual(groupName, "xmp-plus") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Plus License Data)")
+        ElseIf StringsEqual(groupName, "xmp-pmi") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PRISM for images)")
+        ElseIf StringsEqual(groupName, "xmp-prism") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PRISM)")
+        ElseIf StringsEqual(groupName, "xmp-prl") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PRISM Rights)")
+        ElseIf StringsEqual(groupName, "xmp-prm") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PRISM Recipe)")
+        ElseIf StringsEqual(groupName, "xmp-pur") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PRISM Usage Rights)")
+        ElseIf StringsEqual(groupName, "xmp-rdf") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (RDF)")
+        ElseIf StringsEqual(groupName, "xmp-swf") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe SWF)")
+        ElseIf StringsEqual(groupName, "xmp-tiff") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (EXIF-TIFF)")
+        ElseIf StringsEqual(groupName, "xmp-x") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Toolkit)")
+        ElseIf StringsEqual(groupName, "xmp-xmp") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (General)")
+        ElseIf StringsEqual(groupName, "xmp-xmpbj") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Basic Job)")
+        ElseIf StringsEqual(groupName, "xmp-xmpdm") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Dynamic Media)")
+        ElseIf StringsEqual(groupName, "xmp-xmpmm") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Media Management)")
+        ElseIf StringsEqual(groupName, "xmp-xmpnote") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Note)")
+        ElseIf StringsEqual(groupName, "xmp-xmpplus") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Picture Licensing)")
+        ElseIf StringsEqual(groupName, "xmp-xmprights") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Rights Management)")
+        ElseIf StringsEqual(groupName, "xmp-xmptpg") Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Paged Text)")
+        Else
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Misc)")
+        End If
+        
+        CalculateIdealXMPGroupName = True
+        
+    End If
+    
+End Function
+
+Private Function StringsEqual(ByRef str1 As String, ByRef str2 As String) As Boolean
+    StringsEqual = CBool(StrComp(str1, str2, vbBinaryCompare) = 0)
 End Function
 
 Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boolean
