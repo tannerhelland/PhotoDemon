@@ -24,6 +24,17 @@ Begin VB.Form FormMetadata
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   938
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdLabel lblGroupDescription 
+      Height          =   255
+      Left            =   4080
+      Top             =   4260
+      Width           =   9855
+      _ExtentX        =   17383
+      _ExtentY        =   450
+      Alignment       =   2
+      FontItalic      =   -1  'True
+      FontSize        =   9
+   End
    Begin PhotoDemon.pdHyperlink hypExiftool 
       Height          =   255
       Left            =   240
@@ -80,7 +91,7 @@ Begin VB.Form FormMetadata
       Layout          =   1
    End
    Begin PhotoDemon.pdListBoxOD lstMetadata 
-      Height          =   4455
+      Height          =   4095
       Left            =   3840
       TabIndex        =   1
       Top             =   120
@@ -112,8 +123,7 @@ Begin VB.Form FormMetadata
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   609
-         Caption         =   "use formal values only"
-         Value           =   0
+         Caption         =   "show human-friendly values (instead of technical ones)"
       End
       Begin PhotoDemon.pdTextBox txtValue 
          Height          =   1140
@@ -322,13 +332,12 @@ Private Type mdCategory
     Count As Long
 End Type
 
-Private mdCategories() As mdCategory
-Private numOfCategories As Long
-Private highestCategoryCount As Long
+Private m_MDCategories() As mdCategory
+Private m_NumOfCategories As Long
+Private m_LargestCategoryCount As Long
 
-'This array will hold all tags currently in storage, but sorted into categories
-Private allTags() As PDMetadataItem
-Private curTagCount() As Long
+'This array holds all tags currently in storage, but sorted into a 2D array by category
+Private m_AllTags() As PDMetadataItem
 
 'Height of each metadata content block
 Private Const BLOCKHEIGHT As Long = 54
@@ -402,8 +411,8 @@ Private Sub Form_Load()
     m_DescriptionFont.SetTextAlignment vbLeftJustify
         
     'Initialize the category array
-    ReDim mdCategories(0) As mdCategory
-    numOfCategories = 0
+    ReDim m_MDCategories(0 To 3) As mdCategory
+    m_NumOfCategories = 0
     
     'Start by tallying up information on the various metadata types within this image
     Dim chkGroup As String
@@ -422,40 +431,45 @@ Private Sub Form_Load()
         If (Not curMetadata.InternalUseOnly) Then
         
             'Search the current list of known categories for this metadata object's category
-            For j = 0 To numOfCategories
-                If StrComp(mdCategories(j).Name, chkGroup) = 0 Then
+            For j = 0 To m_NumOfCategories - 1
+                If StrComp(m_MDCategories(j).Name, chkGroup, vbBinaryCompare) = 0 Then
                     categoryFound = True
-                    mdCategories(j).Count = mdCategories(j).Count + 1
+                    m_MDCategories(j).Count = m_MDCategories(j).Count + 1
                     Exit For
                 End If
             Next j
             
             'If no matching category was found, create a new category entry
-            If Not categoryFound Then
-                mdCategories(numOfCategories).Name = chkGroup
-                mdCategories(numOfCategories).Count = 1
-                numOfCategories = numOfCategories + 1
-                ReDim Preserve mdCategories(0 To numOfCategories) As mdCategory
+            If (Not categoryFound) Then
+                If (m_NumOfCategories) > UBound(m_MDCategories) Then ReDim Preserve m_MDCategories(0 To m_NumOfCategories * 2 - 1) As mdCategory
+                m_MDCategories(m_NumOfCategories).Name = chkGroup
+                m_MDCategories(m_NumOfCategories).Count = 1
+                m_NumOfCategories = m_NumOfCategories + 1
             End If
             
         End If
     
     Next i
     
+    'With all categories now detected, we want to sort the list
+    SortCategoryList
+    
     'We can now populate the left-side list box with the categories we found.  While doing this, find
     ' the category with the highest tag count.
-    highestCategoryCount = 0
+    m_LargestCategoryCount = 0
     
-    For i = 0 To numOfCategories - 1
-        lstGroup.AddItem mdCategories(i).Name, i
-        If mdCategories(i).Count > highestCategoryCount Then highestCategoryCount = mdCategories(i).Count
+    For i = 0 To m_NumOfCategories - 1
+        lstGroup.AddItem m_MDCategories(i).Name, i, CBool(StrComp(LCase$(m_MDCategories(i).Name), "inferred", vbBinaryCompare) = 0)
+        If m_MDCategories(i).Count > m_LargestCategoryCount Then m_LargestCategoryCount = m_MDCategories(i).Count
     Next i
     
     'We can now build a 2D array that contains all tags, sorted by category.  Why not do this above?  Because
     ' it's computationally expensive to constantly redim arrays in VB, and this technique allows us to redim
     ' the main tag array only once, after all values have been tallied.
-    ReDim allTags(0 To numOfCategories - 1, 0 To highestCategoryCount - 1) As PDMetadataItem
-    ReDim curTagCount(0 To numOfCategories - 1) As Long
+    ReDim m_AllTags(0 To m_NumOfCategories - 1, 0 To m_LargestCategoryCount - 1) As PDMetadataItem
+    
+    Dim curTagCount() As Long
+    ReDim curTagCount(0 To m_NumOfCategories - 1) As Long
     
     For i = 0 To pdImages(g_CurrentImage).imgMetadata.GetMetadataCount - 1
         
@@ -464,10 +478,10 @@ Private Sub Form_Load()
         chkGroup = curMetadata.TagGroupFriendly
         
         'Find the matching group in the Group array, then insert this tag into place
-        For j = 0 To numOfCategories - 1
-            If StrComp(mdCategories(j).Name, chkGroup) = 0 Then
+        For j = 0 To m_NumOfCategories - 1
+            If StrComp(m_MDCategories(j).Name, chkGroup) = 0 Then
             
-                allTags(j, curTagCount(j)) = curMetadata
+                m_AllTags(j, curTagCount(j)) = curMetadata
                 curTagCount(j) = curTagCount(j) + 1
                 Exit For
                 
@@ -476,7 +490,7 @@ Private Sub Form_Load()
         
     Next i
     
-    lstGroup.Caption = g_Language.TranslateMessage("%1 groups in this image:", numOfCategories)
+    lstGroup.Caption = g_Language.TranslateMessage("%1 groups in this image:", m_NumOfCategories)
     
     'Populate the simple/technical switches at the bottom
     btsTechnical(0).AddItem "simple", 0
@@ -511,6 +525,56 @@ Private Sub Form_Load()
     
 End Sub
 
+Private Sub SortCategoryList()
+    
+    Dim i As Long, j As Long
+    
+    'We first want to sort the group names alphabetically.  The easiest way to do this is with pdStringStack.
+    Dim cNames As pdStringStack
+    Set cNames = New pdStringStack
+    For i = 0 To m_NumOfCategories - 1
+        cNames.AddString m_MDCategories(i).Name
+    Next i
+    cNames.SortAlphabetically
+    
+    'We now want to do something weird.  The "System", "File", and "Composite" categories should always come first.
+    ' These categories are largely un-editable, and they are persistent across image formats.
+    For i = 0 To m_NumOfCategories - 1
+        If StrComp(LCase$(cNames.GetString(i)), "system", vbBinaryCompare) = 0 Then
+            cNames.MoveStringToNewPosition i, 0
+            Exit For
+        End If
+    Next i
+    
+    For i = 0 To m_NumOfCategories - 1
+        If StrComp(LCase$(cNames.GetString(i)), "file", vbBinaryCompare) = 0 Then
+            cNames.MoveStringToNewPosition i, 1
+            Exit For
+        End If
+    Next i
+    
+    For i = 0 To m_NumOfCategories - 1
+        If StrComp(LCase$(cNames.GetString(i)), "inferred", vbBinaryCompare) = 0 Then
+            cNames.MoveStringToNewPosition i, 2
+            Exit For
+        End If
+    Next i
+    
+    'We now want to sort the main category list to match this order.
+    Dim tmpCat As mdCategory
+    For i = 0 To m_NumOfCategories - 1
+        For j = i To m_NumOfCategories - 1
+            If (StrComp(cNames.GetString(i), m_MDCategories(j).Name, vbBinaryCompare) = 0) And (i <> j) Then
+                tmpCat = m_MDCategories(i)
+                m_MDCategories(i) = m_MDCategories(j)
+                m_MDCategories(j) = tmpCat
+                Exit For
+            End If
+        Next j
+    Next i
+    
+End Sub
+
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
@@ -536,7 +600,7 @@ Private Sub UpdateMetadataList()
     lstMetadata.Clear
     
     Dim i As Long
-    For i = 0 To mdCategories(curCategory).Count - 1
+    For i = 0 To m_MDCategories(curCategory).Count - 1
         lstMetadata.AddItem , i
     Next i
     
@@ -549,10 +613,31 @@ Private Sub lstGroup_Click()
     Dim curCategory As Long
     curCategory = lstGroup.ListIndex
     
-    If mdCategories(curCategory).Count = 1 Then
+    If m_MDCategories(curCategory).Count = 1 Then
         lstMetadata.Caption = g_Language.TranslateMessage("1 tag in this category:")
     Else
-        lstMetadata.Caption = g_Language.TranslateMessage("%1 tags in this category:", mdCategories(curCategory).Count)
+        lstMetadata.Caption = g_Language.TranslateMessage("%1 tags in this category:", m_MDCategories(curCategory).Count)
+    End If
+    
+    'Some categories display a "helper" description.  Check for that now.
+    Dim catName As String, groupDescription As String
+    catName = LCase$(m_MDCategories(curCategory).Name)
+    If StrComp(catName, "system", vbBinaryCompare) = 0 Then
+        groupDescription = g_Language.TranslateMessage("Note: ""System"" tags are provided by the operating system.  They are not embedded as traditional metadata.")
+    ElseIf StrComp(catName, "file", vbBinaryCompare) = 0 Then
+        groupDescription = g_Language.TranslateMessage("Note: ""File"" tags are required by this image format.  They are not embedded as traditional metadata.")
+    ElseIf StrComp(catName, "inferred", vbBinaryCompare) = 0 Then
+        groupDescription = g_Language.TranslateMessage("Note: ""Inferred"" tags are hypothetical values inferred from other metadata.  They are not embedded as traditional metadata.")
+    End If
+    
+    'If a helper description exists, reflow the interface to match
+    If (Len(groupDescription) = 0) Then
+        lblGroupDescription.Visible = False
+        lstMetadata.SetHeight lstGroup.GetHeight
+    Else
+        lblGroupDescription.Caption = groupDescription
+        lblGroupDescription.Visible = True
+        lstMetadata.SetHeight ((lblGroupDescription.GetTop - lstGroup.GetTop) - FixDPI(8))
     End If
     
     'Update the metadata list to reflect the new category
@@ -587,7 +672,7 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     offsetY = tmpRectF.Top + FixDPI(7)
     
     Dim thisTag As PDMetadataItem
-    thisTag = allTags(blockCategory, itemIndex)
+    thisTag = m_AllTags(blockCategory, itemIndex)
     
     Dim linePadding As Long
     linePadding = FixDPI(4)
@@ -638,16 +723,16 @@ Private Sub UpdateTagView()
     
     If (curTag >= 0) Then
     
-        With allTags(curGroup, curTag)
+        With m_AllTags(curGroup, curTag)
             Me.lblGroup.Caption = .TagGroup
             Me.lblTable.Caption = .TagTable
             Me.lblTagID.Caption = .TagID
             Me.lblTagName.Caption = .TagNameFriendly
         
             If CBool(chkFriendlyValue.Value) Then
-                Me.txtValue.Text = .TagValue
-            Else
                 Me.txtValue.Text = .TagValueFriendly
+            Else
+                Me.txtValue.Text = .TagValue
             End If
         
         End With

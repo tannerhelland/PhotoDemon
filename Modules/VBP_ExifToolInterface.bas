@@ -154,7 +154,7 @@ Public Type PDMetadataItem
     IsTagList As Boolean            'Indicates the presence of a list-type tag, common with XMP chunks coming from Photoshop.  The friendly tag name contains a semicolor-delimited list of tag values.
     IsTagBinary As Boolean          'Indicates the presence of a base64-encoded binary tag.
     InternalUseOnly As Boolean      'Some tags (like ExifTool version) have no relevance to the end-user.  We still want to track these, but we tag them so that they are not exposed to the user.
-    TagIndex As Long                'Only meaningful if HasIndex (above) is TRUE.
+    TagIndexInternal As Long        'Only meaningful if HasIndex (above) is TRUE.
     TagBase64Value As String        'Only meaningful if IsTagBinary (above) is TRUE.
     
     'Currently defined by PD, with questionable results - consider fixing
