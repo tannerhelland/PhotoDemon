@@ -520,6 +520,8 @@ Public Sub ReflowStatusBar(ByVal enabledState As Boolean)
         
     'Images are not loaded.  Hide the lines and other items.
     Else
+        m_LinePositions(1) = 0
+        m_LinePositions(2) = 0
         cmdZoomFit.Visible = False
         cmdZoomIn.Visible = False
         cmdZoomOut.Visible = False

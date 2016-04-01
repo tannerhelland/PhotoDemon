@@ -559,7 +559,7 @@ End Sub
 
 'Post-translation, we can request an immediate refresh
 Public Sub RequestRefresh()
-    ucSupport.RequestRepaint
+    ucSupport.RequestRepaint True
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.

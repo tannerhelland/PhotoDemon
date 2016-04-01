@@ -377,7 +377,7 @@ Private m_Colors As pdThemeColors
 
 Private Sub btsEditPanel_Click(ByVal buttonIndex As Long)
     Dim i As Long
-    For i = picContainer.lBound To picContainer.UBound
+    For i = picContainer.lBound To picContainer.ubound
         picContainer(i).Visible = CBool(i = buttonIndex)
     Next i
 End Sub
@@ -469,10 +469,12 @@ Private Sub Form_Load()
     ' the category with the highest tag count.
     m_LargestCategoryCount = 0
     
+    lstGroup.SetAutomaticRedraws False
     For i = 0 To m_NumOfCategories - 1
         lstGroup.AddItem m_MDCategories(i).Name, i, CBool(StrComp(LCase$(m_MDCategories(i).Name), "inferred", vbBinaryCompare) = 0)
         If m_MDCategories(i).Count > m_LargestCategoryCount Then m_LargestCategoryCount = m_MDCategories(i).Count
     Next i
+    lstGroup.SetAutomaticRedraws True, True
     
     'We can now build a 2D array that contains all tags, sorted by category.  Why not do this above?  Because
     ' it's computationally expensive to constantly redim arrays in VB, and this technique allows us to redim
@@ -496,11 +498,9 @@ Private Sub Form_Load()
         'Find the matching group in the Group array, then insert this tag into place
         For j = 0 To m_NumOfCategories - 1
             If StrComp(m_MDCategories(j).Name, chkGroup) = 0 Then
-            
                 m_AllTags(j, curTagCount(j)) = curMetadata
                 curTagCount(j) = curTagCount(j) + 1
                 Exit For
-                
             End If
         Next j
         
