@@ -157,9 +157,6 @@ Public Type PDMetadataItem
     TagIndexInternal As Long        'Only meaningful if HasIndex (above) is TRUE.
     TagBase64Value As String        'Only meaningful if IsTagBinary (above) is TRUE.
     
-    'Currently defined by PD, with questionable results - consider fixing
-    'SubGroup As String
-    
     'Used to flag tags that need to be removed by the image export engine
     TagMarkedForRemoval As Boolean
     
@@ -168,7 +165,8 @@ Public Type PDMetadataItem
     UserModified As Boolean
     AllAttributesLoaded As Boolean
     TagIsWritable As Boolean
-    TagDataType As Boolean
+    TagDataType As String
+    TagDebugData As String
     
 End Type
 
@@ -184,13 +182,15 @@ Private curMetadataString As String
 Private captureModeActive As Boolean
 
 'While verification mode is active (e.g. we only care about ExifTool succeeding or failing), this will be set to TRUE.
-Private verificationModeActive As Boolean
-Private verificationString As String
+Private m_VerificationModeActive As Boolean
+Private m_VerificationString As String
 
-'Once in its lifetime, ExifTool will be asked to write its full tag database to an XML file (~1.5 mb worth of data).  This
-' will normally happen the first time PD is run.  While that special mode is running, this variable will be set to TRUE.
-Private databaseModeActive As Boolean
-Private databaseString As String
+'Once in its lifetime, ExifTool will be asked to write its full tag database to an XML file (~6.2 mb worth of data).
+' This will normally happen the first time the Metadata Editor is initiated.  While that special mode is running,
+' this variable will be set to TRUE. (Note that the matching database string will be available under a variety of
+' circumstances, as it is filled whenever the user initiates a metadata editing session.)
+Private m_DatabaseModeActive As Boolean
+Private m_DatabaseString As String
 
 'As of 6.6 alpha, technical metadata reports can now be generated for a given file.  While this mode is active, we do not
 ' want to immediately delete the report; use this boolean to check for that particular state.
@@ -211,7 +211,7 @@ Private tmpMetadataFilePath As String
 Private m_LastRequestID As Long
 
 Public Function IsDatabaseModeActive() As Boolean
-    IsDatabaseModeActive = databaseModeActive
+    IsDatabaseModeActive = m_DatabaseModeActive
 End Function
 
 'The FormMain.ShellPipeMain user control will asynchronously trigger this function whenever it receives new metadata
@@ -222,13 +222,13 @@ Public Sub NewMetadataReceived(ByVal newMetadata As String)
         curMetadataString = curMetadataString & newMetadata
     
     'During verification mode, we must also check to see if verification has finished
-    ElseIf verificationModeActive Then
-        verificationString = verificationString & newMetadata
+    ElseIf m_VerificationModeActive Then
+        m_VerificationString = m_VerificationString & newMetadata
         If IsMetadataFinished() Then StopVerificationMode
         
     'During database mode, check for a finish state, then write the retrieved database out to file!
-    ElseIf databaseModeActive Then
-        databaseString = databaseString & newMetadata
+    ElseIf m_DatabaseModeActive Then
+        m_DatabaseString = m_DatabaseString & newMetadata
         If IsMetadataFinished() Then WriteMetadataDatabaseToFile
     End If
     
@@ -240,32 +240,31 @@ Private Sub WriteMetadataDatabaseToFile()
     mdDatabasePath = g_PluginPath & "ExifToolDatabase.xml"
         
     'Replace the {ready} text supplied by ExifTool itself, which will be at the end of the metadata database
-    If Len(databaseString) <> 0 Then databaseString = Replace$(databaseString, "{ready}", "")
+    If Len(m_DatabaseString) <> 0 Then m_DatabaseString = Replace$(m_DatabaseString, "{ready}", "")
     
     'Write our XML string out to file
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    cFile.SaveStringToTextFile databaseString, mdDatabasePath
+    cFile.SaveStringToTextFile m_DatabaseString, mdDatabasePath
         
-    'Reset the database mode trackers, so the database doesn't accidentally get rebuilt again
-    databaseString = ""
-    databaseModeActive = False
+    'Reset the database mode tracker, so the database doesn't accidentally get rebuilt again!
+    m_DatabaseModeActive = False
     
 End Sub
 
 'When we only care about ExifTool succeeding or failing, use this function to enter "verification mode", which simply checks
 ' to see if ExifTool has finished its previous request.
 Private Sub StartVerificationMode()
-    verificationModeActive = True
-    verificationString = ""
+    m_VerificationModeActive = True
+    m_VerificationString = ""
 End Sub
 
 'When verification mode ends (as triggered by an automatic check in newMetadataReceived), we must also remove the temporary
 ' file we created that held the data being exported via ExifTool.
 Private Sub StopVerificationMode()
     
-    verificationModeActive = False
+    m_VerificationModeActive = False
     
     'All file interactions are handled through pdFSO, PhotoDemon's Unicode-compatible file system object
     Dim cFile As pdFSO
@@ -273,7 +272,7 @@ Private Sub StopVerificationMode()
     
     If Not technicalReportModeActive Then
     
-        verificationString = ""
+        m_VerificationString = ""
         
         'Verification mode is a bit different.  We need to erase our temporary metadata file if it exists; then we can exit.
         cFile.KillFile tmpMetadataFilePath
@@ -281,16 +280,16 @@ Private Sub StopVerificationMode()
     Else
     
         'Replace the {ready} text supplied by ExifTool itself, which will be at the end of the metadata report
-        If Len(verificationString) <> 0 Then verificationString = Replace$(verificationString, "{ready}", "")
+        If Len(m_VerificationString) <> 0 Then m_VerificationString = Replace$(m_VerificationString, "{ready}", "")
         
         'Write the completed technical report out to a temp file
         Dim tmpFilename As String
         tmpFilename = g_UserPreferences.GetTempPath & "MetadataReport_" & GetFilenameWithoutExtension(technicalReportSrcImage) & ".html"
         
-        cFile.SaveStringToTextFile verificationString, tmpFilename  ', True, False
+        cFile.SaveStringToTextFile m_VerificationString, tmpFilename  ', True, False
         
         'Shell the default HTML viewer for the user
-        verificationString = ""
+        m_VerificationString = ""
         OpenURL tmpFilename
         
         technicalReportSrcImage = ""
@@ -317,10 +316,10 @@ Public Function IsMetadataFinished() As Boolean
     
     If captureModeActive Then
         tmpMetadata = curMetadataString
-    ElseIf verificationModeActive Then
-        tmpMetadata = verificationString
-    ElseIf databaseModeActive Then
-        tmpMetadata = databaseString
+    ElseIf m_VerificationModeActive Then
+        tmpMetadata = m_VerificationString
+    ElseIf m_DatabaseModeActive Then
+        tmpMetadata = m_DatabaseString
     Else
         IsMetadataFinished = True
         Exit Function
@@ -347,8 +346,8 @@ Public Function IsMetadataFinished() As Boolean
         If InStr(1, tmpMetadata, "{ready}", vbBinaryCompare) > 0 Then
             
             'Terminate the relevant mode
-            If verificationModeActive Then verificationModeActive = False
-            If databaseModeActive Then databaseModeActive = False
+            If m_VerificationModeActive Then m_VerificationModeActive = False
+            If m_DatabaseModeActive Then m_DatabaseModeActive = False
             
             IsMetadataFinished = True
             
@@ -597,6 +596,11 @@ Public Function ShowMetadataDialog(ByRef srcImage As pdImage) As Boolean
                 
             End If
             
+            'With the database successfully constructed, we now need to load it into memory
+            Dim cFile As pdFSO
+            Set cFile = New pdFSO
+            If Len(m_DatabaseString) = 0 Then cFile.LoadTextFileAsString g_PluginPath & "exifToolDatabase.xml", m_DatabaseString
+            
             ShowPDDialog vbModal, FormMetadata
         
         'TODO 7.0: still raise the form, and allow the user to add their own metadata to the image
@@ -627,8 +631,8 @@ Public Function WriteTagDatabase() As Boolean
         'Database wasn't found.  Generate a new copy now.
         
         'Start metadata database retrieval mode
-        databaseModeActive = True
-        databaseString = ""
+        m_DatabaseModeActive = True
+        m_DatabaseString = ""
         
         'Request a database rewrite from ExifTool
         Dim cmdParams As String
@@ -1075,34 +1079,76 @@ CleanUp:
     
 End Function
 
-'For the most part, PD interfaces with ExifTool asynchronously.  There is one situation, however, where we need to wait for
-' some time while ExifTool runs an (incredibly complicated) task: generating an initial metadata editing database.
+'Once the metadata database has been loaded, you can query it for additional tag information.  (This function will fail if
+' 1) the database has not been loaded, or 2) the tag cannot be found.  (2) typically only happens if you haven't properly
+' populated the dstMetadata object with data from an image file.)
+Public Function FillTagFromDatabase(ByRef dstMetadata As PDMetadataItem) As Boolean
 
-'This is really only a problem if we attempt to load an image, but ExifTool is busy generating the database, because PD will
-' appear to "hang" while ExifTool finishes it work.  As such, the load function calls this function as a failsafe, to make
-' sure ExifTool has a change to finish its work.
-Public Sub VerifyMetadataDatabase()
+    'Pulling a tag from the database is fairly complex.  We start by tracking down the relevant table in question.
+    ' (Many different tag groups contain tags with the same name, so we must retrieve only the relevant entry.)
     
-    'Wait for metadata parsing to finish...
-    If (Not ExifTool.IsMetadataFinished) Then
+    'FYI - table entries look like this:
+    ' <table name='Exif::Main' g0='EXIF' g1='IFD0' g2='Image'>
+    '  <desc lang='en'>Exif</desc>
+    ' ...tag values...
+    ' </table>
+    Dim srcTableSearch As String, tableStart As Long, tableEnd As Long
+    srcTableSearch = "<table name='" & dstMetadata.TagTable & "'"
+    tableStart = InStr(1, m_DatabaseString, srcTableSearch, vbBinaryCompare)
     
-        Message "Finishing final program initialization steps..."
-    
-        'Forcibly disable the main form to avoid DoEvents allowing click-through
-        FormMain.Enabled = False
-    
-        'Pause for 1/10 second
-        Do
-            PauseProgram 0.1
-            
-            'If the user shuts down the program while we are still waiting for input, exit immediately
-            If g_ProgramShuttingDown Then Exit Sub
-            
-        Loop While (Not ExifTool.IsMetadataFinished)
+    'If the table wasn't located, there is literally nothing we can do!
+    If (tableStart <> 0) Then
         
-        'Re-enable the main form
-        FormMain.Enabled = True
+        'Find where this table ends.  The target tag must exist in this region, or it will be considered invalid.
+        tableEnd = InStr(tableStart, m_DatabaseString, "</table>", vbBinaryCompare)
+        If (tableEnd <> 0) Then
         
+            'We now have a region of the string to search for this tag.  Tag database lines all follow a predictable pattern:
+            '<tag id='1' name='InteropIndex' type='string' writable='true' flags='Unsafe' g1='InteropIFD'>
+            ' <desc lang='en'>Interoperability Index</desc>
+            ' ...potentially more info...
+            '</tag>
+            
+            'Of that initial block, only the ID, NAME, TYPE, and WRITABLE attributes are guaranteed to exist.
+            ' Extra FLAGS and GROUP IDs (e.g. "g1") are optional, as are some other obscure values.
+            ' At present, we want to track down the start and end lines of the tag in question, so we can parse
+            ' out any additional attributes.
+            Dim srcTagSearch As String, tagStart As Long, tagEnd As Long
+            srcTagSearch = "<tag id='" & dstMetadata.TagID & "' name='" & dstMetadata.TagName & "'"
+            tagStart = InStr(tableStart, m_DatabaseString, srcTagSearch, vbBinaryCompare)
+            If (tagStart <> 0) Then
+                tagEnd = InStr(tagStart, m_DatabaseString, "</tag>", vbBinaryCompare)
+                If (tagEnd <> 0) Then
+                
+                    'Make sure the tag boundaries lie within the table boundaries
+                    If (tagStart > tableStart) And (tagEnd < tableEnd) Then
+                    
+                        'We now know exactly where to parse out this tag's values.  Copy them into a dedicated string,
+                        ' then pass that string off to a separate parse routine.  (The +6 is used to trap the closing
+                        ' "</tag>" as well.)
+                        Dim tagChunk As String
+                        tagChunk = Mid$(m_DatabaseString, tagStart, (tagEnd - tagStart) + 6)
+                        
+                        'TODO!
+                        dstMetadata.TagDebugData = tagChunk
+                    
+                    Else
+                        Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() found a tag, but it lies outside the required table boundaries: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
+                    End If
+                    
+                Else
+                    Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a closing tag: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
+                End If
+            Else
+                Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a matching table: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
+            End If
+        
+        Else
+            Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a closing table tag: " & dstMetadata.TagTable
+        End If
+        
+    Else
+        Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a matching table: " & dstMetadata.TagTable
     End If
-    
-End Sub
+
+End Function

@@ -123,7 +123,7 @@ Begin VB.Form FormMetadata
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   609
-         Caption         =   "show human-friendly values (instead of technical ones)"
+         Caption         =   "use human-friendly values (instead of technical ones)"
       End
       Begin PhotoDemon.pdTextBox txtValue 
          Height          =   1140
@@ -154,7 +154,7 @@ Begin VB.Form FormMetadata
          Width           =   3255
          _ExtentX        =   5741
          _ExtentY        =   529
-         Caption         =   "tag name"
+         Caption         =   "name"
          FontSize        =   12
       End
       Begin PhotoDemon.pdLabel lblTagID 
@@ -176,7 +176,7 @@ Begin VB.Form FormMetadata
          Width           =   3255
          _ExtentX        =   5741
          _ExtentY        =   529
-         Caption         =   "tag ID (optional)"
+         Caption         =   "formal ID"
          FontSize        =   12
       End
       Begin PhotoDemon.pdLabel lblTable 
@@ -233,6 +233,17 @@ Begin VB.Form FormMetadata
          _ExtentY        =   529
          Caption         =   "tag value"
          FontSize        =   12
+      End
+      Begin PhotoDemon.pdLabel lblTagDebug 
+         Height          =   1620
+         Left            =   4080
+         Top             =   2160
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   2858
+         Caption         =   ""
+         FontSize        =   8
+         Layout          =   1
       End
    End
    Begin VB.PictureBox picContainer 
@@ -476,6 +487,11 @@ Private Sub Form_Load()
         'As above, retrieve the next metadata entry
         curMetadata = pdImages(g_CurrentImage).imgMetadata.GetMetadataEntry(i)
         chkGroup = curMetadata.TagGroupFriendly
+        
+        'By default, PD only grabs as much metadata information as it needs to successfully write the metadata out to file.
+        ' Editing requires additional tag data.  Populate that now, by synchronizing each tag against its ExifTool
+        ' database entry.
+        ExifTool.FillTagFromDatabase curMetadata
         
         'Find the matching group in the Group array, then insert this tag into place
         For j = 0 To m_NumOfCategories - 1
@@ -734,6 +750,9 @@ Private Sub UpdateTagView()
             Else
                 Me.txtValue.Text = .TagValue
             End If
+            
+            'DEBUG ONLY!
+            Me.lblTagDebug.Caption = .TagDebugData
         
         End With
         
