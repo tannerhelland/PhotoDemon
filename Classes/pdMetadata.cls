@@ -1169,69 +1169,8 @@ Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
                 'First thing we need to do is mark all tags to be removed.  Note that GPS tags will be automatically removed by
                 ' a parameter we pass to ExifTool, but any other privacy tags must be removed manually.
                 Dim i As Long
-                Dim removeThisTag As Boolean
-                Dim sMetadataName As String
                 For i = 0 To m_NumOfTags - 1
-                
-                    removeThisTag = False
-                
-                    'Compare this tag against a manually curated database of potentially private tags.  If a match is found,
-                    ' mark this tag for removal.
-
-                    sMetadataName = UCase$(m_Tags(i).TagName)
-        
-                    If InStr(1, sMetadataName, "FIRMWARE", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "ABOUT", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "ARTIST", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "BABY", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "BY-LINE", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "CITY", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "COMMENT", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "COPYRIGHT", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "COUNTRY", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "CREATOR", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "DATE", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "HISTORY", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "LOCATION", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "MAKE", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "MODEL", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "NAME", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "RIGHTS", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "SERIAL", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "SOFTWARE", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "TIME", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "TOOL", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, sMetadataName, "VERSION", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, UCase$(m_Tags(i).TagValue), "XMP.IID", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    ElseIf InStr(1, UCase$(m_Tags(i).TagValue), "XMP.DID", vbBinaryCompare) > 0 Then
-                        removeThisTag = True
-                    End If
-                    
-                    m_Tags(i).TagMarkedForRemoval = removeThisTag
-                
+                    m_Tags(i).TagMarkedForRemoval = DoesTagHavePrivacyConcerns(m_Tags(i))
                 Next i
                 
                 'Now that all problematic tags have been identified, we need to generate a modified XML string without those entries.
@@ -1271,6 +1210,72 @@ Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
         WriteAllMetadata = True
     End If
     
+End Function
+
+'Someday, it would be nice for the caller to have some control over this list.  For example, they may want to strip GPS,
+' but preserve Copyright data.  That's not possible with a hard-coded implementation.
+'
+'For now, however, you can call this function to see if PD will remove the tag if the Anonymization option is checked.
+Friend Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Boolean
+
+    Dim potentialConcern As Boolean
+    potentialConcern = False
+    
+    Dim sMetadataName As String
+    sMetadataName = UCase$(srcTag.TagName)
+        
+    If InStr(1, sMetadataName, "FIRMWARE", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "ABOUT", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "ARTIST", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "BABY", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "BY-LINE", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "CITY", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "COMMENT", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "COPYRIGHT", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "COUNTRY", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "CREATOR", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "DATE", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "HISTORY", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "LOCATION", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "MAKE", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "MODEL", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "NAME", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "RIGHTS", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "SERIAL", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "SOFTWARE", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "TIME", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "TOOL", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, sMetadataName, "VERSION", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, UCase$(srcTag.TagValue), "XMP.IID", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    ElseIf InStr(1, UCase$(srcTag.TagValue), "XMP.DID", vbBinaryCompare) > 0 Then
+        potentialConcern = True
+    End If
+    
+    DoesTagHavePrivacyConcerns = potentialConcern
+                    
 End Function
 
 Private Sub Class_Initialize()

@@ -91,12 +91,6 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     ' and depending on user input, handle the file a few different ways.
     Dim imageHasMultiplePages As Boolean: imageHasMultiplePages = False
     Dim numOfPages As Long: numOfPages = 0
-    
-    'Before actually loading anything, we also perform a one-time check to make sure the metadata engine isn't still busy
-    ' processing an initial database build.
-    If g_ExifToolEnabled Then
-        If ExifTool.IsDatabaseModeActive Then ExifTool.VerifyMetadataDatabase
-    End If
         
     'We now have one last tedious check to perform: making sure the file actually exists!
     If (Not cFile.FileExist(srcFile)) Then
