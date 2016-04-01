@@ -67,6 +67,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
     'Display a busy cursor
     If handleUIDisabling Then
+        Message "Loading image..."
         Processor.MarkProgramBusyState True, True
     End If
     
@@ -106,8 +107,6 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     '*************************************************************************************************************************************
     ' If the image being loaded is a primary image (e.g. one opened normally), prepare a blank pdImage object to receive it
     '*************************************************************************************************************************************
-    
-    Message "Loading image..."
     
     'To prevent re-entry problems, forcibly disable the main form before proceeding further.  Note that any criteria that result in
     ' a premature exit from this function *MUST* reenable the form manually!

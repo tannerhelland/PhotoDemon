@@ -443,7 +443,7 @@ Public Sub showDialog()
     ' (Also, we should check the case of the FreeImage handle being 0, as that will cause uncatchable crashes.)
     Dim newWidth As Long, newHeight As Long
     If src_FIHandle <> 0 Then
-        convertAspectRatio FreeImage_GetWidth(src_FIHandle), FreeImage_GetHeight(src_FIHandle), picPreview.ScaleWidth * 2, picPreview.ScaleHeight * 2, newWidth, newHeight
+        ConvertAspectRatio FreeImage_GetWidth(src_FIHandle), FreeImage_GetHeight(src_FIHandle), picPreview.ScaleWidth * 2, picPreview.ScaleHeight * 2, newWidth, newHeight
         mini_FIHandle = Outside_FreeImageV3.FreeImage_Rescale(src_FIHandle, newWidth, newHeight, FILTER_CATMULLROM)
     End If
     
@@ -474,7 +474,7 @@ Private Sub UpdatePreview()
     
     'Retrieve a tone-mapped image, using the master tone-map function
     If mini_FIHandle <> 0 Then
-        tmp_FIHandle = Plugin_FreeImage.applyToneMapping(mini_FIHandle, getToneMapParamString())
+        tmp_FIHandle = Plugin_FreeImage.ApplyToneMapping(mini_FIHandle, getToneMapParamString())
     End If
     
     'If successful, create a pdDIB copy, render it to the screen, then kill our temporary FreeImage handle
@@ -526,7 +526,7 @@ End Sub
 'CANCEL button
 Private Sub cmdBar_CancelClick()
     
-    Message "Cancelling image import..."
+    Message ""
     
     'Hide the dialog and return a value of "Cancel"
     userAnswer = vbCancel

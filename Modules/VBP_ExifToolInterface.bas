@@ -210,6 +210,17 @@ Private tmpMetadataFilePath As String
 ' "complete", and return TRUE for isMetadataFinished.
 Private m_LastRequestID As Long
 
+'Parsing the ExifTool database is a complicated and unpleasant process; limited local caching helps alleviate some of the pain
+Private Type ET_GROUP
+    GroupName As String
+    GroupStart As Long
+    GroupEnd As Long
+End Type
+
+Private Const INIT_GROUP_CACHE_SIZE As Long = 8
+Private m_GroupCache() As ET_GROUP
+Private m_NumGroupsInCache As Long
+
 Public Function IsDatabaseModeActive() As Boolean
     IsDatabaseModeActive = m_DatabaseModeActive
 End Function
@@ -600,6 +611,9 @@ Public Function ShowMetadataDialog(ByRef srcImage As pdImage) As Boolean
             Dim cFile As pdFSO
             Set cFile = New pdFSO
             If Len(m_DatabaseString) = 0 Then cFile.LoadTextFileAsString g_PluginPath & "exifToolDatabase.xml", m_DatabaseString
+            
+            'Metadata caching is performed on a per-image basis, so we need to reset the cache on each invocation
+            ExifTool.StartNewDatabaseCache
             
             ShowPDDialog vbModal, FormMetadata
         
@@ -1079,6 +1093,11 @@ CleanUp:
     
 End Function
 
+Public Sub StartNewDatabaseCache()
+    ReDim m_GroupCache(0 To INIT_GROUP_CACHE_SIZE - 1) As ET_GROUP
+    m_NumGroupsInCache = 0
+End Sub
+
 'Once the metadata database has been loaded, you can query it for additional tag information.  (This function will fail if
 ' 1) the database has not been loaded, or 2) the tag cannot be found.  (2) typically only happens if you haven't properly
 ' populated the dstMetadata object with data from an image file.)
@@ -1092,8 +1111,81 @@ Public Function FillTagFromDatabase(ByRef dstMetadata As PDMetadataItem) As Bool
     '  <desc lang='en'>Exif</desc>
     ' ...tag values...
     ' </table>
-    Dim srcTableSearch As String, tableStart As Long, tableEnd As Long
-    srcTableSearch = "<table name='" & dstMetadata.TagTable & "'"
+    
+    'We cache table positions as we locate them, so a separate function is used
+    Dim tableStart As Long, tableEnd As Long
+    If GetTagGroup(dstMetadata.TagTable, tableStart, tableEnd) Then
+        
+        'We now have a region of the string to search for this tag.  Tag database lines all follow a predictable pattern:
+        '<tag id='1' name='InteropIndex' type='string' writable='true' flags='Unsafe' g1='InteropIFD'>
+        ' <desc lang='en'>Interoperability Index</desc>
+        ' ...potentially more info...
+        '</tag>
+        
+        'Of that initial block, only the ID, NAME, TYPE, and WRITABLE attributes are guaranteed to exist.
+        ' Extra FLAGS and GROUP IDs (e.g. "g1") are optional, as are some other obscure values.
+        ' At present, we want to track down the start and end lines of the tag in question, so we can parse
+        ' out any additional attributes.
+        Dim srcTagSearch As String, tagStart As Long, tagEnd As Long
+        srcTagSearch = "<tag id='" & dstMetadata.TagID & "' name='" & dstMetadata.TagName & "'"
+        tagStart = InStr(tableStart, m_DatabaseString, srcTagSearch, vbBinaryCompare)
+        If (tagStart <> 0) Then
+            tagEnd = InStr(tagStart, m_DatabaseString, "</tag>", vbBinaryCompare)
+            If (tagEnd <> 0) Then
+            
+                'Make sure the tag boundaries lie within the table boundaries
+                If (tagStart > tableStart) And (tagEnd < tableEnd) Then
+                
+                    'We now know exactly where to parse out this tag's values.  Copy them into a dedicated string,
+                    ' then pass that string off to a separate parse routine.  (The +6 is used to trap the closing
+                    ' "</tag>" as well.)
+                    Dim tagChunk As String
+                    tagChunk = Mid$(m_DatabaseString, tagStart, (tagEnd - tagStart) + 6)
+                    
+                    'TODO!
+                    dstMetadata.TagDebugData = tagChunk
+                
+                Else
+                    Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() found a tag, but it lies outside the required table boundaries: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
+                End If
+                
+            Else
+                Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a closing tag: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
+            End If
+        Else
+            Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a matching table: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
+        End If
+        
+    Else
+        Debug.Print "WARNING!  ExifTool.GetTagGroup() failed to find a matching table: " & dstMetadata.TagTable
+    End If
+
+End Function
+
+Private Function GetTagGroup(ByVal srcTableName As String, ByRef tableStart As Long, ByRef tableEnd As Long) As Boolean
+
+    GetTagGroup = False
+    
+    'If caching is active, check there first
+    If (m_NumGroupsInCache > 0) Then
+        
+        Dim i As Long
+        For i = 0 To m_NumGroupsInCache - 1
+            If StrComp(srcTableName, m_GroupCache(i).GroupName) = 0 Then
+                tableStart = m_GroupCache(i).GroupStart
+                tableEnd = m_GroupCache(i).GroupEnd
+                GetTagGroup = True
+                Exit For
+            End If
+        Next i
+        
+        If GetTagGroup Then Exit Function
+    
+    End If
+    
+    'If caching is inactive, or we couldn't find this group in the cache, we have to search the database manually
+    Dim srcTableSearch As String
+    srcTableSearch = "<table name='" & srcTableName & "'"
     tableStart = InStr(1, m_DatabaseString, srcTableSearch, vbBinaryCompare)
     
     'If the table wasn't located, there is literally nothing we can do!
@@ -1102,53 +1194,26 @@ Public Function FillTagFromDatabase(ByRef dstMetadata As PDMetadataItem) As Bool
         'Find where this table ends.  The target tag must exist in this region, or it will be considered invalid.
         tableEnd = InStr(tableStart, m_DatabaseString, "</table>", vbBinaryCompare)
         If (tableEnd <> 0) Then
-        
-            'We now have a region of the string to search for this tag.  Tag database lines all follow a predictable pattern:
-            '<tag id='1' name='InteropIndex' type='string' writable='true' flags='Unsafe' g1='InteropIFD'>
-            ' <desc lang='en'>Interoperability Index</desc>
-            ' ...potentially more info...
-            '</tag>
             
-            'Of that initial block, only the ID, NAME, TYPE, and WRITABLE attributes are guaranteed to exist.
-            ' Extra FLAGS and GROUP IDs (e.g. "g1") are optional, as are some other obscure values.
-            ' At present, we want to track down the start and end lines of the tag in question, so we can parse
-            ' out any additional attributes.
-            Dim srcTagSearch As String, tagStart As Long, tagEnd As Long
-            srcTagSearch = "<tag id='" & dstMetadata.TagID & "' name='" & dstMetadata.TagName & "'"
-            tagStart = InStr(tableStart, m_DatabaseString, srcTagSearch, vbBinaryCompare)
-            If (tagStart <> 0) Then
-                tagEnd = InStr(tagStart, m_DatabaseString, "</tag>", vbBinaryCompare)
-                If (tagEnd <> 0) Then
-                
-                    'Make sure the tag boundaries lie within the table boundaries
-                    If (tagStart > tableStart) And (tagEnd < tableEnd) Then
-                    
-                        'We now know exactly where to parse out this tag's values.  Copy them into a dedicated string,
-                        ' then pass that string off to a separate parse routine.  (The +6 is used to trap the closing
-                        ' "</tag>" as well.)
-                        Dim tagChunk As String
-                        tagChunk = Mid$(m_DatabaseString, tagStart, (tagEnd - tagStart) + 6)
-                        
-                        'TODO!
-                        dstMetadata.TagDebugData = tagChunk
-                    
-                    Else
-                        Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() found a tag, but it lies outside the required table boundaries: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
-                    End If
-                    
-                Else
-                    Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a closing tag: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
-                End If
-            Else
-                Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a matching table: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
-            End If
-        
+            'Add this group to our running cache
+            With m_GroupCache(m_NumGroupsInCache)
+                .GroupName = srcTableName
+                .GroupStart = tableStart
+                .GroupEnd = tableEnd
+            End With
+            
+            m_NumGroupsInCache = m_NumGroupsInCache + 1
+            If (m_NumGroupsInCache > UBound(m_GroupCache)) Then ReDim Preserve m_GroupCache(0 To m_NumGroupsInCache * 2 - 1) As ET_GROUP
+            
+            GetTagGroup = True
+            
         Else
-            Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a closing table tag: " & dstMetadata.TagTable
+            Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a closing table tag: " & srcTableName
         End If
         
     Else
-        Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a matching table: " & dstMetadata.TagTable
+        Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a matching table: " & srcTableName
     End If
-
+    
 End Function
+
