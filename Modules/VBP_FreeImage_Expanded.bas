@@ -1000,7 +1000,7 @@ Private Function RaiseToneMapDialog(ByVal fi_Handle As Long, ByRef dst_fiHandle 
     Else
         
         Debug.Print "Tone-map dialog appears to have been successful; result = " & howToProceed
-        
+        Message "Applying tone-mapping..."
         dst_fiHandle = ApplyToneMapping(fi_Handle, toneMapSettings)
         
         If dst_fiHandle = 0 Then
