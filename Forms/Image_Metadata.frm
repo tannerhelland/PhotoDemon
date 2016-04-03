@@ -223,12 +223,11 @@ Begin VB.Form FormMetadata
          Caption         =   "subgroup"
          FontSize        =   12
       End
-      Begin PhotoDemon.pdLabel lblTitle 
+      Begin PhotoDemon.pdLabel lblTagTitle 
          Height          =   300
-         Index           =   5
          Left            =   3960
          Top             =   0
-         Width           =   3255
+         Width           =   6015
          _ExtentX        =   5741
          _ExtentY        =   529
          Caption         =   "tag value"
@@ -338,12 +337,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Type mdCategory
+Private Type MDCategory
     Name As String
     Count As Long
 End Type
 
-Private m_MDCategories() As mdCategory
+Private m_MDCategories() As MDCategory
 Private m_NumOfCategories As Long
 Private m_LargestCategoryCount As Long
 
@@ -377,7 +376,7 @@ Private m_Colors As pdThemeColors
 
 Private Sub btsEditPanel_Click(ByVal buttonIndex As Long)
     Dim i As Long
-    For i = picContainer.lBound To picContainer.ubound
+    For i = picContainer.lBound To picContainer.UBound
         picContainer(i).Visible = CBool(i = buttonIndex)
     Next i
 End Sub
@@ -422,7 +421,7 @@ Private Sub Form_Load()
     m_DescriptionFont.SetTextAlignment vbLeftJustify
         
     'Initialize the category array
-    ReDim m_MDCategories(0 To 3) As mdCategory
+    ReDim m_MDCategories(0 To 3) As MDCategory
     m_NumOfCategories = 0
     
     'Start by tallying up information on the various metadata types within this image
@@ -452,7 +451,7 @@ Private Sub Form_Load()
             
             'If no matching category was found, create a new category entry
             If (Not categoryFound) Then
-                If (m_NumOfCategories) > UBound(m_MDCategories) Then ReDim Preserve m_MDCategories(0 To m_NumOfCategories * 2 - 1) As mdCategory
+                If (m_NumOfCategories) > UBound(m_MDCategories) Then ReDim Preserve m_MDCategories(0 To m_NumOfCategories * 2 - 1) As MDCategory
                 m_MDCategories(m_NumOfCategories).Name = chkGroup
                 m_MDCategories(m_NumOfCategories).Count = 1
                 m_NumOfCategories = m_NumOfCategories + 1
@@ -577,7 +576,7 @@ Private Sub SortCategoryList()
     Next i
     
     'We now want to sort the main category list to match this order.
-    Dim tmpCat As mdCategory
+    Dim tmpCat As MDCategory
     For i = 0 To m_NumOfCategories - 1
         For j = i To m_NumOfCategories - 1
             If (StrComp(cNames.GetString(i), m_MDCategories(j).Name, vbBinaryCompare) = 0) And (i <> j) Then
@@ -751,6 +750,10 @@ Private Sub UpdateTagView()
                 Me.txtValue.Text = .TagValue
             End If
             
+            'The title caption changes depending on the data type, but *only* if the tag is writable!
+            lblTagTitle.Caption = g_Language.TranslateMessage("value")
+            If .DB_IsWritable Then lblTagTitle.Caption = lblTagTitle.Caption & ConvertDataTypeToString(m_AllTags(curGroup, curTag))
+            
             'DEBUG ONLY!
             Me.lblTagDebug.Caption = .TagDebugData
         
@@ -760,3 +763,116 @@ Private Sub UpdateTagView()
     
 End Sub
 
+Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As String
+    
+    Dim strResult As String
+    
+    Dim countPresent As Boolean, countValue As Long
+    countPresent = (srcMetadata.DB_TypeCount <> 0)
+    countValue = srcMetadata.DB_TypeCount
+    If countValue < 2 Then countValue = 1
+    
+    Select Case srcMetadata.DB_DataTypeStrict
+    
+        Case MD_int8s
+            strResult = g_Language.TranslateMessage("integer [-127 to 127]")
+            If countPresent Then strResult = CStr(countValue) & " x " & strResult
+        Case MD_int8u
+            strResult = g_Language.TranslateMessage("integer [0 to 255]")
+        Case MD_int16s
+            strResult = g_Language.TranslateMessage("integer [-32,768 to 32,767]")
+        Case MD_int16u
+            strResult = g_Language.TranslateMessage("integer [0 to 65,535]")
+        Case MD_int32s
+            strResult = g_Language.TranslateMessage("any integer")
+        Case MD_int32u
+            strResult = g_Language.TranslateMessage("any integer >= 0")
+        Case MD_int64s
+            strResult = g_Language.TranslateMessage("any integer")
+        Case MD_int64u
+            strResult = g_Language.TranslateMessage("any integer >= 0")
+        Case MD_rational32s
+            strResult = g_Language.TranslateMessage("any number")
+        Case MD_rational32u
+            strResult = g_Language.TranslateMessage("any number >= 0")
+        Case MD_rational64s
+            strResult = g_Language.TranslateMessage("any number")
+        Case MD_rational64u
+            strResult = g_Language.TranslateMessage("any number >= 0")
+        Case MD_fixed16s
+            strResult = g_Language.TranslateMessage("any number")
+        Case MD_fixed16u
+            strResult = g_Language.TranslateMessage("any number >= 0")
+        Case MD_fixed32s
+            strResult = g_Language.TranslateMessage("any number")
+        Case MD_fixed32u
+            strResult = g_Language.TranslateMessage("any number >= 0")
+        Case MD_float
+            strResult = g_Language.TranslateMessage("any number")
+        Case MD_double
+            strResult = g_Language.TranslateMessage("any number")
+        Case MD_extended
+            strResult = g_Language.TranslateMessage("any number")
+        Case MD_ifd
+            strResult = g_Language.TranslateMessage("file position marker")
+        Case MD_ifd64
+            strResult = g_Language.TranslateMessage("file position marker")
+        Case MD_string
+            strResult = g_Language.TranslateMessage("text")
+        Case MD_undef
+            strResult = g_Language.TranslateMessage("unknown format")
+        Case MD_binary
+            strResult = g_Language.TranslateMessage("binary data")
+        Case MD_integerstring
+            strResult = g_Language.TranslateMessage("list of digits")
+        Case MD_floatstring
+            strResult = g_Language.TranslateMessage("any number")
+        Case MD_rationalstring
+            strResult = g_Language.TranslateMessage("any number")
+        Case MD_datestring
+            strResult = g_Language.TranslateMessage("date [YYYY:mm:dd HH:MM:SS]")
+        Case MD_booleanstring
+            strResult = g_Language.TranslateMessage("true or false")
+        Case MD_digits
+            strResult = g_Language.TranslateMessage("list of digits")
+    
+    End Select
+
+    'Some tags will specify a count, e.g. "string [64]" or "integer [4]" - with the last being common for RGBA entries.
+    ' We'll append such a count to the type description, for convenience.
+    If countPresent Then
+        
+        Select Case srcMetadata.DB_DataTypeStrict
+    
+            Case MD_int8s, MD_int8u, MD_int16s, MD_int16u
+                strResult = CStr(countValue) & " x " & strResult
+            Case MD_int32s, MD_int32u, MD_int64s, MD_int64u
+                strResult = CStr(countValue) & " x " & strResult
+            Case MD_rational32s, MD_rational32u, MD_rational64s, MD_rational64u
+                strResult = CStr(countValue) & " x " & strResult
+            Case MD_fixed16s, MD_fixed16u, MD_fixed32s, MD_fixed32u
+                strResult = CStr(countValue) & " x " & strResult
+            Case MD_float, MD_double, MD_extended
+                strResult = CStr(countValue) & " x " & strResult
+            Case MD_ifd, MD_ifd64
+                strResult = CStr(countValue) & " x " & strResult
+            Case MD_string
+                strResult = strResult & " [" & g_Language.TranslateMessage("%1 characters max", CStr(countValue)) & "]"
+            Case MD_undef, MD_binary
+                strResult = strResult & " [" & g_Language.TranslateMessage("%1 bytes max", CStr(countValue)) & "]"
+            Case MD_integerstring, MD_digits
+                strResult = strResult & " [" & g_Language.TranslateMessage("%1 numbers max", CStr(countValue)) & "]"
+            Case MD_floatstring, MD_rationalstring
+                strResult = CStr(countValue) & " x " & strResult
+            Case MD_datestring
+                strResult = CStr(countValue) & " x " & strResult
+            Case MD_booleanstring
+                strResult = CStr(countValue) & " x " & strResult
+            
+        End Select
+        
+    End If
+    
+    If Len(strResult) <> 0 Then ConvertDataTypeToString = " (" & strResult & ")"
+
+End Function
