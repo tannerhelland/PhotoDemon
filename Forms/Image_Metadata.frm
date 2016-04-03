@@ -366,8 +366,11 @@ Private Enum PDMETADATA_COLOR_LIST
     PDMD_TitleUnselected = 1
     PDMD_DescriptionSelected = 2
     PDMD_DescriptionUnselected = 3
-    [_Last] = 3
-    [_Count] = 4
+    PDMD_TagIsWritable = 4
+    PDMD_TagIsNotWritable = 5
+    PDMD_TagIsUnsafe = 6
+    [_Last] = 6
+    [_Count] = 7
 End Enum
 
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
@@ -602,6 +605,9 @@ Private Sub UpdateColorList()
         .LoadThemeColor PDMD_TitleUnselected, "TitleUnselected", IDE_GRAY
         .LoadThemeColor PDMD_DescriptionSelected, "TitleSelected", IDE_GRAY
         .LoadThemeColor PDMD_DescriptionUnselected, "TitleUnselected", IDE_GRAY
+        .LoadThemeColor PDMD_TagIsWritable, "TagIsWritable", RGB(0, 255, 0)
+        .LoadThemeColor PDMD_TagIsNotWritable, "TagIsNotWritable", RGB(255, 0, 0)
+        .LoadThemeColor PDMD_TagIsUnsafe, "TagIsUnsafe", RGB(0, 255, 255)
     End With
 End Sub
 
@@ -692,11 +698,12 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     Dim linePadding As Long
     linePadding = FixDPI(4)
     
-    Dim mHeight As Single
-    Dim drawString As String, numericalPrefix As String
-    
+    'Note that we deliberately maintain the numerical prefix as a separate entity; we need its size (in pixels) to calculate
+    ' proper padding for the description line of text.
+    Dim numericalPrefix As String
     numericalPrefix = CStr(itemIndex + 1) & " - "
         
+    Dim drawString As String
     If (btsTechnical(0).ListIndex = 0) Then
         drawString = thisTag.TagNameFriendly
     Else
@@ -708,12 +715,31 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
         drawString = drawString & " " & g_Language.TranslateMessage("(encoding unknown)")
     End If
     
+    'Before rendering the title, we render a colored bar to indicate the write-ability of this tag
+    Dim tagColor As Long
+    If thisTag.DB_IsWritable Then
+        If thisTag.DBF_IsUnsafe Then
+            tagColor = m_Colors.RetrieveColor(PDMD_TagIsUnsafe, Me.Enabled)
+        Else
+            tagColor = m_Colors.RetrieveColor(PDMD_TagIsWritable, Me.Enabled)
+        End If
+    Else
+        tagColor = m_Colors.RetrieveColor(PDMD_TagIsNotWritable, Me.Enabled)
+    End If
+    
+    Dim spaceWidth As Single
+    spaceWidth = m_TitleFont.GetWidthOfString(" ") * 0.5
+    With tmpRectF
+        GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, (offsetX - .Left) + m_TitleFont.GetWidthOfString(CStr(itemIndex + 1)) + spaceWidth + 1, .Height, tagColor
+    End With
+    
     'Start with the simplest field: the tag title (readable form)
     m_TitleFont.AttachToDC bufferDC
     m_TitleFont.SetFontColor titleColor
     m_TitleFont.FastRenderText offsetX + 0, offsetY + 0, numericalPrefix & drawString
                 
     'Below the tag title, add the human-friendly description
+    Dim mHeight As Single
     mHeight = m_TitleFont.GetHeightOfString(drawString) + linePadding
     m_TitleFont.ReleaseFromDC
     
