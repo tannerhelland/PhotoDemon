@@ -496,14 +496,6 @@ Private Sub RedrawBackBuffer()
                 
                 GDI_Plus.GDIPlusFillRectFToDC bufferDC, tmpRect, curColor
                 
-                '...followed by its border...
-                If itemIsSelected Then
-                    If itemIsHovered Then curColor = itemColorSelectedBorderHover Else curColor = itemColorSelectedBorder
-                Else
-                    If itemIsHovered Then curColor = itemColorUnselectedBorderHover Else curColor = itemColorUnselectedBorder
-                End If
-                GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRect, curColor, , , , LineJoinMiter
-                
                 '...then interject an event, so our parent can draw the remainder of this object
                 If listHasFocus Then
                     tmpRect.Left = tmpRect.Left - 1
@@ -511,7 +503,15 @@ Private Sub RedrawBackBuffer()
                 End If
                 RaiseEvent DrawListEntry(bufferDC, i, tmpListItem.textEn, itemIsSelected, itemIsHovered, VarPtr(tmpRect))
                 
-                'Finally, render a separator line, if any
+                '...then paint its hover-specific border over the top...
+                If itemIsSelected Then
+                    If itemIsHovered Then curColor = itemColorSelectedBorderHover Else curColor = itemColorSelectedBorder
+                Else
+                    If itemIsHovered Then curColor = itemColorUnselectedBorderHover Else curColor = itemColorUnselectedBorder
+                End If
+                GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRect, curColor, , , , LineJoinMiter
+                
+                '...and finally, render a separator line, if any
                 If itemHasSeparator Then
                     lineY = tmpRect.Top + tmpHeightWithoutSeparator + (tmpHeight - tmpHeightWithoutSeparator) / 2
                     GDI_Plus.GDIPlusDrawLineToDC bufferDC, m_ListRect.Left + FixDPI(12), lineY, m_ListRect.Left + m_ListRect.Width - FixDPI(12), lineY, separatorColor, 255

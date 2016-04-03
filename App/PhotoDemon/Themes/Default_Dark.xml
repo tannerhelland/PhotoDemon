@@ -272,6 +272,9 @@
 				<DescriptionUnselected>TextDefault</DescriptionUnselected>
 				<DescriptionUnselected-hover>TextHyperlink</DescriptionUnselected-hover>
 				<DescriptionUnselected-disabled>GrayDisabled</DescriptionUnselected-disabled>
+				<TagIsWritable>#74ee79</TagIsWritable>
+				<TagIsNotWritable>#ee4d51</TagIsNotWritable>
+				<TagIsUnsafe>#ff9451</TagIsUnsafe>
 			</PDMetadataList>
 			
 			<PDNavigator>
