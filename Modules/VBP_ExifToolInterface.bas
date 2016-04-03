@@ -160,15 +160,88 @@ Public Type PDMetadataItem
     'Used to flag tags that need to be removed by the image export engine
     TagMarkedForRemoval As Boolean
     
+    'Used to flag tags that the user has touched from the metadata editing dialog
+    UserModified As Boolean
+    
     'IMPORTANT NOTE!  All values past this line are *not* filled in automatically.  They must be manually filled by parsing
     ' the ExifTool database file for the tag's matching attributes.  This is typically handled by the Metadata editing window.
-    UserModified As Boolean
-    AllAttributesLoaded As Boolean
-    TagIsWritable As Boolean
-    TagDataType As String
+    
+    'These three values will always be loaded by a database pass
+    DB_IsWritable As Boolean
+    DB_TypeCount As Long
+    DB_DataType As String
+    DB_DataTypeStrict As PD_Metadata_Datatype
+    
+    'These values are filled on an as-needed basis; they are only specified if a tag requires it.
+    ' (On most tags, these will be FALSE.)
+    DBF_IsAvoid As Boolean
+    DBF_IsBag As Boolean
+    DBF_IsBinary As Boolean
+    DBF_IsFlattened As Boolean
+    DBF_IsList As Boolean
+    DBF_IsMandatory As Boolean
+    DBF_IsPermanent As Boolean
+    DBF_IsProtected As Boolean
+    DBF_IsSequence As Boolean
+    DBF_IsUnknown As Boolean
+    DBF_IsUnsafe As Boolean
+    
+    'Description should always match the "friendly name", above, but we retrieve it "just in case"
+    DB_Description As String
+    
+    'If a tag provides its own hard-coded list of possible values, this will be set to TRUE, and the stacks will be populated
+    DB_HardcodedList As Boolean
+    DB_HardcodedListSize As Long
+    DB_StackIDs As pdStringStack
+    DB_StackValues As pdStringStack
+    
+    'Raw copy of the database XML packet associated with this tag, "just in case"
     TagDebugData As String
     
 End Type
+
+Public Enum PD_Metadata_Datatype
+    MD_int8s       '- Signed 8-bit integer                    (EXIF 'SBYTE')
+    MD_int8u       '- Unsigned 8-bit integer                  (EXIF 'BYTE')
+    MD_int16s      '- Signed 16-bit integer                   (EXIF 'SSHORT')
+    MD_int16u      '- Unsigned 16-bit integer                 (EXIF 'SHORT')
+    MD_int32s      '- Signed 32-bit integer                   (EXIF 'SLONG')
+    MD_int32u      '- Unsigned 32-bit integer                 (EXIF 'LONG')
+    MD_int64s      '- Signed 64-bit integer                   (BigTIFF 'SLONG8')
+    MD_int64u      '- Unsigned 64-bit integer                 (BigTIFF 'LONG8')
+    MD_rational32s '- Rational consisting of 2 int16s values
+    MD_rational32u '- Rational consisting of 2 int16u values
+    MD_rational64s '- Rational consisting of 2 int32s values  (EXIF 'SRATIONAL')
+    MD_rational64u '- Rational consisting of 2 int32u values  (EXIF 'RATIONAL')
+    MD_fixed16s    '- Signed 16-bit fixed point value
+    MD_fixed16u    '- Unsigned 16-bit fixed point value
+    MD_fixed32s    '- Signed 32-bit fixed point value
+    MD_fixed32u    '- Unsigned 32-bit fixed point value
+    MD_float       '- 32-bit IEEE floating point value        (EXIF 'FLOAT')
+    MD_double      '- 64-bit IEEE floating point value        (EXIF 'DOUBLE')
+    MD_extended    '- 80-bit extended floating float
+    MD_ifd         '- Unsigned 32-bit integer sub-IFD pointer (EXIF 'IFD')
+    MD_ifd64       '- Unsigned 64-bit integer sub-IFD pointer (BigTIFF 'IFD8')
+    MD_string      '- Series of 8-bit ASCII characters        (EXIF 'ASCII').
+                   '  Note that PD condenses other string types down to MD_string, while silently handling conversions.
+    MD_undef       '- Undefined-format binary data            (EXIF 'UNDEFINED')
+    MD_binary      '- Binary data (same as 'undef')
+    MD_integerstring    '- XMP type (e.g. encoded as a string, but it must adhere to certain formatting criteria)
+    MD_floatstring      '- XMP type (e.g. encoded as a string, but it must adhere to certain formatting criteria)
+    MD_rationalstring   '- XMP type (e.g. encoded as a string, but it must adhere to certain formatting criteria)
+    MD_datestring       '- XMP type (e.g. encoded as a string, but it must adhere to certain formatting criteria)
+    MD_booleanstring    '- XMP type (e.g. encoded as a string, but it must adhere to certain formatting criteria)
+    MD_digits      '- IPTC type, basically a list of ASCII digits, restricted by count
+    
+End Enum
+
+#If False Then
+Private Const MD_int8s = 0, MD_int8u = 0, MD_int16s = 0, MD_int16u = 0, MD_int16uRev = 0, MD_int32s = 0, MD_int32u = 0
+Private Const MD_int64s = 0, MD_int64u = 0, MD_rational32s = 0, MD_rational32u = 0, MD_rational64s = 0, MD_rational64u = 0
+Private Const MD_fixed16s = 0, MD_fixed16u = 0, MD_fixed32s = 0, MD_fixed32u = 0, MD_float = 0, MD_double = 0
+Private Const MD_extended = 0, MD_ifd = 0, MD_ifd64 = 0, MD_string = 0, MD_undef = 0, MD_binary = 0
+Private Const MD_integerstring = 0, MD_floatstring = 0, MD_rationalstring = 0, MD_datestring = 0, MD_booleanstring = 0, MD_digits = 0
+#End If
 
 'Once ExifTool has been run at least once, this will be set to TRUE.  If TRUE, this means that the shellPipeMain user control
 ' on FormMain is active and connected to ExifTool, and can be used to send/receive input and output.
@@ -212,7 +285,7 @@ Private m_LastRequestID As Long
 
 'Parsing the ExifTool database is a complicated and unpleasant process; limited local caching helps alleviate some of the pain
 Private Type ET_GROUP
-    GroupName As String
+    groupName As String
     GroupStart As Long
     GroupEnd As Long
 End Type
@@ -1142,8 +1215,13 @@ Public Function FillTagFromDatabase(ByRef dstMetadata As PDMetadataItem) As Bool
                     Dim tagChunk As String
                     tagChunk = Mid$(m_DatabaseString, tagStart, (tagEnd - tagStart) + 6)
                     
-                    'TODO!
+                    'For convenience, we currently store the entire chunk for debug purposes;
+                    ' TODO 7.0: see if we are ready to abandon this!
                     dstMetadata.TagDebugData = tagChunk
+                    
+                    If Not ParseTagDatabaseEntry(dstMetadata, tagChunk) Then
+                        Debug.Print "WARNING!  ExifTool.ParseTagDatabaseEntry() failed on a tag: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
+                    End If
                 
                 Else
                     Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() found a tag, but it lies outside the required table boundaries: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
@@ -1171,7 +1249,7 @@ Private Function GetTagGroup(ByVal srcTableName As String, ByRef tableStart As L
         
         Dim i As Long
         For i = 0 To m_NumGroupsInCache - 1
-            If StrComp(srcTableName, m_GroupCache(i).GroupName) = 0 Then
+            If StrComp(srcTableName, m_GroupCache(i).groupName) = 0 Then
                 tableStart = m_GroupCache(i).GroupStart
                 tableEnd = m_GroupCache(i).GroupEnd
                 GetTagGroup = True
@@ -1197,7 +1275,7 @@ Private Function GetTagGroup(ByVal srcTableName As String, ByRef tableStart As L
             
             'Add this group to our running cache
             With m_GroupCache(m_NumGroupsInCache)
-                .GroupName = srcTableName
+                .groupName = srcTableName
                 .GroupStart = tableStart
                 .GroupEnd = tableEnd
             End With
@@ -1217,3 +1295,254 @@ Private Function GetTagGroup(ByVal srcTableName As String, ByRef tableStart As L
     
 End Function
 
+Private Function ParseTagDatabaseEntry(ByRef dstMetadata As PDMetadataItem, ByRef srcXML As String) As Boolean
+
+    'This function assumes that the XML packet it receives is well-formed, and properly parsed out of the appropriate
+    ' table in the master ExifTool database.  If these criteria are not met, all bets are off.
+    
+    'The first thing we want to do is break the XML into lines.  ExifTool spits out well-formed XML where each entry is
+    ' placed on its own line, and this simplifies parsing.
+    Dim xmlLines() As String
+    xmlLines = Split(srcXML, vbCrLf, , vbBinaryCompare)
+    
+    If VB_Hacks.IsArrayInitialized(xmlLines) Then
+        
+        'To understand the next phase of the parsing process, let's look at the layout of two typical metadata tags:
+        
+        ' <tag id='1' name='InteropIndex' type='string' writable='true' flags='Unsafe' g1='InteropIFD'>
+        '  <desc lang='en'>Interoperability Index</desc>
+        '  <values>
+        '   <key id='R03'>
+        '    <val lang='en'>R03 - DCF option file (Adobe RGB)</val>
+        '   </key>
+        '   <key id='R98'>
+        '    <val lang='en'>R98 - DCF basic file (sRGB)</val>
+        '   </key>
+        '   <key id='THM'>
+        '    <val lang='en'>THM - DCF thumbnail file</val>
+        '   </key>
+        '  </values>
+        ' </tag>
+        
+        ' <tag id='2' name='InteropVersion' type='undef' writable='true' flags='Mandatory,Unsafe' g1='InteropIFD'>
+        '  <desc lang='en'>Interoperability Version</desc>
+        ' </tag>
+        
+        'The first example represents tags where the range of possible values is discrete, and each entry is mapped to
+        ' a specific, predetermined value.
+        
+        'The second example is a more freeform tag, where the user can theoretically place anything the way (within the
+        ' constraints of the given type, obviously).
+        
+        'Regardless of which category a tag falls into, we can always parse the initial tag entry and the following
+        ' description line using identical code.  (Also, note that we used the "id" and "name" values to locate this tag
+        ' line in the first place, so those entries do not need to be parsed.  Instead, we want to get the "type" and
+        ' "writable" values (which should always be present), and if they are available, any "count" or "flags" values.
+        dstMetadata.DB_IsWritable = (StrComp(GetXMLAttribute(xmlLines(0), "writable"), "true", vbBinaryCompare) = 0)
+        dstMetadata.DB_DataType = GetXMLAttribute(xmlLines(0), "type")
+        dstMetadata.DB_DataTypeStrict = GetStrictMDDatatype(dstMetadata.DB_DataType)
+        
+        'Some tags have a type like "byte x 4", which is common for things like RGBA definitions.  For purposes of
+        ' presenting this value to the user, we must treat the value differently from a Long.  Tags like this can be
+        ' identified by the presence of a "count" tag, which will always be >= 2.  ("0" and "1" would be redundant,
+        ' as a single value is the assumed default.)
+        Dim tmpString As String
+        tmpString = GetXMLAttribute(xmlLines(0), "count")
+        If Len(tmpString) <> 0 Then dstMetadata.DB_TypeCount = CLng(tmpString)
+        
+        'Flag retrieval is a bit convoluted, as flags are presented as a comma-delimited list.
+        tmpString = GetXMLAttribute(xmlLines(0), "flags")
+        If Len(tmpString) <> 0 Then
+            dstMetadata.DBF_IsAvoid = CBool(InStr(1, tmpString, "Avoid", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsBag = CBool(InStr(1, tmpString, "Bag", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsBinary = CBool(InStr(1, tmpString, "Binary", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsFlattened = CBool(InStr(1, tmpString, "Flattened", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsList = CBool(InStr(1, tmpString, "List", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsMandatory = CBool(InStr(1, tmpString, "Mandatory", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsPermanent = CBool(InStr(1, tmpString, "Permanent", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsProtected = CBool(InStr(1, tmpString, "Protected", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsSequence = CBool(InStr(1, tmpString, "Sequence", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsUnknown = CBool(InStr(1, tmpString, "Unknown", vbBinaryCompare) <> 0)
+            dstMetadata.DBF_IsUnsafe = CBool(InStr(1, tmpString, "Unsafe", vbBinaryCompare) <> 0)
+        End If
+        
+        'The second line is always a description
+        If UBound(xmlLines) >= 1 Then dstMetadata.DB_Description = GetXMLValue_SingleLine(xmlLines(1))
+        
+        'The third line will be one of two things:
+        ' 1) A closing tag (literally, "</tag>")
+        ' 2) A <values> tag, which indicates that one or more hard-coded key/value pairs follow
+        If UBound(xmlLines) >= 2 Then
+            If InStr(1, xmlLines(2), "</tag>", vbBinaryCompare) = 0 Then
+                If InStr(1, xmlLines(2), "<values>", vbBinaryCompare) <> 0 Then
+                    
+                    dstMetadata.DB_HardcodedList = True
+                    Dim numOfKeys As Long: numOfKeys = 0
+                    Dim curLine As Long: curLine = 3
+                    
+                    'Values follow a nice, predictable pattern:
+                    '<key id='-1'>
+                    ' <val lang='en'>n/a</val>
+                    '</key>
+                    '<key id='1'>
+                    ' <val lang='en'>Canon EF 50mm f/1.8</val>
+                    '</key>
+                    '<key id='2'>
+                    ' <val lang='en'>Canon EF 28mm f/2.8</val>
+                    '</key>
+                    '...many more lines...
+                    
+                    'Unfortunately, there's no way to know how many values are present, short of manually parsing until
+                    ' we hit something that *isn't* a value.
+                    
+                    'To simplify this step, each metadata entry supplies two pdStringStacks.  One is used for ID values,
+                    ' the other for values.  (Someday, we may support translations here, because you can coax them out of
+                    ' ExifTool, but that's another project for another day.)
+                    Set dstMetadata.DB_StackIDs = New pdStringStack
+                    Set dstMetadata.DB_StackValues = New pdStringStack
+                    
+                    Do
+                        dstMetadata.DB_StackIDs.AddString GetXMLAttribute(xmlLines(curLine), "id")
+                        dstMetadata.DB_StackValues.AddString GetXMLValue_SingleLine(xmlLines(curLine + 1))
+                        
+                        numOfKeys = numOfKeys + 1
+                        curLine = 3 + numOfKeys * 3
+                        If curLine > UBound(xmlLines) Then Exit Do
+                    Loop While (InStr(1, xmlLines(curLine), "<key id=", vbBinaryCompare) <> 0)
+                    
+                    dstMetadata.DB_HardcodedListSize = numOfKeys
+                    
+                Else
+                    Debug.Print "WARNING!  Strange 3rd line found inside ExifTool.ParseTagDatabaseEntry: " & xmlLines(2)
+                End If
+            
+            End If
+        End If
+        
+        ParseTagDatabaseEntry = True
+    
+    Else
+        ParseTagDatabaseEntry = False
+    End If
+
+End Function
+
+Private Function GetXMLAttribute(ByRef srcXML As String, ByRef atrbName As String) As String
+    
+    GetXMLAttribute = vbNullString
+    
+    Dim strSearch As String
+    strSearch = " " & atrbName & "='"
+    
+    Dim startPos As Long, endPos As Long
+    startPos = InStr(1, srcXML, strSearch, vbBinaryCompare)
+    If (startPos <> 0) Then
+        startPos = startPos + Len(strSearch)
+        endPos = InStr(startPos + 1, srcXML, "'", vbBinaryCompare)
+        If (endPos <> 0) Then GetXMLAttribute = Mid$(srcXML, startPos, endPos - startPos)
+    End If
+    
+End Function
+
+Private Function GetXMLValue_SingleLine(ByRef srcLine As String) As String
+    Dim sPos As Long, ePos As Long
+    sPos = InStr(1, srcLine, ">", vbBinaryCompare)
+    If (sPos > 0) Then
+        ePos = InStrRev(srcLine, "<", , vbBinaryCompare) - 1
+        If (ePos > 0) Then
+            GetXMLValue_SingleLine = Mid$(srcLine, sPos + 1, ePos - sPos)
+        End If
+    End If
+End Function
+
+Private Function StringsEqual(ByRef str1 As String, ByRef str2 As String) As Boolean
+    StringsEqual = CBool(StrComp(str1, str2, vbBinaryCompare) = 0)
+End Function
+
+Private Function GetStrictMDDatatype(ByRef textRepresentation As String) As PD_Metadata_Datatype
+    
+    If StringsEqual(textRepresentation, "int8s") Then
+        GetStrictMDDatatype = MD_int8s
+    ElseIf StringsEqual(textRepresentation, "int8u") Then
+        GetStrictMDDatatype = MD_int8u
+    ElseIf StringsEqual(textRepresentation, "int16s") Then
+        GetStrictMDDatatype = MD_int16s
+    ElseIf StringsEqual(textRepresentation, "int16u") Or StringsEqual(textRepresentation, "int16uRev") Then
+        GetStrictMDDatatype = MD_int16u
+    ElseIf StringsEqual(textRepresentation, "int32s") Then
+        GetStrictMDDatatype = MD_int32s
+    ElseIf StringsEqual(textRepresentation, "int32u") Then
+        GetStrictMDDatatype = MD_int32u
+    ElseIf StringsEqual(textRepresentation, "int64s") Then
+        GetStrictMDDatatype = MD_int64s
+    ElseIf StringsEqual(textRepresentation, "int64u") Then
+        GetStrictMDDatatype = MD_int64u
+    ElseIf StringsEqual(textRepresentation, "rational32s") Then
+        GetStrictMDDatatype = MD_rational32s
+    ElseIf StringsEqual(textRepresentation, "rational32u") Then
+        GetStrictMDDatatype = MD_rational32u
+    ElseIf StringsEqual(textRepresentation, "rational64s") Then
+        GetStrictMDDatatype = MD_rational64s
+    ElseIf StringsEqual(textRepresentation, "rational64u") Then
+        GetStrictMDDatatype = MD_rational64u
+    ElseIf StringsEqual(textRepresentation, "fixed16s") Then
+        GetStrictMDDatatype = MD_fixed16s
+    ElseIf StringsEqual(textRepresentation, "fixed16u") Then
+        GetStrictMDDatatype = MD_fixed16u
+    ElseIf StringsEqual(textRepresentation, "fixed32s") Then
+        GetStrictMDDatatype = MD_fixed32s
+    ElseIf StringsEqual(textRepresentation, "fixed32u") Then
+        GetStrictMDDatatype = MD_fixed32u
+    ElseIf StringsEqual(textRepresentation, "float") Then
+        GetStrictMDDatatype = MD_float
+    ElseIf StringsEqual(textRepresentation, "double") Then
+        GetStrictMDDatatype = MD_double
+    ElseIf StringsEqual(textRepresentation, "extended") Then
+        GetStrictMDDatatype = MD_extended
+    ElseIf StringsEqual(textRepresentation, "ifd") Then
+        GetStrictMDDatatype = MD_ifd
+    ElseIf StringsEqual(textRepresentation, "ifd64") Then
+        GetStrictMDDatatype = MD_ifd64
+    ElseIf StringsEqual(textRepresentation, "string") Then
+        GetStrictMDDatatype = MD_string
+    ElseIf StringsEqual(textRepresentation, "undef") Or StringsEqual(textRepresentation, "?") Then
+        GetStrictMDDatatype = MD_undef
+    ElseIf StringsEqual(textRepresentation, "binary") Then
+        GetStrictMDDatatype = MD_binary
+    
+    'This group of data types are XMP-specific.  They are always stored as strings, but said strings may need to
+    ' observe particular formatting to work.
+    ElseIf StringsEqual(textRepresentation, "integer") Then
+        GetStrictMDDatatype = MD_integerstring
+    ElseIf StringsEqual(textRepresentation, "real") Then
+        GetStrictMDDatatype = MD_floatstring
+    ElseIf StringsEqual(textRepresentation, "rational") Then
+        GetStrictMDDatatype = MD_rationalstring
+    ElseIf StringsEqual(textRepresentation, "date") Then
+        GetStrictMDDatatype = MD_datestring
+    ElseIf StringsEqual(textRepresentation, "boolean") Then
+        GetStrictMDDatatype = MD_booleanstring
+    ElseIf StringsEqual(textRepresentation, "lang-alt") Then
+        GetStrictMDDatatype = MD_string
+    'All XMP information is stored as character strings. The Writable column specifies the information format:
+    ' integer is a string of digits (possibly beginning with a '+' or '-'),
+    ' real is a floating point number
+    ' rational is two integer strings separated by a '/' character
+    ' date is a date/time string in the format "YYYY:MM:DD HH:MM:SS[+/-HH:MM]"
+    ' boolean is either "True" or "False", and lang-alt is a list of string alternatives in different languages.
+    'Individual languages for lang-alt tags are accessed by suffixing the tag name with a '-', followed by an RFC 3066 language code (ie. "XMP:Title-fr", or "Rights-en-US"). A lang-alt tag with no language code accesses the "x-default" language, but causes other languages to be deleted when writing. The "x-default" language code may be specified when writing a new value to write only the default language, but note that all languages are still deleted if "x-default" tag is deleted. When reading, "x-default" is not specified.
+    
+    'Data types past this point do not appear in the official ExifTool documentation, but they have been observed in
+    ' the database.  This list may not be all-inclusive.
+    ElseIf StringsEqual(textRepresentation, "digits") Then
+        GetStrictMDDatatype = MD_integerstring
+    ElseIf (InStr(1, textRepresentation, "string", vbBinaryCompare) <> 0) Then
+        GetStrictMDDatatype = MD_string
+    ElseIf (InStr(1, textRepresentation, "str", vbBinaryCompare) <> 0) Then
+        GetStrictMDDatatype = MD_string
+    
+    Else
+        Debug.Print "WARNING!  ExifTool.GetStrictMDDataType could not resolve this type: " & textRepresentation
+    End If
+    
+End Function
