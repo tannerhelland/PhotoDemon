@@ -871,8 +871,8 @@ Private Function PARSE_LikelyTagLine(ByRef xmlLines() As String, ByRef linePoint
                     
                     'After the RDF description comes the Exiftool-specific description of the tag name.  This may
                     ' include spaces and special chars (unlike the formal name).
-                    If PARSE_WholeLine(xmlLines(sLine + 2), curTagValue, "et:desc") Then m_Tags(m_NumOfTags).TagNameFriendly = curTagValue
-                    If PARSE_WholeLine(xmlLines(sLine + 3), curTagValue, "et:prt") Then m_Tags(m_NumOfTags).TagValueFriendly = curTagValue
+                    If PARSE_WholeLine(xmlLines(sLine + 2), curTagValue, "et:desc") Then m_Tags(m_NumOfTags).TagNameFriendly = ExifTool.PARSE_UnescapeXML(curTagValue)
+                    If PARSE_WholeLine(xmlLines(sLine + 3), curTagValue, "et:prt") Then m_Tags(m_NumOfTags).TagValueFriendly = ExifTool.PARSE_UnescapeXML(curTagValue)
                     
                     'For many tags, this will be the full extent of the tag's contents.  Let's look for one more semi-common tag
                     ' before exiting - a formal value tag, which is the non-human-friendly version of the tag's contents.
@@ -904,7 +904,7 @@ Private Function PARSE_LikelyTagLine(ByRef xmlLines() As String, ByRef linePoint
                         
                         'If this is not a list tag or a binary tag, it must be an invalid tag of some kind - possibly one that uses
                         ' a linebreak character.
-                        ' TODO: handle this tag specially
+                        ' TODO: handle this tag specially??
                         If (Not tagFinished) Then
                             Debug.Print "WARNING: weird tag encountered: " & m_Tags(m_NumOfTags).TagGroupAndName
                         End If

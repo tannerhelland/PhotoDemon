@@ -1367,7 +1367,7 @@ Private Function ParseTagDatabaseEntry(ByRef dstMetadata As PDMetadataItem, ByRe
         End If
         
         'The second line is always a description
-        If UBound(xmlLines) >= 1 Then dstMetadata.DB_Description = GetXMLValue_SingleLine(xmlLines(1))
+        If UBound(xmlLines) >= 1 Then dstMetadata.DB_Description = ExifTool.PARSE_UnescapeXML(GetXMLValue_SingleLine(xmlLines(1)))
         
         'The third line will be one of two things:
         ' 1) A closing tag (literally, "</tag>")
@@ -1403,7 +1403,7 @@ Private Function ParseTagDatabaseEntry(ByRef dstMetadata As PDMetadataItem, ByRe
                     
                     Do
                         dstMetadata.DB_StackIDs.AddString GetXMLAttribute(xmlLines(curLine), "id")
-                        dstMetadata.DB_StackValues.AddString GetXMLValue_SingleLine(xmlLines(curLine + 1))
+                        dstMetadata.DB_StackValues.AddString ExifTool.PARSE_UnescapeXML(GetXMLValue_SingleLine(xmlLines(curLine + 1)))
                         
                         numOfKeys = numOfKeys + 1
                         curLine = 3 + numOfKeys * 3
@@ -1545,4 +1545,15 @@ Private Function GetStrictMDDatatype(ByRef textRepresentation As String) As PD_M
         Debug.Print "WARNING!  ExifTool.GetStrictMDDataType could not resolve this type: " & textRepresentation
     End If
     
+End Function
+
+'ExifTool produces properly escaped chars for the five predefined XML entities (<, >, &, ', ").
+' Numeric character references are *not* unescaped, but support could be added in the future.
+Public Function PARSE_UnescapeXML(ByRef srcString As String) As String
+    PARSE_UnescapeXML = srcString
+    If InStr(1, PARSE_UnescapeXML, "&lt;", vbBinaryCompare) Then PARSE_UnescapeXML = Replace$(PARSE_UnescapeXML, "&lt;", "<")
+    If InStr(1, PARSE_UnescapeXML, "&gt;", vbBinaryCompare) Then PARSE_UnescapeXML = Replace$(PARSE_UnescapeXML, "&gt;", ">")
+    If InStr(1, PARSE_UnescapeXML, "&amp;", vbBinaryCompare) Then PARSE_UnescapeXML = Replace$(PARSE_UnescapeXML, "&amp;", "&")
+    If InStr(1, PARSE_UnescapeXML, "&apos;", vbBinaryCompare) Then PARSE_UnescapeXML = Replace$(PARSE_UnescapeXML, "&apos;", "'")
+    If InStr(1, PARSE_UnescapeXML, "&quot;", vbBinaryCompare) Then PARSE_UnescapeXML = Replace$(PARSE_UnescapeXML, "&quot;", """")
 End Function
