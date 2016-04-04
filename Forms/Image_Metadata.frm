@@ -4,10 +4,10 @@ Begin VB.Form FormMetadata
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Browse image metadata"
-   ClientHeight    =   9345
+   ClientHeight    =   8085
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   14070
+   ClientWidth     =   14190
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,51 +20,40 @@ Begin VB.Form FormMetadata
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   623
+   ScaleHeight     =   539
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   938
+   ScaleWidth      =   946
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdLabel lblGroupDescription 
-      Height          =   255
-      Left            =   4080
-      Top             =   4260
-      Width           =   9855
-      _ExtentX        =   17383
-      _ExtentY        =   450
-      Alignment       =   2
-      FontItalic      =   -1  'True
-      FontSize        =   9
-   End
    Begin PhotoDemon.pdHyperlink hypExiftool 
       Height          =   255
-      Left            =   240
-      Top             =   8160
-      Width           =   3375
-      _ExtentX        =   5953
+      Left            =   120
+      Top             =   6960
+      Width           =   7815
+      _ExtentX        =   13785
       _ExtentY        =   450
       Alignment       =   2
       Caption         =   "click to visit the ExifTool homepage"
       FontSize        =   9
       URL             =   "http://www.sno.phy.queensu.ca/~phil/exiftool/"
    End
-   Begin PhotoDemon.pdButtonStripVertical btsEditPanel 
-      Height          =   1815
-      Left            =   120
+   Begin PhotoDemon.pdButtonStrip btsEditPanel 
+      Height          =   975
+      Left            =   8040
       TabIndex        =   3
-      Top             =   4680
-      Width           =   3615
-      _ExtentX        =   6376
-      _ExtentY        =   3201
-      Caption         =   "metadata tools"
+      Top             =   120
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   2990
+      Caption         =   "tools"
    End
    Begin PhotoDemon.pdListBox lstGroup 
-      Height          =   4455
+      Height          =   6375
       Left            =   120
       TabIndex        =   2
       Top             =   120
-      Width           =   3615
-      _ExtentX        =   5953
-      _ExtentY        =   9975
+      Width           =   3600
+      _ExtentX        =   6350
+      _ExtentY        =   11245
       Caption         =   "metadata groups in this image"
    End
    Begin PhotoDemon.pdCommandBarMini cmdBarMini 
@@ -72,18 +61,18 @@ Begin VB.Form FormMetadata
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   8595
-      Width           =   14070
-      _ExtentX        =   24818
+      Top             =   7335
+      Width           =   14190
+      _ExtentX        =   25030
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdLabel lblExifTool 
-      Height          =   855
-      Left            =   240
-      Top             =   7200
-      Width           =   3375
-      _ExtentX        =   5953
-      _ExtentY        =   1508
+      Height          =   255
+      Left            =   120
+      Top             =   6600
+      Width           =   7815
+      _ExtentX        =   13785
+      _ExtentY        =   450
       Alignment       =   2
       Caption         =   ""
       FontSize        =   9
@@ -91,13 +80,13 @@ Begin VB.Form FormMetadata
       Layout          =   1
    End
    Begin PhotoDemon.pdListBoxOD lstMetadata 
-      Height          =   4095
-      Left            =   3840
+      Height          =   6375
+      Left            =   3765
       TabIndex        =   1
       Top             =   120
-      Width           =   10095
-      _ExtentX        =   12091
-      _ExtentY        =   9975
+      Width           =   4215
+      _ExtentX        =   7435
+      _ExtentY        =   11245
       Caption         =   "tags in this category"
    End
    Begin VB.PictureBox picContainer 
@@ -106,143 +95,58 @@ Begin VB.Form FormMetadata
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       HasDC           =   0   'False
-      Height          =   3855
-      Index           =   0
-      Left            =   3840
-      ScaleHeight     =   257
+      Height          =   6015
+      Index           =   1
+      Left            =   8040
+      ScaleHeight     =   401
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   673
-      TabIndex        =   4
-      Top             =   4680
-      Width           =   10095
-      Begin PhotoDemon.pdCheckBox chkFriendlyValue 
-         Height          =   345
-         Left            =   4080
-         TabIndex        =   10
-         Top             =   1560
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   609
-         Caption         =   "use human-friendly values (instead of technical ones)"
-      End
-      Begin PhotoDemon.pdTextBox txtValue 
-         Height          =   1140
-         Left            =   4080
-         TabIndex        =   9
-         Top             =   360
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   2011
-         Multiline       =   -1  'True
-      End
-      Begin PhotoDemon.pdLabel lblTagName 
-         Height          =   300
-         Left            =   480
-         Top             =   360
-         Width           =   3450
-         _ExtentX        =   6085
-         _ExtentY        =   529
-         Caption         =   ""
-         FontBold        =   -1  'True
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   300
+      ScaleWidth      =   406
+      TabIndex        =   5
+      Top             =   1200
+      Visible         =   0   'False
+      Width           =   6090
+      Begin PhotoDemon.pdButtonStrip btsTechnical 
+         Height          =   975
          Index           =   0
-         Left            =   240
+         Left            =   120
+         TabIndex        =   6
          Top             =   0
-         Width           =   3255
-         _ExtentX        =   5741
-         _ExtentY        =   529
-         Caption         =   "name"
-         FontSize        =   12
+         Width           =   5730
+         _ExtentX        =   10107
+         _ExtentY        =   1720
+         Caption         =   "tag names"
       End
-      Begin PhotoDemon.pdLabel lblTagID 
-         Height          =   300
-         Left            =   480
-         Top             =   1200
-         Width           =   3450
-         _ExtentX        =   6085
-         _ExtentY        =   529
-         Caption         =   ""
-         FontBold        =   -1  'True
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   300
+      Begin PhotoDemon.pdButtonStrip btsTechnical 
+         Height          =   975
          Index           =   1
+         Left            =   120
+         TabIndex        =   7
+         Top             =   1080
+         Width           =   5730
+         _ExtentX        =   10107
+         _ExtentY        =   1720
+         Caption         =   "tag values"
+      End
+      Begin PhotoDemon.pdButton cmdTechnicalReport 
+         Height          =   555
          Left            =   240
-         Top             =   840
-         Width           =   3255
-         _ExtentX        =   5741
-         _ExtentY        =   529
-         Caption         =   "formal ID"
-         FontSize        =   12
+         TabIndex        =   8
+         Top             =   2550
+         Width           =   5610
+         _ExtentX        =   9895
+         _ExtentY        =   979
+         Caption         =   "Generate full metadata report (HTML)..."
       End
-      Begin PhotoDemon.pdLabel lblTable 
-         Height          =   300
-         Left            =   480
-         Top             =   2040
-         Width           =   3450
-         _ExtentX        =   6085
-         _ExtentY        =   529
-         Caption         =   ""
-         FontBold        =   -1  'True
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   300
-         Index           =   2
-         Left            =   240
-         Top             =   1680
-         Width           =   3255
-         _ExtentX        =   5741
-         _ExtentY        =   529
-         Caption         =   "parent table"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblGroup 
-         Height          =   300
-         Left            =   480
-         Top             =   2880
-         Width           =   3450
-         _ExtentX        =   6085
-         _ExtentY        =   529
-         Caption         =   ""
-         FontBold        =   -1  'True
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   300
-         Index           =   3
-         Left            =   240
-         Top             =   2520
-         Width           =   3255
-         _ExtentX        =   5741
-         _ExtentY        =   529
-         Caption         =   "subgroup"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblTagTitle 
-         Height          =   300
-         Left            =   3960
-         Top             =   0
-         Width           =   6015
-         _ExtentX        =   5741
-         _ExtentY        =   529
-         Caption         =   "tag value"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblTagDebug 
-         Height          =   1620
-         Left            =   4080
+      Begin PhotoDemon.pdLabel lblTechnicalReport 
+         Height          =   270
+         Left            =   120
          Top             =   2160
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   2858
-         Caption         =   ""
-         FontSize        =   8
-         Layout          =   1
+         Width           =   5745
+         _ExtentX        =   10134
+         _ExtentY        =   476
+         Caption         =   "advanced"
+         FontSize        =   11
+         ForeColor       =   4210752
       End
    End
    Begin VB.PictureBox picContainer 
@@ -251,57 +155,75 @@ Begin VB.Form FormMetadata
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       HasDC           =   0   'False
-      Height          =   3855
-      Index           =   1
-      Left            =   3840
-      ScaleHeight     =   257
+      Height          =   6015
+      Index           =   0
+      Left            =   8040
+      ScaleHeight     =   401
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   673
-      TabIndex        =   5
-      Top             =   4680
-      Width           =   10095
-      Begin PhotoDemon.pdButtonStrip btsTechnical 
-         Height          =   975
-         Index           =   0
-         Left            =   240
-         TabIndex        =   6
+      ScaleWidth      =   406
+      TabIndex        =   4
+      Top             =   1200
+      Width           =   6090
+      Begin PhotoDemon.pdListBox lstValue 
+         Height          =   3000
+         Left            =   120
+         TabIndex        =   10
          Top             =   360
-         Width           =   4530
-         _ExtentX        =   7779
-         _ExtentY        =   1720
-         Caption         =   "tag names"
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   5292
       End
-      Begin PhotoDemon.pdButtonStrip btsTechnical 
-         Height          =   975
-         Index           =   1
-         Left            =   5040
-         TabIndex        =   7
+      Begin PhotoDemon.pdLabel lblValue 
+         Height          =   3000
+         Left            =   195
+         Top             =   390
+         Visible         =   0   'False
+         Width           =   5760
+         _ExtentX        =   10160
+         _ExtentY        =   5292
+         Caption         =   ""
+         Layout          =   1
+      End
+      Begin PhotoDemon.pdTextBox txtValue 
+         Height          =   3000
+         Left            =   120
+         TabIndex        =   9
          Top             =   360
-         Width           =   4530
-         _ExtentX        =   7779
-         _ExtentY        =   1720
-         Caption         =   "tag values"
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   5292
+         Multiline       =   -1  'True
       End
-      Begin PhotoDemon.pdButton cmdTechnicalReport 
-         Height          =   555
-         Left            =   360
-         TabIndex        =   8
-         Top             =   1950
-         Width           =   4410
-         _ExtentX        =   7779
-         _ExtentY        =   979
-         Caption         =   "Generate full metadata report (HTML)..."
+      Begin PhotoDemon.pdLabel lblTagName 
+         Height          =   300
+         Left            =   120
+         Top             =   0
+         Width           =   5850
+         _ExtentX        =   6085
+         _ExtentY        =   529
+         Caption         =   ""
+         FontBold        =   -1  'True
+         FontSize        =   12
       End
-      Begin PhotoDemon.pdLabel lblTechnicalReport 
-         Height          =   270
-         Left            =   240
-         Top             =   1560
-         Width           =   4425
-         _ExtentX        =   7805
-         _ExtentY        =   476
-         Caption         =   "advanced tools"
-         FontSize        =   11
-         ForeColor       =   4210752
+      Begin PhotoDemon.pdLabel lblTagType 
+         Height          =   300
+         Left            =   120
+         Top             =   3480
+         Width           =   5895
+         _ExtentX        =   5741
+         _ExtentY        =   529
+         Caption         =   ""
+      End
+      Begin PhotoDemon.pdLabel lblGroupDescription 
+         Height          =   1095
+         Left            =   120
+         Top             =   4200
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1931
+         Alignment       =   2
+         FontItalic      =   -1  'True
+         Layout          =   1
       End
    End
 End
@@ -340,6 +262,7 @@ Option Explicit
 Private Type MDCategory
     Name As String
     Count As Long
+    LastListIndex As Long
 End Type
 
 Private m_MDCategories() As MDCategory
@@ -350,7 +273,7 @@ Private m_LargestCategoryCount As Long
 Private m_AllTags() As PDMetadataItem
 
 'Height of each metadata content block
-Private Const BLOCKHEIGHT As Long = 54
+Private Const BLOCKHEIGHT As Long = 46
 
 'Font objects for rendering
 Private m_TitleFont As pdFont, m_DescriptionFont As pdFont
@@ -369,8 +292,9 @@ Private Enum PDMETADATA_COLOR_LIST
     PDMD_TagIsWritable = 4
     PDMD_TagIsNotWritable = 5
     PDMD_TagIsUnsafe = 6
-    [_Last] = 6
-    [_Count] = 7
+    PDMD_TextTagEditError = 7
+    [_Last] = 7
+    [_Count] = 8
 End Enum
 
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
@@ -391,9 +315,6 @@ Private Sub btsTechnical_Click(Index As Integer, ByVal buttonIndex As Long)
     UpdateMetadataList
     lstMetadata.SetScrollValue vScrollValue
     lstMetadata.ListIndex = lstListIndex
-End Sub
-
-Private Sub chkFriendlyValue_Click()
     UpdateTagView
 End Sub
 
@@ -521,10 +442,11 @@ Private Sub Form_Load()
     
     'Select the first group by default
     lstGroup.ListIndex = 0
+    If (lstMetadata.ListCount > 0) Then lstMetadata.ListIndex = 0
     
     'Prep any other interface components
-    btsEditPanel.AddItem "tag editor", 0
-    btsEditPanel.AddItem "tag settings", 1
+    btsEditPanel.AddItem "edit", 0
+    btsEditPanel.AddItem "settings", 1
     btsEditPanel.ListIndex = 0
     
     'Technical metadata reports are only available for images that actually exist on disk (vs clipboard or scanned images)
@@ -537,7 +459,7 @@ Private Sub Form_Load()
     End If
     
     'Give ExifTool credit for its amazing work!
-    lblExifTool.Caption = g_Language.TranslateMessage("Metadata support is provided by the 3rd-party ExifTool library.  ExifTool is Copyright 2016 by Phil Harvey.")
+    lblExifTool.Caption = g_Language.TranslateMessage("Metadata support is provided by Phil Harvey's ExifTool library.")
     
     ApplyThemeAndTranslations Me
     
@@ -608,6 +530,7 @@ Private Sub UpdateColorList()
         .LoadThemeColor PDMD_TagIsWritable, "TagIsWritable", RGB(0, 255, 0)
         .LoadThemeColor PDMD_TagIsNotWritable, "TagIsNotWritable", RGB(255, 0, 0)
         .LoadThemeColor PDMD_TagIsUnsafe, "TagIsUnsafe", RGB(0, 255, 255)
+        .LoadThemeColor PDMD_TextTagEditError, "TextTagEditError", RGB(255, 0, 0)
     End With
 End Sub
 
@@ -635,9 +558,9 @@ Private Sub lstGroup_Click()
     curCategory = lstGroup.ListIndex
     
     If m_MDCategories(curCategory).Count = 1 Then
-        lstMetadata.Caption = g_Language.TranslateMessage("1 tag in this category:")
+        lstMetadata.Caption = g_Language.TranslateMessage("1 tag in this category")
     Else
-        lstMetadata.Caption = g_Language.TranslateMessage("%1 tags in this category:", m_MDCategories(curCategory).Count)
+        lstMetadata.Caption = g_Language.TranslateMessage("%1 tags in this category", m_MDCategories(curCategory).Count)
     End If
     
     'Some categories display a "helper" description.  Check for that now.
@@ -651,22 +574,24 @@ Private Sub lstGroup_Click()
         groupDescription = g_Language.TranslateMessage("Note: ""Inferred"" tags are hypothetical values inferred from other metadata.  They are not embedded as traditional metadata.")
     End If
     
-    'If a helper description exists, reflow the interface to match
+    'If a helper description exists, show/hide the description label to match
     If (Len(groupDescription) = 0) Then
         lblGroupDescription.Visible = False
-        lstMetadata.SetHeight lstGroup.GetHeight
     Else
         lblGroupDescription.Caption = groupDescription
         lblGroupDescription.Visible = True
-        lstMetadata.SetHeight ((lblGroupDescription.GetTop - lstGroup.GetTop) - FixDPI(8))
     End If
     
     'Update the metadata list to reflect the new category
     UpdateMetadataList
     
+    'We remember the last ListIndex for each category.  With the listbox successfully filled, set the new index now
+    lstMetadata.ListIndex = m_MDCategories(curCategory).LastListIndex
+    
 End Sub
 
 Private Sub lstMetadata_Click()
+    m_MDCategories(lstGroup.ListIndex).LastListIndex = lstMetadata.ListIndex
     UpdateTagView
 End Sub
 
@@ -690,29 +615,24 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     
     Dim offsetY As Single, offsetX As Single
     offsetX = tmpRectF.Left + FixDPI(8)
-    offsetY = tmpRectF.Top + FixDPI(7)
+    offsetY = tmpRectF.Top + FixDPI(4)
     
     Dim thisTag As PDMetadataItem
     thisTag = m_AllTags(blockCategory, itemIndex)
     
     Dim linePadding As Long
-    linePadding = FixDPI(4)
+    linePadding = FixDPI(3)
     
     'Note that we deliberately maintain the numerical prefix as a separate entity; we need its size (in pixels) to calculate
     ' proper padding for the description line of text.
     Dim numericalPrefix As String
-    numericalPrefix = CStr(itemIndex + 1) & " - "
-        
+    numericalPrefix = CStr(itemIndex + 1) & "  "
+    
     Dim drawString As String
     If (btsTechnical(0).ListIndex = 0) Then
         drawString = thisTag.TagNameFriendly
     Else
         drawString = thisTag.TagGroupAndName
-    End If
-        
-    'Notify the user of text we were unable to convert to a human-readable value
-    If thisTag.IsTagBinary Then
-        drawString = drawString & " " & g_Language.TranslateMessage("(encoding unknown)")
     End If
     
     'Before rendering the title, we render a colored bar to indicate the write-ability of this tag
@@ -728,9 +648,9 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     End If
     
     Dim spaceWidth As Single
-    spaceWidth = m_TitleFont.GetWidthOfString(" ") * 0.5
+    spaceWidth = m_TitleFont.GetWidthOfString(" ")
     With tmpRectF
-        GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, (offsetX - .Left) + m_TitleFont.GetWidthOfString(CStr(itemIndex + 1)) + spaceWidth + 1, .Height, tagColor
+        GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, (offsetX - .Left) + m_TitleFont.GetWidthOfString(CStr(itemIndex + 1)) + spaceWidth + 1, .Height + 1, tagColor
     End With
     
     'Start with the simplest field: the tag title (readable form)
@@ -765,24 +685,94 @@ Private Sub UpdateTagView()
     If (curTag >= 0) Then
     
         With m_AllTags(curGroup, curTag)
-            Me.lblGroup.Caption = .TagGroup
-            Me.lblTable.Caption = .TagTable
-            Me.lblTagID.Caption = .TagID
-            Me.lblTagName.Caption = .TagNameFriendly
-        
-            If CBool(chkFriendlyValue.Value) Then
-                Me.txtValue.Text = .TagValueFriendly
+            lblTagName.Caption = .TagNameFriendly
+            
+            'Editable values are presented using an edit-friendly control (text box, dropdown, etc).  Non-editable values
+            ' only get a label.
+            If .DB_IsWritable Then
+                lblValue.Visible = False
+                
+                'Values that are part of a hardcoded list are available via dropdown
+                If .DB_HardcodedList Then
+                    
+                    lstValue.Clear
+                    Dim newListIndex As Long, listIndexFound As Boolean
+                    newListIndex = -1
+                    listIndexFound = False
+                    
+                    Dim strID As String, strValue As String
+                    
+                    Dim i As Long
+                    For i = 0 To .DB_StackValues.GetNumOfStrings - 1
+                        
+                        strID = .DB_StackIDs.GetString(i)
+                        strValue = .DB_StackValues.GetString(i)
+                        
+                        'If this entry's ID and VALUE are identical (as they are for many XMP tags, as XMP deals solely in text),
+                        ' it's redundant to list both.  For EXIF values, however, the ID may be numerical while the VALUE is
+                        ' a nice, human-readable chunk of text, so display both.
+                        If StrComp(strID, strValue, vbBinaryCompare) = 0 Then
+                            lstValue.AddItem strValue
+                        Else
+                            lstValue.AddItem "(" & strID & ") " & strValue
+                        End If
+                        
+                        If StrComp(.TagValue, .DB_StackIDs.GetString(i), vbBinaryCompare) = 0 Then
+                            newListIndex = i
+                            listIndexFound = True
+                        
+                        'As a failsafe, also compare the "print-friendly" version of the current value
+                        Else
+                            If StrComp(.TagValueFriendly, .DB_StackValues.GetString(i), vbBinaryCompare) = 0 Then
+                                newListIndex = i
+                                listIndexFound = True
+                            End If
+                        End If
+                        
+                    Next i
+                    
+                    'If a matching list index is *not* found, add the current value (whatever it is) to the list in the
+                    ' final position.
+                    If (Not listIndexFound) Then
+                        lstValue.AddItem "(" & .TagValue & ") " & .TagValueFriendly
+                        lstValue.ListIndex = (lstValue.ListCount - 1)
+                    Else
+                        lstValue.ListIndex = newListIndex
+                    End If
+                    
+                    lstValue.Visible = True
+                    txtValue.Visible = False
+                
+                'Any other values (text and numeric entry, among others) are handled via text box
+                Else
+                    lstValue.Visible = False
+                    txtValue.Visible = True
+                    If (btsTechnical(1).ListIndex = 0) Then txtValue.Text = .TagValueFriendly Else txtValue.Text = .TagValue
+                End If
+                
             Else
-                Me.txtValue.Text = .TagValue
+                lstValue.Visible = False
+                txtValue.Visible = False
+                lblValue.Visible = True
+                If (btsTechnical(1).ListIndex = 0) Then lblValue.Caption = .TagValueFriendly Else lblValue.Caption = .TagValue
             End If
             
             'The title caption changes depending on the data type, but *only* if the tag is writable!
-            lblTagTitle.Caption = g_Language.TranslateMessage("value")
-            If .DB_IsWritable Then lblTagTitle.Caption = lblTagTitle.Caption & ConvertDataTypeToString(m_AllTags(curGroup, curTag))
+            If .DB_IsWritable Then
+                If .DB_HardcodedList Then
+                    lblTagType.Visible = False
+                Else
+                    lblTagType.UseCustomForeColor = False
+                    lblTagType.Caption = g_Language.TranslateMessage("tag format:") & ConvertDataTypeToString(m_AllTags(curGroup, curTag))
+                    lblTagType.Visible = True
+                End If
+            Else
+                lblTagType.ForeColor = m_Colors.RetrieveColor(PDMD_TextTagEditError)
+                lblTagType.UseCustomForeColor = True
+                lblTagType.Caption = g_Language.TranslateMessage("NOTE: this tag cannot be edited")
+                lblTagType.Visible = True
+            End If
             
-            'DEBUG ONLY!
-            Me.lblTagDebug.Caption = .TagDebugData
-        
         End With
         
     End If
@@ -846,15 +836,16 @@ Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As
         Case MD_string
             strResult = g_Language.TranslateMessage("text")
         Case MD_undef
-            strResult = g_Language.TranslateMessage("unknown format")
+            Debug.Print "The selected tag actually has an ""undefined"" data format, but PD displays ""text"" as a convenience."
+            strResult = g_Language.TranslateMessage("text")
         Case MD_binary
             strResult = g_Language.TranslateMessage("binary data")
         Case MD_integerstring
             strResult = g_Language.TranslateMessage("list of digits")
         Case MD_floatstring
-            strResult = g_Language.TranslateMessage("any number")
+            strResult = g_Language.TranslateMessage("any real number")
         Case MD_rationalstring
-            strResult = g_Language.TranslateMessage("any number")
+            strResult = g_Language.TranslateMessage("any real number")
         Case MD_datestring
             strResult = g_Language.TranslateMessage("date [YYYY:mm:dd HH:MM:SS]")
         Case MD_booleanstring
@@ -899,6 +890,6 @@ Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As
         
     End If
     
-    If Len(strResult) <> 0 Then ConvertDataTypeToString = " (" & strResult & ")"
+    If Len(strResult) <> 0 Then ConvertDataTypeToString = " " & strResult
 
 End Function
