@@ -35,6 +35,7 @@
 			<TextDefault>#c0c0c0</TextDefault>
 			<TextDark>#d9d9d9</TextDark>
 			<TextEditBox>TextDark</TextEditBox>
+			<TextError>#eb2b26</TextError>
 			<TextHyperlink>Accent4</TextHyperlink>
 			<TextHover>Accent6</TextHover>
 			<TextInvert>#313131</TextInvert>
@@ -275,6 +276,7 @@
 				<TagIsWritable>#74ee79</TagIsWritable>
 				<TagIsNotWritable>#ee4d51</TagIsNotWritable>
 				<TagIsUnsafe>#ff9451</TagIsUnsafe>
+				<TextTagEditError>TextError</TextTagEditError>
 			</PDMetadataList>
 			
 			<PDNavigator>
