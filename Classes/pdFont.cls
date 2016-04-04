@@ -245,7 +245,7 @@ Public Sub FastRenderText(ByVal dstX As Long, ByVal dstY As Long, ByRef srcStrin
 End Sub
 
 'A roughly identical function to fastRenderText, above, but with a constraining rect
-Public Sub FastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcString As String, Optional ByVal useEllipses As Boolean = True, Optional ByVal centerVertically As Boolean = False)
+Public Sub FastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcString As String, Optional ByVal useEllipses As Boolean = True, Optional ByVal centerVertically As Boolean = False, Optional ByVal treatAmpAsControlChar As Boolean = True)
     
     'IMPORTANT NOTE!  Per MSDN, the following caveat is made regarding the source string pointer:
     '  "A pointer to the string that specifies the text to be drawn. If the nCount parameter is -1, the string must
@@ -271,6 +271,7 @@ Public Sub FastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
     ' the extra buffer space as necessary.)
     Dim dtFlags As Long
     If centerVertically Then dtFlags = DT_VCENTER Else dtFlags = DT_TOP
+    If (Not treatAmpAsControlChar) Then dtFlags = dtFlags Or DT_NOPREFIX
     
     Select Case curTextAlignment
         
