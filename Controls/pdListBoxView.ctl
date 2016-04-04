@@ -528,7 +528,7 @@ Private Sub RedrawBackBuffer()
                 tmpFont.SetFontColor curColor
                 tmpFont.AttachToDC bufferDC
                 tmpFont.SetTextAlignment vbLeftJustify
-                tmpFont.FastRenderTextWithClipping tmpRect.Left + textPadding, tmpRect.Top + LIST_PADDING_VERTICAL, tmpRect.Width - LIST_PADDING_HORIZONTAL, tmpRect.Height - LIST_PADDING_VERTICAL, tmpListItem.textTranslated, True, True
+                tmpFont.FastRenderTextWithClipping tmpRect.Left + textPadding, tmpRect.Top + LIST_PADDING_VERTICAL, tmpRect.Width - LIST_PADDING_HORIZONTAL, tmpRect.Height - LIST_PADDING_VERTICAL, tmpListItem.textTranslated, True, True, False
                 tmpFont.ReleaseFromDC
                 
                 'Separators are drawn separately, external to the other items
