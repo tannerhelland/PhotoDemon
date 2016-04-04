@@ -467,7 +467,7 @@ Private Sub RedrawBackBuffer()
                 'Left and Width start out the same for all list entries
                 If listHasFocus Then
                     tmpRect.Left = m_ListRect.Left + 2
-                    tmpRect.Width = m_ListRect.Width - 4
+                    tmpRect.Width = m_ListRect.Width - 3
                 Else
                     tmpRect.Left = m_ListRect.Left + 1
                     tmpRect.Width = m_ListRect.Width - 2
@@ -509,7 +509,10 @@ Private Sub RedrawBackBuffer()
                 Else
                     If itemIsHovered Then curColor = itemColorUnselectedBorderHover Else curColor = itemColorUnselectedBorder
                 End If
-                GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRect, curColor, , , , LineJoinMiter
+                
+                ' (As of the 7.0 release, the border is only drawn if the current item is selected.  This is a deliberate decision
+                '  to improve aesthetics on the Metadata dialog, among others.  This may be revisited in the future.)
+                If itemIsHovered Or itemIsSelected Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRect, curColor, , , False, LineJoinMiter
                 
                 '...and finally, render a separator line, if any
                 If itemHasSeparator Then
