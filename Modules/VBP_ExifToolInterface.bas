@@ -1419,6 +1419,12 @@ Private Function ParseTagDatabaseEntry(ByRef dstMetadata As PDMetadataItem, ByRe
             End If
         End If
         
+        'Before exiting, we apply some manual changes to certain tags, to align with the way PD processes metadata.
+        
+        'First, we want to mark some tags as "Protected", even though they are technically not (e.g. JPEG Orientation, which we
+        ' overwrite automatically in order to produce valid files).  ExifTool lets the user mess with these tags, but we don't.
+        If StrComp(dstMetadata.TagNameFriendly, "Orientation") = 0 Then dstMetadata.DBF_IsProtected = True
+        
         ParseTagDatabaseEntry = True
     
     Else

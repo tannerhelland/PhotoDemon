@@ -649,7 +649,7 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     'Before rendering the title, we render a colored bar to indicate the write-ability of this tag
     Dim tagColor As Long
     If thisTag.DB_IsWritable Then
-        If thisTag.DBF_IsUnsafe Then
+        If (thisTag.DBF_IsUnsafe Or thisTag.DBF_IsProtected Or thisTag.DBF_IsMandatory) Then
             tagColor = m_Colors.RetrieveColor(PDMD_TagIsUnsafe, Me.Enabled)
         Else
             tagColor = m_Colors.RetrieveColor(PDMD_TagIsWritable, Me.Enabled)
@@ -795,10 +795,10 @@ Private Sub UpdateTagView()
                 End If
                 
                 'Protected tags can technically be edited, but there may be unforeseen consequences.  Let the user know.
-                If .DBF_IsUnsafe Then
+                If (.DBF_IsUnsafe Or .DBF_IsProtected Or .DBF_IsMandatory) Then
                     lblWarning.UseCustomForeColor = True
                     lblWarning.ForeColor = m_Colors.RetrieveColor(PDMD_TextTagEditError)
-                    lblWarning.Caption = g_Language.TranslateMessage("WARNING: this is a protected tag.  PhotoDemon may ignore your changes in order to produce a valid image file.")
+                    lblWarning.Caption = g_Language.TranslateMessage("NOTE: this is a protected tag.  You can edit it, but PhotoDemon may overwrite your changes to produce a valid image file.")
                     
                     If lblTagType.Visible Then
                         lblWarning.SetTop lblTagType.GetTop + lblTagType.GetHeight + FixDPI(8)
@@ -837,14 +837,14 @@ Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As
     Select Case srcMetadata.DB_DataTypeStrict
     
         Case MD_int8s
-            strResult = g_Language.TranslateMessage("integer [-127 to 127]")
+            strResult = g_Language.TranslateMessage("integers only [-127 to 127]")
             If countPresent Then strResult = CStr(countValue) & " x " & strResult
         Case MD_int8u
-            strResult = g_Language.TranslateMessage("integer [0 to 255]")
+            strResult = g_Language.TranslateMessage("integers only [0 to 255]")
         Case MD_int16s
-            strResult = g_Language.TranslateMessage("integer [-32,768 to 32,767]")
+            strResult = g_Language.TranslateMessage("integers only [-32,768 to 32,767]")
         Case MD_int16u
-            strResult = g_Language.TranslateMessage("integer [0 to 65,535]")
+            strResult = g_Language.TranslateMessage("integers only [0 to 65,535]")
         Case MD_int32s
             strResult = g_Language.TranslateMessage("integers only")
         Case MD_int32u
@@ -874,7 +874,7 @@ Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As
         Case MD_double
             strResult = g_Language.TranslateMessage("numbers only")
         Case MD_extended
-            strResult = g_Language.TranslateMessage("any number")
+            strResult = g_Language.TranslateMessage("numbers only")
         Case MD_ifd
             strResult = g_Language.TranslateMessage("must be a valid file position marker")
         Case MD_ifd64
