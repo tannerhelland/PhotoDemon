@@ -3,11 +3,8 @@ Attribute VB_Name = "ExifTool"
 'ExifTool Plugin Interface
 'Copyright 2013-2016 by Tanner Helland
 'Created: 24/May/13
-'Last updated: 22/October/14
-'Last update: many technical improvements to metadata writing.  Formats that support only XMP or Exif will now have
-'              as many tags as humanly possible converted to the relevant format.  Unconverted tags will be ignored.
-'              When writing new tags, the preferred metadata format for a given image format will be preferentially
-'              used (e.g. XMP for PNG files, Exif for JPEGs, etc).
+'Last updated: 05/April/16
+'Last update: mass overhaul in conjunction with building the Metadata Editor dialog
 '
 'Module for handling all ExifTool interfacing.  This module is pointless without the accompanying ExifTool plugin,
 ' which can be found in the App/PhotoDemon/Plugins subdirectory as "exiftool.exe".  The ExifTool plugin is
@@ -31,13 +28,13 @@ Attribute VB_Name = "ExifTool"
 '
 'http://www.vbforums.com/showthread.php?364219-Classic-VB-How-do-I-shell-a-command-line-program-and-capture-the-output
 '
-'Those code modules are no longer relevant to the current implementation, but I thought it worthwhile to mention them
-' in case others want a (much simpler!) look at how they might interact with ExifTool.
+'Those code modules have long since been replaced with a custom PD implementation, but I thought it worthwhile to
+' mention them in case others want a (much simpler!) look at how they might interact with ExifTool.
 '
-'This project was seriously tested against v10.13 of ExifTool (March '16).  While I do informally test newer versions,
+'This project was last tested against v10.13 of ExifTool (March '16).  While I do informally test newer versions,
 ' it's just not possible to test all metadata variations, so problems may arise if used with other versions.
-' Additional documentation regarding the use of ExifTool can be found in the official ExifTool package, downloadable
-' from http://www.sno.phy.queensu.ca/~phil/exiftool/
+' Additional documentation regarding the use of ExifTool can be found in the official ExifTool package,
+' downloadable from http://www.sno.phy.queensu.ca/~phil/exiftool/
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -157,11 +154,15 @@ Public Type PDMetadataItem
     TagIndexInternal As Long        'Only meaningful if HasIndex (above) is TRUE.
     TagBase64Value As String        'Only meaningful if IsTagBinary (above) is TRUE.
     
-    'Used to flag tags that need to be removed by the image export engine
+    'Used to flag tags that need to be removed by the image export engine.  The edit dialog may set this function,
+    ' and the "remove privacy concern tags" option may also set this at export-time.
     TagMarkedForRemoval As Boolean
     
     'Used to flag tags that the user has touched from the metadata editing dialog
-    UserModified As Boolean
+    UserModifiedThisSession As Boolean
+    UserModifiedAllSessions As Boolean
+    UserValueNew As String
+    UserIDNew As String
     
     'IMPORTANT NOTE!  All values past this line are *not* filled in automatically.  They must be manually filled by parsing
     ' the ExifTool database file for the tag's matching attributes.  This is typically handled by the Metadata editing window.
@@ -186,7 +187,7 @@ Public Type PDMetadataItem
     DBF_IsUnknown As Boolean
     DBF_IsUnsafe As Boolean
     
-    'Description should always match the "friendly name", above, but we retrieve it "just in case"
+    'Description should always match the "friendly name", above, but we retrieve a database copy "just in case"
     DB_Description As String
     
     'If a tag provides its own hard-coded list of possible values, this will be set to TRUE, and the stacks will be populated
