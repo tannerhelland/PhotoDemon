@@ -32,7 +32,7 @@ Begin VB.Form FormMetadata
       _ExtentX        =   13785
       _ExtentY        =   450
       Alignment       =   2
-      Caption         =   "click to visit the ExifTool homepage"
+      Caption         =   "visit the ExifTool homepage"
       FontSize        =   9
       URL             =   "http://www.sno.phy.queensu.ca/~phil/exiftool/"
    End
@@ -88,66 +88,6 @@ Begin VB.Form FormMetadata
       _ExtentX        =   7435
       _ExtentY        =   11245
       Caption         =   "tags in this category"
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
-      Height          =   6015
-      Index           =   1
-      Left            =   8040
-      ScaleHeight     =   401
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   406
-      TabIndex        =   5
-      Top             =   1200
-      Visible         =   0   'False
-      Width           =   6090
-      Begin PhotoDemon.pdButtonStrip btsTechnical 
-         Height          =   975
-         Index           =   0
-         Left            =   120
-         TabIndex        =   6
-         Top             =   0
-         Width           =   5730
-         _ExtentX        =   10107
-         _ExtentY        =   1720
-         Caption         =   "tag names"
-      End
-      Begin PhotoDemon.pdButtonStrip btsTechnical 
-         Height          =   975
-         Index           =   1
-         Left            =   120
-         TabIndex        =   7
-         Top             =   1080
-         Width           =   5730
-         _ExtentX        =   10107
-         _ExtentY        =   1720
-         Caption         =   "tag values"
-      End
-      Begin PhotoDemon.pdButton cmdTechnicalReport 
-         Height          =   555
-         Left            =   240
-         TabIndex        =   8
-         Top             =   2550
-         Width           =   5610
-         _ExtentX        =   9895
-         _ExtentY        =   979
-         Caption         =   "Generate full metadata report (HTML)..."
-      End
-      Begin PhotoDemon.pdLabel lblTechnicalReport 
-         Height          =   270
-         Left            =   120
-         Top             =   2160
-         Width           =   5745
-         _ExtentX        =   10134
-         _ExtentY        =   476
-         Caption         =   "advanced"
-         FontSize        =   11
-         ForeColor       =   4210752
-      End
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -217,13 +157,84 @@ Begin VB.Form FormMetadata
       Begin PhotoDemon.pdLabel lblGroupDescription 
          Height          =   1095
          Left            =   120
-         Top             =   4200
+         Top             =   4560
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   1931
          Alignment       =   2
          FontItalic      =   -1  'True
          Layout          =   1
+      End
+      Begin PhotoDemon.pdLabel lblWarning 
+         Height          =   540
+         Left            =   120
+         Top             =   3840
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   953
+         Caption         =   ""
+         Layout          =   1
+         UseCustomForeColor=   -1  'True
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      HasDC           =   0   'False
+      Height          =   6015
+      Index           =   1
+      Left            =   8040
+      ScaleHeight     =   401
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   406
+      TabIndex        =   5
+      Top             =   1200
+      Visible         =   0   'False
+      Width           =   6090
+      Begin PhotoDemon.pdButtonStrip btsTechnical 
+         Height          =   975
+         Index           =   0
+         Left            =   120
+         TabIndex        =   6
+         Top             =   0
+         Width           =   5730
+         _ExtentX        =   10107
+         _ExtentY        =   1720
+         Caption         =   "tag names"
+      End
+      Begin PhotoDemon.pdButtonStrip btsTechnical 
+         Height          =   975
+         Index           =   1
+         Left            =   120
+         TabIndex        =   7
+         Top             =   1080
+         Width           =   5730
+         _ExtentX        =   10107
+         _ExtentY        =   1720
+         Caption         =   "tag values"
+      End
+      Begin PhotoDemon.pdButton cmdTechnicalReport 
+         Height          =   555
+         Left            =   240
+         TabIndex        =   8
+         Top             =   2550
+         Width           =   5610
+         _ExtentX        =   9895
+         _ExtentY        =   979
+         Caption         =   "Generate full metadata report (HTML)..."
+      End
+      Begin PhotoDemon.pdLabel lblTechnicalReport 
+         Height          =   270
+         Left            =   120
+         Top             =   2160
+         Width           =   5745
+         _ExtentX        =   10134
+         _ExtentY        =   476
+         Caption         =   "advanced"
+         FontSize        =   11
+         ForeColor       =   4210752
       End
    End
 End
@@ -459,7 +470,7 @@ Private Sub Form_Load()
     End If
     
     'Give ExifTool credit for its amazing work!
-    lblExifTool.Caption = g_Language.TranslateMessage("Metadata support is provided by Phil Harvey's ExifTool library.")
+    lblExifTool.Caption = g_Language.TranslateMessage("Metadata support is made possible by the ExifTool library.")
     
     ApplyThemeAndTranslations Me
     
@@ -692,10 +703,14 @@ Private Sub UpdateTagView()
             If .DB_IsWritable Then
                 lblValue.Visible = False
                 
-                'Values that are part of a hardcoded list are available via dropdown
-                If .DB_HardcodedList Then
+                'Values that are part of a hardcoded list are available via dropdown, but *only* if they consist of a single entry.
+                ' (Some list values, like JPEG component configuration, are hard-coded list values x4.  This is very difficult
+                '  to handle programmatically, so we default to text entry in those cases.)
+                If .DB_HardcodedList And (.DB_TypeCount < 2) Then
                     
+                    lstValue.SetAutomaticRedraws False
                     lstValue.Clear
+                    
                     Dim newListIndex As Long, listIndexFound As Boolean
                     newListIndex = -1
                     listIndexFound = False
@@ -740,6 +755,7 @@ Private Sub UpdateTagView()
                         lstValue.ListIndex = newListIndex
                     End If
                     
+                    lstValue.SetAutomaticRedraws True, True
                     lstValue.Visible = True
                     txtValue.Visible = False
                 
@@ -762,15 +778,45 @@ Private Sub UpdateTagView()
                 If .DB_HardcodedList Then
                     lblTagType.Visible = False
                 Else
+                    
                     lblTagType.UseCustomForeColor = False
-                    lblTagType.Caption = g_Language.TranslateMessage("tag format:") & ConvertDataTypeToString(m_AllTags(curGroup, curTag))
-                    lblTagType.Visible = True
+                    
+                    Dim strTagRestrictions As String
+                    strTagRestrictions = ConvertDataTypeToString(m_AllTags(curGroup, curTag))
+                    
+                    'We only list restrictions if necessary.  Generic "text" tags are treated as though they have no restrictions.
+                    If (Len(strTagRestrictions) <> 0) And (StrComp(strTagRestrictions, "text", vbBinaryCompare) <> 0) Then
+                        lblTagType.Caption = g_Language.TranslateMessage("tag restrictions: ") & strTagRestrictions
+                        lblTagType.Visible = True
+                    Else
+                        lblTagType.Visible = False
+                    End If
+                    
                 End If
+                
+                'Protected tags can technically be edited, but there may be unforeseen consequences.  Let the user know.
+                If .DBF_IsUnsafe Then
+                    lblWarning.UseCustomForeColor = True
+                    lblWarning.ForeColor = m_Colors.RetrieveColor(PDMD_TextTagEditError)
+                    lblWarning.Caption = g_Language.TranslateMessage("WARNING: this is a protected tag.  PhotoDemon may ignore your changes in order to produce a valid image file.")
+                    
+                    If lblTagType.Visible Then
+                        lblWarning.SetTop lblTagType.GetTop + lblTagType.GetHeight + FixDPI(8)
+                    Else
+                        lblWarning.SetTop txtValue.GetTop + txtValue.GetHeight + FixDPI(8)
+                    End If
+                    
+                    lblWarning.Visible = True
+                Else
+                    lblWarning.Visible = False
+                End If
+                
             Else
                 lblTagType.ForeColor = m_Colors.RetrieveColor(PDMD_TextTagEditError)
                 lblTagType.UseCustomForeColor = True
                 lblTagType.Caption = g_Language.TranslateMessage("NOTE: this tag cannot be edited")
                 lblTagType.Visible = True
+                lblWarning.Visible = False
             End If
             
         End With
@@ -800,46 +846,46 @@ Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As
         Case MD_int16u
             strResult = g_Language.TranslateMessage("integer [0 to 65,535]")
         Case MD_int32s
-            strResult = g_Language.TranslateMessage("any integer")
+            strResult = g_Language.TranslateMessage("integers only")
         Case MD_int32u
-            strResult = g_Language.TranslateMessage("any integer >= 0")
+            strResult = g_Language.TranslateMessage("integers >= 0")
         Case MD_int64s
-            strResult = g_Language.TranslateMessage("any integer")
+            strResult = g_Language.TranslateMessage("integers only")
         Case MD_int64u
-            strResult = g_Language.TranslateMessage("any integer >= 0")
+            strResult = g_Language.TranslateMessage("integers >= 0")
         Case MD_rational32s
-            strResult = g_Language.TranslateMessage("any number")
+            strResult = g_Language.TranslateMessage("numbers only")
         Case MD_rational32u
-            strResult = g_Language.TranslateMessage("any number >= 0")
+            strResult = g_Language.TranslateMessage("numbers >= 0")
         Case MD_rational64s
-            strResult = g_Language.TranslateMessage("any number")
+            strResult = g_Language.TranslateMessage("numbers only")
         Case MD_rational64u
-            strResult = g_Language.TranslateMessage("any number >= 0")
+            strResult = g_Language.TranslateMessage("numbers >= 0")
         Case MD_fixed16s
-            strResult = g_Language.TranslateMessage("any number")
+            strResult = g_Language.TranslateMessage("numbers only")
         Case MD_fixed16u
-            strResult = g_Language.TranslateMessage("any number >= 0")
+            strResult = g_Language.TranslateMessage("numbers >= 0")
         Case MD_fixed32s
-            strResult = g_Language.TranslateMessage("any number")
+            strResult = g_Language.TranslateMessage("numbers only")
         Case MD_fixed32u
-            strResult = g_Language.TranslateMessage("any number >= 0")
+            strResult = g_Language.TranslateMessage("numbers >= 0")
         Case MD_float
-            strResult = g_Language.TranslateMessage("any number")
+            strResult = g_Language.TranslateMessage("numbers only")
         Case MD_double
-            strResult = g_Language.TranslateMessage("any number")
+            strResult = g_Language.TranslateMessage("numbers only")
         Case MD_extended
             strResult = g_Language.TranslateMessage("any number")
         Case MD_ifd
-            strResult = g_Language.TranslateMessage("file position marker")
+            strResult = g_Language.TranslateMessage("must be a valid file position marker")
         Case MD_ifd64
-            strResult = g_Language.TranslateMessage("file position marker")
+            strResult = g_Language.TranslateMessage("must be a valid file position marker")
         Case MD_string
             strResult = g_Language.TranslateMessage("text")
         Case MD_undef
             Debug.Print "The selected tag actually has an ""undefined"" data format, but PD displays ""text"" as a convenience."
             strResult = g_Language.TranslateMessage("text")
         Case MD_binary
-            strResult = g_Language.TranslateMessage("binary data")
+            strResult = g_Language.TranslateMessage("must be valid binary data")
         Case MD_integerstring
             strResult = g_Language.TranslateMessage("list of digits")
         Case MD_floatstring
@@ -847,7 +893,7 @@ Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As
         Case MD_rationalstring
             strResult = g_Language.TranslateMessage("any real number")
         Case MD_datestring
-            strResult = g_Language.TranslateMessage("date [YYYY:mm:dd HH:MM:SS]")
+            strResult = g_Language.TranslateMessage("date (YYYY:mm:dd HH:MM:SS[.ss][+/-HH:MM])")
         Case MD_booleanstring
             strResult = g_Language.TranslateMessage("true or false")
         Case MD_digits
@@ -890,6 +936,6 @@ Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As
         
     End If
     
-    If Len(strResult) <> 0 Then ConvertDataTypeToString = " " & strResult
-
+    If Len(strResult) <> 0 Then ConvertDataTypeToString = strResult
+    
 End Function
