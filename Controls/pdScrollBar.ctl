@@ -1222,10 +1222,12 @@ Private Function GetValueFromMouseCoords(ByVal x As Single, ByVal y As Single, O
     
     'Next, figure out where the relevant coordinate (x or y, depending on orientation) lies as a fraction of the total width
     Dim posRatio As Double
-    If m_OrientationHorizontal Then
-        posRatio = (x - trackRect.Left) / availablePixels
-    Else
-        posRatio = (y - trackRect.Top) / availablePixels
+    If (availablePixels <> 0) Then
+        If m_OrientationHorizontal Then
+            posRatio = (x - trackRect.Left) / availablePixels
+        Else
+            posRatio = (y - trackRect.Top) / availablePixels
+        End If
     End If
     
     'Convert that to a matching position on the control's min/max scale
