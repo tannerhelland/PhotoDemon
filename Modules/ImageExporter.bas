@@ -263,7 +263,7 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
         #End If
         
         Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
-        prepSafeArray tmpSA, srcDIB
+        PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
         
         Dim x As Long, y As Long, finalX As Long, finalY As Long
@@ -298,7 +298,7 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
             colorFound = False
             
             'Now, loop through the colors we've accumulated thus far and compare this entry against each of them.
-            For i = 0 To numUniqueColors
+            For i = 0 To numUniqueColors - 1
                 If UniqueColors(i) = chkValue Then
                     colorFound = True
                     Exit For
@@ -399,7 +399,7 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         #End If
 
         Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
-        prepSafeArray tmpSA, srcDIB
+        PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
 
         Dim x As Long, y As Long, finalX As Long, finalY As Long
