@@ -185,7 +185,7 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
         m_TotalHeight = m_TotalHeight + .itemHeight
         
         'Positioning values are really only used if separators are active, or if user-specified heights are involved,
-        ' but right now we right those positions correctly for any insertion action.  (We can revisit in the future
+        ' but right now we set those positions correctly for any insertion action.  (We can revisit in the future
         ' if performance becomes an issue.)
         If itemIndex < m_NumOfItems Then
             

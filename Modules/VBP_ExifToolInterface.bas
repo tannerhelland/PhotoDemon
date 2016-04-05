@@ -32,10 +32,10 @@ Attribute VB_Name = "ExifTool"
 'http://www.vbforums.com/showthread.php?364219-Classic-VB-How-do-I-shell-a-command-line-program-and-capture-the-output
 '
 'Those code modules are no longer relevant to the current implementation, but I thought it worthwhile to mention them
-' in case others find them useful.
+' in case others want a (much simpler!) look at how they might interact with ExifTool.
 '
-'This project was originally designed against v9.37 of ExifTool (14 Sep '13).  While I do test newer versions, it's
-' impossible to test all metadata possibilities, so problems may arise if used with other versions of the software.
+'This project was seriously tested against v10.13 of ExifTool (March '16).  While I do informally test newer versions,
+' it's just not possible to test all metadata variations, so problems may arise if used with other versions.
 ' Additional documentation regarding the use of ExifTool can be found in the official ExifTool package, downloadable
 ' from http://www.sno.phy.queensu.ca/~phil/exiftool/
 '
