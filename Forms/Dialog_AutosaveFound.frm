@@ -85,7 +85,7 @@ Begin VB.Form dialog_AutosaveWarning
       Width           =   3300
       _ExtentX        =   5821
       _ExtentY        =   1296
-      Caption         =   "Discard all images"
+      Caption         =   "Discard all autosaves"
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -213,7 +213,7 @@ Public Sub showDialog()
     userAnswer = vbNo
     
     'Load command button images
-    cmdOK.AssignImage "LRGACCEPT"
+    CmdOK.AssignImage "LRGACCEPT"
     cmdCancel.AssignImage "LRGCANCEL"
     
     'Apply any custom styles to the form
