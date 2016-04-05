@@ -51,8 +51,8 @@ Begin VB.Form FormMetadata
       Left            =   120
       TabIndex        =   2
       Top             =   120
-      Width           =   3600
-      _ExtentX        =   6350
+      Width           =   3360
+      _ExtentX        =   5927
       _ExtentY        =   11245
       Caption         =   "metadata groups in this image"
    End
@@ -69,7 +69,7 @@ Begin VB.Form FormMetadata
    Begin PhotoDemon.pdLabel lblExifTool 
       Height          =   255
       Left            =   120
-      Top             =   6600
+      Top             =   6630
       Width           =   7815
       _ExtentX        =   13785
       _ExtentY        =   450
@@ -81,11 +81,11 @@ Begin VB.Form FormMetadata
    End
    Begin PhotoDemon.pdListBoxOD lstMetadata 
       Height          =   6375
-      Left            =   3765
+      Left            =   3525
       TabIndex        =   1
       Top             =   120
-      Width           =   4215
-      _ExtentX        =   7435
+      Width           =   4455
+      _ExtentX        =   7858
       _ExtentY        =   11245
       Caption         =   "tags in this category"
    End
@@ -104,6 +104,17 @@ Begin VB.Form FormMetadata
       TabIndex        =   4
       Top             =   1200
       Width           =   6090
+      Begin PhotoDemon.pdCheckBox chkRemove 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   11
+         Top             =   4560
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   661
+         Caption         =   "mark tag for removal"
+         Value           =   0
+      End
       Begin PhotoDemon.pdListBox lstValue 
          Height          =   3000
          Left            =   120
@@ -122,7 +133,7 @@ Begin VB.Form FormMetadata
          _ExtentX        =   10160
          _ExtentY        =   5292
          Caption         =   ""
-         Layout          =   1
+         Layout          =   3
       End
       Begin PhotoDemon.pdTextBox txtValue 
          Height          =   3000
@@ -154,23 +165,12 @@ Begin VB.Form FormMetadata
          _ExtentY        =   529
          Caption         =   ""
       End
-      Begin PhotoDemon.pdLabel lblGroupDescription 
-         Height          =   1095
-         Left            =   120
-         Top             =   4560
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1931
-         Alignment       =   2
-         FontItalic      =   -1  'True
-         Layout          =   1
-      End
       Begin PhotoDemon.pdLabel lblWarning 
          Height          =   540
-         Left            =   120
+         Left            =   150
          Top             =   3840
-         Width           =   5895
-         _ExtentX        =   10398
+         Width           =   5850
+         _ExtentX        =   10319
          _ExtentY        =   953
          Caption         =   ""
          Layout          =   1
@@ -237,6 +237,17 @@ Begin VB.Form FormMetadata
          ForeColor       =   4210752
       End
    End
+   Begin PhotoDemon.pdLabel lblGroupDescription 
+      Height          =   1095
+      Left            =   240
+      Top             =   5400
+      Width           =   3150
+      _ExtentX        =   5556
+      _ExtentY        =   1931
+      FontItalic      =   -1  'True
+      FontSize        =   9
+      Layout          =   1
+   End
 End
 Attribute VB_Name = "FormMetadata"
 Attribute VB_GlobalNameSpace = False
@@ -247,8 +258,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Browser
 'Copyright 2013-2016 by Tanner Helland
 'Created: 27/May/13
-'Last updated: 27/March/16
-'Last update: start overhaul required for metadata editing support
+'Last updated: 05/April/16
+'Last update: total overhaul to finally implement support for user editing of metadata
 '
 'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
@@ -282,6 +293,10 @@ Private m_LargestCategoryCount As Long
 
 'This array holds all tags currently in storage, but sorted into a 2D array by category
 Private m_AllTags() As PDMetadataItem
+
+'The IDs of the last group and metadata item selected.  We need to track these so we can "apply" changes whenever the
+' current item "loses focus".  (I use quotation marks because we use custom focus events in place of the traditional ones.)
+Private m_GroupIndex As Long, m_TagIndex As Long
 
 'Height of each metadata content block
 Private Const BLOCKHEIGHT As Long = 46
@@ -564,6 +579,9 @@ Private Sub UpdateMetadataList()
 End Sub
 
 Private Sub lstGroup_Click()
+        
+    'Before doing anything, store any changes to the current tag
+    TagLostFocus
     
     Dim curCategory As Long
     curCategory = lstGroup.ListIndex
@@ -588,8 +606,10 @@ Private Sub lstGroup_Click()
     'If a helper description exists, show/hide the description label to match
     If (Len(groupDescription) = 0) Then
         lblGroupDescription.Visible = False
+        lstGroup.SetHeight lstMetadata.GetHeight
     Else
         lblGroupDescription.Caption = groupDescription
+        lstGroup.SetHeight (lblGroupDescription.GetTop - FixDPI(4)) - lstGroup.GetTop
         lblGroupDescription.Visible = True
     End If
     
@@ -599,11 +619,24 @@ Private Sub lstGroup_Click()
     'We remember the last ListIndex for each category.  With the listbox successfully filled, set the new index now
     lstMetadata.ListIndex = m_MDCategories(curCategory).LastListIndex
     
+    'We also remember the last group and tax index, so we can apply "lost focus" changes to edited tags
+    m_GroupIndex = lstGroup.ListIndex
+    m_TagIndex = lstMetadata.ListIndex
+    
 End Sub
 
 Private Sub lstMetadata_Click()
+        
+    'Before doing anything, store any changes to the current tag
+    TagLostFocus
+        
     m_MDCategories(lstGroup.ListIndex).LastListIndex = lstMetadata.ListIndex
     UpdateTagView
+    
+    'We also remember the last group and tax index, so we can apply "lost focus" changes to edited tags
+    m_GroupIndex = lstGroup.ListIndex
+    m_TagIndex = lstMetadata.ListIndex
+    
 End Sub
 
 Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
@@ -687,6 +720,7 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     
 End Sub
 
+'When a new tag is selected from the metadata list, this sub updates the right-side panel to match
 Private Sub UpdateTagView()
 
     Dim curGroup As Long, curTag As Long
@@ -694,7 +728,12 @@ Private Sub UpdateTagView()
     curTag = lstMetadata.ListIndex
     
     If (curTag >= 0) Then
-    
+        
+        'The positioning of certain controls is reflowed depending on the contents of the tag.  We track the vertical
+        ' position of reflow as we go, as some elements are hidden/shown dynamically, and this affects the positioning
+        ' of subsequent elements.
+        Dim reflowTop As Long
+        
         With m_AllTags(curGroup, curTag)
             lblTagName.Caption = .TagNameFriendly
             
@@ -758,12 +797,14 @@ Private Sub UpdateTagView()
                     lstValue.SetAutomaticRedraws True, True
                     lstValue.Visible = True
                     txtValue.Visible = False
+                    reflowTop = lstValue.GetTop + lstValue.GetHeight
                 
                 'Any other values (text and numeric entry, among others) are handled via text box
                 Else
                     lstValue.Visible = False
                     txtValue.Visible = True
                     If (btsTechnical(1).ListIndex = 0) Then txtValue.Text = .TagValueFriendly Else txtValue.Text = .TagValue
+                    reflowTop = txtValue.GetTop + txtValue.GetHeight
                 End If
                 
             Else
@@ -771,10 +812,20 @@ Private Sub UpdateTagView()
                 txtValue.Visible = False
                 lblValue.Visible = True
                 If (btsTechnical(1).ListIndex = 0) Then lblValue.Caption = .TagValueFriendly Else lblValue.Caption = .TagValue
+                reflowTop = lblValue.GetTop + lblValue.GetHeight
             End If
             
-            'The title caption changes depending on the data type, but *only* if the tag is writable!
+            'The reflow position variable now points at the bottom of the relevant edit control (edit box, list, label, etc).
+            ' Add some padding before proceeding.
+            reflowTop = reflowTop + FixDPI(6)
+            
+            'After determining which edit control to use, we now need to determine the visibility and positioning of various
+            ' warning labels, type descriptors, and other per-tag information.  As before, most of this information is
+            ' contingent on the tag being writable.
             If .DB_IsWritable Then
+                
+                'Hard-coded lists do not display tag formatting requirements (formatting is handled silently, based on
+                ' the user's list selection).
                 If .DB_HardcodedList Then
                     lblTagType.Visible = False
                 Else
@@ -784,10 +835,16 @@ Private Sub UpdateTagView()
                     Dim strTagRestrictions As String
                     strTagRestrictions = ConvertDataTypeToString(m_AllTags(curGroup, curTag))
                     
-                    'We only list restrictions if necessary.  Generic "text" tags are treated as though they have no restrictions.
+                    'We only list restrictions if necessary.  Generic "text" tags are treated as if they have no restrictions.
                     If (Len(strTagRestrictions) <> 0) And (StrComp(strTagRestrictions, "text", vbBinaryCompare) <> 0) Then
                         lblTagType.Caption = g_Language.TranslateMessage("tag restrictions: ") & strTagRestrictions
+                        lblTagType.SetTop reflowTop
                         lblTagType.Visible = True
+                        
+                        'Any time an element is made visible, we add its height to the running reflow offset, so subsequent
+                        ' elements can be positioned correctly.
+                        reflowTop = reflowTop + lblTagType.GetHeight + FixDPI(6)
+                        
                     Else
                         lblTagType.Visible = False
                     End If
@@ -796,28 +853,39 @@ Private Sub UpdateTagView()
                 
                 'Protected tags can technically be edited, but there may be unforeseen consequences.  Let the user know.
                 If (.DBF_IsUnsafe Or .DBF_IsProtected Or .DBF_IsMandatory) Then
-                    lblWarning.UseCustomForeColor = True
                     lblWarning.ForeColor = m_Colors.RetrieveColor(PDMD_TextTagEditError)
-                    lblWarning.Caption = g_Language.TranslateMessage("NOTE: this is a protected tag.  You can edit it, but PhotoDemon may overwrite your changes to produce a valid image file.")
-                    
-                    If lblTagType.Visible Then
-                        lblWarning.SetTop lblTagType.GetTop + lblTagType.GetHeight + FixDPI(8)
-                    Else
-                        lblWarning.SetTop txtValue.GetTop + txtValue.GetHeight + FixDPI(8)
-                    End If
-                    
+                    lblWarning.UseCustomForeColor = True
+                    lblWarning.Caption = g_Language.TranslateMessage("This is a protected tag.  Edits are allowed, but they may be overwritten to produce a valid image file.")
+                    lblWarning.SetTop reflowTop
                     lblWarning.Visible = True
+                    
+                    'Any time an element is made visible, we add its height to the running reflow offset, so subsequent
+                    ' elements can be positioned correctly.
+                    reflowTop = reflowTop + lblWarning.GetHeight + FixDPI(6)
+                    
                 Else
                     lblWarning.Visible = False
                 End If
                 
             Else
-                lblTagType.ForeColor = m_Colors.RetrieveColor(PDMD_TextTagEditError)
-                lblTagType.UseCustomForeColor = True
-                lblTagType.Caption = g_Language.TranslateMessage("NOTE: this tag cannot be edited")
-                lblTagType.Visible = True
-                lblWarning.Visible = False
+                
+                lblTagType.Visible = False
+                
+                'Non-writable tags get a warning about non-editability
+                lblWarning.ForeColor = m_Colors.RetrieveColor(PDMD_TextTagEditError)
+                lblWarning.UseCustomForeColor = True
+                lblWarning.Caption = g_Language.TranslateMessage("This tag is restricted.  It cannot be edited, and removal requests will be ignored if they result in an invalid file.")
+                lblWarning.SetTop reflowTop
+                lblWarning.Visible = True
+                
+                'Any time an element is made visible, we add its height to the running reflow offset, so subsequent
+                ' elements can be positioned correctly.
+                reflowTop = reflowTop + lblWarning.GetHeight + FixDPI(6)
+                
             End If
+            
+            chkRemove.SetTop reflowTop
+            If .TagMarkedForRemoval Then chkRemove.Value = vbChecked Else chkRemove.Value = vbUnchecked
             
         End With
         
@@ -939,3 +1007,16 @@ Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As
     If Len(strResult) <> 0 Then ConvertDataTypeToString = strResult
     
 End Function
+
+'When the current tag loses focus, call this sub to update the tag's information against any user-applied edits.
+Private Sub TagLostFocus()
+    
+    If (m_GroupIndex >= 0) And (m_TagIndex >= 0) Then
+    
+        With m_AllTags(m_GroupIndex, m_TagIndex)
+            .TagMarkedForRemoval = CBool(chkRemove.Value)
+        End With
+    
+    End If
+    
+End Sub
