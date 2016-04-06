@@ -170,8 +170,15 @@ Private Function GetTagValue(ByVal tagNameAndGroup As String, Optional ByVal sea
 End Function
 
 'Given an index and a source metadata object, fill that object with the contents of the matching entry in the m_Tags() array
-Friend Function GetMetadataEntry(ByVal objIndex As Long) As PDMetadataItem
-    If (objIndex < m_NumOfTags) And (objIndex >= 0) Then GetMetadataEntry = m_Tags(objIndex)
+Friend Function GetMetadataEntry(ByVal mtdIndex As Long) As PDMetadataItem
+    If (mtdIndex < m_NumOfTags) And (mtdIndex >= 0) Then GetMetadataEntry = m_Tags(mtdIndex)
+End Function
+
+Friend Function SetMetadataEntryByIndex(ByVal mtdIndex As Long, ByRef newMetadata As PDMetadataItem) As Boolean
+    If (mtdIndex < m_NumOfTags) And (mtdIndex >= 0) Then
+        m_Tags(mtdIndex) = newMetadata
+        SetMetadataEntryByIndex = True
+    End If
 End Function
 
 'Return the total metadata count for this object.  Note that binary and list items ARE included in this count.

@@ -403,7 +403,7 @@ Begin VB.Form FormMain
          Caption         =   "Metadata"
          Index           =   19
          Begin VB.Menu MnuMetadata 
-            Caption         =   "Browse image metadata..."
+            Caption         =   "Edit metadata..."
             Index           =   0
          End
          Begin VB.Menu MnuMetadata 

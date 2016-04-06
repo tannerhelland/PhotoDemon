@@ -277,6 +277,8 @@
 				<TagIsNotWritable>#ee4d51</TagIsNotWritable>
 				<TagIsUnsafe>#ff9451</TagIsUnsafe>
 				<TextTagEditError>TextError</TextTagEditError>
+				<TagBackgroundDeleted>#ffcfd6</TagBackgroundDeleted>
+				<TagBackgroundEdited>#daffc8</TagBackgroundEdited>
 			</PDMetadataList>
 			
 			<PDNavigator>
