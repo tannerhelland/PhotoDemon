@@ -167,11 +167,13 @@ Public Type PDMetadataItem
     'IMPORTANT NOTE!  All values past this line are *not* filled in automatically.  They must be manually filled by parsing
     ' the ExifTool database file for the tag's matching attributes.  This is typically handled by the Metadata editing window.
     
-    'These three values will always be loaded by a database pass
-    DB_IsWritable As Boolean
-    DB_TypeCount As Long
-    DB_DataType As String
-    DB_DataTypeStrict As PD_Metadata_Datatype
+    'These five values will always be loaded by a database pass
+    DB_TagHitDatabase As Boolean    'TRUE if this tag object has already been filled with its database information.
+                                    ' (This is updated per-session, so closing the image and reloading it will reset this value.)
+    DB_IsWritable As Boolean        'TRUE if ExifTool is capable of writing/updating this tag
+    DB_TypeCount As Long            'TRUE if this tag has a type like "byte x 4" instead of "int_32"
+    DB_DataType As String           'The string representation of this tag's datatype; this is primarily used for debugging
+    DB_DataTypeStrict As PD_Metadata_Datatype   'Please use this version of the tag's datatype, not the string
     
     'These values are filled on an as-needed basis; they are only specified if a tag requires it.
     ' (On most tags, these will be FALSE.)
@@ -187,16 +189,17 @@ Public Type PDMetadataItem
     DBF_IsUnknown As Boolean
     DBF_IsUnsafe As Boolean
     
-    'Description should always match the "friendly name", above, but we retrieve a database copy "just in case"
+    'Database description should always match the "friendly name", above, but we retrieve a database copy "just in case"
     DB_Description As String
     
     'If a tag provides its own hard-coded list of possible values, this will be set to TRUE, and the stacks will be populated
+    ' with (DB_HardcodedListSize - 1) values
     DB_HardcodedList As Boolean
     DB_HardcodedListSize As Long
     DB_StackIDs As pdStringStack
     DB_StackValues As pdStringStack
     
-    'Raw copy of the database XML packet associated with this tag, "just in case"
+    'Raw copy of the database XML packet associated with this tag, "just in case".  Do not use this for anything but parsing.
     TagDebugData As String
     
 End Type
@@ -797,7 +800,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     'Ignore minor errors and warnings
     cmdParams = cmdParams & "-m" & vbCrLf
         
-    'Overwrite the original destination file, but only if the metadata was embedded succesfully
+    'Overwrite the original destination file (but only if the metadata was embedded successfully!)
     cmdParams = cmdParams & "-overwrite_original" & vbCrLf
     
     'To support Unicode filenames, explicitly request UTF-8-compatible parsing.
@@ -808,8 +811,36 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     cmdParams = cmdParams & "-tagsfromfile" & vbCrLf & srcMetadataFile & vbCrLf
     cmdParams = cmdParams & dstImageFile & vbCrLf
     
+    'Next, we need to manually request the update of any tags that the user has manually modified via the metadata editor.
+    Dim i As Long, tmpMetadata As PDMetadataItem
+    For i = 0 To srcPDImage.imgMetadata.GetMetadataCount - 1
+        tmpMetadata = srcPDImage.imgMetadata.GetMetadataEntry(i)
+        
+        If tmpMetadata.UserModifiedAllSessions Then
+            cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "="
+            
+            'If the tag value has strings or special chars ("<",">", etc), we may need to escape it...?
+            ' (TODO: newlines are the primary problem here, as ExifTool normally separates commands via CrLf.  We may be able to avoid
+            '         this by requesting parsing of HTML character entities, per http://www.sno.phy.queensu.ca/~phil/exiftool/faq.html#Q21)
+            
+            'If DoesTagValueRequireEscaping(tmpMetadata.UserValueNew) Then
+            '    cmdParams = cmdParams & """" & tmpMetadata.UserValueNew & """"
+            'Else
+                cmdParams = cmdParams & tmpMetadata.UserValueNew
+            'End If
+            
+            cmdParams = cmdParams & vbCrLf
+        End If
+            
+        'Also, if the user has manually requested removal of a tag, mirror that request to ExifTool
+        If tmpMetadata.TagMarkedForRemoval Then
+            cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "=" & vbCrLf
+        End If
+        
+    Next i
+    
     'On some files, we prefer to use XMP over Exif.  This command instructs ExifTool to convert Exif tags to XMP tags where possible.
-    If outputMetadataFormat = PDMF_XMP Then
+    If (outputMetadataFormat = PDMF_XMP) Then
         cmdParams = cmdParams & "-xmp:all<all" & vbCrLf
     End If
     
@@ -845,7 +876,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'Size tags are written to different areas based on the type of metadata being written.  JPEGs require special rules; see the spec
     ' for details: http://www.cipa.jp/std/documents/e/DC-008-2012_E.pdf
-    If srcPDImage.currentFileFormat = PDIF_JPEG Then
+    If (srcPDImage.currentFileFormat = PDIF_JPEG) Then
         cmdParams = cmdParams & "--" & tagGroupPrefix & "ImageWidth" & vbCrLf
         cmdParams = cmdParams & "--" & tagGroupPrefix & "ImageHeight" & vbCrLf
     Else
@@ -853,7 +884,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
         cmdParams = cmdParams & "-" & tagGroupPrefix & "ImageHeight=" & srcPDImage.Height & vbCrLf
     End If
     
-    If outputMetadataFormat = PDMF_EXIF Then
+    If (outputMetadataFormat = PDMF_EXIF) Then
         cmdParams = cmdParams & "-ExifIFD:ExifImageWidth=" & srcPDImage.Width & vbCrLf
         cmdParams = cmdParams & "-ExifIFD:ExifImageHeight=" & srcPDImage.Height & vbCrLf
     ElseIf outputMetadataFormat = PDMF_XMP Then
@@ -861,11 +892,9 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
         cmdParams = cmdParams & "-xmp-exif:ExifImageHeight=" & srcPDImage.Height & vbCrLf
     End If
     
-    
-    
     'JPEGs have the unique issue of needing their resolution values also updated in the JFIF header, so we make
     ' an additional request here for JPEGs specifically.
-    If srcPDImage.currentFileFormat = PDIF_JPEG Then
+    If (srcPDImage.currentFileFormat = PDIF_JPEG) Then
         cmdParams = cmdParams & "-JFIF:XResolution=" & srcPDImage.getDPI() & vbCrLf
         cmdParams = cmdParams & "-JFIF:YResolution=" & srcPDImage.getDPI() & vbCrLf
         cmdParams = cmdParams & "-JFIF:ResolutionUnit=inches" & vbCrLf
@@ -876,7 +905,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'GPS removal indicates the user wants privacy tags removed; if the user has NOT requested removal of these, list PD as
     ' the processing software.
-    If Not removeGPS Then cmdParams = cmdParams & "-Software=" & GetPhotoDemonNameAndVersion() & vbCrLf
+    If (Not removeGPS) Then cmdParams = cmdParams & "-Software=" & GetPhotoDemonNameAndVersion() & vbCrLf
     
     'ExifTool will always note itself as the XMP toolkit unless we specifically tell it not to; when "privacy mode" is active,
     ' do not list any toolkit at all.
@@ -887,7 +916,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     If Not g_ImageFormats.IsExifAllowedForPDIF(srcPDImage.currentFileFormat) Then
         cmdParams = cmdParams & "-exif:all=" & vbCrLf
     End If
-        
+    
     'Finally, add the special command "-execute" which tells ExifTool to start operations
     cmdParams = cmdParams & "-execute" & vbCrLf
     
@@ -901,6 +930,24 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     WriteMetadata = True
     
+End Function
+
+Private Function DoesTagValueRequireEscaping(ByRef srcTagValue As String) As Boolean
+    If InStr(1, srcTagValue, " ", vbBinaryCompare) <> 0 Then
+        DoesTagValueRequireEscaping = True
+    ElseIf InStr(1, srcTagValue, vbCrLf, vbBinaryCompare) <> 0 Then
+        DoesTagValueRequireEscaping = True
+    ElseIf InStr(1, srcTagValue, "<", vbBinaryCompare) <> 0 Then
+        DoesTagValueRequireEscaping = True
+    ElseIf InStr(1, srcTagValue, ">", vbBinaryCompare) <> 0 Then
+        DoesTagValueRequireEscaping = True
+    ElseIf InStr(1, srcTagValue, "&", vbBinaryCompare) <> 0 Then
+        DoesTagValueRequireEscaping = True
+    ElseIf InStr(1, srcTagValue, "'", vbBinaryCompare) <> 0 Then
+        DoesTagValueRequireEscaping = True
+    ElseIf InStr(1, srcTagValue, """", vbBinaryCompare) <> 0 Then
+        DoesTagValueRequireEscaping = True
+    End If
 End Function
 
 'Start ExifTool.  We now use FormMain.shellPipeMain (a user control of type ShellPipe) to pass data to/from ExifTool.  This greatly
@@ -1176,11 +1223,17 @@ End Sub
 ' 1) the database has not been loaded, or 2) the tag cannot be found.  (2) typically only happens if you haven't properly
 ' populated the dstMetadata object with data from an image file.)
 Public Function FillTagFromDatabase(ByRef dstMetadata As PDMetadataItem) As Boolean
-
+    
+    'If this tag has already been processed during this session, ignore it.
+    If dstMetadata.DB_TagHitDatabase Then
+        FillTagFromDatabase = True
+        Exit Function
+    End If
+    
     'Pulling a tag from the database is fairly complex.  We start by tracking down the relevant table in question.
     ' (Many different tag groups contain tags with the same name, so we must retrieve only the relevant entry.)
     
-    'FYI - table entries look like this:
+    'FYI - table segments (EXIF, IPTC, XMP, etc) look like this:
     ' <table name='Exif::Main' g0='EXIF' g1='IFD0' g2='Image'>
     '  <desc lang='en'>Exif</desc>
     ' ...tag values...
@@ -1220,7 +1273,10 @@ Public Function FillTagFromDatabase(ByRef dstMetadata As PDMetadataItem) As Bool
                     ' TODO 7.0: see if we are ready to abandon this!
                     dstMetadata.TagDebugData = tagChunk
                     
-                    If Not ParseTagDatabaseEntry(dstMetadata, tagChunk) Then
+                    If ParseTagDatabaseEntry(dstMetadata, tagChunk) Then
+                        'To prevent future passes from hitting the database again, set the relevant shortcut flag
+                        dstMetadata.DB_TagHitDatabase = True
+                    Else
                         Debug.Print "WARNING!  ExifTool.ParseTagDatabaseEntry() failed on a tag: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
                     End If
                 

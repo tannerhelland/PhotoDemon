@@ -387,7 +387,7 @@ Public Sub DrawCaption_Clipped(ByVal dstDC As Long, ByVal dstX As Long, ByVal ds
     
     'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
     ' this function will automatically calculation a new font size, and stick it inside m_FontSizeCaptionFit.)
-    If Not m_FontSizeVerified Then VerifyFontSize
+    If (Not m_FontSizeVerified) Then VerifyFontSize
     
     'Get a copy of the current font from the central font cache
     Dim tmpFont As pdFont
@@ -398,12 +398,12 @@ Public Sub DrawCaption_Clipped(ByVal dstDC As Long, ByVal dstX As Long, ByVal ds
         Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
     End If
     
-    If customColor <> -1 Then
+    If (customColor <> -1) Then
         tmpFont.SetFontColor customColor
     Else
-        If m_Colors Is Nothing Then InitializeColorCache
-        If m_CaptionColor = -1 Then m_CaptionColor = m_Colors.RetrieveColor(PDC_Caption)
-        If m_CaptionColorCustom <> -1 Then tmpFont.SetFontColor m_CaptionColorCustom Else tmpFont.SetFontColor m_CaptionColor
+        If (m_Colors Is Nothing) Then InitializeColorCache
+        If (m_CaptionColor = -1) Then m_CaptionColor = m_Colors.RetrieveColor(PDC_Caption)
+        If (m_CaptionColorCustom <> -1) Then tmpFont.SetFontColor m_CaptionColorCustom Else tmpFont.SetFontColor m_CaptionColor
     End If
     
     tmpFont.AttachToDC dstDC

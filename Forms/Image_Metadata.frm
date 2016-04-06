@@ -3,7 +3,7 @@ Begin VB.Form FormMetadata
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Browse image metadata"
+   Caption         =   "Metadata editor"
    ClientHeight    =   8085
    ClientLeft      =   45
    ClientTop       =   315
@@ -298,6 +298,9 @@ Private m_AllTags() As PDMetadataItem
 ' current item "loses focus".  (I use quotation marks because we use custom focus events in place of the traditional ones.)
 Private m_GroupIndex As Long, m_TagIndex As Long
 
+'Focus changes trigger various responses; we ignore them until the dialog is fully visible
+Private m_DialogFinishedLoading As Boolean
+
 'Height of each metadata content block
 Private Const BLOCKHEIGHT As Long = 46
 
@@ -319,8 +322,10 @@ Private Enum PDMETADATA_COLOR_LIST
     PDMD_TagIsNotWritable = 5
     PDMD_TagIsUnsafe = 6
     PDMD_TextTagEditError = 7
-    [_Last] = 7
-    [_Count] = 8
+    PDMD_TagBackgroundDeleted = 8
+    PDMD_TagBackgroundEdited = 9
+    [_Last] = 9
+    [_Count] = 10
 End Enum
 
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
@@ -344,8 +349,46 @@ Private Sub btsTechnical_Click(Index As Integer, ByVal buttonIndex As Long)
     UpdateTagView
 End Sub
 
+Private Sub cmdBarMini_OKClick()
+    
+    'Before doing anything else, trigger a lost-focus check to make sure any edits on the current tag are preserved.
+    TagLostFocus False
+    
+    'When OK is clicked, we need to relay any changed metadata entries back to the parent metadata collection.
+    ' (Hypothetically, unchanged entries could be entirely ignored by this step, but PD copies them back to preserve
+    ' any semantic data we filled via the primary ExifTool database.  This saves a bit of work if the metadata editor
+    ' is invoked again on this image.)
+    Dim i As Long, j As Long, k As Long
+    Dim curMetadata As PDMetadataItem, targetMetadata As PDMetadataItem
+    
+    'The local metadata collection is organized as a 2D array where each row has varying length.
+    For i = 0 To m_NumOfCategories - 1
+        For j = 0 To m_MDCategories(i).Count - 1
+            
+            curMetadata = m_AllTags(i, j)
+            
+            'Find the matching tag entry in the parent image's metadata collection
+            For k = 0 To pdImages(g_CurrentImage).imgMetadata.GetMetadataCount - 1
+                targetMetadata = pdImages(g_CurrentImage).imgMetadata.GetMetadataEntry(k)
+                If StrComp(m_MDCategories(i).Name, targetMetadata.TagGroupFriendly, vbBinaryCompare) = 0 Then
+                    If StrComp(curMetadata.TagNameFriendly, targetMetadata.TagNameFriendly, vbBinaryCompare) = 0 Then
+                        pdImages(g_CurrentImage).imgMetadata.SetMetadataEntryByIndex k, curMetadata
+                        Exit For
+                    End If
+                End If
+            Next k
+        
+        Next j
+    Next i
+    
+End Sub
+
 Private Sub cmdTechnicalReport_Click()
     ExifTool.CreateTechnicalMetadataReport pdImages(g_CurrentImage)
+End Sub
+
+Private Sub Form_Activate()
+    m_DialogFinishedLoading = True
 End Sub
 
 Private Sub Form_Load()
@@ -435,7 +478,8 @@ Private Sub Form_Load()
     
     For i = 0 To pdImages(g_CurrentImage).imgMetadata.GetMetadataCount - 1
         
-        'As above, retrieve the next metadata entry
+        'As above, retrieve the next metadata entry, and this time, reset any per-session trackers
+        curMetadata.UserModifiedThisSession = False
         curMetadata = pdImages(g_CurrentImage).imgMetadata.GetMetadataEntry(i)
         chkGroup = curMetadata.TagGroupFriendly
         
@@ -485,7 +529,7 @@ Private Sub Form_Load()
     End If
     
     'Give ExifTool credit for its amazing work!
-    lblExifTool.Caption = g_Language.TranslateMessage("Metadata support is made possible by the ExifTool library.")
+    lblExifTool.Caption = g_Language.TranslateMessage("Metadata support is provided by the open-source ExifTool library.")
     
     ApplyThemeAndTranslations Me
     
@@ -557,6 +601,8 @@ Private Sub UpdateColorList()
         .LoadThemeColor PDMD_TagIsNotWritable, "TagIsNotWritable", RGB(255, 0, 0)
         .LoadThemeColor PDMD_TagIsUnsafe, "TagIsUnsafe", RGB(0, 255, 255)
         .LoadThemeColor PDMD_TextTagEditError, "TextTagEditError", RGB(255, 0, 0)
+        .LoadThemeColor PDMD_TagBackgroundDeleted, "TagBackgroundDeleted", RGB(255, 200, 200)
+        .LoadThemeColor PDMD_TagBackgroundEdited, "TagBackgroundEdited", RGB(200, 255, 200)
     End With
 End Sub
 
@@ -641,7 +687,7 @@ End Sub
 
 Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
     
-    'Calculate colors
+    'Calculate text colors (which vary depending on selection state)
     Dim titleColor As Long, descriptionColor As Long
     If itemIsSelected Then
         titleColor = m_Colors.RetrieveColor(PDMD_TitleSelected, lstMetadata.Enabled, , itemIsHovered)
@@ -651,6 +697,7 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
         descriptionColor = m_Colors.RetrieveColor(PDMD_DescriptionUnselected, lstMetadata.Enabled, , itemIsHovered)
     End If
     
+    'Prep various default rendering values (including retrieval of the boundary rect from the list box manager)
     Dim blockCategory As Long
     blockCategory = lstGroup.ListIndex
     
@@ -667,8 +714,28 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     Dim linePadding As Long
     linePadding = FixDPI(3)
     
+    'If the user has modified this tag, but the tag is *not* currently selected, we paint it with a different background color.
+    If (Not itemIsSelected) Then
+        
+        'Tags marked for removal get a pink background
+        If thisTag.TagMarkedForRemoval Then
+            With tmpRectF
+                GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Width, .Height + 1#, m_Colors.RetrieveColor(PDMD_TagBackgroundDeleted, Me.Enabled)
+            End With
+            
+        'If the user has supplied their own value for this tag, we use a green background
+        ElseIf (thisTag.UserModifiedAllSessions) Then
+            If StrComp(LCase$(thisTag.UserValueNew), LCase$(thisTag.TagValueFriendly), vbBinaryCompare) <> 0 Then
+                With tmpRectF
+                    GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Width, .Height + 1#, m_Colors.RetrieveColor(PDMD_TagBackgroundEdited, Me.Enabled)
+                End With
+            End If
+        End If
+        
+    End If
+    
     'Note that we deliberately maintain the numerical prefix as a separate entity; we need its size (in pixels) to calculate
-    ' proper padding for the description line of text.
+    ' proper padding for the description line of text, and width for the colored bar that indicates the tag's writability.
     Dim numericalPrefix As String
     numericalPrefix = CStr(itemIndex + 1) & "  "
     
@@ -694,7 +761,7 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     Dim spaceWidth As Single
     spaceWidth = m_TitleFont.GetWidthOfString(" ")
     With tmpRectF
-        GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, (offsetX - .Left) + m_TitleFont.GetWidthOfString(CStr(itemIndex + 1)) + spaceWidth + 1, .Height + 1, tagColor
+        GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, (offsetX - .Left) + m_TitleFont.GetWidthOfString(CStr(itemIndex + 1)) + spaceWidth + 1#, .Height + 1#, tagColor
     End With
     
     'Start with the simplest field: the tag title (readable form)
@@ -707,10 +774,14 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     mHeight = m_TitleFont.GetHeightOfString(drawString) + linePadding
     m_TitleFont.ReleaseFromDC
     
-    If (btsTechnical(1).ListIndex = 0) Then
-        drawString = thisTag.TagValueFriendly
+    If thisTag.UserModifiedAllSessions Then
+        drawString = thisTag.UserValueNew
     Else
-        drawString = thisTag.TagValue
+        If (btsTechnical(1).ListIndex = 0) Then
+            drawString = thisTag.TagValueFriendly
+        Else
+            drawString = thisTag.TagValue
+        End If
     End If
     
     m_DescriptionFont.AttachToDC bufferDC
@@ -754,6 +825,15 @@ Private Sub UpdateTagView()
                     newListIndex = -1
                     listIndexFound = False
                     
+                    Dim targetID As String, targetValue As String
+                    If .UserModifiedAllSessions Then
+                        targetID = LCase$(.UserIDNew)
+                        targetValue = LCase$(.UserValueNew)
+                    Else
+                        targetID = LCase$(.TagValue)
+                        targetValue = LCase$(.TagValueFriendly)
+                    End If
+                    
                     Dim strID As String, strValue As String
                     
                     Dim i As Long
@@ -771,13 +851,16 @@ Private Sub UpdateTagView()
                             lstValue.AddItem "(" & strID & ") " & strValue
                         End If
                         
-                        If StrComp(.TagValue, .DB_StackIDs.GetString(i), vbBinaryCompare) = 0 Then
+                        'Next, we want to figure out what .ListIndex value to set.  Typically, this is the tag's initial value,
+                        ' but if the user has edited this value (during this session or a previous one), we need to use that
+                        ' .ListIndex instead.  This is determined prior to running the loop (e.g. see above).
+                        If StrComp(targetID, LCase$(.DB_StackIDs.GetString(i)), vbBinaryCompare) = 0 Then
                             newListIndex = i
                             listIndexFound = True
                         
                         'As a failsafe, also compare the "print-friendly" version of the current value
                         Else
-                            If StrComp(.TagValueFriendly, .DB_StackValues.GetString(i), vbBinaryCompare) = 0 Then
+                            If StrComp(targetValue, LCase$(.DB_StackValues.GetString(i)), vbBinaryCompare) = 0 Then
                                 newListIndex = i
                                 listIndexFound = True
                             End If
@@ -803,7 +886,11 @@ Private Sub UpdateTagView()
                 Else
                     lstValue.Visible = False
                     txtValue.Visible = True
-                    If (btsTechnical(1).ListIndex = 0) Then txtValue.Text = .TagValueFriendly Else txtValue.Text = .TagValue
+                    If .UserModifiedAllSessions Then
+                        txtValue.Text = .UserValueNew
+                    Else
+                        If (btsTechnical(1).ListIndex = 0) Then txtValue.Text = .TagValueFriendly Else txtValue.Text = .TagValue
+                    End If
                     reflowTop = txtValue.GetTop + txtValue.GetHeight
                 End If
                 
@@ -1009,12 +1096,98 @@ Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As
 End Function
 
 'When the current tag loses focus, call this sub to update the tag's information against any user-applied edits.
-Private Sub TagLostFocus()
-    
+Private Sub TagLostFocus(Optional ByVal redrawListToMatch As Boolean = True)
+        
+    If (Not m_DialogFinishedLoading) Then Exit Sub
+        
     If (m_GroupIndex >= 0) And (m_TagIndex >= 0) Then
-    
+        
+        Dim tagWasEdited As Boolean: tagWasEdited = False
+        Dim tagStateChangedOther As Boolean: tagStateChangedOther = False
+        
         With m_AllTags(m_GroupIndex, m_TagIndex)
-            .TagMarkedForRemoval = CBool(chkRemove.Value)
+            
+            'Tag removal is handled specially.  (Specifically, note that it is unrelated to the .UserModified trackers;
+            ' this is important because PhotoDemon itself may mark tags for removal, independent of the user.)
+            If (.TagMarkedForRemoval) <> CBool(chkRemove.Value) Then
+                .TagMarkedForRemoval = CBool(chkRemove.Value)
+                tagStateChangedOther = True
+            End If
+            
+            'There's no point checking for value changes if a tag is un-editable
+            If .DB_IsWritable Then
+            
+                'Detecting a value change varies by edit type.  Text box entries can be compared pretty easily (just a StrComp),
+                ' while list-box changes are a bit more convoluted.
+                
+                'Values that are part of a hardcoded list are available via dropdown, and the dropdown contains both the ID
+                ' and the friendly text, crammed into one.  As such, we can't just compare listbox text.
+                If .DB_HardcodedList And (.DB_TypeCount < 2) Then
+                    
+                    'Start by detecting which listindex corresponds to the tag's original value.
+                    Dim foundDefaultListIndex As Boolean: foundDefaultListIndex = False
+                    
+                    Dim i As Long
+                    For i = 0 To .DB_StackValues.GetNumOfStrings - 1
+                        
+                        If StrComp(.TagValue, .DB_StackIDs.GetString(i), vbBinaryCompare) = 0 Then
+                            foundDefaultListIndex = True
+
+                        'As a failsafe, also compare the "print-friendly" version of the current value
+                        Else
+                            If StrComp(.TagValueFriendly, .DB_StackValues.GetString(i), vbBinaryCompare) = 0 Then
+                                foundDefaultListIndex = True
+                            End If
+                        End If
+                        
+                        If foundDefaultListIndex Then
+                        
+                            '"i" is the .ListIndex of the tag's original value.
+                            If (lstValue.ListIndex <> i) Then
+                                
+                                'This tag has been edited
+                                tagWasEdited = True
+                                .UserIDNew = .DB_StackIDs.GetString(lstValue.ListIndex)
+                                .UserValueNew = .DB_StackValues.GetString(lstValue.ListIndex)
+                                
+                            End If
+                            
+                            Exit For
+                        
+                        End If
+
+                    Next i
+                
+                'Any other values (text and numeric entry, among others) are handled via text box
+                Else
+                    
+                    Dim testString As String
+                    If (btsTechnical(1).ListIndex = 0) Then testString = .TagValueFriendly Else testString = .TagValue
+                    If StrComp(txtValue.Text, testString, vbBinaryCompare) <> 0 Then
+                        
+                        'This string is different from the one we placed inside.  Mark the tag as edited, and store the
+                        ' user-supplied value.
+                        tagWasEdited = True
+                        .UserValueNew = txtValue.Text
+                    
+                    End If
+                    
+                End If
+            '/End "is tag writable?"
+            End If
+            
+            'We track two "was this tag edited?" values: one for this session (which is reset every time the metadata editor
+            ' is loaded), and one for ALL sessions (once it becomes TRUE, it stays TRUE until PD exits).
+            If tagWasEdited Then
+                .UserModifiedThisSession = True
+                .UserModifiedAllSessions = True
+            End If
+            
+            'State changes require us to repaint the metadata list box, as the changes should be immediately reflected.
+            If (tagWasEdited Or tagStateChangedOther) Then
+                If redrawListToMatch Then lstMetadata.SetAutomaticRedraws True, True
+            End If
+            
         End With
     
     End If
