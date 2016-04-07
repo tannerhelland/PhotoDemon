@@ -210,7 +210,7 @@ Private Sub UpdateControlLayout()
     hplReviewMetadata.SetWidth (bWidth - (hplReviewMetadata.GetLeft * 2))
     
     Dim i As Long
-    For i = lblInfo.lBound To lblInfo.ubound
+    For i = lblInfo.lBound To lblInfo.UBound
         lblInfo(i).SetWidth (bWidth - (lblInfo(i).GetLeft * 2))
     Next i
                 
@@ -236,7 +236,7 @@ Public Sub UpdateAgainstCurrentTheme()
     hplReviewMetadata.UpdateAgainstCurrentTheme
     
     Dim i As Long
-    For i = lblInfo.lBound To lblInfo.ubound
+    For i = lblInfo.lBound To lblInfo.UBound
         lblInfo(i).UpdateAgainstCurrentTheme
     Next i
     
@@ -258,20 +258,20 @@ Public Function GetMetadataSettings() As String
 End Function
 
 'Update the UI against a previously saved set of metadata settings in XML format
-Public Sub SetMetadataSettings(ByRef srcXML As String)
+Public Sub SetMetadataSettings(ByRef srcXML As String, Optional ByVal srcIsPresetManager As Boolean = False)
 
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.SetParamString srcXML
     
     If cParams.GetBool("MetadataExportAllowed", True) Then chkMetadata.Value = vbChecked Else chkMetadata.Value = vbUnchecked
-    If cParams.GetBool("MetadataAnonymize", True) Then chkAnonymize.Value = vbChecked Else chkAnonymize.Value = vbUnchecked
+    If cParams.GetBool("MetadataAnonymize", False) Then chkAnonymize.Value = vbChecked Else chkAnonymize.Value = vbUnchecked
     
 End Sub
 
 Public Sub Reset()
     chkMetadata.Value = vbChecked
-    chkAnonymize.Value = vbChecked
+    chkAnonymize.Value = vbUnchecked
 End Sub
 
 Public Sub SetParentImage(ByRef srcImage As pdImage, ByVal destinationFormat As PHOTODEMON_IMAGE_FORMAT)
@@ -282,12 +282,22 @@ Public Sub SetParentImage(ByRef srcImage As pdImage, ByVal destinationFormat As 
     UpdateFormatComponentVisibility
 End Sub
 
+'If the parent image has metadata, we provide a bold notification to the user.  (We also retrieve the metadata presets,
+' if any, from the parent image.)
 Private Sub EvaluatePresenceOfMetadata()
     If Not (m_ImageCopy Is Nothing) Then
         If m_ImageCopy.imgMetadata.HasMetadata Then
             lblTitle.Caption = g_Language.TranslateMessage("This image contains metadata.")
             lblTitle.FontBold = True
             hplReviewMetadata.Caption = g_Language.TranslateMessage("click to review this image's metadata")
+            
+            Dim cParams As pdParamXML
+            Set cParams = New pdParamXML
+            cParams.SetParamString m_ImageCopy.imgStorage.GetEntry_String("MetadataSettings")
+            
+            If cParams.GetBool("MetadataExportAllowed", True) Then chkMetadata.Value = vbChecked Else chkMetadata.Value = vbUnchecked
+            If cParams.GetBool("MetadataAnonymize", False) Then chkAnonymize.Value = vbChecked Else chkAnonymize.Value = vbUnchecked
+            
         Else
             lblTitle.Caption = g_Language.TranslateMessage("This image does not contain metadata.")
             lblTitle.FontBold = False

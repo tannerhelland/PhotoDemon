@@ -29,8 +29,8 @@ Begin VB.Form dialog_ExportJP2
       TabIndex        =   3
       Top             =   2520
       Width           =   5655
-      _extentx        =   9975
-      _extenty        =   661
+      _ExtentX        =   9975
+      _ExtentY        =   661
    End
    Begin PhotoDemon.pdSlider sltQuality 
       Height          =   405
@@ -38,12 +38,12 @@ Begin VB.Form dialog_ExportJP2
       TabIndex        =   0
       Top             =   3120
       Width           =   5775
-      _extentx        =   15055
-      _extenty        =   873
-      max             =   256
-      min             =   1
-      value           =   16
-      notchposition   =   1
+      _ExtentX        =   15055
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   256
+      Value           =   16
+      NotchPosition   =   1
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -52,9 +52,9 @@ Begin VB.Form dialog_ExportJP2
       TabIndex        =   1
       Top             =   5835
       Width           =   12135
-      _extentx        =   21405
-      _extenty        =   1323
-      dontautounloadparent=   -1
+      _ExtentX        =   21405
+      _ExtentY        =   1323
+      DontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -62,35 +62,35 @@ Begin VB.Form dialog_ExportJP2
       TabIndex        =   2
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.pdLabel lblBefore 
       Height          =   435
       Left            =   6240
       Top             =   3600
       Width           =   2265
-      _extentx        =   3995
-      _extenty        =   767
-      caption         =   "high quality, large file"
-      fontitalic      =   -1
-      fontsize        =   8
-      forecolor       =   4210752
-      layout          =   1
+      _ExtentX        =   3995
+      _ExtentY        =   767
+      Caption         =   "high quality, large file"
+      FontItalic      =   -1  'True
+      FontSize        =   8
+      ForeColor       =   4210752
+      Layout          =   1
    End
    Begin PhotoDemon.pdLabel lblAfter 
       Height          =   435
       Left            =   8520
       Top             =   3600
       Width           =   2190
-      _extentx        =   3863
-      _extenty        =   767
-      alignment       =   1
-      caption         =   "low quality, small file"
-      fontitalic      =   -1
-      fontsize        =   8
-      forecolor       =   4210752
-      layout          =   1
+      _ExtentX        =   3863
+      _ExtentY        =   767
+      Alignment       =   1
+      Caption         =   "low quality, small file"
+      FontItalic      =   -1  'True
+      FontSize        =   8
+      ForeColor       =   4210752
+      Layout          =   1
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   360
@@ -98,11 +98,11 @@ Begin VB.Form dialog_ExportJP2
       Left            =   6000
       Top             =   2160
       Width           =   5850
-      _extentx        =   10319
-      _extenty        =   635
-      caption         =   "image compression ratio"
-      fontsize        =   12
-      forecolor       =   4210752
+      _ExtentX        =   10319
+      _ExtentY        =   635
+      Caption         =   "image compression ratio"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "dialog_ExportJP2"
@@ -204,12 +204,12 @@ Private Sub pdFxPreview_ViewportChanged()
 End Sub
 
 Private Sub sltQuality_Change()
-    updateComboBox
+    UpdateComboBox
     UpdatePreview
 End Sub
 
 'Used to keep the "compression ratio" text box, scroll bar, and combo box in sync
-Private Sub updateComboBox()
+Private Sub UpdateComboBox()
     
     Select Case sltQuality.Value
         
@@ -236,7 +236,7 @@ Private Sub updateComboBox()
 End Sub
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog()
+Public Sub ShowDialog()
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
@@ -278,14 +278,14 @@ Private Sub UpdatePreview()
         
         'Start by retrieving the relevant portion of the image, according to the preview window
         Dim tmpSafeArray As SAFEARRAY2D
-        previewNonStandardImage tmpSafeArray, origImageCopy, pdFxPreview
+        PreviewNonStandardImage tmpSafeArray, origImageCopy, pdFxPreview
         
         'The public workingDIB object now contains the relevant portion of the preview window.  Use that to
         ' obtain a JPEG-ified version of the image data.
-        fillDIBWithJP2Version workingDIB, workingDIB, Abs(sltQuality.Value)
+        FillDIBWithJP2Version workingDIB, workingDIB, Abs(sltQuality.Value)
         
         'Paint the final image to screen and release all temporary objects
-        finalizeNonstandardPreview pdFxPreview
+        FinalizeNonstandardPreview pdFxPreview
         
     End If
 

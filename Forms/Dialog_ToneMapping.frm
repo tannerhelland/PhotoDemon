@@ -421,7 +421,7 @@ Public Property Let fi_HandleCopy(ByVal srcHandle As Long)
 End Property
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog()
+Public Sub ShowDialog()
     
     'Prevent preview images from rendering until all initialization has finished
     cmdBar.MarkPreviewStatus False

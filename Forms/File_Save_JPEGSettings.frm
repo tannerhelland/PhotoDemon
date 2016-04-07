@@ -144,7 +144,7 @@ Begin VB.Form dialog_ExportJPEG
          Width           =   6975
          _ExtentX        =   12303
          _ExtentY        =   1931
-         Caption         =   "color sharpness (chroma subsampling)"
+         Caption         =   "chroma subsampling"
       End
       Begin PhotoDemon.pdButtonStrip btsDepth 
          Height          =   1095
@@ -328,6 +328,10 @@ Private Sub cmdBar_OKClick()
     'TODO 7.0: solve the puzzle of proper thumbnail handling
     'cParams.AddParam "JPEGThumbnail", CBool(chkThumbnail)
     
+    'Free resources that are no longer required
+    Set m_CompositedImage = Nothing
+    Set m_SrcImage = Nothing
+    
     'Hide but *DO NOT UNLOAD* the form.  The dialog manager needs to retrieve the setting strings before unloading us
     m_UserDialogAnswer = vbOK
     Me.Hide
@@ -451,7 +455,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Update the preview
     UpdatePreviewSource
-    UpdatePreview
+    UpdatePreview True
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
@@ -494,16 +498,16 @@ Private Sub UpdatePreviewSource()
     End If
 End Sub
 
-Private Sub UpdatePreview()
+Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
 
-    If cmdBar.PreviewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
+    If (cmdBar.PreviewsAllowed Or forceUpdate) And g_ImageFormats.FreeImageEnabled Then
         
         'Make sure the preview source is up-to-date
         If (m_FIHandle = 0) Then UpdatePreviewSource
         
         'Prep all relevant FreeImage flags
         Dim jpegQuality As Long, jpegSubsampling As Long
-        jpegQuality = sltQuality.Value
+        If sltQuality.IsValid Then jpegQuality = sltQuality.Value Else jpegQuality = 92
         jpegSubsampling = GetFISubsampleConstant
         
         Dim fi_Flags As Long
@@ -513,6 +517,8 @@ Private Sub UpdatePreview()
         workingDIB.resetDIB
         If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_JPEG, fi_Flags) Then
             FinalizeNonstandardPreview pdFxPreview, True
+        Else
+            Debug.Print "WARNING: JPEG EXPORT PREVIEW IS HORRIBLY BROKEN!"
         End If
         
     End If

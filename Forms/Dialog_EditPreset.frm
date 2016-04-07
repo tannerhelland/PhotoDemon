@@ -33,8 +33,7 @@ Begin VB.Form dialog_AddPreset
       Width           =   6735
       _ExtentX        =   11880
       _ExtentY        =   1323
-      BackColor       =   14802140
-      dontAutoUnloadParent=   -1  'True
+      DontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.pdTextBox txtName 
       Height          =   375
@@ -104,7 +103,7 @@ Public Property Get newPresetName() As String
 End Property
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog(ByRef srcPresetManager As pdToolPreset, ByRef parentForm As Form)
+Public Sub ShowDialog(ByRef srcPresetManager As pdToolPreset, ByRef parentForm As Form)
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
@@ -133,7 +132,7 @@ Private Sub cmdBarMini_OKClick()
     If Len(Trim$(txtName.Text)) <> 0 Then
         
         'A valid name was entered.  See if this name already exists in the preset manager.
-        If m_Presets.doesPresetExist(Trim$(txtName.Text)) Then
+        If m_Presets.DoesPresetExist(Trim$(txtName.Text)) Then
         
             'This name already exists.  Ask the user if an overwrite is okay.
             Dim msgReturn As VbMsgBoxResult
@@ -150,8 +149,8 @@ Private Sub cmdBarMini_OKClick()
                 Case vbNo
                     txtName.Text = g_Language.TranslateMessage("(enter name here)")
                     txtName.SetFocus
-                    txtName.selectAll
-                    cmdBarMini.doNotUnloadForm
+                    txtName.SelectAll
+                    cmdBarMini.DoNotUnloadForm
                     Exit Sub
 
                 'If the user selects CANCEL, exit the dialog entirely
@@ -171,9 +170,9 @@ Private Sub cmdBarMini_OKClick()
         
         txtName.Text = g_Language.TranslateMessage("(enter name here)")
         txtName.SetFocus
-        txtName.selectAll
+        txtName.SelectAll
         
-        cmdBarMini.doNotUnloadForm
+        cmdBarMini.DoNotUnloadForm
         Exit Sub
         
     End If

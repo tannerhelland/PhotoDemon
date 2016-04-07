@@ -67,10 +67,9 @@ Begin VB.Form dialog_OutlineSettings
       Width           =   12660
       _ExtentX        =   22331
       _ExtentY        =   1323
-      BackColor       =   14802140
       AutoloadLastPreset=   -1  'True
-      dontAutoUnloadParent=   -1  'True
-      dontResetAutomatically=   -1  'True
+      DontAutoUnloadParent=   -1  'True
+      DontResetAutomatically=   -1  'True
    End
    Begin PhotoDemon.pdButtonStrip btsStyle 
       Height          =   1095
@@ -236,7 +235,7 @@ Public Property Get newPen() As String
 End Property
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog(ByVal initialPen As String, Optional ByRef callingControl As pdPenSelector = Nothing)
+Public Sub ShowDialog(ByVal initialPen As String, Optional ByRef callingControl As pdPenSelector = Nothing)
     
     'Store a reference to the calling control (if any)
     Set parentPenControl = callingControl

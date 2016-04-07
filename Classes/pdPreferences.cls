@@ -521,7 +521,7 @@ Private Sub CreateNewPreferencesFile()
         xmlEngine.writeTag "OverwriteOrCopy", "0"
         xmlEngine.writeTag "SuggestedFormat", "0"
         xmlEngine.writeTag "PreserveMetadata", "True"
-        xmlEngine.writeTag "AnonymizeMetadata", "True"
+        xmlEngine.writeTag "AnonymizeMetadata", "False"
     xmlEngine.closeTag "Saving"
     xmlEngine.writeBlankLine
     

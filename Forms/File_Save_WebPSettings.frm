@@ -208,12 +208,12 @@ Private Sub pdFxPreview_ViewportChanged()
 End Sub
 
 Private Sub sltQuality_Change()
-    updateComboBox
+    UpdateComboBox
     UpdatePreview
 End Sub
 
 'Used to keep the "compression ratio" text box, scroll bar, and combo box in sync
-Private Sub updateComboBox()
+Private Sub UpdateComboBox()
     
     Select Case sltQuality.Value
         
@@ -240,7 +240,7 @@ Private Sub updateComboBox()
 End Sub
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog()
+Public Sub ShowDialog()
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
@@ -282,14 +282,14 @@ Private Sub UpdatePreview()
         
         'Start by retrieving the relevant portion of the image, according to the preview window
         Dim tmpSafeArray As SAFEARRAY2D
-        previewNonStandardImage tmpSafeArray, origImageCopy, pdFxPreview
+        PreviewNonStandardImage tmpSafeArray, origImageCopy, pdFxPreview
         
         'The public workingDIB object now contains the relevant portion of the preview window.  Use that to
         ' obtain a JPEG-ified version of the image data.
-        fillDIBWithWebPVersion workingDIB, workingDIB, Abs(sltQuality.Value)
+        FillDIBWithWebPVersion workingDIB, workingDIB, Abs(sltQuality.Value)
                 
         'Paint the final image to screen and release all temporary objects
-        finalizeNonstandardPreview pdFxPreview
+        FinalizeNonstandardPreview pdFxPreview
         
     End If
 

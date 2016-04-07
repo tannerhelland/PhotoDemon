@@ -48,10 +48,9 @@ Begin VB.Form dialog_FillSettings
       Width           =   12270
       _ExtentX        =   21643
       _ExtentY        =   1323
-      BackColor       =   14802140
       AutoloadLastPreset=   -1  'True
-      dontAutoUnloadParent=   -1  'True
-      dontResetAutomatically=   -1  'True
+      DontAutoUnloadParent=   -1  'True
+      DontResetAutomatically=   -1  'True
    End
    Begin PhotoDemon.pdButtonStrip btsStyle 
       Height          =   1050
@@ -371,7 +370,7 @@ Public Property Get newBrush() As String
 End Property
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog(ByVal initialBrush As String, Optional ByRef callingControl As pdBrushSelector = Nothing)
+Public Sub ShowDialog(ByVal initialBrush As String, Optional ByRef callingControl As pdBrushSelector = Nothing)
 
     Debug.Print "Initial brush=" & initialBrush
 

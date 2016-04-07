@@ -65,7 +65,7 @@ Public Sub GetDefaultPDImageObject(ByRef dstImage As pdImage)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.AddParam "MetadataExportAllowed", g_UserPreferences.GetPref_Boolean("Saving", "PreserveMetadata", True)
-    cParams.AddParam "MetadataAnonymize", g_UserPreferences.GetPref_Boolean("Saving", "AnonymizeMetadata", True)
+    cParams.AddParam "MetadataAnonymize", g_UserPreferences.GetPref_Boolean("Saving", "AnonymizeMetadata", False)
     dstImage.imgStorage.AddEntry "MetadataSettings", cParams.GetParamString
     
 End Sub

@@ -232,10 +232,9 @@ Begin VB.Form dialog_GradientEditor
       Width           =   12660
       _ExtentX        =   22331
       _ExtentY        =   1323
-      BackColor       =   14802140
       AutoloadLastPreset=   -1  'True
-      dontAutoUnloadParent=   -1  'True
-      dontResetAutomatically=   -1  'True
+      DontAutoUnloadParent=   -1  'True
+      DontResetAutomatically=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
@@ -344,7 +343,7 @@ Public Property Get newGradient() As String
 End Property
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog(ByVal initialGradient As String, Optional ByRef callingControl As pdGradientSelector = Nothing)
+Public Sub ShowDialog(ByVal initialGradient As String, Optional ByRef callingControl As pdGradientSelector = Nothing)
     
     'Store a reference to the calling control (if any)
     Set parentGradientControl = callingControl
@@ -517,8 +516,8 @@ Private Sub Form_Load()
         
         'Set up a special mouse handler for the gradient interaction window
         If m_MouseEvents Is Nothing Then Set m_MouseEvents = New pdInputMouse
-        m_MouseEvents.addInputTracker picInteract.hWnd, True, True, , True
-        m_MouseEvents.setSystemCursor IDC_HAND
+        m_MouseEvents.AddInputTracker picInteract.hWnd, True, True, , True
+        m_MouseEvents.SetSystemCursor IDC_HAND
                 
         'Prep a default set of gradient points
         resetGradientPoints
@@ -716,8 +715,8 @@ Private Sub UpdatePreview()
         m_NodePreviewDIB.RenderToPictureBox Me.picNodePreview
         
         'Release our GDI+ handles
-        GDI_Plus.releaseGDIPlusBrush gdipBrushMain
-        GDI_Plus.releaseGDIPlusBrush gdipBrushNodes
+        GDI_Plus.ReleaseGDIPlusBrush gdipBrushMain
+        GDI_Plus.ReleaseGDIPlusBrush gdipBrushNodes
                 
         'Notify our parent of the update
         If Not (parentGradientControl Is Nothing) Then parentGradientControl.NotifyOfLiveGradientChange m_GradientPreview.getGradientAsString
@@ -811,12 +810,12 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
 End Sub
 
 Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    m_MouseEvents.setSystemCursor IDC_HAND
+    m_MouseEvents.SetSystemCursor IDC_HAND
 End Sub
 
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_CurHoverPoint = -1
-    m_MouseEvents.setSystemCursor IDC_DEFAULT
+    m_MouseEvents.SetSystemCursor IDC_DEFAULT
     drawGradientNodes
 End Sub
 
