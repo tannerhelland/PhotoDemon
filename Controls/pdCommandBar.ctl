@@ -1128,7 +1128,7 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
                         
                     'Metadata management controls handle their own XML string parsing
                     Case "pdMetadata"
-                        eControl.SetMetadataSettings controlValue
+                        eControl.SetMetadataSettings controlValue, True
                         
                 End Select
     

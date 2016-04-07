@@ -27,8 +27,8 @@ Begin VB.UserControl pdFxPreviewCtl
       TabIndex        =   2
       Top             =   0
       Width           =   5775
-      _extentx        =   10186
-      _extenty        =   8916
+      _ExtentX        =   10186
+      _ExtentY        =   8916
    End
    Begin PhotoDemon.pdButtonStrip btsZoom 
       Height          =   495
@@ -36,9 +36,9 @@ Begin VB.UserControl pdFxPreviewCtl
       TabIndex        =   1
       Top             =   5160
       Width           =   2775
-      _extentx        =   4895
-      _extenty        =   873
-      fontsize        =   8
+      _ExtentX        =   4895
+      _ExtentY        =   873
+      FontSize        =   8
    End
    Begin PhotoDemon.pdButtonStrip btsState 
       Height          =   495
@@ -46,9 +46,9 @@ Begin VB.UserControl pdFxPreviewCtl
       TabIndex        =   0
       Top             =   5160
       Width           =   2775
-      _extentx        =   4895
-      _extenty        =   873
-      fontsize        =   8
+      _ExtentX        =   4895
+      _ExtentY        =   873
+      FontSize        =   8
    End
 End
 Attribute VB_Name = "pdFxPreviewCtl"
@@ -179,12 +179,12 @@ Public Property Get hWnd() As Long
 End Property
 
 'OffsetX/Y are used when the preview is in 1:1 mode, and the user is allowed to scroll around the underlying image
-Public Property Get OffsetX() As Long
-    OffsetX = pdPreviewBox.OffsetX
+Public Property Get offsetX() As Long
+    offsetX = pdPreviewBox.offsetX
 End Property
 
-Public Property Get OffsetY() As Long
-    OffsetY = pdPreviewBox.OffsetY
+Public Property Get offsetY() As Long
+    offsetY = pdPreviewBox.offsetY
 End Property
 
 'External functions may need to access the color selected by the preview control

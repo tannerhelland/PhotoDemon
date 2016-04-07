@@ -198,7 +198,7 @@ Public Property Get DialogResult() As VbMsgBoxResult
 End Property
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
-Public Sub showDialog()
+Public Sub ShowDialog()
 
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
@@ -213,7 +213,7 @@ Public Sub showDialog()
     userAnswer = vbNo
     
     'Load command button images
-    CmdOK.AssignImage "LRGACCEPT"
+    cmdOK.AssignImage "LRGACCEPT"
     cmdCancel.AssignImage "LRGCANCEL"
     
     'Apply any custom styles to the form

@@ -164,12 +164,12 @@ Public Property Get hWnd() As Long
 End Property
 
 'OffsetX/Y are used when the preview is in 1:1 mode, and the user is allowed to scroll around the underlying image
-Public Property Get OffsetX() As Long
-    If m_HScrollAllowed Then OffsetX = ValidateXOffset(m_HScrollValue + m_OffsetX) Else OffsetX = 0
+Public Property Get offsetX() As Long
+    If m_HScrollAllowed Then offsetX = ValidateXOffset(m_HScrollValue + m_OffsetX) Else offsetX = 0
 End Property
 
-Public Property Get OffsetY() As Long
-    If m_VScrollAllowed Then OffsetY = ValidateYOffset(m_VScrollValue + m_OffsetY) Else OffsetY = 0
+Public Property Get offsetY() As Long
+    If m_VScrollAllowed Then offsetY = ValidateYOffset(m_VScrollValue + m_OffsetY) Else offsetY = 0
 End Property
 
 'External functions may need to access the color selected by the preview control
@@ -217,6 +217,11 @@ End Sub
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout
     RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
+    m_UniqueID = Timer
+    If (Not newVisibility) Then FastDrawing.ResetPreviewIDs
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
@@ -468,8 +473,8 @@ Private Sub GetDIBXYFromMouseXY(ByVal mouseX As Single, ByVal mouseY As Single, 
     'We now have an original DIB width/height pair, destination DIB width/height pair, preview (x, y) offset - all that's left
     ' is a source (x, y) offset.
     Dim srcX As Single, srcY As Single
-    srcX = Me.OffsetX
-    srcY = Me.OffsetY
+    srcX = Me.offsetX
+    srcY = Me.offsetY
     
     'Convert the destination (x, y) pair to the [0, 1] range.
     Dim dstX As Single, dstY As Single
@@ -585,6 +590,7 @@ End Sub
 Private Sub UserControl_Terminate()
     If Not (m_OriginalImage Is Nothing) Then m_OriginalImage.eraseDIB
     If Not (m_fxImage Is Nothing) Then m_fxImage.eraseDIB
+    FastDrawing.ResetPreviewIDs
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)

@@ -1091,7 +1091,7 @@ Private Sub syncInterfaceToCurrentColor()
     
     Dim pImageData() As Byte
     Dim psa As SAFEARRAY2D
-    prepSafeArray psa, primaryBox
+    PrepSafeArray psa, primaryBox
     CopyMemory ByVal VarPtrArray(pImageData()), VarPtr(psa), 4
     
     Dim x As Long, y As Long, quickX As Long

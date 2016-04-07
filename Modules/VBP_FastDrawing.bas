@@ -94,6 +94,12 @@ Private m_PreviousPreviewID As Double
 
 Private m_PreviousPreviewCopy As pdDIB
 
+'When a preview control is unloaded, it can optionally call this to forcibly reset the preview engine's tracking ID.
+' This will force a full refresh on the next preview (generally advised, in case the user switches between images).
+Public Sub ResetPreviewIDs()
+    m_PreviousPreviewID = 0#
+End Sub
+
 'This function can be used to populate a valid SAFEARRAY2D structure against any DIB
 Public Sub PrepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcDIB As pdDIB)
     
@@ -116,7 +122,7 @@ End Sub
 Public Sub PreviewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As pdDIB, ByRef previewTarget As pdFxPreviewCtl, Optional ByVal leaveAlphaPremultiplied As Boolean = False)
     
     'Before doing anything else, see if we can simply re-use our previous preview image
-    If (m_PreviousPreviewID = previewTarget.GetUniqueID) And (Not workingDIB Is Nothing) And (Not m_PreviousPreviewCopy Is Nothing) Then
+    If (m_PreviousPreviewID = previewTarget.GetUniqueID) And (m_PreviousPreviewID <> 0) And (Not workingDIB Is Nothing) And (Not m_PreviousPreviewCopy Is Nothing) Then
     
         'We know workingDIB and m_PreviousPreviewCopy are NOT nothing, thanks to the check above, so no DIB instantation is required.
         'Simply copy m_PreviousPreviewCopy into workingDIB
@@ -180,8 +186,8 @@ Public Sub PreviewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As p
         Else
         
             'Calculate offsets, if any, for the image
-            hOffset = previewTarget.OffsetX
-            vOffset = previewTarget.OffsetY
+            hOffset = previewTarget.offsetX
+            vOffset = previewTarget.offsetY
             
             If (workingDIB.getDIBWidth <> newWidth) Or (workingDIB.getDIBHeight <> newHeight) Or (workingDIB.getDIBColorDepth <> srcDIB.getDIBColorDepth) Then
                 workingDIB.createBlank newWidth, newHeight, srcDIB.getDIBColorDepth
@@ -423,8 +429,8 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 Else
                 
                     'Calculate offsets, if any, for the selected area
-                    hOffset = previewTarget.OffsetX
-                    vOffset = previewTarget.OffsetY
+                    hOffset = previewTarget.offsetX
+                    vOffset = previewTarget.offsetY
                     
                     If workingDIB.getDIBWidth <> newWidth Or workingDIB.getDIBHeight <> newHeight Then
                         workingDIB.createBlank newWidth, newHeight, pdImages(g_CurrentImage).GetActiveDIB().getDIBColorDepth
@@ -452,8 +458,8 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 Else
                 
                     'Calculate offsets, if any, for the image
-                    hOffset = previewTarget.OffsetX
-                    vOffset = previewTarget.OffsetY
+                    hOffset = previewTarget.offsetX
+                    vOffset = previewTarget.offsetY
                     
                     If workingDIB.getDIBWidth <> newWidth Or workingDIB.getDIBHeight <> newHeight Then
                         workingDIB.createBlank newWidth, newHeight, pdImages(g_CurrentImage).GetActiveDIB().getDIBColorDepth
@@ -604,8 +610,8 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
             Else
                 
                 Dim hOffset As Long, vOffset As Long
-                hOffset = previewTarget.OffsetX
-                vOffset = previewTarget.OffsetY
+                hOffset = previewTarget.offsetX
+                vOffset = previewTarget.offsetY
                 
                 selMaskCopy.createBlank workingDIB.getDIBWidth, workingDIB.getDIBHeight
                 BitBlt selMaskCopy.getDIBDC, 0, 0, selMaskCopy.getDIBWidth, selMaskCopy.getDIBHeight, pdImages(g_CurrentImage).mainSelection.selMask.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft + hOffset, pdImages(g_CurrentImage).mainSelection.boundTop + vOffset, vbSrcCopy

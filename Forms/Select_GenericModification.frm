@@ -34,8 +34,7 @@ Begin VB.Form FormSelectionDialogs
       Width           =   6660
       _ExtentX        =   11748
       _ExtentY        =   1323
-      BackColor       =   14802140
-      dontAutoUnloadParent=   -1  'True
+      DontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.pdSlider sltSelValue 
       Height          =   405
@@ -91,7 +90,7 @@ Public Property Get paramValue() As Double
 End Property
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
-Public Sub showDialog(ByVal typeOfDialog As SelectionDialogType)
+Public Sub ShowDialog(ByVal typeOfDialog As SelectionDialogType)
     
     'Based on the type of dialog requested, rebuild the dialog's text
     Dim titleText As String, sliderText As String
@@ -146,7 +145,7 @@ Private Sub cmdBarMini_OKClick()
         userValue = sltSelValue.Value
         Me.Hide
     Else
-        cmdBarMini.doNotUnloadForm
+        cmdBarMini.DoNotUnloadForm
     End If
 End Sub
 

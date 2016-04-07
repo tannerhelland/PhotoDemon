@@ -66,7 +66,7 @@ Begin VB.Form FormPreferences
          Width           =   7935
          _ExtentX        =   13996
          _ExtentY        =   661
-         Caption         =   "copy all relevant metadata to the new file"
+         Caption         =   "copy any relevant metadata to the new file"
       End
       Begin PhotoDemon.pdCheckBox chkConfirmUnsaved 
          Height          =   330
@@ -104,7 +104,7 @@ Begin VB.Form FormPreferences
          Width           =   7950
          _ExtentX        =   14023
          _ExtentY        =   503
-         Caption         =   "when saving images that originally contained metadata:"
+         Caption         =   "default behavior when saving images for the first time:"
          ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblInterfaceTitle 
@@ -1997,7 +1997,7 @@ Private Sub LoadAllPreferences()
                
         'START metadata export
             If g_UserPreferences.GetPref_Boolean("Saving", "PreserveMetadata", True) Then chkSaveMetadata.Value = vbChecked Else chkSaveMetadata.Value = vbUnchecked
-            If g_UserPreferences.GetPref_Boolean("Saving", "AnonymizeMetadata", True) Then chkAnonymizeMetadata.Value = vbChecked Else chkAnonymizeMetadata.Value = vbUnchecked
+            If g_UserPreferences.GetPref_Boolean("Saving", "AnonymizeMetadata", False) Then chkAnonymizeMetadata.Value = vbChecked Else chkAnonymizeMetadata.Value = vbUnchecked
         'END metadata export
     
     'END Saving preferences

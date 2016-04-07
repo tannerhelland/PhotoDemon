@@ -124,7 +124,7 @@ Public Property Get DialogResult() As VbMsgBoxResult
 End Property
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
-Public Sub showDialog()
+Public Sub ShowDialog()
 
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long

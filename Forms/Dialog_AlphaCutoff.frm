@@ -43,8 +43,7 @@ Begin VB.Form dialog_AlphaCutoff
       Width           =   11655
       _ExtentX        =   20558
       _ExtentY        =   1323
-      BackColor       =   14802140
-      dontAutoUnloadParent=   -1  'True
+      DontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.pdSlider sltThreshold 
       Height          =   705
@@ -162,7 +161,7 @@ Public Property Let refDIB(ByRef refDIB As pdDIB)
 End Property
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog()
+Public Sub ShowDialog()
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
@@ -198,7 +197,7 @@ Private Sub UpdatePreview()
     tmpDIB.eraseDIB
     
     tmpDIB.createFromExistingDIB srcDIB
-    tmpDIB.applyAlphaCutoff sltThreshold.Value, False, csComposite.Color
+    tmpDIB.ApplyAlphaCutoff sltThreshold.Value, False, csComposite.Color
     
     tmpDIB.RenderToPictureBox picPreview
 
