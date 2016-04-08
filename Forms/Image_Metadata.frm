@@ -778,9 +778,17 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
         drawString = thisTag.UserValueNew
     Else
         If (btsTechnical(1).ListIndex = 0) Then
-            drawString = thisTag.TagValueFriendly
+            If Len(thisTag.TagValueFriendly) < 100 Then
+                drawString = thisTag.TagValueFriendly
+            Else
+                drawString = Left$(thisTag.TagValueFriendly, 100)
+            End If
         Else
-            drawString = thisTag.TagValue
+            If Len(thisTag.TagValueFriendly) < 100 Then
+                drawString = thisTag.TagValue
+            Else
+                drawString = Left$(thisTag.TagValue, 100)
+            End If
         End If
     End If
     

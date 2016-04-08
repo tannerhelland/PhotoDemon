@@ -169,7 +169,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             pdDebug.LogAction "Starting separate metadata extraction thread..."
         #End If
             
-        StartMetadataProcessing srcFile, targetImage.originalFileFormat, targetImage.imageID
+        StartMetadataProcessing srcFile, targetImage
         
     End If
     

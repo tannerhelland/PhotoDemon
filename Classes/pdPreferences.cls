@@ -478,9 +478,12 @@ Private Sub CreateNewPreferencesFile()
     xmlEngine.writeBlankLine
     
     xmlEngine.writeTag "Loading", "", True
-        xmlEngine.writeTag "AutomaticallyLoadMetadata", "False"
         xmlEngine.writeTag "ExifAutoRotate", "True"
         xmlEngine.writeTag "InitialImageZoom", "0"
+        xmlEngine.writeTag "MetadataEstimateJPEG", "True"
+        xmlEngine.writeTag "MetadataExtractBinary", "False"
+        xmlEngine.writeTag "MetadataExtractUnknown", "False"
+        xmlEngine.writeTag "MetadataHideDuplicates", "True"
         xmlEngine.writeTag "ToneMappingPrompt", "True"
     xmlEngine.closeTag "Loading"
     xmlEngine.writeBlankLine
@@ -522,6 +525,7 @@ Private Sub CreateNewPreferencesFile()
         xmlEngine.writeTag "SuggestedFormat", "0"
         xmlEngine.writeTag "PreserveMetadata", "True"
         xmlEngine.writeTag "AnonymizeMetadata", "False"
+        xmlEngine.writeTag "MetadataListPD", "True"
     xmlEngine.closeTag "Saving"
     xmlEngine.writeBlankLine
     
