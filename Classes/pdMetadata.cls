@@ -845,7 +845,7 @@ Private Function PARSE_LikelyTagLine(ByRef xmlLines() As String, ByRef linePoint
             '     this will be the *only* value provided.  For known tags with hard-coded constants (like the example above),
             '     an <et:val> tag will also be provided, to tell us what the actual, physical value of the tag is.
             
-            'Other descriptors may also exist, but we'll get to those in turn.
+            'Other rare descriptors can exist, but we'll get to those in turn.
             
             'Start by stripping out the full group+tag name combination.  We need this value to find where the tag entry ends.
             Dim curTagName As String, endTagName As String, curTagValue As String
@@ -879,7 +879,20 @@ Private Function PARSE_LikelyTagLine(ByRef xmlLines() As String, ByRef linePoint
                     'After the RDF description comes the Exiftool-specific description of the tag name.  This may
                     ' include spaces and special chars (unlike the formal name).
                     If PARSE_WholeLine(xmlLines(sLine + 2), curTagValue, "et:desc") Then m_Tags(m_NumOfTags).TagNameFriendly = ExifTool.PARSE_UnescapeXML(curTagValue)
-                    If PARSE_WholeLine(xmlLines(sLine + 3), curTagValue, "et:prt") Then m_Tags(m_NumOfTags).TagValueFriendly = ExifTool.PARSE_UnescapeXML(curTagValue)
+                    If PARSE_WholeLine(xmlLines(sLine + 3), curTagValue, "et:prt") Then
+                        m_Tags(m_NumOfTags).TagValueFriendly = ExifTool.PARSE_UnescapeXML(curTagValue)
+                    
+                    'If the print tag is not contained on a single line, it may be a binary tag.  These only appear if the -b
+                    ' option is sent to ExifTool, and they result in XML like this:
+                    ' <et:prt rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>
+                    '/9j/4gxYSUNDX1BST0ZJTEUAAQEAAAxITGlubwIQAABtbnRyUkdCIFhZWiAH
+                    '...many more Base64 lines...
+                    '</et:prt>
+                    
+                    'PD can parse these via a specialized Binary tag parser.
+                    Else
+                        tagFinished = PARSE_UnprocessedBinaryValue(xmlLines, sLine, eLine, m_Tags(m_NumOfTags))
+                    End If
                     
                     'For many tags, this will be the full extent of the tag's contents.  Let's look for one more semi-common tag
                     ' before exiting - a formal value tag, which is the non-human-friendly version of the tag's contents.
@@ -890,7 +903,12 @@ Private Function PARSE_LikelyTagLine(ByRef xmlLines() As String, ByRef linePoint
                     'Check for a closing rdf description; if it exists, we can ignore any further parsing.
                     Else
                         m_Tags(m_NumOfTags).TagValue = m_Tags(m_NumOfTags).TagValueFriendly
-                        tagFinished = PARSE_EndOfTagDetails(xmlLines(sLine + 4))
+                        
+                        'In 99% of cases, this is just a simple tag that ends at (sLine + 4).  Rare, fully processed binary tags,
+                        ' (as demonstrated in the previous If/Then block) will also end here, but the finished line of their tag
+                        ' will have already been calculated by a previous step, and tagFinished will be TRUE.
+                        If (Not tagFinished) Then tagFinished = PARSE_EndOfTagDetails(xmlLines(sLine + 4))
+                        
                     End If
                     
                     'If a closing rdf description has already been located, this tag has been successfully parsed
@@ -937,6 +955,62 @@ Private Function PARSE_LikelyTagLine(ByRef xmlLines() As String, ByRef linePoint
 
 End Function
 
+'Unprocessed binary values are only available if the -b option is sent to ExifTool at extraction time.  Otherwise, binary tags
+' are generally ignored, unless their length is extremely small (a few bytes)
+Private Function PARSE_UnprocessedBinaryValue(ByRef xmlLines() As String, ByRef tagStartLine As Long, ByRef tagEndLine As Long, ByRef dstMetadata As PDMetadataItem) As Boolean
+    
+    dstMetadata.IsTagBinary = False
+    
+    'Here is the layout of a base-64 encoded binary tag (this is taken from an actual, real-world image):
+'    <Composite:ThumbnailImage>
+'     <rdf:Description et:id='ThumbnailImage' et:table='Composite'>
+'      <et:desc>Thumbnail Image</et:desc>
+'      <et:prt rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>
+'/9j/4gxYSUNDX1BST0ZJTEUAAQEAAAxITGlubwIQAABtbnRyUkdCIFhZWiAH
+'zgACAAkABgAxAABhY3NwTVNGVAAAAABJRUMgc1JHQgAAAAAAAAAAAAAAAAAA
+'...many more Base64 lines...
+'2Q==
+'</et:prt>
+'     </rdf:Description>
+'    </Composite:ThumbnailImage>
+    
+    'ExifTool's output is consistent (including the datatype identifier), so we can use line separators to quickly check for such tags.
+    If StrComp(Trim$(xmlLines(tagStartLine + 3)), "<et:prt rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>", vbBinaryCompare) = 0 Then
+        
+        'This is a binary tag.  *STARTING WITH THE NEXT LINE*, everything that follows is part of the tag, until the closing
+        ' </et:val> tag is reached.  (Note that we will need to strip a trailing CrLf from the value.)
+        dstMetadata.IsTagBinary = True
+        
+        'Looping backward from the closing tag line (which has already been discovered!), look for the closing </et:prt> tag.
+        Dim i As Long
+        For i = (tagEndLine - 1) To tagStartLine Step -1
+            If StrComp(Trim$(xmlLines(i)), "</et:prt>", vbBinaryCompare) = 0 Then Exit For
+        Next i
+        
+        If (i > tagStartLine) Then
+            
+            Dim finalValueLine As Long:  finalValueLine = i - 1
+            Dim fullTagValue As String
+            
+            For i = (tagStartLine + 4) To finalValueLine
+                fullTagValue = fullTagValue & xmlLines(i)
+            Next i
+            
+            'Strip any vbCrLfs in the data and store the raw Base64 data.  (Without additional semantics, it's hard to know what format
+            ' the data actually represents.)
+            'If (InStr(1, fullTagValue, vbCrLf, vbBinaryCompare) <> 0) Then fullTagValue = Replace$(fullTagValue, vbCrLf, "", , , vbBinaryCompare)
+            dstMetadata.TagBase64Value = fullTagValue
+            dstMetadata.TagValueFriendly = fullTagValue
+            dstMetadata.WasBinaryExtracted = True
+            
+        End If
+        
+    End If
+    
+    PARSE_UnprocessedBinaryValue = dstMetadata.IsTagBinary
+    
+End Function
+
 Private Function PARSE_BinaryValueCheck(ByRef xmlLines() As String, ByRef tagStartLine As Long, ByRef tagEndLine As Long, ByRef dstMetadata As PDMetadataItem) As Boolean
     
     dstMetadata.IsTagBinary = False
@@ -978,6 +1052,7 @@ Private Function PARSE_BinaryValueCheck(ByRef xmlLines() As String, ByRef tagSta
             ' the data actually represents.)
             If (InStr(1, fullTagValue, vbCrLf, vbBinaryCompare) <> 0) Then fullTagValue = Replace$(fullTagValue, vbCrLf, "", , , vbBinaryCompare)
             dstMetadata.TagBase64Value = fullTagValue
+            dstMetadata.WasBinaryExtracted = True
             
             'ExifTool will sometimes store characters of an unknown codepage as Base64 data.  Attempt a heuristic-based conversion to a
             ' raw string and store the result; this is the best we can do at present.

@@ -150,6 +150,7 @@ Public Type PDMetadataItem
     HasIndex As Boolean             'Indicates the presence of an "et:index" identifier in the RDF description.  This is only supplied under rare circumstances, e.g. if the same tag appears in multiple groups.
     IsTagList As Boolean            'Indicates the presence of a list-type tag, common with XMP chunks coming from Photoshop.  The friendly tag name contains a semicolor-delimited list of tag values.
     IsTagBinary As Boolean          'Indicates the presence of a base64-encoded binary tag.
+    WasBinaryExtracted As Boolean   'Normally, we skip the extraction of binary data as it can be enormous and time-consuming to process.  However, if the user requests binary extraction via preference, we can go ahead and retrieve the data for them.  This tag indicates that we performed such an extraction, and the result is stored inside TagBase64Value.
     InternalUseOnly As Boolean      'Some tags (like ExifTool version) have no relevance to the end-user.  We still want to track these, but we tag them so that they are not exposed to the user.
     TagIndexInternal As Long        'Only meaningful if HasIndex (above) is TRUE.
     TagBase64Value As String        'Only meaningful if IsTagBinary (above) is TRUE.
@@ -512,7 +513,7 @@ End Function
 
 'Start an ExifTool instance (if one isn't already active), and have it process an image file.  Because we now run ExifTool
 ' asynchronously, this should be done early in the image load process.
-Public Function StartMetadataProcessing(ByVal srcFile As String, ByVal srcFormat As Long, ByVal targetImageID As Long) As Boolean
+Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage As pdImage) As Boolean
 
     'If ExifTool is not running, start it.  If it cannot be started, exit.
     If (Not isExifToolRunning) Then
@@ -555,15 +556,28 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
         cmdParams = cmdParams & "-lang" & vbCrLf & g_Language.getCurrentLanguage() & vbCrLf
     End If
     
-    'TEST! On JPEGs, request a digest as well
-    'If srcFormat = PDIF_JPEG Then cmdParams = cmdParams & "-jpegdigest" & vbCrLf
+    'If the user wants us to estimate JPEG quality, do so now
+    If g_UserPreferences.GetPref_Boolean("Loading", "Metadata Estimate JPEG", True) Then
+        cmdParams = cmdParams & "-api" & vbCrLf & "RequestTags=JPEGQualityEstimate,JPEGDigest" & vbCrLf
+    End If
     
-    'Request that binary data be processed.  We have no use for this data within PD, but when it comes time to write
-    ' our metadata back out to file, we may want to have a copy of it.
-    'cmdParams = cmdParams & "-b" & vbCrLf
+    'If the user wants us to extract binary data, do so now
+    If g_UserPreferences.GetPref_Boolean("Loading", "Metadata Extract Binary", False) Then
+        cmdParams = cmdParams & "-b" & vbCrLf
+    End If
+    
+    'If the user wants us to extract unknown tags, do so now
+    If g_UserPreferences.GetPref_Boolean("Loading", "Metadata Extract Unknown", False) Then
+        cmdParams = cmdParams & "-u" & vbCrLf
+    End If
+    
+    'If the user wants us to expose duplicate tags, do so now.  (Default behavior is to suppress duplicates.)
+    If g_UserPreferences.GetPref_Boolean("Loading", "Metadata Hide Duplicates", True) Then
+        cmdParams = cmdParams & "--a" & vbCrLf
+    End If
     
     'Historically, we needed to explicitly set a charset; this shouldn't be necessary with current versions (as UTF-8 is
-    ' automatically supported), but if desired, specific metadata types can be coerced into requested character sets.
+    ' automatically supported), but if desired, specific metadata types can be coerced into requested character sets like so:
     'cmdParams = cmdParams & "-charset" & vbCrLf & "UTF8" & vbCrLf
     
     'To support Unicode filenames, explicitly request UTF-8-compatible parsing.
@@ -591,17 +605,19 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
     cmdParams = cmdParams & srcFile & vbCrLf
     
     'Finally, add the special command "-execute" which tells ExifTool to start operations
-    cmdParams = cmdParams & "-execute" & targetImageID & vbCrLf
+    cmdParams = cmdParams & "-execute" & dstImage.imageID & vbCrLf
     
     'Note this request ID as being the last one we received; only when this ID is returned by ExifTool will we actually consider our
     ' work complete.
-    m_LastRequestID = targetImageID
+    m_LastRequestID = dstImage.imageID
     
     'DEBUG ONLY! Display the param list we have assembled.
     'Debug.Print cmdParams
     
     'Ask the user control to start processing this image's metadata.  It will handle things from here.
     FormMain.shellPipeMain.SendData cmdParams
+    
+    StartMetadataProcessing = True
     
 End Function
 
@@ -904,8 +920,10 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     If removeGPS Then cmdParams = cmdParams & "-gps:all=" & vbCrLf
     
     'GPS removal indicates the user wants privacy tags removed; if the user has NOT requested removal of these, list PD as
-    ' the processing software.
-    If (Not removeGPS) Then cmdParams = cmdParams & "-Software=" & GetPhotoDemonNameAndVersion() & vbCrLf
+    ' the processing software.  (Note that this behavior can also be disabled from the Preferences dialog.)
+    If (Not removeGPS) Then
+        If g_UserPreferences.GetPref_Boolean("Saving", "MetadataListPD", True) Then cmdParams = cmdParams & "-Software=" & GetPhotoDemonNameAndVersion() & vbCrLf
+    End If
     
     'ExifTool will always note itself as the XMP toolkit unless we specifically tell it not to; when "privacy mode" is active,
     ' do not list any toolkit at all.

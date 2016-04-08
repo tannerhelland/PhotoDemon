@@ -33,7 +33,7 @@ Begin VB.Form dialog_AutosaveWarning
       Width           =   3300
       _ExtentX        =   5821
       _ExtentY        =   1296
-      Caption         =   "Restore selected images"
+      Caption         =   "Restore selected autosaves"
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
