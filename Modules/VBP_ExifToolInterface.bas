@@ -3,7 +3,7 @@ Attribute VB_Name = "ExifTool"
 'ExifTool Plugin Interface
 'Copyright 2013-2016 by Tanner Helland
 'Created: 24/May/13
-'Last updated: 05/April/16
+'Last updated: 08/April/16
 'Last update: mass overhaul in conjunction with building the Metadata Editor dialog
 '
 'Module for handling all ExifTool interfacing.  This module is pointless without the accompanying ExifTool plugin,
@@ -848,17 +848,12 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
             cmdParams = cmdParams & vbCrLf
         End If
             
-        'Also, if the user has manually requested removal of a tag, mirror that request to ExifTool
+        'Also, if the user has manually requested removal of a tag, mirror that request to ExifTool.
         If tmpMetadata.TagMarkedForRemoval Then
             cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "=" & vbCrLf
         End If
         
     Next i
-    
-    'On some files, we prefer to use XMP over Exif.  This command instructs ExifTool to convert Exif tags to XMP tags where possible.
-    If (outputMetadataFormat = PDMF_XMP) Then
-        cmdParams = cmdParams & "-xmp:all<all" & vbCrLf
-    End If
     
     'Regardless of the type of metadata copy we're performing, we need to alter or remove some tags because their
     ' original values are no longer relevant.
@@ -928,11 +923,16 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     'ExifTool will always note itself as the XMP toolkit unless we specifically tell it not to; when "privacy mode" is active,
     ' do not list any toolkit at all.
     If removeGPS Then cmdParams = cmdParams & "-XMPToolkit=" & vbCrLf
-        
+    
     'If the output format does not support Exif whatsoever, we can ask ExifTool to forcibly remove any remaining Exif tags.
     ' (This includes any tags it was unable to convert to XMP or IPTC format.)
     If Not g_ImageFormats.IsExifAllowedForPDIF(srcPDImage.currentFileFormat) Then
         cmdParams = cmdParams & "-exif:all=" & vbCrLf
+    End If
+    
+    'On some files, we prefer to use XMP over Exif.  This command instructs ExifTool to convert Exif tags to XMP tags where possible.
+    If (outputMetadataFormat = PDMF_XMP) Then
+        cmdParams = cmdParams & "-xmp:all<all" & vbCrLf
     End If
     
     'Finally, add the special command "-execute" which tells ExifTool to start operations
@@ -1638,3 +1638,69 @@ Public Function PARSE_UnescapeXML(ByRef srcString As String) As String
     If InStr(1, PARSE_UnescapeXML, "&apos;", vbBinaryCompare) Then PARSE_UnescapeXML = Replace$(PARSE_UnescapeXML, "&apos;", "'")
     If InStr(1, PARSE_UnescapeXML, "&quot;", vbBinaryCompare) Then PARSE_UnescapeXML = Replace$(PARSE_UnescapeXML, "&quot;", """")
 End Function
+
+'Someday, it would be nice for the caller to have some control over this list.  For example, they may want to strip GPS,
+' but preserve Copyright data.  That's not possible with a hard-coded implementation.
+'
+'For now, however, you can call this function to see if PD will remove the tag if the Anonymization option is checked.
+Public Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Boolean
+
+    Dim potentialConcern As Boolean
+    potentialConcern = False
+    
+    'Non-writable categories can be skipped in advance, as their tags cannot physically be written by ExifTool.
+    Dim sCategoryName As String
+    sCategoryName = UCase$(srcTag.TagGroupFriendly)
+    
+    Dim groupSkippable As Boolean: groupSkippable = False
+    If StrComp(sCategoryName, "SYSTEM", vbBinaryCompare) = 0 Then groupSkippable = True
+    If StrComp(sCategoryName, "FILE", vbBinaryCompare) = 0 Then groupSkippable = True
+    If StrComp(sCategoryName, "ICC PROFILE", vbBinaryCompare) = 0 Then groupSkippable = True
+    
+    'Technically, we should be able to get away with not checking inferred tags (called "Composite" by ExifTool), per this link:
+    ' http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Composite.html
+    '
+    'But because this is a sensitive topic, we err on the side of caution and check tags in the inferred group.
+    'If StrComp(sCategoryName, "INFERRED", vbBinaryCompare) = 0 Then groupSkippable = True
+    
+    'Only proceed with further checks if this category is a potentially writable one
+    If (Not groupSkippable) Then
+    
+        Dim sMetadataName As String
+        sMetadataName = UCase$(srcTag.TagName)
+        
+        If InStr(1, sMetadataName, "FIRMWARE", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "ABOUT", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "ARTIST", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "BABY", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "BY-LINE", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "CITY", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "COMMENT", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "COPYRIGHT", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "COUNTRY", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "CREATOR", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "DATE", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "HISTORY", vbBinaryCompare) > 0 Then potentialConcern = True
+        If (Len(sMetadataName) >= 3) Then
+            If InStr(1, Right$(sMetadataName, 3), " ID", vbBinaryCompare) > 0 Then potentialConcern = True
+        End If
+        If InStr(1, sMetadataName, "LOCATION", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "MAKE", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "MODEL", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "NAME", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "RIGHTS", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "SERIAL", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "SOFTWARE", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "SUBJECT", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "TIME", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "TOOL", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "VERSION", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, UCase$(srcTag.TagValue), "XMP.IID", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, UCase$(srcTag.TagValue), "XMP.DID", vbBinaryCompare) > 0 Then potentialConcern = True
+        
+    End If
+    
+    DoesTagHavePrivacyConcerns = potentialConcern
+                    
+End Function
+

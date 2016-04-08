@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Handler
 'Copyright 2013-2016 by Tanner Helland
 'Created: 23/May/13
-'Last updated: 05/January/15
-'Last update: perform special checks for certain PNG chunks (sRGB, cHRM, gAMA).  PD now processes the data in these
-'              chunks, if present, which allows us to provide identical rendering to Firefox and Chrome.
+'Last updated: 08/April/16
+'Last update: mass overhaul in conjunction with building the Metadata Editor dialog
 '
 'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
@@ -1248,20 +1247,19 @@ Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
             
                 Message "Removing metadata with potential privacy concerns..."
             
-                'First thing we need to do is mark all tags to be removed.  Note that GPS tags will be automatically removed by
-                ' a parameter we pass to ExifTool, but any other privacy tags must be removed manually.
+                'NOTE: GPS tags will be automatically removed by a special parameter we pass to ExifTool, but any other
+                ' privacy-problematic tags must be manually flagged.
                 Dim i As Long
                 For i = 0 To m_NumOfTags - 1
-                    m_Tags(i).TagMarkedForRemoval = DoesTagHavePrivacyConcerns(m_Tags(i))
+                    If (Not m_Tags(i).TagMarkedForRemoval) Then m_Tags(i).TagMarkedForRemoval = ExifTool.DoesTagHavePrivacyConcerns(m_Tags(i))
                 Next i
                 
-                'Now that all problematic tags have been identified, we need to generate a modified XML string without those entries.
-                newXMLString = RetrieveModifiedXMLString
-            
-            'The caller doesn't want metadata anonymized, so just retrieve the current string as-is
-            Else
-                newXMLString = m_OriginalXML
             End If
+            
+            'Now that all problematic tags have been identified, we need to generate a modified XML string without those entries.
+            ' (NOTE: removal of these tags will *still be requested* when we interact with ExifTool, but by preemptively removing
+            '        said entries, we add an extra layer of protection against parsing errors and other glitches.)
+            newXMLString = RetrieveModifiedXMLString
             
             Message "Embedding metadata..."
                 
@@ -1292,72 +1290,6 @@ Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
         WriteAllMetadata = True
     End If
     
-End Function
-
-'Someday, it would be nice for the caller to have some control over this list.  For example, they may want to strip GPS,
-' but preserve Copyright data.  That's not possible with a hard-coded implementation.
-'
-'For now, however, you can call this function to see if PD will remove the tag if the Anonymization option is checked.
-Friend Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Boolean
-
-    Dim potentialConcern As Boolean
-    potentialConcern = False
-    
-    Dim sMetadataName As String
-    sMetadataName = UCase$(srcTag.TagName)
-        
-    If InStr(1, sMetadataName, "FIRMWARE", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "ABOUT", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "ARTIST", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "BABY", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "BY-LINE", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "CITY", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "COMMENT", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "COPYRIGHT", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "COUNTRY", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "CREATOR", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "DATE", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "HISTORY", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "LOCATION", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "MAKE", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "MODEL", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "NAME", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "RIGHTS", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "SERIAL", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "SOFTWARE", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "TIME", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "TOOL", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, sMetadataName, "VERSION", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, UCase$(srcTag.TagValue), "XMP.IID", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    ElseIf InStr(1, UCase$(srcTag.TagValue), "XMP.DID", vbBinaryCompare) > 0 Then
-        potentialConcern = True
-    End If
-    
-    DoesTagHavePrivacyConcerns = potentialConcern
-                    
 End Function
 
 Private Sub Class_Initialize()

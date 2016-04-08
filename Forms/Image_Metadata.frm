@@ -24,18 +24,6 @@ Begin VB.Form FormMetadata
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   946
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdHyperlink hypExiftool 
-      Height          =   255
-      Left            =   120
-      Top             =   6960
-      Width           =   7815
-      _ExtentX        =   13785
-      _ExtentY        =   450
-      Alignment       =   2
-      Caption         =   "visit the ExifTool homepage"
-      FontSize        =   9
-      URL             =   "http://www.sno.phy.queensu.ca/~phil/exiftool/"
-   End
    Begin PhotoDemon.pdButtonStrip btsEditPanel 
       Height          =   975
       Left            =   8040
@@ -47,7 +35,7 @@ Begin VB.Form FormMetadata
       Caption         =   "tools"
    End
    Begin PhotoDemon.pdListBox lstGroup 
-      Height          =   6375
+      Height          =   5895
       Left            =   120
       TabIndex        =   2
       Top             =   120
@@ -66,21 +54,8 @@ Begin VB.Form FormMetadata
       _ExtentX        =   25030
       _ExtentY        =   1323
    End
-   Begin PhotoDemon.pdLabel lblExifTool 
-      Height          =   255
-      Left            =   120
-      Top             =   6630
-      Width           =   7815
-      _ExtentX        =   13785
-      _ExtentY        =   450
-      Alignment       =   2
-      Caption         =   ""
-      FontSize        =   9
-      ForeColor       =   -2147483640
-      Layout          =   1
-   End
    Begin PhotoDemon.pdListBoxOD lstMetadata 
-      Height          =   6375
+      Height          =   7095
       Left            =   3525
       TabIndex        =   1
       Top             =   120
@@ -88,6 +63,125 @@ Begin VB.Form FormMetadata
       _ExtentX        =   7858
       _ExtentY        =   11245
       Caption         =   "tags in this category"
+   End
+   Begin PhotoDemon.pdLabel lblGroupDescription 
+      Height          =   495
+      Left            =   240
+      Top             =   6120
+      Width           =   3150
+      _ExtentX        =   5556
+      _ExtentY        =   1931
+      Caption         =   ""
+      FontItalic      =   -1  'True
+      FontSize        =   9
+      Layout          =   3
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      HasDC           =   0   'False
+      Height          =   6015
+      Index           =   1
+      Left            =   8040
+      ScaleHeight     =   401
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   406
+      TabIndex        =   5
+      Top             =   1200
+      Visible         =   0   'False
+      Width           =   6090
+      Begin PhotoDemon.pdButtonStrip btsTechnical 
+         Height          =   975
+         Index           =   0
+         Left            =   240
+         TabIndex        =   6
+         Top             =   0
+         Width           =   5610
+         _ExtentX        =   9895
+         _ExtentY        =   1720
+         Caption         =   "tag names"
+      End
+      Begin PhotoDemon.pdButtonStrip btsTechnical 
+         Height          =   975
+         Index           =   1
+         Left            =   240
+         TabIndex        =   7
+         Top             =   1080
+         Width           =   5610
+         _ExtentX        =   9895
+         _ExtentY        =   1720
+         Caption         =   "tag values"
+      End
+      Begin PhotoDemon.pdButton cmdTechnicalReport 
+         Height          =   555
+         Left            =   420
+         TabIndex        =   8
+         Top             =   2550
+         Width           =   5370
+         _ExtentX        =   9472
+         _ExtentY        =   979
+         Caption         =   "Generate full metadata report (HTML)..."
+      End
+      Begin PhotoDemon.pdLabel lblTechnicalReport 
+         Height          =   270
+         Left            =   240
+         Top             =   2160
+         Width           =   5625
+         _ExtentX        =   9922
+         _ExtentY        =   476
+         Caption         =   "advanced"
+         FontSize        =   11
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdHyperlink hypExiftool 
+         Height          =   255
+         Left            =   0
+         Top             =   5700
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   450
+         Alignment       =   2
+         Caption         =   "visit the ExifTool homepage"
+         FontSize        =   9
+         URL             =   "http://www.sno.phy.queensu.ca/~phil/exiftool/"
+      End
+      Begin PhotoDemon.pdLabel lblExifTool 
+         Height          =   255
+         Left            =   120
+         Top             =   5370
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   450
+         Alignment       =   2
+         Caption         =   ""
+         FontSize        =   9
+         ForeColor       =   -2147483640
+         Layout          =   1
+      End
+   End
+   Begin PhotoDemon.pdButtonToolbox btnGroupOptions 
+      Height          =   630
+      Index           =   0
+      Left            =   240
+      TabIndex        =   13
+      Top             =   6600
+      Width           =   630
+      _ExtentX        =   1111
+      _ExtentY        =   1111
+      StickyToggle    =   -1  'True
+   End
+   Begin PhotoDemon.pdButtonToolbox btnGroupOptions 
+      Height          =   630
+      Index           =   1
+      Left            =   900
+      TabIndex        =   14
+      Top             =   6600
+      Width           =   630
+      _ExtentX        =   1111
+      _ExtentY        =   1111
+      AutoToggle      =   -1  'True
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -104,16 +198,16 @@ Begin VB.Form FormMetadata
       TabIndex        =   4
       Top             =   1200
       Width           =   6090
-      Begin PhotoDemon.pdCheckBox chkRemove 
-         Height          =   375
+      Begin PhotoDemon.pdButtonToolbox btnTagOptions 
+         Height          =   630
+         Index           =   0
          Left            =   120
          TabIndex        =   11
          Top             =   4560
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   661
-         Caption         =   "mark tag for removal"
-         Value           =   0
+         Width           =   630
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         StickyToggle    =   -1  'True
       End
       Begin PhotoDemon.pdListBox lstValue 
          Height          =   3000
@@ -176,77 +270,17 @@ Begin VB.Form FormMetadata
          Layout          =   1
          UseCustomForeColor=   -1  'True
       End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
-      Height          =   6015
-      Index           =   1
-      Left            =   8040
-      ScaleHeight     =   401
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   406
-      TabIndex        =   5
-      Top             =   1200
-      Visible         =   0   'False
-      Width           =   6090
-      Begin PhotoDemon.pdButtonStrip btsTechnical 
-         Height          =   975
-         Index           =   0
-         Left            =   120
-         TabIndex        =   6
-         Top             =   0
-         Width           =   5730
-         _ExtentX        =   10107
-         _ExtentY        =   1720
-         Caption         =   "tag names"
-      End
-      Begin PhotoDemon.pdButtonStrip btsTechnical 
-         Height          =   975
+      Begin PhotoDemon.pdButtonToolbox btnTagOptions 
+         Height          =   630
          Index           =   1
-         Left            =   120
-         TabIndex        =   7
-         Top             =   1080
-         Width           =   5730
-         _ExtentX        =   10107
-         _ExtentY        =   1720
-         Caption         =   "tag values"
+         Left            =   780
+         TabIndex        =   12
+         Top             =   4560
+         Width           =   630
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         AutoToggle      =   -1  'True
       End
-      Begin PhotoDemon.pdButton cmdTechnicalReport 
-         Height          =   555
-         Left            =   240
-         TabIndex        =   8
-         Top             =   2550
-         Width           =   5610
-         _ExtentX        =   9895
-         _ExtentY        =   979
-         Caption         =   "Generate full metadata report (HTML)..."
-      End
-      Begin PhotoDemon.pdLabel lblTechnicalReport 
-         Height          =   270
-         Left            =   120
-         Top             =   2160
-         Width           =   5745
-         _ExtentX        =   10134
-         _ExtentY        =   476
-         Caption         =   "advanced"
-         FontSize        =   11
-         ForeColor       =   4210752
-      End
-   End
-   Begin PhotoDemon.pdLabel lblGroupDescription 
-      Height          =   1095
-      Left            =   240
-      Top             =   5400
-      Width           =   3150
-      _ExtentX        =   5556
-      _ExtentY        =   1931
-      FontItalic      =   -1  'True
-      FontSize        =   9
-      Layout          =   1
    End
 End
 Attribute VB_Name = "FormMetadata"
@@ -258,8 +292,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Browser
 'Copyright 2013-2016 by Tanner Helland
 'Created: 27/May/13
-'Last updated: 05/April/16
-'Last update: total overhaul to finally implement support for user editing of metadata
+'Last updated: 08/April/16
+'Last update: mass overhaul in conjunction with building the Metadata Editor dialog
 '
 'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
@@ -307,6 +341,12 @@ Private Const BLOCKHEIGHT As Long = 46
 'Font objects for rendering
 Private m_TitleFont As pdFont, m_DescriptionFont As pdFont
 
+'Tag buttons.  These may not all be available on all tags (e.g. some tags cannot be edited, so they don't get a "reset" button)
+Private Enum PDMETADATA_TAG_BUTTONS
+    MDTB_Remove = 0
+    MDTB_Reset = 1
+End Enum
+
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
 ' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
@@ -331,6 +371,67 @@ End Enum
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
+
+Private Sub btnGroupOptions_Click(Index As Integer)
+    
+    Dim curCategory As Long
+    curCategory = lstGroup.ListIndex
+    
+    Dim i As Long
+    
+    Select Case Index
+    
+        'Delete entire group
+        Case MDTB_Remove
+            Dim removalState As Boolean
+            removalState = btnGroupOptions(MDTB_Remove).Value
+            For i = 0 To m_MDCategories(curCategory).Count - 1
+                m_AllTags(curCategory, i).TagMarkedForRemoval = removalState
+            Next i
+            
+        'Reset entire group
+        Case MDTB_Reset
+            For i = 0 To m_MDCategories(curCategory).Count - 1
+                m_AllTags(curCategory, i).UserIDNew = vbNullString
+                m_AllTags(curCategory, i).UserValueNew = vbNullString
+                m_AllTags(curCategory, i).UserModifiedAllSessions = False
+                m_AllTags(curCategory, i).UserModifiedThisSession = False
+            Next i
+    
+    End Select
+    
+    lstMetadata.SetAutomaticRedraws True, True
+    UpdateGroupButtonEnablement
+    UpdateTagView
+
+End Sub
+
+Private Sub btnTagOptions_Click(Index As Integer)
+
+    Select Case Index
+    
+        Case MDTB_Remove
+        
+        Case MDTB_Reset
+                
+            If (m_GroupIndex >= 0) And (m_TagIndex >= 0) Then
+                m_AllTags(m_GroupIndex, m_TagIndex).UserIDNew = vbNullString
+                m_AllTags(m_GroupIndex, m_TagIndex).UserValueNew = vbNullString
+                m_AllTags(m_GroupIndex, m_TagIndex).UserModifiedAllSessions = False
+                m_AllTags(m_GroupIndex, m_TagIndex).UserModifiedThisSession = False
+            
+                Dim backupTagIndex As Long
+                backupTagIndex = m_TagIndex
+                
+                UpdateTagView
+                UpdateMetadataList
+                lstMetadata.ListIndex = backupTagIndex
+            
+            End If
+    
+    End Select
+
+End Sub
 
 Private Sub btsEditPanel_Click(ByVal buttonIndex As Long)
     Dim i As Long
@@ -511,13 +612,26 @@ Private Sub Form_Load()
     btsTechnical(1).ListIndex = 0
     
     'Select the first group by default
-    lstGroup.ListIndex = 0
-    If (lstMetadata.ListCount > 0) Then lstMetadata.ListIndex = 0
+    lstGroup.ListIndex = 0: m_GroupIndex = 0
+    If (lstMetadata.ListCount > 0) Then
+        lstMetadata.ListIndex = 0
+        m_TagIndex = 0
+    End If
     
     'Prep any other interface components
-    btsEditPanel.AddItem "edit", 0
-    btsEditPanel.AddItem "settings", 1
+    btsEditPanel.AddItem "edit tags", 0
+    btsEditPanel.AddItem "editor options", 1
     btsEditPanel.ListIndex = 0
+    
+    btnTagOptions(MDTB_Remove).AssignImage "TF_CLOSE", , 100
+    btnTagOptions(MDTB_Remove).AssignTooltip "Mark this tag for removal"
+    btnTagOptions(MDTB_Reset).AssignImage "CMDBAR_RESET", , 50
+    btnTagOptions(MDTB_Reset).AssignTooltip "Reset tag to its original value"
+    
+    btnGroupOptions(MDTB_Remove).AssignImage "TF_CLOSE", , 100
+    btnGroupOptions(MDTB_Remove).AssignTooltip "Mark this entire group for removal"
+    btnGroupOptions(MDTB_Reset).AssignImage "CMDBAR_RESET", , 50
+    btnGroupOptions(MDTB_Reset).AssignTooltip "Reset entire group to its original values"
     
     'Technical metadata reports are only available for images that actually exist on disk (vs clipboard or scanned images)
     If Len(pdImages(g_CurrentImage).imgStorage.GetEntry_String("CurrentLocationOnDisk")) <> 0 Then
@@ -547,25 +661,40 @@ Private Sub SortCategoryList()
     Next i
     cNames.SortAlphabetically
     
-    'We now want to do something weird.  The "System", "File", and "Composite" categories should always come first.
-    ' These categories are largely un-editable, and they are persistent across image formats.
+    'We now want to do something weird.  Certain hard-coded, non-editable categories should always come first.  Specifically:
+    ' "System" / "File" / "ICC Profile" / "Inferred"
+    ' These categories tend to be persistent across image formats, and their behavior is controlled by PhotoDemon.
+    Dim targetPosition As Long
+    targetPosition = 0
+    
     For i = 0 To m_NumOfCategories - 1
         If StrComp(LCase$(cNames.GetString(i)), "system", vbBinaryCompare) = 0 Then
-            cNames.MoveStringToNewPosition i, 0
+            cNames.MoveStringToNewPosition i, targetPosition
+            targetPosition = targetPosition + 1
             Exit For
         End If
     Next i
     
     For i = 0 To m_NumOfCategories - 1
         If StrComp(LCase$(cNames.GetString(i)), "file", vbBinaryCompare) = 0 Then
-            cNames.MoveStringToNewPosition i, 1
+            cNames.MoveStringToNewPosition i, targetPosition
+            targetPosition = targetPosition + 1
+            Exit For
+        End If
+    Next i
+    
+    For i = 0 To m_NumOfCategories - 1
+        If StrComp(LCase$(cNames.GetString(i)), "icc profile", vbBinaryCompare) = 0 Then
+            cNames.MoveStringToNewPosition i, targetPosition
+            targetPosition = targetPosition + 1
             Exit For
         End If
     Next i
     
     For i = 0 To m_NumOfCategories - 1
         If StrComp(LCase$(cNames.GetString(i)), "inferred", vbBinaryCompare) = 0 Then
-            cNames.MoveStringToNewPosition i, 2
+            cNames.MoveStringToNewPosition i, targetPosition
+            targetPosition = targetPosition + 1
             Exit For
         End If
     Next i
@@ -622,6 +751,28 @@ Private Sub UpdateMetadataList()
     
     lstMetadata.SetAutomaticRedraws True, True
     
+    UpdateGroupButtonEnablement
+    
+End Sub
+
+Private Sub UpdateGroupButtonEnablement()
+    
+    Dim curCategory As Long
+    curCategory = lstGroup.ListIndex
+    
+    Dim atLeastOneTagEdited As Boolean: atLeastOneTagEdited = False
+    Dim allTagsMarkedForRemoval As Boolean: allTagsMarkedForRemoval = True
+    
+    Dim i As Long
+    For i = 0 To m_MDCategories(curCategory).Count - 1
+        If (Not m_AllTags(curCategory, i).TagMarkedForRemoval) Then allTagsMarkedForRemoval = False
+        If m_AllTags(curCategory, i).UserModifiedAllSessions Then atLeastOneTagEdited = True
+    Next i
+    
+    'En/disable the group operation buttons according to the current group criteria
+    btnGroupOptions(MDTB_Remove).Value = allTagsMarkedForRemoval
+    btnGroupOptions(MDTB_Reset).Enabled = atLeastOneTagEdited
+    
 End Sub
 
 Private Sub lstGroup_Click()
@@ -632,32 +783,52 @@ Private Sub lstGroup_Click()
     Dim curCategory As Long
     curCategory = lstGroup.ListIndex
     
-    If m_MDCategories(curCategory).Count = 1 Then
-        lstMetadata.Caption = g_Language.TranslateMessage("1 tag in this category")
+    If m_MDCategories(curCategory).Count > 0 Then
+        If m_MDCategories(curCategory).Count = 1 Then
+            lstMetadata.Caption = g_Language.TranslateMessage("1 tag in this category")
+        Else
+            lstMetadata.Caption = g_Language.TranslateMessage("%1 tags in this category", m_MDCategories(curCategory).Count)
+        End If
     Else
-        lstMetadata.Caption = g_Language.TranslateMessage("%1 tags in this category", m_MDCategories(curCategory).Count)
+        lstMetadata.Caption = g_Language.TranslateMessage("no tags in this category")
     End If
     
-    'Some categories display a "helper" description.  Check for that now.
+    'Beneath the group box, disply group-level buttons (delete all, reset all, etc)
+    Dim topOfDescription As Long
+    topOfDescription = (lstMetadata.GetTop + lstMetadata.GetHeight) - btnGroupOptions(0).GetHeight
+    
+    Dim i As Long
+    For i = btnGroupOptions.lBound To btnGroupOptions.UBound
+        btnGroupOptions(i).SetTop topOfDescription
+    Next i
+    
+    topOfDescription = topOfDescription - FixDPI(4)
+    
+    'Some categories display a "helper" description
     Dim catName As String, groupDescription As String
     catName = LCase$(m_MDCategories(curCategory).Name)
     If StrComp(catName, "system", vbBinaryCompare) = 0 Then
-        groupDescription = g_Language.TranslateMessage("Note: ""System"" tags are provided by the operating system.  They are not embedded as traditional metadata.")
+        groupDescription = g_Language.TranslateMessage("""System"" tags are provided by the operating system.  They are not embedded as traditional metadata.")
     ElseIf StrComp(catName, "file", vbBinaryCompare) = 0 Then
-        groupDescription = g_Language.TranslateMessage("Note: ""File"" tags are required by this image format.  They are not embedded as traditional metadata.")
+        groupDescription = g_Language.TranslateMessage("""File"" tags are required by this image format.  They are not embedded as traditional metadata.")
+    ElseIf StrComp(catName, "icc profile", vbBinaryCompare) = 0 Then
+        groupDescription = g_Language.TranslateMessage("ICC profiles are handled automatically by PhotoDemon.  They are not embedded as traditional metadata.")
     ElseIf StrComp(catName, "inferred", vbBinaryCompare) = 0 Then
-        groupDescription = g_Language.TranslateMessage("Note: ""Inferred"" tags are hypothetical values inferred from other metadata.  They are not embedded as traditional metadata.")
+        groupDescription = g_Language.TranslateMessage("""Inferred"" tags are hypothetical values inferred from other metadata.  They are not embedded as traditional metadata.")
     End If
     
     'If a helper description exists, show/hide the description label to match
     If (Len(groupDescription) = 0) Then
         lblGroupDescription.Visible = False
-        lstGroup.SetHeight lstMetadata.GetHeight
     Else
         lblGroupDescription.Caption = groupDescription
-        lstGroup.SetHeight (lblGroupDescription.GetTop - FixDPI(4)) - lstGroup.GetTop
+        lblGroupDescription.Top = topOfDescription - lblGroupDescription.GetHeight
         lblGroupDescription.Visible = True
+        topOfDescription = topOfDescription - (lblGroupDescription.GetHeight + FixDPI(4))
     End If
+    
+    'With all UI elements beneath the group box now displayed correctly, set the final listbox height
+    lstGroup.SetHeight (topOfDescription - lstGroup.GetTop)
     
     'Update the metadata list to reflect the new category
     UpdateMetadataList
@@ -979,8 +1150,18 @@ Private Sub UpdateTagView()
                 
             End If
             
-            chkRemove.SetTop reflowTop
-            If .TagMarkedForRemoval Then chkRemove.Value = vbChecked Else chkRemove.Value = vbUnchecked
+            'All tags receive a "remove this tag" option
+            btnTagOptions(MDTB_Remove).SetTop reflowTop
+            btnTagOptions(MDTB_Remove).Value = .TagMarkedForRemoval
+            
+            'Editable tags also receive a "reset this tag" button
+            If .DB_IsWritable Then
+                btnTagOptions(MDTB_Reset).Enabled = .UserModifiedAllSessions
+                btnTagOptions(MDTB_Reset).SetTop reflowTop
+                btnTagOptions(MDTB_Reset).Visible = True
+            Else
+                btnTagOptions(MDTB_Reset).Visible = False
+            End If
             
         End With
         
@@ -1117,8 +1298,8 @@ Private Sub TagLostFocus(Optional ByVal redrawListToMatch As Boolean = True)
             
             'Tag removal is handled specially.  (Specifically, note that it is unrelated to the .UserModified trackers;
             ' this is important because PhotoDemon itself may mark tags for removal, independent of the user.)
-            If (.TagMarkedForRemoval) <> CBool(chkRemove.Value) Then
-                .TagMarkedForRemoval = CBool(chkRemove.Value)
+            If (.TagMarkedForRemoval) <> btnTagOptions(MDTB_Remove).Value Then
+                .TagMarkedForRemoval = btnTagOptions(MDTB_Remove).Value
                 tagStateChangedOther = True
             End If
             
@@ -1194,10 +1375,19 @@ Private Sub TagLostFocus(Optional ByVal redrawListToMatch As Boolean = True)
             'State changes require us to repaint the metadata list box, as the changes should be immediately reflected.
             If (tagWasEdited Or tagStateChangedOther) Then
                 If redrawListToMatch Then lstMetadata.SetAutomaticRedraws True, True
+                UpdateGroupButtonEnablement
             End If
             
         End With
     
     End If
     
+End Sub
+
+Private Sub lstValue_Click()
+    btnTagOptions(MDTB_Reset).Enabled = True
+End Sub
+
+Private Sub txtValue_Change()
+    btnTagOptions(MDTB_Reset).Enabled = True
 End Sub
