@@ -549,7 +549,7 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
     cmdParams = cmdParams & "-l" & vbCrLf
         
     'Request a custom separator for list-type values
-    cmdParams = cmdParams & "-sep" & vbCrLf & ";" & vbCrLf
+    cmdParams = cmdParams & "-sep" & vbCrLf & ";;" & vbCrLf
         
     'If a translation is active, request descriptions in the current language
     If g_Language.translationActive Then
@@ -815,7 +815,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'Ignore minor errors and warnings
     cmdParams = cmdParams & "-m" & vbCrLf
-        
+    
     'Overwrite the original destination file (but only if the metadata was embedded successfully!)
     cmdParams = cmdParams & "-overwrite_original" & vbCrLf
     
@@ -827,25 +827,36 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     cmdParams = cmdParams & "-tagsfromfile" & vbCrLf & srcMetadataFile & vbCrLf
     cmdParams = cmdParams & dstImageFile & vbCrLf
     
+    'Allow HTML entities (we need these for things like newlines)
+    cmdParams = cmdParams & "-E" & vbCrLf
+    
+    'Define the same custom separator we used when initially reading the metadata
+    cmdParams = cmdParams & "-sep" & vbCrLf & ";;" & vbCrLf
+    
     'Next, we need to manually request the update of any tags that the user has manually modified via the metadata editor.
-    Dim i As Long, tmpMetadata As PDMetadataItem
+    Dim i As Long, tmpMetadata As PDMetadataItem, tmpEscapedValue As String
     For i = 0 To srcPDImage.imgMetadata.GetMetadataCount - 1
         tmpMetadata = srcPDImage.imgMetadata.GetMetadataEntry(i)
         
         If tmpMetadata.UserModifiedAllSessions Then
             cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "="
             
-            'If the tag value has strings or special chars ("<",">", etc), we may need to escape it...?
-            ' (TODO: newlines are the primary problem here, as ExifTool normally separates commands via CrLf.  We may be able to avoid
-            '         this by requesting parsing of HTML character entities, per http://www.sno.phy.queensu.ca/~phil/exiftool/faq.html#Q21)
-            
-            'If DoesTagValueRequireEscaping(tmpMetadata.UserValueNew) Then
-            '    cmdParams = cmdParams & """" & tmpMetadata.UserValueNew & """"
-            'Else
+            'Some tag-types require special escaping behavior (e.g. multiline comments, list-type values)
+            If DoesTagValueRequireEscaping(tmpMetadata, tmpEscapedValue) Then
+                cmdParams = cmdParams & tmpEscapedValue
+            Else
                 cmdParams = cmdParams & tmpMetadata.UserValueNew
-            'End If
+            End If
             
             cmdParams = cmdParams & vbCrLf
+        
+        'For reasons I don't currently understand, unedited list-type tags may not be handled correctly by ExifTool.
+        ' As such, specifically request their writing.
+        Else
+            If tmpMetadata.IsTagList Or tmpMetadata.DBF_IsBag Or tmpMetadata.DBF_IsList Or tmpMetadata.DBF_IsSequence Then
+                Debug.Print "LIST: " & tmpMetadata.TagValueFriendly
+                cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "=" & tmpMetadata.TagValueFriendly & vbCrLf
+            End If
         End If
             
         'Also, if the user has manually requested removal of a tag, mirror that request to ExifTool.
@@ -924,15 +935,15 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     ' do not list any toolkit at all.
     If removeGPS Then cmdParams = cmdParams & "-XMPToolkit=" & vbCrLf
     
+    'On some files, we prefer to use XMP over Exif.  This command instructs ExifTool to convert Exif tags to XMP tags where possible.
+    If (outputMetadataFormat = PDMF_XMP) Then
+        cmdParams = cmdParams & "-xmp:all<all" & vbCrLf
+    End If
+    
     'If the output format does not support Exif whatsoever, we can ask ExifTool to forcibly remove any remaining Exif tags.
     ' (This includes any tags it was unable to convert to XMP or IPTC format.)
     If Not g_ImageFormats.IsExifAllowedForPDIF(srcPDImage.currentFileFormat) Then
         cmdParams = cmdParams & "-exif:all=" & vbCrLf
-    End If
-    
-    'On some files, we prefer to use XMP over Exif.  This command instructs ExifTool to convert Exif tags to XMP tags where possible.
-    If (outputMetadataFormat = PDMF_XMP) Then
-        cmdParams = cmdParams & "-xmp:all<all" & vbCrLf
     End If
     
     'Finally, add the special command "-execute" which tells ExifTool to start operations
@@ -950,21 +961,17 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
 End Function
 
-Private Function DoesTagValueRequireEscaping(ByRef srcTagValue As String) As Boolean
-    If InStr(1, srcTagValue, " ", vbBinaryCompare) <> 0 Then
+Private Function DoesTagValueRequireEscaping(ByRef srcMetadata As PDMetadataItem, ByRef dstEscapedTag As String) As Boolean
+    If InStr(1, srcMetadata.UserValueNew, vbCrLf, vbBinaryCompare) <> 0 Then
         DoesTagValueRequireEscaping = True
-    ElseIf InStr(1, srcTagValue, vbCrLf, vbBinaryCompare) <> 0 Then
-        DoesTagValueRequireEscaping = True
-    ElseIf InStr(1, srcTagValue, "<", vbBinaryCompare) <> 0 Then
-        DoesTagValueRequireEscaping = True
-    ElseIf InStr(1, srcTagValue, ">", vbBinaryCompare) <> 0 Then
-        DoesTagValueRequireEscaping = True
-    ElseIf InStr(1, srcTagValue, "&", vbBinaryCompare) <> 0 Then
-        DoesTagValueRequireEscaping = True
-    ElseIf InStr(1, srcTagValue, "'", vbBinaryCompare) <> 0 Then
-        DoesTagValueRequireEscaping = True
-    ElseIf InStr(1, srcTagValue, """", vbBinaryCompare) <> 0 Then
-        DoesTagValueRequireEscaping = True
+        
+        'List-type tags are escaped differently!
+        If srcMetadata.DBF_IsBag Or srcMetadata.DBF_IsList Or srcMetadata.DBF_IsSequence Then
+            dstEscapedTag = Replace$(srcMetadata.UserValueNew, vbCrLf, ";;", , , vbBinaryCompare)
+        Else
+            dstEscapedTag = Replace$(srcMetadata.UserValueNew, vbCrLf, "&#xd;&#xa;", , , vbBinaryCompare)
+        End If
+        
     End If
 End Function
 
@@ -1667,7 +1674,7 @@ Public Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Bo
     If (Not groupSkippable) Then
     
         Dim sMetadataName As String
-        sMetadataName = UCase$(srcTag.TagName)
+        sMetadataName = UCase$(Trim$(srcTag.TagName))
         
         If InStr(1, sMetadataName, "FIRMWARE", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "ABOUT", vbBinaryCompare) > 0 Then potentialConcern = True
@@ -1681,9 +1688,7 @@ Public Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Bo
         If InStr(1, sMetadataName, "CREATOR", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "DATE", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "HISTORY", vbBinaryCompare) > 0 Then potentialConcern = True
-        If (Len(sMetadataName) >= 3) Then
-            If InStr(1, Right$(sMetadataName, 3), " ID", vbBinaryCompare) > 0 Then potentialConcern = True
-        End If
+        If InStr(1, sMetadataName, " ID", vbBinaryCompare) > 0 Then potentialConcern = True         'The leading space is not an accident!
         If InStr(1, sMetadataName, "LOCATION", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "MAKE", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "MODEL", vbBinaryCompare) > 0 Then potentialConcern = True

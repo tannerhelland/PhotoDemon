@@ -76,91 +76,6 @@ Begin VB.Form FormMetadata
       FontSize        =   9
       Layout          =   3
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
-      Height          =   6015
-      Index           =   1
-      Left            =   8040
-      ScaleHeight     =   401
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   406
-      TabIndex        =   5
-      Top             =   1200
-      Visible         =   0   'False
-      Width           =   6090
-      Begin PhotoDemon.pdButtonStrip btsTechnical 
-         Height          =   975
-         Index           =   0
-         Left            =   240
-         TabIndex        =   6
-         Top             =   0
-         Width           =   5610
-         _ExtentX        =   9895
-         _ExtentY        =   1720
-         Caption         =   "tag names"
-      End
-      Begin PhotoDemon.pdButtonStrip btsTechnical 
-         Height          =   975
-         Index           =   1
-         Left            =   240
-         TabIndex        =   7
-         Top             =   1080
-         Width           =   5610
-         _ExtentX        =   9895
-         _ExtentY        =   1720
-         Caption         =   "tag values"
-      End
-      Begin PhotoDemon.pdButton cmdTechnicalReport 
-         Height          =   555
-         Left            =   420
-         TabIndex        =   8
-         Top             =   2550
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   979
-         Caption         =   "Generate full metadata report (HTML)..."
-      End
-      Begin PhotoDemon.pdLabel lblTechnicalReport 
-         Height          =   270
-         Left            =   240
-         Top             =   2160
-         Width           =   5625
-         _ExtentX        =   9922
-         _ExtentY        =   476
-         Caption         =   "advanced"
-         FontSize        =   11
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdHyperlink hypExiftool 
-         Height          =   255
-         Left            =   0
-         Top             =   5700
-         Width           =   6015
-         _ExtentX        =   10610
-         _ExtentY        =   450
-         Alignment       =   2
-         Caption         =   "visit the ExifTool homepage"
-         FontSize        =   9
-         URL             =   "http://www.sno.phy.queensu.ca/~phil/exiftool/"
-      End
-      Begin PhotoDemon.pdLabel lblExifTool 
-         Height          =   255
-         Left            =   120
-         Top             =   5370
-         Width           =   5775
-         _ExtentX        =   10186
-         _ExtentY        =   450
-         Alignment       =   2
-         Caption         =   ""
-         FontSize        =   9
-         ForeColor       =   -2147483640
-         Layout          =   1
-      End
-   End
    Begin PhotoDemon.pdButtonToolbox btnGroupOptions 
       Height          =   630
       Index           =   0
@@ -258,6 +173,7 @@ Begin VB.Form FormMetadata
          _ExtentX        =   5741
          _ExtentY        =   529
          Caption         =   ""
+         Layout          =   3
       End
       Begin PhotoDemon.pdLabel lblWarning 
          Height          =   540
@@ -280,6 +196,91 @@ Begin VB.Form FormMetadata
          _ExtentX        =   1111
          _ExtentY        =   1111
          AutoToggle      =   -1  'True
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      HasDC           =   0   'False
+      Height          =   6015
+      Index           =   1
+      Left            =   8040
+      ScaleHeight     =   401
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   406
+      TabIndex        =   5
+      Top             =   1200
+      Visible         =   0   'False
+      Width           =   6090
+      Begin PhotoDemon.pdButtonStrip btsTechnical 
+         Height          =   975
+         Index           =   0
+         Left            =   240
+         TabIndex        =   6
+         Top             =   0
+         Width           =   5610
+         _ExtentX        =   9895
+         _ExtentY        =   1720
+         Caption         =   "tag names"
+      End
+      Begin PhotoDemon.pdButtonStrip btsTechnical 
+         Height          =   975
+         Index           =   1
+         Left            =   240
+         TabIndex        =   7
+         Top             =   1080
+         Width           =   5610
+         _ExtentX        =   9895
+         _ExtentY        =   1720
+         Caption         =   "tag values"
+      End
+      Begin PhotoDemon.pdButton cmdTechnicalReport 
+         Height          =   555
+         Left            =   420
+         TabIndex        =   8
+         Top             =   2550
+         Width           =   5370
+         _ExtentX        =   9472
+         _ExtentY        =   979
+         Caption         =   "Generate full metadata report (HTML)..."
+      End
+      Begin PhotoDemon.pdLabel lblTechnicalReport 
+         Height          =   270
+         Left            =   240
+         Top             =   2160
+         Width           =   5625
+         _ExtentX        =   9922
+         _ExtentY        =   476
+         Caption         =   "advanced"
+         FontSize        =   11
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdHyperlink hypExiftool 
+         Height          =   255
+         Left            =   0
+         Top             =   5700
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   450
+         Alignment       =   2
+         Caption         =   "visit the ExifTool homepage"
+         FontSize        =   9
+         URL             =   "http://www.sno.phy.queensu.ca/~phil/exiftool/"
+      End
+      Begin PhotoDemon.pdLabel lblExifTool 
+         Height          =   255
+         Left            =   120
+         Top             =   5370
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   450
+         Alignment       =   2
+         Caption         =   ""
+         FontSize        =   9
+         ForeColor       =   -2147483640
+         Layout          =   1
       End
    End
 End
@@ -945,23 +946,30 @@ Private Sub lstMetadata_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As
     mHeight = m_TitleFont.GetHeightOfString(drawString) + linePadding
     m_TitleFont.ReleaseFromDC
     
-    If thisTag.UserModifiedAllSessions Then
-        drawString = thisTag.UserValueNew
-    Else
-        If (btsTechnical(1).ListIndex = 0) Then
-            If Len(thisTag.TagValueFriendly) < 100 Then
-                drawString = thisTag.TagValueFriendly
-            Else
-                drawString = Left$(thisTag.TagValueFriendly, 100)
-            End If
+    With thisTag
+        
+        'Trim long strings to prevent issues with DrawString
+        Const MAX_DRAW_CHAR_LENGTH As Long = 64
+        If .UserModifiedAllSessions Then
+            If Len(.UserValueNew) < MAX_DRAW_CHAR_LENGTH Then drawString = .UserValueNew Else drawString = Left$(.UserValueNew, MAX_DRAW_CHAR_LENGTH)
         Else
-            If Len(thisTag.TagValueFriendly) < 100 Then
-                drawString = thisTag.TagValue
+            If (btsTechnical(1).ListIndex = 0) Then
+                If Len(.TagValueFriendly) < MAX_DRAW_CHAR_LENGTH Then drawString = .TagValueFriendly Else drawString = Left$(.TagValueFriendly, MAX_DRAW_CHAR_LENGTH)
             Else
-                drawString = Left$(thisTag.TagValue, 100)
+                If Len(.TagValueFriendly) < MAX_DRAW_CHAR_LENGTH Then drawString = .TagValue Else drawString = Left$(.TagValue, MAX_DRAW_CHAR_LENGTH)
             End If
         End If
-    End If
+    
+        'List-type tags use a special delimiter (;;).  Change this to commas to make the list a bit prettier
+        If .DBF_IsList Or .DBF_IsBag Or .DBF_IsSequence Then
+            If .UserModifiedAllSessions Then
+                drawString = Replace$(drawString, vbCrLf, ", ", , , vbBinaryCompare)
+            Else
+                drawString = Replace$(drawString, ";;", ", ", , , vbBinaryCompare)
+            End If
+        End If
+        
+    End With
     
     m_DescriptionFont.AttachToDC bufferDC
     m_DescriptionFont.SetFontColor descriptionColor
@@ -1068,7 +1076,18 @@ Private Sub UpdateTagView()
                     If .UserModifiedAllSessions Then
                         txtValue.Text = .UserValueNew
                     Else
-                        If (btsTechnical(1).ListIndex = 0) Then txtValue.Text = .TagValueFriendly Else txtValue.Text = .TagValue
+                        
+                        'If this is a list-type tag, we will replace the default separator (;) with newlines
+                        If .DBF_IsList Or .DBF_IsBag Or .DBF_IsSequence Then
+                            If (btsTechnical(1).ListIndex = 0) Then
+                                txtValue.Text = Replace$(.TagValueFriendly, ";;", vbCrLf, , , vbBinaryCompare)
+                            Else
+                                txtValue.Text = Replace$(.TagValue, ";;", vbCrLf, , , vbBinaryCompare)
+                            End If
+                        Else
+                            If (btsTechnical(1).ListIndex = 0) Then txtValue.Text = .TagValueFriendly Else txtValue.Text = .TagValue
+                        End If
+                        
                     End If
                     reflowTop = txtValue.GetTop + txtValue.GetHeight
                 End If
@@ -1178,6 +1197,9 @@ Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As
     countValue = srcMetadata.DB_TypeCount
     If countValue < 2 Then countValue = 1
     
+    Dim isList As Boolean
+    isList = srcMetadata.DBF_IsBag Or srcMetadata.DBF_IsList Or srcMetadata.DBF_IsSequence
+    
     Select Case srcMetadata.DB_DataTypeStrict
     
         Case MD_int8s
@@ -1220,28 +1242,28 @@ Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As
         Case MD_extended
             strResult = g_Language.TranslateMessage("numbers only")
         Case MD_ifd
-            strResult = g_Language.TranslateMessage("must be a valid file position marker")
+            strResult = g_Language.TranslateMessage("file position marker")
         Case MD_ifd64
-            strResult = g_Language.TranslateMessage("must be a valid file position marker")
+            strResult = g_Language.TranslateMessage("file position marker")
         Case MD_string
             strResult = g_Language.TranslateMessage("text")
         Case MD_undef
             Debug.Print "The selected tag actually has an ""undefined"" data format, but PD displays ""text"" as a convenience."
             strResult = g_Language.TranslateMessage("text")
         Case MD_binary
-            strResult = g_Language.TranslateMessage("must be valid binary data")
+            strResult = g_Language.TranslateMessage("binary data")
         Case MD_integerstring
-            strResult = g_Language.TranslateMessage("list of digits")
+            strResult = g_Language.TranslateMessage("digits")
         Case MD_floatstring
-            strResult = g_Language.TranslateMessage("any real number")
+            strResult = g_Language.TranslateMessage("numbers only")
         Case MD_rationalstring
-            strResult = g_Language.TranslateMessage("any real number")
+            strResult = g_Language.TranslateMessage("numbers only")
         Case MD_datestring
-            strResult = g_Language.TranslateMessage("date (YYYY:mm:dd HH:MM:SS[.ss][+/-HH:MM])")
+            strResult = g_Language.TranslateMessage("dates only (YYYY:mm:dd HH:MM:SS[.ss][+/-HH:MM])")
         Case MD_booleanstring
-            strResult = g_Language.TranslateMessage("true or false")
+            strResult = g_Language.TranslateMessage("true or false only")
         Case MD_digits
-            strResult = g_Language.TranslateMessage("list of digits")
+            strResult = g_Language.TranslateMessage("digits only")
     
     End Select
 
@@ -1279,6 +1301,8 @@ Private Function ConvertDataTypeToString(ByRef srcMetadata As PDMetadataItem) As
         End Select
         
     End If
+    
+    If isList Then strResult = g_Language.TranslateMessage("list of %1, one entry per line", strResult)
     
     If Len(strResult) <> 0 Then ConvertDataTypeToString = strResult
     
@@ -1351,7 +1375,19 @@ Private Sub TagLostFocus(Optional ByVal redrawListToMatch As Boolean = True)
                 Else
                     
                     Dim testString As String
-                    If (btsTechnical(1).ListIndex = 0) Then testString = .TagValueFriendly Else testString = .TagValue
+                    
+                    'List-type tags require a special check, as we will have forcibly converted them from a special
+                    ' delimiter state (;;) to newlines, for the user's convenience
+                    If .DBF_IsList Or .DBF_IsBag Or .DBF_IsSequence Then
+                        If (btsTechnical(1).ListIndex = 0) Then
+                            testString = Replace$(.TagValueFriendly, ";;", vbCrLf, , , vbBinaryCompare)
+                        Else
+                            testString = Replace$(.TagValue, ";;", vbCrLf, , , vbBinaryCompare)
+                        End If
+                    Else
+                        If (btsTechnical(1).ListIndex = 0) Then testString = .TagValueFriendly Else testString = .TagValue
+                    End If
+                    
                     If StrComp(txtValue.Text, testString, vbBinaryCompare) <> 0 Then
                         
                         'This string is different from the one we placed inside.  Mark the tag as edited, and store the
