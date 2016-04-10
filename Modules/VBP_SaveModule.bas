@@ -450,6 +450,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
         If srcPDImage.imgMetadata.HasMetadata Then
             nodeIndex = pdiWriter.addNode("pdMetadata_Raw", -1, 2)
             pdiWriter.addNodeDataFromString nodeIndex, True, srcPDImage.imgMetadata.GetOriginalXMLMetadataString, compressHeaders, , embedChecksums
+            pdiWriter.addNodeDataFromString nodeIndex, False, srcPDImage.imgMetadata.GetSerializedXMLData, compressHeaders, , embedChecksums
         End If
     
     End If
@@ -1784,8 +1785,8 @@ Public Function FindMeanRMSDForTwoDIBs(ByRef srcDib1 As pdDIB, ByRef srcDib2 As 
     
     Dim srcArray1() As Byte, srcArray2() As Byte
     
-    prepSafeArray tmpSA1, srcDib1
-    prepSafeArray tmpSA2, srcDib2
+    PrepSafeArray tmpSA1, srcDib1
+    PrepSafeArray tmpSA2, srcDib2
     
     CopyMemory ByVal VarPtrArray(srcArray1()), VarPtr(tmpSA1), 4
     CopyMemory ByVal VarPtrArray(srcArray2()), VarPtr(tmpSA2), 4

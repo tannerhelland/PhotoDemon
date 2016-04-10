@@ -290,7 +290,7 @@ Private m_LastRequestID As Long
 
 'Parsing the ExifTool database is a complicated and unpleasant process; limited local caching helps alleviate some of the pain
 Private Type ET_GROUP
-    groupName As String
+    GroupName As String
     GroupStart As Long
     GroupEnd As Long
 End Type
@@ -854,7 +854,6 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
         ' As such, specifically request their writing.
         Else
             If tmpMetadata.IsTagList Or tmpMetadata.DBF_IsBag Or tmpMetadata.DBF_IsList Or tmpMetadata.DBF_IsSequence Then
-                Debug.Print "LIST: " & tmpMetadata.TagValueFriendly
                 cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "=" & tmpMetadata.TagValueFriendly & vbCrLf
             End If
         End If
@@ -1331,7 +1330,7 @@ Private Function GetTagGroup(ByVal srcTableName As String, ByRef tableStart As L
         
         Dim i As Long
         For i = 0 To m_NumGroupsInCache - 1
-            If StrComp(srcTableName, m_GroupCache(i).groupName) = 0 Then
+            If StrComp(srcTableName, m_GroupCache(i).GroupName) = 0 Then
                 tableStart = m_GroupCache(i).GroupStart
                 tableEnd = m_GroupCache(i).GroupEnd
                 GetTagGroup = True
@@ -1357,7 +1356,7 @@ Private Function GetTagGroup(ByVal srcTableName As String, ByRef tableStart As L
             
             'Add this group to our running cache
             With m_GroupCache(m_NumGroupsInCache)
-                .groupName = srcTableName
+                .GroupName = srcTableName
                 .GroupStart = tableStart
                 .GroupEnd = tableEnd
             End With
@@ -1672,13 +1671,15 @@ Public Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Bo
     
     'Only proceed with further checks if this category is a potentially writable one
     If (Not groupSkippable) Then
-    
+        
+        'First, we check technical tag names for known problematic text
         Dim sMetadataName As String
         sMetadataName = UCase$(Trim$(srcTag.TagName))
         
         If InStr(1, sMetadataName, "FIRMWARE", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "ABOUT", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "ARTIST", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "AUTHOR", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "BABY", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "BY-LINE", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "CITY", vbBinaryCompare) > 0 Then potentialConcern = True
@@ -1687,8 +1688,12 @@ Public Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Bo
         If InStr(1, sMetadataName, "COUNTRY", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "CREATOR", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "DATE", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "DESCRIPTION", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "DIGEST", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "DOCUMENTID", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "GPS", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "HISTORY", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, sMetadataName, " ID", vbBinaryCompare) > 0 Then potentialConcern = True         'The leading space is not an accident!
+        If InStr(1, sMetadataName, "INSTANCEID", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "LOCATION", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "MAKE", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "MODEL", vbBinaryCompare) > 0 Then potentialConcern = True
@@ -1698,10 +1703,18 @@ Public Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Bo
         If InStr(1, sMetadataName, "SOFTWARE", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "SUBJECT", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "TIME", vbBinaryCompare) > 0 Then potentialConcern = True
+        If InStr(1, sMetadataName, "TITLE", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "TOOL", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "VERSION", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, UCase$(srcTag.TagValue), "XMP.IID", vbBinaryCompare) > 0 Then potentialConcern = True
-        If InStr(1, UCase$(srcTag.TagValue), "XMP.DID", vbBinaryCompare) > 0 Then potentialConcern = True
+        
+        'Next, check actual tag values for known problematic text
+        If (Not potentialConcern) Then
+            Dim sMetadataValue As String
+            sMetadataValue = UCase$(Trim$(srcTag.TagValue))
+            If InStr(1, sMetadataValue, "XMP.IID", vbBinaryCompare) > 0 Then potentialConcern = True
+            If InStr(1, sMetadataValue, "XMP.DID", vbBinaryCompare) > 0 Then potentialConcern = True
+            If InStr(1, sMetadataValue, "UUID", vbBinaryCompare) > 0 Then potentialConcern = True
+        End If
         
     End If
     
@@ -1709,3 +1722,123 @@ Public Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Bo
                     
 End Function
 
+Public Function SerializeTagToString(ByRef srcMetadata As PDMetadataItem) As String
+
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    'Basically, this is just a long-ass process of assembling all tag properties into XML tags.
+    With srcMetadata
+        cParams.AddParam "PDMD_TagGroupAndName", .TagGroupAndName
+        cParams.AddParam "PDMD_TagGroup", .TagGroup
+        cParams.AddParam "PDMD_TagGroupFriendly", .TagGroupFriendly
+        cParams.AddParam "PDMD_TagName", .TagName
+        cParams.AddParam "PDMD_TagNameFriendly", .TagNameFriendly
+        cParams.AddParam "PDMD_TagTable", .TagTable
+        cParams.AddParam "PDMD_TagID", .TagID
+        cParams.AddParam "PDMD_TagValueFriendly", .TagValueFriendly
+        cParams.AddParam "PDMD_TagValue", .TagValue
+        cParams.AddParam "PDMD_HasIndex", .HasIndex
+        cParams.AddParam "PDMD_IsTagList", .IsTagList
+        cParams.AddParam "PDMD_IsTagBinary", .IsTagBinary
+        cParams.AddParam "PDMD_WasBinaryExtracted", .WasBinaryExtracted
+        cParams.AddParam "PDMD_InternalUseOnly", .InternalUseOnly
+        cParams.AddParam "PDMD_TagIndexInternal", .TagIndexInternal
+        cParams.AddParam "PDMD_TagBase64Value", .TagBase64Value
+        cParams.AddParam "PDMD_TagMarkedForRemoval", .TagMarkedForRemoval
+        cParams.AddParam "PDMD_UserModifiedThisSession", .UserModifiedThisSession
+        cParams.AddParam "PDMD_UserModifiedAllSessions", .UserModifiedAllSessions
+        cParams.AddParam "PDMD_UserValueNew", .UserValueNew
+        cParams.AddParam "PDMD_UserIDNew", .UserIDNew
+        cParams.AddParam "PDMD_DBTagHitDatabase", .DB_TagHitDatabase
+        cParams.AddParam "PDMD_DBISWritable", .DB_IsWritable
+        cParams.AddParam "PDMD_DBTypeCount", .DB_TypeCount
+        cParams.AddParam "PDMD_DBDataType", .DB_DataType
+        cParams.AddParam "PDMD_DBDataTypeStrict", .DB_DataTypeStrict
+        cParams.AddParam "PDMD_DBFIsAvoid", .DBF_IsAvoid
+        cParams.AddParam "PDMD_DBFIsBag", .DBF_IsBag
+        cParams.AddParam "PDMD_DBFIsBinary", .DBF_IsBinary
+        cParams.AddParam "PDMD_DBFIsFlattened", .DBF_IsFlattened
+        cParams.AddParam "PDMD_DBFIsList", .DBF_IsList
+        cParams.AddParam "PDMD_DBFIsMandatory", .DBF_IsMandatory
+        cParams.AddParam "PDMD_DBFIsPermanent", .DBF_IsPermanent
+        cParams.AddParam "PDMD_DBFIsProtected", .DBF_IsProtected
+        cParams.AddParam "PDMD_DBFIsSequence", .DBF_IsSequence
+        cParams.AddParam "PDMD_DBFIsUnknown", .DBF_IsUnknown
+        cParams.AddParam "PDMD_DBFIsUnsafe", .DBF_IsUnsafe
+        cParams.AddParam "PDMD_DBDescription", .DB_Description
+        cParams.AddParam "PDMD_DBHardCodedList", .DB_HardcodedList
+        cParams.AddParam "PDMD_DBHardCodedListSize", .DB_HardcodedListSize
+        If .DB_HardcodedList And (.DB_HardcodedListSize > 0) Then
+            cParams.AddParam "PDMD_StackIDs", .DB_StackIDs.SerializeStackToSingleString()
+            cParams.AddParam "PDMD_StackValues", .DB_StackValues.SerializeStackToSingleString()
+        End If
+        cParams.AddParam "PDMD_TagDebugData", .TagDebugData
+    End With
+    
+    SerializeTagToString = cParams.GetParamString
+
+End Function
+
+Public Sub RecoverTagFromSerializedString(ByRef srcString As String, ByRef dstMetadata As PDMetadataItem)
+    
+    If (Len(srcString) <> 0) Then
+    
+        Dim cParams As pdParamXML
+        Set cParams = New pdParamXML
+        cParams.SetParamString srcString
+        
+        'Basically, this is just a long-ass process of retrieving all tag properties from their specific XML tags.
+        With dstMetadata
+            .TagGroupAndName = cParams.GetString("PDMD_TagGroupAndName")
+            .TagGroup = cParams.GetString("PDMD_TagGroup")
+            .TagGroupFriendly = cParams.GetString("PDMD_TagGroupFriendly")
+            .TagName = cParams.GetString("PDMD_TagName")
+            .TagNameFriendly = cParams.GetString("PDMD_TagNameFriendly")
+            .TagTable = cParams.GetString("PDMD_TagTable")
+            .TagID = cParams.GetString("PDMD_TagID")
+            .TagValueFriendly = cParams.GetString("PDMD_TagValueFriendly")
+            .TagValue = cParams.GetString("PDMD_TagValue")
+            .HasIndex = cParams.GetBool("PDMD_HasIndex")
+            .IsTagList = cParams.GetBool("PDMD_IsTagList")
+            .IsTagBinary = cParams.GetBool("PDMD_IsTagBinary")
+            .WasBinaryExtracted = cParams.GetBool("PDMD_WasBinaryExtracted")
+            .InternalUseOnly = cParams.GetBool("PDMD_InternalUseOnly")
+            .TagIndexInternal = cParams.GetLong("PDMD_TagIndexInternal")
+            .TagBase64Value = cParams.GetString("PDMD_TagBase64Value")
+            .TagMarkedForRemoval = cParams.GetBool("PDMD_TagMarkedForRemoval")
+            .UserModifiedThisSession = cParams.GetBool("PDMD_UserModifiedThisSession")
+            .UserModifiedAllSessions = cParams.GetBool("PDMD_UserModifiedAllSessions")
+            .UserValueNew = cParams.GetString("PDMD_UserValueNew")
+            .UserIDNew = cParams.GetString("PDMD_UserIDNew")
+            .DB_TagHitDatabase = cParams.GetBool("PDMD_DBTagHitDatabase")
+            .DB_IsWritable = cParams.GetBool("PDMD_DBISWritable")
+            .DB_TypeCount = cParams.GetLong("PDMD_DBTypeCount")
+            .DB_DataType = cParams.GetString("PDMD_DBDataType")
+            .DB_DataTypeStrict = cParams.GetLong("PDMD_DBDataTypeStrict")
+            .DBF_IsAvoid = cParams.GetBool("PDMD_DBFIsAvoid")
+            .DBF_IsBag = cParams.GetBool("PDMD_DBFIsBag")
+            .DBF_IsBinary = cParams.GetBool("PDMD_DBFIsBinary")
+            .DBF_IsFlattened = cParams.GetBool("PDMD_DBFIsFlattened")
+            .DBF_IsList = cParams.GetBool("PDMD_DBFIsList")
+            .DBF_IsMandatory = cParams.GetBool("PDMD_DBFIsMandatory")
+            .DBF_IsPermanent = cParams.GetBool("PDMD_DBFIsPermanent")
+            .DBF_IsProtected = cParams.GetBool("PDMD_DBFIsProtected")
+            .DBF_IsSequence = cParams.GetBool("PDMD_DBFIsSequence")
+            .DBF_IsUnknown = cParams.GetBool("PDMD_DBFIsUnknown")
+            .DBF_IsUnsafe = cParams.GetBool("PDMD_DBFIsUnsafe")
+            .DB_Description = cParams.GetString("PDMD_DBDescription")
+            .DB_HardcodedList = cParams.GetBool("PDMD_DBHardCodedList")
+            .DB_HardcodedListSize = cParams.GetLong("PDMD_DBHardCodedListSize")
+            If .DB_HardcodedList And (.DB_HardcodedListSize > 0) Then
+                Set .DB_StackIDs = New pdStringStack
+                Set .DB_StackValues = New pdStringStack
+                .DB_StackIDs.RecreateStackFromSerializedString cParams.GetString("PDMD_StackIDs")
+                .DB_StackValues.RecreateStackFromSerializedString cParams.GetString("PDMD_StackValues")
+            End If
+            .TagDebugData = cParams.GetString("PDMD_TagDebugData")
+        End With
+        
+    End If
+    
+End Sub

@@ -367,6 +367,69 @@ FailsafeReset:
     
 End Sub
 
+Public Function SerializeStackToSingleString() As String
+
+    If m_NumOfStrings > 0 Then
+        
+        'The first entry in the serialized string is always the string count
+        Dim finalString As String
+        finalString = CStr(m_NumOfStrings)
+        
+        Dim tstPipeString As String: tstPipeString = "|"
+        Dim rplPipeString As String: rplPipeString = "&pipe;"
+        
+        Dim i As Long
+        For i = 0 To m_NumOfStrings - 1
+            If InStr(1, m_Strings(i), tstPipeString, vbBinaryCompare) <> 0 Then
+                finalString = finalString & tstPipeString & Replace(m_Strings(i), tstPipeString, rplPipeString, , , vbBinaryCompare)
+            Else
+                finalString = finalString & tstPipeString & m_Strings(i)
+            End If
+        Next i
+        
+    End If
+    
+End Function
+
+Public Function RecreateStackFromSerializedString(ByRef srcString As String) As Boolean
+    
+    On Error GoTo RecreateFailure
+    
+    Me.ResetStack
+    
+    Dim tstPipeString As String: tstPipeString = "|"
+    Dim rplPipeString As String: rplPipeString = "&pipe;"
+    
+    If InStr(1, srcString, tstPipeString, vbBinaryCompare) <> 0 Then
+    
+        Dim stringArray() As String
+        stringArray = Split(srcString, tstPipeString, , vbBinaryCompare)
+        
+        m_NumOfStrings = CLng(stringArray(LBound(stringArray)))
+        
+        Dim i As Long
+        For i = 0 To m_NumOfStrings - 1
+            
+            If InStr(1, stringArray(i + 1), rplPipeString, vbBinaryCompare) <> 0 Then
+                Me.AddString Replace(stringArray(i + 1), rplPipeString, tstPipeString, , , vbBinaryCompare)
+            Else
+                Me.AddString stringArray(i + 1)
+            End If
+        Next i
+        
+    End If
+    
+    RecreateStackFromSerializedString = True
+    Exit Function
+    
+RecreateFailure:
+    
+    Debug.Print "WARNING!  Failed to un-serialize string: " & srcString
+    RecreateStackFromSerializedString = False
+    Exit Function
+
+End Function
+
 Private Sub Class_Initialize()
     
     'Always start with an initialized array
