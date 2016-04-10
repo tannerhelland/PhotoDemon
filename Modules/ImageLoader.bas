@@ -204,6 +204,28 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         
         End If
         
+        '(As of v7.0, a serialized copy of the image's metadata is also stored.  This copy contains all user edits
+        ' and other changes.)
+        If pdiReader.getNodeDataByName("pdMetadata_Raw", False, retBytes, sourceIsUndoFile) Then
+        
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Serialized metadata chunk found.  Retrieving now..."
+            #End If
+        
+            'Copy the received bytes into a string
+            If pdiReader.getPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
+                retString = Space$((UBound(retBytes) + 1) \ 2)
+                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+            Else
+                retString = StrConv(retBytes, vbUnicode)
+            End If
+            
+            'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
+            ' internal metadata struct.
+            dstImage.imgMetadata.RecreateFromSerializedXMLData retString
+        
+        End If
+        
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "PDI parsing complete.  Returning control to main image loader..."
         #End If
