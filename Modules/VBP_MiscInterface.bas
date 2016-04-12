@@ -1209,7 +1209,7 @@ Public Function PXToTwipsY(ByVal srcPixelHeight As Long) As Long
     PXToTwipsY = srcPixelHeight * TwipsPerPixelYFix
 End Function
 
-Public Sub DisplayWaitScreen(ByVal waitTitle As String, ByRef ownerForm As Form, Optional ByVal descriptionText As String = vbNullString)
+Public Sub DisplayWaitScreen(ByVal waitTitle As String, ByRef ownerForm As Form, Optional ByVal descriptionText As String = vbNullString, Optional ByVal raiseModally As Boolean = False)
     
     FormWait.Visible = False
     FormWait.lblWaitTitle.Caption = waitTitle
@@ -1223,11 +1223,17 @@ Public Sub DisplayWaitScreen(ByVal waitTitle As String, ByRef ownerForm As Form,
     End If
     
     Screen.MousePointer = vbHourglass
-    FormWait.Show vbModeless, ownerForm
+    
+    If raiseModally Then
+        FormWait.Show vbModal, ownerForm
+    Else
+        FormWait.Show vbModeless, ownerForm
+    End If
     
 End Sub
 
 Public Sub HideWaitScreen()
+    g_UnloadWaitWindow = False
     Screen.MousePointer = vbDefault
     Unload FormWait
 End Sub

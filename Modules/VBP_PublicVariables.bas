@@ -259,3 +259,6 @@ Public g_UserWantsRestart As Boolean
 ' PD uses this value to suspend any other automatic updates, as a precaution against any bugs in the updater.
 Public g_ProgramStartedViaRestart As Boolean
 
+'Asynchronous tasks may require a modal wait screen.  To unload them successfully, we use a global flag that other
+' asynchronous methods (like timers) can trigger.
+Public g_UnloadWaitWindow As Boolean
