@@ -52,7 +52,9 @@ Public Sub Main()
     On Error Resume Next
     
     'The following block of code prevents XP crashes when VB usercontrols are present in a project (as they are in PhotoDemon)
-    hShellModule = LoadLibrary("shell32.dll")
+    Dim strShellName As String
+    strShellName = "shell32.dll"
+    hShellModule = LoadLibrary(StrPtr(strShellName))
     InitCommonControlsEx iccex
     
     'If an error occurs, attempt to initiate the Win9x version

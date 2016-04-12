@@ -183,8 +183,10 @@ End Sub
 Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As Long, Optional ByVal includeChrome As Boolean = True, Optional ByRef isWindowMinimized As Boolean = False) As Boolean
 
     'Vista+ defines window boundaries differently, so we have to use a special API to retrieve correct boundaries.
+    ' (NOTE: this behavior is currently disabled, as it doesn't actually help that much, and it introduces some
+    '        unwanted complexities under Win 10.  Further comments are given below.)
     'Dim hLib As Long
-    'If g_IsVistaOrLater Then hLib = LoadLibrary("dwmapi.dll")
+    'If g_IsVistaOrLater Then hLib = LoadLibraryA("dwmapi.dll")
     
     'Start by retrieving the necessary dimensions from the target window
     Dim wpSuccess As Boolean, tmpWinPlacement As WindowPlacement

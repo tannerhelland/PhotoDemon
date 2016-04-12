@@ -26,21 +26,30 @@ Private Declare Function zlibVersion Lib "zlibwapi" () As Long
 Private m_ZLibHandle As Long
 
 'Is zLib available as a plugin?  (NOTE: this is now determined separately from g_ZLibEnabled.)
-Public Function isZLibAvailable() As Boolean
+Public Function IsZLibAvailable() As Boolean
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If cFile.FileExist(g_PluginPath & "zlibwapi.dll") Then isZLibAvailable = True Else isZLibAvailable = False
+    If cFile.FileExist(g_PluginPath & "zlibwapi.dll") Then IsZLibAvailable = True Else IsZLibAvailable = False
     
 End Function
 
 'Initialize zLib.  Do not call this until you have verified zLib's existence (typically via isZLibAvailable(), above)
-Public Function initializeZLib() As Boolean
+Public Function InitializeZLib() As Boolean
     
     'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
-    m_ZLibHandle = LoadLibrary(g_PluginPath & "zlibwapi.dll")
-    initializeZLib = CBool(m_ZLibHandle <> 0)
+    Dim zLibPath As String
+    zLibPath = g_PluginPath & "zlibwapi.dll"
+    m_ZLibHandle = LoadLibrary(StrPtr(zLibPath))
+    InitializeZLib = CBool(m_ZLibHandle <> 0)
+    
+    #If DEBUGMODE = 1 Then
+        If (Not InitializeZLib) Then
+            pdDebug.LogAction "WARNING!  LoadLibrary failed to load zLib.  Last DLL error: " & Err.LastDllError
+            pdDebug.LogAction "(FYI, the attempted path was: " & zLibPath & ")"
+        End If
+    #End If
     
 End Function
 

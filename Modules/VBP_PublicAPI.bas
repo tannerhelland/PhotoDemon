@@ -85,7 +85,7 @@ Public Const STRETCHBLT_HALFTONE As Long = 4
 
 'API calls for explicitly calling dlls.  This allows us to build DLL paths at runtime, and it also allows
 ' us to call any DLL we like without first passing them through regsvr32.
-Public Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
+Public Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryW" (ByVal lpLibFileName As Long) As Long
 Public Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 
 'ShellExecute is preferable to VB's 'Shell' command; I use it for launching URLs using the system's default web browser.

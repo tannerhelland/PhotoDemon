@@ -187,7 +187,7 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     
     'Forward a save request to the actual saveUndoData function.  It handles the messy business of actually writing the correct
     ' filetypes (which it determines based on the current processType and targetLayer)
-    Saving.SaveUndoData parentPDImage, getCurrentUndoFilename(), processType, targetLayerID
+    Saving.SaveUndoData parentPDImage, GetCurrentUndoFilename(), processType, targetLayerID
     
     'Previously, we notified the user when undo/redo data was saved.  This was stupid, but it is sometimes helpful to
     ' display that info in the debug window.
@@ -262,7 +262,7 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.  We always create a copy of the Undo
     ' stack, in XML format, in the temporary folder.
-    writeUndoDataToXML generateUndoHeaderFilename()
+    writeUndoDataToXML GenerateUndoHeaderFilename()
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     'debugUndo "new Undo entry created"
@@ -281,7 +281,7 @@ Public Sub forceLastUndoDataToIncludeEverything()
     
     'Overwrite the previous action's Undo data with a full image backup.  Note that all the settings from the previous
     ' action are retained; the only thing we're doing differently is specifying the Undo type as UNDO_EVERYTHING.
-    Saving.SaveUndoData parentPDImage, generateUndoFilename(undoNum - 1), UNDO_EVERYTHING, -1
+    Saving.SaveUndoData parentPDImage, GenerateUndoFilename(undoNum - 1), UNDO_EVERYTHING, -1
     
     'Update the stack entry at that point to reflect the UNDO_EVERYTHING usage
     With undoStack(undoNum - 1)
@@ -290,7 +290,7 @@ Public Sub forceLastUndoDataToIncludeEverything()
     End With
     
     'Update the Undo XML header as well.
-    writeUndoDataToXML generateUndoHeaderFilename()
+    writeUndoDataToXML GenerateUndoHeaderFilename()
         
 End Sub
 
@@ -324,7 +324,7 @@ Public Sub moveToSpecificUndoPoint(ByVal undoIndex As Long)
     Message "Reconstructing image..."
     
     'Start by resetting the image to its default state, e.g. Undo 0.
-    LoadUndo generateUndoFilename(0), UNDO_EVERYTHING, UNDO_EVERYTHING, , True
+    LoadUndo GenerateUndoFilename(0), UNDO_EVERYTHING, UNDO_EVERYTHING, , True
     
     'From this point, we now want to advance the Undo stack to the requested index by applying successive diff entries
     ' until the final index is reached.
@@ -332,7 +332,7 @@ Public Sub moveToSpecificUndoPoint(ByVal undoIndex As Long)
     
         Dim i As Long
         For i = 1 To undoIndex - 1
-            LoadUndo generateUndoFilename(i), undoStack(i).undoType, undoStack(i).undoType, undoStack(i).undoLayerID, True
+            LoadUndo GenerateUndoFilename(i), undoStack(i).undoType, undoStack(i).undoType, undoStack(i).undoLayerID, True
         Next i
     
     End If
@@ -363,7 +363,7 @@ Public Sub moveToSpecificUndoPoint(ByVal undoIndex As Long)
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
-    writeUndoDataToXML generateUndoHeaderFilename()
+    writeUndoDataToXML GenerateUndoHeaderFilename()
     
     'Now that all layers have been updated against their most recent diff, we can finally redraw the screen
     Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -464,7 +464,7 @@ Public Sub RestoreUndoData()
     
     'With the most recent relevant diff file identified, we can now launch the undo loading routine for that diff.  It will
     ' automatically apply any changes against the relevant parts of the current pdImage object.
-    LoadUndo generateUndoFilename(nearestDiffIndex), undoStack(nearestDiffIndex).undoType, undoStack(undoNum).undoType, undoStack(undoNum).undoLayerID, suspendRedraws
+    LoadUndo GenerateUndoFilename(nearestDiffIndex), undoStack(nearestDiffIndex).undoType, undoStack(undoNum).undoType, undoStack(undoNum).undoLayerID, suspendRedraws
     
     'If redraws have been suspended, we know that we need to reconstruct one or more layers in the image against their
     ' most recent diff.
@@ -488,7 +488,7 @@ Public Sub RestoreUndoData()
                 
                 'If a more recent layer header was found, apply it now.
                 If (nearestImageDiffHeader > nearestDiffIndex) Then
-                    LoadUndo generateUndoFilename(nearestImageDiffHeader), undoStack(nearestImageDiffHeader).undoType, UNDO_IMAGEHEADER, , suspendRedraws
+                    LoadUndo GenerateUndoFilename(nearestImageDiffHeader), undoStack(nearestImageDiffHeader).undoType, UNDO_IMAGEHEADER, , suspendRedraws
                 End If
                 
                 'Also reset the nearestDiffIndex value to match the header's location; subsequent layer checks
@@ -523,7 +523,7 @@ Public Sub RestoreUndoData()
                     'If vectorCheck = nearestLayerDiffDIB Then
                     '    LoadUndo generateUndoFilename(nearestLayerDiffDIB), undoStack(nearestLayerDiffDIB).undoType, UNDO_LAYER_VECTORSAFE, curLayerID, suspendRedraws
                     'Else
-                        LoadUndo generateUndoFilename(nearestLayerDiffDIB), undoStack(nearestLayerDiffDIB).undoType, UNDO_LAYER, curLayerID, suspendRedraws
+                        LoadUndo GenerateUndoFilename(nearestLayerDiffDIB), undoStack(nearestLayerDiffDIB).undoType, UNDO_LAYER, curLayerID, suspendRedraws
                     'End If
                     
                 End If
@@ -534,7 +534,7 @@ Public Sub RestoreUndoData()
                 
                 'If a more recent layer header was found, apply it now.
                 If (nearestLayerDiffHeader > nearestDiffIndex) And (nearestLayerDiffHeader > nearestLayerDiffDIB) Then
-                    LoadUndo generateUndoFilename(nearestLayerDiffHeader), undoStack(nearestLayerDiffHeader).undoType, UNDO_LAYERHEADER, curLayerID, suspendRedraws
+                    LoadUndo GenerateUndoFilename(nearestLayerDiffHeader), undoStack(nearestLayerDiffHeader).undoType, UNDO_LAYERHEADER, curLayerID, suspendRedraws
                 End If
                 
             Next i
@@ -552,7 +552,7 @@ Public Sub RestoreUndoData()
                 
             'If a more recent layer header was found, apply it now.
             If (nearestLayerDiffHeader > nearestDiffIndex) Then
-                LoadUndo generateUndoFilename(nearestLayerDiffHeader), undoStack(nearestLayerDiffHeader).undoType, UNDO_LAYERHEADER, curLayerID, suspendRedraws
+                LoadUndo GenerateUndoFilename(nearestLayerDiffHeader), undoStack(nearestLayerDiffHeader).undoType, UNDO_LAYERHEADER, curLayerID, suspendRedraws
             End If
         
         End If
@@ -567,7 +567,7 @@ Public Sub RestoreUndoData()
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
-    writeUndoDataToXML generateUndoHeaderFilename()
+    writeUndoDataToXML GenerateUndoHeaderFilename()
     
     'Notify the program that undo/redo data is no longer being processed, so asynchronous functions can resume their behavior.
     g_UndoRedoActive = False
@@ -709,14 +709,14 @@ Public Sub RestoreRedoData()
     'The great thing about Redo is that it chronogically moves in the same direction as PD's Undo diff files.  So unlike
     ' Undo - which requires us to traverse the undo timeline in reverse, looking for a relevant diff file - we can simply
     ' apply the next valid diff in line, no extra work required!
-    LoadUndo generateUndoFilename(undoNum - 1), getUndoProcessType, getUndoProcessType, undoStack(undoNum - 1).undoLayerID
+    LoadUndo GenerateUndoFilename(undoNum - 1), getUndoProcessType, getUndoProcessType, undoStack(undoNum - 1).undoLayerID
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     'debugUndo "user clicked Redo"
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
-    writeUndoDataToXML generateUndoHeaderFilename()
+    writeUndoDataToXML GenerateUndoHeaderFilename()
     
     'Notify the program that undo/redo data is no longer being processed, so asynchronous functions can resume their behavior.
     g_UndoRedoActive = False
@@ -793,9 +793,9 @@ Public Function fillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
         Set tmpLayer = New pdLayer
         
         If relevantVectorIndex > relevantDiffIndex Then
-            LoadUndo generateUndoFilename(relevantVectorIndex), undoStack(relevantVectorIndex).undoType, UNDO_LAYER_VECTORSAFE, affectedLayerID, True, tmpLayer
+            LoadUndo GenerateUndoFilename(relevantVectorIndex), undoStack(relevantVectorIndex).undoType, UNDO_LAYER_VECTORSAFE, affectedLayerID, True, tmpLayer
         Else
-            LoadUndo generateUndoFilename(relevantDiffIndex), undoStack(relevantDiffIndex).undoType, UNDO_LAYER, affectedLayerID, True, tmpLayer
+            LoadUndo GenerateUndoFilename(relevantDiffIndex), undoStack(relevantDiffIndex).undoType, UNDO_LAYER, affectedLayerID, True, tmpLayer
         End If
         
         'tmpLayer will now contain a copy of the relevant DIB (inside .layerDIB).  Copy it into the destination DIB, then exit.
@@ -812,45 +812,45 @@ Public Function fillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
 End Function
 
 'Get the filename of the current Undo file, using the same formula as generateUndoFilename below
-Public Function getCurrentUndoFilename()
-    getCurrentUndoFilename = generateUndoFilename(undoNum)
+Public Function GetCurrentUndoFilename()
+    GetCurrentUndoFilename = GenerateUndoFilename(undoNum)
 End Function
 
 'Generate a unique Undo/Redo file name, including full temp path.
-Private Function generateUndoFilename(ByVal uIndex As Long) As String
+Private Function GenerateUndoFilename(ByVal uIndex As Long) As String
     
     'As a failsafe, all Undo/Redo files are erased when this class is unloaded.  The clearUndos function requires this
     ' function to generate Undo filnames.  If our parent class was terminated properly, it will have already erased
     ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
     ' parent reference in advance.
     If Not (parentPDImage Is Nothing) Then
-        generateUndoFilename = g_UserPreferences.GetTempPath & "~cPDU_(" & g_SessionID & ")_" & parentPDImage.imageID & "_" & uIndex & "_.pdtmp"
+        GenerateUndoFilename = g_UserPreferences.GetTempPath & "~cPDU_(" & g_SessionID & ")_" & parentPDImage.imageID & "_" & uIndex & "_.pdtmp"
     End If
     
 End Function
 
 'Publicly accessible mechanism for generating a unique Undo/Redo file name.  Any changes to the private function, above,
 ' should be mirrored here.
-Public Function generateUndoFilenameExternal(ByVal imageID As Long, ByVal uIndex As Long, ByVal originalSessionID As String) As String
-    generateUndoFilenameExternal = g_UserPreferences.GetTempPath & "~cPDU_(" & originalSessionID & ")_" & imageID & "_" & uIndex & "_.pdtmp"
+Public Function GenerateUndoFilenameExternal(ByVal imageID As Long, ByVal uIndex As Long, ByVal originalSessionID As String) As String
+    GenerateUndoFilenameExternal = g_UserPreferences.GetTempPath & "~cPDU_(" & originalSessionID & ")_" & imageID & "_" & uIndex & "_.pdtmp"
 End Function
 
 'Generate a unique Undo/Redo header filename, including full temp path.  Note that this function does *NOT* take an
 ' Undo number index.  The entire stack is written out to the header file, every time.
-Private Function generateUndoHeaderFilename() As String
+Private Function GenerateUndoHeaderFilename() As String
     
     'As a failsafe, all Undo/Redo files are erased when this class is unloaded.  The clearUndos function requires this
     ' function to generate Undo filnames.  If our parent class was terminated properly, it will have already erased
     ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
     ' parent reference in advance.
     If Not (parentPDImage Is Nothing) Then
-        generateUndoHeaderFilename = g_UserPreferences.GetTempPath & "~PDU_StackSummary_(" & g_SessionID & ")_" & parentPDImage.imageID & "_.pdtmp"
+        GenerateUndoHeaderFilename = g_UserPreferences.GetTempPath & "~PDU_StackSummary_(" & g_SessionID & ")_" & parentPDImage.imageID & "_.pdtmp"
     End If
     
 End Function
 
 'Erase all undo files that this class has created
-Public Sub clearUndos()
+Public Sub ClearUndos()
     
     On Error Resume Next
     
@@ -868,19 +868,19 @@ Public Sub clearUndos()
     For i = 0 To undoTotal
         
         'Check image data first...
-        If cFile.FileExist(generateUndoFilename(i)) Then cFile.KillFile generateUndoFilename(i)
+        If cFile.FileExist(GenerateUndoFilename(i)) Then cFile.KillFile GenerateUndoFilename(i)
         
         '...followed by layer data
-        If cFile.FileExist(generateUndoFilename(i) & ".layer") Then cFile.KillFile generateUndoFilename(i) & ".layer"
+        If cFile.FileExist(GenerateUndoFilename(i) & ".layer") Then cFile.KillFile GenerateUndoFilename(i) & ".layer"
         
         '...followed by selection data
-        If cFile.FileExist(generateUndoFilename(i) & ".selection") Then cFile.KillFile generateUndoFilename(i) & ".selection"
+        If cFile.FileExist(GenerateUndoFilename(i) & ".selection") Then cFile.KillFile GenerateUndoFilename(i) & ".selection"
         
     Next i
     
     'Destroy the header file and preview image, if any
-    If cFile.FileExist(generateUndoHeaderFilename()) Then cFile.KillFile generateUndoHeaderFilename()
-    If cFile.FileExist(generateUndoHeaderFilename() & ".asp") Then cFile.KillFile generateUndoHeaderFilename() & ".asp"
+    If cFile.FileExist(GenerateUndoHeaderFilename()) Then cFile.KillFile GenerateUndoHeaderFilename()
+    If cFile.FileExist(GenerateUndoHeaderFilename() & ".asp") Then cFile.KillFile GenerateUndoHeaderFilename() & ".asp"
     
     'Set the current and maximum Undo number to 0
     undoNum = 0
@@ -991,7 +991,7 @@ End Sub
 
 'When this class is unloaded, we must make sure to delete any Undo files we created
 Private Sub Class_Terminate()
-    clearUndos
+    ClearUndos
 End Sub
 
 'Write the Undo stack out to file, in XML format
@@ -1055,7 +1055,7 @@ Public Sub writeUndoDataToXML(ByVal dstFilename As String)
     'As an added bonus (new to PD 6.4), also write out a thumbnail of the image *as it appears right now*.  The Autosave engine
     ' will use this as an image preview if something goes horribly wrong.
     If (undoNum > 0) Then
-        If (Not (undoStack(undoNum - 1).thumbnailLarge Is Nothing)) Then Saving.QuickSaveDIBAsPNG generateUndoHeaderFilename & ".asp", undoStack(undoNum - 1).thumbnailLarge
+        If (Not (undoStack(undoNum - 1).thumbnailLarge Is Nothing)) Then Saving.QuickSaveDIBAsPNG GenerateUndoHeaderFilename & ".asp", undoStack(undoNum - 1).thumbnailLarge
     End If
     
 End Sub
