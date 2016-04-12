@@ -298,6 +298,7 @@ End Type
 Private Const INIT_GROUP_CACHE_SIZE As Long = 8
 Private m_GroupCache() As ET_GROUP
 Private m_NumGroupsInCache As Long
+Private m_ModalWaitWindowActive As Boolean
 
 Public Function IsDatabaseModeActive() As Boolean
     IsDatabaseModeActive = m_DatabaseModeActive
@@ -318,7 +319,10 @@ Public Sub NewMetadataReceived(ByVal newMetadata As String)
     'During database mode, check for a finish state, then write the retrieved database out to file!
     ElseIf m_DatabaseModeActive Then
         m_DatabaseString = m_DatabaseString & newMetadata
-        If IsMetadataFinished() Then WriteMetadataDatabaseToFile
+        If IsMetadataFinished() Then
+            WriteMetadataDatabaseToFile
+            If m_ModalWaitWindowActive Then g_UnloadWaitWindow = True
+        End If
     End If
     
 End Sub
@@ -673,7 +677,7 @@ Public Function DoesTagDatabaseExist() As Boolean
     DoesTagDatabaseExist = cFile.FileExist(g_PluginPath & "exifToolDatabase.xml")
 End Function
 
-Public Function ShowMetadataDialog(ByRef srcImage As pdImage) As Boolean
+Public Function ShowMetadataDialog(ByRef srcImage As pdImage, Optional ByRef parentForm As Form = Nothing) As Boolean
 
     'Perform a failsafe check to make sure the metadata object exists.  (If ExifTool is missing, it may
     ' not be present!)
@@ -691,11 +695,23 @@ Public Function ShowMetadataDialog(ByRef srcImage As pdImage) As Boolean
                 Dim waitTitle As String, waitDescription As String
                 waitTitle = g_Language.TranslateMessage("Please wait while the tag database is created...")
                 waitDescription = g_Language.TranslateMessage("The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.")
-                Interface.DisplayWaitScreen waitTitle, FormMain, waitDescription
+                
+                'When raising the metadata dialog from a save dialog, we cannot display the "please wait" window modelessly
+                ' (as the save dialog will be modal).  As such, we must use different methods for unloading it.
+                If Not (parentForm Is Nothing) Then
+                    m_ModalWaitWindowActive = True
+                    Interface.DisplayWaitScreen waitTitle, parentForm, waitDescription, True
+                    m_ModalWaitWindowActive = False
+                    
+                'Raising the metadata dialog from the main window can be done modelessly
+                Else
+                    Interface.DisplayWaitScreen waitTitle, FormMain, waitDescription, False
+                End If
                 
                 Do
                     DoEvents
                 Loop While ExifTool.IsDatabaseModeActive
+                
                 Interface.HideWaitScreen
                 
             End If
@@ -746,7 +762,6 @@ Public Function WriteTagDatabase() As Boolean
         cmdParams = ""
         
         cmdParams = cmdParams & "-listx" & vbCrLf
-        'cmdParams = cmdParams & "-s" & vbCrLf
         cmdParams = cmdParams & "-lang" & vbCrLf
         cmdParams = cmdParams & "en" & vbCrLf
         cmdParams = cmdParams & "-f" & vbCrLf

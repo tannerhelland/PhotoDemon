@@ -51,13 +51,13 @@ Begin VB.Form FormWait
       Left            =   240
       Top             =   240
       Width           =   8490
-      _extentx        =   0
-      _extenty        =   0
-      alignment       =   2
-      caption         =   "please wait"
-      fontbold        =   -1  'True
-      fontsize        =   12
-      forecolor       =   9437184
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   2
+      Caption         =   "please wait"
+      FontBold        =   -1  'True
+      FontSize        =   12
+      ForeColor       =   9437184
    End
    Begin PhotoDemon.pdLabel lblWaitDescription 
       Height          =   960
@@ -65,12 +65,12 @@ Begin VB.Form FormWait
       Top             =   1560
       Visible         =   0   'False
       Width           =   8490
-      _extentx        =   14975
-      _extenty        =   1905
-      alignment       =   2
-      caption         =   ""
-      forecolor       =   9437184
-      layout          =   1
+      _ExtentX        =   14975
+      _ExtentY        =   1905
+      Alignment       =   2
+      Caption         =   ""
+      ForeColor       =   9437184
+      Layout          =   1
    End
 End
 Attribute VB_Name = "FormWait"
@@ -82,6 +82,9 @@ Option Explicit
 
 'System progress bar control
 Private sysProgBar As cProgressBarOfficial
+
+Private WithEvents m_ModalUnloadCheck As pdTimer
+Attribute m_ModalUnloadCheck.VB_VarHelpID = -1
 
 Private Sub Form_Load()
 
@@ -96,21 +99,38 @@ Private Sub Form_Load()
     Interface.ApplyThemeAndTranslations Me
     
     'Turn on the progress bar timer, which is used to move the marquee progress bar.
-    ' (This is no longer required, thankfully.)
-    'tmrProgBar.Enabled = True
+    tmrProgBar.Enabled = True
+    
+    Set m_ModalUnloadCheck = New pdTimer
+    m_ModalUnloadCheck.Interval = 16
+    m_ModalUnloadCheck.StartTimer
     
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
+    If Not (m_ModalUnloadCheck Is Nothing) Then
+        m_ModalUnloadCheck.StopTimer
+        Set m_ModalUnloadCheck = Nothing
+    End If
     tmrProgBar.Enabled = False
 End Sub
 
-Private Sub tmrProgBar_Timer()
+Private Sub m_ModalUnloadCheck_Timer()
+    
+    DoEvents
+    
+    'If the dialog is raised modally, an asynchronous method must be used to unload the window.  Set this global flag
+    ' to unload the window asynchronously.
+    If g_UnloadWaitWindow Then
+        g_UnloadWaitWindow = False
+        Unload Me
+    End If
+    
+End Sub
 
+Private Sub tmrProgBar_Timer()
     sysProgBar.Value = sysProgBar.Value + 1
     If sysProgBar.Value = sysProgBar.Max Then sysProgBar.Value = sysProgBar.Min
-    
     sysProgBar.Refresh
-    
 End Sub
 

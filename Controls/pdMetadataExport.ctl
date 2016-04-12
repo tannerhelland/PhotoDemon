@@ -135,7 +135,7 @@ Attribute hWnd.VB_UserMemId = -515
 End Property
 
 Private Sub hplReviewMetadata_Click()
-    ExifTool.ShowMetadataDialog m_ImageCopy
+    ExifTool.ShowMetadataDialog m_ImageCopy, UserControl.Parent
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
