@@ -85,7 +85,7 @@ Public Sub LoadAllPlugins()
         If pluginExists(i) Then pluginAllowed(i) = isPluginAllowed(i)
         
         'If the user has allowed a plugin to exist, attempt to initialize it.
-        If pluginAllowed(i) Then pluginInitialized(i) = initializePlugin(i)
+        If pluginAllowed(i) Then pluginInitialized(i) = InitializePlugin(i)
         
         'We now know enough to set global initialization flags.  (This step is technically optional; see comments in the matching sub.)
         setGlobalPluginFlags i, pluginInitialized(i)
@@ -206,7 +206,7 @@ End Function
  'official plugin folder, and the user has not forcibly disabled a given plugin.
 '
 'Returns TRUE if the plugin was initialized successfully; FALSE otherwise.
-Private Function initializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
     
     'Because this function has variable complexity (depending on the plugin), an intermediary value is used to track success/failure.
     ' At the end of the function, the function return will simply copy this value, so make sure it's set correctly before the
@@ -247,11 +247,11 @@ Private Function initializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         
         Case CCP_zLib
             'zLib maintains a program-wide handle for the life of the program, which we attempt to generate now.
-            initializationSuccessful = Plugin_zLib_Interface.initializeZLib()
+            initializationSuccessful = Plugin_zLib_Interface.InitializeZLib()
             
     End Select
 
-    initializePlugin = initializationSuccessful
+    InitializePlugin = initializationSuccessful
 
 End Function
 

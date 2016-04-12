@@ -45,8 +45,10 @@ End Function
 
 'Return the EZTwain version number, as a string
 Public Function getEZTwainVersion() As String
-
-    hLib_Scanner = LoadLibrary(g_PluginPath & "eztw32.dll")
+    
+    Dim strEZTPath As String
+    strEZTPath = g_PluginPath & "eztw32.dll"
+    hLib_Scanner = LoadLibrary(StrPtr(strEZTPath))
     
     If hLib_Scanner <> 0 Then
     
@@ -64,8 +66,10 @@ End Function
 
 'This should be run before the scanner is accessed
 Public Function EnableScanner() As Boolean
-
-    hLib_Scanner = LoadLibrary(g_PluginPath & "eztw32.dll")
+    
+    Dim strEZTPath As String
+    strEZTPath = g_PluginPath & "eztw32.dll"
+    hLib_Scanner = LoadLibrary(StrPtr(strEZTPath))
     
     If hLib_Scanner <> 0 Then
         If TWAIN_IsAvailable() = 0 Then EnableScanner = False Else EnableScanner = True
@@ -86,7 +90,9 @@ Public Sub Twain32SelectScanner()
         If EnableScanner Then
             
             Dim hLib As Long
-            hLib = LoadLibrary(g_PluginPath & "eztw32.dll")
+            Dim strEZTPath As String
+            strEZTPath = g_PluginPath & "eztw32.dll"
+            hLib = LoadLibrary(StrPtr(strEZTPath))
                 
             TWAIN_SelectImageSource GetModalOwner().hWnd
             
@@ -130,9 +136,11 @@ Public Sub Twain32Scan()
         Message "Unresponsive scanner - scanning suspended "
         Exit Sub
     End If
-
+    
     Dim hLib As Long
-    hLib = LoadLibrary(g_PluginPath & "eztw32.dll")
+    Dim strEZTPath As String
+    strEZTPath = g_PluginPath & "eztw32.dll"
+    hLib = LoadLibrary(StrPtr(strEZTPath))
 
     'Note that this function has a fairly extensive error handling routine
     On Error GoTo ScanError

@@ -212,7 +212,7 @@ Private Declare Function zlibVersion Lib "zlibwapi.dll" () As Long
 
 'API calls for explicitly calling dlls.  This allows us to build DLL paths at runtime, and it also allows
 ' us to call any DLL we like without first passing them through regsvr32.
-Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
+Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryW" (ByVal lpLibFileName As Long) As Long
 Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 
 'If zLib has been successfully initialized, this will be set to TRUE.  If we initialized the DLL within this class, we will also
@@ -1928,7 +1928,7 @@ Public Function init_ZLib(ByVal pathToZLibDLL As String, Optional ByVal leaveIni
         If Len(pathToZLibDLL) <> 0 Then
         
             'If the library was successfully loaded, a non-zero value will be returned.
-            m_ZLibToken = LoadLibrary(pathToZLibDLL)
+            m_ZLibToken = LoadLibrary(StrPtr(pathToZLibDLL))
             
             If m_ZLibToken <> 0 Then
                 m_ZLibAvailable = True

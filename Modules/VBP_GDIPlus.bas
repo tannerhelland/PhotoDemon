@@ -2105,7 +2105,7 @@ End Function
 
 'Save an image using GDI+.  Per the current save spec, ImageID must be specified.
 ' Additional save options are currently available for JPEGs (save quality, range [1,100]) and TIFFs (compression type).
-Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilename As String, ByVal imgFormat As GDIPlusImageFormat, ByVal outputColorDepth As Long, Optional ByVal JPEGQuality As Long = 92) As Boolean
+Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilename As String, ByVal imgFormat As GDIPlusImageFormat, ByVal outputColorDepth As Long, Optional ByVal jpegQuality As Long = 92) As Boolean
 
     On Error GoTo GDIPlusSaveError
 
@@ -2258,7 +2258,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
                 .NumberOfValues = 1
                 .encType = [EncoderParameterValueTypeLong]
                 .Guid = pvDEFINE_GUID(EncoderQuality)
-                .Value = VarPtr(JPEGQuality)
+                .Value = VarPtr(jpegQuality)
             End With
             
             CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
@@ -2894,7 +2894,10 @@ Public Function IsGDIPlusAvailable() As Boolean
         
         'Next, check to see if v1.1 is available.  This allows for advanced fx work.
         Dim hMod As Long
-        hMod = LoadLibrary("gdiplus.dll")
+        Dim strGDIPName As String
+        strGDIPName = "gdiplus.dll"
+        hMod = LoadLibrary(StrPtr(strGDIPName))
+        
         If hMod Then
             Dim testAddress As Long
             testAddress = GetProcAddress(hMod, "GdipDrawImageFX")
