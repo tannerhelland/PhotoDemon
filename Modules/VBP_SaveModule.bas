@@ -239,6 +239,9 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
             Case PDIF_BMP
                 GetExportParamsFromDialog = CBool(Dialog_Handler.PromptBMPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
+            Case PDIF_GIF
+                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptGIFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+            
             Case PDIF_JPEG
                 GetExportParamsFromDialog = CBool(Dialog_Handler.PromptJPEGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 
@@ -289,14 +292,7 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         'GIFs are preferentially exported by FreeImage, then GDI+ (if available).  I don't know how to control the algorithm
         ' GDI+ uses for 8-bpp color reduction, so the results of its encoder are likely to be poor.
         Case PDIF_GIF
-            If g_ImageFormats.FreeImageEnabled Then
-                ExportToSpecificFormat = SaveGIFImage(srcImage, dstPath)
-            ElseIf g_ImageFormats.GDIPlusEnabled Then
-                ExportToSpecificFormat = GDIPlusSavePicture(srcImage, dstPath, ImageGIF, 8)
-            Else
-                ExportToSpecificFormat = False
-                Exit Function
-            End If
+            ExportToSpecificFormat = ImageExporter.ExportGIF(srcImage, dstPath, saveParameters, metadataParameters)
             
         Case PDIF_PNG
             If g_ImageFormats.FreeImageEnabled Then
@@ -544,131 +540,6 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
 SavePDLayerError:
 
     SavePhotoDemonLayer = False
-    
-End Function
-
-'Save a GIF (Graphics Interchange Format) image.  GDI+ can also do this.
-Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As String, Optional ByVal forceAlphaConvert As Long = -1) As Boolean
-
-    On Error GoTo SaveGIFError
-    
-    Dim sFileType As String
-    sFileType = "GIF"
-
-    'Make sure we found the plug-in when we loaded the program
-    If Not g_ImageFormats.FreeImageEnabled Then
-        PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save cannot be completed without FreeImage library."
-        SaveGIFImage = False
-        Exit Function
-    End If
-    
-    Message "Preparing %1 image...", sFileType
-    
-    'Retrieve a composited copy of the image, at full size
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    srcPDImage.GetCompositedImage tmpDIB, False
-    
-    'If the current image is 32bpp, we will need to apply some additional actions to the image to prepare the
-    ' transparency.  Mark a bool value, because we will reference it in multiple places throughout the save function.
-    Dim handleAlpha As Boolean
-    If tmpDIB.getDIBColorDepth = 32 Then handleAlpha = True Else handleAlpha = False
-    
-    'If the current image contains transparency, we need to modify it in order to retain the alpha channel.
-    If handleAlpha Then
-    
-        'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
-        If DIB_Handler.IsDIBAlphaBinary(tmpDIB) Then
-            tmpDIB.ApplyAlphaCutoff
-        Else
-            If forceAlphaConvert = -1 Then
-                Dim alphaCheck As VbMsgBoxResult
-                alphaCheck = PromptAlphaCutoff(tmpDIB)
-                
-                'If the alpha dialog is canceled, abandon the entire save
-                If alphaCheck = vbCancel Then
-                
-                    tmpDIB.eraseDIB
-                    Set tmpDIB = Nothing
-                    SaveGIFImage = False
-                    Exit Function
-                
-                'If it wasn't canceled, use the value it provided to apply our alpha cut-off
-                Else
-                    tmpDIB.ApplyAlphaCutoff g_AlphaCutoff, , g_AlphaCompositeColor
-                End If
-                
-                'If the user decided to completely remove the image's alpha values, change handleAlpha to FALSE
-                If g_AlphaCutoff = 0 Then handleAlpha = False
-                
-            Else
-                tmpDIB.ApplyAlphaCutoff forceAlphaConvert
-            End If
-            
-        End If
-    
-    End If
-    
-    Message "Writing %1 file...", sFileType
-    
-    'Convert our current DIB to a FreeImage-type DIB
-    Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
-    
-    'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
-    If handleAlpha Then
-    
-        fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_NNQUANT, True)
-        
-        'We now need to find the palette index of a known transparent pixel
-        Dim transpX As Long, transpY As Long
-        tmpDIB.getTransparentLocation transpX, transpY
-        
-        Dim palIndex As Byte
-        FreeImage_GetPixelIndex fi_DIB, transpX, transpY, palIndex
-        
-        'Request that FreeImage set that palette entry as the transparent index
-        FreeImage_SetTransparentIndex fi_DIB, palIndex
-        
-        'Finally, because some software may not display the transparency correctly, we need to set that
-        ' palette index to some normal color instead of bright magenta.  To do that, we must make a
-        ' copy of the palette and update the transparency index accordingly.
-        Dim fi_Palette() As Long
-        fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
-        
-        fi_Palette(palIndex) = tmpDIB.GetOriginalTransparentColor()
-        
-    End If
-    
-    'Use that handle to save the image to GIF format, with required 8bpp (256 color) conversion
-    If fi_DIB <> 0 Then
-        
-        Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, GIFPath, PDIF_GIF, , FICD_8BPP, , , , , True)
-        
-        If fi_Check Then
-            Message "%1 save complete.", sFileType
-        Else
-            Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-            SaveGIFImage = False
-            Exit Function
-        End If
-        
-    Else
-    
-        Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-        SaveGIFImage = False
-        Exit Function
-        
-    End If
-    
-    SaveGIFImage = True
-    Exit Function
-    
-SaveGIFError:
-
-    SaveGIFImage = False
     
 End Function
 

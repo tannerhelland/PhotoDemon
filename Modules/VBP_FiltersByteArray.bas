@@ -370,7 +370,7 @@ Public Function VerticalBlur_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidt
 End Function
 
 'Given a 2D byte array, normalize the contents to guarantee a full stretch on the range [0, 255]
-Public Function normalizeByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long) As Boolean
+Public Function NormalizeByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long) As Boolean
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -434,13 +434,13 @@ Public Function normalizeByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As
     
     End If
     
-    normalizeByteArray = True
+    NormalizeByteArray = True
     
 End Function
 
 'Add noise to a byte array.  noiseAmount is on the range [0, 255]; it will be auto-converted to [-255, 255] when applying changes
 ' to the image.
-Public Function addNoiseByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, ByVal noiseAmount As Long) As Boolean
+Public Function AddNoiseByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, ByVal noiseAmount As Long) As Boolean
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -475,14 +475,14 @@ Public Function addNoiseByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As 
     Next y
     Next x
     
-    addNoiseByteArray = True
+    AddNoiseByteArray = True
     
 End Function
 
 'Given a byte array, convert all values to 0 or 255 using a user-supplied threshold value.  If the autoCalculateThreshold value is TRUE,
 ' the array will be scanned and the median value of the array will be used as the threshold.  This should result in an image with a
 ' relatively even split between white and black pixels.
-Public Function thresholdByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal thresholdValue As Long = 127, Optional ByVal autoCalculateThreshold As Boolean = False) As Boolean
+Public Function ThresholdByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal thresholdValue As Long = 127, Optional ByVal autoCalculateThreshold As Boolean = False) As Boolean
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -540,7 +540,7 @@ Public Function thresholdByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As
     Next y
     Next x
     
-    thresholdByteArray = True
+    ThresholdByteArray = True
     
 End Function
 
@@ -549,7 +549,7 @@ End Function
 '
 'If the autoCalculateThreshold value is TRUE, the array will be scanned and the median value of the array will be used as the threshold.
 ' (This should result in an image with a relatively even split between white and black pixels.)
-Public Function thresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal thresholdValue As Long = 127, Optional ByVal autoCalculateThreshold As Boolean = False) As Boolean
+Public Function ThresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal thresholdValue As Long = 127, Optional ByVal autoCalculateThreshold As Boolean = False) As Boolean
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -674,7 +674,7 @@ NextDitheredPixel:
     Next y
     Next x
     
-    thresholdPlusDither_ByteArray = True
+    ThresholdPlusDither_ByteArray = True
     
 End Function
 

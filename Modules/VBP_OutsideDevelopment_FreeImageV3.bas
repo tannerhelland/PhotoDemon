@@ -1637,7 +1637,7 @@ Public Declare Function FreeImage_ColorQuantize Lib "FreeImage.dll" Alias "_Free
            ByVal Bitmap As Long, _
            ByVal QuantizeMethod As FREE_IMAGE_QUANTIZE) As Long
            
-Private Declare Function FreeImage_ColorQuantizeExInt Lib "FreeImage.dll" Alias "_FreeImage_ColorQuantizeEx@20" ( _
+Public Declare Function FreeImage_ColorQuantizeExInt Lib "FreeImage.dll" Alias "_FreeImage_ColorQuantizeEx@20" ( _
            ByVal Bitmap As Long, _
   Optional ByVal QuantizeMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT, _
   Optional ByVal PaletteSize As Long = 256, _
@@ -2438,6 +2438,13 @@ Dim lpInfoHeader As Long
       Call CopyMemory(ByVal ptrToBitmapInfoHeader, ByVal lpInfoHeader, 40&)
    End If
 
+End Sub
+
+'Overwrite an existing FI DIB header with our own header copy.  WARNING!  USE WITH EXTREME! CAUTION!
+Public Sub FreeImage_SetInfoHeaderEx(ByVal fi_Handle As Long, ByVal ptrToBitmapInfoHeader As Long)
+    Dim lpInfoHeader As Long
+    lpInfoHeader = FreeImage_GetInfoHeader(fi_Handle)
+    If (lpInfoHeader <> 0) Then Call CopyMemory(ByVal lpInfoHeader, ByVal ptrToBitmapInfoHeader, 40&)
 End Sub
 
 Public Function FreeImage_GetPaletteExLong(ByVal Bitmap As Long) As Long()

@@ -27,7 +27,7 @@ Option Explicit
 Public Function ChoosePDColor(ByVal oldColor As Long, ByRef newColor As Long, Optional ByRef callingControl As pdColorSelector) As VbMsgBoxResult
 
     Load dialog_ColorSelector
-    dialog_ColorSelector.showDialog oldColor, callingControl
+    dialog_ColorSelector.ShowDialog oldColor, callingControl
     
     ChoosePDColor = dialog_ColorSelector.DialogResult
     If ChoosePDColor = vbOK Then newColor = dialog_ColorSelector.newColor
@@ -43,7 +43,7 @@ Public Function ConfirmClose(ByVal formID As Long) As VbMsgBoxResult
     Load dialog_UnsavedChanges
     
     dialog_UnsavedChanges.formID = formID
-    dialog_UnsavedChanges.showDialog FormMain
+    dialog_UnsavedChanges.ShowDialog FormMain
     
     ConfirmClose = dialog_UnsavedChanges.DialogResult
     
@@ -56,7 +56,7 @@ End Function
 Public Function PromptMultiImage(ByVal srcFilename As String, ByVal numOfPages As Long) As VbMsgBoxResult
 
     Load dialog_MultiImage
-    dialog_MultiImage.showDialog srcFilename, numOfPages
+    dialog_MultiImage.ShowDialog srcFilename, numOfPages
     
     PromptMultiImage = dialog_MultiImage.DialogResult
     
@@ -68,7 +68,7 @@ End Function
 Public Function PromptBMPSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportBMP
-    dialog_ExportBMP.showDialog srcImage
+    dialog_ExportBMP.ShowDialog srcImage
 
     PromptBMPSettings = dialog_ExportBMP.GetDialogResult
     dstFormatParams = dialog_ExportBMP.GetFormatParams
@@ -81,11 +81,26 @@ Public Function PromptBMPSettings(ByRef srcImage As pdImage, ByRef dstFormatPara
     
 End Function
 
+'Present a dialog box to ask the user for various GIF export settings
+Public Function PromptGIFSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+    
+    Load dialog_ExportGIF
+    dialog_ExportGIF.ShowDialog srcImage
+    
+    PromptGIFSettings = dialog_ExportGIF.GetDialogResult
+    dstFormatParams = dialog_ExportGIF.GetFormatParams
+    dstMetadataParams = dialog_ExportGIF.GetMetadataParams
+    
+    Unload dialog_ExportGIF
+    Set dialog_ExportGIF = Nothing
+    
+End Function
+
 'Present a dialog box to ask the user for various JPEG export settings
 Public Function PromptJPEGSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportJPEG
-    dialog_ExportJPEG.showDialog srcImage
+    dialog_ExportJPEG.ShowDialog srcImage
     
     PromptJPEGSettings = dialog_ExportJPEG.GetDialogResult
     dstFormatParams = dialog_ExportJPEG.GetFormatParams
@@ -101,7 +116,7 @@ Public Function PromptJP2Settings(ByRef srcImage As pdImage, ByRef dstFormatPara
 
     Load dialog_ExportJP2
     Set dialog_ExportJP2.imageBeingExported = srcImage
-    dialog_ExportJP2.showDialog
+    dialog_ExportJP2.ShowDialog
 
     PromptJP2Settings = dialog_ExportJP2.DialogResult
     dstFormatParams = dialog_ExportJP2.xmlParamString
@@ -118,7 +133,7 @@ Public Function PromptWebPSettings(ByRef srcImage As pdImage, ByRef dstFormatPar
 
     Load dialog_ExportWebP
     Set dialog_ExportWebP.imageBeingExported = srcImage
-    dialog_ExportWebP.showDialog
+    dialog_ExportWebP.ShowDialog
 
     PromptWebPSettings = dialog_ExportWebP.DialogResult
     dstFormatParams = dialog_ExportWebP.xmlParamString
@@ -135,7 +150,7 @@ Public Function PromptJXRSettings(ByRef srcImage As pdImage, ByRef dstFormatPara
 
     Load dialog_ExportJXR
     Set dialog_ExportJXR.imageBeingExported = srcImage
-    dialog_ExportJXR.showDialog
+    dialog_ExportJXR.ShowDialog
 
     PromptJXRSettings = dialog_ExportJXR.DialogResult
     dstFormatParams = dialog_ExportJXR.xmlParamString
@@ -153,7 +168,7 @@ Public Function PromptAlphaCutoff(ByRef srcDIB As pdDIB) As VbMsgBoxResult
 
     Load dialog_AlphaCutoff
     dialog_AlphaCutoff.refDIB = srcDIB
-    dialog_AlphaCutoff.showDialog
+    dialog_AlphaCutoff.ShowDialog
 
     PromptAlphaCutoff = dialog_AlphaCutoff.DialogResult
     
@@ -166,7 +181,7 @@ End Function
 Public Function DisplayIDEWarning() As VbMsgBoxResult
 
     Load dialog_IDEWarning
-    dialog_IDEWarning.showDialog
+    dialog_IDEWarning.ShowDialog
 
     DisplayIDEWarning = dialog_IDEWarning.DialogResult
     
@@ -179,7 +194,7 @@ End Function
 Public Function DisplayAutosaveWarning(ByRef dstArray() As AutosaveXML) As VbMsgBoxResult
 
     Load dialog_AutosaveWarning
-    dialog_AutosaveWarning.showDialog
+    dialog_AutosaveWarning.ShowDialog
     
     DisplayAutosaveWarning = dialog_AutosaveWarning.DialogResult
     
@@ -248,7 +263,7 @@ Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
         dialog_ToneMapping.fi_HandleCopy = fi_Handle
         
         'Display the (modal) dialog and wait for it to return
-        dialog_ToneMapping.showDialog
+        dialog_ToneMapping.ShowDialog
         
         'This function will return the actual dialog result (OK vs Cancel)...
         PromptToneMapSettings = dialog_ToneMapping.DialogResult
@@ -295,7 +310,7 @@ End Function
 Public Function PromptNewPreset(ByRef srcPresetManager As pdToolPreset, ByRef parentForm As Form, ByRef dstPresetName As String) As VbMsgBoxResult
 
     Load dialog_AddPreset
-    dialog_AddPreset.showDialog srcPresetManager, parentForm
+    dialog_AddPreset.ShowDialog srcPresetManager, parentForm
 
     PromptNewPreset = dialog_AddPreset.DialogResult
     
@@ -336,7 +351,7 @@ Public Function PromptGenericYesNoDialog(ByVal questionID As String, ByVal quest
     'The user has not saved a previous answer.  Display the full dialog.
     Else
     
-        dialog_GenericMemory.showDialog questionText, yesButtonText, noButtonText, cancelButtonText, rememberCheckBoxText, dialogTitleText, icon, defaultAnswer, defaultRemember
+        dialog_GenericMemory.ShowDialog questionText, yesButtonText, noButtonText, cancelButtonText, rememberCheckBoxText, dialogTitleText, icon, defaultAnswer, defaultRemember
         
         'Retrieve the user's answer
         PromptGenericYesNoDialog = dialog_GenericMemory.DialogResult
@@ -373,7 +388,7 @@ Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As Strin
     'The user has not saved a previous answer.  Display the full dialog.
     Else
     
-        dialog_GenericMemory.showDialog questionText, yesButtonText, noButtonText, cancelButtonText, rememberCheckBoxText, dialogTitleText, icon, defaultAnswer, defaultRemember
+        dialog_GenericMemory.ShowDialog questionText, yesButtonText, noButtonText, cancelButtonText, rememberCheckBoxText, dialogTitleText, icon, defaultAnswer, defaultRemember
         
         'Retrieve the user's answer
         PromptGenericYesNoDialog_SingleOutcome = dialog_GenericMemory.DialogResult
@@ -406,7 +421,7 @@ End Function
 Public Function ChoosePDBrush(ByRef oldBrush As String, ByRef newBrush As String, Optional ByRef callingControl As pdBrushSelector) As VbMsgBoxResult
 
     Load dialog_FillSettings
-    dialog_FillSettings.showDialog oldBrush, callingControl
+    dialog_FillSettings.ShowDialog oldBrush, callingControl
     
     ChoosePDBrush = dialog_FillSettings.DialogResult
     If ChoosePDBrush = vbOK Then newBrush = dialog_FillSettings.newBrush
@@ -431,7 +446,7 @@ End Function
 Public Function ChoosePDPen(ByRef oldPen As String, ByRef newPen As String, Optional ByRef callingControl As pdPenSelector) As VbMsgBoxResult
 
     Load dialog_OutlineSettings
-    dialog_OutlineSettings.showDialog oldPen, callingControl
+    dialog_OutlineSettings.ShowDialog oldPen, callingControl
     
     ChoosePDPen = dialog_OutlineSettings.DialogResult
     If ChoosePDPen = vbOK Then newPen = dialog_OutlineSettings.newPen
@@ -457,7 +472,7 @@ End Function
 Public Function ChoosePDGradient(ByRef oldGradient As String, ByRef newGradient As String, Optional ByRef callingControl As pdGradientSelector) As VbMsgBoxResult
 
     Load dialog_GradientEditor
-    dialog_GradientEditor.showDialog oldGradient, callingControl
+    dialog_GradientEditor.ShowDialog oldGradient, callingControl
     
     ChoosePDGradient = dialog_GradientEditor.DialogResult
     If ChoosePDGradient = vbOK Then newGradient = dialog_GradientEditor.newGradient
