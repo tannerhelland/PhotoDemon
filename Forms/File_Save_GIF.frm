@@ -1,9 +1,9 @@
 VERSION 5.00
-Begin VB.Form dialog_ExportBMP 
+Begin VB.Form dialog_ExportGIF 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " BMP export options"
+   Caption         =   " GIF export options"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -25,11 +25,27 @@ Begin VB.Form dialog_ExportBMP
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   873
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdSlider sldAlphaCutoff 
+      Height          =   855
+      Left            =   5880
+      TabIndex        =   8
+      Top             =   4560
+      Width           =   7095
+      _ExtentX        =   12515
+      _ExtentY        =   1508
+      Caption         =   "alpha cut-off"
+      Max             =   254
+      SliderTrackStyle=   1
+      Value           =   64
+      GradientColorRight=   1703935
+      NotchPosition   =   2
+      NotchValueCustom=   64
+   End
    Begin PhotoDemon.pdCheckBox chkColorCount 
       Height          =   375
       Left            =   6000
-      TabIndex        =   6
-      Top             =   4200
+      TabIndex        =   3
+      Top             =   1320
       Width           =   6975
       _ExtentX        =   7858
       _ExtentY        =   661
@@ -39,8 +55,8 @@ Begin VB.Form dialog_ExportBMP
    Begin PhotoDemon.pdColorSelector clsBackground 
       Height          =   975
       Left            =   5880
-      TabIndex        =   9
-      Top             =   1860
+      TabIndex        =   5
+      Top             =   2280
       Width           =   7095
       _ExtentX        =   15690
       _ExtentY        =   1720
@@ -50,7 +66,7 @@ Begin VB.Form dialog_ExportBMP
       Height          =   375
       Index           =   0
       Left            =   9360
-      Top             =   4740
+      Top             =   1860
       Width           =   3615
       _ExtentX        =   9340
       _ExtentY        =   661
@@ -59,8 +75,8 @@ Begin VB.Form dialog_ExportBMP
    Begin PhotoDemon.pdSlider sldColorCount 
       Height          =   375
       Left            =   6240
-      TabIndex        =   7
-      Top             =   4680
+      TabIndex        =   4
+      Top             =   1800
       Width           =   3015
       _ExtentX        =   5318
       _ExtentY        =   661
@@ -70,20 +86,20 @@ Begin VB.Form dialog_ExportBMP
       NotchPosition   =   2
       NotchValueCustom=   256
    End
-   Begin PhotoDemon.pdButtonStrip btsDepthRGB 
+   Begin PhotoDemon.pdButtonStrip btsAlpha 
       Height          =   1095
       Left            =   5880
-      TabIndex        =   4
-      Top             =   3000
+      TabIndex        =   2
+      Top             =   3360
       Width           =   7095
       _ExtentX        =   15690
       _ExtentY        =   1931
-      Caption         =   "depth"
+      Caption         =   "transparency"
    End
    Begin PhotoDemon.pdButtonStrip btsColorModel 
       Height          =   1095
       Left            =   5880
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   120
       Width           =   7095
       _ExtentX        =   15690
@@ -94,87 +110,45 @@ Begin VB.Form dialog_ExportBMP
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   5790
       Width           =   13095
       _ExtentX        =   23098
       _ExtentY        =   1323
    End
-   Begin PhotoDemon.pdCheckBox chkRLE 
-      Height          =   375
-      Left            =   6000
-      TabIndex        =   0
-      Top             =   5280
-      Width           =   6975
-      _ExtentX        =   7435
-      _ExtentY        =   661
-      Caption         =   "use RLE compression"
-      Value           =   0
-   End
-   Begin PhotoDemon.pdButtonStrip btsDepthGrayscale 
-      Height          =   1095
-      Left            =   5880
-      TabIndex        =   5
-      Top             =   3000
-      Width           =   7095
-      _ExtentX        =   15690
-      _ExtentY        =   1931
-      Caption         =   "depth"
-   End
-   Begin PhotoDemon.pdCheckBox chkPremultiplyAlpha 
-      Height          =   375
-      Left            =   6000
-      TabIndex        =   8
-      Top             =   1320
-      Width           =   6855
-      _ExtentX        =   15478
-      _ExtentY        =   661
-      Caption         =   "premultiply alpha"
-      Value           =   0
-   End
-   Begin PhotoDemon.pdCheckBox chkFlipRows 
-      Height          =   375
-      Left            =   6000
-      TabIndex        =   10
-      Top             =   1320
-      Width           =   6975
-      _ExtentX        =   15478
-      _ExtentY        =   661
-      Caption         =   "flip row order (top-down)"
-      Value           =   0
-   End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   11
+      TabIndex        =   6
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+      ColorSelection  =   -1  'True
    End
-   Begin PhotoDemon.pdCheckBox chk16555 
-      Height          =   375
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   4200
-      Width           =   6975
-      _ExtentX        =   15478
-      _ExtentY        =   661
-      Caption         =   "use legacy 15-bit encoding (X1-R5-G5-B5)"
-      Value           =   0
+   Begin PhotoDemon.pdColorSelector clsAlphaColor 
+      Height          =   975
+      Left            =   5880
+      TabIndex        =   7
+      Top             =   4560
+      Width           =   7095
+      _ExtentX        =   15690
+      _ExtentY        =   1720
+      Caption         =   "transparent color (right-click image to select)"
+      curColor        =   16711935
    End
 End
-Attribute VB_Name = "dialog_ExportBMP"
+Attribute VB_Name = "dialog_ExportGIF"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Bitmap export dialog
+'GIF export dialog
 'Copyright 2012-2016 by Tanner Helland
 'Created: 11/December/12
-'Last updated: 16/March/16
-'Last update: repurpose old color-depth dialog into a BMP-specific one
+'Last updated: 11/April/16
+'Last update: repurpose old color-depth dialog into a GIF-specific one
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -204,6 +178,9 @@ Private m_FormatParamString As String
 ' cannot write any BMP-specific data.
 Private m_MetadataParamString As String
 
+'Default alpha cut-off when "auto" is selected
+Private Const DEFAULT_ALPHA_CUTOFF As Long = 64
+
 'The user's answer is returned via this property
 Public Function GetDialogResult() As VbMsgBoxResult
     GetDialogResult = m_UserDialogAnswer
@@ -226,18 +203,15 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     Message "Waiting for user to specify export options... "
     
     btsColorModel.AddItem "auto", 0
-    btsColorModel.AddItem "color + transparency", 1
-    btsColorModel.AddItem "color only", 2
-    btsColorModel.AddItem "grayscale", 3
+    btsColorModel.AddItem "color", 1
+    btsColorModel.AddItem "grayscale", 2
     
-    btsDepthRGB.AddItem "32-bpp XRGB (X8-R8-G8-B8)", 0
-    btsDepthRGB.AddItem "24-bpp RGB (R8-G8-B8)", 1
-    btsDepthRGB.AddItem "16-bpp (R5-G6-B5)", 2
-    btsDepthRGB.AddItem "8-bpp (indexed)", 3
+    btsAlpha.AddItem "auto", 0
+    btsAlpha.AddItem "none", 1
+    btsAlpha.AddItem "by cut-off", 2
+    btsAlpha.AddItem "by color", 3
     
-    btsDepthGrayscale.AddItem "8-bpp (256 shades)", 0
-    btsDepthGrayscale.AddItem "4-bpp (16 shades)", 1
-    btsDepthGrayscale.AddItem "1-bpp (monochrome)", 2
+    sldAlphaCutoff.NotchValueCustom = DEFAULT_ALPHA_CUTOFF
     
     'Prep a preview (if any)
     Set m_SrcImage = srcImage
@@ -248,6 +222,8 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     If (Not g_ImageFormats.FreeImageEnabled) Or (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
     
     'Update the preview
+    UpdateAllVisibility
+    UpdateTransparencyOptions
     UpdatePreviewSource
     UpdatePreview
     
@@ -257,6 +233,44 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'Display the dialog
     ShowPDDialog vbModal, Me, True
 
+End Sub
+
+Private Sub btsAlpha_Click(ByVal buttonIndex As Long)
+    UpdateTransparencyOptions
+    UpdatePreviewSource
+    UpdatePreview
+End Sub
+
+Private Sub UpdateTransparencyOptions()
+    
+    Select Case btsAlpha.ListIndex
+    
+        'auto
+        Case 0
+            sldAlphaCutoff.Visible = False
+            clsAlphaColor.Visible = False
+            pdFxPreview.AllowColorSelection = False
+            
+        'no alpha
+        Case 1
+            sldAlphaCutoff.Visible = False
+            clsAlphaColor.Visible = False
+            pdFxPreview.AllowColorSelection = False
+        
+        'alpha by cut-off
+        Case 2
+            sldAlphaCutoff.Visible = True
+            clsAlphaColor.Visible = False
+            pdFxPreview.AllowColorSelection = False
+        
+        'alpha by color
+        Case 3
+            sldAlphaCutoff.Visible = False
+            clsAlphaColor.Visible = True
+            pdFxPreview.AllowColorSelection = True
+    
+    End Select
+    
 End Sub
 
 Private Sub btsColorModel_Click(ByVal buttonIndex As Long)
@@ -271,97 +285,35 @@ Private Sub UpdateAllVisibility()
     
         'Auto
         Case 0
-            btsDepthRGB.Visible = False
-            btsDepthGrayscale.Visible = False
-            chkPremultiplyAlpha.Visible = False
+            UpdateColorCountVisibility False
             clsBackground.Visible = False
-            chkFlipRows.Visible = False
             
-        'RGBA
+        'Color
         Case 1
-            btsDepthRGB.Visible = False
-            btsDepthGrayscale.Visible = False
-            chkPremultiplyAlpha.Visible = True
-            clsBackground.Visible = False
-            chkFlipRows.Visible = True
-        
-        'RGB
-        Case 2
-            btsDepthRGB.Visible = True
-            btsDepthGrayscale.Visible = False
-            chkPremultiplyAlpha.Visible = False
+            UpdateColorCountVisibility True
             clsBackground.Visible = True
-            chkFlipRows.Visible = True
         
         'Grayscale
-        Case 3
-            btsDepthRGB.Visible = False
-            btsDepthGrayscale.Visible = True
-            chkPremultiplyAlpha.Visible = False
+        Case 2
+            UpdateColorCountVisibility True
             clsBackground.Visible = True
-            chkFlipRows.Visible = True
-    
+        
     End Select
     
-    EvaluateDepthRGBVisibility
-
 End Sub
 
-Private Sub EvaluateDepthRGBVisibility()
-    If (Not btsDepthRGB.Visible) Then
-        chk16555.Visible = False
-        SetGroupVisibility_IndexedColor False
-    Else
-        Select Case btsDepthRGB.ListIndex
-        
-            '32-bpp XRGB
-            Case 0
-                chk16555.Visible = False
-                SetGroupVisibility_IndexedColor False
-                
-            '24-bpp
-            Case 1
-                chk16555.Visible = False
-                SetGroupVisibility_IndexedColor False
-            
-            '16-bpp
-            Case 2
-                chk16555.Visible = True
-                SetGroupVisibility_IndexedColor False
-            
-            '8-bpp
-            Case 3
-                chk16555.Visible = False
-                SetGroupVisibility_IndexedColor True
-        
-        End Select
-    End If
-End Sub
-
-Private Sub SetGroupVisibility_IndexedColor(ByVal vState As Boolean)
-    chkRLE.Visible = vState
-    chkColorCount.Visible = vState
-    sldColorCount.Visible = vState
-    lblTitle(0).Visible = vState
-End Sub
-
-Private Sub btsDepthGrayscale_Click(ByVal buttonIndex As Long)
-    UpdatePreviewSource
-    UpdatePreview
-End Sub
-
-Private Sub btsDepthRGB_Click(ByVal buttonIndex As Long)
-    EvaluateDepthRGBVisibility
-    UpdatePreviewSource
-    UpdatePreview
-End Sub
-
-Private Sub chk16555_Click()
-    UpdatePreviewSource
-    UpdatePreview
+Private Sub UpdateColorCountVisibility(ByVal newValue As Boolean)
+    chkColorCount.Visible = newValue
+    sldColorCount.Visible = newValue
+    lblTitle(0).Visible = newValue
 End Sub
 
 Private Sub chkColorCount_Click()
+    UpdatePreviewSource
+    UpdatePreview
+End Sub
+
+Private Sub clsAlphaColor_ColorChanged()
     UpdatePreviewSource
     UpdatePreview
 End Sub
@@ -391,16 +343,13 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    chkPremultiplyAlpha.Value = vbUnchecked
-    chk16555.Value = vbUnchecked
-    chkColorCount.Value = vbUnchecked
-    chkRLE = vbUnchecked
-    chkFlipRows.Value = vbUnchecked
-    sldColorCount.Value = 256
-    btsDepthGrayscale.ListIndex = 0
-    btsDepthRGB.ListIndex = 1
     btsColorModel.ListIndex = 0
+    chkColorCount.Value = vbUnchecked
+    sldColorCount.Value = 256
     clsBackground.Color = vbWhite
+    btsAlpha.ListIndex = 0
+    sldAlphaCutoff.Value = DEFAULT_ALPHA_CUTOFF
+    clsAlphaColor.Color = RGB(255, 0, 255)
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -414,75 +363,56 @@ Private Function GetExportParamString() As String
     Set cParams = New pdParamXML
     
     'Convert the color depth option buttons into a usable numeric value
-    Dim outputDepth As String
+    Dim outputColorMode As String
     
     Select Case btsColorModel.ListIndex
-        
-        'Auto
         Case 0
-            outputDepth = "Auto"
-        
-        'RGBA
+            outputColorMode = "Auto"
         Case 1
-            outputDepth = "32"
-            cParams.AddParam "BMPUseXRGB", False
-            cParams.AddParam "BMPPremultiplyAlpha", CBool(chkPremultiplyAlpha.Value)
-        
-        'RGB
+            outputColorMode = "Color"
         Case 2
-            Select Case btsDepthRGB.ListIndex
-                
-                '32-bpp XRGB
-                Case 0
-                    outputDepth = "32"
-                    cParams.AddParam "BMPUseXRGB", True
-                    cParams.AddParam "BMPPremultiplyAlpha", False
-                
-                '24-bpp
-                Case 1
-                    outputDepth = "24"
-                
-                '16-bpp
-                Case 2
-                    outputDepth = "16"
-                
-                '8-bpp
-                Case 3
-                    outputDepth = "8"
-                
-            End Select
-        
-        'Grayscale
-        Case 3
-            Select Case btsDepthGrayscale.ListIndex
-                
-                '8-bpp
-                Case 0
-                    outputDepth = "8"
-                
-                '4-bpp
-                Case 1
-                    outputDepth = "4"
-                
-                '1-bpp
-                Case 2
-                    outputDepth = "1"
-                
-            End Select
-    
+            outputColorMode = "Gray"
     End Select
     
-    cParams.AddParam "BMPColorDepth", outputDepth
-    cParams.AddParam "BMPRLECompression", CBool(chkRLE.Value)
-    cParams.AddParam "BMPForceGrayscale", CBool(btsColorModel.ListIndex = 3)
-    cParams.AddParam "BMP16bpp555", CBool(chk16555.Value)
-    If CBool(chkColorCount.Value) Then cParams.AddParam "BMPIndexedColorCount", sldColorCount.Value
-    cParams.AddParam "BMPBackgroundColor", clsBackground.Color
-    cParams.AddParam "BMPFlipRowOrder", CBool(chkFlipRows.Value)
+    cParams.AddParam "GIFColorMode", outputColorMode
+    
+    Dim outputAlphaMode As String
+    Select Case btsAlpha.ListIndex
+        Case 0
+            outputAlphaMode = "Auto"
+        Case 1
+            outputAlphaMode = "None"
+        Case 2
+            outputAlphaMode = "ByCutoff"
+        Case 3
+            outputAlphaMode = "ByColor"
+    End Select
+    
+    cParams.AddParam "GIFAlphaMode", outputAlphaMode
+    
+    'If "auto" mode is selected, we currently enforce a hard-coded cut-off value.  There may be a better way to do this,
+    ' but I'm not currently aware of it!
+    Dim outputAlphaCutoff As Long
+    If (btsAlpha.ListIndex = 0) Or (Not sldAlphaCutoff.IsValid) Then outputAlphaCutoff = DEFAULT_ALPHA_CUTOFF Else outputAlphaCutoff = sldAlphaCutoff.Value
+    cParams.AddParam "GIFAlphaCutoff", outputAlphaCutoff
+    
+    Dim colorCount As Long
+    If (btsColorModel.ListIndex <> 0) Then
+        If CBool(chkColorCount) And sldColorCount.IsValid Then colorCount = sldColorCount.Value Else colorCount = 256
+    Else
+        colorCount = 256
+    End If
+    cParams.AddParam "GIFColorCount", colorCount
+    cParams.AddParam "GIFBackgroundColor", clsBackground.Color
+    cParams.AddParam "GIFAlphaColor", clsAlphaColor.Color
     
     GetExportParamString = cParams.GetParamString
     
 End Function
+
+Private Sub pdFxPreview_ColorSelected()
+    clsAlphaColor.Color = pdFxPreview.SelectedColor
+End Sub
 
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreviewSource
@@ -501,57 +431,36 @@ Private Sub UpdatePreviewSource()
         FastDrawing.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
         
         'Convert the DIB to a FreeImage-compatible handle, at a color-depth that matches the current settings.
-        ' (Note that we can completely skip this step for the "Auto" depth mode.)
-        Dim prvColorDepth As Long, forceGrayscale As Boolean
-        forceGrayscale = False
+        ' (Note that one way or another, we'll always be converting the image to an 8-bpp mode.)
+        Dim forceGrayscale As Boolean
+        forceGrayscale = CBool(btsColorModel.ListIndex = 2)
         
+        Dim paletteCount As Long
         If (btsColorModel.ListIndex = 0) Then
-            prvColorDepth = 32
+            paletteCount = 256
         Else
-            
-            
-            If (btsColorModel.ListIndex = 1) Then
-                prvColorDepth = 32
-            ElseIf (btsColorModel.ListIndex = 2) Then
-                Select Case btsDepthRGB.ListIndex
-                    Case 0, 1
-                        prvColorDepth = 24
-                    Case 2
-                        prvColorDepth = 16
-                    Case 3
-                        prvColorDepth = 8
-                End Select
-            Else
-                forceGrayscale = True
-                Select Case btsDepthGrayscale.ListIndex
-                    Case 0
-                        prvColorDepth = 8
-                    Case 1
-                        prvColorDepth = 4
-                    Case 2
-                        prvColorDepth = 1
-                End Select
-            End If
-            
+            If CBool(chkColorCount.Value) And sldColorCount.IsValid Then paletteCount = sldColorCount.Value Else paletteCount = 256
         End If
         
-        Dim BMP16bpp555 As Boolean
-        BMP16bpp555 = CBool(chk16555.Value)
-        
-        Dim BMPIndexedColorCount As Long
-        If CBool(chkColorCount.Value) Then
-            If sldColorCount.IsValid Then BMPIndexedColorCount = sldColorCount.Value Else BMPIndexedColorCount = 256
+        Dim desiredAlphaMode As PD_ALPHA_STATUS, desiredAlphaCutoff As Long
+        If btsAlpha.ListIndex = 0 Then
+            desiredAlphaMode = PDAS_BinaryAlpha       'Auto
+            desiredAlphaCutoff = DEFAULT_ALPHA_CUTOFF
+        ElseIf btsAlpha.ListIndex = 1 Then
+            desiredAlphaMode = PDAS_NoAlpha           'None
+            desiredAlphaCutoff = 0
+        ElseIf btsAlpha.ListIndex = 2 Then
+            desiredAlphaMode = PDAS_BinaryAlpha       'By cut-off
+            If sldAlphaCutoff.IsValid Then desiredAlphaCutoff = sldAlphaCutoff.Value Else desiredAlphaCutoff = 96
         Else
-            BMPIndexedColorCount = 256
+            desiredAlphaMode = PDAS_NewAlphaFromColor 'By color
+            desiredAlphaCutoff = clsAlphaColor.Color
         End If
         
-        If prvColorDepth = 32 Then
-            m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, prvColorDepth, PDAS_ComplicatedAlpha, PDAS_ComplicatedAlpha)
-        Else
-            m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, prvColorDepth, PDAS_NoAlpha, PDAS_NoAlpha, , clsBackground.Color, forceGrayscale, BMPIndexedColorCount, BMP16bpp555)
-        End If
+        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 8, desiredAlphaMode, PDAS_ComplicatedAlpha, desiredAlphaCutoff, clsBackground.Color, forceGrayscale, paletteCount)
         
     End If
+    
 End Sub
 
 Private Sub UpdatePreview()
@@ -562,8 +471,8 @@ Private Sub UpdatePreview()
         If (m_FIHandle = 0) Then UpdatePreviewSource
         
         'Retrieve a BMP-saved version of the current preview image
-        workingDIB.resetDIB
-        If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_BMP) Then
+        workingDIB.ResetDIB
+        If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_GIF) Then
             FinalizeNonstandardPreview pdFxPreview, True
         End If
         
@@ -571,7 +480,13 @@ Private Sub UpdatePreview()
     
 End Sub
 
+Private Sub sldAlphaCutoff_Change()
+    UpdatePreviewSource
+    UpdatePreview
+End Sub
+
 Private Sub sldColorCount_Change()
+    If Not CBool(chkColorCount) Then chkColorCount.Value = vbChecked
     UpdatePreviewSource
     UpdatePreview
 End Sub

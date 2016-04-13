@@ -164,7 +164,7 @@ Private Sub Form_Load()
     End If
     
     'If the current image has more than one layer, warn the user that this action will flatten the image.
-    If pdImages(g_CurrentImage).getNumOfLayers > 1 Then
+    If pdImages(g_CurrentImage).GetNumOfLayers > 1 Then
         lblFlatten.Visible = True
     Else
         lblFlatten.Visible = False
@@ -193,12 +193,12 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
     'A temporary DIB is required to pass data back-and-forth with FreeImage
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    pdImages(g_CurrentImage).getCompositedImage tmpDIB, True
+    pdImages(g_CurrentImage).GetCompositedImage tmpDIB, True
     
     'Color reduction only works on a flat copy of the image, so retrieve a composited version now.
     If toPreview Then
         Dim tmpSafeArray As SAFEARRAY2D
-        previewNonStandardImage tmpSafeArray, tmpDIB, pdFxPreview
+        PreviewNonStandardImage tmpSafeArray, tmpDIB, pdFxPreview
         
     'If this is not a preview, flatten the image before proceeding further
     Else
@@ -206,7 +206,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
         SetProgBarMax 3
         SetProgBarVal 1
         Message "Flattening image..."
-        Layer_Handler.flattenImage
+        Layer_Handler.FlattenImage
         
     End If
     
@@ -220,7 +220,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
     ' actual processing.
     If Not toPreview Then
         Set workingDIB = New pdDIB
-        workingDIB.createFromExistingDIB pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB
+        workingDIB.createFromExistingDIB pdImages(g_CurrentImage).GetLayerByIndex(0).layerDIB
     End If
     
     'FreeImage requires 24bpp images as color reduction targets.
@@ -256,15 +256,15 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
             Else
                 
                 SetProgBarVal 3
-                Plugin_FreeImage.GetPDDibFromFreeImageHandle returnDIB, pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB
-                pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB.convertTo32bpp
+                Plugin_FreeImage.GetPDDibFromFreeImageHandle returnDIB, pdImages(g_CurrentImage).GetLayerByIndex(0).layerDIB
+                pdImages(g_CurrentImage).GetLayerByIndex(0).layerDIB.convertTo32bpp
                 
                 'Ask FreeImage for the size of the quantized image's palette
                 numOfQuantizedColors = FreeImage_GetColorsUsed(returnDIB)
                 
                 'Notify the parent image of these changes
-                pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, 0
-                pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+                pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, 0
+                pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE
                 
             End If
             
@@ -273,7 +273,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
             
             'If this is a preview, draw the new image to the picture box and exit.  Otherwise, render the new main image DIB.
             If toPreview Then
-                finalizeNonstandardPreview dstPic
+                FinalizeNonstandardPreview dstPic
             Else
                 Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 SetProgBarVal 0

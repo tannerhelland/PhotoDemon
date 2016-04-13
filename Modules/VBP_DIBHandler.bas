@@ -43,7 +43,7 @@ Public Function IsDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZ
             ' match either of this, this is a non-binary alpha channel and it must be handled specially.
             Dim iData() As Byte
             Dim tmpSA As SAFEARRAY2D
-            prepSafeArray tmpSA, srcDIB
+            PrepSafeArray tmpSA, srcDIB
             CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
             Dim x As Long, y As Long, quickX As Long
@@ -107,7 +107,7 @@ Public Function isDIBGrayscale(ByRef srcDIB As pdDIB) As Boolean
         'Loop through the image and compare RGB values to determine grayscale or not.
         Dim iData() As Byte
         Dim tmpSA As SAFEARRAY2D
-        prepSafeArray tmpSA, srcDIB
+        PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
         
         Dim x As Long, y As Long, quickX As Long
@@ -190,10 +190,10 @@ Public Function createCMYKDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As B
         'Prepare direct access to the source and destination DIB data
         Dim srcData() As Byte, dstData() As Byte
         Dim srcSA As SAFEARRAY2D, dstSA As SAFEARRAY2D
-        prepSafeArray srcSA, srcDIB
+        PrepSafeArray srcSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcData()), VarPtr(srcSA), 4
         
-        prepSafeArray dstSA, dstDIB
+        PrepSafeArray dstSA, dstDIB
         CopyMemory ByVal VarPtrArray(dstData()), VarPtr(dstSA), 4
         
         Dim x As Long, y As Long, QuickXSrc As Long, QuickXDst As Long
@@ -259,7 +259,7 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
         'Create a local array and point it at the pixel data we want to operate on
         Dim ImageData() As Byte
         Dim tmpSA As SAFEARRAY2D
-        prepSafeArray tmpSA, srcDIB
+        PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
             
         'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -360,7 +360,7 @@ End Function
 
 'Given a grayscale map (2D byte array), create a matching grayscale DIB from it.
 ' (Note: this function does not support progress bar reports, by design.)
-Public Function createDIBFromGrayscaleMap(ByRef dstDIB As pdDIB, ByRef srcGrayArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long) As Boolean
+Public Function CreateDIBFromGrayscaleMap(ByRef dstDIB As pdDIB, ByRef srcGrayArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long) As Boolean
     
     'Create the DIB
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
@@ -370,7 +370,7 @@ Public Function createDIBFromGrayscaleMap(ByRef dstDIB As pdDIB, ByRef srcGrayAr
         'Point a local array at the DIB
         Dim dstImageData() As Byte
         Dim tmpSA As SAFEARRAY2D
-        prepSafeArray tmpSA, dstDIB
+        PrepSafeArray tmpSA, dstDIB
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
         
         'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -389,23 +389,133 @@ Public Function createDIBFromGrayscaleMap(ByRef dstDIB As pdDIB, ByRef srcGrayAr
         For x = initX To finalX
             QuickVal = x * qvDepth
         For y = initY To finalY
-            
             dstImageData(QuickVal, y) = srcGrayArray(x, y)
             dstImageData(QuickVal + 1, y) = srcGrayArray(x, y)
             dstImageData(QuickVal + 2, y) = srcGrayArray(x, y)
-            
         Next y
         Next x
         
         'With our work complete, point ImageData() away from the DIB and deallocate it
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
                 
-        createDIBFromGrayscaleMap = True
+        CreateDIBFromGrayscaleMap = True
         
     Else
         Debug.Print "WARNING! Could not create blank DIB inside createDIBFromGrayscaleMap."
-        createDIBFromGrayscaleMap = False
+        CreateDIBFromGrayscaleMap = False
     End If
 
 End Function
 
+'Convert a DIB to its grayscale equivalent.  (Note that this function does not support progress bar reports, by design.)
+Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShades As Long = 256, Optional ByVal ignoreMagicMagenta As Boolean = True) As Boolean
+    
+    'Make sure the DIB exists
+    If srcDIB Is Nothing Then Exit Function
+    
+    'Make sure the source DIB isn't empty
+    If (srcDIB.getDIBDC <> 0) And (srcDIB.getDIBWidth <> 0) And (srcDIB.getDIBHeight <> 0) Then
+    
+        'Create a local array and point it at the pixel data we want to operate on
+        Dim ImageData() As Byte
+        Dim tmpSA As SAFEARRAY2D
+        PrepSafeArray tmpSA, srcDIB
+        CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+        'These values will help us access locations in the array more quickly.
+        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+        Dim QuickVal As Long, qvDepth As Long
+        qvDepth = srcDIB.getDIBColorDepth \ 8
+        
+        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+        Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+        initX = 0
+        initY = 0
+        finalX = (srcDIB.getDIBWidth - 1) * qvDepth
+        finalY = (srcDIB.getDIBHeight - 1)
+        
+        Dim r As Long, g As Long, b As Long, a As Long, grayVal As Long
+        
+        'Premultiplication requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table
+        ' for converting single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+        Dim alphaIsPremultiplied As Boolean: alphaIsPremultiplied = srcDIB.getAlphaPremultiplication
+        
+        Dim applyPremult() As Single, removePremult() As Single, tmpAlphaModifier As Single
+        ReDim applyPremult(0 To 255) As Single
+        ReDim removePremult(0 To 255) As Single
+        If alphaIsPremultiplied Then
+            For x = 0 To 255
+                applyPremult(x) = x / 255
+                If (x <> 0) Then removePremult(x) = 255 / x
+            Next x
+        End If
+        
+        'Grayscale values are very look-up friendly
+        Dim conversionFactor As Double
+        conversionFactor = (255 / (numOfShades - 1))
+        
+        'Build a look-up table for our custom grayscale conversion results
+        Dim gLookUp(0 To 255) As Byte
+        For x = 0 To 255
+            grayVal = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
+            If grayVal > 255 Then grayVal = 255
+            gLookUp(x) = CByte(grayVal)
+        Next x
+            
+        'Now we can loop through each pixel in the image, converting values as we go
+        For y = initY To finalY
+        For x = initX To finalX Step qvDepth
+                
+            'Get the source pixel color values
+            b = ImageData(x, y)
+            g = ImageData(x + 1, y)
+            r = ImageData(x + 2, y)
+            
+            'Remove premultiplication, as necessary
+            If alphaIsPremultiplied Then
+                a = ImageData(x + 3, y)
+                If (a <> 255) Then
+                    tmpAlphaModifier = removePremult(a)
+                    r = (r * tmpAlphaModifier)
+                    g = (g * tmpAlphaModifier)
+                    b = (b * tmpAlphaModifier)
+                End If
+            End If
+            
+            'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
+            grayVal = (213 * r + 715 * g + 72 * b) \ 1000
+            If grayVal > 255 Then grayVal = 255
+            
+            'We could probably skip the lookup table entirely when numOfShades = 256, but the speed hit is near-trivial.
+            ' (Frankly, the bigger problem is premultiplied alpha, as usual.)
+            If alphaIsPremultiplied Then
+                If (a <> 255) Then
+                    tmpAlphaModifier = applyPremult(a)
+                    grayVal = (grayVal * tmpAlphaModifier)
+                End If
+            End If
+            
+            If ignoreMagicMagenta Then
+                ImageData(x, y) = gLookUp(grayVal)
+                ImageData(x + 1, y) = gLookUp(grayVal)
+                ImageData(x + 2, y) = gLookUp(grayVal)
+            Else
+                If (r <> 253) Or (g <> 0) Or (b <> 253) Then
+                    ImageData(x, y) = gLookUp(grayVal)
+                    ImageData(x + 1, y) = gLookUp(grayVal)
+                    ImageData(x + 2, y) = gLookUp(grayVal)
+                End If
+            End If
+            
+        Next x
+        Next y
+        
+        CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+        MakeDIBGrayscale = True
+        
+    Else
+        Debug.Print "WARNING! Non-existent DIB passed to DIB_Handler.MakeDIBGrayscale()."
+        MakeDIBGrayscale = False
+    End If
+
+End Function

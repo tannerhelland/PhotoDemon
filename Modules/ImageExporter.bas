@@ -19,13 +19,14 @@ Attribute VB_Name = "ImageExporter"
 Option Explicit
 
 Public Enum PD_ALPHA_STATUS
-    PDAS_NoAlpha = 0
-    PDAS_BinaryAlpha = 1
-    PDAS_ComplicatedAlpha = 2
+    PDAS_NoAlpha = 0            'All alpha will be forcibly removed, and the image will be composited against a background color
+    PDAS_BinaryAlpha = 1        'Alpha will be reduced to just 0 or just 255; semi-transparent pixels will be composited against a background color
+    PDAS_ComplicatedAlpha = 2   'Alpha will be left intact (anything on the range [0, 255] is valid)
+    PDAS_NewAlphaFromColor = 3  'A new alpha channel will be generated, with the specified color turned fully transparent, and all other pixels composited against a background color
 End Enum
 
 #If False Then
-    Private Const PDAS_NoAlpha = 0, PDAS_BinaryAlpha = 1, PDAS_ComplicatedAlpha = 2
+    Private Const PDAS_NoAlpha = 0, PDAS_BinaryAlpha = 1, PDAS_ComplicatedAlpha = 2, PDAS_NewAlphaFromColor = 3
 #End If
 
 'Given an input DIB, return the most relevant output color depth.  This will be a numeric value like "32" or "24".
@@ -567,13 +568,14 @@ End Sub
 ' 3) Most formats can ignore the metadataParams string, as metadata handling is typically handled via separate
 '     ExifTool-specific functions.  This string primarily exists for formats like JPEG, where metadata handling is
 '     messy since some functionality is easier to handle inside FreeImage (like thumbnail generation).  Either way,
-'     if a metadata string is generated for a given format, it will be supplied as a parameter, "just in case".
+'     if a metadata string is generated for a given format, it will be supplied as a parameter, "just in case" the
+'     export function needs to parse it.
 '
 ' 4) All functions return success/failure by boolean.  (FreeImage-specific errors are logged and processed externally.)
 '
 ' 5) Because these export functions interface with multiple parts of the program (including the batch processor), it is
 '     very important that they maintain identical function signatures.  Any format-specific functionality needs to be
-'     handled via those XML parameter strings, and not via extra optional params.
+'     handled via the aforementioned XML parameter strings, and not via extra params.
 Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportBMPError
@@ -676,6 +678,87 @@ ExportBMPError:
     
 End Function
 
+Public Function ExportGIF(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportGIFError
+    
+    ExportGIF = False
+    Dim sFileType As String: sFileType = "GIF"
+    
+    'Parse all relevant GIF parameters.  (See the GIF export dialog for details on how these are generated.)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString formatParams
+    
+    'Only two parameters are mandatory; the others are used on an as-needed basis
+    Dim gifColorMode As String, gifAlphaMode As String
+    gifColorMode = cParams.GetString("GIFColorMode", "Auto")
+    gifAlphaMode = cParams.GetString("GIFAlphaMode", "Auto")
+    
+    Dim gifAlphaCutoff As Long, gifColorCount As Long, gifBackgroundColor As Long, gifAlphaColor As Long
+    gifAlphaCutoff = cParams.GetLong("GIFAlphaCutoff", 64)
+    gifColorCount = cParams.GetLong("GIFColorCount", 256)
+    gifBackgroundColor = cParams.GetLong("GIFBackgroundColor", vbWhite)
+    gifAlphaColor = cParams.GetLong("GIFAlphaColor", RGB(255, 0, 255))
+    
+    'Some combinations of parameters invalidate other parameters.  Calculate any overrides now.
+    Dim gifForceGrayscale As Boolean
+    If StrComp(LCase$(gifColorMode), "gray", vbBinaryCompare) = 0 Then gifForceGrayscale = True Else gifForceGrayscale = False
+    If StrComp(LCase$(gifColorMode), "auto", vbBinaryCompare) = 0 Then gifColorCount = 256
+    
+    Dim desiredAlphaStatus As PD_ALPHA_STATUS
+    desiredAlphaStatus = PDAS_BinaryAlpha
+    If StrComp(LCase$(gifAlphaMode), "auto", vbBinaryCompare) = 0 Then gifAlphaCutoff = 64
+    If StrComp(LCase$(gifAlphaMode), "none", vbBinaryCompare) = 0 Then desiredAlphaStatus = PDAS_NoAlpha
+    If StrComp(LCase$(gifAlphaMode), "bycolor", vbBinaryCompare) = 0 Then
+        desiredAlphaStatus = PDAS_NewAlphaFromColor
+        gifAlphaCutoff = gifAlphaColor
+    End If
+    
+    'Generate a composited image copy, with alpha automatically un-premultiplied
+    Dim tmpImageCopy As pdDIB
+    Set tmpImageCopy = New pdDIB
+    srcPDImage.GetCompositedImage tmpImageCopy, False
+        
+    'FreeImage provides the most comprehensive GIF encoder, so we prefer it whenever possible
+    If g_ImageFormats.FreeImageEnabled Then
+            
+        Dim fi_DIB As Long
+        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, 8, desiredAlphaStatus, PDAS_ComplicatedAlpha, gifAlphaCutoff, gifBackgroundColor, gifForceGrayscale, gifColorCount)
+        
+        'Finally, prepare some GIF save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,
+        ' request RLE encoding from FreeImage.
+        Dim GIFflags As Long: GIFflags = GIF_DEFAULT
+        
+        'Use that handle to save the image to GIF format, with required color conversion based on the outgoing color depth
+        If (fi_DIB <> 0) Then
+            ExportGIF = FreeImage_SaveEx(fi_DIB, dstFile, PDIF_GIF, GIFflags, FICD_8BPP, , , , , True)
+            If ExportGIF Then
+                ExportDebugMsg "Export to " & sFileType & " appears successful."
+            Else
+                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+            End If
+        Else
+            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            ExportGIF = False
+        End If
+        
+    ElseIf g_ImageFormats.GDIPlusEnabled Then
+        ExportGIF = GDIPlusSavePicture(srcPDImage, dstFile, ImageGIF, 8)
+    Else
+        ExportGIF = False
+        Message "No %1 encoder found. Save aborted.", "JPEG"
+    End If
+    
+    
+    Exit Function
+    
+ExportGIFError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportGIF = False
+    
+End Function
+
 Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportJPEGError
@@ -754,6 +837,7 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         'Use that handle to save the image to JPEG format, with required color conversion based on the outgoing color depth
         If (fi_DIB <> 0) Then
             
+            'TODO!  Figure out how to best handle thumbnails...
 '            'If a thumbnail has been requested, embed it now
 '            If cParams.GetBool("JPEGThumbnail", False) Then
 '                Dim fThumbnail As Long

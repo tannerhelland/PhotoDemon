@@ -298,7 +298,7 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
         
         Dim tmpData() As Byte
         Dim tSA As SAFEARRAY2D
-        prepInternalSafeArray tSA
+        PrepInternalSafeArray tSA
         CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4&
         
         Dim quickX As Long
@@ -333,14 +333,14 @@ Public Sub ApplyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
     If (m_DibColorDepth = 32) Then
         If (m_dibDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
             
-            If cutOff = 0 Then
+            If (cutOff = 0) Then
                 convertTo24bpp newBackgroundColor
                 Exit Sub
             End If
             
             Dim iData() As Byte
             Dim tmpSA As SAFEARRAY2D
-            prepInternalSafeArray tmpSA
+            PrepInternalSafeArray tmpSA
             CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
             Dim x As Long, y As Long, finalX As Long, finalY As Long
@@ -350,13 +350,15 @@ Public Sub ApplyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
             Dim chkAlpha As Byte
             Dim tmpAlpha As Double
             
+            'This function requires unpremultiplied alpha
+            If Me.getAlphaPremultiplication Then Me.SetAlphaPremultiplication False
             Dim stillLookingForTransPixel As Boolean: stillLookingForTransPixel = True
             
             'Retrieve RGB values from the new background color, which we'll use to composite semi-transparent pixels
-            Dim backR As Byte, backG As Byte, backB As Byte
-            backR = CByte(ExtractR(newBackgroundColor))
-            backG = CByte(ExtractG(newBackgroundColor))
-            backB = CByte(ExtractB(newBackgroundColor))
+            Dim backR As Long, backG As Long, backB As Long
+            backR = Colors.ExtractR(newBackgroundColor)
+            backG = Colors.ExtractG(newBackgroundColor)
+            backB = Colors.ExtractB(newBackgroundColor)
                 
             'Loop through the image, checking alphas as we go
             For y = 0 To finalY
@@ -380,9 +382,9 @@ Public Sub ApplyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
                     '  HALFTONE-mode resampling may bleed the magenta into the preview and give poor results.
                     '  That's why this option can be toggled.)
                     If forceColor Then
-                        iData(x + 2, y) = 253
-                        iData(x + 1, y) = 0
                         iData(x, y) = 253
+                        iData(x + 1, y) = 0
+                        iData(x + 2, y) = 253
                     End If
                     
                     'Blank the alpha channel
@@ -397,9 +399,9 @@ Public Sub ApplyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
                         tmpAlpha = CDbl(chkAlpha) / 255
                 
                         'Use that alpha value to blend the current color against white
-                        iData(x + 2, y) = Blend2Colors(iData(x + 2, y), backR, tmpAlpha)
-                        iData(x + 1, y) = Blend2Colors(iData(x + 1, y), backG, tmpAlpha)
                         iData(x, y) = Blend2Colors(iData(x, y), backB, tmpAlpha)
+                        iData(x + 1, y) = Blend2Colors(iData(x + 1, y), backG, tmpAlpha)
+                        iData(x + 2, y) = Blend2Colors(iData(x + 2, y), backR, tmpAlpha)
                         
                         'Opaque-ify the alpha channel
                         iData(x + 3, y) = 255
@@ -428,7 +430,7 @@ Public Sub MemorizeBinaryAlphaData()
             
             Dim iData() As Byte
             Dim tmpSA As SAFEARRAY2D
-            prepInternalSafeArray tmpSA
+            PrepInternalSafeArray tmpSA
             CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
             
             Dim x As Long, y As Long, finalX As Long, finalY As Long
@@ -461,6 +463,116 @@ Public Sub MemorizeBinaryAlphaData()
     
 End Sub
 
+'This function will generate a new alpha channel for a 32bpp image, using a target color as its guide.
+' Just like the ApplyAlphaCutOff function, above, the location of a transparent pixel (m_trnsX, m_trnsY)
+' will be memorized, and if forceColor is TRUE, any alpha values above the cutoff will be replaced with magic
+' magenta (253,0,253) to make subsequent palettization easier.
+'
+'Returns: TRUE if at least one pixel was made transparent; FALSE otherwise
+Public Function MakeColorTransparent(ByVal srcColor As Long, Optional ByVal forceColor As Boolean = True, Optional ByVal newBackgroundColor As Long = 16777215) As Boolean
+
+    If (m_DibColorDepth = 32) Then
+        If (m_dibDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
+            
+            Dim iData() As Byte
+            Dim tmpSA As SAFEARRAY2D
+            PrepInternalSafeArray tmpSA
+            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    
+            Dim x As Long, y As Long, finalX As Long, finalY As Long
+            finalX = (m_dibWidth - 1) * 4
+            finalY = (m_dibHeight - 1)
+            
+            Dim chkR As Long, chkG As Long, chkB As Long, chkAlpha As Byte
+            Dim targetR As Long, targetG As Long, targetB As Long
+            targetR = Colors.ExtractR(srcColor)
+            targetG = Colors.ExtractG(srcColor)
+            targetB = Colors.ExtractB(srcColor)
+            
+            Dim tmpAlpha As Double
+            
+            'This function require unpremultiplied alpha
+            If Me.getAlphaPremultiplication Then Me.SetAlphaPremultiplication False
+        
+            Dim stillLookingForTransPixel As Boolean: stillLookingForTransPixel = True
+            
+            'Retrieve RGB values from the new background color, which we'll use to composite semi-transparent pixels
+            Dim backR As Long, backG As Long, backB As Long
+            backR = Colors.ExtractR(newBackgroundColor)
+            backG = Colors.ExtractG(newBackgroundColor)
+            backB = Colors.ExtractB(newBackgroundColor)
+                
+            'Loop through the image, checking alphas as we go
+            For y = 0 To finalY
+            For x = 0 To finalX Step 4
+                
+                chkB = iData(x, y)
+                chkG = iData(x + 1, y)
+                chkR = iData(x + 2, y)
+                chkAlpha = iData(x + 3, y)
+                
+                'There are basically two options here:
+                ' 1) This pixel matches our target color, and needs to be made fully transparent
+                ' 2) This pixel does not match our target color, and needs to be made fully opaque
+                If (targetR = chkR) And (targetG = chkG) And (targetB = chkB) Then
+                
+                    'This pixel is a match!  Make it fully transparent.
+                    
+                    'Remember this location if we haven't already
+                    If stillLookingForTransPixel Then
+                        stillLookingForTransPixel = False
+                        m_trnsX = (x \ 4)
+                        m_trnsY = y
+                        m_OriginalTransparentColor = RGB(targetR, targetG, targetB)
+                    End If
+                    
+                    'Color this pixel with magic magenta - RGB(253, 0, 253)
+                    ' (NOTE: when previewing this effect, we don't actually want to change pixel colors. Otherwise,
+                    '  HALFTONE-mode resampling may bleed the magenta into the preview and give poor results.
+                    '  That's why this option can be toggled.)
+                    ' (ALSO NOTE: this has unpredictable effects if the caller assumes a premultiplied state.
+                    '  Plan accordingly!)
+                    If forceColor Then
+                        iData(x, y) = 253
+                        iData(x + 1, y) = 0
+                        iData(x + 2, y) = 253
+                    End If
+                    
+                    'Blank the alpha channel
+                    iData(x + 3, y) = 0
+                    
+                Else
+                
+                    'This pixel is not a match!  Make it fully opaque.
+                    If (chkAlpha <> 255) Then
+                
+                        'Convert the alpha value to a floating-point variable
+                        tmpAlpha = CDbl(chkAlpha) / 255
+                        iData(x, y) = Blend2Colors(chkB, backB, tmpAlpha)
+                        iData(x + 1, y) = Blend2Colors(chkG, backG, tmpAlpha)
+                        iData(x + 2, y) = Blend2Colors(chkR, backR, tmpAlpha)
+                        
+                        'Opaque-ify the alpha channel
+                        iData(x + 3, y) = 255
+                    
+                    End If
+                
+                End If
+                
+            Next x
+            Next y
+    
+            'With our alpha channel complete, point iData() away from the DIB and deallocate it
+            CopyMemory ByVal VarPtrArray(iData), 0&, 4
+            
+            MakeColorTransparent = Not stillLookingForTransPixel
+            
+        End If
+    End If
+    
+End Function
+
+
 'Force all alpha bytes in the DIB to some preset value.  If the value is *not* 255, please remember to premultiply
 ' alpha accordingly, if the DIB will be rendered to the screen.
 Public Sub ForceNewAlpha(ByVal newAlpha As Byte)
@@ -474,7 +586,7 @@ Public Sub ForceNewAlpha(ByVal newAlpha As Byte)
             'Loop through the image and force each alpha value to the user's specified value
             Dim iData() As Byte
             Dim tmpSA As SAFEARRAY2D
-            prepInternalSafeArray tmpSA
+            PrepInternalSafeArray tmpSA
             CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
             Dim x As Long, y As Long, quickX As Long
@@ -525,8 +637,8 @@ Public Function getDIBHeight() As Long
 End Function
 
 'Return whether or not this DIB has image data associated with it
-Public Function hasImage() As Boolean
-    hasImage = (m_dibHandle <> 0)
+Public Function HasImage() As Boolean
+    HasImage = (m_dibHandle <> 0)
 End Function
 
 'Return whether the DIB is top-down (negative height) or bottom-up (positive height)
@@ -718,7 +830,7 @@ Public Function convertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
             
             'Finally, we need to loop through the image and set all alpha values to 255. Otherwise the image will
             ' be completely transparent (and we don't want that!)
-            prepInternalSafeArray tmpSA
+            PrepInternalSafeArray tmpSA
             CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
             
             'Loop through the image, setting the alpha of each pixel to 255 (opaque)
@@ -759,7 +871,7 @@ Public Function convertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
                 
                 'Finally, we need to loop through the image and set all alpha values to 255. Otherwise the image will
                 ' be completely transparent (and we don't want that!)
-                prepInternalSafeArray tmpSA
+                PrepInternalSafeArray tmpSA
                 CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
                 
                 'Loop through the image, setting the alpha of each pixel to 255 (opaque)
@@ -1001,7 +1113,7 @@ Public Sub eraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
 End Sub
 
 'Maintain the DIB's dimensions, but reset all bytes to some value (typically 0).  FillMemory is used for maximum performance.
-Public Sub resetDIB(Optional ByVal fillValue As Byte = 0)
+Public Sub ResetDIB(Optional ByVal fillValue As Byte = 0)
 
     'Retrieve a pointer to the DIB array and the array's current size
     Dim tmpDIBPointer As Long, tmpDibSize As Long
@@ -1435,7 +1547,7 @@ End Function
 Public Sub WriteToBitmapFile(ByRef dstFilename As String)
 
     'First, make sure this DIB actually contains image data
-    If Not Me.hasImage() Then Exit Sub
+    If Not Me.HasImage() Then Exit Sub
     
     'Calculate the size of a scanline
     Dim slWidth As Long
@@ -1522,13 +1634,13 @@ End Sub
 
 'As a helper to external functions, this sub can be used to fill a destination array with a copy the image's current data.
 ' Note that this is raw image bytes - no header whatsoever - so it's assumed the caller knows how to deal with the data.
-Public Sub copyImageBytesIntoStream(ByRef dstArray() As Byte)
+Public Sub CopyImageBytesIntoStream(ByRef dstArray() As Byte)
 
     'Retrieve a pointer to the current DIB bits (in VB format).  Technically we could just use the m_dibBits pointer
     ' and calculate bounds manually, but this provides a foolproof way to do the same thing using existing code.
     Dim iData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepInternalSafeArray tmpSA
+    PrepInternalSafeArray tmpSA
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
     'Using that temporary as our source, convert the image to the supplied 1D array.
@@ -1551,12 +1663,12 @@ End Sub
 'The counterpart to copyImageBytesIntoStream, above.  This function will blindly copy an array of bytes over the current
 ' image's data.  For it to work, the DIB must have been correctly created at the right size and color depth BEFORE CALLING
 ' THIS FUNCTION.  Otherwise, you will get errors.
-Public Sub copyStreamOverImageArray(ByRef srcArray() As Byte)
+Public Sub CopyStreamOverImageArray(ByRef srcArray() As Byte)
     CopyMemory ByVal m_dibBits, srcArray(0), UBound(srcArray) + 1
 End Sub
 
 'Sometimes this class needs to access its own DIB bits. Here's how.
-Private Sub prepInternalSafeArray(ByRef dstSafeArray As SAFEARRAY2D)
+Private Sub PrepInternalSafeArray(ByRef dstSafeArray As SAFEARRAY2D)
     With dstSafeArray
         .cbElements = 1
         .cDims = 2
@@ -1570,7 +1682,7 @@ End Sub
 
 '2D array access is slow, so PD tries to use 1D arrays when possible.  This function initializes a base SafeArray, but the caller
 ' will need to manually update it to point at a desired line.
-Private Sub prepInternalSafeArray1D(ByRef dstSafeArray As SAFEARRAY1D)
+Private Sub PrepInternalSafeArray1D(ByRef dstSafeArray As SAFEARRAY1D)
     With dstSafeArray
         .cbElements = 1
         .cDims = 1
@@ -1617,7 +1729,7 @@ Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     dibPointer = Me.getActualDIBBits
     
     Dim dibPixels() As Byte, dibSA As SAFEARRAY1D
-    prepInternalSafeArray1D dibSA
+    PrepInternalSafeArray1D dibSA
     
     Dim x As Long, y As Long
     Dim checkAlpha As Byte, tmpAlpha As Double
@@ -1709,7 +1821,7 @@ Public Sub copyAlphaFromExistingDIB(ByRef srcDIB As pdDIB)
     'Prepare a SafeArray that points to our own DIB data
     Dim iData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepInternalSafeArray tmpSA
+    PrepInternalSafeArray tmpSA
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
     'Now make a second array that points to the source DIB data
@@ -1752,12 +1864,6 @@ Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
         Exit Sub
     End If
     
-    'Prepare a SAFEARRAY, which allows us to access the DIB data directly
-    'Dim iData() As Byte
-    'Dim tmpSA As SAFEARRAY2D
-    'prepInternalSafeArray tmpSA
-    'CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-    
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
     Dim finalX As Long, finalY As Long
@@ -1784,7 +1890,7 @@ Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
     dibPointer = Me.getActualDIBBits
     
     Dim dibPixels() As Byte, dibSA As SAFEARRAY1D
-    prepInternalSafeArray1D dibSA
+    PrepInternalSafeArray1D dibSA
     
     Dim x As Long, y As Long, quickX As Long
     Dim r As Long, g As Long, b As Long
