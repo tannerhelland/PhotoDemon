@@ -248,6 +248,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     If (Not g_ImageFormats.FreeImageEnabled) Or (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
     
     'Update the preview
+    UpdateAllVisibility
     UpdatePreviewSource
     UpdatePreview
     
@@ -562,7 +563,7 @@ Private Sub UpdatePreview()
         If (m_FIHandle = 0) Then UpdatePreviewSource
         
         'Retrieve a BMP-saved version of the current preview image
-        workingDIB.resetDIB
+        workingDIB.ResetDIB
         If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_BMP) Then
             FinalizeNonstandardPreview pdFxPreview, True
         End If
@@ -572,6 +573,7 @@ Private Sub UpdatePreview()
 End Sub
 
 Private Sub sldColorCount_Change()
+    If Not CBool(chkColorCount.Value) Then chkColorCount.Value = vbChecked
     UpdatePreviewSource
     UpdatePreview
 End Sub
