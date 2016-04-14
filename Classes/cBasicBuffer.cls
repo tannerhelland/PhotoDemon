@@ -250,7 +250,9 @@ Public Function ReadBytes(Optional ByVal Length As Long = -1) As Byte()
                 Length = mSize - mPosition
             End If
         Else
-            Err.Raise 5, TypeName(Me), "Can't request 0 (no) bytes"
+            Debug.Print "WARNING!  clsBasicBuffer was asked to request 0 bytes; this is impossible!"
+            Exit Function
+            'Err.Raise 5, TypeName(Me), "Can't request 0 (no) bytes"
         End If
     Else
         Err.Raise &H8004C300, TypeName(Me), "Not open"

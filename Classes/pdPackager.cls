@@ -251,7 +251,7 @@ Private m_File As pdFSO
 ' directory assembly process much faster (because we don't have to ReDim Preserve the directory when we run out of space).
 ' Similarly, if you have some notion of how large the data chunk will be, you can supply it in advance.  There is generally
 ' no penalty to over-estimating space, as the buffer will be trimmed before writing it out to file.
-Public Sub prepareNewPackage(Optional ByVal numOfDataNodes As Long = 0, Optional ByVal optPackageID As Long = 0, Optional ByVal estimatedDataChunkSize As Long = 0)
+Public Sub PrepareNewPackage(Optional ByVal numOfDataNodes As Long = 0, Optional ByVal optPackageID As Long = 0, Optional ByVal estimatedDataChunkSize As Long = 0)
 
     'Reset all module-level storage structs related to writing a new pdPackage file
     
@@ -312,7 +312,7 @@ End Sub
 '
 'Importantly, this function returns the index of the added node, which external functions must then use to supply this node's
 ' actual data arrays.
-Public Function addNode(Optional ByVal thisNodeName As String = "", Optional ByVal thisNodeID As Long = 0, Optional ByVal thisNodeType As Long = 0) As Long
+Public Function AddNode(Optional ByVal thisNodeName As String = "", Optional ByVal thisNodeID As Long = 0, Optional ByVal thisNodeType As Long = 0) As Long
 
     'Increment our active node count
     m_NumOfNodes = m_NumOfNodes + 1
@@ -342,7 +342,7 @@ Public Function addNode(Optional ByVal thisNodeName As String = "", Optional ByV
     End With
     
     'Return the index of this node, which the caller will use to supply this node's data (in a separate step).
-    addNode = m_NumOfNodes - 1
+    AddNode = m_NumOfNodes - 1
     
 End Function
 
@@ -365,12 +365,12 @@ End Function
 ' 3) Whether to calculate a checksum for the uncompressed data bytes.  This is completely optional.  If a checksum is found in
 '    the file, pdPackage will automatically process it at load-time, and reject the file if checksums do not match.  Note that
 '    checksumming the data increases write time non-trivially.
-Public Function addNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal dataPointer As Long, ByVal dataLength As Long, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
+Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal dataPointer As Long, ByVal dataLength As Long, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
     If nodeIndex < 0 Or nodeIndex > m_NumOfNodes - 1 Then
         Debug.Print "Node index out of range - try again with a valid node index!"
-        addNodeDataFromPointer = False
+        AddNodeDataFromPointer = False
         Exit Function
     End If
     
@@ -378,10 +378,10 @@ Public Function addNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     If compressData Then
     
         'Overall data chunk flag
-        setBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DataFlags(0)
+        SetBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DataFlags(0)
         
         'This node's flag
-        setBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
+        SetBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
         
     End If
     
@@ -418,7 +418,7 @@ Public Function addNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
         Dim compressedSize As Long
         
         'copyPtrToArray will return TRUE if the data was compressed; FALSE if it was not.  There is no error state for the function.
-        If copyPtrToArray(dataPointer, dataLength, compressedData, compressedSize, True, compressionLevel, False) Then
+        If CopyPtrToArray(dataPointer, dataLength, compressedData, compressedSize, True, compressionLevel, False) Then
             
             'For fun, supply some debug info on the compression.
             Debug.Print "Node data compressed successfully; compressed data is " & Format(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(dataLength)))), "#0.00") & "% smaller (" & dataLength & " to " & compressedSize & " bytes)."
@@ -446,7 +446,7 @@ Public Function addNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     If requestChecksum And m_ZLibAvailable Then
     
         Dim zLibAdlerSum As Long
-        zLibAdlerSum = checkSumArbitraryData(dataPointer, dataLength)
+        zLibAdlerSum = ChecksumArbitraryData(dataPointer, dataLength)
         
         If useHeaderBuffer Then
             m_NodeDirectory(nodeIndex).NodeHeaderAdler32 = zLibAdlerSum
@@ -457,23 +457,23 @@ Public Function addNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     End If
     
     'This chunk was added successfully!  Return TRUE and exit.
-    addNodeDataFromPointer = True
+    AddNodeDataFromPointer = True
     
 End Function
 
 'Thin wrapper to addNodeDataFromPointer, above; if possible, use that function directly to avoid any unnecessary copying of arrays
-Public Function addNodeDataFromByteArray(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef DataBytes() As Byte, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
+Public Function AddNodeDataFromByteArray(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef DataBytes() As Byte, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
 
-    addNodeDataFromByteArray = addNodeDataFromPointer(nodeIndex, useHeaderBuffer, VarPtr(DataBytes(0)), UBound(DataBytes) + 1, compressData, compressionLevel, requestChecksum)
+    AddNodeDataFromByteArray = AddNodeDataFromPointer(nodeIndex, useHeaderBuffer, VarPtr(DataBytes(0)), UBound(DataBytes) + 1, compressData, compressionLevel, requestChecksum)
     
 End Function
 
 'Thin wrapper for addNodeDataFromPointer, above, but allows the user to supply a string.
-Public Function addNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef srcDataString As String, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
+Public Function AddNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef srcDataString As String, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
     
     'Forward the string pointer to the actual addNodeData function, and return its result.
     If Len(srcDataString) <> 0 Then
-        addNodeDataFromString = addNodeDataFromPointer(nodeIndex, useHeaderBuffer, StrPtr(srcDataString), Len(srcDataString) * 2, compressData, compressionLevel, requestChecksum)
+        AddNodeDataFromString = AddNodeDataFromPointer(nodeIndex, useHeaderBuffer, StrPtr(srcDataString), Len(srcDataString) * 2, compressData, compressionLevel, requestChecksum)
     End If
 
 End Function
@@ -493,7 +493,7 @@ End Function
 ' extracting by filename, it can't differentiate between these two unless you provide the relative path too.
 '
 'Returns: TRUE if successful.
-Public Function autoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal addChecksumVerification As Boolean = True, Optional ByVal storeUsingThisRelativePathAndFilename As String = "") As Boolean
+Public Function AutoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal addChecksumVerification As Boolean = True, Optional ByVal storeUsingThisRelativePathAndFilename As String = "") As Boolean
 
     'Attempt to load the file into a byte array
     Dim fileContents() As Byte
@@ -511,31 +511,31 @@ Public Function autoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal O
             filenameIncludesRelativePath = (Len(storeUsingThisRelativePathAndFilename) > 0)
             
             If filenameIncludesRelativePath Then
-                nodeIndex = addNode(PDP_DATA_FILEANDPATH, , OptionalNodeType)
+                nodeIndex = AddNode(PDP_DATA_FILEANDPATH, , OptionalNodeType)
             Else
-                nodeIndex = addNode(PDP_DATA_FILE, , OptionalNodeType)
+                nodeIndex = AddNode(PDP_DATA_FILE, , OptionalNodeType)
             End If
             
             'Write the filename out to the first node.  If the caller specifically specified that the filename includes a relative path,
             ' we will write the whole filename, untouched
             If filenameIncludesRelativePath Then
-                autoAddNodeFromFile = addNodeDataFromString(nodeIndex, True, storeUsingThisRelativePathAndFilename, False)
+                AutoAddNodeFromFile = AddNodeDataFromString(nodeIndex, True, storeUsingThisRelativePathAndFilename, False)
             Else
-                autoAddNodeFromFile = addNodeDataFromString(nodeIndex, True, m_File.GetFilename(pathToFile), False)
+                AutoAddNodeFromFile = AddNodeDataFromString(nodeIndex, True, m_File.GetFilename(pathToFile), False)
             End If
             
             'Write the file contents out to the second node
-            autoAddNodeFromFile = autoAddNodeFromFile And addNodeDataFromByteArray(nodeIndex, False, fileContents, , , addChecksumVerification)
+            AutoAddNodeFromFile = AutoAddNodeFromFile And AddNodeDataFromByteArray(nodeIndex, False, fileContents, , , addChecksumVerification)
             
             'Mark a special flag bit in this node, to identify it as an auto-added file entry.  This simplifies the extraction process later,
             ' and also provides a failsafe against the user adding their own nodes called "PDPFILE".
-            setBitFlag PDP_FLAG_FILE_NODE, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
+            SetBitFlag PDP_FLAG_FILE_NODE, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
             
         End If
     
     Else
         Debug.Print "WARNING! pdPackage.autoAddNodeFromFile could not load " & pathToFile & ". Abandoning request."
-        autoAddNodeFromFile = False
+        AutoAddNodeFromFile = False
     End If
 
 End Function
@@ -573,7 +573,7 @@ End Function
 '
 'Returns: TRUE if all files are added successfully, FALSE otherwise.  FALSE should not occur unless read access to target folder(s) is restricted,
 ' or if memory runs out because the constructed package exceeds available memory.
-Public Function autoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal recurseSubfolders As Boolean = True, Optional ByVal preserveFolders As Boolean = True, Optional ByVal useCustomRelativeFolderBase As String = "", Optional ByVal addChecksumVerification As Boolean = True, Optional ByVal onlyAllowTheseExtensions As String = "", Optional ByVal doNotAllowTheseExtensions As String = "") As Boolean
+Public Function AutoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal recurseSubfolders As Boolean = True, Optional ByVal preserveFolders As Boolean = True, Optional ByVal useCustomRelativeFolderBase As String = "", Optional ByVal addChecksumVerification As Boolean = True, Optional ByVal onlyAllowTheseExtensions As String = "", Optional ByVal doNotAllowTheseExtensions As String = "") As Boolean
 
     'As usual, our lovely pdFSO instance (m_File) is going to handle most the heavy lifting.  It will return the list of files to be added
     ' in a pdStringStack object, which we can then iterate at our leisure.
@@ -610,11 +610,11 @@ Public Function autoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal
             End If
             
             'Add this node
-            nodeAdditionSuccess = nodeAdditionSuccess And autoAddNodeFromFile(curFile, OptionalNodeType, addChecksumVerification, relativeFilePath)
+            nodeAdditionSuccess = nodeAdditionSuccess And AutoAddNodeFromFile(curFile, OptionalNodeType, addChecksumVerification, relativeFilePath)
             
         Loop
         
-        autoAddNodesFromFolder = nodeAdditionSuccess
+        AutoAddNodesFromFolder = nodeAdditionSuccess
         
         'Display some debug info if one or more nodes failed to add
         If Not nodeAdditionSuccess Then
@@ -630,7 +630,7 @@ Public Function autoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal
     Else
         
         Debug.Print "WARNING! pdPackager.autoAddNodesFromFolder() could not retrieve a valid list of files.  Do you have read access to the folder??"
-        autoAddNodesFromFolder = False
+        AutoAddNodesFromFolder = False
         
     End If
 
@@ -663,7 +663,7 @@ End Function
 '
 'Returns: TRUE if all files are added successfully, FALSE otherwise.  FALSE should not occur unless read access to target file(s) and/or folder(s)
 ' is restricted, or if memory runs out because the constructed package exceeds available memory.
-Public Function autoAddNodesFromStringStack(ByRef srcStringStack As pdStringStack, Optional ByVal relativeFolderBase As String = "", Optional ByVal OptionalNodeType As Long = 0, Optional ByVal recurseSubfolders As Boolean = True, Optional ByVal addChecksumVerification As Boolean = True) As Boolean
+Public Function AutoAddNodesFromStringStack(ByRef srcStringStack As pdStringStack, Optional ByVal relativeFolderBase As String = "", Optional ByVal OptionalNodeType As Long = 0, Optional ByVal recurseSubfolders As Boolean = True, Optional ByVal addChecksumVerification As Boolean = True) As Boolean
     
     Dim autoAddSuccess As Boolean
     autoAddSuccess = True
@@ -688,19 +688,19 @@ Public Function autoAddNodesFromStringStack(ByRef srcStringStack As pdStringStac
             
                 'Construct a relative path
                 relativePath = m_File.GenerateRelativePath(relativeFolderBase, curFile)
-                autoAddSuccess = autoAddSuccess And autoAddNodeFromFile(curFile, OptionalNodeType, addChecksumVerification, relativePath)
+                autoAddSuccess = autoAddSuccess And AutoAddNodeFromFile(curFile, OptionalNodeType, addChecksumVerification, relativePath)
                 
             Else
-                autoAddSuccess = autoAddSuccess And autoAddNodeFromFile(curFile, OptionalNodeType, addChecksumVerification)
+                autoAddSuccess = autoAddSuccess And AutoAddNodeFromFile(curFile, OptionalNodeType, addChecksumVerification)
             End If
         
         ElseIf m_File.FolderExist(curFile, False) Then
         
             'This is a folder.  Add it via the folder function.
             If relativeFoldersInUse Then
-                autoAddSuccess = autoAddSuccess And autoAddNodesFromFolder(curFile, OptionalNodeType, recurseSubfolders, True, relativeFolderBase, addChecksumVerification)
+                autoAddSuccess = autoAddSuccess And AutoAddNodesFromFolder(curFile, OptionalNodeType, recurseSubfolders, True, relativeFolderBase, addChecksumVerification)
             Else
-                autoAddSuccess = autoAddSuccess And autoAddNodesFromFolder(curFile, OptionalNodeType, recurseSubfolders, False, , addChecksumVerification)
+                autoAddSuccess = autoAddSuccess And AutoAddNodesFromFolder(curFile, OptionalNodeType, recurseSubfolders, False, , addChecksumVerification)
             End If
         
         Else
@@ -709,14 +709,14 @@ Public Function autoAddNodesFromStringStack(ByRef srcStringStack As pdStringStac
     
     Loop
     
-    autoAddNodesFromStringStack = autoAddSuccess
+    AutoAddNodesFromStringStack = autoAddSuccess
     
 End Function
 
 'When all nodes have been successfully added, the user can finally write out their data to file.  This function will return TRUE
 ' if successful, FALSE if unsuccessful.  (Note that it assumes the caller has done some basic validation on the file path, like
 ' obtaining permission from the user to overwrite an existing file.)
-Public Function writePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As Boolean = False, Optional ByVal secondPassDataCompression As Boolean = False, Optional ByVal thisIsATempFile As Boolean = False) As Boolean
+Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As Boolean = False, Optional ByVal secondPassDataCompression As Boolean = False, Optional ByVal thisIsATempFile As Boolean = False) As Boolean
     
     'Start by updating the file header.  Most of this will have been done when the class was initialized, but some values
     ' can't be set until all nodes have been added.
@@ -745,18 +745,18 @@ Public Function writePackageToFile(ByVal dstFilename As String, Optional ByVal s
     
     'Use the copyPtrToArray function to copy the contents of m_NodeDirectory into rawDirectoryBuffer().  The function will return TRUE
     ' if it compresses the data; false, otherwise.
-    If copyPtrToArray(VarPtr(m_NodeDirectory(0)), originalSize, rawDirectoryBuffer, compressedSize, secondPassDirectoryCompression, , True) Then
+    If CopyPtrToArray(VarPtr(m_NodeDirectory(0)), originalSize, rawDirectoryBuffer, compressedSize, secondPassDirectoryCompression, , True) Then
         m_FileHeader.DirectoryChunkSizeCompressed = compressedSize
-        setBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DirectoryFlags(0)
+        SetBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DirectoryFlags(0)
     Else
         m_FileHeader.DirectoryChunkSizeCompressed = 0
     End If
     
     'Repeat the above steps for the data chunk
     originalSize = m_FileHeader.DataChunkSize
-    If copyPtrToArray(m_DataBuffer.CurrentBytesPointer, originalSize, rawDataBuffer, compressedSize, secondPassDataCompression, , True) Then
+    If CopyPtrToArray(m_DataBuffer.CurrentBytesPointer, originalSize, rawDataBuffer, compressedSize, secondPassDataCompression, , True) Then
         m_FileHeader.DataChunkSizeCompressed = compressedSize
-        setBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DataFlags(0)
+        SetBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DataFlags(0)
     Else
         m_FileHeader.DataChunkSizeCompressed = 0
     End If
@@ -808,7 +808,7 @@ Public Function writePackageToFile(ByVal dstFilename As String, Optional ByVal s
         
         m_File.CloseFileHandle hFile
         
-        writePackageToFile = True
+        WritePackageToFile = True
     
     Else
     
@@ -816,7 +816,7 @@ Public Function writePackageToFile(ByVal dstFilename As String, Optional ByVal s
             pdDebug.LogAction "WARNING!  pdPackager.writePackageToFile failed to create a valid destination file handle.  Package was not written."
         #End If
         
-        writePackageToFile = False
+        WritePackageToFile = False
     
     End If
         
@@ -838,7 +838,7 @@ End Function
 ' uncompressed copy of the data.  The returned BOOLEAN reports whether or not compression was actually used, NOT whether or not the
 ' function was successful.  (It is assumed the function is always successful, because if zLib fails, the default uncompressed
 ' array will still be returned, and the caller can proceed normally with that data.)
-Private Function copyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long, ByRef dstArray() As Byte, ByRef dstSize As Long, Optional ByVal useCompression As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal trimDestinationArray As Boolean = False) As Boolean
+Private Function CopyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long, ByRef dstArray() As Byte, ByRef dstSize As Long, Optional ByVal useCompression As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal trimDestinationArray As Boolean = False) As Boolean
 
     'If compression is active, extra steps are (obviously) required.
     If useCompression Then
@@ -862,7 +862,7 @@ Private Function copyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long,
         
             'ReDim the destination array, if requested
             If trimDestinationArray Then ReDim Preserve dstArray(0 To dstSize - 1) As Byte
-            copyPtrToArray = True
+            CopyPtrToArray = True
         
         'zLib failed; write an uncompressed directory instead.
         Else
@@ -870,7 +870,7 @@ Private Function copyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long,
             dstSize = srcSize
             ReDim dstArray(0 To dstSize - 1) As Byte
             CopyMemory VarPtr(dstArray(0)), srcPointer, srcSize
-            copyPtrToArray = False
+            CopyPtrToArray = False
         
         End If
         
@@ -879,15 +879,15 @@ Private Function copyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long,
         dstSize = srcSize
         ReDim dstArray(0 To dstSize - 1) As Byte
         CopyMemory VarPtr(dstArray(0)), srcPointer, srcSize
-        copyPtrToArray = False
+        CopyPtrToArray = False
     
     End If
     
 End Function
 
 'This wrapper for copyPtrToArray, above, that allows the user to specify an array reference instead of a pointer
-Private Function copyArray(ByRef srcArray() As Byte, ByVal srcSize As Long, ByRef dstArray() As Byte, ByRef dstSize As Long, Optional ByVal useCompression As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal trimDestinationArray As Boolean = False) As Boolean
-    copyArray = copyPtrToArray(VarPtr(srcArray(0)), srcSize, dstArray, dstSize, useCompression, compressionLevel, trimDestinationArray)
+Private Function CopyArray(ByRef srcArray() As Byte, ByVal srcSize As Long, ByRef dstArray() As Byte, ByRef dstSize As Long, Optional ByVal useCompression As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal trimDestinationArray As Boolean = False) As Boolean
+    CopyArray = CopyPtrToArray(VarPtr(srcArray(0)), srcSize, dstArray, dstSize, useCompression, compressionLevel, trimDestinationArray)
 End Function
 
 'Load a pdPackage file into memory.  A few things to note:
@@ -903,7 +903,7 @@ End Function
 ' 1) Source file.  (Again, callers must do their own validation on this path.)
 ' 2) Optionally, a sub-type value you want to validate.  If this value is not found in bytes 4-7 of the file header, the file
 '     will be rejected.  (If you didn't request a specific sub-type at pdPackage creation time, don't enable this check!)
-Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal subTypeValidator As Long = 0) As Boolean
+Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal subTypeValidator As Long = 0) As Boolean
 
     On Error GoTo StopPackageFileRead
     
@@ -926,7 +926,7 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         
         'Validate the file signature.  Valid pdPackage files must have their first 4 bytes set to "PDPK" in ASCII.
         If (m_FileHeader.PDP_ID <> PDP_UNIVERSAL_IDENTIFIER) Then
-            raiseInternalMessage "File doesn't have valid pdPackage header.  Abandoning load."
+            RaiseInternalMessage "File doesn't have valid pdPackage header.  Abandoning load."
             GoTo StopPackageFileRead
         End If
         
@@ -934,7 +934,7 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         If subTypeValidator <> 0 Then
             
             If (m_FileHeader.PDP_SubID <> subTypeValidator) Then
-                raiseInternalMessage "File doesn't match requested sub-type value.  Abandoning load."
+                RaiseInternalMessage "File doesn't match requested sub-type value.  Abandoning load."
                 GoTo StopPackageFileRead
             End If
         
@@ -947,8 +947,8 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             m_File.CloseFileHandle hFile
             
             'Let the legacy load function have a go at the data
-            If Not loadLegacyPDPackage(srcFilename) Then
-                raiseInternalMessage "Legacy file format could not be decoded."
+            If Not LoadLegacyPDPackage(srcFilename) Then
+                RaiseInternalMessage "Legacy file format could not be decoded."
                 GoTo StopPackageFileRead
             End If
         
@@ -958,7 +958,7 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             'Make sure the struct size is correct; if it isn't, all subsequent parsing will fail.
             Dim tmpNode As PDP_NODE
             If m_FileHeader.NodeStructSize <> LenB(tmpNode) Then
-                raiseInternalMessage "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
+                RaiseInternalMessage "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
                 GoTo StopPackageFileRead
             End If
             
@@ -991,7 +991,7 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
                     'Make sure the decompression size is what we expected
                     If tmpLength <> m_FileHeader.DirectoryChunkSize Then
-                        raiseInternalMessage "WARNING!  Decompressed directory chunk size shows possible CRC error (" & CStr(tmpLength) & " vs " & CStr(m_FileHeader.DirectoryChunkSize) & ")"
+                        RaiseInternalMessage "WARNING!  Decompressed directory chunk size shows possible CRC error (" & CStr(tmpLength) & " vs " & CStr(m_FileHeader.DirectoryChunkSize) & ")"
                     End If
                     
                     'Free the temporary compression buffer
@@ -999,14 +999,14 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
                     If zLibResult <> 0 Then
                         
-                        raiseInternalMessage "Directory is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
+                        RaiseInternalMessage "Directory is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
                         GoTo StopPackageFileRead
                     
                     End If
                     
                 Else
                 
-                    raiseInternalMessage "Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
+                    RaiseInternalMessage "Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
                     GoTo StopPackageFileRead
                 
                 End If
@@ -1047,7 +1047,7 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
                     'Make sure the decompression size is what we expected
                     If tmpLength <> m_FileHeader.DataChunkSize Then
-                        raiseInternalMessage "WARNING!  Decompressed directory chunk size shows possible CRC error (" & CStr(tmpLength) & " vs " & CStr(m_FileHeader.DataChunkSize) & ")"
+                        RaiseInternalMessage "WARNING!  Decompressed directory chunk size shows possible CRC error (" & CStr(tmpLength) & " vs " & CStr(m_FileHeader.DataChunkSize) & ")"
                     End If
                     
                     'Free our temporary buffer
@@ -1055,14 +1055,14 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
                     If zLibResult <> 0 Then
                         
-                        raiseInternalMessage "Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
+                        RaiseInternalMessage "Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
                         GoTo StopPackageFileRead
                     
                     End If
                     
                 Else
                 
-                    raiseInternalMessage "Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
+                    RaiseInternalMessage "Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
                     GoTo StopPackageFileRead
                 
                 End If
@@ -1080,10 +1080,10 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         If hFile <> 0 Then m_File.CloseFileHandle hFile
         
         'File load complete!
-        readPackageFromFile = True
+        ReadPackageFromFile = True
         
     Else
-        readPackageFromFile = False
+        ReadPackageFromFile = False
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  pdPackager.readPackageFromFile failed to create a valid handle for " & srcFilename & ".  Read abandoned."
         #End If
@@ -1095,14 +1095,14 @@ StopPackageFileRead:
     
     Debug.Print "An error occurred in the pdPackager.readPackageFromFile function.  Additional data should have been supplied by the Message() function."
     If hFile <> 0 Then m_File.CloseFileHandle hFile
-    readPackageFromFile = False
+    ReadPackageFromFile = False
     Exit Function
 
 End Function
 
 'Any PDPackage versions prior to the current version (THIS_PDPACKAGE_VERSION) are loaded via this function.  This function does not use
 ' Unicode-aware parsing code, FYI!
-Private Function loadLegacyPDPackage(ByRef srcFile As String) As Boolean
+Private Function LoadLegacyPDPackage(ByRef srcFile As String) As Boolean
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Legacy pdPackage format detected.  Attempting decoding now..."
@@ -1145,16 +1145,16 @@ Private Function loadLegacyPDPackage(ByRef srcFile As String) As Boolean
                     m_DataBuffer.WriteBytes rawDataBuffer
                     
                     'Mark the load as successful
-                    loadLegacyPDPackage = True
+                    LoadLegacyPDPackage = True
                     
                 'Struct size mismatch - file is probably not PDI type.
                 Else
-                    raiseInternalMessage "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
-                    loadLegacyPDPackage = False
+                    RaiseInternalMessage "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
+                    LoadLegacyPDPackage = False
                 End If
                 
             Case Else
-                loadLegacyPDPackage = False
+                LoadLegacyPDPackage = False
             
         End Select
         
@@ -1164,25 +1164,25 @@ Private Function loadLegacyPDPackage(ByRef srcFile As String) As Boolean
 End Function
 
 'Returns the version of a loaded pdPackage.  Return value is meaningless if no package is loaded.
-Public Function getPDPackageVersion() As Long
-    getPDPackageVersion = m_FileHeader.PDP_Version
+Public Function GetPDPackageVersion() As Long
+    GetPDPackageVersion = m_FileHeader.PDP_Version
 End Function
 
 'Returns the current number of nodes in the package.  This is primarily designed to be used right after loading a pdPackage file;
 ' after this number is obtained, the caller can iterate through individual nodes, extracting data as they go.
-Public Function getNumOfNodes() As Long
-    getNumOfNodes = m_NumOfNodes
+Public Function GetNumOfNodes() As Long
+    GetNumOfNodes = m_NumOfNodes
 End Function
 
 'Given a node index, return relevant header data for that node.  This function will fail if the node index is out of bounds.
 ' There is generally no need to use this function, as the direct node data access functions will handle all this automatically.
 ' But I guess it's here if you need it.
-Public Function getNodeInfo(ByVal nodeIndex As Long, Optional ByRef dstNodeName As String, Optional ByRef dstNodeID As Long, Optional ByRef dstOptionalNodeType As Long) As Boolean
+Public Function GetNodeInfo(ByVal nodeIndex As Long, Optional ByRef dstNodeName As String, Optional ByRef dstNodeID As Long, Optional ByRef dstOptionalNodeType As Long) As Boolean
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
     If nodeIndex < 0 Or nodeIndex > m_NumOfNodes - 1 Then
         Debug.Print "Node index out of range - try again with a valid node index!"
-        getNodeInfo = False
+        GetNodeInfo = False
         Exit Function
     End If
     
@@ -1193,7 +1193,7 @@ Public Function getNodeInfo(ByVal nodeIndex As Long, Optional ByRef dstNodeName 
         dstOptionalNodeType = .OptionalNodeType
     End With
     
-    getNodeInfo = True
+    GetNodeInfo = True
 
 End Function
 
@@ -1223,7 +1223,7 @@ End Function
 ' this feature, make sure dstPath includes the filename and extension, e.g. dstPath = "C:\newFilename.ext"
 '
 'Returns TRUE if extraction was successful.  If a relative path must be constructed, a TRUE return means the path was successfully constructed.
-Public Function autoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename As String, Optional ByVal dstPathIncludesFilename As Boolean = False, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal ignoreRelativePathIfPresent As Boolean = False) As Boolean
+Public Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename As String, Optional ByVal dstPathIncludesFilename As Boolean = False, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal ignoreRelativePathIfPresent As Boolean = False) As Boolean
 
     'Node headers use a fixed-length 32 character string for storing names.  As such, we pad the file node type identifier to 32 chars.
     Dim nodeName32_1 As String * 32, nodeName32_2 As String * 32
@@ -1261,7 +1261,7 @@ Public Function autoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
         If nodeFound Then
         
             'This node appears to be a file node.  As a failsafe, check for the special file-type node flag.
-            If getBitFlag(PDP_FLAG_FILE_NODE, m_NodeDirectory(i).NodeFlags(0)) Then
+            If GetBitFlag(PDP_FLAG_FILE_NODE, m_NodeDirectory(i).NodeFlags(0)) Then
             
                 'This is a valid file-type node.  If the user supplied an optionalNodeType, check it now.
                 nodeFound = True
@@ -1278,10 +1278,10 @@ Public Function autoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
                 If nodeFound Then
                     
                     'Extract the header array, which will contain the filename of this file
-                    If getNodeDataByIndex(i, True, retBytes, True) Then
+                    If GetNodeDataByIndex(i, True, retBytes, True) Then
                     
                         'If this byte array equals the source filename, we have a match (DING DING DING).
-                        If checkArrayEquality(filenameArray, retBytes) Then
+                        If CheckArrayEquality(filenameArray, retBytes) Then
                         
                             nodeFound = True
                             nodeIndex = i
@@ -1367,7 +1367,7 @@ Public Function autoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
         If Len(fullDestinationPath) > 0 Then
         
             'Retrieve this node's contents
-            If getNodeDataByIndex(nodeIndex, False, retBytes()) Then
+            If GetNodeDataByIndex(nodeIndex, False, retBytes()) Then
             
                 'Erase the target file, if it exists
                 If m_File.FileExist(fullDestinationPath) Then Kill fullDestinationPath
@@ -1380,20 +1380,20 @@ Public Function autoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
                     Put #fileNum, , retBytes
                 Close #fileNum
                 
-                autoExtractSingleFile = True
+                AutoExtractSingleFile = True
             
             Else
-                autoExtractSingleFile = False
+                AutoExtractSingleFile = False
             End If
             
         Else
             Debug.Print "WARNING! pdPackage.autoExtractSingleFile() was unable to construct the output path for " & srcFilename & "."
             Debug.Print "WARNING! As such, the file was not written.  (But one or more folders may have been constructed as part of the extraction.)"
-            autoExtractSingleFile = False
+            AutoExtractSingleFile = False
         End If
         
     Else
-        autoExtractSingleFile = False
+        AutoExtractSingleFile = False
     End If
 
 End Function
@@ -1415,7 +1415,7 @@ End Function
 '
 'Returns: TRUE if all files are extracted successfully, FALSE otherwise.  FALSE should not occur unless write access to the target folder
 ' is restricted.
-Public Function autoExtractAllFiles(ByVal dstPath As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal ignoreRelativePaths As Boolean = False) As Boolean
+Public Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal ignoreRelativePaths As Boolean = False) As Boolean
     
     'Enforce a trailing slash on dstPath, as we'll potentially be appending a lot of filenames to it
     dstPath = m_File.EnforcePathSlash(dstPath)
@@ -1457,7 +1457,7 @@ Public Function autoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
         If nodeFound Then
         
             'This node appears to be a file node.  As a failsafe, check for the special file-type node flag.
-            If getBitFlag(PDP_FLAG_FILE_NODE, m_NodeDirectory(i).NodeFlags(0)) Then
+            If GetBitFlag(PDP_FLAG_FILE_NODE, m_NodeDirectory(i).NodeFlags(0)) Then
             
                 'This is a valid file-type node.  If the user supplied an optionalNodeType, check it now.
                 nodeFound = True
@@ -1474,7 +1474,7 @@ Public Function autoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                 If nodeFound Then
                     
                     'Extract the header array, which contain the file's name and any relative path data
-                    If getNodeDataByIndex(i, True, retBytes, True) Then
+                    If GetNodeDataByIndex(i, True, retBytes, True) Then
                         
                         'Cast the returned bytes directly into a string; this preserves Unicode characters.
                         strFilename = Space$((UBound(retBytes) + 1) \ 2)
@@ -1529,7 +1529,7 @@ Public Function autoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                         If Len(fullDestinationPath) > 0 Then
                         
                             'Retrieve this node's contents
-                            If getNodeDataByIndex(i, False, retBytes()) Then
+                            If GetNodeDataByIndex(i, False, retBytes()) Then
                             
                                 'Erase the target file, if it exists
                                 If m_File.FileExist(fullDestinationPath) Then Kill fullDestinationPath
@@ -1568,16 +1568,16 @@ Public Function autoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
     Next i
     
     'Report success.  allNodesSuccessful will be TRUE IFF there were no failures or errors during extraction.
-    autoExtractAllFiles = allNodesSuccessful
+    AutoExtractAllFiles = allNodesSuccessful
 
 End Function
 
 'Are two byte arrays equal?
-Private Function checkArrayEquality(ByRef srcArray1() As Byte, ByRef srcArray2() As Byte) As Boolean
+Private Function CheckArrayEquality(ByRef srcArray1() As Byte, ByRef srcArray2() As Byte) As Boolean
 
     'Check bounds first
     If UBound(srcArray1) <> UBound(srcArray2) Then
-        checkArrayEquality = False
+        CheckArrayEquality = False
     
     'Array bounds are equal, so an actual per-element test is required
     Else
@@ -1586,14 +1586,14 @@ Private Function checkArrayEquality(ByRef srcArray1() As Byte, ByRef srcArray2()
         For i = 0 To UBound(srcArray1)
         
             If srcArray1(i) <> srcArray2(i) Then
-                checkArrayEquality = False
+                CheckArrayEquality = False
                 Exit Function
             End If
         
         Next i
         
         'If we made it all the way here, the arrays are equal
-        checkArrayEquality = True
+        CheckArrayEquality = True
     
     End If
 
@@ -1606,7 +1606,7 @@ End Function
 '
 ' Checksum validation and decompression are handled automatically, depending on the contents of the source file.  If performance
 ' is at a premium, you can forcibly disable checksum validation, even if the file supplies checksum data.
-Public Function getNodeDataByName(ByVal targetNodeName As String, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal disableChecksumValidation As Boolean = False) As Boolean
+Public Function GetNodeDataByName(ByVal targetNodeName As String, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal disableChecksumValidation As Boolean = False) As Boolean
 
     'Node headers use a fixed-length 32 character string for storing names.  As such, pad the supplied node name to
     ' 32 chars as necessary.
@@ -1631,14 +1631,14 @@ Public Function getNodeDataByName(ByVal targetNodeName As String, ByVal useHeade
     
     'If a matching node was found, use getNodeDataByIndex() to retrieve its data
     If nodeIndex > 0 Then
-        getNodeDataByName = getNodeDataByIndex(nodeIndex, useHeaderBuffer, dstArray(), disableChecksumValidation)
+        GetNodeDataByName = GetNodeDataByIndex(nodeIndex, useHeaderBuffer, dstArray(), disableChecksumValidation)
     Else
-        getNodeDataByName = False
+        GetNodeDataByName = False
     End If
 
 End Function
 
-Public Function getNodeDataByID(ByVal targetNodeID As Long, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal disableChecksumValidation As Boolean = False) As Boolean
+Public Function GetNodeDataByID(ByVal targetNodeID As Long, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal disableChecksumValidation As Boolean = False) As Boolean
 
     'Search the node array for a matching ID
     Dim i As Long, nodeIndex As Long
@@ -1660,18 +1660,18 @@ Public Function getNodeDataByID(ByVal targetNodeID As Long, ByVal useHeaderBuffe
         
         'If a matching node was found, use getNodeDataByIndex() to retrieve its data
         If nodeIndex >= 0 Then
-            getNodeDataByID = getNodeDataByIndex(nodeIndex, useHeaderBuffer, dstArray(), disableChecksumValidation)
+            GetNodeDataByID = GetNodeDataByIndex(nodeIndex, useHeaderBuffer, dstArray(), disableChecksumValidation)
         Else
-            getNodeDataByID = False
+            GetNodeDataByID = False
         End If
         
     Else
-        getNodeDataByID = False
+        GetNodeDataByID = False
     End If
 
 End Function
 
-Public Function getNodeDataByID_UnsafeDstPointer(ByVal targetNodeID As Long, ByVal useHeaderBuffer As Boolean, ByVal dstPointer As Long, Optional ByVal disableChecksumValidation As Boolean = False) As Boolean
+Public Function GetNodeDataByID_UnsafeDstPointer(ByVal targetNodeID As Long, ByVal useHeaderBuffer As Boolean, ByVal dstPointer As Long, Optional ByVal disableChecksumValidation As Boolean = False) As Boolean
 
     'Search the node array for a matching ID
     Dim i As Long, nodeIndex As Long
@@ -1693,13 +1693,13 @@ Public Function getNodeDataByID_UnsafeDstPointer(ByVal targetNodeID As Long, ByV
         
         'If a matching node was found, use getNodeDataByIndex() to retrieve its data
         If nodeIndex >= 0 Then
-            getNodeDataByID_UnsafeDstPointer = getNodeDataByIndex_UnsafeDstPointer(nodeIndex, useHeaderBuffer, dstPointer, disableChecksumValidation)
+            GetNodeDataByID_UnsafeDstPointer = GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, useHeaderBuffer, dstPointer, disableChecksumValidation)
         Else
-            getNodeDataByID_UnsafeDstPointer = False
+            GetNodeDataByID_UnsafeDstPointer = False
         End If
         
     Else
-        getNodeDataByID_UnsafeDstPointer = False
+        GetNodeDataByID_UnsafeDstPointer = False
     End If
         
 End Function
@@ -1709,7 +1709,7 @@ End Function
 '
 'Given a node index, and a target location (header buffer or data buffer), fill a destination array with the contents of that
 ' data buffer.  Decompression and checksum validation is handled automatically, depending on the contents of the node.
-Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal disableChecksumValidation As Boolean = False) As Boolean
+Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal disableChecksumValidation As Boolean = False) As Boolean
 
     'Retrieve the offset, packed size, and original (unpacked) size of the target data
     Dim dataOffset As Long, dataPackedSize As Long, dataOriginalSize As Long
@@ -1742,23 +1742,27 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             
             If zLibResult <> 0 Then
                 
-                raiseInternalMessage "File node is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
-                getNodeDataByIndex = False
+                RaiseInternalMessage "File node is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
+                GetNodeDataByIndex = False
                 Exit Function
             
             End If
             
         Else
-        
-            raiseInternalMessage "File node is compressed, but zLib is missing.  Decompression impossible; abandoning load."
-            getNodeDataByIndex = False
+            RaiseInternalMessage "File node is compressed, but zLib is missing.  Decompression impossible; abandoning load."
+            GetNodeDataByIndex = False
             Exit Function
-        
         End If
         
     'If the data is uncompressed, make a direct copy of the corresponding chunk of the master buffer
     Else
-        dstArray = m_DataBuffer.ReadBytes(dataPackedSize)
+        If (dataPackedSize <> 0) Then
+            dstArray = m_DataBuffer.ReadBytes(dataPackedSize)
+        Else
+            RaiseInternalMessage "File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt."
+            GetNodeDataByIndex = False
+            Exit Function
+        End If
     End If
     
     'Retrieve the stored checksum value for this node (if any).
@@ -1779,12 +1783,12 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
         'Like CRC32 functions, Adler checksums accept a previous value as their initial input.  If you don't want to supply
         ' this, you can supply a null buffer to get the library's recommended initial value.  (That's what we do here.)
         Dim zLibAdlerSum As Long
-        zLibAdlerSum = checkSumArbitraryArray(dstArray)
+        zLibAdlerSum = ChecksumArbitraryArray(dstArray)
         
         'If the checksums do not match, fail the function and exit
         If checkSumOriginal <> zLibAdlerSum Then
-            raiseInternalMessage "Checksum failed for node #" & nodeIndex & ".  Expected value: " & checkSumOriginal & ", calculated value: " & zLibAdlerSum & ". Load abandoned."
-            getNodeDataByIndex = False
+            RaiseInternalMessage "Checksum failed for node #" & nodeIndex & ".  Expected value: " & checkSumOriginal & ", calculated value: " & zLibAdlerSum & ". Load abandoned."
+            GetNodeDataByIndex = False
             Exit Function
         Else
             #If DEBUGMODE = 1 Then
@@ -1799,7 +1803,7 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
     End If
     
     'If we made it all the way here, the node has been successfully loaded!
-    getNodeDataByIndex = True
+    GetNodeDataByIndex = True
 
 End Function
 
@@ -1818,7 +1822,7 @@ End Function
 '
 'That said, note that PD only uses this function sparingly, when it is *absolutely certain of its safety*.  You would be wise to do the same.
 ' An incorrectly allocated destination buffer will cause mass destruction (and a guaranteed hard crash), so do not use this function ignorantly.
-Public Function getNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal dstPointer As Long, Optional ByVal disableChecksumValidation As Boolean = False) As Boolean
+Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal dstPointer As Long, Optional ByVal disableChecksumValidation As Boolean = False) As Boolean
 
     'Retrieve the offset, packed size, and original (unpacked) size of the target data
     Dim dataOffset As Long, dataPackedSize As Long, dataOriginalSize As Long
@@ -1848,16 +1852,16 @@ Public Function getNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
             
             If zLibResult <> 0 Then
                 
-                raiseInternalMessage "File node is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
-                getNodeDataByIndex_UnsafeDstPointer = False
+                RaiseInternalMessage "File node is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
+                GetNodeDataByIndex_UnsafeDstPointer = False
                 Exit Function
             
             End If
             
         Else
         
-            raiseInternalMessage "File node is compressed, but zLib is missing.  Decompression impossible; abandoning load."
-            getNodeDataByIndex_UnsafeDstPointer = False
+            RaiseInternalMessage "File node is compressed, but zLib is missing.  Decompression impossible; abandoning load."
+            GetNodeDataByIndex_UnsafeDstPointer = False
             Exit Function
         
         End If
@@ -1885,12 +1889,12 @@ Public Function getNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
         'Like CRC32 functions, Adler checksums accept a previous value as their initial input.  If you don't want to supply
         ' this, you can supply a null buffer to get the library's recommended initial value.  (That's what we do here.)
         Dim zLibAdlerSum As Long
-        zLibAdlerSum = checkSumArbitraryData(dstPointer, dataOriginalSize)
+        zLibAdlerSum = ChecksumArbitraryData(dstPointer, dataOriginalSize)
         
         'If the checksums do not match, fail the function and exit
         If checkSumOriginal <> zLibAdlerSum Then
-            raiseInternalMessage "Checksum failed for node #" & nodeIndex & ".  Expected value: " & checkSumOriginal & ", calculated value: " & zLibAdlerSum & ". Load abandoned."
-            getNodeDataByIndex_UnsafeDstPointer = False
+            RaiseInternalMessage "Checksum failed for node #" & nodeIndex & ".  Expected value: " & checkSumOriginal & ", calculated value: " & zLibAdlerSum & ". Load abandoned."
+            GetNodeDataByIndex_UnsafeDstPointer = False
             Exit Function
         Else
             If useHeaderBuffer Then
@@ -1903,7 +1907,7 @@ Public Function getNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
     End If
     
     'If we made it all the way here, the node has been successfully loaded!
-    getNodeDataByIndex_UnsafeDstPointer = True
+    GetNodeDataByIndex_UnsafeDstPointer = True
 
 End Function
 
@@ -1916,7 +1920,7 @@ End Function
 ' Simply pass TRUE as the second parameter and this class will assume you've already used LoadLibrary successfully.
 ' Additionally, the third parameter can be set as FALSE to notify this class that the caller tried to initiate zLib, but
 ' failed to do so successfully.
-Public Function init_ZLib(ByVal pathToZLibDLL As String, Optional ByVal leaveInitToCaller As Boolean = False, Optional callerInitiationSuccess As Boolean = True) As Boolean
+Public Function Init_ZLib(ByVal pathToZLibDLL As String, Optional ByVal leaveInitToCaller As Boolean = False, Optional callerInitiationSuccess As Boolean = True) As Boolean
 
     If leaveInitToCaller Then
         m_ZLibAvailable = callerInitiationSuccess
@@ -1943,7 +1947,7 @@ Public Function init_ZLib(ByVal pathToZLibDLL As String, Optional ByVal leaveIni
     End If
     
     'This function will return TRUE if it considers zLib to be available, and FALSE if it does not.
-    init_ZLib = m_ZLibAvailable
+    Init_ZLib = m_ZLibAvailable
 
 End Function
 
@@ -1952,7 +1956,7 @@ End Function
 '  1) position of the flag, which must be in the range [0, 31]
 '  2) value of the flag, TRUE for 1, FALSE for 0
 '  3) The Long-type value where you want the flag placed
-Private Sub setBitFlag(ByVal flagPosition As Long, ByVal flagValue As Boolean, ByRef copyOfDstLong As Long)
+Private Sub SetBitFlag(ByVal flagPosition As Long, ByVal flagValue As Boolean, ByRef copyOfDstLong As Long)
 
     If (flagPosition >= 0) And (flagPosition <= 31) Then
     
@@ -1984,7 +1988,7 @@ End Sub
 ' Inputs:
 '  1) position of the flag, which must be in the range [0, 31]
 '  2) The Long from which you want the bit retrieved
-Private Function getBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) As Boolean
+Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) As Boolean
 
     If (flagPosition >= 0) And (flagPosition <= 31) Then
     
@@ -1992,7 +1996,7 @@ Private Function getBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) A
         Dim longMask As Long
         If flagPosition < 31 Then longMask = 2 ^ flagPosition Else longMask = &H80000000
         
-        getBitFlag = ((srcLong And longMask) <> 0)
+        GetBitFlag = ((srcLong And longMask) <> 0)
         
     Else
         Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
@@ -2001,7 +2005,7 @@ Private Function getBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) A
 End Function
 
 'Once a package has been loaded from file, you can use this function to check various flags in the file
-Public Function getPackageFlag(ByVal flagToCheck As PDP_FLAGS, Optional ByVal checkLocation As PDP_FLAG_LOCATION = PDP_LOCATION_ANY, Optional ByVal nodeIndex As Long = 0) As Boolean
+Public Function GetPackageFlag(ByVal flagToCheck As PDP_FLAGS, Optional ByVal checkLocation As PDP_FLAG_LOCATION = PDP_LOCATION_ANY, Optional ByVal nodeIndex As Long = 0) As Boolean
 
     'Check the relevant flag location
     Select Case checkLocation
@@ -2010,30 +2014,30 @@ Public Function getPackageFlag(ByVal flagToCheck As PDP_FLAGS, Optional ByVal ch
         Case PDP_LOCATION_ANY
         
             'Check directory and data flags first
-            getPackageFlag = getBitFlag(flagToCheck, m_FileHeader.DirectoryFlags(0)) Or getBitFlag(flagToCheck, m_FileHeader.DataFlags(0))
+            GetPackageFlag = GetBitFlag(flagToCheck, m_FileHeader.DirectoryFlags(0)) Or GetBitFlag(flagToCheck, m_FileHeader.DataFlags(0))
             
             'If the flag is still false, scan individual nodes, looking for a hit
-            If Not getPackageFlag Then
+            If Not GetPackageFlag Then
             
                 Dim i As Long
                 For i = 0 To m_NumOfNodes - 1
-                    getPackageFlag = getPackageFlag Or getBitFlag(flagToCheck, m_NodeDirectory(i).NodeFlags(0))
-                    If getPackageFlag Then Exit For
+                    GetPackageFlag = GetPackageFlag Or GetBitFlag(flagToCheck, m_NodeDirectory(i).NodeFlags(0))
+                    If GetPackageFlag Then Exit For
                 Next i
             
             End If
         
         'Directory chunk flags
         Case PDP_LOCATION_DIRECTORY
-            getPackageFlag = getBitFlag(flagToCheck, m_FileHeader.DirectoryFlags(0))
+            GetPackageFlag = GetBitFlag(flagToCheck, m_FileHeader.DirectoryFlags(0))
         
         'Data chunk flags
         Case PDP_LOCATION_DATA
-            getPackageFlag = getBitFlag(flagToCheck, m_FileHeader.DataFlags(0))
+            GetPackageFlag = GetBitFlag(flagToCheck, m_FileHeader.DataFlags(0))
         
         'Specific node flags; if used, we'd better hope the user supplied the right node index!
         Case PDP_LOCATION_INDIVIDUALNODE
-            getPackageFlag = getBitFlag(flagToCheck, m_NodeDirectory(nodeIndex).NodeFlags(0))
+            GetPackageFlag = GetBitFlag(flagToCheck, m_NodeDirectory(nodeIndex).NodeFlags(0))
     
     End Select
 
@@ -2041,21 +2045,21 @@ End Function
 
 'Since this class makes extensive use of checksums, it's a convenient place to expose an arbitrary checksum function.  This function uses the
 ' same checksum strategy as pdPackage itself, so checksums by this function can be used as a failsafe check against internal pdPackage checksums.
-Public Function checkSumArbitraryData(ByVal dataPointer As Long, ByVal dataLength As Long) As Long
+Public Function ChecksumArbitraryData(ByVal dataPointer As Long, ByVal dataLength As Long) As Long
     
     'Like CRC32 functions, Adler checksums accept a previous value as their initial input.  If you don't want to supply
     ' this, you can supply a null buffer to get the library's recommended initial value.  (That's what we do here.)
-    checkSumArbitraryData = adler32(adler32(0, ByVal 0&, 0), ByVal dataPointer, dataLength)
+    ChecksumArbitraryData = adler32(adler32(0, ByVal 0&, 0), ByVal dataPointer, dataLength)
     
 End Function
 
 'Thin wrapper to checkSumArbitraryData, above, as a convenience when working with VB arrays
-Public Function checkSumArbitraryArray(ByRef array0Based() As Byte) As Long
-    checkSumArbitraryArray = checkSumArbitraryData(VarPtr(array0Based(0)), UBound(array0Based) + 1)
+Public Function ChecksumArbitraryArray(ByRef array0Based() As Byte) As Long
+    ChecksumArbitraryArray = ChecksumArbitraryData(VarPtr(array0Based(0)), UBound(array0Based) + 1)
 End Function
 
 'Thin wrapper to checkSumArbitraryData, above, as a convenience when working with files
-Public Function checkSumArbitraryFile(ByRef pathToFile As String) As Long
+Public Function ChecksumArbitraryFile(ByRef pathToFile As String) As Long
 
     'Attempt to load the file into a byte array
     If m_File.FileExist(pathToFile) Then
@@ -2074,7 +2078,7 @@ Public Function checkSumArbitraryFile(ByRef pathToFile As String) As Long
         
         'Make sure the file loaded successfully
         If UBound(fileContents) >= LBound(fileContents) Then
-            checkSumArbitraryFile = checkSumArbitraryArray(fileContents)
+            ChecksumArbitraryFile = ChecksumArbitraryArray(fileContents)
         End If
         
     End If
@@ -2110,7 +2114,7 @@ End Sub
 
 'If something unexpected occurs, and the user needs to know about it (e.g. it's not just debugging data), pdPackage will raise a message
 ' using this function.  PhotoDemon uses a central "Message" function to handle messages like this, but you can change it to Debug.Print instead.
-Private Sub raiseInternalMessage(ByVal msgString As String, ParamArray ExtraText() As Variant)
+Private Sub RaiseInternalMessage(ByVal msgString As String, ParamArray ExtraText() As Variant)
     
     If UBound(ExtraText) >= LBound(ExtraText) Then
         Message msgString, ExtraText
