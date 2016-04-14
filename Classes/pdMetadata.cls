@@ -901,6 +901,10 @@ Private Function PARSE_LikelyTagLine(ByRef xmlLines() As String, ByRef linePoint
                 endTagName = "</" & curTagName & ">"
                 Do While (InStr(1, xmlLines(linePointer), endTagName, vbBinaryCompare) = 0)
                     linePointer = linePointer + 1
+                    If linePointer > UBound(xmlLines) Then
+                        PARSE_LikelyTagLine = False
+                        Exit Function
+                    End If
                 Loop
                 
                 eLine = linePointer
