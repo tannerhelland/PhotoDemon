@@ -1830,6 +1830,11 @@ End Sub
 ' here must also be mirrored there.
 Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal targetLayerID As Long = -1) As Boolean
     
+    #If DEBUGMODE = 1 Then
+        Dim timeAtUndoStart As Double
+        timeAtUndoStart = Timer
+    #End If
+    
     'What kind of Undo data we save is determined by the current processType.
     Select Case processType
     
@@ -1864,6 +1869,11 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
             Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, False, False, False, , , , , , True
         
     End Select
+    
+    #If DEBUGMODE = 1 Then
+        'Want to test undo timing?  Uncomment the line below
+        Debug.Print "Time take for Undo file creation: " & Format$(Timer - timeAtUndoStart, "#0.####") & " seconds"
+    #End If
     
 End Function
 
