@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.150</langversion>
+<langversion>6.7.151</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -707,6 +707,41 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 
 <!-- END text for VBP_MDIWindow.bas-->
 
+<!-- BEGIN text for ImageExporter.bas -->
+
+<phrase>
+<original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
+<translation> %1 guardar fallado (FreeImage_SaveEx silenciosa falla). Por favor, informa de este error utilizando Ayuda -> Enviar informe de errores.</translation>
+</phrase>
+
+<phrase>
+<original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
+<translation> %1 guardar fallado (FreeImage regresó mango blanco). Por favor, informa de este error utilizando Ayuda -> Enviar informe de errores.</translation>
+</phrase>
+
+<phrase>
+<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
+
+To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
+<translation>La interfaz FreeImage plug-in (FreeImage.dll) se marcó como perdidos o averiados en programa initialization.
+
+To habilitar el soporte para este formato de imagen, por favor copie el archivo FreeImage.dll (descargable desde http://freeimage.sourceforge.net/download. html) en el directorio de plug-in y volver a cargar el programa.</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage Interface Error</original>
+<translation>Error FreeImage Interface</translation>
+</phrase>
+
+<phrase>
+<original>Save cannot be completed without FreeImage library.</original>
+<translation>Guardar no se puede completar sin la biblioteca FreeImage.</translation>
+</phrase>
+
+<!-- ImageExporter.bas contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for ImageExporter.bas-->
+
 <!-- BEGIN text for ImageLoader.bas -->
 
 <phrase>
@@ -989,7 +1024,12 @@ To habilitar el soporte para archivos de PDI comprimido, haga clic en Ayuda> Bus
 <translation>Cancelar el procesamiento de imágenes</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 67 phrases. 20 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
+<phrase>
+<original>preview not available</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_MiscInterface.bas contains 69 phrases. 21 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -1102,6 +1142,11 @@ To habilitar el soporte para archivos de PDI comprimido, haga clic en Ayuda> Bus
 <!-- BEGIN text for VBP_LoadModule.bas -->
 
 <phrase>
+<original>Loading image</original>
+<translation>Cargando imagen</translation>
+</phrase>
+
+<phrase>
 <original>Unfortunately, the image '%1' could not be found.
 
 If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
@@ -1113,11 +1158,6 @@ If esta imagen se encontraba originalmente en un medio extraíble (DVD, unidad U
 <phrase>
 <original>File not found</original>
 <translation>Archivo no encontrado</translation>
-</phrase>
-
-<phrase>
-<original>Loading image</original>
-<translation>Cargando imagen</translation>
 </phrase>
 
 <phrase>
@@ -1210,7 +1250,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Completa la duplicación de imagen.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -1355,6 +1395,31 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 </phrase>
 
 <phrase>
+<original>Please wait while the tag database is created</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No metadata available.</original>
+<translation>No hay metadatos disponibles.</translation>
+</phrase>
+
+<phrase>
+<original>This image does not contain any metadata.</original>
+<translation>Esta imagen no contiene metadatos.</translation>
+</phrase>
+
+<phrase>
+<original>No metadata available</original>
+<translation>No hay metadatos disponibles</translation>
+</phrase>
+
+<phrase>
 <original>This file format does not support metadata.  Metadata processing skipped.</original>
 <translation>Este formato de archivo no admite metadatos. Procesamiento de metadatos saltado.</translation>
 </phrase>
@@ -1384,12 +1449,7 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 <translation>Error al iniciar el servicio el plugin (no se pudo crear proceso: %1).</translation>
 </phrase>
 
-<phrase>
-<original>Finishing final program initialization steps</original>
-<translation>Acabado pasos finales de inicialización del programa</translation>
-</phrase>
-
-<!-- VBP_ExifToolInterface.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+<!-- VBP_ExifToolInterface.bas contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for VBP_ExifToolInterface.bas-->
 
@@ -1400,7 +1460,12 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 <translation>Importación a través FreeImage falló (Err # %1)</translation>
 </phrase>
 
-<!-- VBP_FreeImage_Expanded.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<phrase>
+<original>Applying tone-mapping</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FreeImage_Expanded.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FreeImage_Expanded.bas-->
 
@@ -1895,38 +1960,8 @@ When terminado, haga clic en el botón Enviar. Gracias!</translation>
 <!-- BEGIN text for VBP_SaveModule.bas -->
 
 <phrase>
-<original>Counting image colors to determine optimal exported color depth</original>
-<translation>Contar colores de la imagen para determinar la profundidad de color óptimo exportado</translation>
-</phrase>
-
-<phrase>
-<original>Color count successful (%1 bpp recommended)</original>
-<translation>Recuento color éxito ( %1 bpp recomendado)</translation>
-</phrase>
-
-<phrase>
-<original>Recommended color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-<translation>Profundidad de color recomendada de %1 bpp es compatible con este formato. Procediendo con ahorro</translation>
-</phrase>
-
-<phrase>
-<original>Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
-<translation>Profundidad de color recomendada de %1 bpp no es compatible con este formato. Procediendo de ahorrar en %2 bpp</translation>
-</phrase>
-
-<phrase>
-<original>Requested color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-<translation>Profundidad de color de la petición de oferta de %1 bpp es compatible con este formato. Procediendo con ahorro</translation>
-</phrase>
-
-<phrase>
-<original>Requested color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
-<translation>Profundidad de color de la petición de oferta de %1 bpp no es compatible con este formato. Procediendo de ahorrar en %2 bpp</translation>
-</phrase>
-
-<phrase>
-<original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
-<translation>Formato de salida sin ser reconocida. Ahorra abortada. Por favor, use la Ayuda -> Enviar informe de errores elemento de menú para informar de este incidente.</translation>
+<original>Saving %1 file</original>
+<translation>Ahorro %1 archivo</translation>
 </phrase>
 
 <phrase>
@@ -1948,28 +1983,8 @@ In Mientras tanto, intenta guardar la imagen en un formato alternativo. También
 </phrase>
 
 <phrase>
-<original>Saving %1 file</original>
-<translation>Ahorro %1 archivo</translation>
-</phrase>
-
-<phrase>
-<original>%1 save complete.</original>
-<translation> %1 salvar completa.</translation>
-</phrase>
-
-<phrase>
-<original>Preparing %1 image</original>
-<translation>Imagen Preparación de 1%</translation>
-</phrase>
-
-<phrase>
-<original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation> %1 guardar fallado (FreeImage_SaveEx silenciosa falla). Por favor, informa de este error utilizando Ayuda -> Enviar informe de errores.</translation>
-</phrase>
-
-<phrase>
-<original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation> %1 guardar fallado (FreeImage regresó mango blanco). Por favor, informa de este error utilizando Ayuda -> Enviar informe de errores.</translation>
+<original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
+<translation>Formato de salida sin ser reconocida. Ahorra abortada. Por favor, use la Ayuda -> Enviar informe de errores elemento de menú para informar de este incidente.</translation>
 </phrase>
 
 <phrase>
@@ -1978,27 +1993,18 @@ In Mientras tanto, intenta guardar la imagen en un formato alternativo. También
 </phrase>
 
 <phrase>
+<original>%1 save complete.</original>
+<translation> %1 salvar completa.</translation>
+</phrase>
+
+<phrase>
 <original>Saving %1 layer</original>
 <translation>Ahorrar %1 capa</translation>
 </phrase>
 
 <phrase>
-<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
-
-To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
-<translation>La interfaz FreeImage plug-in (FreeImage.dll) se marcó como perdidos o averiados en programa initialization.
-
-To habilitar el soporte para este formato de imagen, por favor copie el archivo FreeImage.dll (descargable desde http://freeimage.sourceforge.net/download. html) en el directorio de plug-in y volver a cargar el programa.</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage Interface Error</original>
-<translation>Error FreeImage Interface</translation>
-</phrase>
-
-<phrase>
-<original>Save cannot be completed without FreeImage library.</original>
-<translation>Guardar no se puede completar sin la biblioteca FreeImage.</translation>
+<original>Preparing %1 image</original>
+<translation>Imagen Preparación de 1%</translation>
 </phrase>
 
 <phrase>
@@ -2027,31 +2033,6 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 </phrase>
 
 <phrase>
-<original>Testing JPEG quality values to determine best setting</original>
-<translation>Prueba de los valores de calidad JPEG para determinar la mejor configuración</translation>
-</phrase>
-
-<phrase>
-<original>Ideal quality of %1 found.  Continuing with save</original>
-<translation>Calidad Ideal de %1 encontrado. Continuando con ahorro</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing image color content</original>
-<translation>El análisis de contenido de imágenes de color</translation>
-</phrase>
-
-<phrase>
-<original>No color found.  Saving 8bpp grayscale JPEG.</original>
-<translation>No hay color encontrado. Ahorrar 8bpp escala de grises JPEG.</translation>
-</phrase>
-
-<phrase>
-<original>Color found.  Saving 24bpp full-color JPEG.</original>
-<translation>Color que se encuentra. Ahorrar 24bpp todo color JPEG.</translation>
-</phrase>
-
-<phrase>
 <original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
 <translation>Miniatura no save (FreeImage_SaveEx silenciosa falla). Por favor reporte este error utilizando Ayuda -> Presentar Informe Bug.</translation>
 </phrase>
@@ -2066,7 +2047,7 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 <translation>Miniatura guardar falló (error GDI sin especificar).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 126 phrases. 94 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 71 phrases. 55 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -2154,13 +2135,13 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 </phrase>
 
 <phrase>
-<original>PhotoDemon selection</original>
-<translation>selección PhotoDemon</translation>
+<original>Export selection as image</original>
+<translation>Exportar selección como imagen</translation>
 </phrase>
 
 <phrase>
-<original>Export selection as image</original>
-<translation>Exportar selección como imagen</translation>
+<original>PhotoDemon selection</original>
+<translation>selección PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -2233,7 +2214,7 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 <translation>Encontrar borde de selección</translation>
 </phrase>
 
-<!-- VBP_SelectionHandler.bas contains 44 phrases. 17 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<!-- VBP_SelectionHandler.bas contains 42 phrases. 15 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
 
 <!-- END text for VBP_SelectionHandler.bas-->
 
@@ -2749,18 +2730,18 @@ Please válida Introduzca un valor numérico.</translation>
 </phrase>
 
 <phrase>
-<original>System</original>
-<translation>sistema</translation>
+<original>Inferred</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>General</original>
-<translation>general</translation>
+<original>Exif (thumbnail)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>File</original>
-<translation>expediente</translation>
+<original>Exif</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2769,8 +2750,268 @@ Please válida Introduzca un valor numérico.</translation>
 </phrase>
 
 <phrase>
-<original>Composite</original>
-<translation>compuesto</translation>
+<original>XMP (Apple)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (ACD Systems)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Adobe Album)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Adobe)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Creative Commons)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Sony Ericcson)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Adobe After Effects)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Photoshop Camera Raw)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Dublin Core)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Description Explorer)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (DICOM)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (DigiKam)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (EXIF)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (EXIF 2.3)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Microsoft Expression Media)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Extensis Portfolio)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Fast Picture Viewer)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Getty Images)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Google Photosphere)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (IDimager)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (IPTC Core)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (IPTC Extension)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Adobe Lightroom)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (iView MediaPro)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Microsoft Photo 1.0)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Microsoft Photo 1.2)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Microsoft Photo 1.1)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (MWG)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Adobe PDF)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Adobe PDF extended)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (PhotoMechanic)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Adobe Photoshop)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (PixelLive)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Plus License Data)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (PRISM for images)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (PRISM)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (PRISM Rights)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (PRISM Recipe)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (PRISM Usage Rights)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (RDF)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Adobe SWF)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (EXIF-TIFF)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Toolkit)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (General)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Basic Job)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Dynamic Media)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Media Management)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Note)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Picture Licensing)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Rights Management)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Paged Text)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>XMP (Misc)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Removing metadata with potential privacy concerns</original>
+<translation>Extracción de metadatos con posibles problemas de privacidad</translation>
 </phrase>
 
 <phrase>
@@ -2788,12 +3029,7 @@ Please válida Introduzca un valor numérico.</translation>
 <translation>Los metadatos no puede haber sido incorporado (pero imagen guardada todavía escrito correctamente).</translation>
 </phrase>
 
-<phrase>
-<original>Removing metadata with potential privacy concerns</original>
-<translation>Extracción de metadatos con posibles problemas de privacidad</translation>
-</phrase>
-
-<!-- pdMetadata.cls contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- pdMetadata.cls contains 123 phrases. 62 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <!-- END text for pdMetadata.cls-->
 
@@ -3624,6 +3860,16 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- BEGIN text for pdImageStrip.ctl -->
 
 <phrase>
+<original>CurrentLocationOnDisk</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>OriginalFileName</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Once this image has been saved to disk, its filename will appear here.</original>
 <translation>Una vez que esta imagen se ha guardado en el disco, el nombre del archivo aparecerá aquí.</translation>
 </phrase>
@@ -3638,7 +3884,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <translation>Coloca una miniatura de la imagen para ver su nombre y el archivo actual ubicación.</translation>
 </phrase>
 
-<!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- pdImageStrip.ctl contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 <!-- END text for pdImageStrip.ctl-->
 
@@ -3654,11 +3900,69 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- END text for pdListBox.ctl-->
 
+<!-- BEGIN text for pdListBoxOD.ctl -->
+
+<!-- pdListBoxOD.ctl contains 0 phrases. -->
+
+<!-- END text for pdListBoxOD.ctl-->
+
 <!-- BEGIN text for pdListBoxView.ctl -->
 
 <!-- pdListBoxView.ctl contains 0 phrases. -->
 
 <!-- END text for pdListBoxView.ctl-->
+
+<!-- BEGIN text for pdListBoxViewOD.ctl -->
+
+<!-- pdListBoxViewOD.ctl contains 0 phrases. -->
+
+<!-- END text for pdListBoxViewOD.ctl-->
+
+<!-- BEGIN text for pdMetadataExport.ctl -->
+
+<phrase>
+<original>general metadata settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>click to review this image's metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>copy all relevant metadata to the new file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>erase tags that might be personal (including GPS and location)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This image contains metadata.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This image does not contain metadata.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>click to add metadata to this image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 settings</original>
+<translation></translation>
+</phrase>
+
+<!-- pdMetadataExport.ctl contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+
+<!-- END text for pdMetadataExport.ctl-->
 
 <!-- BEGIN text for pdNavigator.ctl -->
 
@@ -4212,8 +4516,8 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>Browse image metadata</original>
-<translation>Examine los metadatos de imagen</translation>
+<original>Edit metadata</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5724,28 +6028,8 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
-<original>No metadata available.</original>
-<translation>No hay metadatos disponibles.</translation>
-</phrase>
-
-<phrase>
-<original>This image does not contain any metadata.</original>
-<translation>Esta imagen no contiene metadatos.</translation>
-</phrase>
-
-<phrase>
-<original>No metadata available</original>
-<translation>No hay metadatos disponibles</translation>
-</phrase>
-
-<phrase>
 <original>Count image colors</original>
 <translation>Contar colores de la imagen</translation>
-</phrase>
-
-<phrase>
-<original>Loading metadata for this image</original>
-<translation>Cargando metadatos para esta imagen</translation>
 </phrase>
 
 <phrase>
@@ -5858,7 +6142,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- MainWindow.frm contains 563 phrases. 187 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -7306,13 +7590,13 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
-<original>Restore selected images</original>
-<translation>Restaurar imágenes seleccionadas</translation>
+<original>Restore selected autosaves</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Discard all images</original>
-<translation>Deseche todas las imágenes</translation>
+<original>Discard all autosaves</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7431,51 +7715,121 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 
 <!-- END text for Dialog_EditPreset.frm-->
 
-<!-- BEGIN text for Dialog_ExportColorDepth.frm (dialog_ExportColorDepth) -->
+<!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
 
 <phrase>
-<original>Please Choose Exported Color Depth</original>
-<translation>Por favor, elija Exportados Profundidad de color</translation>
+<original>BMP export options</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>1 bpp (monochrome)</original>
-<translation>1 bpp (monocromo)</translation>
+<original>restrict palette size</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>4 bpp (16 shades of gray)</original>
-<translation>4 bpp (16 tonos de gris)</translation>
+<original>background color</original>
+<translation>color de fondo</translation>
 </phrase>
 
 <phrase>
-<original>8 bpp (256 colors or full grayscale)</original>
-<translation>8 bpp (256 colores o completa escala de grises)</translation>
+<original>unique colors</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>24 bpp (16 million colors)</original>
-<translation>24 bpp (16 millones de colores)</translation>
+<original>depth</original>
+<translation>profundidad</translation>
 </phrase>
 
 <phrase>
-<original>32 bpp (16 million colors + full transparency)</original>
-<translation>32 bpp (16 millones de colores completa transparencia)</translation>
+<original>color model</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>please choose an output color depth</original>
-<translation>elija una profundidad de color de salida</translation>
+<original>use RLE compression</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Waiting for user to specify color depth</original>
-<translation>Esperando que el usuario especifique la profundidad de color</translation>
+<original>premultiply alpha</original>
+<translation></translation>
 </phrase>
 
-<!-- Dialog_ExportColorDepth.frm contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
+<phrase>
+<original>flip row order (top-down)</original>
+<translation></translation>
+</phrase>
 
-<!-- END text for Dialog_ExportColorDepth.frm-->
+<phrase>
+<original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Waiting for user to specify export options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color + transparency</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>grayscale</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>32-bpp XRGB (X8-R8-G8-B8)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>24-bpp RGB (R8-G8-B8)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>16-bpp (R5-G6-B5)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (indexed)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (256 shades)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>4-bpp (16 shades)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>1-bpp (monochrome)</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_BMP.frm contains 23 phrases.  One was a duplicate of an existing phrase, so only 22 new phrases were written to file. -->
+
+<!-- END text for File_Save_BMP.frm-->
 
 <!-- BEGIN text for Dialog_FillSettings.frm (dialog_FillSettings) -->
 
@@ -7577,8 +7931,8 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <!-- BEGIN text for Dialog_GenericWait.frm (FormWait) -->
 
 <phrase>
-<original>Applying changes</original>
-<translation>aplicación de los cambios</translation>
+<original>Please wait a moment</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7886,11 +8240,6 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
-<original>Cancelling image import</original>
-<translation>Cancelación de importación imagen</translation>
-</phrase>
-
-<phrase>
 <original>Proceeding with tone mapping</original>
 <translation>Procediendo con el mapeo de tonos</translation>
 </phrase>
@@ -7915,7 +8264,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>Reinhard</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -8399,16 +8748,11 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
-<original>depth</original>
-<translation>profundidad</translation>
-</phrase>
-
-<phrase>
 <original>Carving image relief</original>
 <translation>Grabado en relieve la imagen</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -11342,38 +11686,48 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>click here to review the image's metadata</original>
-<translation>haga clic aquí para revisar los metadatos de la imagen</translation>
+<original>compression method</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>other metadata options</original>
-<translation>otras opciones de metadatos</translation>
+<original>chroma subsampling</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>general metadata setting for this image</original>
-<translation>configuración de metadatos general para esta imagen</translation>
+<original>metadata</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>use perceptive color matching (slower, more accurate)</original>
-<translation>utilizar la concordancia de color perceptivo (más lento, más preciso)</translation>
+<original>perfect (99)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>automatic quality detection</original>
-<translation>detección de la calidad automática</translation>
+<original>excellent (92)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>advanced quality settings</original>
-<translation>ajustes avanzados de calidad</translation>
+<original>good (80)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Quality</original>
-<translation>Calidad</translation>
+<original>average (65)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>low (40)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom quality</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11382,86 +11736,36 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>Do not set quality automatically</original>
-<translation>No ajuste la calidad de forma automática</translation>
+<original>baseline</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>No noticeable differences allowed</original>
-<translation>No hay diferencias notables permitido</translation>
+<original>optimized baseline</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Slight differences allowed</original>
-<translation>Ligeras diferencias permitidas</translation>
+<original>progressive</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Some minor differences allowed</original>
-<translation>Algunas diferencias menores permitidos</translation>
+<original>low (default)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Many minor differences allowed</original>
-<translation>Muchas pequeñas diferencias permitidas</translation>
+<original>color (24-bpp)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon can automatically choose a JPEG quality setting for you.  The statistical analyses it uses are designed around photographs; synthetic images or images with large regions of solid color may not work as well.</original>
-<translation>PhotoDemon puede elegir automáticamente un ajuste de calidad JPEG para usted. El análisis estadísticos que utiliza están diseñados en torno a las fotografías, las imágenes sintéticas o imágenes con grandes regiones de color sólido puede no funcionar tan bien.</translation>
+<original>black and white (8-bpp)</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Perceptive color matching uses the CIE L*a*b* color space for highly accurate color modeling.  Enabling this setting may increase processing time by several seconds.</original>
-<translation>Igualación de color perceptivo utiliza el CIE L * a * b * del espacio de color para el modelado de color de alta precisión. Habilitar esta opción puede aumentar el tiempo de procesamiento por varios segundos.</translation>
-</phrase>
-
-<phrase>
-<original>use program-wide setting (default)</original>
-<translation>utilizar configuración de todo el programa (por defecto)</translation>
-</phrase>
-
-<phrase>
-<original>preserve all relevant metadata</original>
-<translation>conservar todos los metadatos relevantes</translation>
-</phrase>
-
-<phrase>
-<original>preserve all relevant metadata, but remove personal tags</original>
-<translation>conservar todos los metadatos relevantes, pero quitar las etiquetas personales</translation>
-</phrase>
-
-<phrase>
-<original>do not preserve metadata</original>
-<translation>no conservan los metadatos</translation>
-</phrase>
-
-<phrase>
-<original>The current program-wide setting is</original>
-<translation>La configuración de todo el programa actual es</translation>
-</phrase>
-
-<phrase>
-<original>preserve all relevant metadata, but remove personal tags (GPS coords, serial #'s, etc)</original>
-<translation>conservar todos los metadatos relevantes, pero quitar las etiquetas personales (coords GPS, serial # 's, etc)</translation>
-</phrase>
-
-<phrase>
-<original>You can change the program-wide setting from the Tools -> Options menu.</original>
-<translation>Puede cambiar la configuración de todo el programa a partir de los menú Herramientas -> Opciones.</translation>
-</phrase>
-
-<phrase>
-<original>Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, the GPS coordinates where a photo was taken, or many other items.  To view an image's metadata, use the Image -> Metadata menu.</original>
-<translation>Metadatos de imagen son datos adicionales colocados en un archivo de imagen con una cámara o el software de fotos. Estos datos pueden incluir cosas como la marca y modelo de la cámara, el GPS las coordenadas donde se tomó una foto, o muchas otras cosas. Para ver los metadatos de una imagen, utilice la imagen -> menú Metadatos.</translation>
-</phrase>
-
-<phrase>
-<original>JPEG previews require the FreeImage plugin.</original>
-<translation>Previsualizaciones JPEG requieren el plugin FreeImage.</translation>
-</phrase>
-
-<!-- File_Save_JPEGSettings.frm contains 57 phrases. 32 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Save_JPEGSettings.frm contains 26 phrases. 9 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for File_Save_JPEGSettings.frm-->
 
@@ -11698,13 +12002,23 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 <!-- BEGIN text for Image_Metadata.frm (FormMetadata) -->
 
 <phrase>
-<original>Generate full metadata report (HTML)</original>
-<translation>Generar informe completo de metadatos (HTML)</translation>
+<original>Metadata editor</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>tools</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>metadata groups in this image</original>
 <translation>grupos de metadatos en esta imagen</translation>
+</phrase>
+
+<phrase>
+<original>tags in this category</original>
+<translation>etiquetas en esta categoría</translation>
 </phrase>
 
 <phrase>
@@ -11718,23 +12032,23 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 </phrase>
 
 <phrase>
-<original>metadata options</original>
-<translation>opciones de metadatos</translation>
+<original>Generate full metadata report (HTML)</original>
+<translation>Generar informe completo de metadatos (HTML)</translation>
 </phrase>
 
 <phrase>
-<original>tags in this category</original>
-<translation>etiquetas en esta categoría</translation>
+<original>visit the ExifTool homepage</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>1 tag in this category</original>
-<translation>1 etiqueta en esta categoría</translation>
+<original>Remove tags that might contain personal information</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>%1 tags in this category</original>
-<translation> %1 etiquetas en esta categoría</translation>
+<original>%1 groups in this image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11748,16 +12062,191 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 </phrase>
 
 <phrase>
-<original>All metadata information is supplied by the ExifTool plugin.  You can learn more about ExifTool at http://www.sno.phy.queensu.ca/~phil/exiftool/</original>
-<translation>Toda la información de metadatos es suministrada por el plugin ExifTool. Usted puede aprender más sobre ExifTool en http://www.sno.phy.queensu.ca/~phil/exiftool/</translation>
+<original>edit tags</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>(encoding unknown)</original>
-<translation>(desconocido codificación)</translation>
+<original>editor options</original>
+<translation></translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<phrase>
+<original>Mark this tag for removal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset tag to its original value</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Mark this entire group for removal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset entire group to its original values</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Metadata support is provided by the open-source ExifTool library.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>1 tag in this category</original>
+<translation>1 etiqueta en esta categoría</translation>
+</phrase>
+
+<phrase>
+<original>%1 tags in this category</original>
+<translation> %1 etiquetas en esta categoría</translation>
+</phrase>
+
+<phrase>
+<original>no tags in this category</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>"System" tags are provided by the operating system.  They are not embedded as traditional metadata.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>"File" tags are required by this image format.  They are not embedded as traditional metadata.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ICC profiles are handled automatically by PhotoDemon.  They are not embedded as traditional metadata.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>"Inferred" tags are hypothetical values inferred from other metadata.  They are not embedded as traditional metadata.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(" & strID & ") " & strValu</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(" & .TagValue & ") " & .TagValueFriendl</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>tag restrictions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This is a protected tag.  Edits are allowed, but they may be overwritten to produce a valid image file.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This tag is restricted.  It cannot be edited, and removal requests will be ignored if they result in an invalid file.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>integers only [-127 to 127]</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>integers only [0 to 255]</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>integers only [-32,768 to 32,767]</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>integers only [0 to 65,535]</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>integers only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>integers >= 0</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>numbers only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>numbers >= 0</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>file position marker</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>binary data</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>digits</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dates only (YYYY:mm:dd HH:MM:SS[.ss][+/-HH:MM])</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>true or false only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>digits only</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 characters max</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 bytes max</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 numbers max</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>list of %1, one entry per line</original>
+<translation></translation>
+</phrase>
+
+<!-- Image_Metadata.frm contains 114 phrases. 65 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -11854,11 +12343,6 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 </phrase>
 
 <phrase>
-<original>fitting inclusively, with colored borders as necessary</original>
-<translation>montaje inclusive, con bordes de color según sea necesario</translation>
-</phrase>
-
-<phrase>
 <original>fitting exclusively, and cropping as necessary</original>
 <translation>ajuste exclusivamente, y recorte según sea necesario</translation>
 </phrase>
@@ -11888,7 +12372,7 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 <translation>capa de cambio de tamaño</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 54 phrases. 29 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 53 phrases. 29 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for Image_Resize.frm-->
 
@@ -12120,12 +12604,7 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 
 <!-- BEGIN text for Layer_Transparency_RemoveTransparency.frm (FormConvert24bpp) -->
 
-<phrase>
-<original>background color</original>
-<translation>color de fondo</translation>
-</phrase>
-
-<!-- Layer_Transparency_RemoveTransparency.frm contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Layer_Transparency_RemoveTransparency.frm contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Layer_Transparency_RemoveTransparency.frm-->
 
@@ -12324,6 +12803,11 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 <!-- BEGIN text for Toolbar_ToolSelect.frm (toolbar_Toolbox) -->
 
 <phrase>
+<original>File</original>
+<translation>expediente</translation>
+</phrase>
+
+<phrase>
 <original>file</original>
 <translation>expediente</translation>
 </phrase>
@@ -12508,7 +12992,7 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 52 phrases. 15 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 52 phrases. 14 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -12772,6 +13256,11 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 </phrase>
 
 <phrase>
+<original>Composite</original>
+<translation>compuesto</translation>
+</phrase>
+
+<phrase>
 <original>Luminance</original>
 <translation>luminancia</translation>
 </phrase>
@@ -12861,7 +13350,7 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 <translation>Esta opción controla qué criterios utiliza la varita mágica para determinar si un píxel se debe agregar a la selección actual.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 54 phrases. 16 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 54 phrases. 15 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -13522,6 +14011,26 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 </phrase>
 
 <phrase>
+<original>forcibly extract binary-type tags as Base64 (slow)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>estimate original JPEG quality settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>extract unknown tags</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>automatically hide duplicate tags</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>color management</original>
 <translation>gestión del color</translation>
 </phrase>
@@ -13757,28 +14266,18 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 </phrase>
 
 <phrase>
+<original>copy any relevant metadata to the new file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>when closing images, warn me me about unsaved changes</original>
 <translation>al cerrar las imágenes, advertir a mí me acerca de los cambios no guardados</translation>
 </phrase>
 
 <phrase>
-<original>when saving images that originally contained metadata</original>
-<translation>al guardar las imágenes que originalmente contenía metadatos</translation>
-</phrase>
-
-<phrase>
-<original>metadata (EXIF, GPS, comments, etc.)</original>
-<translation>metadatos (EXIF, GPS, comentarios, etc)</translation>
-</phrase>
-
-<phrase>
-<original>set outgoing color depth</original>
-<translation>configurar la profundidad de color de salida</translation>
-</phrase>
-
-<phrase>
-<original>color depth of saved images</original>
-<translation>profundidad de color de las imágenes guardadas</translation>
+<original>default metadata behavior on first save</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13804,6 +14303,16 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 <phrase>
 <original>default file format when saving</original>
 <translation>por defecto el formato de archivo al guardar</translation>
+</phrase>
+
+<phrase>
+<original>erase tags that might be personal (GPS, camera details, etc)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13908,21 +14417,6 @@ Are ¿Seguro que quieres continuar?</translation>
 <phrase>
 <original>Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable.</original>
 <translation>Cualquier foto de más de 2 megapíxeles es demasiado grande para caber en un monitor de computadora promedio. PhotoDemon puede desactivar automáticamente el zoom en fotografías de gran formato, para que toda la imagen se puede ver.</translation>
-</phrase>
-
-<phrase>
-<original>by asking me what color depth I want to use</original>
-<translation>pidiéndome profundidad de qué color que quiero usar</translation>
-</phrase>
-
-<phrase>
-<original>automatically</original>
-<translation>automáticamente</translation>
-</phrase>
-
-<phrase>
-<original>Some image file types support multiple color depths.  PhotoDemon's developers suggest letting the software choose the best color depth for you, unless you have reason to choose otherwise.</original>
-<translation>Algunos tipos de archivos de imágenes compatibles con varias profundidades de color. Los desarrolladores de PhotoDemon sugieren dejar que el software a elegir la mejor profundidad de color para usted, a menos que tenga razones para elegir otra cosa.</translation>
 </phrase>
 
 <phrase>
@@ -14334,7 +14828,7 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <translation>ADVERTENCIA: es inválida esta carpeta (acceso prohibido). Proporcione una carpeta válida. Si no se proporciona ninguna nueva carpeta, PhotoDemon utilizará ubicación temporal por defecto del sistema.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 230 phrases. 64 were duplicates of existing phrases, so only 166 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 229 phrases. 62 were duplicates of existing phrases, so only 167 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14589,12 +15083,48 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for File_Save_GIF.frm (dialog_ExportGIF) -->
+
+<phrase>
+<original>GIF export options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparency</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparent color (right-click image to select)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>by cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>by color</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_GIF.frm contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for File_Save_GIF.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2495</phrasecount>
+<phrasecount>2595</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4290 phrases. -->
-<!-- 1795 are duplicates, so only 2495 unique phrases have been written to file. -->
-<!-- These 2495 phrases contain approximately 13266 total words. -->
+<!-- As of this build, PhotoDemon contains 4469 phrases. -->
+<!-- 1874 are duplicates, so only 2595 unique phrases have been written to file. -->
+<!-- These 2595 phrases contain approximately 13401 total words. -->
 
 </pdData>
