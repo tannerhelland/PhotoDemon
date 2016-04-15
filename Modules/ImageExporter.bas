@@ -708,7 +708,6 @@ Public Function ExportGIF(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     
     Dim desiredAlphaStatus As PD_ALPHA_STATUS
     desiredAlphaStatus = PDAS_BinaryAlpha
-    If StrComp(LCase$(gifAlphaMode), "auto", vbBinaryCompare) = 0 Then gifAlphaCutoff = 64
     If StrComp(LCase$(gifAlphaMode), "none", vbBinaryCompare) = 0 Then desiredAlphaStatus = PDAS_NoAlpha
     If StrComp(LCase$(gifAlphaMode), "bycolor", vbBinaryCompare) = 0 Then
         desiredAlphaStatus = PDAS_NewAlphaFromColor
