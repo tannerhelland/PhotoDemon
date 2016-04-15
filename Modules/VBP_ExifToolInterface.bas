@@ -882,20 +882,38 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'Regardless of the type of metadata copy we're performing, we need to alter or remove some tags because their
     ' original values are no longer relevant.
-    cmdParams = cmdParams & "--IFD2:ImageWidth" & vbCrLf & "--IFD2:ImageHeight" & vbCrLf
+    cmdParams = cmdParams & "-IFD2:ImageWidth=" & vbCrLf & "-IFD2:ImageHeight=" & vbCrLf
     cmdParams = cmdParams & "--Padding" & vbCrLf
-            
+    
     'Remove YCbCr subsampling data from the tags, as we may be using a different system than the previous save, and this information
     ' is not useful anyway - the JPEG header contains a copy of the subsampling data for the decoder, and that's sufficient!
-    cmdParams = cmdParams & "--YCbCrSubSampling" & vbCrLf
-    cmdParams = cmdParams & "--IFD0:YCbCrSubSampling" & vbCrLf
+    cmdParams = cmdParams & "-YCbCrSubSampling=" & vbCrLf
+    cmdParams = cmdParams & "-IFD0:YCbCrSubSampling=" & vbCrLf
     
     'Remove YCbCrPositioning tags as well.  If no previous values are found, ExifTool will automatically repopulate these with
     ' the right value according to the JPEG header.
-    cmdParams = cmdParams & "--YCbCrPositioning" & vbCrLf
+    cmdParams = cmdParams & "-YCbCrPositioning=" & vbCrLf
+    
+    'Photoshop embeds a bunch of problematic Photoshop-specific data, whose values may no longer be relevant
+    cmdParams = cmdParams & "-XMP-photoshop:ColorMode=" & vbCrLf
+    cmdParams = cmdParams & "-XMP-photoshop:ICCProfileName=" & vbCrLf
+    
+    'Note that some EXIF tags do not translate well to XMP.  ExifTool will copy these over anyway, but we want to manually
+    ' remove them.
+    cmdParams = cmdParams & "-ExifIFD:BitsPerSample=" & vbCrLf
+    cmdParams = cmdParams & "-ExifIFD:ColorSpace=" & vbCrLf
+    cmdParams = cmdParams & "-ExifIFD:ComponentsConfiguration=" & vbCrLf
+    cmdParams = cmdParams & "-ExifIFD:CompressedBitsPerPixel=" & vbCrLf
+    cmdParams = cmdParams & "-ExifIFD:Compression=" & vbCrLf
+    cmdParams = cmdParams & "-xmp:BitsPerSample=" & vbCrLf
+    cmdParams = cmdParams & "-xmp:ColorSpace=" & vbCrLf
+    cmdParams = cmdParams & "-xmp:ComponentsConfiguration=" & vbCrLf
+    cmdParams = cmdParams & "-xmp:CompressedBitsPerPixel=" & vbCrLf
+    cmdParams = cmdParams & "-xmp:Compression=" & vbCrLf
     
     'Other software may have added Exif tags for an embedded thumbnail.  PD obeys the JFIF spec and writes the thumbnail into the
     ' JFIF header, so we don't want those extra Exif tags included.
+    cmdParams = cmdParams & "-IFD1:Compression=" & vbCrLf
     cmdParams = cmdParams & "-IFD1:all=" & vbCrLf
     
     'Now, we want to add a number of tags whose values should always be written, as they can be crucial to understanding the
@@ -913,8 +931,8 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     'Size tags are written to different areas based on the type of metadata being written.  JPEGs require special rules; see the spec
     ' for details: http://www.cipa.jp/std/documents/e/DC-008-2012_E.pdf
     If (srcPDImage.currentFileFormat = PDIF_JPEG) Then
-        cmdParams = cmdParams & "--" & tagGroupPrefix & "ImageWidth" & vbCrLf
-        cmdParams = cmdParams & "--" & tagGroupPrefix & "ImageHeight" & vbCrLf
+        cmdParams = cmdParams & "-" & tagGroupPrefix & "ImageWidth=" & vbCrLf
+        cmdParams = cmdParams & "-" & tagGroupPrefix & "ImageHeight=" & vbCrLf
     Else
         cmdParams = cmdParams & "-" & tagGroupPrefix & "ImageWidth=" & srcPDImage.Width & vbCrLf
         cmdParams = cmdParams & "-" & tagGroupPrefix & "ImageHeight=" & srcPDImage.Height & vbCrLf
@@ -951,7 +969,10 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'On some files, we prefer to use XMP over Exif.  This command instructs ExifTool to convert Exif tags to XMP tags where possible.
     If (outputMetadataFormat = PDMF_XMP) Then
+        
+        'Convert all tags to XMP
         cmdParams = cmdParams & "-xmp:all<all" & vbCrLf
+        
     End If
     
     'If the output format does not support Exif whatsoever, we can ask ExifTool to forcibly remove any remaining Exif tags.
