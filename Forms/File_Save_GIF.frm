@@ -4,7 +4,7 @@ Begin VB.Form dialog_ExportGIF
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " GIF export options"
-   ClientHeight    =   6540
+   ClientHeight    =   7230
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   13095
@@ -21,97 +21,16 @@ Begin VB.Form dialog_ExportGIF
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   436
+   ScaleHeight     =   482
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   873
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdSlider sldAlphaCutoff 
-      Height          =   855
-      Left            =   5880
-      TabIndex        =   8
-      Top             =   4560
-      Width           =   7095
-      _ExtentX        =   12515
-      _ExtentY        =   1508
-      Caption         =   "alpha cut-off"
-      Max             =   254
-      SliderTrackStyle=   1
-      Value           =   64
-      GradientColorRight=   1703935
-      NotchPosition   =   2
-      NotchValueCustom=   64
-   End
-   Begin PhotoDemon.pdCheckBox chkColorCount 
-      Height          =   375
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   1320
-      Width           =   6975
-      _ExtentX        =   7858
-      _ExtentY        =   661
-      Caption         =   "restrict palette size"
-      Value           =   0
-   End
-   Begin PhotoDemon.pdColorSelector clsBackground 
-      Height          =   975
-      Left            =   5880
-      TabIndex        =   5
-      Top             =   2280
-      Width           =   7095
-      _ExtentX        =   15690
-      _ExtentY        =   1720
-      Caption         =   "background color"
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   375
-      Index           =   0
-      Left            =   9360
-      Top             =   1860
-      Width           =   3615
-      _ExtentX        =   9340
-      _ExtentY        =   661
-      Caption         =   "unique colors"
-   End
-   Begin PhotoDemon.pdSlider sldColorCount 
-      Height          =   375
-      Left            =   6240
-      TabIndex        =   4
-      Top             =   1800
-      Width           =   3015
-      _ExtentX        =   5318
-      _ExtentY        =   661
-      Min             =   2
-      Max             =   256
-      Value           =   256
-      NotchPosition   =   2
-      NotchValueCustom=   256
-   End
-   Begin PhotoDemon.pdButtonStrip btsAlpha 
-      Height          =   1095
-      Left            =   5880
-      TabIndex        =   2
-      Top             =   3360
-      Width           =   7095
-      _ExtentX        =   15690
-      _ExtentY        =   1931
-      Caption         =   "transparency"
-   End
-   Begin PhotoDemon.pdButtonStrip btsColorModel 
-      Height          =   1095
-      Left            =   5880
-      TabIndex        =   1
-      Top             =   120
-      Width           =   7095
-      _ExtentX        =   15690
-      _ExtentY        =   1931
-      Caption         =   "color model"
-   End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5790
+      Top             =   6480
       Width           =   13095
       _ExtentX        =   23098
       _ExtentY        =   1323
@@ -119,23 +38,155 @@ Begin VB.Form dialog_ExportGIF
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
       ColorSelection  =   -1  'True
    End
-   Begin PhotoDemon.pdColorSelector clsAlphaColor 
-      Height          =   975
+   Begin PhotoDemon.pdButtonStrip btsCategory 
+      Height          =   615
       Left            =   5880
-      TabIndex        =   7
-      Top             =   4560
+      TabIndex        =   10
+      Top             =   120
       Width           =   7095
-      _ExtentX        =   15690
-      _ExtentY        =   1720
-      Caption         =   "transparent color (right-click image to select)"
-      curColor        =   16711935
+      _ExtentX        =   12515
+      _ExtentY        =   1085
+      FontSize        =   11
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      HasDC           =   0   'False
+      Height          =   5535
+      Index           =   0
+      Left            =   5880
+      ScaleHeight     =   369
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   473
+      TabIndex        =   2
+      Top             =   840
+      Width           =   7095
+      Begin PhotoDemon.pdSlider sldAlphaCutoff 
+         Height          =   855
+         Left            =   0
+         TabIndex        =   3
+         Top             =   4440
+         Width           =   7095
+         _ExtentX        =   12515
+         _ExtentY        =   1508
+         Caption         =   "alpha cut-off"
+         Max             =   254
+         SliderTrackStyle=   1
+         Value           =   64
+         GradientColorRight=   1703935
+         NotchPosition   =   2
+         NotchValueCustom=   64
+      End
+      Begin PhotoDemon.pdCheckBox chkColorCount 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   4
+         Top             =   1200
+         Width           =   6975
+         _ExtentX        =   7858
+         _ExtentY        =   661
+         Caption         =   "restrict palette size"
+         Value           =   0
+      End
+      Begin PhotoDemon.pdColorSelector clsBackground 
+         Height          =   975
+         Left            =   0
+         TabIndex        =   5
+         Top             =   2160
+         Width           =   7095
+         _ExtentX        =   15690
+         _ExtentY        =   1720
+         Caption         =   "background color"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   375
+         Index           =   0
+         Left            =   3480
+         Top             =   1740
+         Width           =   3615
+         _ExtentX        =   9340
+         _ExtentY        =   661
+         Caption         =   "unique colors"
+      End
+      Begin PhotoDemon.pdSlider sldColorCount 
+         Height          =   375
+         Left            =   360
+         TabIndex        =   6
+         Top             =   1680
+         Width           =   3015
+         _ExtentX        =   5318
+         _ExtentY        =   661
+         Min             =   2
+         Max             =   256
+         Value           =   256
+         NotchPosition   =   2
+         NotchValueCustom=   256
+      End
+      Begin PhotoDemon.pdButtonStrip btsAlpha 
+         Height          =   1095
+         Left            =   0
+         TabIndex        =   7
+         Top             =   3240
+         Width           =   7095
+         _ExtentX        =   15690
+         _ExtentY        =   1931
+         Caption         =   "transparency"
+      End
+      Begin PhotoDemon.pdButtonStrip btsColorModel 
+         Height          =   1095
+         Left            =   0
+         TabIndex        =   8
+         Top             =   0
+         Width           =   7095
+         _ExtentX        =   15690
+         _ExtentY        =   1931
+         Caption         =   "color model"
+      End
+      Begin PhotoDemon.pdColorSelector clsAlphaColor 
+         Height          =   975
+         Left            =   0
+         TabIndex        =   9
+         Top             =   4440
+         Width           =   7095
+         _ExtentX        =   15690
+         _ExtentY        =   1720
+         Caption         =   "transparent color (right-click image to select)"
+         curColor        =   16711935
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      HasDC           =   0   'False
+      Height          =   5535
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   369
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   473
+      TabIndex        =   11
+      Top             =   840
+      Width           =   7095
+      Begin PhotoDemon.pdMetadataExport mtdManager 
+         Height          =   4935
+         Left            =   120
+         TabIndex        =   12
+         Top             =   120
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   8705
+      End
    End
 End
 Attribute VB_Name = "dialog_ExportGIF"
@@ -202,6 +253,11 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     Message "Waiting for user to specify export options... "
     
+    'Populate the category button strip
+    btsCategory.AddItem "basic", 0
+    btsCategory.AddItem "metadata", 1
+    btsCategory.ListIndex = 0
+    
     btsColorModel.AddItem "auto", 0
     btsColorModel.AddItem "color", 1
     btsColorModel.AddItem "grayscale", 2
@@ -221,7 +277,11 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     End If
     If (Not g_ImageFormats.FreeImageEnabled) Or (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
     
+    'Next, prepare various controls on the metadata panel
+    mtdManager.SetParentImage m_SrcImage, PDIF_GIF
+    
     'Update the preview
+    UpdatePanelVisibility
     UpdateAllVisibility
     UpdateTransparencyOptions
     UpdatePreviewSource
@@ -273,6 +333,17 @@ Private Sub UpdateTransparencyOptions()
     
 End Sub
 
+Private Sub btsCategory_Click(ByVal buttonIndex As Long)
+    UpdatePanelVisibility
+End Sub
+
+Private Sub UpdatePanelVisibility()
+    Dim i As Long
+    For i = 0 To btsCategory.ListCount - 1
+        picContainer(i).Visible = CBool(i = btsCategory.ListIndex)
+    Next i
+End Sub
+
 Private Sub btsColorModel_Click(ByVal buttonIndex As Long)
     UpdateAllVisibility
     UpdatePreviewSource
@@ -286,18 +357,15 @@ Private Sub UpdateAllVisibility()
         'Auto
         Case 0
             UpdateColorCountVisibility False
-            clsBackground.Visible = False
             
         'Color
         Case 1
             UpdateColorCountVisibility True
-            clsBackground.Visible = True
-        
+            
         'Grayscale
         Case 2
             UpdateColorCountVisibility True
-            clsBackground.Visible = True
-        
+            
     End Select
     
 End Sub
@@ -330,6 +398,7 @@ End Sub
 
 Private Sub cmdBar_OKClick()
     m_FormatParamString = GetExportParamString
+    m_MetadataParamString = mtdManager.GetMetadataSettings
     m_UserDialogAnswer = vbOK
     Me.Hide
 End Sub

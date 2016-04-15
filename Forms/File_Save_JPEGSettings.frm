@@ -514,7 +514,7 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
         fi_Flags = jpegQuality Or jpegSubsampling
         
         'Retrieve a JPEG-saved version of the current preview image
-        workingDIB.resetDIB
+        workingDIB.ResetDIB
         If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_JPEG, fi_Flags) Then
             FinalizeNonstandardPreview pdFxPreview, True
         Else
