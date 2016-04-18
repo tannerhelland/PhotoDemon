@@ -2569,7 +2569,10 @@ Private Sub Form_Load()
     FormMain.UpdateMainLayout
     g_WindowManager.SetAutoRefreshMode False
     
-    Me.Visible = True
+    'DWM may cause issues inside the IDE, so forcibly refresh the main form after displaying it.
+    ' (Just to be safe, we'll apply a second refresh later, followed by a DoEvents to ensure the window is immediately repainted.)
+    FormMain.Show vbModeless
+    FormMain.Refresh
     
     'Visibility for the options toolbox is automatically set according to the current tool; this is different from other dialogs.
     ' (Note that the .ResetToolButtonStates function checks the relevant preference prior to changing the window state, so all
@@ -2744,7 +2747,7 @@ Private Sub Form_Load()
     ' detect this state and offer to download the plugins for the user.
     ' (NOTE: this check is superceded by the update check - since a full program update will include the missing plugins -
     '        so we ignore this request if the user was already notified of a program update.)
-    If (Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not IsFreeImageAvailable) Or (Not isPngQuantAvailable) Or (Not IsExifToolAvailable) Then
+    If (Not IsZLibAvailable) Or (Not isEZTwainAvailable) Or (Not IsFreeImageAvailable) Or (Not isPngQuantAvailable) Or (Not IsExifToolAvailable) Then
     
         'TODO: rework this to scan for missing plugins in the current application folder.  Some .zip clients - e.g. WinZip - may not
         '      preserve folders during extraction.  PD should automatically detect and repair this situation.
@@ -2760,6 +2763,7 @@ Private Sub Form_Load()
         
     Message ""
     FormMain.Refresh
+    DoEvents
     
     'As of 18 March '16, I have added a warning to nightly builds.  Current work on image exporting means that saving
     ' image files via PD is really not recommended.
