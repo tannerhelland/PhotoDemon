@@ -6,10 +6,10 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.860</langversion>
+<langversion>6.8.1414</langversion>
 <langstatus>未完成</langstatus>
 
-<author>ILoveVB</author>
+<author>ChenLin(QQ:289778005)</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -206,7 +206,7 @@
 
 <phrase>
 <original>Open an image</original>
-<translation>打开一个图形文件</translation>
+<translation>打开图像文件</translation>
 </phrase>
 
 <phrase>
@@ -1025,7 +1025,7 @@ To enable support for compressed PDI files, click Help > Check for Updates, and 
 
 <phrase>
 <original>preview not available</original>
-<translation></translation>
+<translation>预览不可用</translation>
 </phrase>
 
 <!-- VBP_MiscInterface.bas contains 69 phrases. 21 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
@@ -1174,12 +1174,14 @@ If this image was originally located on removable media (DVD, USB drive, etc), p
 %1
 
 Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
-<translation></translation>
+<translation>PhotoDemon无法加载以下图像：
+% 1 
+请使用另一个程序在一个通用的格式保存该图像（如JPEG或PNG）前加载。谢谢!</translation>
 </phrase>
 
 <phrase>
 <original>Image import failed</original>
-<translation></translation>
+<translation>图像导入失败</translation>
 </phrase>
 
 <phrase>
@@ -1210,7 +1212,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 <phrase>
 <original>%1 of %2 images loaded successfully</original>
-<translation></translation>
+<translation>% 2 图像加载成功 % 1</translation>
 </phrase>
 
 <phrase>
@@ -1218,12 +1220,14 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 %1
 Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
-<translation></translation>
+<translation>不幸的是，PhotoDemon无法加载下面的图像：
+1%
+请验证这些图像是否存在，以及是否使用支持的图像格式（如JPEG或PNG）。 谢谢！</translation>
 </phrase>
 
 <phrase>
 <original>Some images were not loaded</original>
-<translation></translation>
+<translation>一些图像没有加载</translation>
 </phrase>
 
 <phrase>
@@ -1393,12 +1397,12 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Please wait while the tag database is created</original>
-<translation></translation>
+<translation>请稍候，正在创建标签数据库</translation>
 </phrase>
 
 <phrase>
 <original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
-<translation></translation>
+<translation>标签数据库处理20000+元数据标签支持的PhotoDemon技术细节。创建数据库需要10到15秒，当元数据编辑器第一次使用时，它只需要创建一次。</translation>
 </phrase>
 
 <phrase>
@@ -1459,7 +1463,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Applying tone-mapping</original>
-<translation></translation>
+<translation>应用色调映射</translation>
 </phrase>
 
 <!-- VBP_FreeImage_Expanded.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -2430,7 +2434,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Image URL found.  Attempting to download</original>
-<translation></translation>
+<translation>找到图片网址。尝试下载</translation>
 </phrase>
 
 <phrase>
@@ -2440,7 +2444,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Image download failed.  Please copy a valid image URL and try again.</original>
-<translation></translation>
+<translation>图片下载失败。请复制一个有效的图像的网址，并再次尝试。</translation>
 </phrase>
 
 <phrase>
@@ -2727,17 +2731,17 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Inferred</original>
-<translation></translation>
+<translation>推断</translation>
 </phrase>
 
 <phrase>
 <original>Exif (thumbnail)</original>
-<translation></translation>
+<translation>EXIF（缩略图）</translation>
 </phrase>
 
 <phrase>
 <original>Exif</original>
-<translation></translation>
+<translation>EXIF</translation>
 </phrase>
 
 <phrase>
@@ -2747,262 +2751,262 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>XMP (Apple)</original>
-<translation></translation>
+<translation>XMP（苹果）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (ACD Systems)</original>
-<translation></translation>
+<translation>XMP（ACD系统）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe Album)</original>
-<translation></translation>
+<translation>XMP（Adobe专辑）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe)</original>
-<translation></translation>
+<translation>XMP（Adobe）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Creative Commons)</original>
-<translation></translation>
+<translation>XMP（创作共用）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Sony Ericcson)</original>
-<translation></translation>
+<translation>XMP（索尼爱立信）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe After Effects)</original>
-<translation></translation>
+<translation>XMP（Adobe 后处理效果）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Photoshop Camera Raw)</original>
-<translation></translation>
+<translation>XMP（Photoshop中的Camera Raw）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Dublin Core)</original>
-<translation></translation>
+<translation>XMP（都柏林核心集）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Description Explorer)</original>
-<translation></translation>
+<translation>XMP（说明浏览器）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (DICOM)</original>
-<translation></translation>
+<translation>XMP (DICOM)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (DigiKam)</original>
-<translation></translation>
+<translation>XMP (DigiKam)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (EXIF)</original>
-<translation></translation>
+<translation>XMP (EXIF)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (EXIF 2.3)</original>
-<translation></translation>
+<translation>XMP (EXIF 2.3)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Microsoft Expression Media)</original>
-<translation></translation>
+<translation>XMP (Microsoft Expression Media)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Extensis Portfolio)</original>
-<translation></translation>
+<translation>XMP（Extensis组合）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Fast Picture Viewer)</original>
-<translation></translation>
+<translation>XMP（快速浏览图片）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Getty Images)</original>
-<translation></translation>
+<translation>XMP（Getty图像）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Google Photosphere)</original>
-<translation></translation>
+<translation>XMP（谷歌光球）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (IDimager)</original>
-<translation></translation>
+<translation>XMP (IDimager)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (IPTC Core)</original>
-<translation></translation>
+<translation>XMP（IPTC核心）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (IPTC Extension)</original>
-<translation></translation>
+<translation>XMP（IPTC扩展）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe Lightroom)</original>
-<translation></translation>
+<translation>XMP (Adobe Lightroom)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (iView MediaPro)</original>
-<translation></translation>
+<translation>XMP (iView MediaPro)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Microsoft Photo 1.0)</original>
-<translation></translation>
+<translation>XMP (Microsoft Photo 1.0)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Microsoft Photo 1.2)</original>
-<translation></translation>
+<translation>XMP (Microsoft Photo 1.2)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Microsoft Photo 1.1)</original>
-<translation></translation>
+<translation>XMP (Microsoft Photo 1.1)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (MWG)</original>
-<translation></translation>
+<translation>XMP (MWG)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe PDF)</original>
-<translation></translation>
+<translation>XMP (Adobe PDF)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe PDF extended)</original>
-<translation></translation>
+<translation>XMP（Adobe PDF扩展）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PhotoMechanic)</original>
-<translation></translation>
+<translation>XMP (PhotoMechanic)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe Photoshop)</original>
-<translation></translation>
+<translation>XMP (Adobe Photoshop)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PixelLive)</original>
-<translation></translation>
+<translation>XMP (PixelLive)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Plus License Data)</original>
-<translation></translation>
+<translation>XMP（加上许可证数据）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM for images)</original>
-<translation></translation>
+<translation>XMP（棱镜的图像）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM)</original>
-<translation></translation>
+<translation>XMP（棱镜）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM Rights)</original>
-<translation></translation>
+<translation>XMP (PRISM Rights)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM Recipe)</original>
-<translation></translation>
+<translation>XMP (PRISM Recipe)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM Usage Rights)</original>
-<translation></translation>
+<translation>XMP (PRISM Usage Rights)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (RDF)</original>
-<translation></translation>
+<translation>XMP (RDF)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe SWF)</original>
-<translation></translation>
+<translation>XMP (Adobe SWF)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (EXIF-TIFF)</original>
-<translation></translation>
+<translation>XMP (EXIF-TIFF)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Toolkit)</original>
-<translation></translation>
+<translation>XMP (Toolkit)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (General)</original>
-<translation></translation>
+<translation>XMP（一般）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Basic Job)</original>
-<translation></translation>
+<translation>XMP（基础性工作）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Dynamic Media)</original>
-<translation></translation>
+<translation>XMP（动态媒体）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Media Management)</original>
-<translation></translation>
+<translation>XMP（媒体管理）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Note)</original>
-<translation></translation>
+<translation>XMP (Note)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Picture Licensing)</original>
-<translation></translation>
+<translation>XMP (图片声明)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Rights Management)</original>
-<translation></translation>
+<translation>XMP（版权管理）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Paged Text)</original>
-<translation></translation>
+<translation>XMP（分页文本）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Misc)</original>
-<translation></translation>
+<translation>XMP（杂项）</translation>
 </phrase>
 
 <phrase>
@@ -3412,7 +3416,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Enter</original>
-<translation>回车</translation>
+<translation>Enter</translation>
 </phrase>
 
 <phrase>
@@ -3570,9 +3574,9 @@ Please enter a numeric value.</original>
 
 You can also use the Open Image button on the left,
 or the File > Open and File > Import menus.</original>
-<translation>拖动图片到这个位置开始编辑。
-你也可以使用左边的按钮打开图像，
-或文件>打开文件>导入菜单。</translation>
+<translation>拖动图片到这个位置开始编辑；
+你也可以使用左边的黄色打开按钮打开图像；
+或文件>打开… 菜单 和 文件>导入 菜单来打开图像。</translation>
 </phrase>
 
 <!-- pdCanvasView.ctl contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -3594,7 +3598,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>RGB(%1, %2, %3)</original>
-<translation></translation>
+<translation>RGB(%1, %2, %3)</translation>
 </phrase>
 
 <phrase>
@@ -3856,12 +3860,12 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>CurrentLocationOnDisk</original>
-<translation></translation>
+<translation>磁盘上的当前位置</translation>
 </phrase>
 
 <phrase>
 <original>OriginalFileName</original>
-<translation></translation>
+<translation>原始文件名</translation>
 </phrase>
 
 <phrase>
@@ -3917,42 +3921,42 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>general metadata settings</original>
-<translation></translation>
+<translation>通用的元数据设置</translation>
 </phrase>
 
 <phrase>
 <original>click to review this image's metadata</original>
-<translation></translation>
+<translation>单击查看此图像的元数据</translation>
 </phrase>
 
 <phrase>
 <original>copy all relevant metadata to the new file</original>
-<translation></translation>
+<translation>所有相关的元数据复制到新的文件</translation>
 </phrase>
 
 <phrase>
 <original>erase tags that might be personal (including GPS and location)</original>
-<translation></translation>
+<translation>清除可能是个人的标签（包括全球定位系统和位置）</translation>
 </phrase>
 
 <phrase>
 <original>This image contains metadata.</original>
-<translation></translation>
+<translation>此图像包含元数据。</translation>
 </phrase>
 
 <phrase>
 <original>This image does not contain metadata.</original>
-<translation></translation>
+<translation>此图像不包含元数据。</translation>
 </phrase>
 
 <phrase>
 <original>click to add metadata to this image</original>
-<translation></translation>
+<translation>单击以添加该图像的元数据</translation>
 </phrase>
 
 <phrase>
 <original>%1 settings</original>
-<translation></translation>
+<translation>%1 设置</translation>
 </phrase>
 
 <!-- pdMetadataExport.ctl contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -4247,7 +4251,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
-<translation></translation>
+<translation>PhotoDemon by Tanner Helland - www.photodemon.org</translation>
 </phrase>
 
 <phrase>
@@ -4467,12 +4471,12 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>90° clockwise</original>
-<translation></translation>
+<translation>顺时针 90度</translation>
 </phrase>
 
 <phrase>
 <original>90° counter-clockwise</original>
-<translation></translation>
+<translation>逆时针 90度</translation>
 </phrase>
 
 <phrase>
@@ -4512,7 +4516,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Edit metadata</original>
-<translation></translation>
+<translation>编辑元数据</translation>
 </phrase>
 
 <phrase>
@@ -4602,17 +4606,17 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Rotate 90° clockwise</original>
-<translation></translation>
+<translation>旋转90度顺时针</translation>
 </phrase>
 
 <phrase>
 <original>Rotate 90° counter-clockwise</original>
-<translation></translation>
+<translation>旋转90度逆时针</translation>
 </phrase>
 
 <phrase>
 <original>Rotate 180°</original>
-<translation></translation>
+<translation>旋转180度</translation>
 </phrase>
 
 <phrase>
@@ -4707,7 +4711,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Feather</original>
-<translation>羽毛</translation>
+<translation>羽化</translation>
 </phrase>
 
 <phrase>
@@ -4942,7 +4946,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Red-eye removal</original>
-<translation></translation>
+<translation>去除红眼</translation>
 </phrase>
 
 <phrase>
@@ -5057,7 +5061,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Symmetric nearest-neighbor</original>
-<translation></translation>
+<translation>对称近邻</translation>
 </phrase>
 
 <phrase>
@@ -5242,7 +5246,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Anisotropic diffusion</original>
-<translation></translation>
+<translation>各项异性扩散</translation>
 </phrase>
 
 <phrase>
@@ -5312,7 +5316,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Portrait glow</original>
-<translation></translation>
+<translation>焕发肖像</translation>
 </phrase>
 
 <phrase>
@@ -5472,7 +5476,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Developers</original>
-<translation></translation>
+<translation>开发人员</translation>
 </phrase>
 
 <phrase>
@@ -6812,12 +6816,12 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>target histogram</original>
-<translation></translation>
+<translation>目标直方图</translation>
 </phrase>
 
 <phrase>
 <original>mode</original>
-<translation></translation>
+<translation>模式</translation>
 </phrase>
 
 <phrase>
@@ -6847,7 +6851,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>local</original>
-<translation></translation>
+<translation>本地</translation>
 </phrase>
 
 <!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -7399,57 +7403,57 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Red eye removal</original>
-<translation></translation>
+<translation>去除红眼</translation>
 </phrase>
 
 <phrase>
 <original>strictness</original>
-<translation></translation>
+<translation>严格</translation>
 </phrase>
 
 <phrase>
 <original>enforce shape restrictions</original>
-<translation></translation>
+<translation>强制形状的限制</translation>
 </phrase>
 
 <phrase>
 <original>color sensitivity</original>
-<translation></translation>
+<translation>色彩的敏感度</translation>
 </phrase>
 
 <phrase>
 <original>object sensitivity</original>
-<translation></translation>
+<translation>对象的敏感性</translation>
 </phrase>
 
 <phrase>
 <original>highlight detected regions (preview only)</original>
-<translation></translation>
+<translation>突出显示区域（仅预览）</translation>
 </phrase>
 
 <phrase>
 <original>enforce size restrictions</original>
-<translation></translation>
+<translation>强制大小限制</translation>
 </phrase>
 
 <phrase>
 <original>Searching image for potential red-eye locations</original>
-<translation></translation>
+<translation>寻找潜在的红眼睛位置的图像</translation>
 </phrase>
 
 <phrase>
 <original>Refining list of eye candidates</original>
-<translation></translation>
+<translation>眼表候选人名单</translation>
 </phrase>
 
 <phrase>
 <original>Applying final false-positive checks</original>
-<translation></translation>
+<translation>最后运用假阳性检查</translation>
 </phrase>
 
 <phrase>
 <original>Applying final red-eye corrections (%1 of %2)</original>
-<translation></translation>
+<translation>应用最后红眼校正(%1 / %2)</translation>
 </phrase>
 
 <!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -7584,12 +7588,12 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Restore selected autosaves</original>
-<translation></translation>
+<translation>恢复选定的自动保存</translation>
 </phrase>
 
 <phrase>
 <original>Discard all autosaves</original>
-<translation></translation>
+<translation>丢弃所有的自动保存</translation>
 </phrase>
 
 <phrase>
@@ -7712,12 +7716,12 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>BMP export options</original>
-<translation></translation>
+<translation>BMP导出选项</translation>
 </phrase>
 
 <phrase>
 <original>restrict palette size</original>
-<translation></translation>
+<translation>限制调色板大小</translation>
 </phrase>
 
 <phrase>
@@ -7727,7 +7731,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>unique colors</original>
-<translation></translation>
+<translation>独特的颜色</translation>
 </phrase>
 
 <phrase>
@@ -7737,87 +7741,87 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>color model</original>
-<translation></translation>
+<translation>彩色模式</translation>
 </phrase>
 
 <phrase>
 <original>use RLE compression</original>
-<translation></translation>
+<translation>使用RLE压缩</translation>
 </phrase>
 
 <phrase>
 <original>premultiply alpha</original>
-<translation></translation>
+<translation>预乘阿尔法</translation>
 </phrase>
 
 <phrase>
 <original>flip row order (top-down)</original>
-<translation></translation>
+<translation>翻转行顺序（自上而下）</translation>
 </phrase>
 
 <phrase>
 <original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
-<translation></translation>
+<translation>使用传统的15位编码（X1-R5-G5-B5）</translation>
 </phrase>
 
 <phrase>
 <original>Waiting for user to specify export options</original>
-<translation></translation>
+<translation>等待用户指定导出选项</translation>
 </phrase>
 
 <phrase>
 <original>auto</original>
-<translation></translation>
+<translation>自动</translation>
 </phrase>
 
 <phrase>
 <original>color + transparency</original>
-<translation></translation>
+<translation>彩色 + 透明度</translation>
 </phrase>
 
 <phrase>
 <original>color only</original>
-<translation></translation>
+<translation>仅彩色</translation>
 </phrase>
 
 <phrase>
 <original>grayscale</original>
-<translation></translation>
+<translation>灰度</translation>
 </phrase>
 
 <phrase>
 <original>32-bpp XRGB (X8-R8-G8-B8)</original>
-<translation></translation>
+<translation>32位色ARGB（X8-R8-G8-B8）</translation>
 </phrase>
 
 <phrase>
 <original>24-bpp RGB (R8-G8-B8)</original>
-<translation></translation>
+<translation>24 bpp的RGB（R8-G8-B8）</translation>
 </phrase>
 
 <phrase>
 <original>16-bpp (R5-G6-B5)</original>
-<translation></translation>
+<translation>16位色（R5-G6-B5）</translation>
 </phrase>
 
 <phrase>
 <original>8-bpp (indexed)</original>
-<translation></translation>
+<translation>8位色（索引）</translation>
 </phrase>
 
 <phrase>
 <original>8-bpp (256 shades)</original>
-<translation></translation>
+<translation>8位色（256级）</translation>
 </phrase>
 
 <phrase>
 <original>4-bpp (16 shades)</original>
-<translation></translation>
+<translation>4位色（16级）</translation>
 </phrase>
 
 <phrase>
 <original>1-bpp (monochrome)</original>
-<translation></translation>
+<translation>1位色（黑白）</translation>
 </phrase>
 
 <!-- File_Save_BMP.frm contains 23 phrases.  One was a duplicate of an existing phrase, so only 22 new phrases were written to file. -->
@@ -7925,7 +7929,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Please wait a moment</original>
-<translation></translation>
+<translation>请稍候</translation>
 </phrase>
 
 <phrase>
@@ -8320,7 +8324,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>%1 has unsaved changes.  What would you like to do?</original>
-<translation>%1 已改变，你想做什么？</translation>
+<translation>%1 已改变，选择你想执行的操作。</translation>
 </phrase>
 
 <phrase>
@@ -8940,7 +8944,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>accuracy</original>
-<translation></translation>
+<translation>准确性</translation>
 </phrase>
 
 <!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8951,7 +8955,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating symmetric pixel pairs</original>
-<translation></translation>
+<translation>生成对称像素对</translation>
 </phrase>
 
 <!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9664,42 +9668,42 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>directionality</original>
-<translation></translation>
+<translation>方向性</translation>
 </phrase>
 
 <phrase>
 <original>gradient flow</original>
-<translation></translation>
+<translation>梯度流</translation>
 </phrase>
 
 <phrase>
 <original>iterations</original>
-<translation></translation>
+<translation>迭代</translation>
 </phrase>
 
 <phrase>
 <original>model</original>
-<translation></translation>
+<translation>模型</translation>
 </phrase>
 
 <phrase>
 <original>Calculating energy gradients (pass %1 of %2)</original>
-<translation></translation>
+<translation>计算能量梯度（合格 %1 /%2）</translation>
 </phrase>
 
 <phrase>
 <original>4-way cardinal</original>
-<translation></translation>
+<translation>4路鲜红色</translation>
 </phrase>
 
 <phrase>
 <original>4-way ordinal</original>
-<translation></translation>
+<translation>4路序数</translation>
 </phrase>
 
 <phrase>
 <original>8-way</original>
-<translation></translation>
+<translation>8路</translation>
 </phrase>
 
 <phrase>
@@ -9709,7 +9713,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>smooth</original>
-<translation></translation>
+<translation>光滑</translation>
 </phrase>
 
 <!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -10012,27 +10016,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>glow radius</original>
-<translation></translation>
+<translation>辉光半径</translation>
 </phrase>
 
 <phrase>
 <original>exposure boost</original>
-<translation></translation>
+<translation>曝光增加</translation>
 </phrase>
 
 <phrase>
 <original>Applying petroleum jelly to camera lens</original>
-<translation></translation>
+<translation>应用凡士林相机镜头</translation>
 </phrase>
 
 <phrase>
 <original>classic</original>
-<translation></translation>
+<translation>经典</translation>
 </phrase>
 
 <phrase>
 <original>subtle</original>
-<translation></translation>
+<translation>微妙</translation>
 </phrase>
 
 <!-- Effects_Stylize_PortraitGlow.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -11678,47 +11682,47 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>compression method</original>
-<translation></translation>
+<translation>压缩方法</translation>
 </phrase>
 
 <phrase>
 <original>chroma subsampling</original>
-<translation></translation>
+<translation>色度抽样</translation>
 </phrase>
 
 <phrase>
 <original>metadata</original>
-<translation></translation>
+<translation>元数据</translation>
 </phrase>
 
 <phrase>
 <original>perfect (99)</original>
-<translation></translation>
+<translation>完美（99）</translation>
 </phrase>
 
 <phrase>
 <original>excellent (92)</original>
-<translation></translation>
+<translation>优良（92）</translation>
 </phrase>
 
 <phrase>
 <original>good (80)</original>
-<translation></translation>
+<translation>好（80）</translation>
 </phrase>
 
 <phrase>
 <original>average (65)</original>
-<translation></translation>
+<translation>平均（65）</translation>
 </phrase>
 
 <phrase>
 <original>low (40)</original>
-<translation></translation>
+<translation>低（40）</translation>
 </phrase>
 
 <phrase>
 <original>custom quality</original>
-<translation></translation>
+<translation>自定义质量</translation>
 </phrase>
 
 <phrase>
@@ -11728,32 +11732,32 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>baseline</original>
-<translation></translation>
+<translation>基线</translation>
 </phrase>
 
 <phrase>
 <original>optimized baseline</original>
-<translation></translation>
+<translation>优化基线</translation>
 </phrase>
 
 <phrase>
 <original>progressive</original>
-<translation></translation>
+<translation>进步</translation>
 </phrase>
 
 <phrase>
 <original>low (default)</original>
-<translation></translation>
+<translation>低（默认）</translation>
 </phrase>
 
 <phrase>
 <original>color (24-bpp)</original>
-<translation></translation>
+<translation>彩色（24位）</translation>
 </phrase>
 
 <phrase>
 <original>black and white (8-bpp)</original>
-<translation></translation>
+<translation>黑白（8 位）</translation>
 </phrase>
 
 <!-- File_Save_JPEGSettings.frm contains 26 phrases. 9 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -11959,7 +11963,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>quantization method</original>
-<translation></translation>
+<translation>量化方法</translation>
 </phrase>
 
 <phrase>
@@ -11994,12 +11998,12 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Metadata editor</original>
-<translation></translation>
+<translation>元数据编辑器</translation>
 </phrase>
 
 <phrase>
 <original>tools</original>
-<translation></translation>
+<translation>工具</translation>
 </phrase>
 
 <phrase>
@@ -12029,17 +12033,17 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>visit the ExifTool homepage</original>
-<translation></translation>
+<translation>访问ExifTool主页</translation>
 </phrase>
 
 <phrase>
 <original>Remove tags that might contain personal information</original>
-<translation></translation>
+<translation>删除可能包含个人信息的标签</translation>
 </phrase>
 
 <phrase>
 <original>%1 groups in this image</original>
-<translation></translation>
+<translation>此图像中有 %1 分组</translation>
 </phrase>
 
 <phrase>
@@ -12054,37 +12058,37 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>edit tags</original>
-<translation></translation>
+<translation>编辑标签</translation>
 </phrase>
 
 <phrase>
 <original>editor options</original>
-<translation></translation>
+<translation>编辑器选项</translation>
 </phrase>
 
 <phrase>
 <original>Mark this tag for removal</original>
-<translation></translation>
+<translation>标记此标记为移除</translation>
 </phrase>
 
 <phrase>
 <original>Reset tag to its original value</original>
-<translation></translation>
+<translation>复位标记为原始值</translation>
 </phrase>
 
 <phrase>
 <original>Mark this entire group for removal</original>
-<translation></translation>
+<translation>标记此整个组为删除</translation>
 </phrase>
 
 <phrase>
 <original>Reset entire group to its original values</original>
-<translation></translation>
+<translation>重置整个组为其原始值</translation>
 </phrase>
 
 <phrase>
 <original>Metadata support is provided by the open-source ExifTool library.</original>
-<translation></translation>
+<translation>元数据支持由开源ExifTool库提供。</translation>
 </phrase>
 
 <phrase>
@@ -12099,142 +12103,142 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>no tags in this category</original>
-<translation></translation>
+<translation>此类别中没有标签</translation>
 </phrase>
 
 <phrase>
 <original>"System" tags are provided by the operating system.  They are not embedded as traditional metadata.</original>
-<translation></translation>
+<translation>“系统”标签由操作系统提供。它们不被嵌入传统元数据。</translation>
 </phrase>
 
 <phrase>
 <original>"File" tags are required by this image format.  They are not embedded as traditional metadata.</original>
-<translation></translation>
+<translation>“文件”标签是由该图像格式要求。它们不嵌入作为传统的元数据。</translation>
 </phrase>
 
 <phrase>
 <original>ICC profiles are handled automatically by PhotoDemon.  They are not embedded as traditional metadata.</original>
-<translation></translation>
+<translation>ICC配置文件是由PhotoDemon自动处理。它们不嵌入作为传统的元数据。</translation>
 </phrase>
 
 <phrase>
 <original>"Inferred" tags are hypothetical values inferred from other metadata.  They are not embedded as traditional metadata.</original>
-<translation></translation>
+<translation>“推断”标签是从其他元数据中推断出来的假设值。它们不被嵌入传统元数据。</translation>
 </phrase>
 
 <phrase>
 <original>(" & strID & ") " & strValu</original>
-<translation></translation>
+<translation>(" & strID & ") " & strValu</translation>
 </phrase>
 
 <phrase>
 <original>(" & .TagValue & ") " & .TagValueFriendl</original>
-<translation></translation>
+<translation>(" & .TagValue & ") " & .TagValueFriendl</translation>
 </phrase>
 
 <phrase>
 <original>tag restrictions</original>
-<translation></translation>
+<translation>标签的限制</translation>
 </phrase>
 
 <phrase>
 <original>This is a protected tag.  Edits are allowed, but they may be overwritten to produce a valid image file.</original>
-<translation></translation>
+<translation>这是一个受保护标签。虽然允许编辑，但他们可能会被覆盖以产生一个有效的图像文件。</translation>
 </phrase>
 
 <phrase>
 <original>This tag is restricted.  It cannot be edited, and removal requests will be ignored if they result in an invalid file.</original>
-<translation></translation>
+<translation>这个标签被限制。它不能被编辑，如果它们导致无效的文件，则将被忽略。</translation>
 </phrase>
 
 <phrase>
 <original>integers only [-127 to 127]</original>
-<translation></translation>
+<translation>只有整数[-127到127]</translation>
 </phrase>
 
 <phrase>
 <original>integers only [0 to 255]</original>
-<translation></translation>
+<translation>只有整数[0至255]</translation>
 </phrase>
 
 <phrase>
 <original>integers only [-32,768 to 32,767]</original>
-<translation></translation>
+<translation>只有整数[-32,768到32,767]</translation>
 </phrase>
 
 <phrase>
 <original>integers only [0 to 65,535]</original>
-<translation></translation>
+<translation>只有整数[0到65,535]</translation>
 </phrase>
 
 <phrase>
 <original>integers only</original>
-<translation></translation>
+<translation>仅整数</translation>
 </phrase>
 
 <phrase>
 <original>integers >= 0</original>
-<translation></translation>
+<translation>整数>=0</translation>
 </phrase>
 
 <phrase>
 <original>numbers only</original>
-<translation></translation>
+<translation>只有数字</translation>
 </phrase>
 
 <phrase>
 <original>numbers >= 0</original>
-<translation></translation>
+<translation>数字 >=0</translation>
 </phrase>
 
 <phrase>
 <original>file position marker</original>
-<translation></translation>
+<translation>文件位置标记</translation>
 </phrase>
 
 <phrase>
 <original>binary data</original>
-<translation></translation>
+<translation>二进制数据</translation>
 </phrase>
 
 <phrase>
 <original>digits</original>
-<translation></translation>
+<translation>数字</translation>
 </phrase>
 
 <phrase>
 <original>dates only (YYYY:mm:dd HH:MM:SS[.ss][+/-HH:MM])</original>
-<translation></translation>
+<translation>仅日期 (YYYY:mm:dd HH:MM:SS[.ss][+/-HH:MM])</translation>
 </phrase>
 
 <phrase>
 <original>true or false only</original>
-<translation></translation>
+<translation>仅为真或假</translation>
 </phrase>
 
 <phrase>
 <original>digits only</original>
-<translation></translation>
+<translation>仅数字</translation>
 </phrase>
 
 <phrase>
 <original>%1 characters max</original>
-<translation></translation>
+<translation>最大 %1 个字符</translation>
 </phrase>
 
 <phrase>
 <original>%1 bytes max</original>
-<translation></translation>
+<translation>最大 %1 个字节</translation>
 </phrase>
 
 <phrase>
 <original>%1 numbers max</original>
-<translation></translation>
+<translation>最大 %1 个数字</translation>
 </phrase>
 
 <phrase>
 <original>list of %1, one entry per line</original>
-<translation></translation>
+<translation>每行 %1，一个条目列表</translation>
 </phrase>
 
 <!-- Image_Metadata.frm contains 114 phrases. 65 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
@@ -12813,12 +12817,12 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>n-d</original>
-<translation></translation>
+<translation>非破坏</translation>
 </phrase>
 
 <phrase>
 <original>select</original>
-<translation></translation>
+<translation>选择</translation>
 </phrase>
 
 <phrase>
@@ -12833,37 +12837,37 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>File tools: create, load, and save image files</original>
-<translation></translation>
+<translation>文件工具：创建、加载和保存图像文件</translation>
 </phrase>
 
 <phrase>
 <original>Undo/Redo tools: revert destructive changes made to an image or layer</original>
-<translation></translation>
+<translation>撤消/重做工具：恢复对图像或图层的破坏性变化</translation>
 </phrase>
 
 <phrase>
 <original>Non-destructive tools: move, rotate, or apply certain photo adjustments without permanently modifying an image</original>
-<translation></translation>
+<translation>非破坏性的工具：移动，旋转，或适用于某些照片调整，而无需永久修改图像</translation>
 </phrase>
 
 <phrase>
 <original>Select tools: isolate parts of an image or layer for further editing</original>
-<translation></translation>
+<translation>选择工具：将图像或图层中的部分隔离，以进行进一步的编辑</translation>
 </phrase>
 
 <phrase>
 <original>Text tools: create and edit text layers</original>
-<translation></translation>
+<translation>文本工具：创建和编辑文本图层</translation>
 </phrase>
 
 <phrase>
 <original>Paint tools: use a mouse, touchpad, or pen tablet to apply brushstrokes to an image or layer</original>
-<translation></translation>
+<translation>画图工具：使用鼠标，触摸板，或手写板来操作图像或层</translation>
 </phrase>
 
 <phrase>
 <original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
-<translation>此选项将创建一个空白图像。其他的方式来创建新的映像可以在文件中找到 - >导入菜单。</translation>
+<translation>创建一个空白图像（快捷键：Ctrl+N）。</translation>
 </phrase>
 
 <phrase>
@@ -12873,7 +12877,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.</original>
-<translation>另一种方式来打开的图像是从桌面或Windows资源管理器拖放和拖放到PhotoDemon。</translation>
+<translation>打开的图像一个要编辑的图像(快捷键：Ctrl+O)。</translation>
 </phrase>
 
 <phrase>
@@ -12943,7 +12947,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Apply non-destructive lighting adjustments</original>
-<translation>应用非破坏性的照明调整</translation>
+<translation>锁定移动,调整光线和色温</translation>
 </phrase>
 
 <phrase>
@@ -12953,7 +12957,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Elliptical (Oval) Selection</original>
-<translation>椭圆（椭圆）选择</translation>
+<translation>椭圆（椭圆形）选择</translation>
 </phrase>
 
 <phrase>
@@ -12968,7 +12972,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Lasso (Freehand) Selection</original>
-<translation>套索（写意）的选择</translation>
+<translation>套索（手动）选择</translation>
 </phrase>
 
 <phrase>
@@ -13140,7 +13144,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
-<translation>作出快速调整。这个动作不是必需的，但如果视口渲染缓慢，许多快速修复调整是积极的，它可以提高性能。</translation>
+<translation>快速调整。这个操作不是必需的，但如果视觉渲染慢，使用此操作可以提高性能。</translation>
 </phrase>
 
 <!-- Toolpanel_QuickFix.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -13206,12 +13210,12 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Lightbox</original>
-<translation>透明黑色</translation>
+<translation>反色</translation>
 </phrase>
 
 <phrase>
 <original>Outline</original>
-<translation>概述</translation>
+<translation>轮廓</translation>
 </phrase>
 
 <phrase>
@@ -13221,7 +13225,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Feathered</original>
-<translation>羽毛</translation>
+<translation>羽化</translation>
 </phrase>
 
 <phrase>
@@ -14004,22 +14008,22 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation></translation>
+<translation>强行提取二进制类型标记为Base64（慢）</translation>
 </phrase>
 
 <phrase>
 <original>estimate original JPEG quality settings</original>
-<translation></translation>
+<translation>估计原始JPEG质量设置</translation>
 </phrase>
 
 <phrase>
 <original>extract unknown tags</original>
-<translation></translation>
+<translation>提取未知标签</translation>
 </phrase>
 
 <phrase>
 <original>automatically hide duplicate tags</original>
-<translation></translation>
+<translation>自动隐藏重复标签</translation>
 </phrase>
 
 <phrase>
@@ -14259,7 +14263,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>copy any relevant metadata to the new file</original>
-<translation></translation>
+<translation>复制任何相关的元数据到新文件</translation>
 </phrase>
 
 <phrase>
@@ -14269,7 +14273,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>default metadata behavior on first save</original>
-<translation></translation>
+<translation>第一次保存的默认元数据行为</translation>
 </phrase>
 
 <phrase>
@@ -14299,12 +14303,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>erase tags that might be personal (GPS, camera details, etc)</original>
-<translation></translation>
+<translation>擦除标记，可能是个人（全球定位系统，摄像机的信息等）</translation>
 </phrase>
 
 <phrase>
 <original>list PhotoDemon as the last-used editing software</original>
-<translation></translation>
+<translation>将PhotoDemon作为最后使用的编辑软件</translation>
 </phrase>
 
 <phrase>
@@ -15078,32 +15082,32 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>GIF export options</original>
-<translation></translation>
+<translation>GIF导出选项</translation>
 </phrase>
 
 <phrase>
 <original>alpha cut-off</original>
-<translation></translation>
+<translation>阿尔法截止</translation>
 </phrase>
 
 <phrase>
 <original>transparency</original>
-<translation></translation>
+<translation>透明度</translation>
 </phrase>
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
-<translation></translation>
+<translation>透明颜色（右键选择图像）</translation>
 </phrase>
 
 <phrase>
 <original>by cut-off</original>
-<translation></translation>
+<translation>通过切断</translation>
 </phrase>
 
 <phrase>
 <original>by color</original>
-<translation></translation>
+<translation>通过颜色</translation>
 </phrase>
 
 <!-- File_Save_GIF.frm contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
