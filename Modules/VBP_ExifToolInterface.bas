@@ -777,7 +777,7 @@ End Function
 
 'Given a path to a valid metadata file, and a second path to a valid image file, use ExifTool to write the contents of
 ' the metadata file into the image file.
-Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFile As String, ByRef srcPDImage As pdImage, Optional ByVal removeGPS As Boolean = False) As Boolean
+Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFile As String, ByRef srcPDImage As pdImage, Optional ByVal forciblyAnonymize As Boolean = False, Optional ByVal originalMetadataParams As String = vbNullString) As Boolean
     
     'If ExifTool is not running, start it.  If it cannot be started, exit.
     If Not isExifToolRunning Then
@@ -798,6 +798,12 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
         WriteMetadata = True
         Exit Function
     End If
+    
+    'If an additional metadata parameter string was supplied, create a parser for it.  This may contain specialized
+    ' processing instructions.
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString originalMetadataParams
     
     'The preferred metadata format affects many of the requests sent to ExifTool.  Tag write requests are typically prefixed by
     ' the preferred tag group.  This string represents that group.
@@ -841,6 +847,9 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     ' start by copying all tags, then applying manual updates as necessary.
     cmdParams = cmdParams & "-tagsfromfile" & vbCrLf & srcMetadataFile & vbCrLf
     cmdParams = cmdParams & dstImageFile & vbCrLf
+    
+    'Do *not* transfer over any thumbnail information (otherwise, this risks overwriting PD's existing thumbnail, if any!)
+    cmdParams = cmdParams & "--IFD1:all" & vbCrLf
     
     'Allow HTML entities (we need these for things like newlines)
     cmdParams = cmdParams & "-E" & vbCrLf
@@ -911,10 +920,24 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     cmdParams = cmdParams & "-xmp:CompressedBitsPerPixel=" & vbCrLf
     cmdParams = cmdParams & "-xmp:Compression=" & vbCrLf
     
-    'Other software may have added Exif tags for an embedded thumbnail.  PD obeys the JFIF spec and writes the thumbnail into the
-    ' JFIF header, so we don't want those extra Exif tags included.
-    cmdParams = cmdParams & "-IFD1:Compression=" & vbCrLf
-    cmdParams = cmdParams & "-IFD1:all=" & vbCrLf
+    'If PD is embedding its own thumbnail, FreeImage will have created a temporary thumbnail file for us.  Use it now.
+    Dim needToEmbedThumbnail As Boolean: needToEmbedThumbnail = False
+    
+    If cParams.GetBool("MetadataEmbedThumbnail", False) Then
+        Dim tmpString As String
+        tmpString = cParams.GetString("MetadataTempFilename")
+        If Len(tmpString) <> 0 Then
+            cmdParams = cmdParams & "-ThumbnailImage<=" & tmpString & vbCrLf
+            needToEmbedThumbnail = True
+        End If
+    End If
+    
+    'Other software may have added tags related to an embedded thumbnail.  If PD is *not* embedding its own thumbnail, we want to
+    ' forcibly remove any existing thumbnail information.
+    If (Not needToEmbedThumbnail) Then
+        cmdParams = cmdParams & "-IFD1:Compression=" & vbCrLf
+        cmdParams = cmdParams & "-IFD1:all=" & vbCrLf
+    End If
     
     'Now, we want to add a number of tags whose values should always be written, as they can be crucial to understanding the
     ' contents of the image.
@@ -955,17 +978,18 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     End If
     
     'If we were asked to remove GPS data, do so now
-    If removeGPS Then cmdParams = cmdParams & "-gps:all=" & vbCrLf
+    If forciblyAnonymize Then cmdParams = cmdParams & "-gps:all=" & vbCrLf
     
-    'GPS removal indicates the user wants privacy tags removed; if the user has NOT requested removal of these, list PD as
-    ' the processing software.  (Note that this behavior can also be disabled from the Preferences dialog.)
-    If (Not removeGPS) Then
+    'The incoming parameter "forciblyAnonymize" indicates the user wants privacy tags removed.
+    ' If the user has NOT requested anonymization, list PD as the processing software.  (Note that this behavior can also be
+    ' disabled from the Preferences dialog.)
+    If (Not forciblyAnonymize) Then
         If g_UserPreferences.GetPref_Boolean("Saving", "MetadataListPD", True) Then cmdParams = cmdParams & "-Software=" & GetPhotoDemonNameAndVersion() & vbCrLf
     End If
     
     'ExifTool will always note itself as the XMP toolkit unless we specifically tell it not to; when "privacy mode" is active,
     ' do not list any toolkit at all.
-    If removeGPS Then cmdParams = cmdParams & "-XMPToolkit=" & vbCrLf
+    If forciblyAnonymize Then cmdParams = cmdParams & "-XMPToolkit=" & vbCrLf
     
     'On some files, we prefer to use XMP over Exif.  This command instructs ExifTool to convert Exif tags to XMP tags where possible.
     If (outputMetadataFormat = PDMF_XMP) Then

@@ -26,21 +26,21 @@ Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long, Optional ByVal ne
     If newColorDepth = 24 Then
     
         'Ask the current DIB to convert itself to 24bpp mode
-        pdImages(g_CurrentImage).getActiveDIB.convertTo24bpp newBackColor
+        pdImages(g_CurrentImage).GetActiveDIB.ConvertTo24bpp newBackColor
         
         'Because PD now uses an "always 32bpp" approach to layers, convert the image back to 32bpp mode.
         ' (All its alpha values will be 255.)
-        pdImages(g_CurrentImage).getActiveDIB.convertTo32bpp 255
+        pdImages(g_CurrentImage).GetActiveDIB.ConvertTo32bpp 255
         
     Else
     
         'Ask the current DIB to convert itself to 32bpp mode
-        pdImages(g_CurrentImage).getActiveDIB.convertTo32bpp 255
+        pdImages(g_CurrentImage).GetActiveDIB.ConvertTo32bpp 255
     
     End If
     
     'Notify the parent of the target layer of the change
-    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).getActiveLayerIndex
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetActiveLayerIndex
     
     Message "Finished."
     
@@ -58,7 +58,7 @@ Public Sub MenuHeatMap()
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA
+    PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -76,7 +76,7 @@ Public Sub MenuHeatMap()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -132,7 +132,7 @@ Public Sub MenuHeatMap()
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If userPressedESC() Then Exit For
+            If UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
@@ -142,7 +142,7 @@ Public Sub MenuHeatMap()
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData
+    FinalizeImageData
     
 End Sub
 
@@ -164,17 +164,17 @@ Public Sub MenuComicBook()
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA
+    PrepImageData dstSA
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
     Dim gaussDIB As pdDIB
     Set gaussDIB = New pdDIB
-    gaussDIB.createFromExistingDIB workingDIB
+    gaussDIB.CreateFromExistingDIB workingDIB
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -186,25 +186,25 @@ Public Sub MenuComicBook()
     CreateGaussianBlurDIB gRadius, srcDIB, gaussDIB, False, finalY + finalY + finalX + finalX
     
     If cancelCurrentAction Then
-        srcDIB.eraseDIB
-        gaussDIB.eraseDIB
-        finalizeImageData
+        srcDIB.EraseDIB
+        gaussDIB.EraseDIB
+        FinalizeImageData
         Exit Sub
     End If
         
     'Now that we have a gaussian DIB created in gaussDIB, we can point arrays toward it and the source DIB
     Dim dstImageData() As Byte
-    prepImageData dstSA
+    PrepImageData dstSA
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     Dim GaussImageData() As Byte
     Dim gaussSA As SAFEARRAY2D
-    prepSafeArray gaussSA, gaussDIB
+    PrepSafeArray gaussSA, gaussDIB
     CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
             
     'These values will help us access locations in the array more quickly.
@@ -215,7 +215,7 @@ Public Sub MenuComicBook()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
         
     Message "Animating image (stage %1 of %2)...", 2, 3
         
@@ -253,7 +253,7 @@ Public Sub MenuComicBook()
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If userPressedESC() Then Exit For
+            If UserPressedESC() Then Exit For
             SetProgBarVal x + (finalY * 2)
         End If
     Next x
@@ -262,7 +262,7 @@ Public Sub MenuComicBook()
     CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
     Erase GaussImageData
     
-    gaussDIB.eraseDIB
+    gaussDIB.EraseDIB
     Set gaussDIB = Nothing
     
     'Because this function occurs in multiple passes, it requires specialized cancel behavior.  All array references must be dropped
@@ -270,7 +270,7 @@ Public Sub MenuComicBook()
     If cancelCurrentAction Then
         CopyMemory ByVal VarPtrArray(dstImageData()), 0&, 4
         CopyMemory ByVal VarPtrArray(srcImageData()), 0&, 4
-        finalizeImageData
+        FinalizeImageData
         Exit Sub
     End If
     
@@ -347,7 +347,7 @@ Public Sub MenuComicBook()
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If userPressedESC() Then Exit For
+            If UserPressedESC() Then Exit For
             SetProgBarVal x + finalX + (finalY * 2)
         End If
     Next x
@@ -359,7 +359,7 @@ Public Sub MenuComicBook()
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData
+    FinalizeImageData
 
 End Sub
 
@@ -371,7 +371,7 @@ Public Sub MenuSynthesize()
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA
+    PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -389,7 +389,7 @@ Public Sub MenuSynthesize()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -429,7 +429,7 @@ Public Sub MenuSynthesize()
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If userPressedESC() Then Exit For
+            If UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
@@ -439,7 +439,7 @@ Public Sub MenuSynthesize()
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData
+    FinalizeImageData
 
 End Sub
 
@@ -451,7 +451,7 @@ Public Sub MenuAlien()
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA
+    PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -469,7 +469,7 @@ Public Sub MenuAlien()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -501,7 +501,7 @@ Public Sub MenuAlien()
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If userPressedESC() Then Exit For
+            If UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
@@ -511,7 +511,7 @@ Public Sub MenuAlien()
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData
+    FinalizeImageData
   
 End Sub
 
@@ -524,7 +524,7 @@ Public Sub MenuAntique()
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA
+    PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -542,7 +542,7 @@ Public Sub MenuAntique()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'We're going to need grayscale values as part of the effect; grayscale is easily optimized via a look-up table
     Dim gLookUp(0 To 765) As Byte
@@ -608,7 +608,7 @@ Public Sub MenuAntique()
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If userPressedESC() Then Exit For
+            If UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
@@ -618,7 +618,7 @@ Public Sub MenuAntique()
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData
+    FinalizeImageData
     
 End Sub
 
@@ -631,7 +631,7 @@ Public Sub MenuSepia()
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA
+    PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -649,7 +649,7 @@ Public Sub MenuSepia()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -682,7 +682,7 @@ Public Sub MenuSepia()
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If userPressedESC() Then Exit For
+            If UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
@@ -692,7 +692,7 @@ Public Sub MenuSepia()
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData
+    FinalizeImageData
     
 End Sub
 
@@ -730,7 +730,7 @@ Public Sub MenuDream()
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA
+    PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -748,7 +748,7 @@ Public Sub MenuDream()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -789,7 +789,7 @@ Public Sub MenuDream()
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If userPressedESC() Then Exit For
+            If UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
@@ -799,7 +799,7 @@ Public Sub MenuDream()
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData
+    FinalizeImageData
 
 End Sub
 
@@ -811,7 +811,7 @@ Public Sub MenuRadioactive()
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA
+    PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -829,7 +829,7 @@ Public Sub MenuRadioactive()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -864,7 +864,7 @@ Public Sub MenuRadioactive()
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If userPressedESC() Then Exit For
+            If UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
@@ -874,7 +874,7 @@ Public Sub MenuRadioactive()
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData
+    FinalizeImageData
 
 End Sub
 
@@ -885,12 +885,12 @@ Public Sub AutoContrastCorrect(Optional ByVal percentIgnore As Double = 0.05, Op
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     ContrastCorrectDIB percentIgnore, workingDIB, toPreview
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -902,7 +902,7 @@ Public Sub MenuCountColors()
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA
+    PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -920,7 +920,7 @@ Public Sub MenuCountColors()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'This array will track whether or not a given color has been detected in the image
     Dim UniqueColors() As Boolean
@@ -962,7 +962,7 @@ Public Sub MenuCountColors()
     
     'Reset the progress bar
     SetProgBarVal 0
-    releaseProgressBar
+    ReleaseProgressBar
     
     'Show the user our final tally
     Message "Total number of unique colors: %1", totalCount
@@ -1027,10 +1027,10 @@ Public Sub MenuTest()
     '*******************************
     
     'Apply the test LUTs to the image
-    cLut.applyLUTsToDIB_Color pdImages(g_CurrentImage).getActiveDIB, rLUT, gLUT, bLUT
+    cLut.applyLUTsToDIB_Color pdImages(g_CurrentImage).GetActiveDIB, rLUT, gLUT, bLUT
         
     'Reflect any image changes on the screen.
-    releaseProgressBar
+    ReleaseProgressBar
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     Exit Sub

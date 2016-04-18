@@ -1322,7 +1322,7 @@ Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
             xmlEngine.writeXMLToFile tmpXMLPath, True
                 
             'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
-            WriteAllMetadata = WriteMetadata(tmpXMLPath, outputPath, srcImage, forciblyAnonymize)
+            WriteAllMetadata = WriteMetadata(tmpXMLPath, outputPath, srcImage, forciblyAnonymize, metadataParams)
             If WriteAllMetadata Then
                 Message "Metadata embedded successfully."
             Else
