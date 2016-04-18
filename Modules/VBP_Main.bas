@@ -664,8 +664,15 @@ Public Sub FinalShutdown()
         Set pdImages(i) = Nothing
     Next i
     
+    'Delete any remaining temp files in the cache
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Clearing temp file cache..."
+    #End If
+    
+    FileSystem.DeleteTempFiles
+    
     'Release FreeImage (if available)
-    If g_FreeImageHandle <> 0 Then
+    If (g_FreeImageHandle <> 0) Then
     
         FreeLibrary g_FreeImageHandle
         g_ImageFormats.FreeImageEnabled = False
@@ -703,7 +710,7 @@ Public Sub FinalShutdown()
     #End If
     
     'If the shell32 library was loaded successfully, once FormMain is closed, we need to unload the library handle.
-    If hShellModule <> 0 Then FreeLibrary hShellModule
+    If (hShellModule <> 0) Then FreeLibrary hShellModule
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "All human-written code complete.  Shutting down pdDebug and exiting gracefully."

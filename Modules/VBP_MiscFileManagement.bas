@@ -58,6 +58,13 @@ Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As L
 Private Const SYNCHRONIZE = &H100000
 Private Const WAIT_INFINITE = -1&
 
+'PD creates a lot of temp files.  To prevent hard drive thrashing, this module tracks created temp files,
+' and deletes them en masse when PD terminates.  (You can also delete temp files prematurely by calling the
+' associated function, but because some PD tasks run asynchronously, this behavior is not generally advised.)
+Private m_NumOfTempFiles As Long
+Private m_ListOfTempFiles() As String
+Private Const INIT_TEMP_FILE_CACHE As Long = 16
+
 'If a file exists, this function can be used to intelligently increment the file name (e.g. "filename (n+1).ext")
 ' Note that the function returns the auto-incremented filename WITHOUT an extension and WITHOUT a prepended folder,
 ' by design, so that the result can be passed to a common dialog without further parsing.
@@ -411,3 +418,45 @@ Private Function Win32ToVbTime(ft As Currency) As Date
     End If
     
 End Function
+
+'Request a temporary filename.  The filename will automatically be added to PD's internal cache, and deleted when
+' PD exits.  The caller *can* delete the file if they want, but it is not necessary.
+Public Function RequestTempFile() As String
+
+    If (m_NumOfTempFiles = 0) Then
+        ReDim m_ListOfTempFiles(0 To INIT_TEMP_FILE_CACHE - 1) As String
+    Else
+        If m_NumOfTempFiles > UBound(m_ListOfTempFiles) Then ReDim Preserve m_ListOfTempFiles(0 To m_NumOfTempFiles * 2 - 1) As String
+    End If
+        
+    Dim cFile As pdSystemInfo
+    Set cFile = New pdSystemInfo
+    
+    Dim tmpFile As String
+    tmpFile = cFile.GetUniqueTempFilename()
+    
+    m_ListOfTempFiles(m_NumOfTempFiles) = tmpFile
+    m_NumOfTempFiles = m_NumOfTempFiles + 1
+    RequestTempFile = tmpFile
+
+End Function
+
+Public Sub DeleteTempFiles()
+
+    If (m_NumOfTempFiles > 0) Then
+    
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        
+        Dim i As Long
+        For i = 0 To m_NumOfTempFiles - 1
+            If Len(m_ListOfTempFiles(i)) <> 0 Then
+                If cFile.FileExist(m_ListOfTempFiles(i)) Then cFile.KillFile m_ListOfTempFiles(i)
+            End If
+        Next i
+        
+        m_NumOfTempFiles = 0
+    
+    End If
+    
+End Sub
