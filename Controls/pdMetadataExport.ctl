@@ -2,12 +2,12 @@ VERSION 5.00
 Begin VB.UserControl pdMetadataExport 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   ClientHeight    =   4500
+   ClientHeight    =   4650
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   5250
    HasDC           =   0   'False
-   ScaleHeight     =   300
+   ScaleHeight     =   310
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   350
    ToolboxBitmap   =   "pdMetadataExport.ctx":0000
@@ -17,33 +17,33 @@ Begin VB.UserControl pdMetadataExport
       Left            =   0
       Top             =   1200
       Width           =   5055
-      _ExtentX        =   8916
-      _ExtentY        =   661
-      Caption         =   "general metadata settings"
-      FontSize        =   12
+      _extentx        =   8916
+      _extenty        =   661
+      caption         =   "general metadata settings"
+      fontsize        =   12
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   495
       Left            =   120
       Top             =   0
       Width           =   4935
-      _ExtentX        =   8705
-      _ExtentY        =   873
-      Alignment       =   2
-      Caption         =   ""
-      FontBold        =   -1  'True
-      FontSize        =   12
+      _extentx        =   8705
+      _extenty        =   873
+      alignment       =   2
+      caption         =   ""
+      fontbold        =   -1  'True
+      fontsize        =   12
    End
    Begin PhotoDemon.pdHyperlink hplReviewMetadata 
       Height          =   375
       Left            =   120
       Top             =   600
       Width           =   4935
-      _ExtentX        =   8705
-      _ExtentY        =   661
-      Alignment       =   2
-      Caption         =   "click to review this image's metadata"
-      RaiseClickEvent =   -1  'True
+      _extentx        =   8705
+      _extenty        =   661
+      alignment       =   2
+      caption         =   "click to review this image's metadata"
+      raiseclickevent =   -1  'True
    End
    Begin PhotoDemon.pdCheckBox chkMetadata 
       Height          =   375
@@ -51,9 +51,9 @@ Begin VB.UserControl pdMetadataExport
       TabIndex        =   0
       Top             =   1680
       Width           =   4935
-      _ExtentX        =   8705
-      _ExtentY        =   661
-      Caption         =   "copy all relevant metadata to the new file"
+      _extentx        =   8705
+      _extenty        =   661
+      caption         =   "copy all relevant metadata to the new file"
    End
    Begin PhotoDemon.pdCheckBox chkAnonymize 
       Height          =   375
@@ -61,9 +61,9 @@ Begin VB.UserControl pdMetadataExport
       TabIndex        =   1
       Top             =   2160
       Width           =   4935
-      _ExtentX        =   8705
-      _ExtentY        =   661
-      Caption         =   "erase tags that might be personal (including GPS and location)"
+      _extentx        =   8705
+      _extenty        =   661
+      caption         =   "erase tags that might be personal (including GPS and location)"
    End
    Begin PhotoDemon.pdLabel lblInfo 
       Height          =   375
@@ -72,10 +72,22 @@ Begin VB.UserControl pdMetadataExport
       Top             =   2640
       Visible         =   0   'False
       Width           =   5055
-      _ExtentX        =   8916
-      _ExtentY        =   661
-      Caption         =   ""
-      FontSize        =   12
+      _extentx        =   8916
+      _extenty        =   661
+      caption         =   ""
+      fontsize        =   12
+   End
+   Begin PhotoDemon.pdCheckBox chkThumbnail 
+      Height          =   375
+      Left            =   120
+      TabIndex        =   2
+      Top             =   3120
+      Visible         =   0   'False
+      Width           =   4935
+      _extentx        =   8705
+      _extenty        =   661
+      caption         =   "embed thumbnail image"
+      value           =   0
    End
 End
 Attribute VB_Name = "pdMetadataExport"
@@ -163,7 +175,8 @@ Private Sub UserControl_Initialize()
 '     but it can also get them into trouble if they select an output format that doesn't support the full breadth of
 '     tags in the current image.
 '
-'    'At present, I'm still studying what other software does, to try and get a feel for how others have tackled this.
+'    'At present, I'm still studying what other software does, to try and get a feel for how others have tackled this,
+'     so outgoing metadata formats are still handled silently.
 
 '    btsMetadataFormat.AddItem "automatic", 0
 '    btsMetadataFormat.AddItem "IPTC", 1
@@ -205,9 +218,12 @@ Private Sub UpdateControlLayout()
     
     'At present, everything in this control extends the full width of the container
     lblTitle.SetWidth (bWidth - (lblTitle.GetLeft * 2))
-    chkMetadata.SetWidth (bWidth - chkMetadata.Left)
-    chkAnonymize.SetWidth (bWidth - chkAnonymize.Left)
+    chkMetadata.SetWidth (bWidth - chkMetadata.GetLeft)
+    chkAnonymize.SetWidth (bWidth - chkAnonymize.GetLeft)
     hplReviewMetadata.SetWidth (bWidth - (hplReviewMetadata.GetLeft * 2))
+    
+    '...including format-specific options (which may or may not be visible, depending on the parent format)
+    chkThumbnail.SetWidth (bWidth - chkThumbnail.GetLeft)
     
     Dim i As Long
     For i = lblInfo.lBound To lblInfo.UBound
@@ -234,6 +250,7 @@ Public Sub UpdateAgainstCurrentTheme()
     chkMetadata.UpdateAgainstCurrentTheme
     chkAnonymize.UpdateAgainstCurrentTheme
     hplReviewMetadata.UpdateAgainstCurrentTheme
+    chkThumbnail.UpdateAgainstCurrentTheme
     
     Dim i As Long
     For i = lblInfo.lBound To lblInfo.UBound
@@ -252,6 +269,12 @@ Public Function GetMetadataSettings() As String
     
     cParams.AddParam "MetadataExportAllowed", CBool(chkMetadata.Value)
     cParams.AddParam "MetadataAnonymize", CBool(chkAnonymize.Value)
+    If IsThumbnailSupported() Then cParams.AddParam "MetadataEmbedThumbnail", CBool(chkThumbnail.Value) Else cParams.AddParam "MetadataEmbedThumbnail", False
+    
+    'Whenever a new metadata string is generated, we also generate a new temp filename for use with this image.
+    ' This file may or may not created (it's required when setting thumbnails, for example), but by setting it at the
+    ' image level, we allow any subsequent metadata operations to reuse the same file at their leisure.
+    cParams.AddParam "MetadataTempFilename", FileSystem.RequestTempFile()
     
     GetMetadataSettings = cParams.GetParamString
 
@@ -266,12 +289,14 @@ Public Sub SetMetadataSettings(ByRef srcXML As String, Optional ByVal srcIsPrese
     
     If cParams.GetBool("MetadataExportAllowed", True) Then chkMetadata.Value = vbChecked Else chkMetadata.Value = vbUnchecked
     If cParams.GetBool("MetadataAnonymize", False) Then chkAnonymize.Value = vbChecked Else chkAnonymize.Value = vbUnchecked
+    If cParams.GetBool("MetadataEmbedThumbnail", False) Then chkThumbnail.Value = vbChecked Else chkThumbnail.Value = vbUnchecked
     
 End Sub
 
 Public Sub Reset()
     chkMetadata.Value = vbChecked
     chkAnonymize.Value = vbUnchecked
+    chkThumbnail.Value = vbUnchecked
 End Sub
 
 Public Sub SetParentImage(ByRef srcImage As pdImage, ByVal destinationFormat As PHOTODEMON_IMAGE_FORMAT)
@@ -297,6 +322,7 @@ Private Sub EvaluatePresenceOfMetadata()
             
             If cParams.GetBool("MetadataExportAllowed", True) Then chkMetadata.Value = vbChecked Else chkMetadata.Value = vbUnchecked
             If cParams.GetBool("MetadataAnonymize", False) Then chkAnonymize.Value = vbChecked Else chkAnonymize.Value = vbUnchecked
+            If cParams.GetBool("MetadataEmbedThumbnail", False) Then chkThumbnail.Value = vbChecked Else chkThumbnail.Value = vbUnchecked
             
         Else
             lblTitle.Caption = g_Language.TranslateMessage("This image does not contain metadata.")
@@ -324,21 +350,33 @@ End Sub
 Private Sub UpdateFormatComponentVisibility()
     
     Select Case m_DstFormat
-    
-        Case PDIF_UNKNOWN
-            lblInfo(1).Visible = False
         
         Case PDIF_JPEG
+            lblInfo(1).Caption = g_Language.TranslateMessage("JPEG-specific settings")
             lblInfo(1).Visible = True
+            chkThumbnail.Visible = True
+            
+        Case Else
+            lblInfo(1).Visible = False
+            chkThumbnail.Visible = False
     
     End Select
     
-    'Title the format-specific settings region
-    If lblInfo(1).Visible Then
-        lblInfo(1).Caption = g_Language.TranslateMessage("%1 settings", UCase$(g_ImageFormats.GetExtensionFromPDIF(m_DstFormat)))
-    End If
-    
 End Sub
+
+Private Function IsThumbnailSupported() As Boolean
+    
+    Select Case m_DstFormat
+        
+        Case PDIF_JPEG
+            IsThumbnailSupported = True
+            
+        Case Else
+            IsThumbnailSupported = False
+    
+    End Select
+    
+End Function
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)

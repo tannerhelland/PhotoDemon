@@ -42,7 +42,7 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
     
     'If the incoming image is already 24-bpp, we can skip the alpha-processing steps entirely.  However, it is not
     ' necessary for the caller to do this.  PD will provide correct results either way.
-    If srcDIB.getDIBColorDepth = 24 Then
+    If srcDIB.GetDIBColorDepth = 24 Then
         currentAlphaStatus = PDAS_NoAlpha
         colorCheckSuccessful = AutoDetectColors_24BPPSource(srcDIB, uniqueColorCount, isGrayscale, isMonochrome)
         isTrueColor = CBool(uniqueColorCount > 256)
@@ -257,7 +257,7 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
     
     AutoDetectColors_24BPPSource = False
     
-    If srcDIB.getDIBColorDepth = 24 Then
+    If srcDIB.GetDIBColorDepth = 24 Then
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "Analyzing color count of 24-bpp image..."
@@ -268,8 +268,8 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
         CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
         
         Dim x As Long, y As Long, finalX As Long, finalY As Long
-        finalY = srcDIB.getDIBHeight - 1
-        finalX = srcDIB.getDIBWidth - 1
+        finalY = srcDIB.GetDIBHeight - 1
+        finalX = srcDIB.GetDIBWidth - 1
         finalX = finalX * 3
         
         Dim UniqueColors() As Long
@@ -393,7 +393,7 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
 
     AutoDetectColors_32BPPSource = False
 
-    If (srcDIB.getDIBColorDepth = 32) Then
+    If (srcDIB.GetDIBColorDepth = 32) Then
 
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "Analyzing color count of 32-bpp image..."
@@ -404,8 +404,8 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
 
         Dim x As Long, y As Long, finalX As Long, finalY As Long
-        finalY = srcDIB.getDIBHeight - 1
-        finalX = srcDIB.getDIBWidth - 1
+        finalY = srcDIB.GetDIBHeight - 1
+        finalX = srcDIB.GetDIBWidth - 1
         finalX = finalX * 4
 
         Dim UniqueColors() As RGBQUAD
@@ -629,7 +629,7 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     'Because bitmaps do not support transparency < 32-bpp, remove transparency immediately if the output depth is < 32-bpp,
     ' and forgo any further alpha handling.
     Else
-        tmpImageCopy.convertTo24bpp bmpBackgroundColor
+        tmpImageCopy.ConvertTo24bpp bmpBackgroundColor
         desiredAlphaStatus = PDAS_NoAlpha
     End If
     
@@ -770,6 +770,11 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     Set cParams = New pdParamXML
     cParams.SetParamString formatParams
     
+    'Some JPEG information (like embedding a thumbnail) is handled by the metadata parameter string.
+    Dim cParamsMetadata As pdParamXML
+    Set cParamsMetadata = New pdParamXML
+    cParamsMetadata.SetParamString metadataParams
+    
     Dim jpegQuality As Long
     jpegQuality = cParams.GetLong("JPEGQuality", 92)
     
@@ -813,7 +818,7 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     ' We also apply a custom backcolor here (if one exists; white is used by default).
     Dim jpegBackgroundColor As Long
     jpegBackgroundColor = cParams.GetLong("JPEGBackgroundColor", vbWhite)
-    If (tmpImageCopy.getDIBColorDepth = 32) Then tmpImageCopy.convertTo24bpp jpegBackgroundColor
+    If (tmpImageCopy.GetDIBColorDepth = 32) Then tmpImageCopy.ConvertTo24bpp jpegBackgroundColor
     
     'Retrieve the recommended output color depth of the image.
     Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
@@ -836,15 +841,25 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         'Use that handle to save the image to JPEG format, with required color conversion based on the outgoing color depth
         If (fi_DIB <> 0) Then
             
-            'TODO!  Figure out how to best handle thumbnails...
-'            'If a thumbnail has been requested, embed it now
-'            If cParams.GetBool("JPEGThumbnail", False) Then
-'                Dim fThumbnail As Long
-'                fThumbnail = FreeImage_MakeThumbnail(fi_DIB, 100)
-'                FreeImage_SetThumbnail fi_DIB, fThumbnail
-'                FreeImage_Unload fThumbnail
-'            End If
-            
+            'Next, we need to see if thumbnail embedding is enabled.  If it is, we need to embed a second, smaller copy
+            ' of the JPEG within the parent JPEG object.
+            If cParamsMetadata.GetBool("MetadataEmbedThumbnail", False) Then
+                
+                Dim fThumbnail As Long, tmpFile As String
+                fThumbnail = FreeImage_MakeThumbnail(fi_DIB, 100)
+                tmpFile = cParamsMetadata.GetString("MetadataTempFilename")
+                
+                If Len(tmpFile) <> 0 Then
+                    Dim cFile As pdFSO
+                    Set cFile = New pdFSO
+                    If cFile.FileExist(tmpFile) Then cFile.KillFile tmpFile
+                    FreeImage_SaveEx fThumbnail, tmpFile, FIF_JPEG, FISO_JPEG_BASELINE Or FISO_JPEG_QUALITYNORMAL, FICD_24BPP
+                End If
+                
+                FreeImage_Unload fThumbnail
+                
+            End If
+
             'Immediately prior to saving, pass this image's resolution values (if any) to FreeImage.
             ' These values will be embedded in the JFIF header.
             FreeImage_SetResolutionX fi_DIB, srcPDImage.getDPI
@@ -856,6 +871,7 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
             Else
                 Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
             End If
+            
         Else
             Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
             ExportJPEG = False
@@ -898,14 +914,14 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         srcPDImage.GetCompositedImage tmpImageCopy
         
         'HDR does not support alpha-channels, so convert to 24-bpp in advance
-        If tmpImageCopy.getDIBColorDepth = 32 Then tmpImageCopy.convertTo24bpp
+        If tmpImageCopy.GetDIBColorDepth = 32 Then tmpImageCopy.ConvertTo24bpp
         
         'HDR only supports one output color depth, so auto-detection is unnecessary
         ExportDebugMsg "HDR format only supports one output depth, so color depth auto-detection was ignored."
             
         'Convert our current DIB to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(tmpImageCopy.getDIBDC)
+        fi_DIB = FreeImage_CreateFromDC(tmpImageCopy.GetDIBDC)
         Set tmpImageCopy = Nothing
         
         If (fi_DIB <> 0) Then
@@ -1033,7 +1049,7 @@ Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         If (currentAlphaStatus = PDAS_NoAlpha) Then desiredAlphaStatus = PDAS_NoAlpha Else desiredAlphaStatus = PDAS_ComplicatedAlpha
         
         'Similarly, because PSD is currently limited to 24-bpp or 32-bpp output, convert any non-transparent images to 24-bpp now
-        If (desiredAlphaStatus = PDAS_NoAlpha) Or (outputColorDepth <= 24) Then tmpImageCopy.convertTo24bpp
+        If (desiredAlphaStatus = PDAS_NoAlpha) Or (outputColorDepth <= 24) Then tmpImageCopy.ConvertTo24bpp
         
         Dim fi_DIB As Long
         fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus)
