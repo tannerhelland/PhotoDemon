@@ -30,15 +30,16 @@ Public Enum CORE_PLUGINS
     CCP_ExifTool = 2
     CCP_EZTwain = 3
     CCP_PNGQuant = 4
+    CCP_LittleCMS = 5
 End Enum
 
 #If False Then
-    Private Const CCP_FreeImage = 0, CCP_zLib = 1, CCP_ExifTool = 2, CCP_EZTwain = 3, CCP_PNGQuant = 4
+    Private Const CCP_FreeImage = 0, CCP_zLib = 1, CCP_ExifTool = 2, CCP_EZTwain = 3, CCP_PNGQuant = 4, CCP_LittleCMS = 5
 #End If
 
 'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum), so if you add or remove
 ' a plugin, make sure to update this!
-Private Const CORE_PLUGIN_COUNT As Long = 5
+Private Const CORE_PLUGIN_COUNT As Long = 6
 
 'To simplify handling throughout this module, plugin existence, allowance, and successful initialization are tracked internally.
 ' Note that these values ARE NOT EXTERNALLY AVAILABLE, by design; external callers should use the global plugin trackers
@@ -78,21 +79,21 @@ Public Sub LoadAllPlugins()
     For i = 0 To CORE_PLUGIN_COUNT - 1
     
         'Before doing anything else, see if the plugin file actually exists.
-        pluginExists(i) = doesPluginFileExist(i)
+        pluginExists(i) = DoesPluginFileExist(i)
         
         'If the plugin file exists, see if the user has forcibly disabled it.  If they have, we can skip initialization.
         ' we can initialize it.  (Some plugins may not require this step; that's okay.)
-        If pluginExists(i) Then pluginAllowed(i) = isPluginAllowed(i)
+        If pluginExists(i) Then pluginAllowed(i) = IsPluginAllowed(i)
         
         'If the user has allowed a plugin to exist, attempt to initialize it.
         If pluginAllowed(i) Then pluginInitialized(i) = InitializePlugin(i)
         
         'We now know enough to set global initialization flags.  (This step is technically optional; see comments in the matching sub.)
-        setGlobalPluginFlags i, pluginInitialized(i)
+        SetGlobalPluginFlags i, pluginInitialized(i)
                 
         'Finally, if a plugin affects UI or other user-exposed bits, that's the last thing we set before exiting.
         ' (This step is optional; plugins do not need to support it.)
-        finalizePluginInitialization i, pluginInitialized(i)
+        FinalizePluginInitialization i, pluginInitialized(i)
         
     Next i
     
@@ -106,7 +107,7 @@ Public Sub LoadAllPlugins()
             If pluginInitialized(i) Then
                 successfulPluginCount = successfulPluginCount + 1
             Else
-                pdDebug.LogAction "WARNING!  Plugin ID#" & i & " (" & getPluginFilename(i) & ") was not initialized."
+                pdDebug.LogAction "WARNING!  Plugin ID#" & i & " (" & GetPluginFilename(i) & ") was not initialized."
             End If
         Next i
         
@@ -118,24 +119,27 @@ End Sub
 
 'Given a plugin enum value, return a string of the core plugin's filename.  Note that this (obviously) does not include helper files,
 ' like README or LICENSE files - just the core DLL or EXE for the plugin.
-Private Function getPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
+Private Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
     
     Select Case pluginEnumID
     
         Case CCP_ExifTool
-            getPluginFilename = "exiftool.exe"
+            GetPluginFilename = "exiftool.exe"
         
         Case CCP_EZTwain
-            getPluginFilename = "eztw32.dll"
+            GetPluginFilename = "eztw32.dll"
         
         Case CCP_FreeImage
-            getPluginFilename = "FreeImage.dll"
+            GetPluginFilename = "FreeImage.dll"
+        
+        Case CCP_LittleCMS
+            GetPluginFilename = "lcms2.dll"
         
         Case CCP_PNGQuant
-            getPluginFilename = "pngquant.exe"
+            GetPluginFilename = "pngquant.exe"
         
         Case CCP_zLib
-            getPluginFilename = "zlibwapi.dll"
+            GetPluginFilename = "zlibwapi.dll"
     
     End Select
     
@@ -146,7 +150,7 @@ End Function
 '
 'Returns TRUE if one or more helper files exist; FALSE if none exist.  This should make it easier for the caller to know if the
 ' string stack needs to be processed further.
-Private Function getNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, ByRef dstStringStack As pdStringStack) As Boolean
+Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, ByRef dstStringStack As pdStringStack) As Boolean
     
     If dstStringStack Is Nothing Then Set dstStringStack = New pdStringStack
     dstStringStack.ResetStack
@@ -162,6 +166,9 @@ Private Function getNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
         Case CCP_FreeImage
             dstStringStack.AddString "freeimage-LICENSE.txt"
         
+        Case CCP_LittleCMS
+            dstStringStack.AddString "lcms2-LICENSE.txt"
+        
         Case CCP_PNGQuant
             dstStringStack.AddString "pngquant-README.txt"
         
@@ -170,30 +177,33 @@ Private Function getNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
     
     End Select
     
-    getNonEssentialPluginFiles = CBool(dstStringStack.GetNumOfStrings <> 0)
+    GetNonEssentialPluginFiles = CBool(dstStringStack.GetNumOfStrings <> 0)
     
 End Function
 
 'The Plugin Manager dialog allows the user to forcibly disable plugins.  This can be very helpful when testing bugs and crashes,
 ' but generally isn't relevant for a casual user.  Regardless, the plugin loader will check this value prior to initializing a plugin.
-Private Function isPluginAllowed(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+Private Function IsPluginAllowed(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
     
     Select Case pluginEnumID
     
         Case CCP_ExifTool
-            isPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force ExifTool Disable", False)
+            IsPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force ExifTool Disable", False)
                     
         Case CCP_EZTwain
-            isPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force EZTwain Disable", False)
+            IsPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force EZTwain Disable", False)
         
         Case CCP_FreeImage
-            isPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force FreeImage Disable", False)
+            IsPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force FreeImage Disable", False)
+        
+        Case CCP_LittleCMS
+            IsPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force LittleCMS Disable", False)
         
         Case CCP_PNGQuant
-            isPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force PNGQuant Disable", False)
+            IsPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force PNGQuant Disable", False)
         
         Case CCP_zLib
-            isPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force ZLib Disable", False)
+            IsPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force ZLib Disable", False)
     
     End Select
     
@@ -239,7 +249,11 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         Case CCP_FreeImage
             'FreeImage maintains a program-wide handle for the life of the program, which we attempt to generate now.
             initializationSuccessful = Plugin_FreeImage.InitializeFreeImage()
-            
+        
+        'TODO!
+        Case CCP_LittleCMS
+            initializationSuccessful = True
+        
         Case CCP_PNGQuant
             'The ezTwain module provides a function called "isPNGQuantAvailable()", but all it does is check if the PNGquant exe exists.
             ' This is redundant, so skip that check and forcibly return TRUE.
@@ -258,7 +272,7 @@ End Function
 'Most plugins provide a single global "is plugin available" flag, which spares the program from having to plow through all these
 ' verification steps when it needs to do something with a plugin.  This step is technically optional, although I prefer global flags
 ' because they let me use plugins in performance-sensitive areas without worry.
-Private Sub setGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal pluginState As Boolean)
+Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal pluginState As Boolean)
     
     Select Case pluginEnumID
     
@@ -270,7 +284,10 @@ Private Sub setGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
         
         Case CCP_FreeImage
             g_ImageFormats.FreeImageEnabled = pluginState
-            
+        
+        Case CCP_LittleCMS
+            g_LCMSEnabled = pluginState
+        
         Case CCP_PNGQuant
             g_ImageFormats.pngQuantEnabled = pluginState
         
@@ -285,7 +302,7 @@ End Sub
 '
 'It provides a catch-all for custom initialization behavior (e.g. modifying UI bits to reflect plugin-related features).
 ' New plugins do not need to make use of this functionality.
-Private Sub finalizePluginInitialization(ByVal pluginEnumID As CORE_PLUGINS, ByVal pluginState As Boolean)
+Private Sub FinalizePluginInitialization(ByVal pluginEnumID As CORE_PLUGINS, ByVal pluginState As Boolean)
 
     Select Case pluginEnumID
                 
@@ -297,7 +314,7 @@ Private Sub finalizePluginInitialization(ByVal pluginEnumID As CORE_PLUGINS, ByV
             FormMain.MnuImportSepBar1.Visible = pluginState
         
         Case CCP_FreeImage
-            'As of v6.4, PD uses a callback function to track and report any internal FreeImage errors.
+            'As of v6.4, PD uses a dedicated callback function to track and report any internal FreeImage errors.
             If pluginState Then
                 #If DEBUGMODE = 1 Then
                     Outside_FreeImageV3.FreeImage_InitErrorHandler
@@ -322,11 +339,11 @@ End Sub
 ' 3) If it finds a missing plugin in the program folder, it will automatically move the file to the plugin folder, including any
 '     helper files (README, LICENSE, etc).
 ' 4) If the move is successful, it will return TRUE and exit.
-Private Function doesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
     
     'Start by getting the filename of the plugin in question
     Dim pluginFilename As String
-    pluginFilename = getPluginFilename(pluginEnumID)
+    pluginFilename = GetPluginFilename(pluginEnumID)
     
     'pdFSO is used for all file interactions
     Dim cFile As pdFSO
@@ -334,12 +351,12 @@ Private Function doesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
     
     'See if the file exists.  If it does, great!  We can exit immediately.
     If cFile.FileExist(g_PluginPath & pluginFilename) Then
-        doesPluginFileExist = True
+        DoesPluginFileExist = True
     
     'The plugin file is missing.  Let's see if we can find it.
     Else
     
-        pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & getPluginFilename(pluginEnumID) & ") is missing.  Scanning alternate folders..."
+        pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") is missing.  Scanning alternate folders..."
     
         Dim extraFiles As pdStringStack
         Set extraFiles = New pdStringStack
@@ -348,18 +365,18 @@ Private Function doesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
         ' folders preserved.
         If cFile.FileExist(g_UserPreferences.getProgramPath & pluginFilename) Then
             
-            pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & getPluginFilename(pluginEnumID) & ") was found in the base PD folder.  Attempting to relocate..."
+            pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") was found in the base PD folder.  Attempting to relocate..."
             
             'Move the plugin file to the proper folder
             If cFile.CopyFile(g_UserPreferences.getProgramPath & pluginFilename, g_PluginPath & pluginFilename) Then
                 
-                pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & getPluginFilename(pluginEnumID) & ") was relocated successfully."
+                pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") was relocated successfully."
                 
                 'Kill the old plugin instance
                 cFile.KillFile g_UserPreferences.getProgramPath & pluginFilename
                 
                 'Finally, move any associated files to their new home in the plugin folder
-                If getNonEssentialPluginFiles(pluginEnumID, extraFiles) Then
+                If GetNonEssentialPluginFiles(pluginEnumID, extraFiles) Then
                     
                     Dim tmpFilename As String
                     
@@ -374,19 +391,19 @@ Private Function doesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
                 End If
                 
                 'Return success!
-                doesPluginFileExist = True
+                DoesPluginFileExist = True
             
             'The file couldn't be moved.  There's probably write issues with the folder structure, in which case the program
             ' as a whole is pretty much doomed.  Exit now.
             Else
-                pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & getPluginFilename(pluginEnumID) & ") could not be relocated.  Initialization abandoned."
-                doesPluginFileExist = False
+                pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") could not be relocated.  Initialization abandoned."
+                DoesPluginFileExist = False
             End If
         
         'If the plugin file doesn't exist in the base folder either, we're SOL.  Exit now.
         Else
-            pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & getPluginFilename(pluginEnumID) & ") wasn't found in alternate locations.  Initialization abandoned."
-            doesPluginFileExist = False
+            pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") wasn't found in alternate locations.  Initialization abandoned."
+            DoesPluginFileExist = False
         End If
     
     End If
