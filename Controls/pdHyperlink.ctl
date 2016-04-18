@@ -31,8 +31,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Unicode Hyperlink (clickable label) control
 'Copyright 2014-2016 by Tanner Helland
 'Created: 28/October/14
-'Last updated: 28/January/16
-'Last update: overhaul to use ucSupport, new visual themes, etc
+'Last updated: 18/April/16
+'Last update: fix double-painting issue on MouseLeave events
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -394,13 +394,13 @@ End Sub
 'When the mouse leaves the UC, we must repaint the caption (as it's no longer hovered)
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
+    'Reset the cursor
+    ucSupport.RequestCursor IDC_DEFAULT
+    
     If m_MouseInsideUC Then
         m_MouseInsideUC = False
         RedrawBackBuffer
     End If
-    
-    'Reset the cursor
-    ucSupport.RequestCursor IDC_DEFAULT
     
 End Sub
 
@@ -419,7 +419,7 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    ucSupport.RequestIDERepaint UserControl.hDC
+    If (Not g_IsProgramRunning) Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -576,9 +576,9 @@ Private Sub RedrawBackBuffer()
     
     'We also underline the control on mouse-over
     If m_MouseInsideUC Then
-        ucSupport.SetCaptionFontUnderline True
+        ucSupport.SetCaptionFontUnderline True, True
     Else
-        ucSupport.SetCaptionFontUnderline False
+        ucSupport.SetCaptionFontUnderline False, True
     End If
     
     'Paint the caption manually
