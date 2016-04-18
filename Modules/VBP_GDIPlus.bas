@@ -683,7 +683,7 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
 
     'Create a GDI+ graphics object that points to the destination DIB's DC
     Dim hGdipGraphics As Long, hGdipBitmap As Long
-    GdipCreateFromHDC dstDIB.getDIBDC, hGdipGraphics
+    GdipCreateFromHDC dstDIB.GetDIBDC, hGdipGraphics
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
@@ -720,7 +720,7 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     GdipDisposeImage hGdipBitmap
     
     'GDI+ draw functions always result in a premultiplied image
-    dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
+    dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
     
     'Uncomment the line below to receive timing reports
     'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
@@ -733,10 +733,10 @@ Private Sub getGdipBitmapHandleFromDIB(ByRef tBitmap As Long, ByRef srcDIB As pd
     
     If srcDIB Is Nothing Then Exit Sub
     
-    If srcDIB.getDIBColorDepth = 32 Then
+    If srcDIB.GetDIBColorDepth = 32 Then
         
         'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
-        GdipCreateBitmapFromScan0 srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBWidth * 4, PixelFormat32bppPARGB, ByVal srcDIB.getActualDIBBits, tBitmap
+        GdipCreateBitmapFromScan0 srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBWidth * 4, PixelFormat32bppPARGB, ByVal srcDIB.GetActualDIBBits, tBitmap
         
     Else
     
@@ -745,11 +745,11 @@ Private Sub getGdipBitmapHandleFromDIB(ByRef tBitmap As Long, ByRef srcDIB As pd
         With imgHeader.Header
             .Size = Len(imgHeader.Header)
             .Planes = 1
-            .BitCount = srcDIB.getDIBColorDepth
-            .Width = srcDIB.getDIBWidth
-            .Height = -srcDIB.getDIBHeight
+            .BitCount = srcDIB.GetDIBColorDepth
+            .Width = srcDIB.GetDIBWidth
+            .Height = -srcDIB.GetDIBHeight
         End With
-        GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.getActualDIBBits, tBitmap
+        GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.GetActualDIBBits, tBitmap
         
     End If
 
@@ -775,11 +775,11 @@ Public Function GDIPlusRotateFlipDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     GdipGetImageWidth tBitmap, newWidth
     GdipGetImageHeight tBitmap, newHeight
     
-    dstDIB.createBlank newWidth, newHeight, srcDIB.getDIBColorDepth, 0
+    dstDIB.createBlank newWidth, newHeight, srcDIB.GetDIBColorDepth, 0
     
     'Obtain a GDI+ handle to the target DIB
     Dim iGraphics As Long
-    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
     
     'Render the rotated image
     GdipDrawImage iGraphics, tBitmap, 0, 0
@@ -806,7 +806,7 @@ Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
 
     'Create a GDI+ graphics object that points to the destination DIB's DC
     Dim iGraphics As Long, tBitmap As Long
-    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
@@ -875,7 +875,7 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
 
     'Create a GDI+ graphics object that points to the destination DIB's DC
     Dim iGraphics As Long, tBitmap As Long
-    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
     
     'Next, we need a temporary copy of the image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
@@ -1501,7 +1501,7 @@ Public Function GDIPlusDrawRoundRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, 
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
-    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
     If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
     
     'GDI+ doesn't have a direct rounded rectangles call, so we have to do it ourselves with a custom path
@@ -1552,11 +1552,11 @@ End Function
 
 'Use GDI+ to fill a DIB with a color and optional alpha value; while not as efficient as using GDI, this allows us to set the full DIB alpha
 ' in a single pass.
-Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
+Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal cOpacity As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
 
     'Create a GDI+ copy of the image and request AA
     Dim iGraphics As Long
-    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
     
     If useAA Then
         GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias
@@ -1568,7 +1568,7 @@ Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, By
     
     'Create a solid fill brush from the source image
     Dim hBrush As Long
-    hBrush = GetGDIPlusSolidBrushHandle(eColor, eTransparency)
+    hBrush = GetGDIPlusSolidBrushHandle(eColor, cOpacity)
     
     If hBrush <> 0 Then
         GdipFillRectangle iGraphics, hBrush, x1, y1, xWidth, yHeight
@@ -1598,7 +1598,7 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
     If useThisDCInstead <> 0 Then
         GdipCreateFromHDC useThisDCInstead, iGraphics
     Else
-        GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+        GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
     End If
     
     GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias
@@ -1682,44 +1682,44 @@ End Function
 'Use GDI+ to quickly convert a 24bpp DIB to 32bpp with solid alpha channel
 Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
     
-    If dstDIB.getDIBColorDepth = 32 Then Exit Sub
+    If dstDIB.GetDIBColorDepth = 32 Then Exit Sub
     
     Dim dstBitmap As Long, srcBitmap As Long
     
     'Create a temporary source DIB to hold the intermediate copy of the image
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB dstDIB
+    srcDIB.CreateFromExistingDIB dstDIB
     
     'We know the source DIB is 24bpp, so use GdipCreateBitmapFromGdiDib to obtain a handle
     Dim imgHeader As BITMAPINFO
     With imgHeader.Header
         .Size = Len(imgHeader.Header)
         .Planes = 1
-        .BitCount = srcDIB.getDIBColorDepth
-        .Width = srcDIB.getDIBWidth
-        .Height = -srcDIB.getDIBHeight
+        .BitCount = srcDIB.GetDIBColorDepth
+        .Width = srcDIB.GetDIBWidth
+        .Height = -srcDIB.GetDIBHeight
     End With
     
-    GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.getActualDIBBits, srcBitmap
+    GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.GetActualDIBBits, srcBitmap
     
     'Next, recreate the destination DIB as 32bpp
-    dstDIB.createBlank srcDIB.getDIBWidth, srcDIB.getDIBHeight, 32, , 255
+    dstDIB.createBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 32, , 255
     
     'Clone the bitmap area from source to destination, while converting format as necessary
     Dim gdipReturn As Long
-    gdipReturn = GdipCloneBitmapAreaI(0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, PixelFormat32bppARGB, srcBitmap, dstBitmap)
+    gdipReturn = GdipCloneBitmapAreaI(0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, PixelFormat32bppARGB, srcBitmap, dstBitmap)
     
     'Create a GDI+ graphics object that points to the destination DIB's DC
     Dim iGraphics As Long
-    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
     
     'Paint the converted image to the destination
     GdipDrawImage iGraphics, dstBitmap, 0, 0
     
     'The target image will always have premultiplied alpha (not really relevant, as the source is 24-bpp, but this
     ' lets us use various accelerated codepaths throughout the project).
-    dstDIB.setInitialAlphaPremultiplicationState True
+    dstDIB.SetInitialAlphaPremultiplicationState True
     
     'Release our bitmap copies and GDI+ instances
     GdipDisposeImage srcBitmap
@@ -1888,7 +1888,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             tmpSettingsDIB.createBlank 8, 8, 32, 0, 0
             
             Dim tmpGraphics As Long
-            If GdipCreateFromHDC(tmpSettingsDIB.getDIBDC, tmpGraphics) = 0 Then
+            If GdipCreateFromHDC(tmpSettingsDIB.GetDIBDC, tmpGraphics) = 0 Then
                 
                 'Set high-quality antialiasing and interpolation
                 GdipSetSmoothingMode tmpGraphics, SmoothingModeHighQuality
@@ -1975,7 +1975,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         If iPixelFormat <> PixelFormat32bppPARGB Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, PixelFormat32bppPARGB, hImage, hImage
         
         'Mark the target DIB premultiplication state accordingly
-        dstDIB.setInitialAlphaPremultiplicationState True
+        dstDIB.SetInitialAlphaPremultiplicationState True
         
         'We are now going to copy the image's data directly into our destination DIB by using LockBits.  Very fast, and not much code!
         
@@ -1984,8 +1984,8 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             .Width = imgWidth
             .Height = imgHeight
             .PixelFormat = PixelFormat32bppPARGB
-            .Stride = dstDIB.getDIBArrayWidth
-            .Scan0 = dstDIB.getActualDIBBits
+            .Stride = dstDIB.GetDIBArrayWidth
+            .Scan0 = dstDIB.GetActualDIBBits
         End With
         
         'Next, prepare a clipping rect
@@ -2016,8 +2016,8 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 .Width = imgWidth
                 .Height = imgHeight
                 .PixelFormat = PixelFormat32bppCMYK
-                .Stride = tmpCMYKDIB.getDIBArrayWidth
-                .Scan0 = tmpCMYKDIB.getActualDIBBits
+                .Stride = tmpCMYKDIB.GetDIBArrayWidth
+                .Scan0 = tmpCMYKDIB.GetActualDIBBits
             End With
             
             'Next, prepare a clipping rect
@@ -2049,7 +2049,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                     pdDebug.LogAction "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion..."
                 #End If
             
-                GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+                GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
                 GdipDrawImageRect iGraphics, hImage, 0, 0, imgWidth, imgHeight
                 GdipDeleteGraphics iGraphics
             
@@ -2060,7 +2060,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         Else
             
             'Render the GDI+ image directly onto the newly created DIB
-            GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+            GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
             GdipDrawImageRect iGraphics, hImage, 0, 0, imgWidth, imgHeight
             GdipDeleteGraphics iGraphics
             
@@ -2069,8 +2069,8 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     End If
     
     'Note some original file settings inside the DIB
-    dstDIB.setOriginalFormat imgFormatFIF
-    dstDIB.setOriginalColorDepth imgColorDepth
+    dstDIB.SetOriginalFormat imgFormatFIF
+    dstDIB.SetOriginalColorDepth imgColorDepth
     
     'Release any remaining GDI+ handles and exit
     GdipDisposeImage hImage
@@ -2115,7 +2115,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     srcPDImage.GetCompositedImage tmpDIB, False
-    If (tmpDIB.getDIBColorDepth <> 24) And imgFormat = [ImageJPEG] Then tmpDIB.CompositeBackgroundColor 255, 255, 255
+    If (tmpDIB.GetDIBColorDepth <> 24) And imgFormat = [ImageJPEG] Then tmpDIB.CompositeBackgroundColor 255, 255, 255
 
     'Begin by creating a generic bitmap header for the current DIB
     Dim imgHeader As BITMAPINFO
@@ -2123,9 +2123,9 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     With imgHeader.Header
         .Size = Len(imgHeader.Header)
         .Planes = 1
-        .BitCount = tmpDIB.getDIBColorDepth
-        .Width = tmpDIB.getDIBWidth
-        .Height = -tmpDIB.getDIBHeight
+        .BitCount = tmpDIB.GetDIBColorDepth
+        .Width = tmpDIB.GetDIBWidth
+        .Height = -tmpDIB.GetDIBHeight
     End With
 
     'Use GDI+ to create a GDI+-compatible bitmap
@@ -2136,13 +2136,13 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         
     'Different GDI+ calls are required for different color depths. GdipCreateBitmapFromGdiDib leads to a blank
     ' alpha channel for 32bpp images, so use GdipCreateBitmapFromScan0 in that case.
-    If tmpDIB.getDIBColorDepth = 32 Then
+    If tmpDIB.GetDIBColorDepth = 32 Then
         
         'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
-        GDIPlusReturn = GdipCreateBitmapFromScan0(tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBWidth * 4, PixelFormat32bppARGB, ByVal tmpDIB.getActualDIBBits, hImage)
+        GDIPlusReturn = GdipCreateBitmapFromScan0(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBWidth * 4, PixelFormat32bppARGB, ByVal tmpDIB.GetActualDIBBits, hImage)
     
     Else
-        GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpDIB.getActualDIBBits, hImage)
+        GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpDIB.GetActualDIBBits, hImage)
     End If
     
     If (GDIPlusReturn <> [OK]) Then
@@ -2359,7 +2359,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
     ReDim aEncParams(1 To Len(uEncParams))
     
     Dim gdipColorDepth As Long
-    gdipColorDepth = srcDIB.getDIBColorDepth
+    gdipColorDepth = srcDIB.GetDIBColorDepth
     
     With uEncParams.Parameter
         .NumberOfValues = 1
@@ -2518,7 +2518,7 @@ Public Function getGDIPlusUnionFromPointsAndImage(ByVal numOfPoints As Long, ByV
     tmpSettingsDIB.createBlank 8, 8, 32, 0, 0
     
     Dim tmpGraphics As Long
-    If GdipCreateFromHDC(tmpSettingsDIB.getDIBDC, tmpGraphics) = 0 Then
+    If GdipCreateFromHDC(tmpSettingsDIB.GetDIBDC, tmpGraphics) = 0 Then
     
         'Retrieve the new bounding rect of the region, and place it directly into the function return
         GdipGetRegionBounds gdipRegionHandle, tmpGraphics, getGDIPlusUnionFromPointsAndImage
@@ -2567,7 +2567,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     If useThisDestinationDCInstead <> 0 Then
         GdipCreateFromHDC useThisDestinationDCInstead, iGraphics
     Else
-        GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+        GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
     End If
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
@@ -2607,7 +2607,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         If newAlpha <> 1 Then m_AttributesMatrix(3, 3) = 1
         
         'Update premultiplication status in the target
-        If Not (dstDIB Is Nothing) Then dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
+        If Not (dstDIB Is Nothing) Then dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
         
     End If
     
@@ -2635,7 +2635,7 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
     
     'Create a GDI+ graphics object that points to the destination DIB's DC
     Dim iGraphics As Long, tBitmap As Long
-    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
@@ -2674,7 +2674,7 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
         If newAlpha <> 1 Then m_AttributesMatrix(3, 3) = 1
         
         'Update premultiplication status in the target
-        dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
+        dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
         
     End If
     
@@ -2695,28 +2695,28 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     'Before doing any rotating or blurring, we need to figure out the size of our destination image.  If we don't
     ' do this, the rotation will chop off the image's corners!
     Dim nWidth As Double, nHeight As Double
-    Math_Functions.findBoundarySizeOfRotatedRect srcDIB.getDIBWidth, srcDIB.getDIBHeight, rotateAngle, nWidth, nHeight, False
+    Math_Functions.findBoundarySizeOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, nWidth, nHeight, False
     
     'Use these dimensions to size the destination image, as requested by the user
     If dstDIBAlreadySized Then
-        nWidth = dstDIB.getDIBWidth
-        nHeight = dstDIB.getDIBHeight
+        nWidth = dstDIB.GetDIBWidth
+        nHeight = dstDIB.GetDIBHeight
     Else
         If dstDIB Is Nothing Then Set dstDIB = New pdDIB
-        dstDIB.createBlank nWidth, nHeight, srcDIB.getDIBColorDepth, 0, 0
+        dstDIB.createBlank nWidth, nHeight, srcDIB.GetDIBColorDepth, 0, 0
     End If
     
     'We also want a copy of the corner points of the rotated rect; we'll use these to perform a fast PlgBlt-like operation,
     ' which is how we draw both the rotation and the corner extensions.
     Dim listOfPoints() As POINTFLOAT
     ReDim listOfPoints(0 To 3) As POINTFLOAT
-    Math_Functions.findCornersOfRotatedRect srcDIB.getDIBWidth, srcDIB.getDIBHeight, rotateAngle, listOfPoints, True
+    Math_Functions.findCornersOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, listOfPoints, True
     
     'Calculate the size difference between the source and destination images.  We need to add this offset to all
     ' rotation coordinates, to ensure the rotated image is fully contained within the destination DIB.
     Dim hOffset As Double, vOffset As Double
-    hOffset = (nWidth - srcDIB.getDIBWidth) / 2
-    vOffset = (nHeight - srcDIB.getDIBHeight) / 2
+    hOffset = (nWidth - srcDIB.GetDIBWidth) / 2
+    vOffset = (nHeight - srcDIB.GetDIBHeight) / 2
     
     'Apply those offsets to all rotation points, and because GDI+ requires us to use an offset pixel mode for
     ' non-shit results along edges, pad all coordinates with an extra half-pixel as well.
@@ -2727,7 +2727,7 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     Next i
     
     'Rotate the source DIB into the destination DIB.  At this point, corners are still blank - we'll deal with those momentarily.
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, 1, InterpolationModeHighQualityBicubic, True
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 1, InterpolationModeHighQualityBicubic, True
     
 End Sub
 
@@ -2739,27 +2739,27 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     'Before doing any rotating or blurring, we need to figure out the size of our destination image.  If we don't
     ' do this, the rotation will chop off the image's corners!
     Dim nWidth As Double, nHeight As Double
-    Math_Functions.findBoundarySizeOfRotatedRect srcDIB.getDIBWidth, srcDIB.getDIBHeight, rotateAngle, nWidth, nHeight
+    Math_Functions.findBoundarySizeOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, nWidth, nHeight
     
     'Use these dimensions to size the destination image
     If dstDIB Is Nothing Then Set dstDIB = New pdDIB
-    If (dstDIB.getDIBWidth <> nWidth) Or (dstDIB.getDIBHeight <> nHeight) Or (dstDIB.getDIBColorDepth <> srcDIB.getDIBColorDepth) Then
-        dstDIB.createBlank nWidth, nHeight, srcDIB.getDIBColorDepth, 0, 0
+    If (dstDIB.GetDIBWidth <> nWidth) Or (dstDIB.GetDIBHeight <> nHeight) Or (dstDIB.GetDIBColorDepth <> srcDIB.GetDIBColorDepth) Then
+        dstDIB.createBlank nWidth, nHeight, srcDIB.GetDIBColorDepth, 0, 0
     Else
-        dstDIB.resetDIB 0
+        dstDIB.ResetDIB 0
     End If
     
     'We also want a copy of the corner points of the rotated rect; we'll use these to perform a fast PlgBlt-like operation,
     ' which is how we draw both the rotation and the corner extensions.
     Dim listOfPoints() As POINTFLOAT
     ReDim listOfPoints(0 To 3) As POINTFLOAT
-    Math_Functions.findCornersOfRotatedRect srcDIB.getDIBWidth, srcDIB.getDIBHeight, rotateAngle, listOfPoints, True
+    Math_Functions.findCornersOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, listOfPoints, True
     
     'Calculate the size difference between the source and destination images.  We need to add this offset to all
     ' rotation coordinates, to ensure the rotated image is fully contained within the destination DIB.
     Dim hOffset As Double, vOffset As Double
-    hOffset = (nWidth - srcDIB.getDIBWidth) / 2
-    vOffset = (nHeight - srcDIB.getDIBHeight) / 2
+    hOffset = (nWidth - srcDIB.GetDIBWidth) / 2
+    vOffset = (nHeight - srcDIB.GetDIBHeight) / 2
     
     'Apply those offsets to all rotation points, and because GDI+ requires us to use an offset pixel mode for
     ' non-shit results along edges, pad all coordinates with an extra half-pixel as well.
@@ -2770,7 +2770,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     Next i
     
     'Rotate the source DIB into the destination DIB.  At this point, corners are still blank - we'll deal with those momentarily.
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, 1, InterpolationModeHighQualityBicubic, False
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 1, InterpolationModeHighQualityBicubic, False
     
     'We're now going to calculate a whole bunch of geometry based around the concept of extending a rectangle from
     ' each edge of our rotated image, out to the corner of the rotation DIB.  We will then fill this dead space with a
@@ -2785,7 +2785,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     
     'Get the difference between the diagonal distance, and the original height of the image.  This is the distance
     ' where we need to provide clamped pixels on this edge.
-    distDiff = diagDistance - (srcDIB.getDIBHeight / 2)
+    distDiff = diagDistance - (srcDIB.GetDIBHeight / 2)
     
     'Calculate delta x/y values for the top line, then convert those into unit vectors
     dx = listOfPoints(1).x - listOfPoints(0).x
@@ -2808,7 +2808,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(1).y - pY
     padPoints(2).x = listOfPoints(0).x
     padPoints(2).y = listOfPoints(0).y
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, srcDIB.getDIBWidth, 1, 1, InterpolationModeHighQualityBilinear, False
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, 1, 1, InterpolationModeHighQualityBilinear, False
     
     'Now repeat the above steps for the bottom of the image.  Note that we can reuse almost all of the calculations,
     ' as this line is parallel to the one we just calculated.
@@ -2818,14 +2818,14 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(3).y - (pY / distDiff)
     padPoints(2).x = listOfPoints(2).x + pX
     padPoints(2).y = listOfPoints(2).y + pY
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, srcDIB.getDIBHeight - 2, srcDIB.getDIBWidth, 1, 1, InterpolationModeHighQualityBilinear, False
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, srcDIB.GetDIBHeight - 2, srcDIB.GetDIBWidth, 1, 1, InterpolationModeHighQualityBilinear, False
     
     'We are now going to repeat the above steps, but for the left and right edges of the image.  The end result of this
     ' will be a rotated destination image, with clamped values extending from all image edges.
     
     'Get the difference between the diagonal distance, and the original width of the image.  This is the distance
     ' where we need to provide clamped pixels on this edge.
-    distDiff = diagDistance - (srcDIB.getDIBWidth / 2)
+    distDiff = diagDistance - (srcDIB.GetDIBWidth / 2)
     
     'Calculate delta x/y values for the left line, then convert those into unit vectors
     dx = listOfPoints(2).x - listOfPoints(0).x
@@ -2847,7 +2847,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(0).y
     padPoints(2).x = listOfPoints(2).x + pX
     padPoints(2).y = listOfPoints(2).y + pY
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, 1, srcDIB.getDIBHeight, 1, InterpolationModeHighQualityBilinear, False
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, 1, srcDIB.GetDIBHeight, 1, InterpolationModeHighQualityBilinear, False
     
     '...and finally, repeat everything for the right side of the image
     padPoints(0).x = listOfPoints(1).x + (pX / distDiff)
@@ -2856,7 +2856,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(1).y - pY
     padPoints(2).x = listOfPoints(3).x + (pX / distDiff)
     padPoints(2).y = listOfPoints(3).y + (pY / distDiff)
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, srcDIB.getDIBWidth - 2, 0, 1, srcDIB.getDIBHeight, 1, InterpolationModeHighQualityBilinear, False
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, srcDIB.GetDIBWidth - 2, 0, 1, srcDIB.GetDIBHeight, 1, InterpolationModeHighQualityBilinear, False
     
     'Our work here is complete!
 
@@ -2880,7 +2880,7 @@ Public Function IsGDIPlusAvailable() As Boolean
         'Next, we're going to create a dummy graphics container.  This is useful for GDI+ functions that require world transformation data.
         Set m_TransformDIB = New pdDIB
         m_TransformDIB.createBlank 8, 8, 32, 0, 0
-        GdipCreateFromHDC m_TransformDIB.getDIBDC, m_TransformGraphics
+        GdipCreateFromHDC m_TransformDIB.GetDIBDC, m_TransformGraphics
         
         'Note that these dummy objects are released when GDI+ terminates.
         
