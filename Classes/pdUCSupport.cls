@@ -365,12 +365,12 @@ Public Function GetCaptionFontUnderline() As Boolean
     GetCaptionFontUnderline = m_Caption.GetFontUnderline
 End Function
 
-Public Sub SetCaptionFontUnderline(ByVal newState As Boolean)
+Public Sub SetCaptionFontUnderline(ByVal newState As Boolean, Optional ByVal suspendRepaint As Boolean = False)
     
     'Changes to font style require redraws
     If m_Caption.SetFontUnderline(newState) Then
         SyncBackBufferSize True
-        AskForARepaint True
+        If (Not suspendRepaint) Then AskForARepaint True
     End If
     
 End Sub
@@ -431,7 +431,7 @@ Public Sub PaintCaptionManually(Optional ByVal newX As Long = -1, Optional ByVal
     Else
         If newX = -1 Then newX = m_CustomCaptionRect.Left
         If newY = -1 Then newY = m_CustomCaptionRect.Top
-        m_Caption.DrawCaption_Clipped m_BackBuffer.getDIBDC, newX, newY, m_BackBuffer.getDIBWidth - newX, m_BackBuffer.getDIBHeight - newY, customColor
+        m_Caption.DrawCaption_Clipped m_BackBuffer.GetDIBDC, newX, newY, m_BackBuffer.GetDIBWidth - newX, m_BackBuffer.GetDIBHeight - newY, customColor
     End If
 End Sub
 
@@ -442,7 +442,7 @@ Public Sub PaintCaptionManually_Clipped(ByVal dstX As Long, ByVal dstY As Long, 
             pdDebug.LogAction "WARNING!  You cannot paint outside a WM_PAINT cycle if double-buffering was deactivated!"
         #End If
     Else
-        m_Caption.DrawCaption_Clipped m_BackBuffer.getDIBDC, dstX, dstY, dstWidth, dstHeight, customColor, useEllipses, useOriginalFontSize, centerVertically
+        m_Caption.DrawCaption_Clipped m_BackBuffer.GetDIBDC, dstX, dstY, dstWidth, dstHeight, customColor, useEllipses, useOriginalFontSize, centerVertically
     End If
 End Sub
 
@@ -572,9 +572,9 @@ Private Function ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Opti
             End If
         Else
             If (rpLeft = 0#) And (rpTop = 0#) And (rpWidth = 0#) And (rpHeight = 0#) Then
-                Drawing.FillRectToDC m_BackBuffer.getDIBDC, -1, -1, m_Width + 2, m_Height + 2, newBackColor
+                Drawing.FillRectToDC m_BackBuffer.GetDIBDC, -1, -1, m_Width + 2, m_Height + 2, newBackColor
             Else
-                Drawing.FillRectToDC m_BackBuffer.getDIBDC, rpLeft - 1, rpTop - 1, rpWidth + 2, rpHeight + 2, newBackColor
+                Drawing.FillRectToDC m_BackBuffer.GetDIBDC, rpLeft - 1, rpTop - 1, rpWidth + 2, rpHeight + 2, newBackColor
             End If
         End If
     End If
@@ -593,7 +593,7 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
     Dim bufferWasResized As Boolean
     bufferWasResized = False
     
-    If (m_BackBuffer.getDIBWidth <> m_Width) Or (m_BackBuffer.getDIBHeight <> m_Height) Then
+    If (m_BackBuffer.GetDIBWidth <> m_Width) Or (m_BackBuffer.GetDIBHeight <> m_Height) Then
         m_BackBuffer.createBlank m_Width, m_Height, 24
         bufferWasResized = True
     End If
@@ -635,7 +635,7 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
             
             'Paint the caption, as required
             If (Not m_CustomCaptionPaintingActive) Then
-                m_Caption.DrawCaption_Clipped m_BackBuffer.getDIBDC, m_CaptionRect.Left, m_CaptionRect.Top, m_CaptionRect.Right - m_CaptionRect.Left, m_CaptionRect.Bottom - m_CaptionRect.Top
+                m_Caption.DrawCaption_Clipped m_BackBuffer.GetDIBDC, m_CaptionRect.Left, m_CaptionRect.Top, m_CaptionRect.Right - m_CaptionRect.Left, m_CaptionRect.Bottom - m_CaptionRect.Top
             End If
             
         End If
@@ -648,11 +648,11 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
             With tmpRect
                 .Left = 0
                 .Top = 0
-                .Right = m_BackBuffer.getDIBWidth - 1
-                .Bottom = m_BackBuffer.getDIBHeight - 1
+                .Right = m_BackBuffer.GetDIBWidth - 1
+                .Bottom = m_BackBuffer.GetDIBHeight - 1
             End With
             
-            DrawFocusRect m_BackBuffer.getDIBDC, tmpRect
+            DrawFocusRect m_BackBuffer.GetDIBDC, tmpRect
             
         End If
     
@@ -801,7 +801,7 @@ Private Sub m_Painter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, B
     
     'If backbuffering is active (as it is with most PD controls), copy the relevant portion of the buffer into place.
     Else
-        BitBlt targetDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
+        BitBlt targetDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.GetDIBDC, winLeft, winTop, vbSrcCopy
     End If
     
 End Sub
@@ -873,7 +873,7 @@ Public Function GetBackBufferDC(Optional ByVal repaintBackground As Boolean = Fa
     End If
     
     'With the background successfully filled, allow the caller to paint to the DC at their leisure.
-    GetBackBufferDC = m_BackBuffer.getDIBDC
+    GetBackBufferDC = m_BackBuffer.GetDIBDC
     
 End Function
 
@@ -994,7 +994,7 @@ Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
             
             Dim targetDC As Long
             If m_hDC <> 0 Then targetDC = m_hDC Else targetDC = m_Painter.GetPaintStructDC
-            BitBlt targetDC, 0, 0, m_Width, m_Height, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+            BitBlt targetDC, 0, 0, m_Width, m_Height, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
             
         End If
     End If
@@ -1014,7 +1014,7 @@ Public Sub RequestIDERepaint(ByVal targetDC As Long)
             Else
                 SyncBackBufferSize True
             End If
-            BitBlt targetDC, 0, 0, m_Width, m_Height, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+            BitBlt targetDC, 0, 0, m_Width, m_Height, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
         End If
     End If
 
