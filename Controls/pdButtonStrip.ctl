@@ -226,6 +226,43 @@ Public Property Let FontSizeCaption(ByVal newSize As Single)
     PropertyChanged "FontSizeCaption"
 End Property
 
+'To support high-DPI settings properly, we expose specialized move+size functions
+Public Function GetLeft() As Long
+    GetLeft = ucSupport.GetControlLeft
+End Function
+
+Public Sub SetLeft(ByVal newLeft As Long)
+    ucSupport.RequestNewPosition newLeft, , True
+End Sub
+
+Public Function GetTop() As Long
+    GetTop = ucSupport.GetControlTop
+End Function
+
+Public Sub SetTop(ByVal newTop As Long)
+    ucSupport.RequestNewPosition , newTop, True
+End Sub
+
+Public Function GetWidth() As Long
+    GetWidth = ucSupport.GetControlWidth
+End Function
+
+Public Sub SetWidth(ByVal newWidth As Long)
+    ucSupport.RequestNewSize newWidth, , True
+End Sub
+
+Public Function GetHeight() As Long
+    GetHeight = ucSupport.GetControlHeight
+End Function
+
+Public Sub SetHeight(ByVal newHeight As Long)
+    ucSupport.RequestNewSize , newHeight, True
+End Sub
+
+Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
+    ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
+End Sub
+
 'When the control receives focus, if the focus isn't received via mouse click, display a focus rect around the active button
 Private Sub ucSupport_GotFocusAPI()
     
@@ -488,36 +525,36 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As 
     
     'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
     ' (We also check for these != 0 to verify that an image was successfully loaded.)
-    m_Buttons(itemIndex).btImageWidth = srcDIB.getDIBWidth
-    m_Buttons(itemIndex).btImageHeight = srcDIB.getDIBHeight
+    m_Buttons(itemIndex).btImageWidth = srcDIB.GetDIBWidth
+    m_Buttons(itemIndex).btImageHeight = srcDIB.GetDIBHeight
     
     'Create a vertical sprite-sheet DIB, and mark it as having premultiplied alpha
     If m_Buttons(itemIndex).btImages Is Nothing Then Set m_Buttons(itemIndex).btImages = New pdDIB
     
     With m_Buttons(itemIndex)
-        .btImages.createBlank .btImageWidth, .btImageHeight * 3, srcDIB.getDIBColorDepth, 0, 0
-        .btImages.setInitialAlphaPremultiplicationState True
+        .btImages.createBlank .btImageWidth, .btImageHeight * 3, srcDIB.GetDIBColorDepth, 0, 0
+        .btImages.SetInitialAlphaPremultiplicationState True
         
         'Copy this normal-state DIB into place at the top of the sheet
-        BitBlt .btImages.getDIBDC, 0, 0, .btImageWidth, .btImageHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt .btImages.GetDIBDC, 0, 0, .btImageWidth, .btImageHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Next, make a copy of the source DIB.
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
-        tmpDIB.createFromExistingDIB srcDIB
+        tmpDIB.CreateFromExistingDIB srcDIB
         
         'Convert this to a brighter, "glowing" version; we'll use this when rendering a hovered state.
         ScaleDIBRGBValues tmpDIB, UC_HOVER_BRIGHTNESS, True
         
         'Copy this DIB into position #2, beneath the base DIB
-        BitBlt .btImages.getDIBDC, 0, .btImageHeight, .btImageWidth, .btImageHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt .btImages.GetDIBDC, 0, .btImageHeight, .btImageWidth, .btImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Finally, create a grayscale copy of the original image.  This will serve as the "disabled state" copy.
-        tmpDIB.createFromExistingDIB srcDIB
+        tmpDIB.CreateFromExistingDIB srcDIB
         GrayscaleDIB tmpDIB, True
         
         'Place it into position #3, beneath the previous two DIBs
-        BitBlt .btImages.getDIBDC, 0, .btImageHeight * 2, .btImageWidth, .btImageHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt .btImages.GetDIBDC, 0, .btImageHeight * 2, .btImageWidth, .btImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Free whatever DIBs we can.  (If the caller passed us the source DIB, we trust them to release it.)
         Set tmpDIB = Nothing
@@ -951,7 +988,7 @@ Private Sub RedrawBackBuffer()
                         pxOffset = .btImageHeight * 2
                     End If
                     
-                    .btImages.alphaBlendToDCEx bufferDC, .btImageCoords.x, .btImageCoords.y, .btImageWidth, .btImageHeight, 0, pxOffset, .btImageWidth, .btImageHeight
+                    .btImages.AlphaBlendToDCEx bufferDC, .btImageCoords.x, .btImageCoords.y, .btImageWidth, .btImageHeight, 0, pxOffset, .btImageWidth, .btImageHeight
                     
                 End If
                 
