@@ -244,6 +244,10 @@ Public Property Let UseCustomForeColor(ByVal newSetting As Boolean)
     End If
 End Property
 
+Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    ucSupport.RequestCursor IDC_ARROW
+End Sub
+
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout
     RedrawBackBuffer
@@ -307,6 +311,7 @@ Private Sub UserControl_Initialize()
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
+    ucSupport.RequestExtraFunctionality True
     ucSupport.RequestCaptionSupport False
     ucSupport.SetCaptionAutomaticPainting False
     
