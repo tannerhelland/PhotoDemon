@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.148</langversion>
+<langversion>6.7.149</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -3121,11 +3121,16 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
+<original>File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Checksum failed for node #</original>
 <translation>Checksum gagal untuk nod #</translation>
 </phrase>
 
-<!-- pdPackager.cls contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdPackager.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdPackager.cls-->
 
@@ -3950,6 +3955,11 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
+<original>embed thumbnail image</original>
+<translation>imej kecil embed</translation>
+</phrase>
+
+<phrase>
 <original>This image contains metadata.</original>
 <translation>Imej ini mengandungi metadata.</translation>
 </phrase>
@@ -3965,11 +3975,11 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
-<original>%1 settings</original>
-<translation> %1 tetapan</translation>
+<original>JPEG-specific settings</original>
+<translation></translation>
 </phrase>
 
-<!-- pdMetadataExport.ctl contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdMetadataExport.ctl contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for pdMetadataExport.ctl-->
 
@@ -10581,11 +10591,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>embed thumbnail image</original>
-<translation>imej kecil embed</translation>
-</phrase>
-
-<phrase>
 <original>use progressive encoding</original>
 <translation>menggunakan pengekodan progresif</translation>
 </phrase>
@@ -11193,7 +11198,7 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>diproses sebelum pembatalan. Last imej diproses adalah " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 264 phrases. 87 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 264 phrases. 88 were duplicates of existing phrases, so only 176 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13588,46 +13593,6 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 </phrase>
 
 <phrase>
-<original>Save this translation and proceed to the next phrase</original>
-<translation>Jimat terjemahan ini dan teruskan ke frasa seterusnya</translation>
-</phrase>
-
-<phrase>
-<original>automatically estimate missing translations (via Google Translate)</original>
-<translation>secara automatik menganggarkan terjemahan yang hilang (melalui Google Translate)</translation>
-</phrase>
-
-<phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>ENTER utama secara automatik menyimpan dan hasil untuk frasa seterusnya</translation>
-</phrase>
-
-<phrase>
-<original>translated phrase</original>
-<translation>frasa diterjemahkan</translation>
-</phrase>
-
-<phrase>
-<original>original phrase</original>
-<translation>frasa asal</translation>
-</phrase>
-
-<phrase>
-<original>phrases to display</original>
-<translation>frasa untuk memaparkan</translation>
-</phrase>
-
-<phrase>
-<original>list of phrases (%1 items)</original>
-<translation>senarai frasa ( %1 item)</translation>
-</phrase>
-
-<phrase>
-<original>Initiate auto-translation of all missing phrases</original>
-<translation>Memulakan auto-terjemahan semua frasa hilang</translation>
-</phrase>
-
-<phrase>
 <original>Delete selected language file</original>
 <translation>Padam fail bahasa dipilih</translation>
 </phrase>
@@ -13700,6 +13665,46 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <phrase>
 <original>language ID</original>
 <translation>ID bahasa</translation>
+</phrase>
+
+<phrase>
+<original>Save this translation and proceed to the next phrase</original>
+<translation>Jimat terjemahan ini dan teruskan ke frasa seterusnya</translation>
+</phrase>
+
+<phrase>
+<original>automatically estimate missing translations (via Google Translate)</original>
+<translation>secara automatik menganggarkan terjemahan yang hilang (melalui Google Translate)</translation>
+</phrase>
+
+<phrase>
+<original>ENTER key automatically saves and proceeds to next phrase</original>
+<translation>ENTER utama secara automatik menyimpan dan hasil untuk frasa seterusnya</translation>
+</phrase>
+
+<phrase>
+<original>translated phrase</original>
+<translation>frasa diterjemahkan</translation>
+</phrase>
+
+<phrase>
+<original>original phrase</original>
+<translation>frasa asal</translation>
+</phrase>
+
+<phrase>
+<original>phrases to display</original>
+<translation>frasa untuk memaparkan</translation>
+</phrase>
+
+<phrase>
+<original>list of phrases (%1 items)</original>
+<translation>senarai frasa ( %1 item)</translation>
+</phrase>
+
+<phrase>
+<original>Initiate auto-translation of all missing phrases</original>
+<translation>Memulakan auto-terjemahan semua frasa hilang</translation>
 </phrase>
 
 <phrase>
@@ -14854,6 +14859,61 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 </phrase>
 
 <phrase>
+<original>Disable FreeImage</original>
+<translation>Matikan FreeImage</translation>
+</phrase>
+
+<phrase>
+<original>Disable zLib</original>
+<translation>Matikan zlib</translation>
+</phrase>
+
+<phrase>
+<original>Disable EZTwain</original>
+<translation>Matikan EZTwain</translation>
+</phrase>
+
+<phrase>
+<original>Disable PNGQuant</original>
+<translation>Matikan PNGQuant</translation>
+</phrase>
+
+<phrase>
+<original>Disable ExifTool</original>
+<translation>Matikan ExifTool</translation>
+</phrase>
+
+<phrase>
+<original>Disable LittleCMS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>status</original>
+<translation>status</translation>
+</phrase>
+
+<phrase>
+<original>installed, enabled, and up to date</original>
+<translation>dipasang, membolehkan, dan sehingga tarikh</translation>
+</phrase>
+
+<phrase>
+<original>current plugin status</original>
+<translation>status plugin semasa</translation>
+</phrase>
+
+<phrase>
+<original>GOOD</original>
+<translation>BAIK</translation>
+</phrase>
+
+<phrase>
 <original>improve IE6 compatibility (reduces image quality; use with caution)</original>
 <translation>meningkatkan keserasian IE6 (mengurangkan kualiti imej; menggunakan dengan berhati-hati)</translation>
 </phrase>
@@ -14869,6 +14929,11 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 </phrase>
 
 <phrase>
+<original>BSD license</original>
+<translation>lesen BSD</translation>
+</phrase>
+
+<phrase>
 <original>fast, low quality</original>
 <translation>cepat, berkualiti rendah</translation>
 </phrase>
@@ -14881,11 +14946,6 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <phrase>
 <original>PNGQuant settings</original>
 <translation>tetapan PNGQuant</translation>
-</phrase>
-
-<phrase>
-<original>BSD license</original>
-<translation>lesen BSD</translation>
 </phrase>
 
 <phrase>
@@ -14914,6 +14974,26 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 </phrase>
 
 <phrase>
+<original>MIT license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS plugin information</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS homepage</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>open-source Perl license</original>
 <translation>sumber terbuka lesen Perl</translation>
 </phrase>
@@ -14934,6 +15014,11 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 </phrase>
 
 <phrase>
+<original>public domain</original>
+<translation>domain awam</translation>
+</phrase>
+
+<phrase>
 <original>EZTwain plugin information</original>
 <translation>Maklumat plugin EZTwain</translation>
 </phrase>
@@ -14946,11 +15031,6 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <phrase>
 <original>EZTwain license</original>
 <translation>lesen EZTwain</translation>
-</phrase>
-
-<phrase>
-<original>public domain</original>
-<translation>domain awam</translation>
 </phrase>
 
 <phrase>
@@ -14969,6 +15049,11 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 </phrase>
 
 <phrase>
+<original>FreeImage Public License (FIPL)</original>
+<translation>Lesen Awam FreeImage (FIPL)</translation>
+</phrase>
+
+<phrase>
 <original>FreeImage plugin information</original>
 <translation>FreeImage maklumat plugin</translation>
 </phrase>
@@ -14981,56 +15066,6 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <phrase>
 <original>FreeImage license</original>
 <translation>lesen FreeImage</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage Public License (FIPL)</original>
-<translation>Lesen Awam FreeImage (FIPL)</translation>
-</phrase>
-
-<phrase>
-<original>Disable ExifTool</original>
-<translation>Matikan ExifTool</translation>
-</phrase>
-
-<phrase>
-<original>installed, enabled, and up to date</original>
-<translation>dipasang, membolehkan, dan sehingga tarikh</translation>
-</phrase>
-
-<phrase>
-<original>status</original>
-<translation>status</translation>
-</phrase>
-
-<phrase>
-<original>current plugin status</original>
-<translation>status plugin semasa</translation>
-</phrase>
-
-<phrase>
-<original>GOOD</original>
-<translation>BAIK</translation>
-</phrase>
-
-<phrase>
-<original>Disable FreeImage</original>
-<translation>Matikan FreeImage</translation>
-</phrase>
-
-<phrase>
-<original>Disable zLib</original>
-<translation>Matikan zlib</translation>
-</phrase>
-
-<phrase>
-<original>Disable EZTwain</original>
-<translation>Matikan EZTwain</translation>
-</phrase>
-
-<phrase>
-<original>Disable PNGQuant</original>
-<translation>Matikan PNGQuant</translation>
 </phrase>
 
 <phrase>
@@ -15088,7 +15123,7 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <translation>hilang</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 89 phrases. 34 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
@@ -15124,16 +15159,16 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <translation>dengan warna</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2595</phrasecount>
+<phrasecount>2602</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4469 phrases. -->
-<!-- 1874 are duplicates, so only 2595 unique phrases have been written to file. -->
-<!-- These 2595 phrases contain approximately 13401 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1882 are duplicates, so only 2602 unique phrases have been written to file. -->
+<!-- These 2602 phrases contain approximately 13429 total words. -->
 
 </pdData>

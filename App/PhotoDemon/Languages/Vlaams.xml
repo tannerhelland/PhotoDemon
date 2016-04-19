@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.148</langversion>
+<langversion>6.7.149</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -3111,11 +3111,16 @@ Geef een numerieke waarde.</translation>
 </phrase>
 
 <phrase>
+<original>File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Checksum failed for node #</original>
 <translation>Controlesom mislukt voor knooppunt #</translation>
 </phrase>
 
-<!-- pdPackager.cls contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdPackager.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdPackager.cls-->
 
@@ -3940,6 +3945,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>embed thumbnail image</original>
+<translation>insluiten miniatuurafbeelding</translation>
+</phrase>
+
+<phrase>
 <original>This image contains metadata.</original>
 <translation></translation>
 </phrase>
@@ -3955,11 +3965,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>%1 settings</original>
+<original>JPEG-specific settings</original>
 <translation></translation>
 </phrase>
 
-<!-- pdMetadataExport.ctl contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdMetadataExport.ctl contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for pdMetadataExport.ctl-->
 
@@ -10571,11 +10581,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
-<original>embed thumbnail image</original>
-<translation>insluiten miniatuurafbeelding</translation>
-</phrase>
-
-<phrase>
 <original>use progressive encoding</original>
 <translation>gebruik progressieve codering</translation>
 </phrase>
@@ -11183,7 +11188,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 <translation>verwerkt voor annulering. Laatst bewerkte afbeelding was "%1"</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 264 phrases. 87 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 264 phrases. 88 were duplicates of existing phrases, so only 176 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13578,46 +13583,6 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 </phrase>
 
 <phrase>
-<original>Save this translation and proceed to the next phrase</original>
-<translation>Bewaar deze vertaling en ga verder naar de volgende zin</translation>
-</phrase>
-
-<phrase>
-<original>automatically estimate missing translations (via Google Translate)</original>
-<translation>schat ontbrekende vertalingen in (via Google Translate)</translation>
-</phrase>
-
-<phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>ENTER toets bewaart automatisch en gaat naar de volgende zin</translation>
-</phrase>
-
-<phrase>
-<original>translated phrase</original>
-<translation>vertaalde zin</translation>
-</phrase>
-
-<phrase>
-<original>original phrase</original>
-<translation>originele zin</translation>
-</phrase>
-
-<phrase>
-<original>phrases to display</original>
-<translation>weer te geven zinnen</translation>
-</phrase>
-
-<phrase>
-<original>list of phrases (%1 items)</original>
-<translation>lijst zinnen (%1 items)</translation>
-</phrase>
-
-<phrase>
-<original>Initiate auto-translation of all missing phrases</original>
-<translation>Initiëren automatische vertaling van alle ontbrekende zinnen</translation>
-</phrase>
-
-<phrase>
 <original>Delete selected language file</original>
 <translation>Verwijder geselecteerd taalbestand</translation>
 </phrase>
@@ -13690,6 +13655,46 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <phrase>
 <original>language ID</original>
 <translation>taal ID</translation>
+</phrase>
+
+<phrase>
+<original>Save this translation and proceed to the next phrase</original>
+<translation>Bewaar deze vertaling en ga verder naar de volgende zin</translation>
+</phrase>
+
+<phrase>
+<original>automatically estimate missing translations (via Google Translate)</original>
+<translation>schat ontbrekende vertalingen in (via Google Translate)</translation>
+</phrase>
+
+<phrase>
+<original>ENTER key automatically saves and proceeds to next phrase</original>
+<translation>ENTER toets bewaart automatisch en gaat naar de volgende zin</translation>
+</phrase>
+
+<phrase>
+<original>translated phrase</original>
+<translation>vertaalde zin</translation>
+</phrase>
+
+<phrase>
+<original>original phrase</original>
+<translation>originele zin</translation>
+</phrase>
+
+<phrase>
+<original>phrases to display</original>
+<translation>weer te geven zinnen</translation>
+</phrase>
+
+<phrase>
+<original>list of phrases (%1 items)</original>
+<translation>lijst zinnen (%1 items)</translation>
+</phrase>
+
+<phrase>
+<original>Initiate auto-translation of all missing phrases</original>
+<translation>Initiëren automatische vertaling van alle ontbrekende zinnen</translation>
 </phrase>
 
 <phrase>
@@ -14844,6 +14849,61 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 </phrase>
 
 <phrase>
+<original>Disable FreeImage</original>
+<translation>Uitschakelen FreeImage</translation>
+</phrase>
+
+<phrase>
+<original>Disable zLib</original>
+<translation>Uitschakelen zLib</translation>
+</phrase>
+
+<phrase>
+<original>Disable EZTwain</original>
+<translation>Uitschakelen EZTwain</translation>
+</phrase>
+
+<phrase>
+<original>Disable PNGQuant</original>
+<translation>Uitschakelen pngquant</translation>
+</phrase>
+
+<phrase>
+<original>Disable ExifTool</original>
+<translation>Uitschakelen ExifTool</translation>
+</phrase>
+
+<phrase>
+<original>Disable LittleCMS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>status</original>
+<translation>status</translation>
+</phrase>
+
+<phrase>
+<original>installed, enabled, and up to date</original>
+<translation>geïnstalleerd, ingeschakeld en actueel</translation>
+</phrase>
+
+<phrase>
+<original>current plugin status</original>
+<translation>huidige insteekmodule status</translation>
+</phrase>
+
+<phrase>
+<original>GOOD</original>
+<translation>GOED</translation>
+</phrase>
+
+<phrase>
 <original>improve IE6 compatibility (reduces image quality; use with caution)</original>
 <translation>verbeteren IE6 compatibiliteit (vermindert de beeldkwaliteit; gebruik met de nodige voorzichtigheid)</translation>
 </phrase>
@@ -14859,6 +14919,11 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 </phrase>
 
 <phrase>
+<original>BSD license</original>
+<translation>BSD-licentie</translation>
+</phrase>
+
+<phrase>
 <original>fast, low quality</original>
 <translation>snel, lage kwaliteit</translation>
 </phrase>
@@ -14871,11 +14936,6 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <phrase>
 <original>PNGQuant settings</original>
 <translation>PNGQuant instellingen</translation>
-</phrase>
-
-<phrase>
-<original>BSD license</original>
-<translation>BSD-licentie</translation>
 </phrase>
 
 <phrase>
@@ -14904,6 +14964,26 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 </phrase>
 
 <phrase>
+<original>MIT license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS plugin information</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS homepage</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>open-source Perl license</original>
 <translation>open-source Perl-licentie</translation>
 </phrase>
@@ -14924,6 +15004,11 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 </phrase>
 
 <phrase>
+<original>public domain</original>
+<translation>publiek domein</translation>
+</phrase>
+
+<phrase>
 <original>EZTwain plugin information</original>
 <translation>EZTwain insteekmodule-informatie</translation>
 </phrase>
@@ -14936,11 +15021,6 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <phrase>
 <original>EZTwain license</original>
 <translation>EZTwain licentie</translation>
-</phrase>
-
-<phrase>
-<original>public domain</original>
-<translation>publiek domein</translation>
 </phrase>
 
 <phrase>
@@ -14959,6 +15039,11 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 </phrase>
 
 <phrase>
+<original>FreeImage Public License (FIPL)</original>
+<translation>FreeImage Publieke Licentie (FIPL)</translation>
+</phrase>
+
+<phrase>
 <original>FreeImage plugin information</original>
 <translation>FreeImage insteekmodule-informatie</translation>
 </phrase>
@@ -14971,56 +15056,6 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <phrase>
 <original>FreeImage license</original>
 <translation>FreeImage licentie</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage Public License (FIPL)</original>
-<translation>FreeImage Publieke Licentie (FIPL)</translation>
-</phrase>
-
-<phrase>
-<original>Disable ExifTool</original>
-<translation>Uitschakelen ExifTool</translation>
-</phrase>
-
-<phrase>
-<original>installed, enabled, and up to date</original>
-<translation>geïnstalleerd, ingeschakeld en actueel</translation>
-</phrase>
-
-<phrase>
-<original>status</original>
-<translation>status</translation>
-</phrase>
-
-<phrase>
-<original>current plugin status</original>
-<translation>huidige insteekmodule status</translation>
-</phrase>
-
-<phrase>
-<original>GOOD</original>
-<translation>GOED</translation>
-</phrase>
-
-<phrase>
-<original>Disable FreeImage</original>
-<translation>Uitschakelen FreeImage</translation>
-</phrase>
-
-<phrase>
-<original>Disable zLib</original>
-<translation>Uitschakelen zLib</translation>
-</phrase>
-
-<phrase>
-<original>Disable EZTwain</original>
-<translation>Uitschakelen EZTwain</translation>
-</phrase>
-
-<phrase>
-<original>Disable PNGQuant</original>
-<translation>Uitschakelen pngquant</translation>
 </phrase>
 
 <phrase>
@@ -15078,7 +15113,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <translation>afwezig</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 89 phrases. 34 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
@@ -15114,16 +15149,16 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <translation></translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2595</phrasecount>
+<phrasecount>2602</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4469 phrases. -->
-<!-- 1874 are duplicates, so only 2595 unique phrases have been written to file. -->
-<!-- These 2595 phrases contain approximately 13401 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1882 are duplicates, so only 2602 unique phrases have been written to file. -->
+<!-- These 2602 phrases contain approximately 13429 total words. -->
 
 </pdData>

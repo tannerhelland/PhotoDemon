@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1414</langversion>
+<langversion>6.8.1415</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -3112,11 +3112,16 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Checksum failed for node #</original>
 <translation>校验失败的节点#</translation>
 </phrase>
 
-<!-- pdPackager.cls contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdPackager.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdPackager.cls-->
 
@@ -3940,6 +3945,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>embed thumbnail image</original>
+<translation>嵌入缩略图</translation>
+</phrase>
+
+<phrase>
 <original>This image contains metadata.</original>
 <translation>此图像包含元数据。</translation>
 </phrase>
@@ -3955,11 +3965,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>%1 settings</original>
-<translation>%1 设置</translation>
+<original>JPEG-specific settings</original>
+<translation></translation>
 </phrase>
 
-<!-- pdMetadataExport.ctl contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdMetadataExport.ctl contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for pdMetadataExport.ctl-->
 
@@ -10570,11 +10580,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>embed thumbnail image</original>
-<translation>嵌入缩略图</translation>
-</phrase>
-
-<phrase>
 <original>use progressive encoding</original>
 <translation>使用渐进式编码</translation>
 </phrase>
@@ -11181,7 +11186,7 @@ By default, transparency will be split down the middle, or you can specify a cus
 <translation>取消之前处理。最后处理的图像是 %1</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 264 phrases. 87 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 264 phrases. 88 were duplicates of existing phrases, so only 176 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13577,46 +13582,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>Save this translation and proceed to the next phrase</original>
-<translation>保存并继续翻译下一句</translation>
-</phrase>
-
-<phrase>
-<original>automatically estimate missing translations (via Google Translate)</original>
-<translation>自动翻译（通过谷歌翻译）</translation>
-</phrase>
-
-<phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>回车键自动保存并继续翻译下一句</translation>
-</phrase>
-
-<phrase>
-<original>translated phrase</original>
-<translation>翻译后内容：</translation>
-</phrase>
-
-<phrase>
-<original>original phrase</original>
-<translation>未翻译词条：</translation>
-</phrase>
-
-<phrase>
-<original>phrases to display</original>
-<translation>显示内容</translation>
-</phrase>
-
-<phrase>
-<original>list of phrases (%1 items)</original>
-<translation>总项目数(%1)</translation>
-</phrase>
-
-<phrase>
-<original>Initiate auto-translation of all missing phrases</original>
-<translation>启动自动翻译的所有缺失词组</translation>
-</phrase>
-
-<phrase>
 <original>Delete selected language file</original>
 <translation>&D 删除语言文件</translation>
 </phrase>
@@ -13689,6 +13654,46 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <phrase>
 <original>language ID</original>
 <translation>语言代码:</translation>
+</phrase>
+
+<phrase>
+<original>Save this translation and proceed to the next phrase</original>
+<translation>保存并继续翻译下一句</translation>
+</phrase>
+
+<phrase>
+<original>automatically estimate missing translations (via Google Translate)</original>
+<translation>自动翻译（通过谷歌翻译）</translation>
+</phrase>
+
+<phrase>
+<original>ENTER key automatically saves and proceeds to next phrase</original>
+<translation>回车键自动保存并继续翻译下一句</translation>
+</phrase>
+
+<phrase>
+<original>translated phrase</original>
+<translation>翻译后内容：</translation>
+</phrase>
+
+<phrase>
+<original>original phrase</original>
+<translation>未翻译词条：</translation>
+</phrase>
+
+<phrase>
+<original>phrases to display</original>
+<translation>显示内容</translation>
+</phrase>
+
+<phrase>
+<original>list of phrases (%1 items)</original>
+<translation>总项目数(%1)</translation>
+</phrase>
+
+<phrase>
+<original>Initiate auto-translation of all missing phrases</original>
+<translation>启动自动翻译的所有缺失词组</translation>
 </phrase>
 
 <phrase>
@@ -14840,6 +14845,61 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
+<original>Disable FreeImage</original>
+<translation>禁用FreeImage</translation>
+</phrase>
+
+<phrase>
+<original>Disable zLib</original>
+<translation>禁用ZLIB</translation>
+</phrase>
+
+<phrase>
+<original>Disable EZTwain</original>
+<translation>禁用EZTwain</translation>
+</phrase>
+
+<phrase>
+<original>Disable PNGQuant</original>
+<translation>禁用PNGQuant</translation>
+</phrase>
+
+<phrase>
+<original>Disable ExifTool</original>
+<translation>禁用ExifTool</translation>
+</phrase>
+
+<phrase>
+<original>Disable LittleCMS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>status</original>
+<translation>状态</translation>
+</phrase>
+
+<phrase>
+<original>installed, enabled, and up to date</original>
+<translation>安装，允许，和最新的</translation>
+</phrase>
+
+<phrase>
+<original>current plugin status</original>
+<translation>当前插件状态</translation>
+</phrase>
+
+<phrase>
+<original>GOOD</original>
+<translation>好</translation>
+</phrase>
+
+<phrase>
 <original>improve IE6 compatibility (reduces image quality; use with caution)</original>
 <translation>提高IE6兼容性（降低图像质量;请小心使用）</translation>
 </phrase>
@@ -14855,6 +14915,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
+<original>BSD license</original>
+<translation>BSD许可证</translation>
+</phrase>
+
+<phrase>
 <original>fast, low quality</original>
 <translation>速度快，质量低</translation>
 </phrase>
@@ -14867,11 +14932,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <phrase>
 <original>PNGQuant settings</original>
 <translation>PNGQuant设置</translation>
-</phrase>
-
-<phrase>
-<original>BSD license</original>
-<translation>BSD许可证</translation>
 </phrase>
 
 <phrase>
@@ -14900,6 +14960,26 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
+<original>MIT license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS plugin information</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS homepage</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>open-source Perl license</original>
 <translation>开源的Perl许可</translation>
 </phrase>
@@ -14920,6 +15000,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
+<original>public domain</original>
+<translation>公共区域</translation>
+</phrase>
+
+<phrase>
 <original>EZTwain plugin information</original>
 <translation>EZTwain插件信息</translation>
 </phrase>
@@ -14932,11 +15017,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <phrase>
 <original>EZTwain license</original>
 <translation>EZTwain许可证</translation>
-</phrase>
-
-<phrase>
-<original>public domain</original>
-<translation>公共区域</translation>
 </phrase>
 
 <phrase>
@@ -14955,6 +15035,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
+<original>FreeImage Public License (FIPL)</original>
+<translation>FreeImage的公共许可（FIPL）</translation>
+</phrase>
+
+<phrase>
 <original>FreeImage plugin information</original>
 <translation>FreeImage的插件信息</translation>
 </phrase>
@@ -14967,56 +15052,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <phrase>
 <original>FreeImage license</original>
 <translation>FreeImage的许可证</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage Public License (FIPL)</original>
-<translation>FreeImage的公共许可（FIPL）</translation>
-</phrase>
-
-<phrase>
-<original>Disable ExifTool</original>
-<translation>禁用ExifTool</translation>
-</phrase>
-
-<phrase>
-<original>installed, enabled, and up to date</original>
-<translation>安装，允许，和最新的</translation>
-</phrase>
-
-<phrase>
-<original>status</original>
-<translation>状态</translation>
-</phrase>
-
-<phrase>
-<original>current plugin status</original>
-<translation>当前插件状态</translation>
-</phrase>
-
-<phrase>
-<original>GOOD</original>
-<translation>好</translation>
-</phrase>
-
-<phrase>
-<original>Disable FreeImage</original>
-<translation>禁用FreeImage</translation>
-</phrase>
-
-<phrase>
-<original>Disable zLib</original>
-<translation>禁用ZLIB</translation>
-</phrase>
-
-<phrase>
-<original>Disable EZTwain</original>
-<translation>禁用EZTwain</translation>
-</phrase>
-
-<phrase>
-<original>Disable PNGQuant</original>
-<translation>禁用PNGQuant</translation>
 </phrase>
 
 <phrase>
@@ -15074,7 +15109,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>丢失</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 89 phrases. 34 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
@@ -15110,16 +15145,16 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>通过颜色</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2595</phrasecount>
+<phrasecount>2602</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4469 phrases. -->
-<!-- 1874 are duplicates, so only 2595 unique phrases have been written to file. -->
-<!-- These 2595 phrases contain approximately 13401 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1882 are duplicates, so only 2602 unique phrases have been written to file. -->
+<!-- These 2602 phrases contain approximately 13429 total words. -->
 
 </pdData>
