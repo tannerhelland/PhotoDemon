@@ -31,7 +31,7 @@ Begin VB.UserControl pdMetadataExport
       _extenty        =   873
       alignment       =   2
       caption         =   ""
-      fontbold        =   -1  'True
+      fontbold        =   -1
       fontsize        =   12
    End
    Begin PhotoDemon.pdHyperlink hplReviewMetadata 
@@ -43,7 +43,7 @@ Begin VB.UserControl pdMetadataExport
       _extenty        =   661
       alignment       =   2
       caption         =   "click to review this image's metadata"
-      raiseclickevent =   -1  'True
+      raiseclickevent =   -1
    End
    Begin PhotoDemon.pdCheckBox chkMetadata 
       Height          =   375
@@ -145,6 +145,18 @@ Public Property Get hWnd() As Long
 Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
+
+Private Sub chkMetadata_Click()
+
+    If CBool(chkMetadata.Value) Then
+        chkAnonymize.Enabled = True
+        chkThumbnail.Enabled = True
+    Else
+        chkAnonymize.Enabled = False
+        chkThumbnail.Enabled = False
+    End If
+
+End Sub
 
 Private Sub hplReviewMetadata_Click()
     ExifTool.ShowMetadataDialog m_ImageCopy, UserControl.Parent
