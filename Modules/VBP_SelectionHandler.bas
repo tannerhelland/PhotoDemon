@@ -41,7 +41,7 @@ End Enum
 Public Function displaySelectionDialog(ByVal typeOfDialog As SelectionDialogType, ByRef ReturnValue As Double) As VbMsgBoxResult
 
     Load FormSelectionDialogs
-    FormSelectionDialogs.showDialog typeOfDialog
+    FormSelectionDialogs.ShowDialog typeOfDialog
     
     displaySelectionDialog = FormSelectionDialogs.DialogResult
     ReturnValue = FormSelectionDialogs.paramValue
@@ -62,7 +62,7 @@ Public Sub CreateNewSelection(ByVal paramString As String)
     'For lasso selections, mark the lasso as closed if the selection is being created anew
     Dim cParam As pdParamString
     Set cParam = New pdParamString
-    cParam.setParamString paramString
+    cParam.SetParamString paramString
     
     If cParam.GetLong(1) = sLasso Then pdImages(g_CurrentImage).mainSelection.setLassoClosedState True
     
@@ -233,7 +233,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, False, True
     
     'If the selected area has a blank alpha channel, convert it to 24bpp
-    If Not DIB_Handler.IsDIBAlphaBinary(tmpDIB, False) Then tmpDIB.convertTo24bpp
+    If Not DIB_Handler.IsDIBAlphaBinary(tmpDIB, False) Then tmpDIB.ConvertTo24bpp
     
     'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
@@ -250,7 +250,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     
     'By default, recommend JPEG for 24bpp selections, and PNG for 32bpp selections
     Dim saveFormat As Long
-    If tmpDIB.getDIBColorDepth = 24 Then
+    If tmpDIB.GetDIBColorDepth = 24 Then
         saveFormat = g_ImageFormats.GetIndexOfOutputPDIF(PDIF_JPEG) + 1
     Else
         saveFormat = g_ImageFormats.GetIndexOfOutputPDIF(PDIF_PNG) + 1
@@ -262,7 +262,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     
     'Provide a string to the common dialog; it will fill this with the user's chosen path + filename
     Dim sFile As String
-    sFile = tempPathString & incrementFilename(tempPathString, tmpImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString), g_ImageFormats.GetOutputFormatExtension(saveFormat - 1))
+    sFile = tempPathString & IncrementFilename(tempPathString, tmpImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString), g_ImageFormats.GetOutputFormatExtension(saveFormat - 1))
     
     'Present a common dialog to the user
     If saveDialog.GetSaveFileName(sFile, , True, g_ImageFormats.GetCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
@@ -300,11 +300,11 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     'Create a temporary DIB, then retrieve the current selection into it
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
+    tmpDIB.CreateFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
     
     'Due to the way selections work, it's easier for us to forcibly up-sample the selection mask to 32bpp.  This prevents
     ' some issues with saving to exotic file formats.
-    tmpDIB.convertTo32bpp
+    tmpDIB.ConvertTo32bpp
     
     'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
@@ -325,7 +325,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     
     'Provide a string to the common dialog; it will fill this with the user's chosen path + filename
     Dim sFile As String
-    sFile = tempPathString & incrementFilename(tempPathString, tmpImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString), "png")
+    sFile = tempPathString & IncrementFilename(tempPathString, tmpImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString), "png")
     
     'Now it's time to prepare a standard Save Image common dialog
     Dim saveDialog As pdOpenSaveDialog
@@ -672,12 +672,12 @@ Public Sub invertCurrentSelection()
     
     Dim selMaskData() As Byte
     Dim selMaskSA As SAFEARRAY2D
-    prepSafeArray selMaskSA, pdImages(g_CurrentImage).mainSelection.selMask
+    PrepSafeArray selMaskSA, pdImages(g_CurrentImage).mainSelection.selMask
     CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
     
     Dim maskWidth As Long, maskHeight As Long
-    maskWidth = pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth - 1
-    maskHeight = pdImages(g_CurrentImage).mainSelection.selMask.getDIBHeight - 1
+    maskWidth = pdImages(g_CurrentImage).mainSelection.selMask.GetDIBWidth - 1
+    maskHeight = pdImages(g_CurrentImage).mainSelection.selMask.GetDIBHeight - 1
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -718,10 +718,10 @@ Public Sub invertCurrentSelection()
 End Sub
 
 'Feather the current selection.  Note that this will make a transformable selection non-transformable.
-Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal featherRadius As Double = 0#)
+Public Sub featherCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal featherRadius As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
-    If showDialog Then
+    If ShowDialog Then
         
         Dim retRadius As Double
         If displaySelectionDialog(SEL_FEATHER, retRadius) = vbOK Then
@@ -760,10 +760,10 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
 End Sub
 
 'Sharpen (un-feather?) the current selection.  Note that this will make a transformable selection non-transformable.
-Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sharpenRadius As Double = 0#)
+Public Sub sharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal sharpenRadius As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
-    If showDialog Then
+    If ShowDialog Then
         
         Dim retRadius As Double
         If displaySelectionDialog(SEL_SHARPEN, retRadius) = vbOK Then
@@ -786,7 +786,7 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
         Dim srcDIB As pdDIB
         Set srcDIB = New pdDIB
-        srcDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
+        srcDIB.CreateFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
                 
         'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
         Dim x As Long, y As Long
@@ -795,12 +795,12 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         quickBlurDIB srcDIB, sharpenRadius, True
         
         'Now that we have a gaussian DIB created in workingDIB, we can point arrays toward it and the source DIB
-        prepSafeArray selMaskSA, pdImages(g_CurrentImage).mainSelection.selMask
+        PrepSafeArray selMaskSA, pdImages(g_CurrentImage).mainSelection.selMask
         CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
         
         Dim srcImageData() As Byte
         Dim srcSA As SAFEARRAY2D
-        prepSafeArray srcSA, srcDIB
+        PrepSafeArray srcSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
         'These values will help us access locations in the array more quickly.
@@ -811,7 +811,7 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
         Dim progBarCheck As Long
-        SetProgBarMax pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth
+        SetProgBarMax pdImages(g_CurrentImage).mainSelection.selMask.GetDIBWidth
         progBarCheck = FindBestProgBarValue()
         
         'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
@@ -820,8 +820,8 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         invScaleFactor = 1 - scaleFactor
         
         Dim iWidth As Long, iHeight As Long
-        iWidth = pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth - 1
-        iHeight = pdImages(g_CurrentImage).mainSelection.selMask.getDIBHeight - 1
+        iWidth = pdImages(g_CurrentImage).mainSelection.selMask.GetDIBWidth - 1
+        iHeight = pdImages(g_CurrentImage).mainSelection.selMask.GetDIBHeight - 1
         
         Dim blendVal As Double
         
@@ -903,10 +903,10 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
 End Sub
 
 'Grow the current selection.  Note that this will make a transformable selection non-transformable.
-Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal growSize As Double = 0#)
+Public Sub growCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal growSize As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
-    If showDialog Then
+    If ShowDialog Then
         
         Dim retSize As Double
         If displaySelectionDialog(SEL_GROW, retSize) = vbOK Then
@@ -924,7 +924,7 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         'Use PD's built-in Median function to dilate the selected area
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
-        tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
+        tmpDIB.CreateFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
         CreateMedianDIB growSize, 99, PDPRS_Circle, tmpDIB, pdImages(g_CurrentImage).mainSelection.selMask, False
         
         Set tmpDIB = Nothing
@@ -950,10 +950,10 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
 End Sub
 
 'Shrink the current selection.  Note that this will make a transformable selection non-transformable.
-Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal shrinkSize As Double = 0#)
+Public Sub shrinkCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal shrinkSize As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
-    If showDialog Then
+    If ShowDialog Then
         
         Dim retSize As Double
         If displaySelectionDialog(SEL_SHRINK, retSize) = vbOK Then
@@ -971,7 +971,7 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         'Use PD's built-in Median function to erode the selected area
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
-        tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
+        tmpDIB.CreateFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
         CreateMedianDIB shrinkSize, 1, PDPRS_Circle, tmpDIB, pdImages(g_CurrentImage).mainSelection.selMask, False
         
         'Erase the temporary DIB
@@ -998,10 +998,10 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
 End Sub
 
 'Convert the current selection to border-type.  Note that this will make a transformable selection non-transformable.
-Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal borderRadius As Double = 0#)
+Public Sub borderCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal borderRadius As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
-    If showDialog Then
+    If ShowDialog Then
         
         Dim retSize As Double
         If displaySelectionDialog(SEL_BORDER, retSize) = vbOK Then
@@ -1022,19 +1022,19 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
         'Start by creating the grow and shrink DIBs using a median function.
         Dim growDIB As pdDIB
         Set growDIB = New pdDIB
-        growDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
+        growDIB.CreateFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
         
         Dim shrinkDIB As pdDIB
         Set shrinkDIB = New pdDIB
-        shrinkDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
+        shrinkDIB.CreateFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
         
         'Use a median function to dilate and erode the existing mask
-        CreateMedianDIB borderRadius, 1, PDPRS_Circle, pdImages(g_CurrentImage).mainSelection.selMask, shrinkDIB, False, pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth * 2
-        CreateMedianDIB borderRadius, 99, PDPRS_Circle, pdImages(g_CurrentImage).mainSelection.selMask, growDIB, False, pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth * 2, pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth
+        CreateMedianDIB borderRadius, 1, PDPRS_Circle, pdImages(g_CurrentImage).mainSelection.selMask, shrinkDIB, False, pdImages(g_CurrentImage).mainSelection.selMask.GetDIBWidth * 2
+        CreateMedianDIB borderRadius, 99, PDPRS_Circle, pdImages(g_CurrentImage).mainSelection.selMask, growDIB, False, pdImages(g_CurrentImage).mainSelection.selMask.GetDIBWidth * 2, pdImages(g_CurrentImage).mainSelection.selMask.GetDIBWidth
         
         'Blend those two DIBs together, and use the difference between the two to calculate the new border area
-        pdImages(g_CurrentImage).mainSelection.selMask.createFromExistingDIB growDIB
-        BitBlt pdImages(g_CurrentImage).mainSelection.selMask.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth, pdImages(g_CurrentImage).mainSelection.selMask.getDIBHeight, shrinkDIB.getDIBDC, 0, 0, vbSrcInvert
+        pdImages(g_CurrentImage).mainSelection.selMask.CreateFromExistingDIB growDIB
+        BitBlt pdImages(g_CurrentImage).mainSelection.selMask.GetDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.selMask.GetDIBWidth, pdImages(g_CurrentImage).mainSelection.selMask.GetDIBHeight, shrinkDIB.GetDIBDC, 0, 0, vbSrcInvert
         
         'Erase the temporary DIBs
         Set growDIB = Nothing
@@ -1147,30 +1147,30 @@ End Function
 
 'All selection tools share the same main panel on the options toolbox, but they have different subpanels that contain their
 ' specific parameters.  Use this function to correlate the two.
-Public Function getSelectionSubPanelFromCurrentTool() As Long
+Public Function GetSelectionSubPanelFromCurrentTool() As Long
 
     Select Case g_CurrentTool
     
         Case SELECT_RECT
-            getSelectionSubPanelFromCurrentTool = 0
+            GetSelectionSubPanelFromCurrentTool = 0
             
         Case SELECT_CIRC
-            getSelectionSubPanelFromCurrentTool = 1
+            GetSelectionSubPanelFromCurrentTool = 1
         
         Case SELECT_LINE
-            getSelectionSubPanelFromCurrentTool = 2
+            GetSelectionSubPanelFromCurrentTool = 2
             
         Case SELECT_POLYGON
-            getSelectionSubPanelFromCurrentTool = 3
+            GetSelectionSubPanelFromCurrentTool = 3
             
         Case SELECT_LASSO
-            getSelectionSubPanelFromCurrentTool = 4
+            GetSelectionSubPanelFromCurrentTool = 4
             
         Case SELECT_WAND
-            getSelectionSubPanelFromCurrentTool = 5
+            GetSelectionSubPanelFromCurrentTool = 5
         
         Case Else
-            getSelectionSubPanelFromCurrentTool = -1
+            GetSelectionSubPanelFromCurrentTool = -1
     
     End Select
     
@@ -1219,13 +1219,13 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     Select Case getSelectionShapeFromCurrentTool()
     
         Case sRectangle, sCircle, sLine
-            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.getSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
+            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
         
         Case sPolygon
-            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.getSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolpanel_Selections.sltPolygonCurvature.Value, 0, 0, 0)
+            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolpanel_Selections.sltPolygonCurvature.Value, 0, 0, 0)
             
         Case sLasso
-            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.getSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolpanel_Selections.sltSmoothStroke.Value, 0, 0, 0)
+            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolpanel_Selections.sltSmoothStroke.Value, 0, 0, 0)
             
         Case sWand
             pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(0).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(0).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, x, y, toolpanel_Selections.sltWandTolerance.Value, toolpanel_Selections.btsWandMerge.ListIndex, toolpanel_Selections.btsWandArea.ListIndex, toolpanel_Selections.cboWandCompare.ListIndex)

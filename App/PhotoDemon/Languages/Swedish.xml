@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.148</langversion>
+<langversion>6.7.149</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -3112,11 +3112,16 @@ Please ange ett numeriskt värde.</translation>
 </phrase>
 
 <phrase>
+<original>File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Checksum failed for node #</original>
 <translation>Kontrollsumma misslyckades för nod #</translation>
 </phrase>
 
-<!-- pdPackager.cls contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdPackager.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdPackager.cls-->
 
@@ -3941,6 +3946,11 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
+<original>embed thumbnail image</original>
+<translation>bädda miniatyrbild</translation>
+</phrase>
+
+<phrase>
 <original>This image contains metadata.</original>
 <translation></translation>
 </phrase>
@@ -3956,11 +3966,11 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>%1 settings</original>
+<original>JPEG-specific settings</original>
 <translation></translation>
 </phrase>
 
-<!-- pdMetadataExport.ctl contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdMetadataExport.ctl contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for pdMetadataExport.ctl-->
 
@@ -10572,11 +10582,6 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
-<original>embed thumbnail image</original>
-<translation>bädda miniatyrbild</translation>
-</phrase>
-
-<phrase>
 <original>use progressive encoding</original>
 <translation>använda progressiv kodning</translation>
 </phrase>
@@ -11184,7 +11189,7 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 <translation>bearbetats före inställandet. Senast bearbetade bilden var " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 264 phrases. 87 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 264 phrases. 88 were duplicates of existing phrases, so only 176 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13579,46 +13584,6 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 </phrase>
 
 <phrase>
-<original>Save this translation and proceed to the next phrase</original>
-<translation>Spara denna översättning och gå vidare till nästa fras</translation>
-</phrase>
-
-<phrase>
-<original>automatically estimate missing translations (via Google Translate)</original>
-<translation>automatiskt uppskatta saknade översättningar (via Google Translate)</translation>
-</phrase>
-
-<phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>ENTER-knappen sparar automatiskt och fortsätter till nästa fras</translation>
-</phrase>
-
-<phrase>
-<original>translated phrase</original>
-<translation>översatt fras</translation>
-</phrase>
-
-<phrase>
-<original>original phrase</original>
-<translation>ursprungliga frasen</translation>
-</phrase>
-
-<phrase>
-<original>phrases to display</original>
-<translation>fraser för att visa</translation>
-</phrase>
-
-<phrase>
-<original>list of phrases (%1 items)</original>
-<translation>lista över fraser ( %1 artiklar)</translation>
-</phrase>
-
-<phrase>
-<original>Initiate auto-translation of all missing phrases</original>
-<translation>Initiera automatisk översättning av alla saknade fraser</translation>
-</phrase>
-
-<phrase>
 <original>Delete selected language file</original>
 <translation>Radera markerad språkfil</translation>
 </phrase>
@@ -13691,6 +13656,46 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <phrase>
 <original>language ID</original>
 <translation>språk-ID</translation>
+</phrase>
+
+<phrase>
+<original>Save this translation and proceed to the next phrase</original>
+<translation>Spara denna översättning och gå vidare till nästa fras</translation>
+</phrase>
+
+<phrase>
+<original>automatically estimate missing translations (via Google Translate)</original>
+<translation>automatiskt uppskatta saknade översättningar (via Google Translate)</translation>
+</phrase>
+
+<phrase>
+<original>ENTER key automatically saves and proceeds to next phrase</original>
+<translation>ENTER-knappen sparar automatiskt och fortsätter till nästa fras</translation>
+</phrase>
+
+<phrase>
+<original>translated phrase</original>
+<translation>översatt fras</translation>
+</phrase>
+
+<phrase>
+<original>original phrase</original>
+<translation>ursprungliga frasen</translation>
+</phrase>
+
+<phrase>
+<original>phrases to display</original>
+<translation>fraser för att visa</translation>
+</phrase>
+
+<phrase>
+<original>list of phrases (%1 items)</original>
+<translation>lista över fraser ( %1 artiklar)</translation>
+</phrase>
+
+<phrase>
+<original>Initiate auto-translation of all missing phrases</original>
+<translation>Initiera automatisk översättning av alla saknade fraser</translation>
 </phrase>
 
 <phrase>
@@ -14845,6 +14850,61 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
+<original>Disable FreeImage</original>
+<translation>inaktivera Freeimage</translation>
+</phrase>
+
+<phrase>
+<original>Disable zLib</original>
+<translation>Inaktivera zlib</translation>
+</phrase>
+
+<phrase>
+<original>Disable EZTwain</original>
+<translation>inaktivera EZTwain</translation>
+</phrase>
+
+<phrase>
+<original>Disable PNGQuant</original>
+<translation>Disable pngquant</translation>
+</phrase>
+
+<phrase>
+<original>Disable ExifTool</original>
+<translation>inaktivera ExifTool</translation>
+</phrase>
+
+<phrase>
+<original>Disable LittleCMS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>status</original>
+<translation>status</translation>
+</phrase>
+
+<phrase>
+<original>installed, enabled, and up to date</original>
+<translation>installerat, aktiverat och aktuell</translation>
+</phrase>
+
+<phrase>
+<original>current plugin status</original>
+<translation>nuvarande plugin status</translation>
+</phrase>
+
+<phrase>
+<original>GOOD</original>
+<translation>BRA</translation>
+</phrase>
+
+<phrase>
 <original>improve IE6 compatibility (reduces image quality; use with caution)</original>
 <translation>förbättra IE6 kompatibilitet (reducerar bildkvaliteten, använd med försiktighet)</translation>
 </phrase>
@@ -14860,6 +14920,11 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
+<original>BSD license</original>
+<translation>BSD-licensen</translation>
+</phrase>
+
+<phrase>
 <original>fast, low quality</original>
 <translation>snabb, låg kvalitet</translation>
 </phrase>
@@ -14872,11 +14937,6 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <phrase>
 <original>PNGQuant settings</original>
 <translation>pngquant inställningar</translation>
-</phrase>
-
-<phrase>
-<original>BSD license</original>
-<translation>BSD-licensen</translation>
 </phrase>
 
 <phrase>
@@ -14905,6 +14965,26 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
+<original>MIT license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS plugin information</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS homepage</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>open-source Perl license</original>
 <translation>öppen källkod Perl-licens</translation>
 </phrase>
@@ -14925,6 +15005,11 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
+<original>public domain</original>
+<translation>offentliga rummet</translation>
+</phrase>
+
+<phrase>
 <original>EZTwain plugin information</original>
 <translation>EZTwain plugin informationen</translation>
 </phrase>
@@ -14937,11 +15022,6 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <phrase>
 <original>EZTwain license</original>
 <translation>EZTwain licens</translation>
-</phrase>
-
-<phrase>
-<original>public domain</original>
-<translation>offentliga rummet</translation>
 </phrase>
 
 <phrase>
@@ -14960,6 +15040,11 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
+<original>FreeImage Public License (FIPL)</original>
+<translation>Freeimage Public License (FIPL)</translation>
+</phrase>
+
+<phrase>
 <original>FreeImage plugin information</original>
 <translation>Freeimage plugin informationen</translation>
 </phrase>
@@ -14972,56 +15057,6 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <phrase>
 <original>FreeImage license</original>
 <translation>Freeimage licens</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage Public License (FIPL)</original>
-<translation>Freeimage Public License (FIPL)</translation>
-</phrase>
-
-<phrase>
-<original>Disable ExifTool</original>
-<translation>inaktivera ExifTool</translation>
-</phrase>
-
-<phrase>
-<original>installed, enabled, and up to date</original>
-<translation>installerat, aktiverat och aktuell</translation>
-</phrase>
-
-<phrase>
-<original>status</original>
-<translation>status</translation>
-</phrase>
-
-<phrase>
-<original>current plugin status</original>
-<translation>nuvarande plugin status</translation>
-</phrase>
-
-<phrase>
-<original>GOOD</original>
-<translation>BRA</translation>
-</phrase>
-
-<phrase>
-<original>Disable FreeImage</original>
-<translation>inaktivera Freeimage</translation>
-</phrase>
-
-<phrase>
-<original>Disable zLib</original>
-<translation>Inaktivera zlib</translation>
-</phrase>
-
-<phrase>
-<original>Disable EZTwain</original>
-<translation>inaktivera EZTwain</translation>
-</phrase>
-
-<phrase>
-<original>Disable PNGQuant</original>
-<translation>Disable pngquant</translation>
 </phrase>
 
 <phrase>
@@ -15079,7 +15114,7 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <translation>saknas</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 89 phrases. 34 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
@@ -15115,16 +15150,16 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <translation></translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2595</phrasecount>
+<phrasecount>2602</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4469 phrases. -->
-<!-- 1874 are duplicates, so only 2595 unique phrases have been written to file. -->
-<!-- These 2595 phrases contain approximately 13401 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1882 are duplicates, so only 2602 unique phrases have been written to file. -->
+<!-- These 2602 phrases contain approximately 13429 total words. -->
 
 </pdData>

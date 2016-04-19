@@ -34,9 +34,9 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   22
       Top             =   30
       Width           =   1815
-      _ExtentX        =   3201
-      _ExtentY        =   423
-      Caption         =   "file"
+      _extentx        =   3201
+      _extenty        =   423
+      caption         =   "file"
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -45,8 +45,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   1
       Top             =   2880
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
+      _extentx        =   1085
+      _extenty        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -55,8 +55,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   2
       Top             =   2880
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -65,8 +65,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   3
       Top             =   2880
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -75,8 +75,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   4
       Top             =   3840
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -85,8 +85,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   5
       Top             =   3840
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -95,8 +95,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   6
       Top             =   3840
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -105,8 +105,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   7
       Top             =   4440
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -115,8 +115,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   8
       Top             =   4440
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -125,8 +125,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   9
       Top             =   4440
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -135,9 +135,9 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   10
       Top             =   300
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
-      AutoToggle      =   -1  'True
+      _extentx        =   1085
+      _extenty        =   1085
+      autotoggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -146,9 +146,9 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   11
       Top             =   300
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
-      AutoToggle      =   -1  'True
+      _extentx        =   1085
+      _extenty        =   1085
+      autotoggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -157,9 +157,9 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   12
       Top             =   300
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
-      AutoToggle      =   -1  'True
+      _extentx        =   1085
+      _extenty        =   1085
+      autotoggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -168,9 +168,9 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   13
       Top             =   960
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
-      AutoToggle      =   -1  'True
+      _extentx        =   1085
+      _extenty        =   1085
+      autotoggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -179,9 +179,9 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   14
       Top             =   960
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
-      AutoToggle      =   -1  'True
+      _extentx        =   1085
+      _extenty        =   1085
+      autotoggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -190,9 +190,9 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   15
       Top             =   960
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
-      AutoToggle      =   -1  'True
+      _extentx        =   1085
+      _extenty        =   1085
+      autotoggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -201,9 +201,9 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   16
       Top             =   1920
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
-      AutoToggle      =   -1  'True
+      _extentx        =   1085
+      _extenty        =   1085
+      autotoggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -212,9 +212,9 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   17
       Top             =   1920
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
-      AutoToggle      =   -1  'True
+      _extentx        =   1085
+      _extenty        =   1085
+      autotoggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -223,9 +223,9 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   18
       Top             =   1920
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
-      AutoToggle      =   -1  'True
+      _extentx        =   1085
+      _extenty        =   1085
+      autotoggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -234,8 +234,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   19
       Top             =   5400
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -244,8 +244,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   20
       Top             =   5400
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -254,8 +254,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   21
       Top             =   6480
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -264,9 +264,9 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   23
       Top             =   1620
       Width           =   1815
-      _ExtentX        =   3201
-      _ExtentY        =   423
-      Caption         =   "undo"
+      _extentx        =   3201
+      _extenty        =   423
+      caption         =   "undo"
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -275,9 +275,9 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   24
       Top             =   2580
       Width           =   1815
-      _ExtentX        =   3201
-      _ExtentY        =   423
-      Caption         =   "n-d"
+      _extentx        =   3201
+      _extenty        =   423
+      caption         =   "n-d"
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -286,9 +286,9 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   25
       Top             =   3540
       Width           =   1815
-      _ExtentX        =   3201
-      _ExtentY        =   423
-      Caption         =   "select"
+      _extentx        =   3201
+      _extenty        =   423
+      caption         =   "select"
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -297,9 +297,9 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   26
       Top             =   5100
       Width           =   1815
-      _ExtentX        =   3201
-      _ExtentY        =   423
-      Caption         =   "text"
+      _extentx        =   3201
+      _extenty        =   423
+      caption         =   "text"
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -308,9 +308,9 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   27
       Top             =   6120
       Width           =   1815
-      _ExtentX        =   3201
-      _ExtentY        =   423
-      Caption         =   "paint"
+      _extentx        =   3201
+      _extenty        =   423
+      caption         =   "paint"
    End
    Begin VB.Line lnRightSeparator 
       X1              =   136
@@ -820,25 +820,30 @@ Public Sub ResetToolButtonStates()
         'Move/size tool
         Case NAV_MOVE
             Load toolpanel_MoveSize
+            toolpanel_MoveSize.UpdateAgainstCurrentTheme
             m_ActiveToolPanelKey = "MoveSize"
             
         '"Quick fix" tool(s)
         Case QUICK_FIX_LIGHTING
             Load toolpanel_NDFX
+            toolpanel_NDFX.UpdateAgainstCurrentTheme
             m_ActiveToolPanelKey = "NDFX"
             
         'Rectangular, Elliptical, Line selections
         Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
             Load toolpanel_Selections
+            toolpanel_Selections.UpdateAgainstCurrentTheme
             m_ActiveToolPanelKey = "Selections"
             
         'Vector tools
         Case VECTOR_TEXT
             Load toolpanel_Text
+            toolpanel_Text.UpdateAgainstCurrentTheme
             m_ActiveToolPanelKey = "Text"
             
         Case VECTOR_FANCYTEXT
             Load toolpanel_FancyText
+            toolpanel_FancyText.UpdateAgainstCurrentTheme
             m_ActiveToolPanelKey = "FancyText"
             
         'If a tool does not require an extra settings panel, set the active panel to -1.  This will hide all panels.
@@ -977,7 +982,7 @@ End Sub
 
 'Used to change the visibility of category labels.  When disabled, the button layout is reflowed into a continuous
 ' stream of buttons.  When enabled, buttons are sorted by category.
-Public Sub toggleToolCategoryLabels()
+Public Sub ToggleToolCategoryLabels()
     
     FormMain.MnuWindowToolbox(2).Checked = Not FormMain.MnuWindowToolbox(2).Checked
     g_UserPreferences.SetPref_Boolean "Core", "Show Toolbox Category Labels", CBool(FormMain.MnuWindowToolbox(2).Checked)

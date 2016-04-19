@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.148</langversion>
+<langversion>6.7.149</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -3111,11 +3111,16 @@ S'il vous plaît entrer une valeur numérique.</translation>
 </phrase>
 
 <phrase>
+<original>File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Checksum failed for node #</original>
 <translation>Somme de contrôle n'a pas pour le noeud #</translation>
 </phrase>
 
-<!-- pdPackager.cls contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- pdPackager.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdPackager.cls-->
 
@@ -3940,6 +3945,11 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 </phrase>
 
 <phrase>
+<original>embed thumbnail image</original>
+<translation>Intégrer miniature</translation>
+</phrase>
+
+<phrase>
 <original>This image contains metadata.</original>
 <translation></translation>
 </phrase>
@@ -3955,11 +3965,11 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 </phrase>
 
 <phrase>
-<original>%1 settings</original>
+<original>JPEG-specific settings</original>
 <translation></translation>
 </phrase>
 
-<!-- pdMetadataExport.ctl contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdMetadataExport.ctl contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for pdMetadataExport.ctl-->
 
@@ -10571,11 +10581,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>embed thumbnail image</original>
-<translation>Intégrer miniature</translation>
-</phrase>
-
-<phrase>
 <original>use progressive encoding</original>
 <translation>utiliser le codage progressif</translation>
 </phrase>
@@ -11183,7 +11188,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une va
 <translation>traitées avant d'annulation. Dernière image traitée était "%1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 264 phrases. 87 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 264 phrases. 88 were duplicates of existing phrases, so only 176 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13578,46 +13583,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>Save this translation and proceed to the next phrase</original>
-<translation>Sauvegarder cette traduction et passer à la phrase suivante</translation>
-</phrase>
-
-<phrase>
-<original>automatically estimate missing translations (via Google Translate)</original>
-<translation>estimer automatiquement traductions manquants (via Google Translate) </translation>
-</phrase>
-
-<phrase>
-<original>ENTER key automatically saves and proceeds to next phrase</original>
-<translation>Touche ENTRER enregistre automatiquement et procède à l'expression suivante</translation>
-</phrase>
-
-<phrase>
-<original>translated phrase</original>
-<translation>traduction de la phrase</translation>
-</phrase>
-
-<phrase>
-<original>original phrase</original>
-<translation>phrase originale</translation>
-</phrase>
-
-<phrase>
-<original>phrases to display</original>
-<translation>phrases à afficher</translation>
-</phrase>
-
-<phrase>
-<original>list of phrases (%1 items)</original>
-<translation>liste des phrases ( %1 items)</translation>
-</phrase>
-
-<phrase>
-<original>Initiate auto-translation of all missing phrases</original>
-<translation>Initier l'auto-traduction de toutes les phrases manquantes</translation>
-</phrase>
-
-<phrase>
 <original>Delete selected language file</original>
 <translation>Supprimer le fichier de langue sélectionnée</translation>
 </phrase>
@@ -13690,6 +13655,46 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <phrase>
 <original>language ID</original>
 <translation>ID de langue</translation>
+</phrase>
+
+<phrase>
+<original>Save this translation and proceed to the next phrase</original>
+<translation>Sauvegarder cette traduction et passer à la phrase suivante</translation>
+</phrase>
+
+<phrase>
+<original>automatically estimate missing translations (via Google Translate)</original>
+<translation>estimer automatiquement traductions manquants (via Google Translate) </translation>
+</phrase>
+
+<phrase>
+<original>ENTER key automatically saves and proceeds to next phrase</original>
+<translation>Touche ENTRER enregistre automatiquement et procède à l'expression suivante</translation>
+</phrase>
+
+<phrase>
+<original>translated phrase</original>
+<translation>traduction de la phrase</translation>
+</phrase>
+
+<phrase>
+<original>original phrase</original>
+<translation>phrase originale</translation>
+</phrase>
+
+<phrase>
+<original>phrases to display</original>
+<translation>phrases à afficher</translation>
+</phrase>
+
+<phrase>
+<original>list of phrases (%1 items)</original>
+<translation>liste des phrases ( %1 items)</translation>
+</phrase>
+
+<phrase>
+<original>Initiate auto-translation of all missing phrases</original>
+<translation>Initier l'auto-traduction de toutes les phrases manquantes</translation>
 </phrase>
 
 <phrase>
@@ -14845,6 +14850,61 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 </phrase>
 
 <phrase>
+<original>Disable FreeImage</original>
+<translation>Désactiver FreeImage</translation>
+</phrase>
+
+<phrase>
+<original>Disable zLib</original>
+<translation>Désactiver zLib</translation>
+</phrase>
+
+<phrase>
+<original>Disable EZTwain</original>
+<translation>Désactiver EZTwain</translation>
+</phrase>
+
+<phrase>
+<original>Disable PNGQuant</original>
+<translation>Désactiver PNGQuant</translation>
+</phrase>
+
+<phrase>
+<original>Disable ExifTool</original>
+<translation>désactiver ExifTool</translation>
+</phrase>
+
+<phrase>
+<original>Disable LittleCMS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>status</original>
+<translation>statut</translation>
+</phrase>
+
+<phrase>
+<original>installed, enabled, and up to date</original>
+<translation>et d'actualité</translation>
+</phrase>
+
+<phrase>
+<original>current plugin status</original>
+<translation>statutstatut de l'extension courante</translation>
+</phrase>
+
+<phrase>
+<original>GOOD</original>
+<translation>BON</translation>
+</phrase>
+
+<phrase>
 <original>improve IE6 compatibility (reduces image quality; use with caution)</original>
 <translation>améliorer la compatibilité IE6 (réduit la qualité de l'image; utiliser avec prudence) </translation>
 </phrase>
@@ -14860,6 +14920,11 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 </phrase>
 
 <phrase>
+<original>BSD license</original>
+<translation>Licence BSD </translation>
+</phrase>
+
+<phrase>
 <original>fast, low quality</original>
 <translation>rapide,qualitè faible</translation>
 </phrase>
@@ -14872,11 +14937,6 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <phrase>
 <original>PNGQuant settings</original>
 <translation>Paramètres PNGQuant</translation>
-</phrase>
-
-<phrase>
-<original>BSD license</original>
-<translation>Licence BSD </translation>
 </phrase>
 
 <phrase>
@@ -14905,6 +14965,26 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 </phrase>
 
 <phrase>
+<original>MIT license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS plugin information</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS homepage</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>LittleCMS license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>open-source Perl license</original>
 <translation>Perl licence open-source</translation>
 </phrase>
@@ -14925,6 +15005,11 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 </phrase>
 
 <phrase>
+<original>public domain</original>
+<translation>domaine public</translation>
+</phrase>
+
+<phrase>
 <original>EZTwain plugin information</original>
 <translation>Embrochable de l'information EZTwain</translation>
 </phrase>
@@ -14937,11 +15022,6 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <phrase>
 <original>EZTwain license</original>
 <translation>Licence EZTwain</translation>
-</phrase>
-
-<phrase>
-<original>public domain</original>
-<translation>domaine public</translation>
 </phrase>
 
 <phrase>
@@ -14960,6 +15040,11 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 </phrase>
 
 <phrase>
+<original>FreeImage Public License (FIPL)</original>
+<translation>License Public FreeImage (FIPL)</translation>
+</phrase>
+
+<phrase>
 <original>FreeImage plugin information</original>
 <translation>Embrochable de l'information FreeImage</translation>
 </phrase>
@@ -14972,56 +15057,6 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <phrase>
 <original>FreeImage license</original>
 <translation>LicenceFreeImage</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage Public License (FIPL)</original>
-<translation>License Public FreeImage (FIPL)</translation>
-</phrase>
-
-<phrase>
-<original>Disable ExifTool</original>
-<translation>désactiver ExifTool</translation>
-</phrase>
-
-<phrase>
-<original>installed, enabled, and up to date</original>
-<translation>et d'actualité</translation>
-</phrase>
-
-<phrase>
-<original>status</original>
-<translation>statut</translation>
-</phrase>
-
-<phrase>
-<original>current plugin status</original>
-<translation>statutstatut de l'extension courante</translation>
-</phrase>
-
-<phrase>
-<original>GOOD</original>
-<translation>BON</translation>
-</phrase>
-
-<phrase>
-<original>Disable FreeImage</original>
-<translation>Désactiver FreeImage</translation>
-</phrase>
-
-<phrase>
-<original>Disable zLib</original>
-<translation>Désactiver zLib</translation>
-</phrase>
-
-<phrase>
-<original>Disable EZTwain</original>
-<translation>Désactiver EZTwain</translation>
-</phrase>
-
-<phrase>
-<original>Disable PNGQuant</original>
-<translation>Désactiver PNGQuant</translation>
 </phrase>
 
 <phrase>
@@ -15079,7 +15114,7 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <translation>non présent</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 89 phrases. 34 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
@@ -15115,16 +15150,16 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <translation></translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2595</phrasecount>
+<phrasecount>2602</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4469 phrases. -->
-<!-- 1874 are duplicates, so only 2595 unique phrases have been written to file. -->
-<!-- These 2595 phrases contain approximately 13401 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1882 are duplicates, so only 2602 unique phrases have been written to file. -->
+<!-- These 2602 phrases contain approximately 13429 total words. -->
 
 </pdData>
