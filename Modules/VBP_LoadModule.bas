@@ -213,7 +213,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     ' Run a few failsafe checks to confirm that the image data was loaded successfully
     '*************************************************************************************************************************************
     
-    If loadSuccessful And (targetDIB.getDIBWidth > 0) And (targetDIB.getDIBHeight > 0) And (Not (targetImage Is Nothing)) Then
+    If loadSuccessful And (targetDIB.GetDIBWidth > 0) And (targetDIB.GetDIBHeight > 0) And (Not (targetImage Is Nothing)) Then
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "Debug note: image load appeared to be successful.  Summary forthcoming."
@@ -348,7 +348,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 newLayerID = pdImages(g_CurrentImage).createBlankLayer
                 
                 'Load the next page into the temporary DIB
-                targetDIB.resetDIB 0
+                targetDIB.ResetDIB 0
                 loadSuccessful = LoadFreeImageV4(srcFile, targetDIB, pageTracker)
                 
                 'If the load was successful, copy the DIB into place
@@ -584,7 +584,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     
     'Sometimes, our image load functions will think the image loaded correctly, but they will return a blank image.  Check for
     ' non-zero width and height before continuing.
-    If (Not loadSuccessful) Or (targetDIB.getDIBWidth = 0) Or (targetDIB.getDIBHeight = 0) Then
+    If (Not loadSuccessful) Or (targetDIB.GetDIBWidth = 0) Or (targetDIB.GetDIBHeight = 0) Then
         
         'Only display an error dialog if the import wasn't canceled by the user
         If freeImageReturn <> PD_FAILURE_USER_CANCELED Then
@@ -595,7 +595,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         End If
         
         'Deactivate the (now useless) DIB
-        targetDIB.eraseDIB
+        targetDIB.EraseDIB
         
         'Re-enable the main interface
         If applyUIChanges Then Processor.MarkProgramBusyState False, True
@@ -781,8 +781,8 @@ Public Sub LoadMessage(ByVal sMsg As String)
     
     'Load messages are translatable, but we don't want to translate them if the translation object isn't ready yet
     If (Not (g_Language Is Nothing)) Then
-        If g_Language.readyToTranslate Then
-            If g_Language.translationActive Then sMsg = g_Language.TranslateMessage(sMsg)
+        If g_Language.ReadyToTranslate Then
+            If g_Language.TranslationActive Then sMsg = g_Language.TranslateMessage(sMsg)
         End If
     End If
     
@@ -812,7 +812,7 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKeyS, vbCtrlMask Or vbAltMask Or vbShiftMask, "Save copy", FormMain.MnuFile(9), True, False, True, UNDO_NOTHING
         .AddAccelerator vbKeyS, vbCtrlMask Or vbShiftMask, "Save as", FormMain.MnuFile(10), True, True, True, UNDO_NOTHING
         .AddAccelerator vbKeyF12, 0, "Revert", FormMain.MnuFile(11), True, True, False, UNDO_NOTHING
-        .AddAccelerator vbKeyB, vbCtrlMask, "Batch wizard", FormMain.MnuFile(13), True, True, True, UNDO_NOTHING
+        .AddAccelerator vbKeyB, vbCtrlMask, "Batch wizard", FormMain.MnuFile(13), True, False, True, UNDO_NOTHING
         .AddAccelerator vbKeyP, vbCtrlMask, "Print", FormMain.MnuFile(15), True, True, True, UNDO_NOTHING
         .AddAccelerator vbKeyQ, vbCtrlMask, "Exit program", FormMain.MnuFile(17), True, False, True, UNDO_NOTHING
         

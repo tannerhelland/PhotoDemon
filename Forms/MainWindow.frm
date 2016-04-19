@@ -1619,7 +1619,7 @@ Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boo
         
         'One or more language files were patched.  Notify the language engine that it potentially needs updating.  (The updating itself will
         ' be fired on the next processor call.)
-        If g_Language.translationActive Then g_Language.notifyHotPatchingComplete
+        If g_Language.TranslationActive Then g_Language.NotifyHotPatchingComplete
         
     End If
     
@@ -2242,7 +2242,7 @@ Private Sub MnuWindowToolbox_Click(Index As Integer)
         
         'Toggle category labels
         Case 2
-            toolbar_Toolbox.toggleToolCategoryLabels
+            toolbar_Toolbox.ToggleToolCategoryLabels
         
         '<separator>
         Case 3
@@ -2256,7 +2256,7 @@ Private Sub MnuWindowToolbox_Click(Index As Integer)
 End Sub
 
 Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
-        
+    
     'Accelerators are divided into three groups, and they are processed in the following order:
     ' 1) Direct processor strings.  These are automatically submitted to the software processor.
     ' 2) Non-processor directives that can be fired if no images are present (e.g. Open, Paste)
@@ -2673,7 +2673,7 @@ Private Sub Form_Load()
     'Start by asking the translation engine if it thinks we should display a language dialog.  (The conditions that trigger
     ' this are described in great detail in the pdTranslate class.)
     Dim lDialogReason As Long
-    If g_Language.isLanguageDialogNeeded(lDialogReason) Then
+    If g_Language.IsLanguageDialogNeeded(lDialogReason) Then
     
         'If we are inside this block, the translation engine thinks we should ask the user to pick a language.  The reason
         ' for this is stored in the lDialogReason variable, and the values correspond to the following:
@@ -3806,14 +3806,14 @@ Private Sub mnuLanguages_Click(Index As Integer)
     
     'Remove the existing translation from any visible windows
     Message "Removing existing translation..."
-    g_Language.undoTranslations FormMain, True
-    g_Language.undoTranslations toolbar_Toolbox, True
-    g_Language.undoTranslations toolbar_Options, True
-    g_Language.undoTranslations toolbar_Layers, True
+    g_Language.UndoTranslations FormMain, True
+    g_Language.UndoTranslations toolbar_Toolbox, True
+    g_Language.UndoTranslations toolbar_Options, True
+    g_Language.UndoTranslations toolbar_Layers, True
     
     'Apply the new translation
     Message "Applying new translation..."
-    g_Language.activateNewLanguage Index, True
+    g_Language.ActivateNewLanguage Index, True
     
     Message "Language changed successfully."
     
@@ -3909,8 +3909,8 @@ Private Sub MnuMetadata_Click(Index As Integer)
                 gMapsURL = "https://maps.google.com/maps?f=q&z=18&t=h&q=" & latString & "%2c+" & lonString
                 
                 'As a convenience, request Google Maps in the current language
-                If g_Language.translationActive Then
-                    gMapsURL = gMapsURL & "&hl=" & g_Language.getCurrentLanguage()
+                If g_Language.TranslationActive Then
+                    gMapsURL = gMapsURL & "&hl=" & g_Language.GetCurrentLanguage()
                 Else
                     gMapsURL = gMapsURL & "&hl=en"
                 End If
@@ -4299,7 +4299,7 @@ Private Sub mnuTool_Click(Index As Integer)
         
         'Language editor
         Case 1
-            If Not FormLanguageEditor.Visible Then ShowPDDialog vbModal, FormLanguageEditor
+            If (Not FormLanguageEditor.Visible) Then ShowPDDialog vbModal, FormLanguageEditor
             
         '(separator)
         Case 2

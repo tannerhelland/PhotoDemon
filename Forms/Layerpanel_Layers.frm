@@ -319,14 +319,14 @@ Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
     If (g_OpenImageCount > 0) Then
         
         If Not (pdImages(g_CurrentImage) Is Nothing) Then
-            If Not (pdImages(g_CurrentImage).getActiveLayer Is Nothing) Then
+            If Not (pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
             
                 'Synchronize the opacity scroll bar to the active layer
-                sltLayerOpacity.Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOpacity
+                sltLayerOpacity.Value = pdImages(g_CurrentImage).GetActiveLayer.getLayerOpacity
                 
                 'Synchronize the blend and alpha modes to the active layer
-                cboBlendMode.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerBlendMode
-                cboAlphaMode.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerAlphaMode
+                cboBlendMode.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.getLayerBlendMode
+                cboAlphaMode.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.getLayerAlphaMode
             
             End If
         End If
@@ -354,21 +354,21 @@ Private Sub CheckButtonEnablement()
         cmdLayerAction(LYR_BTN_ADD).Enabled = True
         
         'Merge down is only allowed for layer indexes > 0
-        If pdImages(g_CurrentImage).getActiveLayerIndex = 0 Then
+        If pdImages(g_CurrentImage).GetActiveLayerIndex = 0 Then
             cmdLayerAction(LYR_BTN_MOVE_DOWN).Enabled = False
         Else
             cmdLayerAction(LYR_BTN_MOVE_DOWN).Enabled = True
         End If
         
         'Merge up is only allowed for layer indexes < NUM_OF_LAYERS
-        If pdImages(g_CurrentImage).getActiveLayerIndex < pdImages(g_CurrentImage).getNumOfLayers - 1 Then
+        If pdImages(g_CurrentImage).GetActiveLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers - 1 Then
             cmdLayerAction(LYR_BTN_MOVE_UP).Enabled = True
         Else
             cmdLayerAction(LYR_BTN_MOVE_UP).Enabled = False
         End If
         
         'Delete layer is only allowed if there are multiple layers present
-        If pdImages(g_CurrentImage).getNumOfLayers > 1 Then
+        If pdImages(g_CurrentImage).GetNumOfLayers > 1 Then
             cmdLayerAction(LYR_BTN_DELETE).Enabled = True
         Else
             cmdLayerAction(LYR_BTN_DELETE).Enabled = False
@@ -395,9 +395,9 @@ Private Sub cboAlphaMode_Click()
 
     If g_OpenImageCount > 0 Then
     
-        If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
+        If Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing Then
         
-            pdImages(g_CurrentImage).getActiveLayer.setLayerAlphaMode cboAlphaMode.ListIndex
+            pdImages(g_CurrentImage).GetActiveLayer.setLayerAlphaMode cboAlphaMode.ListIndex
             Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         End If
@@ -408,7 +408,7 @@ End Sub
 
 Private Sub cboAlphaMode_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Generic pgp_AlphaMode, cboAlphaMode.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Generic pgp_AlphaMode, cboAlphaMode.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboAlphaMode_LostFocusAPI()
@@ -424,9 +424,9 @@ Private Sub cboBlendMode_Click()
 
     If g_OpenImageCount > 0 Then
     
-        If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
+        If Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing Then
         
-            pdImages(g_CurrentImage).getActiveLayer.setLayerBlendMode cboBlendMode.ListIndex
+            pdImages(g_CurrentImage).GetActiveLayer.setLayerBlendMode cboBlendMode.ListIndex
             Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         End If
@@ -437,7 +437,7 @@ End Sub
 
 Private Sub cboBlendMode_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Generic pgp_BlendMode, cboBlendMode.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Generic pgp_BlendMode, cboBlendMode.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboBlendMode_LostFocusAPI()
@@ -459,30 +459,30 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
     If Not pdImages(g_CurrentImage) Is Nothing Then
     
         'Up key activates the next layer upward
-        If (vkCode = VK_UP) And (pdImages(g_CurrentImage).getActiveLayerIndex < pdImages(g_CurrentImage).getNumOfLayers - 1) Then
-            Layer_Handler.setActiveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex + 1, True
+        If (vkCode = VK_UP) And (pdImages(g_CurrentImage).GetActiveLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers - 1) Then
+            Layer_Handler.SetActiveLayerByIndex pdImages(g_CurrentImage).GetActiveLayerIndex + 1, True
         End If
         
         'Down key activates the next layer downward
-        If (vkCode = VK_DOWN) And pdImages(g_CurrentImage).getActiveLayerIndex > 0 Then
-            Layer_Handler.setActiveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex - 1, True
+        If (vkCode = VK_DOWN) And pdImages(g_CurrentImage).GetActiveLayerIndex > 0 Then
+            Layer_Handler.SetActiveLayerByIndex pdImages(g_CurrentImage).GetActiveLayerIndex - 1, True
         End If
         
         'Right key increases active layer opacity
-        If (vkCode = VK_RIGHT) And (pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility) Then
+        If (vkCode = VK_RIGHT) And (pdImages(g_CurrentImage).GetActiveLayer.getLayerVisibility) Then
             sltLayerOpacity.Value = sltLayerOpacity.Value + 10
             Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
         
         'Left key decreases active layer opacity
-        If (vkCode = VK_LEFT) And (pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility) Then
+        If (vkCode = VK_LEFT) And (pdImages(g_CurrentImage).GetActiveLayer.getLayerVisibility) Then
             sltLayerOpacity.Value = sltLayerOpacity.Value - 10
             Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
         
         'Delete key: delete the active layer (if allowed)
-        If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).getNumOfLayers > 1 Then
-            Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
+        If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).GetNumOfLayers > 1 Then
+            Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
         End If
         
         'Insert: raise Add New Layer dialog
@@ -498,7 +498,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
             
             'Retrieve the active layer index
             Dim curLayerIndex As Long
-            curLayerIndex = pdImages(g_CurrentImage).getActiveLayerIndex
+            curLayerIndex = pdImages(g_CurrentImage).GetActiveLayerIndex
             
             'Advance the layer index according to the Shift modifier
             If (Shift And vbShiftMask) <> 0 Then
@@ -509,12 +509,12 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
             
             'I'm currently working on letting the user tab through the layer list, then tab *out of the control* upon reaching
             ' the last layer.  But this requires some changes to the pdCanvas control (it's complicated), so this doesn't work just yet.
-            If (curLayerIndex >= 0) And (curLayerIndex < pdImages(g_CurrentImage).getNumOfLayers) Then
+            If (curLayerIndex >= 0) And (curLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers) Then
                 
                 'Debug.Print "HANDLING KEY!"
                 
                 'Activate the new layer
-                pdImages(g_CurrentImage).setActiveLayerByIndex curLayerIndex
+                pdImages(g_CurrentImage).SetActiveLayerByIndex curLayerIndex
                 
                 'Redraw the viewport and interface to match
                 Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -534,7 +534,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
         
         'Space bar: toggle active layer visibility
         If (vkCode = VK_SPACE) Then
-            pdImages(g_CurrentImage).getActiveLayer.setLayerVisibility (Not pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility)
+            pdImages(g_CurrentImage).GetActiveLayer.setLayerVisibility (Not pdImages(g_CurrentImage).GetActiveLayer.getLayerVisibility)
             Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             SyncInterfaceToCurrentImage
         End If
@@ -552,7 +552,7 @@ End Sub
 Private Sub cmdLayerAction_Click(Index As Integer)
 
     Dim copyOfCurLayerID As Long
-    copyOfCurLayerID = pdImages(g_CurrentImage).getActiveLayerID
+    copyOfCurLayerID = pdImages(g_CurrentImage).GetActiveLayerID
 
     Select Case Index
     
@@ -560,13 +560,13 @@ Private Sub cmdLayerAction_Click(Index As Integer)
             Process "Add new layer", True
         
         Case LYR_BTN_DELETE
-            Process "Delete layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGE_VECTORSAFE
+            Process "Delete layer", False, pdImages(g_CurrentImage).GetActiveLayerIndex, UNDO_IMAGE_VECTORSAFE
         
         Case LYR_BTN_MOVE_UP
-            Process "Raise layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGEHEADER
+            Process "Raise layer", False, pdImages(g_CurrentImage).GetActiveLayerIndex, UNDO_IMAGEHEADER
         
         Case LYR_BTN_MOVE_DOWN
-            Process "Lower layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGEHEADER
+            Process "Lower layer", False, pdImages(g_CurrentImage).GetActiveLayerIndex, UNDO_IMAGEHEADER
             
     End Select
     
@@ -595,7 +595,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
             'Has the user clicked a visibility rectangle?
             If IsPointInRect(x, y, m_VisibilityRect) Then
                 
-                Layer_Handler.setLayerVisibilityByIndex clickedLayer, Not pdImages(g_CurrentImage).getLayerByIndex(clickedLayer).getLayerVisibility, True
+                Layer_Handler.SetLayerVisibilityByIndex clickedLayer, Not pdImages(g_CurrentImage).GetLayerByIndex(clickedLayer).getLayerVisibility, True
                 actionInitiated = True
             
             'Duplicate rectangle?
@@ -607,7 +607,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
             'Merge down rectangle?
             ElseIf IsPointInRect(x, y, m_MergeDownRect) Then
             
-                If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, True) >= 0 Then
+                If Layer_Handler.IsLayerAllowedToMergeAdjacent(clickedLayer, True) >= 0 Then
                     Process "Merge layer down", False, Str(clickedLayer), UNDO_IMAGE
                     actionInitiated = True
                 End If
@@ -615,7 +615,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
             'Merge up rectangle?
             ElseIf IsPointInRect(x, y, m_MergeUpRect) Then
             
-                If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, False) >= 0 Then
+                If Layer_Handler.IsLayerAllowedToMergeAdjacent(clickedLayer, False) >= 0 Then
                     Process "Merge layer up", False, Str(clickedLayer), UNDO_IMAGE
                     actionInitiated = True
                 End If
@@ -623,7 +623,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
             'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
             ' the active layer.
             Else
-                Layer_Handler.setActiveLayerByIndex clickedLayer, False
+                Layer_Handler.SetActiveLayerByIndex clickedLayer, False
                 Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             End If
             
@@ -654,10 +654,10 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
         m_LayerNameEditMode = True
         
         'Fill the text box with the current layer name, and select it
-        txtLayerName.Text = pdImages(g_CurrentImage).getLayerByIndex(GetLayerAtPosition(x, y)).getLayerName
+        txtLayerName.Text = pdImages(g_CurrentImage).GetLayerByIndex(GetLayerAtPosition(x, y)).getLayerName
         
         'Set an Undo/Redo marker for the existing layer name
-        Processor.flagInitialNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).getLayerByIndex(GetLayerAtPosition(x, y)).getLayerName, pdImages(g_CurrentImage).getLayerByIndex(GetLayerAtPosition(x, y)).getLayerID
+        Processor.flagInitialNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).GetLayerByIndex(GetLayerAtPosition(x, y)).getLayerName, pdImages(g_CurrentImage).GetLayerByIndex(GetLayerAtPosition(x, y)).getLayerID
         
         txtLayerName.SetFocus
         
@@ -684,7 +684,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     If (clickedLayer >= 0) And (Not pdImages(g_CurrentImage) Is Nothing) Then
         
         'If the image is a multilayer image, and they're using the left mouse button, initiate drag/drop layer reordering
-        If (pdImages(g_CurrentImage).getNumOfLayers > 1) And (Button = pdLeftButton) Then
+        If (pdImages(g_CurrentImage).GetNumOfLayers > 1) And (Button = pdLeftButton) Then
         
             'Enter layer rearranging mode
             m_LayerRearrangingMode = True
@@ -723,9 +723,9 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     
     'Only display the hand cursor if the cursor is over a layer
     If GetLayerAtPosition(x, y) <> -1 Then
-        cMouseEvents.setSystemCursor IDC_HAND
+        cMouseEvents.SetSystemCursor IDC_HAND
     Else
-        cMouseEvents.setSystemCursor IDC_ARROW
+        cMouseEvents.SetSystemCursor IDC_ARROW
     End If
     
     'Don't process further MouseMove events if no images are loaded
@@ -744,13 +744,13 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         layerIndexUnderMouse = GetLayerAtPosition(x, y, True)
                 
         'Ask the parent pdImage to move the layer for us
-        If pdImages(g_CurrentImage).moveLayerToArbitraryIndex(m_LayerIndexToRearrange, layerIndexUnderMouse) Then
+        If pdImages(g_CurrentImage).MoveLayerToArbitraryIndex(m_LayerIndexToRearrange, layerIndexUnderMouse) Then
         
             'Note that the layer currently being moved has changed
             m_LayerIndexToRearrange = layerIndexUnderMouse
             
             'Keep the current layer as the active one
-            setActiveLayerByIndex layerIndexUnderMouse, False
+            SetActiveLayerByIndex layerIndexUnderMouse, False
             
             'Redraw the layer box, and note that thumbnails need to be re-cached
             Me.forceRedraw True
@@ -774,7 +774,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         'Fast mouse movements can cause this event to trigger, even when no layer is hovered.
         ' As such, we need to make sure we won't be attempting to access a bad layer index.
         If curLayerHover >= 0 Then
-            If pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerVisibility Then
+            If pdImages(g_CurrentImage).GetLayerByIndex(curLayerHover).getLayerVisibility Then
                 toolString = g_Language.TranslateMessage("Click to hide this layer.")
             Else
                 toolString = g_Language.TranslateMessage("Click to show this layer.")
@@ -792,7 +792,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     ElseIf IsPointInRect(x, y, m_MergeDownRect) Then
     
         If curLayerHover >= 0 Then
-            If Layer_Handler.isLayerAllowedToMergeAdjacent(curLayerHover, True) >= 0 Then
+            If Layer_Handler.IsLayerAllowedToMergeAdjacent(curLayerHover, True) >= 0 Then
                 toolString = g_Language.TranslateMessage("Click to merge this layer with the layer beneath it.")
             Else
                 toolString = g_Language.TranslateMessage("This layer can't merge down, because there are no visible layers beneath it.")
@@ -803,7 +803,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     ElseIf IsPointInRect(x, y, m_MergeUpRect) Then
     
         If curLayerHover >= 0 Then
-            If Layer_Handler.isLayerAllowedToMergeAdjacent(curLayerHover, False) >= 0 Then
+            If Layer_Handler.IsLayerAllowedToMergeAdjacent(curLayerHover, False) >= 0 Then
                 toolString = g_Language.TranslateMessage("Click to merge this layer with the layer above it.")
             Else
                 toolString = g_Language.TranslateMessage("This layer can't merge up, because there are no visible layers above it.")
@@ -815,7 +815,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     Else
         
         'The tooltip is irrelevant if the current layer is already active
-        If pdImages(g_CurrentImage).getActiveLayerIndex <> GetLayerAtPosition(x, y) Then
+        If pdImages(g_CurrentImage).GetActiveLayerIndex <> GetLayerAtPosition(x, y) Then
             
             If curLayerHover >= 0 Then
                 toolString = g_Language.TranslateMessage("Click to make this the active layer.")
@@ -856,10 +856,10 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
             
             'Ask the parent pdImage to move the layer for us; the MouseMove event has probably taken care of this already.
             ' In that case, this function will return FALSE and we don't have to do anything extra.
-            If pdImages(g_CurrentImage).moveLayerToArbitraryIndex(m_LayerIndexToRearrange, layerIndexUnderMouse) Then
+            If pdImages(g_CurrentImage).MoveLayerToArbitraryIndex(m_LayerIndexToRearrange, layerIndexUnderMouse) Then
     
                 'Keep the current layer as the active one
-                setActiveLayerByIndex layerIndexUnderMouse, False
+                SetActiveLayerByIndex layerIndexUnderMouse, False
                 
                 'Redraw the layer box, and note that thumbnails need to be re-cached
                 Me.forceRedraw True
@@ -940,15 +940,15 @@ Private Sub Form_Load()
             
     'Enable custom input handling for the layer box
     Set cMouseEvents = New pdInputMouse
-    cMouseEvents.addInputTracker picLayers.hWnd, True, True, , True
+    cMouseEvents.AddInputTracker picLayers.hWnd, True, True, , True
     m_MouseOverLayerBox = False
     
     Set cKeyEvents = New pdInputKeyboard
-    cKeyEvents.CreateKeyboardTracker "Layers Toolbar - picLayers", picLayers.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_SPACE, VK_TAB, VK_DELETE, VK_INSERT
+    'cKeyEvents.CreateKeyboardTracker "Layers Toolbar - picLayers", picLayers.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_SPACE, VK_TAB, VK_DELETE, VK_INSERT
     
     'Enable simple input handling for the form as well
     Set cKeyEventsForm = New pdInputKeyboard
-    cKeyEventsForm.CreateKeyboardTracker "Layers Toolbar (form)", Me.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_SPACE, VK_TAB, VK_DELETE, VK_INSERT
+    'cKeyEventsForm.CreateKeyboardTracker "Layers Toolbar (form)", Me.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_SPACE, VK_TAB, VK_DELETE, VK_INSERT
     
     'No layer has been hovered yet
     UpdateHoveredLayer -1
@@ -987,8 +987,8 @@ Private Sub Form_Load()
 
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
-    lastUsedSettings.setParentForm Me
-    lastUsedSettings.loadAllControlValues
+    lastUsedSettings.SetParentForm Me
+    lastUsedSettings.LoadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
     UpdateAgainstCurrentTheme
@@ -1005,8 +1005,8 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'Save all last-used settings to file
-    lastUsedSettings.saveAllControlValues
-    lastUsedSettings.setParentForm Nothing
+    lastUsedSettings.SaveAllControlValues
+    lastUsedSettings.SetParentForm Nothing
 
 End Sub
 
@@ -1022,10 +1022,10 @@ Private Sub initializeUIDib(ByRef dstDIB As pdDIB, ByRef resString As String)
     
     'If the screen is high DPI, resize all DIBs to match
     If FixDPIFloat(1) > 1 Then
-        dstDIB.createBlank FixDPI(tmpDIB.getDIBWidth), FixDPI(tmpDIB.getDIBHeight), tmpDIB.getDIBColorDepth, 0
-        GDIPlusResizeDIB dstDIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+        dstDIB.createBlank FixDPI(tmpDIB.GetDIBWidth), FixDPI(tmpDIB.GetDIBHeight), tmpDIB.GetDIBColorDepth, 0
+        GDIPlusResizeDIB dstDIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, InterpolationModeHighQualityBicubic
     Else
-        dstDIB.createFromExistingDIB tmpDIB
+        dstDIB.CreateFromExistingDIB tmpDIB
     End If
         
 End Sub
@@ -1058,10 +1058,10 @@ Private Sub cacheLayerThumbnails()
     If (Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0) Then
     
         'Make sure the active image has at least one layer.  (This should always be true, but better safe than sorry.)
-        If pdImages(g_CurrentImage).getNumOfLayers > 0 Then
+        If pdImages(g_CurrentImage).GetNumOfLayers > 0 Then
     
             'Retrieve the number of layers in the current image and prepare the thumbnail cache
-            numOfThumbnails = pdImages(g_CurrentImage).getNumOfLayers
+            numOfThumbnails = pdImages(g_CurrentImage).GetNumOfLayers
             ReDim layerThumbnails(0 To numOfThumbnails - 1) As thumbEntry
             
             'Only cache thumbnails if the active image has one or more layers
@@ -1071,12 +1071,12 @@ Private Sub cacheLayerThumbnails()
                 For i = 0 To numOfThumbnails - 1
                     
                     'Retrieve a thumbnail and ID for this layer
-                    If Not pdImages(g_CurrentImage).getLayerByIndex(i) Is Nothing Then
+                    If Not pdImages(g_CurrentImage).GetLayerByIndex(i) Is Nothing Then
                     
-                        layerThumbnails(i).canonicalLayerID = pdImages(g_CurrentImage).getLayerByIndex(i).getLayerID
+                        layerThumbnails(i).canonicalLayerID = pdImages(g_CurrentImage).GetLayerByIndex(i).getLayerID
                         
                         Set layerThumbnails(i).thumbDIB = New pdDIB
-                        pdImages(g_CurrentImage).getLayerByIndex(i).RequestThumbnail layerThumbnails(i).thumbDIB, thumbHeight - (FixDPI(thumbBorder) * 2)
+                        pdImages(g_CurrentImage).GetLayerByIndex(i).RequestThumbnail layerThumbnails(i).thumbDIB, thumbHeight - (FixDPI(thumbBorder) * 2)
                         
                     End If
                     
@@ -1132,21 +1132,21 @@ Private Sub RedrawLayerBox()
     
     'Erase the current DIB
     If (bufferDIB Is Nothing) Then Set bufferDIB = New pdDIB
-    If (bufferDIB.getDIBWidth <> m_BufferWidth) Or (bufferDIB.getDIBHeight <> m_BufferHeight) Then
+    If (bufferDIB.GetDIBWidth <> m_BufferWidth) Or (bufferDIB.GetDIBHeight <> m_BufferHeight) Then
         bufferDIB.createBlank m_BufferWidth, m_BufferHeight, 24
     Else
-        bufferDIB.resetDIB 255
+        bufferDIB.ResetDIB 255
     End If
     
     'If the image has one or more layers, render them to the list.
     If (Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0) Then
     
-        If pdImages(g_CurrentImage).getNumOfLayers > 0 Then
+        If pdImages(g_CurrentImage).GetNumOfLayers > 0 Then
         
             'Loop through the current layer list, drawing layers as we go
             Dim i As Long
-            For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
-                RenderLayerBlock (pdImages(g_CurrentImage).getNumOfLayers - 1) - i, 0, FixDPI(i * BLOCKHEIGHT) - scrollOffset - FixDPI(2)
+            For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
+                RenderLayerBlock (pdImages(g_CurrentImage).GetNumOfLayers - 1) - i, 0, FixDPI(i * BLOCKHEIGHT) - scrollOffset - FixDPI(2)
             Next i
             
         End If
@@ -1154,7 +1154,7 @@ Private Sub RedrawLayerBox()
     End If
     
     'Copy the buffer to its container picture box
-    BitBlt picLayers.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferDIB.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt picLayers.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferDIB.GetDIBDC, 0, 0, vbSrcCopy
     picLayers.Picture = picLayers.Image
     
 End Sub
@@ -1176,16 +1176,16 @@ Private Sub RenderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
         'For performance reasons, retrieve a reference to the corresponding pdLayer object.  We need to
         ' pull a lot of information from this object as part of rendering this block.
         Dim tmpLayerRef As pdLayer
-        Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(blockIndex)
+        Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(blockIndex)
         
         If Not (tmpLayerRef Is Nothing) Then
         
             'If this layer is the active layer, draw the background with the system's current selection color
-            If tmpLayerRef.getLayerID = pdImages(g_CurrentImage).getActiveLayerID Then
+            If tmpLayerRef.getLayerID = pdImages(g_CurrentImage).GetActiveLayerID Then
             
                 SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + FixDPI(BLOCKHEIGHT)
                 hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
-                FillRect bufferDIB.getDIBDC, tmpRect, hBrush
+                FillRect bufferDIB.GetDIBDC, tmpRect, hBrush
                 DeleteObject hBrush
                 
                 'Also, color the fonts with the matching highlighted text color (otherwise they won't be readable)
@@ -1201,7 +1201,7 @@ Private Sub RenderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
                 If (blockIndex = curLayerHover) Then
                     SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + FixDPI(BLOCKHEIGHT)
                     hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
-                    FrameRect bufferDIB.getDIBDC, tmpRect, hBrush
+                    FrameRect bufferDIB.GetDIBDC, tmpRect, hBrush
                     DeleteObject hBrush
                 End If
                 
@@ -1216,9 +1216,9 @@ Private Sub RenderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
             If Not (layerThumbnails(blockIndex).thumbDIB Is Nothing) Then
             
                 If tmpLayerRef.getLayerVisibility Then
-                    layerThumbnails(blockIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                    layerThumbnails(blockIndex).thumbDIB.AlphaBlendToDC bufferDIB.GetDIBDC, 255, xObjOffset, yObjOffset
                 Else
-                    layerThumbnails(blockIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 76, xObjOffset, yObjOffset
+                    layerThumbnails(blockIndex).thumbDIB.AlphaBlendToDC bufferDIB.GetDIBDC, 76, xObjOffset, yObjOffset
                     
                     'Also, render a "closed eye" icon in the corner.
                     ' NOTE: I'm not sold on this being a good idea.  The icon seems to be clickable, but it isn't!
@@ -1236,7 +1236,7 @@ Private Sub RenderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
             ' NOTE: not sold on this behavior, but I'm leaving it for a bit to see how it affects workflow.
             If Not tmpLayerRef.getLayerVisibility Then drawString = g_Language.TranslateMessage("(hidden)") & " " & drawString
             
-            layerNameFont.AttachToDC bufferDIB.getDIBDC
+            layerNameFont.AttachToDC bufferDIB.GetDIBDC
             
             Dim xTextOffset As Long, yTextOffset As Long, xTextWidth As Long, yTextHeight As Long
             xTextOffset = offsetX + thumbWidth + FixDPI(thumbBorder) * 2
@@ -1268,43 +1268,43 @@ Private Sub RenderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
             If (blockIndex = curLayerHover) Then
             
                 'Start with an x-offset at the far right of the panel
-                xObjOffset = m_BufferWidth - img_EyeClosed.getDIBWidth - FixDPI(DIST_BETWEEN_HOVER_BUTTONS)
+                xObjOffset = m_BufferWidth - img_EyeClosed.GetDIBWidth - FixDPI(DIST_BETWEEN_HOVER_BUTTONS)
             
                 'Draw the visibility toggle.  Note that an icon for the opposite visibility state is drawn, to show
                 ' the user what will happen if they click the icon.
                 If tmpLayerRef.getLayerVisibility Then
-                    img_EyeClosed.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                    img_EyeClosed.AlphaBlendToDC bufferDIB.GetDIBDC, 255, xObjOffset, yObjOffset
                 Else
-                    img_EyeOpen.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                    img_EyeOpen.AlphaBlendToDC bufferDIB.GetDIBDC, 255, xObjOffset, yObjOffset
                 End If
                 
                 'Store the visibility toggle's rect (so that mouse events can more easily calculate hit events)
                 FillRectWithDIBCoords m_VisibilityRect, img_EyeOpen, xObjOffset, yObjOffset
                 
                 'Next, provide a "duplicate layer" shortcut
-                xObjOffset = xObjOffset - img_EyeOpen.getDIBWidth - FixDPI(DIST_BETWEEN_HOVER_BUTTONS)
-                img_Duplicate.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                xObjOffset = xObjOffset - img_EyeOpen.GetDIBWidth - FixDPI(DIST_BETWEEN_HOVER_BUTTONS)
+                img_Duplicate.AlphaBlendToDC bufferDIB.GetDIBDC, 255, xObjOffset, yObjOffset
                 FillRectWithDIBCoords m_DuplicateRect, img_Duplicate, xObjOffset, yObjOffset
                 
                 'Next, give the user dedicated merge down/up buttons.  These are only available if the layer is visible.
                 If tmpLayerRef.getLayerVisibility Then
                 
                     'Merge down comes first...
-                    xObjOffset = xObjOffset - img_Duplicate.getDIBWidth - FixDPI(DIST_BETWEEN_HOVER_BUTTONS)
+                    xObjOffset = xObjOffset - img_Duplicate.GetDIBWidth - FixDPI(DIST_BETWEEN_HOVER_BUTTONS)
                     
-                    If Layer_Handler.isLayerAllowedToMergeAdjacent(blockIndex, True) >= 0 Then
-                        img_MergeDown.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                    If Layer_Handler.IsLayerAllowedToMergeAdjacent(blockIndex, True) >= 0 Then
+                        img_MergeDown.AlphaBlendToDC bufferDIB.GetDIBDC, 255, xObjOffset, yObjOffset
                     Else
-                        img_MergeDownDisabled.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                        img_MergeDownDisabled.AlphaBlendToDC bufferDIB.GetDIBDC, 255, xObjOffset, yObjOffset
                     End If
                     FillRectWithDIBCoords m_MergeDownRect, img_MergeDown, xObjOffset, yObjOffset
                     
                     '...then Merge up
-                    xObjOffset = xObjOffset - img_MergeDown.getDIBWidth - FixDPI(DIST_BETWEEN_HOVER_BUTTONS)
-                    If Layer_Handler.isLayerAllowedToMergeAdjacent(blockIndex, False) >= 0 Then
-                        img_MergeUp.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                    xObjOffset = xObjOffset - img_MergeDown.GetDIBWidth - FixDPI(DIST_BETWEEN_HOVER_BUTTONS)
+                    If Layer_Handler.IsLayerAllowedToMergeAdjacent(blockIndex, False) >= 0 Then
+                        img_MergeUp.AlphaBlendToDC bufferDIB.GetDIBDC, 255, xObjOffset, yObjOffset
                     Else
-                        img_MergeUpDisabled.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                        img_MergeUpDisabled.AlphaBlendToDC bufferDIB.GetDIBDC, 255, xObjOffset, yObjOffset
                     End If
                     FillRectWithDIBCoords m_MergeUpRect, img_MergeUp, xObjOffset, yObjOffset
                     
@@ -1323,8 +1323,8 @@ Private Sub FillRectWithDIBCoords(ByRef dstRect As RECT, ByRef srcDIB As pdDIB, 
     With dstRect
         .Left = xOffset
         .Top = yOffset
-        .Right = xOffset + srcDIB.getDIBWidth
-        .Bottom = yOffset + srcDIB.getDIBHeight
+        .Right = xOffset + srcDIB.GetDIBWidth
+        .Bottom = yOffset + srcDIB.GetDIBHeight
     End With
 End Sub
 
@@ -1346,12 +1346,12 @@ Private Function GetLayerAtPosition(ByVal x As Long, ByVal y As Long, Optional B
     
     'It's a bit counterintuitive, but we draw the layer box in reverse order: layer 0 is at the BOTTOM,
     ' and layer(max) is at the TOP.  Because of this, all layer positioning checks must be reversed.
-    tmpLayerCheck = (pdImages(g_CurrentImage).getNumOfLayers - 1) - tmpLayerCheck
+    tmpLayerCheck = (pdImages(g_CurrentImage).GetNumOfLayers - 1) - tmpLayerCheck
     
     'Is the mouse over an actual layer, or just dead space in the box?
     If Not pdImages(g_CurrentImage) Is Nothing Then
     
-        If (tmpLayerCheck >= 0) And (tmpLayerCheck < pdImages(g_CurrentImage).getNumOfLayers) Then
+        If (tmpLayerCheck >= 0) And (tmpLayerCheck < pdImages(g_CurrentImage).GetNumOfLayers) Then
             GetLayerAtPosition = tmpLayerCheck
         Else
         
@@ -1361,7 +1361,7 @@ Private Function GetLayerAtPosition(ByVal x As Long, ByVal y As Long, Optional B
                 If tmpLayerCheck < 0 Then
                     GetLayerAtPosition = 0
                 Else
-                    GetLayerAtPosition = pdImages(g_CurrentImage).getNumOfLayers - 1
+                    GetLayerAtPosition = pdImages(g_CurrentImage).GetNumOfLayers - 1
                 End If
             
             'The user doesn't want us to report the nearest layer.  Report that the mouse is not over a layer.
@@ -1410,9 +1410,9 @@ Private Sub sltLayerOpacity_Change()
 
     If g_OpenImageCount > 0 Then
     
-        If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
+        If Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing Then
         
-            pdImages(g_CurrentImage).getActiveLayer.setLayerOpacity sltLayerOpacity.Value
+            pdImages(g_CurrentImage).GetActiveLayer.setLayerOpacity sltLayerOpacity.Value
             Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         End If
@@ -1423,7 +1423,7 @@ End Sub
 
 Private Sub sltLayerOpacity_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Generic pgp_Opacity, sltLayerOpacity.Value, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Generic pgp_Opacity, sltLayerOpacity.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltLayerOpacity_LostFocusAPI()
@@ -1438,10 +1438,10 @@ Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As 
         preventFurtherHandling = True
         
         'Set the active layer name, then hide the text box
-        pdImages(g_CurrentImage).getActiveLayer.setLayerName txtLayerName.Text
+        pdImages(g_CurrentImage).GetActiveLayer.setLayerName txtLayerName.Text
         
         'If the user changed the name, set an Undo/Redo point now
-        If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).getActiveLayer.getLayerName
+        If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).GetActiveLayer.getLayerName
         
         'Re-enable hotkeys now that editing is finished
         m_LayerNameEditMode = False
@@ -1480,8 +1480,8 @@ Private Sub UpdateHoveredLayer(ByVal newLayerUnderMouse As Long)
         
         'If this control has focus, finalize any Undo/Redo changes to the existing layer (curLayerHover)
         If (g_OpenImageCount > 0) And (g_WindowManager.GetFocusAPI = picLayers.hWnd) Then
-            If (curLayerHover > -1) And (curLayerHover < pdImages(g_CurrentImage).getNumOfLayers) And Tool_Support.canvasToolsAllowed Then
-                Processor.flagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerVisibility
+            If (curLayerHover > -1) And (curLayerHover < pdImages(g_CurrentImage).GetNumOfLayers) And Tool_Support.canvasToolsAllowed Then
+                Processor.flagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetLayerByIndex(curLayerHover).getLayerVisibility
             End If
         End If
         
@@ -1489,8 +1489,8 @@ Private Sub UpdateHoveredLayer(ByVal newLayerUnderMouse As Long)
         
         'If this control has focus, mark the current state of the newly selected layer (newLayerUnderMouse)
         If (g_OpenImageCount > 0) And (g_WindowManager.GetFocusAPI = picLayers.hWnd) Then
-            If (curLayerHover > -1) And (curLayerHover < pdImages(g_CurrentImage).getNumOfLayers) Then
-                Processor.flagInitialNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerVisibility, pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerID
+            If (curLayerHover > -1) And (curLayerHover < pdImages(g_CurrentImage).GetNumOfLayers) Then
+                Processor.flagInitialNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetLayerByIndex(curLayerHover).getLayerVisibility, pdImages(g_CurrentImage).GetLayerByIndex(curLayerHover).getLayerID
             End If
         End If
         
