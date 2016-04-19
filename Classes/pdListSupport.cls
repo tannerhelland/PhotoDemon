@@ -107,6 +107,10 @@ Private m_FirstRenderIndex As Long, m_LastRenderIndex As Long
 ' the owner finally requests rendering data.
 Private m_RenderDataCorrect As Boolean
 
+'When the list is initialized, we note the current language.  If the language changes on subsequent theme updates,
+' we'll re-translate the listbox to match.
+Private m_LanguageAtLastCheck As String
+
 Private Sub Class_Initialize()
     
     m_ListMode = PDLM_LISTBOX
@@ -157,7 +161,7 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
         
         'Add a translated copy of the string as well; this will be the string actually rendered onto the screen.
         If Not (g_Language Is Nothing) Then
-            If g_Language.translationActive Then
+            If g_Language.TranslationActive Then
                 .textTranslated = g_Language.TranslateMessage(srcItemText)
             Else
                 .textTranslated = srcItemText
@@ -211,6 +215,9 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
         End If
         
     End With
+    
+    'If this is the first item, note the current translation language.  (If this changes, we need to re-translate the list.)
+    If m_NumOfItems = 0 Then m_LanguageAtLastCheck = g_Language.GetCurrentLanguage
     
     'Increment the number of list entries
     m_NumOfItems = m_NumOfItems + 1
@@ -380,9 +387,9 @@ Public Function List(ByVal itemIndex As Long, Optional ByVal returnTranslatedTex
     
     If (itemIndex >= 0) And (itemIndex < m_NumOfItems) Then
         If returnTranslatedText Then
-            List = m_Items(itemIndex).textEn
-        Else
             List = m_Items(itemIndex).textTranslated
+        Else
+            List = m_Items(itemIndex).textEn
         End If
     Else
         List = vbNullString
@@ -963,4 +970,19 @@ Public Sub CalculateRenderMetrics()
     
     If m_RedrawAutomatically Then RaiseEvent RedrawNeeded
     
+End Sub
+
+Public Sub UpdateAgainstCurrentTheme()
+
+    If (m_NumOfItems > 0) And (StrComp(m_LanguageAtLastCheck, g_Language.GetCurrentLanguage, vbBinaryCompare) <> 0) Then
+        m_LanguageAtLastCheck = g_Language.GetCurrentLanguage
+        
+        Dim i As Long
+        For i = 0 To m_NumOfItems - 1
+            m_Items(i).textTranslated = g_Language.TranslateMessage(m_Items(i).textEn)
+        Next i
+    
+        m_RenderDataCorrect = False
+    End If
+
 End Sub
