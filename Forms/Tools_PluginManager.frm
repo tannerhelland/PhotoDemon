@@ -58,73 +58,6 @@ Begin VB.Form FormPluginManager
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   5895
-      Index           =   0
-      Left            =   3000
-      ScaleHeight     =   393
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   513
-      TabIndex        =   0
-      Top             =   240
-      Width           =   7695
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   300
-         Index           =   0
-         Left            =   120
-         Top             =   15
-         Width           =   2265
-         _ExtentX        =   3995
-         _ExtentY        =   529
-         Caption         =   "current plugin status:"
-         FontSize        =   12
-         ForeColor       =   4210752
-         Layout          =   2
-      End
-      Begin PhotoDemon.pdLabel lblPluginStatus 
-         Height          =   285
-         Left            =   2460
-         Top             =   15
-         Width           =   690
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Caption         =   "GOOD"
-         FontSize        =   12
-         ForeColor       =   47369
-         Layout          =   2
-         UseCustomForeColor=   -1  'True
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   0
-         Left            =   240
-         Top             =   720
-         Width           =   705
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Caption         =   "status:"
-         FontSize        =   11
-         ForeColor       =   4210752
-         Layout          =   2
-      End
-      Begin PhotoDemon.pdLabel lblStatus 
-         Height          =   285
-         Index           =   0
-         Left            =   1080
-         Top             =   720
-         Width           =   3540
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Caption         =   "installed, enabled, and up to date"
-         FontSize        =   11
-         ForeColor       =   49152
-         UseCustomForeColor=   -1  'True
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   5895
       Index           =   1
       Left            =   3000
       ScaleHeight     =   393
@@ -141,7 +74,7 @@ Begin VB.Form FormPluginManager
          Width           =   7095
          _ExtentX        =   12515
          _ExtentY        =   1931
-         Caption         =   "forcibly disable this plugin:"
+         Caption         =   "forcibly disable:"
          FontSizeCaption =   11
       End
       Begin PhotoDemon.pdHyperlink hypHomepage 
@@ -253,6 +186,73 @@ Begin VB.Form FormPluginManager
          FontSize        =   11
          ForeColor       =   4210752
          Layout          =   2
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   5895
+      Index           =   0
+      Left            =   3000
+      ScaleHeight     =   393
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   513
+      TabIndex        =   0
+      Top             =   240
+      Width           =   7695
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   300
+         Index           =   0
+         Left            =   120
+         Top             =   15
+         Width           =   2265
+         _ExtentX        =   3995
+         _ExtentY        =   529
+         Caption         =   "current plugin status:"
+         FontSize        =   12
+         ForeColor       =   4210752
+         Layout          =   2
+      End
+      Begin PhotoDemon.pdLabel lblPluginStatus 
+         Height          =   285
+         Left            =   2460
+         Top             =   15
+         Width           =   690
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "GOOD"
+         FontSize        =   12
+         ForeColor       =   47369
+         Layout          =   2
+         UseCustomForeColor=   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+         Height          =   285
+         Index           =   0
+         Left            =   240
+         Top             =   720
+         Width           =   705
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "status:"
+         FontSize        =   11
+         ForeColor       =   4210752
+         Layout          =   2
+      End
+      Begin PhotoDemon.pdLabel lblStatus 
+         Height          =   285
+         Index           =   0
+         Left            =   1080
+         Top             =   720
+         Width           =   3540
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "installed, enabled, and up to date"
+         FontSize        =   11
+         ForeColor       =   49152
+         UseCustomForeColor=   -1  'True
       End
    End
 End
@@ -412,7 +412,7 @@ Private Sub Form_Load()
         End If
         
         'Assign title captions and position accordingly
-        lblInterfaceTitle(i).Caption = g_Language.TranslateMessage("%1 status:", PluginManager.GetPluginName(i))
+        lblInterfaceTitle(i).Caption = PluginManager.GetPluginName(i) & ":"
         If lblInterfaceTitle(i).GetWidth > maxWidth Then maxWidth = lblInterfaceTitle(i).GetWidth
         
         'Align the top position of each status label with its matching title label

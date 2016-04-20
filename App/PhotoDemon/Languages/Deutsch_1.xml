@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.149</langversion>
+<langversion>6.7.151</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -1471,7 +1471,37 @@ In Version 6.0 wurden das Format der PhotoDemon-Makrodateien überarbeitet, um n
 
 <!-- BEGIN text for Plugin_Management.bas -->
 
-<!-- Plugin_Management.bas contains 0 phrases. -->
+<phrase>
+<original>artistic license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>public domain</original>
+<translation>Public Domain</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage public license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>MIT license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>zLib license</original>
+<translation>zLib-Lizenz</translation>
+</phrase>
+
+<phrase>
+<original>GNU GPLv3</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_Management.bas contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Plugin_Management.bas-->
 
@@ -14848,48 +14878,33 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 </phrase>
 
 <phrase>
-<original>Disable FreeImage</original>
-<translation>FreeImage ausschalten</translation>
-</phrase>
-
-<phrase>
-<original>Disable zLib</original>
-<translation>zLib ausschalten</translation>
-</phrase>
-
-<phrase>
-<original>Disable EZTwain</original>
-<translation>EZTwain ausschalten</translation>
-</phrase>
-
-<phrase>
-<original>Disable PNGQuant</original>
-<translation>PNGQuant ausschalten</translation>
-</phrase>
-
-<phrase>
-<original>Disable ExifTool</original>
-<translation>ExifTool ausschalten</translation>
-</phrase>
-
-<phrase>
-<original>Disable LittleCMS</original>
+<original>forcibly disable</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>LittleCMS</original>
+<original>homepage</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>status</original>
-<translation>Status</translation>
+<original>license</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>installed, enabled, and up to date</original>
-<translation>installiert, aktiviert und auf dem neuesten Stand</translation>
+<original>%1 summary</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>expected version</original>
+<translation>erwartete Version</translation>
+</phrase>
+
+<phrase>
+<original>version found</original>
+<translation>gefundene Version</translation>
 </phrase>
 
 <phrase>
@@ -14903,158 +14918,13 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 </phrase>
 
 <phrase>
-<original>improve IE6 compatibility (reduces image quality; use with caution)</original>
-<translation>Kompatibilität mit IE6 erhöhen (Vorsicht - führt zu schlechteren Bildern!)</translation>
+<original>status</original>
+<translation>Status</translation>
 </phrase>
 
 <phrase>
-<original>use dithering to improve output</original>
-<translation>Dithering verwenden für ein besseres Ergebnis</translation>
-</phrase>
-
-<phrase>
-<original>performance vs image quality</original>
-<translation>schnelle Bearbeitung oder gute Bildqualität?</translation>
-</phrase>
-
-<phrase>
-<original>BSD license</original>
-<translation>BSD-Lizenz</translation>
-</phrase>
-
-<phrase>
-<original>fast, low quality</original>
-<translation>schnell, aber geringe Qualität</translation>
-</phrase>
-
-<phrase>
-<original>slow, high quality</original>
-<translation>langsam, aber hohe Qualität</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant settings</original>
-<translation>PNGQuant-Einstellungen</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant license</original>
-<translation>PNGQuant-Lizenz</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant homepage</original>
-<translation>PNGQuant-Homepage</translation>
-</phrase>
-
-<phrase>
-<original>version found</original>
-<translation>gefundene Version</translation>
-</phrase>
-
-<phrase>
-<original>expected version</original>
-<translation>erwartete Version</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant plugin information</original>
-<translation>PNGQuant-Plugin-Informationen</translation>
-</phrase>
-
-<phrase>
-<original>MIT license</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>LittleCMS plugin information</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>LittleCMS homepage</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>LittleCMS license</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>open-source Perl license</original>
-<translation>Open-Source-Lizenz für Perl</translation>
-</phrase>
-
-<phrase>
-<original>ExifTool license</original>
-<translation>ExifTool-Lizenz</translation>
-</phrase>
-
-<phrase>
-<original>ExifTool homepage</original>
-<translation>ExifTool-Homepage</translation>
-</phrase>
-
-<phrase>
-<original>ExifTool plugin information</original>
-<translation>ExifTool-Plugin-Informationen</translation>
-</phrase>
-
-<phrase>
-<original>public domain</original>
-<translation>Public Domain</translation>
-</phrase>
-
-<phrase>
-<original>EZTwain plugin information</original>
-<translation>EZTwain-Plugin-Informationen</translation>
-</phrase>
-
-<phrase>
-<original>EZTwain homepage</original>
-<translation>EZTwain-Homepage</translation>
-</phrase>
-
-<phrase>
-<original>EZTwain license</original>
-<translation>EZTwain-Lizenz</translation>
-</phrase>
-
-<phrase>
-<original>zLib license</original>
-<translation>zLib-Lizenz</translation>
-</phrase>
-
-<phrase>
-<original>zLib homepage</original>
-<translation>zLib-Homepage</translation>
-</phrase>
-
-<phrase>
-<original>zLib plugin information</original>
-<translation>zLib-Plugin-Informationen</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage Public License (FIPL)</original>
-<translation>FreeImage Public License (FIPL)</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage plugin information</original>
-<translation>FreeImage-Plugin-Informationen</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage homepage</original>
-<translation>FreeImage-Homepage</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage license</original>
-<translation>FreeImage-Lizenz</translation>
+<original>installed, enabled, and up to date</original>
+<translation>installiert, aktiviert und auf dem neuesten Stand</translation>
 </phrase>
 
 <phrase>
@@ -15078,23 +14948,13 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 </phrase>
 
 <phrase>
-<original>installed</original>
-<translation>installiert</translation>
+<original>installed and up to date</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>disable</original>
-<translation>Deaktiviere</translation>
-</phrase>
-
-<phrase>
-<original>and up to date</original>
-<translation>und aktuell</translation>
-</phrase>
-
-<phrase>
-<original>but incorrect version (%1 found, %2 expected)</original>
-<translation>aber falsche Version (%1 gefunden, %2 erwartet)</translation>
+<original>installed, but version is unexpected</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15103,8 +14963,8 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 </phrase>
 
 <phrase>
-<original>enable</original>
-<translation>Aktiviere</translation>
+<original>not installed</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15112,7 +14972,7 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 <translation>nicht vorhanden</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 89 phrases. 34 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 37 phrases. 16 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
@@ -15152,12 +15012,18 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- END text for File_Save_GIF.frm-->
 
+<!-- BEGIN text for Plugin_OptiPNG.bas -->
+
+<!-- Plugin_OptiPNG.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_OptiPNG.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2602</phrasecount>
+<phrasecount>2574</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4484 phrases. -->
-<!-- 1882 are duplicates, so only 2602 unique phrases have been written to file. -->
-<!-- These 2602 phrases contain approximately 13429 total words. -->
+<!-- As of this build, PhotoDemon contains 4446 phrases. -->
+<!-- 1872 are duplicates, so only 2574 unique phrases have been written to file. -->
+<!-- These 2574 phrases contain approximately 13353 total words. -->
 
 </pdData>
