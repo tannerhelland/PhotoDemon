@@ -209,7 +209,7 @@ Public Sub ContinueLoadingProgram()
     'Now, ask the preferences handler to load all other user settings from the preferences file
     LoadMessage "Loading all user settings..."
     
-    g_UserPreferences.loadUserSettings
+    g_UserPreferences.LoadUserSettings
         
     'Mark the Macro recorder as "not recording"
     MacroStatus = MacroSTOP
@@ -333,7 +333,7 @@ Public Sub ContinueLoadingProgram()
     
     LoadMessage "Loading plugins..."
     
-    Plugin_Management.LoadAllPlugins
+    PluginManager.LoadAllPlugins
     
     
     '*************************************************************************************************************************************

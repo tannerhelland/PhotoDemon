@@ -33,18 +33,8 @@ Private Declare Function TWAIN_EasyVersion Lib "eztw32.dll" () As Long
 'Used to load and unload the EZTW32 dll from an arbitrary location (in our case, the \Data\Plugins subdirectory)
 Dim hLib_Scanner As Long
 
-'Is EZTwain available as a plugin?  (NOTE: this is now determined separately from g_ScanEnabled.)
-Public Function isEZTwainAvailable() As Boolean
-    
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If cFile.FileExist(g_PluginPath & "eztw32.dll") Then isEZTwainAvailable = True Else isEZTwainAvailable = False
-    
-End Function
-
 'Return the EZTwain version number, as a string
-Public Function getEZTwainVersion() As String
+Public Function GetEZTwainVersion() As String
     
     Dim strEZTPath As String
     strEZTPath = g_PluginPath & "eztw32.dll"
@@ -54,11 +44,10 @@ Public Function getEZTwainVersion() As String
     
         Dim ezVer As Long
         ezVer = TWAIN_EasyVersion
-        
         FreeLibrary hLib_Scanner
         
         'The TWAIN version is the version number * 100.  Modify the return string accordingly
-        getEZTwainVersion = (ezVer \ 100) & "." & (ezVer Mod 100) & ".0.0"
+        GetEZTwainVersion = (ezVer \ 100) & "." & (ezVer Mod 100) & ".0.0"
         
     End If
 

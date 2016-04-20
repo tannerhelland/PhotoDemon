@@ -1,4 +1,4 @@
-Attribute VB_Name = "Plugin_Management"
+Attribute VB_Name = "PluginManager"
 '***************************************************************************
 'Core Plugin Manager
 'Copyright 2014-2016 by Tanner Helland
@@ -25,29 +25,69 @@ Option Explicit
 'Currently supported core plugins.  These values are arbitrary and can be changed without consequence, but THEY MUST
 ' ALWAYS BE SEQUENTIAL, STARTING WITH ZERO, because the enum is iterated using For loops (e.g. during initialization).
 Public Enum CORE_PLUGINS
-    CCP_FreeImage = 0
-    CCP_zLib = 1
-    CCP_ExifTool = 2
-    CCP_EZTwain = 3
+    CCP_ExifTool = 0
+    CCP_EZTwain = 1
+    CCP_FreeImage = 2
+    CCP_LittleCMS = 3
     CCP_PNGQuant = 4
-    CCP_LittleCMS = 5
+    CCP_zLib = 5
 End Enum
 
 #If False Then
-    Private Const CCP_FreeImage = 0, CCP_zLib = 1, CCP_ExifTool = 2, CCP_EZTwain = 3, CCP_PNGQuant = 4, CCP_LittleCMS = 5
+    Private Const CCP_ExifTool = 0, CCP_EZTwain = 1, CCP_FreeImage = 2, CCP_LittleCMS = 3, CCP_PNGQuant = 4, CCP_zLib = 5
 #End If
+
+'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
+' the plugin is available, obviously).
+Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.18.0"
+Private Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
+Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
+Private Const EXPECTED_PNGQUANT_VERSION As String = "2.5.2"
+Private Const EXPECTED_EXIFTOOL_VERSION As String = "10.12"
+Private Const EXPECTED_LITTLECMS_VERSION As String = "2.7.0"
 
 'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum), so if you add or remove
 ' a plugin, make sure to update this!
 Private Const CORE_PLUGIN_COUNT As Long = 6
 
+'Much of the version-checking code used in this module was derived from http://allapi.mentalis.org/apilist/GetFileVersionInfo.shtml
+' Many thanks to those authors for their work on demystifying obscure API calls
+Private Type VS_FIXEDFILEINFO
+    dwSignature As Long
+    dwStrucVersionl As Integer     ' e.g. = &h0000 = 0
+    dwStrucVersionh As Integer     ' e.g. = &h0042 = .42
+    dwFileVersionMSl As Integer    ' e.g. = &h0003 = 3
+    dwFileVersionMSh As Integer    ' e.g. = &h0075 = .75
+    dwFileVersionLSl As Integer    ' e.g. = &h0000 = 0
+    dwFileVersionLSh As Integer    ' e.g. = &h0031 = .31
+    dwProductVersionMSl As Integer ' e.g. = &h0003 = 3
+    dwProductVersionMSh As Integer ' e.g. = &h0010 = .1
+    dwProductVersionLSl As Integer ' e.g. = &h0000 = 0
+    dwProductVersionLSh As Integer ' e.g. = &h0031 = .31
+    dwFileFlagsMask As Long        ' = &h3F for version "0.42"
+    dwFileFlags As Long            ' e.g. VFF_DEBUG Or VFF_PRERELEASE
+    dwFileOS As Long               ' e.g. VOS_DOS_WINDOWS16
+    dwFileType As Long             ' e.g. VFT_DRIVER
+    dwFileSubtype As Long          ' e.g. VFT2_DRV_KEYBOARD
+    dwFileDateMS As Long           ' e.g. 0
+    dwFileDateLS As Long           ' e.g. 0
+End Type
+Private Declare Function GetFileVersionInfo Lib "Version" Alias "GetFileVersionInfoA" (ByVal lptstrFilename As String, ByVal dwhandle As Long, ByVal dwlen As Long, lpData As Any) As Long
+Private Declare Function GetFileVersionInfoSize Lib "Version" Alias "GetFileVersionInfoSizeA" (ByVal lptstrFilename As String, lpdwHandle As Long) As Long
+Private Declare Function VerQueryValue Lib "Version" Alias "VerQueryValueA" (pBlock As Any, ByVal lpSubBlock As String, lplpBuffer As Any, puLen As Long) As Long
+Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, ByVal Source As Long, ByVal Length As Long)
+
 'To simplify handling throughout this module, plugin existence, allowance, and successful initialization are tracked internally.
 ' Note that these values ARE NOT EXTERNALLY AVAILABLE, by design; external callers should use the global plugin trackers
 ' (e.g. g_ZLibEnabled, g_ExifToolEnabled, etc) because those trackers encompass the combination of all these factors, and are
 ' thus preferable for high-performance code paths.
-Private pluginExists() As Boolean
-Private pluginAllowed() As Boolean
-Private pluginInitialized() As Boolean
+Private m_PluginExists() As Boolean
+Private m_PluginAllowed() As Boolean
+Private m_PluginInitialized() As Boolean
+
+Public Function GetNumOfPlugins() As Long
+    GetNumOfPlugins = CORE_PLUGIN_COUNT
+End Function
 
 'This subroutine handles the detection and installation of all core plugins. required for an optimal PhotoDemon
 ' experience: zLib, EZTwain32, and FreeImage.  For convenience' sake, it also checks for GDI+ availability.
@@ -58,17 +98,16 @@ Public Sub LoadAllPlugins()
     #End If
     
     'Reset all plugin trackers
-    ReDim pluginExists(0 To CORE_PLUGIN_COUNT - 1) As Boolean
-    ReDim pluginAllowed(0 To CORE_PLUGIN_COUNT - 1) As Boolean
-    ReDim pluginInitialized(0 To CORE_PLUGIN_COUNT - 1) As Boolean
+    ReDim m_PluginExists(0 To CORE_PLUGIN_COUNT - 1) As Boolean
+    ReDim m_PluginAllowed(0 To CORE_PLUGIN_COUNT - 1) As Boolean
+    ReDim m_PluginInitialized(0 To CORE_PLUGIN_COUNT - 1) As Boolean
     
     'Plugin files are located in the \Data\Plugins subdirectory
-    g_PluginPath = g_UserPreferences.getAppPath & "Plugins\"
+    g_PluginPath = g_UserPreferences.GetAppPath & "Plugins\"
     
     'Make sure the plugin path exists
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    
     If Not cFile.FolderExist(g_PluginPath) Then cFile.CreateFolder g_PluginPath, True
         
     'Plugin loading is handled in a loop.  This loop will call several helper functions, passing each sequential plugin
@@ -79,21 +118,21 @@ Public Sub LoadAllPlugins()
     For i = 0 To CORE_PLUGIN_COUNT - 1
     
         'Before doing anything else, see if the plugin file actually exists.
-        pluginExists(i) = DoesPluginFileExist(i)
+        m_PluginExists(i) = DoesPluginFileExist(i)
         
         'If the plugin file exists, see if the user has forcibly disabled it.  If they have, we can skip initialization.
         ' we can initialize it.  (Some plugins may not require this step; that's okay.)
-        If pluginExists(i) Then pluginAllowed(i) = IsPluginAllowed(i)
+        If m_PluginExists(i) Then m_PluginAllowed(i) = IsPluginAllowed(i)
         
-        'If the user has allowed a plugin to exist, attempt to initialize it.
-        If pluginAllowed(i) Then pluginInitialized(i) = InitializePlugin(i)
+        'If the user has allowed a plugin's use, attempt to initialize it.
+        If m_PluginAllowed(i) Then m_PluginInitialized(i) = InitializePlugin(i)
         
         'We now know enough to set global initialization flags.  (This step is technically optional; see comments in the matching sub.)
-        SetGlobalPluginFlags i, pluginInitialized(i)
+        SetGlobalPluginFlags i, m_PluginInitialized(i)
                 
         'Finally, if a plugin affects UI or other user-exposed bits, that's the last thing we set before exiting.
         ' (This step is optional; plugins do not need to support it.)
-        FinalizePluginInitialization i, pluginInitialized(i)
+        FinalizePluginInitialization i, m_PluginInitialized(i)
         
     Next i
     
@@ -104,10 +143,10 @@ Public Sub LoadAllPlugins()
         successfulPluginCount = 0
         
         For i = 0 To CORE_PLUGIN_COUNT - 1
-            If pluginInitialized(i) Then
+            If m_PluginInitialized(i) Then
                 successfulPluginCount = successfulPluginCount + 1
             Else
-                pdDebug.LogAction "WARNING!  Plugin ID#" & i & " (" & GetPluginFilename(i) & ") was not initialized."
+                pdDebug.LogAction "WARNING!  Plugin ID#" & i & " (" & GetPluginName(i) & ") was not initialized."
             End If
         Next i
         
@@ -119,28 +158,69 @@ End Sub
 
 'Given a plugin enum value, return a string of the core plugin's filename.  Note that this (obviously) does not include helper files,
 ' like README or LICENSE files - just the core DLL or EXE for the plugin.
-Private Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
-    
+Public Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
     Select Case pluginEnumID
-    
         Case CCP_ExifTool
             GetPluginFilename = "exiftool.exe"
-        
         Case CCP_EZTwain
             GetPluginFilename = "eztw32.dll"
-        
         Case CCP_FreeImage
             GetPluginFilename = "FreeImage.dll"
-        
         Case CCP_LittleCMS
             GetPluginFilename = "lcms2.dll"
-        
         Case CCP_PNGQuant
             GetPluginFilename = "pngquant.exe"
-        
         Case CCP_zLib
             GetPluginFilename = "zlibwapi.dll"
+    End Select
+End Function
+
+Public Function GetPluginName(ByVal pluginEnumID As CORE_PLUGINS) As String
+    Select Case pluginEnumID
+        Case CCP_ExifTool
+            GetPluginName = "ExifTool"
+        Case CCP_EZTwain
+            GetPluginName = "EZTwain"
+        Case CCP_FreeImage
+            GetPluginName = "FreeImage"
+        Case CCP_LittleCMS
+            GetPluginName = "LittleCMS"
+        Case CCP_PNGQuant
+            GetPluginName = "PNGQuant"
+        Case CCP_zLib
+            GetPluginName = "zLib"
+        Case Else
+            Debug.Print "WARNING!  PluginManager.GetPluginName was handed an invalid Enum ID."
+    End Select
+End Function
+
+'Plugin versions can be retrieved via two primary means:
+' 1) Just reading the product version metadata from the actual file
+' 2) Using some plugin-specific mechanism (typically an exported GetVersion() function of some sort)
+'
+'If a version cannot be retrieved, this function returns a blank string
+Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
     
+    GetPluginVersion = vbNullString
+    
+    Select Case pluginEnumID
+        
+        'ExifTool can write its version number to stdout
+        Case CCP_ExifTool
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = ExifTool.GetExifToolVersion()
+            
+        'EZTwain provides a dedicated version-checking function
+        Case CCP_EZTwain
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_Scanner_Interface.GetEZTwainVersion()
+            
+        'PNGQuant can write its version number to stdout
+        Case CCP_PNGQuant
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_PNGQuant_Interface.GetPngQuantVersion()
+        
+        'All other plugins pull their version info directly from file metadata
+        Case Else
+            GetPluginVersion = RetrieveGenericVersionString(g_PluginPath & PluginManager.GetPluginFilename(pluginEnumID))
+            
     End Select
     
 End Function
@@ -184,33 +264,137 @@ End Function
 'The Plugin Manager dialog allows the user to forcibly disable plugins.  This can be very helpful when testing bugs and crashes,
 ' but generally isn't relevant for a casual user.  Regardless, the plugin loader will check this value prior to initializing a plugin.
 Private Function IsPluginAllowed(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
-    
+    IsPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force " & PluginManager.GetPluginName(pluginEnumID) & " Disable", False)
+End Function
+
+'Simplified function to forcibly disable a plugin via the user's preference file.  Note that this *will not take affect for
+' this session* by design; you must subsequently call the SetPluginEnablement() function to live-change the setting.
+Public Sub SetPluginAllowed(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnabledState As Boolean)
+    g_UserPreferences.SetPref_Boolean "Plugins", "Force " & PluginManager.GetPluginName(pluginEnumID) & " Disable", Not newEnabledState
+End Sub
+
+'Simplified function to detect if a given plugin is currently enabled.  (Plugins can be disabled for a variety of reasons,
+' including forcible disablement by the user, bugs, missing files, etc; this catch-all function returns a binary "enabled" state.)
+Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
     Select Case pluginEnumID
-    
         Case CCP_ExifTool
-            IsPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force ExifTool Disable", False)
-                    
+            IsPluginCurrentlyEnabled = g_ExifToolEnabled
         Case CCP_EZTwain
-            IsPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force EZTwain Disable", False)
-        
+            IsPluginCurrentlyEnabled = g_ScanEnabled
         Case CCP_FreeImage
-            IsPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force FreeImage Disable", False)
-        
+            IsPluginCurrentlyEnabled = g_ImageFormats.FreeImageEnabled
         Case CCP_LittleCMS
-            IsPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force LittleCMS Disable", False)
-        
+            IsPluginCurrentlyEnabled = g_LCMSEnabled
         Case CCP_PNGQuant
-            IsPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force PNGQuant Disable", False)
-        
+            IsPluginCurrentlyEnabled = g_ImageFormats.pngQuantEnabled
         Case CCP_zLib
-            IsPluginAllowed = Not g_UserPreferences.GetPref_Boolean("Plugins", "Force ZLib Disable", False)
-    
+            IsPluginCurrentlyEnabled = g_ZLibEnabled
     End Select
-    
+End Function
+
+'Simplified function to forcibly en/disable a given plugin for this session.  Note that this has program-wide repercussions,
+' including UI states that may no longer be valid - as such, this function should *not* be changed by anything except the
+' Plugin Manager dialog or the plugin initialization functions.
+Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnabledState As Boolean)
+    Select Case pluginEnumID
+        Case CCP_ExifTool
+            g_ExifToolEnabled = newEnabledState
+        Case CCP_EZTwain
+            g_ScanEnabled = newEnabledState
+        Case CCP_FreeImage
+            g_ImageFormats.FreeImageEnabled = newEnabledState
+        Case CCP_LittleCMS
+            g_LCMSEnabled = newEnabledState
+        Case CCP_PNGQuant
+            g_ImageFormats.pngQuantEnabled = newEnabledState
+        Case CCP_zLib
+            g_ZLibEnabled = newEnabledState
+    End Select
+End Sub
+
+'Simplified function to detect if a given plugin is currently installed in PD's plugin folder.  This is (obviously) separate
+' from a plugin actually being *enabled*, as that requires initialization and other steps.
+Public Function IsPluginCurrentlyInstalled(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    IsPluginCurrentlyInstalled = cFile.FileExist(g_PluginPath & GetPluginFilename(pluginEnumID))
+End Function
+
+'Simplified function to return the expected version number of a plugin.  These numbers change with each PD release, and they can
+' be helpful for seeing if a user has manually updated a plugin file to some new version (which is generally okay!)
+Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
+    Select Case pluginEnumID
+        Case CCP_ExifTool
+            ExpectedPluginVersion = EXPECTED_EXIFTOOL_VERSION
+        Case CCP_EZTwain
+            ExpectedPluginVersion = EXPECTED_EZTWAIN_VERSION
+        Case CCP_FreeImage
+            ExpectedPluginVersion = EXPECTED_FREEIMAGE_VERSION
+        Case CCP_LittleCMS
+            ExpectedPluginVersion = EXPECTED_LITTLECMS_VERSION
+        Case CCP_PNGQuant
+            ExpectedPluginVersion = EXPECTED_PNGQUANT_VERSION
+        Case CCP_zLib
+            ExpectedPluginVersion = EXPECTED_ZLIB_VERSION
+    End Select
+End Function
+
+'Simplified function for retrieving the homepage URL for a given plugin
+Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
+    Select Case pluginEnumID
+        Case CCP_ExifTool
+            GetPluginHomepage = "http://www.sno.phy.queensu.ca/~phil/exiftool/"
+        Case CCP_EZTwain
+            GetPluginHomepage = "http://eztwain.com/eztwain1.htm"
+        Case CCP_FreeImage
+            GetPluginHomepage = "http://freeimage.sourceforge.net/"
+        Case CCP_LittleCMS
+            GetPluginHomepage = "http://www.littlecms.com/"
+        Case CCP_PNGQuant
+            GetPluginHomepage = "https://pngquant.org/"
+        Case CCP_zLib
+            GetPluginHomepage = "http://zlib.net/"
+    End Select
+End Function
+
+'Simplified function for retrieving the license name for a given plugin
+Public Function GetPluginLicenseName(ByVal pluginEnumID As CORE_PLUGINS) As String
+    Select Case pluginEnumID
+        Case CCP_ExifTool
+            GetPluginLicenseName = g_Language.TranslateMessage("artistic license")
+        Case CCP_EZTwain
+            GetPluginLicenseName = g_Language.TranslateMessage("public domain")
+        Case CCP_FreeImage
+            GetPluginLicenseName = g_Language.TranslateMessage("FreeImage public license")
+        Case CCP_LittleCMS
+            GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
+        Case CCP_PNGQuant
+            GetPluginLicenseName = g_Language.TranslateMessage("GNU GPLv3")
+        Case CCP_zLib
+            GetPluginLicenseName = g_Language.TranslateMessage("zLib license")
+    End Select
+End Function
+
+'Simplified function for retrieving the license URL for a given plugin
+Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As String
+    Select Case pluginEnumID
+        Case CCP_ExifTool
+            GetPluginLicenseURL = "http://dev.perl.org/licenses/artistic.html"
+        Case CCP_EZTwain
+            GetPluginLicenseURL = "http://eztwain.com/ezt1faq.htm"
+        Case CCP_FreeImage
+            GetPluginLicenseURL = "http://freeimage.sourceforge.net/freeimage-license.txt"
+        Case CCP_LittleCMS
+            GetPluginLicenseURL = "http://www.opensource.org/licenses/mit-license.php"
+        Case CCP_PNGQuant
+            GetPluginLicenseURL = "https://raw.githubusercontent.com/pornel/pngquant/master/COPYRIGHT"
+        Case CCP_zLib
+            GetPluginLicenseURL = "http://zlib.net/zlib_license.html"
+    End Select
 End Function
 
 'If a function requires specialized initialization steps, add them here.  Do NOT add any user-facing interactions (e.g. UI) here,
-' and DO NOT account for user preferences here.  (User preferences are handled via isPluginAllowed(), above).
+' and DO NOT account for user preferences here.  (User preferences are handled via ism_PluginAllowed(), above).
 '
 'This step purely exists to handle custom initialization of plugins, when the master plugin file is known to exist in the
  'official plugin folder, and the user has not forcibly disabled a given plugin.
@@ -242,8 +426,6 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
             initializationSuccessful = ExifTool.StartExifTool()
                     
         Case CCP_EZTwain
-            'The ezTwain module provides a function called "isEZTwainAvailable()", but all it does is check if the EZTwain DLL exists.
-            ' This is redundant, so skip that check and forcibly return TRUE.
             initializationSuccessful = True
         
         Case CCP_FreeImage
@@ -255,8 +437,6 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
             initializationSuccessful = True
         
         Case CCP_PNGQuant
-            'The ezTwain module provides a function called "isPNGQuantAvailable()", but all it does is check if the PNGquant exe exists.
-            ' This is redundant, so skip that check and forcibly return TRUE.
             initializationSuccessful = True
         
         Case CCP_zLib
@@ -335,7 +515,7 @@ End Sub
 '
 'This function performs several tasks:
 ' 1) If the requested plugin file exists in the target folder, great; it returns TRUE and exits.
-' 2) If the requested plugin file does NOT exist in the target folder, it scans the program folder to see if it can find a hit there.
+' 2) If the requested plugin file does NOT exist in the target folder, it scans the program folder to see if it can find it there.
 ' 3) If it finds a missing plugin in the program folder, it will automatically move the file to the plugin folder, including any
 '     helper files (README, LICENSE, etc).
 ' 4) If the move is successful, it will return TRUE and exit.
@@ -363,17 +543,17 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
     
         'See if the plugin file exists in the base PD folder.  This can happen if a user unknowingly extracts the PD .zip without
         ' folders preserved.
-        If cFile.FileExist(g_UserPreferences.getProgramPath & pluginFilename) Then
+        If cFile.FileExist(g_UserPreferences.GetProgramPath & pluginFilename) Then
             
             pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") was found in the base PD folder.  Attempting to relocate..."
             
             'Move the plugin file to the proper folder
-            If cFile.CopyFile(g_UserPreferences.getProgramPath & pluginFilename, g_PluginPath & pluginFilename) Then
+            If cFile.CopyFile(g_UserPreferences.GetProgramPath & pluginFilename, g_PluginPath & pluginFilename) Then
                 
                 pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") was relocated successfully."
                 
                 'Kill the old plugin instance
-                cFile.KillFile g_UserPreferences.getProgramPath & pluginFilename
+                cFile.KillFile g_UserPreferences.GetProgramPath & pluginFilename
                 
                 'Finally, move any associated files to their new home in the plugin folder
                 If GetNonEssentialPluginFiles(pluginEnumID, extraFiles) Then
@@ -381,11 +561,9 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
                     Dim tmpFilename As String
                     
                     Do While extraFiles.PopString(tmpFilename)
-                        
-                        If cFile.CopyFile(g_UserPreferences.getProgramPath & tmpFilename, g_PluginPath & tmpFilename) Then
-                            cFile.KillFile g_UserPreferences.getProgramPath & tmpFilename
+                        If cFile.CopyFile(g_UserPreferences.GetProgramPath & tmpFilename, g_PluginPath & tmpFilename) Then
+                            cFile.KillFile g_UserPreferences.GetProgramPath & tmpFilename
                         End If
-                        
                     Loop
                     
                 End If
@@ -407,5 +585,33 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
         End If
     
     End If
+    
+End Function
+
+'Given an arbitrary filename, return a string with that file's version (as retrieved from file metadata).
+Private Function RetrieveGenericVersionString(ByVal FullFileName As String) As String
+    
+    'Start by retrieving the required version buffer size (and bail if there's no version info)
+    Dim lBufferLen As Long, tmpLong As Long
+    lBufferLen = GetFileVersionInfoSize(FullFileName, tmpLong)
+    If lBufferLen < 1 Then Exit Function
+    
+    'Pull the version info into a dedicated struct
+    Dim sBuffer() As Byte
+    ReDim sBuffer(0 To lBufferLen - 1) As Byte
+    tmpLong = GetFileVersionInfo(FullFileName, 0&, lBufferLen, sBuffer(0))
+    
+    Dim lVerPointer As Long, lVerbufferLen As Long
+    tmpLong = VerQueryValue(sBuffer(0), "\", lVerPointer, lVerbufferLen)
+    
+    Dim udtVerBuffer As VS_FIXEDFILEINFO
+    MoveMemory udtVerBuffer, lVerPointer, Len(udtVerBuffer)
+    
+    'If it proves helpful in the future, here's code for retrieving versioning of the file itself
+    'Dim FileVer As String
+    'FileVer = Trim(Format$(udtVerBuffer.dwFileVersionMSh)) & "." & Trim(Format$(udtVerBuffer.dwFileVersionMSl)) & "." & Trim(Format$(udtVerBuffer.dwFileVersionLSh)) & "." & Trim(Format$(udtVerBuffer.dwFileVersionLSl))
+    
+    '...but right now, we're only concerned with product versioning
+    RetrieveGenericVersionString = Trim$(Format$(udtVerBuffer.dwProductVersionMSh)) & "." & Trim$(Format$(udtVerBuffer.dwProductVersionMSl)) & "." & Trim$(Format$(udtVerBuffer.dwProductVersionLSh)) & "." & Trim$(Format$(udtVerBuffer.dwProductVersionLSl))
     
 End Function

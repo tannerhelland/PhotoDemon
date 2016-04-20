@@ -2738,25 +2738,6 @@ Private Sub Form_Load()
     Me.asyncDownloader.SetAutoDownloadMode True
     
     
-    
-    '*************************************************************************************************************************************
-    ' Next, check for missing core plugins
-    '*************************************************************************************************************************************
-    
-    'Some 3rd-party sites (*cough* PSC *cough*) won't include binary attachments, like PD's plugins.  As a failsafe workaround, PD can
-    ' detect this state and offer to download the plugins for the user.
-    ' (NOTE: this check is superceded by the update check - since a full program update will include the missing plugins -
-    '        so we ignore this request if the user was already notified of a program update.)
-    If (Not IsZLibAvailable) Or (Not isEZTwainAvailable) Or (Not IsFreeImageAvailable) Or (Not isPngQuantAvailable) Or (Not IsExifToolAvailable) Then
-    
-        'TODO: rework this to scan for missing plugins in the current application folder.  Some .zip clients - e.g. WinZip - may not
-        '      preserve folders during extraction.  PD should automatically detect and repair this situation.
-        
-        'Message "Some core plugins could not be found. Preparing updater..."
-            
-    End If
-        
-    
     '*************************************************************************************************************************************
     ' Display any final messages and/or warnings
     '*************************************************************************************************************************************
