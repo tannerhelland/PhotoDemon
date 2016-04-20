@@ -64,8 +64,11 @@ Public g_ZLibEnabled As Boolean
 'Is metadata handling via ExifTool enabled?
 Public g_ExifToolEnabled As Boolean
 
-'Is the LittleCMS library enbaled?
+'Is the LittleCMS library enabled?
 Public g_LCMSEnabled As Boolean
+
+'Is PNG optimization via OptiPNG enabled?
+Public g_OptiPNGEnabled As Boolean
 
 'Because FreeImage is used far more than any other plugin, we no longer load it on-demand.  It is loaded once
 ' when the program starts, and released when the program ends.  This saves us from repeatedly having to load/free

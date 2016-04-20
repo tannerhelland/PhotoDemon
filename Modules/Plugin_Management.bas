@@ -29,26 +29,28 @@ Public Enum CORE_PLUGINS
     CCP_EZTwain = 1
     CCP_FreeImage = 2
     CCP_LittleCMS = 3
-    CCP_PNGQuant = 4
-    CCP_zLib = 5
+    CCP_OptiPNG = 4
+    CCP_PNGQuant = 5
+    CCP_zLib = 6
 End Enum
 
 #If False Then
-    Private Const CCP_ExifTool = 0, CCP_EZTwain = 1, CCP_FreeImage = 2, CCP_LittleCMS = 3, CCP_PNGQuant = 4, CCP_zLib = 5
+    Private Const CCP_ExifTool = 0, CCP_EZTwain = 1, CCP_FreeImage = 2, CCP_LittleCMS = 3, CCP_OptiPNG = 4, CCP_PNGQuant = 5, CCP_zLib = 6
 #End If
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
 ' the plugin is available, obviously).
-Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.18.0"
-Private Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
-Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
-Private Const EXPECTED_PNGQUANT_VERSION As String = "2.5.2"
 Private Const EXPECTED_EXIFTOOL_VERSION As String = "10.12"
+Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
+Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.18.0"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.7.0"
+Private Const EXPECTED_OPTIPNG_VERSION As String = "0.7.6"
+Private Const EXPECTED_PNGQUANT_VERSION As String = "2.5.2"
+Private Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
 
 'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum), so if you add or remove
 ' a plugin, make sure to update this!
-Private Const CORE_PLUGIN_COUNT As Long = 6
+Private Const CORE_PLUGIN_COUNT As Long = 7
 
 'Much of the version-checking code used in this module was derived from http://allapi.mentalis.org/apilist/GetFileVersionInfo.shtml
 ' Many thanks to those authors for their work on demystifying obscure API calls
@@ -168,6 +170,8 @@ Public Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginFilename = "FreeImage.dll"
         Case CCP_LittleCMS
             GetPluginFilename = "lcms2.dll"
+        Case CCP_OptiPNG
+            GetPluginFilename = "optipng.exe"
         Case CCP_PNGQuant
             GetPluginFilename = "pngquant.exe"
         Case CCP_zLib
@@ -185,6 +189,8 @@ Public Function GetPluginName(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginName = "FreeImage"
         Case CCP_LittleCMS
             GetPluginName = "LittleCMS"
+        Case CCP_OptiPNG
+            GetPluginName = "OptiPNG"
         Case CCP_PNGQuant
             GetPluginName = "PNGQuant"
         Case CCP_zLib
@@ -212,6 +218,10 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
         'EZTwain provides a dedicated version-checking function
         Case CCP_EZTwain
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_Scanner_Interface.GetEZTwainVersion()
+        
+        'OptiPNG can write its version number to stdout
+        Case CCP_OptiPNG
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_OptiPNG.GetOptiPNGVersion()
             
         'PNGQuant can write its version number to stdout
         Case CCP_PNGQuant
@@ -249,6 +259,9 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
         Case CCP_LittleCMS
             dstStringStack.AddString "lcms2-LICENSE.txt"
         
+        Case CCP_OptiPNG
+            dstStringStack.AddString "optipng-LICENSE.txt"
+            
         Case CCP_PNGQuant
             dstStringStack.AddString "pngquant-README.txt"
         
@@ -285,6 +298,8 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As 
             IsPluginCurrentlyEnabled = g_ImageFormats.FreeImageEnabled
         Case CCP_LittleCMS
             IsPluginCurrentlyEnabled = g_LCMSEnabled
+        Case CCP_OptiPNG
+            IsPluginCurrentlyEnabled = g_OptiPNGEnabled
         Case CCP_PNGQuant
             IsPluginCurrentlyEnabled = g_ImageFormats.pngQuantEnabled
         Case CCP_zLib
@@ -305,6 +320,8 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnab
             g_ImageFormats.FreeImageEnabled = newEnabledState
         Case CCP_LittleCMS
             g_LCMSEnabled = newEnabledState
+        Case CCP_OptiPNG
+            g_OptiPNGEnabled = newEnabledState
         Case CCP_PNGQuant
             g_ImageFormats.pngQuantEnabled = newEnabledState
         Case CCP_zLib
@@ -332,6 +349,8 @@ Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As Str
             ExpectedPluginVersion = EXPECTED_FREEIMAGE_VERSION
         Case CCP_LittleCMS
             ExpectedPluginVersion = EXPECTED_LITTLECMS_VERSION
+        Case CCP_OptiPNG
+            ExpectedPluginVersion = EXPECTED_OPTIPNG_VERSION
         Case CCP_PNGQuant
             ExpectedPluginVersion = EXPECTED_PNGQUANT_VERSION
         Case CCP_zLib
@@ -350,6 +369,8 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginHomepage = "http://freeimage.sourceforge.net/"
         Case CCP_LittleCMS
             GetPluginHomepage = "http://www.littlecms.com/"
+        Case CCP_OptiPNG
+            GetPluginHomepage = "http://optipng.sourceforge.net/"
         Case CCP_PNGQuant
             GetPluginHomepage = "https://pngquant.org/"
         Case CCP_zLib
@@ -368,6 +389,8 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As CORE_PLUGINS) As Stri
             GetPluginLicenseName = g_Language.TranslateMessage("FreeImage public license")
         Case CCP_LittleCMS
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
+        Case CCP_OptiPNG
+            GetPluginLicenseName = g_Language.TranslateMessage("zLib license")
         Case CCP_PNGQuant
             GetPluginLicenseName = g_Language.TranslateMessage("GNU GPLv3")
         Case CCP_zLib
@@ -386,6 +409,8 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As Strin
             GetPluginLicenseURL = "http://freeimage.sourceforge.net/freeimage-license.txt"
         Case CCP_LittleCMS
             GetPluginLicenseURL = "http://www.opensource.org/licenses/mit-license.php"
+        Case CCP_OptiPNG
+            GetPluginLicenseURL = "http://optipng.sourceforge.net/license.txt"
         Case CCP_PNGQuant
             GetPluginLicenseURL = "https://raw.githubusercontent.com/pornel/pngquant/master/COPYRIGHT"
         Case CCP_zLib
@@ -436,6 +461,10 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         Case CCP_LittleCMS
             initializationSuccessful = True
         
+        'TODO!
+        Case CCP_OptiPNG
+            initializationSuccessful = True
+            
         Case CCP_PNGQuant
             initializationSuccessful = True
         
@@ -467,6 +496,9 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
         
         Case CCP_LittleCMS
             g_LCMSEnabled = pluginState
+            
+        Case CCP_OptiPNG
+            g_OptiPNGEnabled = pluginState
         
         Case CCP_PNGQuant
             g_ImageFormats.pngQuantEnabled = pluginState
