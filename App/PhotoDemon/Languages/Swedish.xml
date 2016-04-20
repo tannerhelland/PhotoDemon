@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.149</langversion>
+<langversion>6.7.151</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -1471,7 +1471,37 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 
 <!-- BEGIN text for Plugin_Management.bas -->
 
-<!-- Plugin_Management.bas contains 0 phrases. -->
+<phrase>
+<original>artistic license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>public domain</original>
+<translation>offentliga rummet</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage public license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>MIT license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>zLib license</original>
+<translation>zLIB licens</translation>
+</phrase>
+
+<phrase>
+<original>GNU GPLv3</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_Management.bas contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Plugin_Management.bas-->
 
@@ -14850,48 +14880,33 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
-<original>Disable FreeImage</original>
-<translation>inaktivera Freeimage</translation>
-</phrase>
-
-<phrase>
-<original>Disable zLib</original>
-<translation>Inaktivera zlib</translation>
-</phrase>
-
-<phrase>
-<original>Disable EZTwain</original>
-<translation>inaktivera EZTwain</translation>
-</phrase>
-
-<phrase>
-<original>Disable PNGQuant</original>
-<translation>Disable pngquant</translation>
-</phrase>
-
-<phrase>
-<original>Disable ExifTool</original>
-<translation>inaktivera ExifTool</translation>
-</phrase>
-
-<phrase>
-<original>Disable LittleCMS</original>
+<original>forcibly disable</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>LittleCMS</original>
+<original>homepage</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>status</original>
-<translation>status</translation>
+<original>license</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>installed, enabled, and up to date</original>
-<translation>installerat, aktiverat och aktuell</translation>
+<original>%1 summary</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>expected version</original>
+<translation>förväntade versionen</translation>
+</phrase>
+
+<phrase>
+<original>version found</original>
+<translation>version funnen</translation>
 </phrase>
 
 <phrase>
@@ -14905,158 +14920,13 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
-<original>improve IE6 compatibility (reduces image quality; use with caution)</original>
-<translation>förbättra IE6 kompatibilitet (reducerar bildkvaliteten, använd med försiktighet)</translation>
+<original>status</original>
+<translation>status</translation>
 </phrase>
 
 <phrase>
-<original>use dithering to improve output</original>
-<translation>Använd dithering för att förbättra utgång</translation>
-</phrase>
-
-<phrase>
-<original>performance vs image quality</original>
-<translation>prestanda vs bildkvalitet</translation>
-</phrase>
-
-<phrase>
-<original>BSD license</original>
-<translation>BSD-licensen</translation>
-</phrase>
-
-<phrase>
-<original>fast, low quality</original>
-<translation>snabb, låg kvalitet</translation>
-</phrase>
-
-<phrase>
-<original>slow, high quality</original>
-<translation>långsam, hög kvalitet</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant settings</original>
-<translation>pngquant inställningar</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant license</original>
-<translation>pngquant licens</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant homepage</original>
-<translation>pngquant hemsida</translation>
-</phrase>
-
-<phrase>
-<original>version found</original>
-<translation>version funnen</translation>
-</phrase>
-
-<phrase>
-<original>expected version</original>
-<translation>förväntade versionen</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant plugin information</original>
-<translation>Pngquant plugin informationen</translation>
-</phrase>
-
-<phrase>
-<original>MIT license</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>LittleCMS plugin information</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>LittleCMS homepage</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>LittleCMS license</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>open-source Perl license</original>
-<translation>öppen källkod Perl-licens</translation>
-</phrase>
-
-<phrase>
-<original>ExifTool license</original>
-<translation>ExifTool licens</translation>
-</phrase>
-
-<phrase>
-<original>ExifTool homepage</original>
-<translation>ExifTool hemsida</translation>
-</phrase>
-
-<phrase>
-<original>ExifTool plugin information</original>
-<translation>ExifTool plugin informationen</translation>
-</phrase>
-
-<phrase>
-<original>public domain</original>
-<translation>offentliga rummet</translation>
-</phrase>
-
-<phrase>
-<original>EZTwain plugin information</original>
-<translation>EZTwain plugin informationen</translation>
-</phrase>
-
-<phrase>
-<original>EZTwain homepage</original>
-<translation>EZTwain hemsida</translation>
-</phrase>
-
-<phrase>
-<original>EZTwain license</original>
-<translation>EZTwain licens</translation>
-</phrase>
-
-<phrase>
-<original>zLib license</original>
-<translation>zLIB licens</translation>
-</phrase>
-
-<phrase>
-<original>zLib homepage</original>
-<translation>zlib hemsida</translation>
-</phrase>
-
-<phrase>
-<original>zLib plugin information</original>
-<translation>ZLIB plugin informationen</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage Public License (FIPL)</original>
-<translation>Freeimage Public License (FIPL)</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage plugin information</original>
-<translation>Freeimage plugin informationen</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage homepage</original>
-<translation>Freeimage hemsida</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage license</original>
-<translation>Freeimage licens</translation>
+<original>installed, enabled, and up to date</original>
+<translation>installerat, aktiverat och aktuell</translation>
 </phrase>
 
 <phrase>
@@ -15080,23 +14950,13 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
-<original>installed</original>
-<translation>installerad</translation>
+<original>installed and up to date</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>disable</original>
-<translation>inaktivera</translation>
-</phrase>
-
-<phrase>
-<original>and up to date</original>
-<translation>och uppdaterade</translation>
-</phrase>
-
-<phrase>
-<original>but incorrect version (%1 found, %2 expected)</original>
-<translation>men fel version ( %1 hittades, %2 förväntas)</translation>
+<original>installed, but version is unexpected</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15105,8 +14965,8 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
-<original>enable</original>
-<translation>möjliggöra</translation>
+<original>not installed</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15114,7 +14974,7 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <translation>saknas</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 89 phrases. 34 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 37 phrases. 16 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
@@ -15154,12 +15014,18 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for File_Save_GIF.frm-->
 
+<!-- BEGIN text for Plugin_OptiPNG.bas -->
+
+<!-- Plugin_OptiPNG.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_OptiPNG.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2602</phrasecount>
+<phrasecount>2574</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4484 phrases. -->
-<!-- 1882 are duplicates, so only 2602 unique phrases have been written to file. -->
-<!-- These 2602 phrases contain approximately 13429 total words. -->
+<!-- As of this build, PhotoDemon contains 4446 phrases. -->
+<!-- 1872 are duplicates, so only 2574 unique phrases have been written to file. -->
+<!-- These 2574 phrases contain approximately 13353 total words. -->
 
 </pdData>
