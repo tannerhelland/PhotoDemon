@@ -28,25 +28,13 @@ Attribute VB_Name = "Plugin_PNGQuant_Interface"
 
 Option Explicit
 
-'Is PNGQuant.exe available on this PC?
-Public Function isPngQuantAvailable() As Boolean
-    
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If cFile.FileExist(g_PluginPath & "pngquant.exe") Then isPngQuantAvailable = True Else isPngQuantAvailable = False
-    
-End Function
-
 'Retrieve the PNGQuant plugin version.  Shelling the executable with the "--version" tag will cause it to return
 ' the current version (and compile date) over stdout.
-Public Function getPngQuantVersion() As String
-
-    If Not isPngQuantAvailable Then
-        getPngQuantVersion = ""
-        Exit Function
+Public Function GetPngQuantVersion() As String
     
-    Else
+    GetPngQuantVersion = ""
+    
+    If PluginManager.IsPluginCurrentlyInstalled(CCP_PNGQuant) Then
         
         Dim pngqPath As String
         pngqPath = g_PluginPath & "pngquant.exe"
@@ -60,10 +48,8 @@ Public Function getPngQuantVersion() As String
             
             Dim versionParts() As String
             versionParts = Split(outputString, " ")
-            getPngQuantVersion = versionParts(0) & ".0"
+            GetPngQuantVersion = versionParts(0) & ".0"
             
-        Else
-            getPngQuantVersion = ""
         End If
         
     End If

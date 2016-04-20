@@ -25,17 +25,7 @@ Private Declare Function zlibVersion Lib "zlibwapi" () As Long
 'A single zLib handle is maintained for the life of a PD instance; see initializeZLib and releaseZLib, below.
 Private m_ZLibHandle As Long
 
-'Is zLib available as a plugin?  (NOTE: this is now determined separately from g_ZLibEnabled.)
-Public Function IsZLibAvailable() As Boolean
-    
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If cFile.FileExist(g_PluginPath & "zlibwapi.dll") Then IsZLibAvailable = True Else IsZLibAvailable = False
-    
-End Function
-
-'Initialize zLib.  Do not call this until you have verified zLib's existence (typically via isZLibAvailable(), above)
+'Initialize zLib.  Do not call this until you have verified zLib's existence (typically via the PluginManager module)
 Public Function InitializeZLib() As Boolean
     
     'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)

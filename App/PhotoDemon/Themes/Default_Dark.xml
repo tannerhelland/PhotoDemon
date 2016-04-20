@@ -39,6 +39,7 @@
 			<TextHyperlink>Accent4</TextHyperlink>
 			<TextHover>Accent6</TextHover>
 			<TextInvert>#313131</TextInvert>
+			<TextSuccess>#14c727</TextSuccess>
 			<White>#ffffff</White>
 		</Definitions>
 		
@@ -295,6 +296,11 @@
 				<Border-disabled></Border-disabled>
 				<Border-hover></Border-hover>
 			</PDPenSelector>
+			
+			<PDPluginManager>
+				<PluginOK>TextSuccess</PluginOK>
+				<PluginError>TextError</PluginError>
+			</PDPluginManager>
 			
 			<PDPreview>
 				<Background>BackgroundDefault</Background>

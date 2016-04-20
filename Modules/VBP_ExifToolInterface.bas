@@ -477,23 +477,12 @@ Public Function RetrieveUntouchedMetadataString() As String
     RetrieveUntouchedMetadataString = curMetadataString
 End Function
 
-'Is ExifTool available as a plugin?
-Public Function IsExifToolAvailable() As Boolean
-    
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If cFile.FileExist(g_PluginPath & "exiftool.exe") Then IsExifToolAvailable = True Else IsExifToolAvailable = False
-    
-End Function
-
-'Retrieve the ExifTool version.
+'Retrieve the currently installed ExifTool version.  (If ExifTool cannot be found, this will return FALSE.)
 Public Function GetExifToolVersion() As String
-
-    If Not IsExifToolAvailable Then
-        GetExifToolVersion = ""
-        Exit Function
-    Else
+    
+    GetExifToolVersion = ""
+    
+    If PluginManager.IsPluginCurrentlyInstalled(CCP_ExifTool) Then
         
         Dim exifPath As String
         exifPath = g_PluginPath & "exiftool.exe"
@@ -507,8 +496,6 @@ Public Function GetExifToolVersion() As String
             If InStr(outputString, vbCrLf) <> 0 Then outputString = Replace(outputString, vbCrLf, "")
             GetExifToolVersion = outputString
             
-        Else
-            GetExifToolVersion = ""
         End If
         
     End If
@@ -556,8 +543,8 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
     cmdParams = cmdParams & "-sep" & vbCrLf & ";;" & vbCrLf
         
     'If a translation is active, request descriptions in the current language
-    If g_Language.translationActive Then
-        cmdParams = cmdParams & "-lang" & vbCrLf & g_Language.getCurrentLanguage() & vbCrLf
+    If g_Language.TranslationActive Then
+        cmdParams = cmdParams & "-lang" & vbCrLf & g_Language.GetCurrentLanguage() & vbCrLf
     End If
     
     'If the user wants us to estimate JPEG quality, do so now

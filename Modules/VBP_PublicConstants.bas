@@ -32,15 +32,6 @@ Public Const PD_PATCH_IDENTIFIER As Long = &H50554450   'PD update patch data (A
 'Magic number for errors that arise during pdPackage interactions
 Public Const PDP_GENERIC_ERROR As Long = 9001
 
-'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
-' the plugin is available, obviously).
-Public Const EXPECTED_FREEIMAGE_VERSION As String = "3.18.0"
-Public Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
-Public Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
-Public Const EXPECTED_PNGQUANT_VERSION As String = "2.5.2"
-Public Const EXPECTED_EXIFTOOL_VERSION As String = "10.12"
-Public Const EXPECTED_LITTLECMS_VERSION As String = "2.7.0"
-
 'Some constants used for general program changes (better to leave them as constants here, then to
 ' have to manually change them when I think up better or more appropriate ones)
 Public Const PROGRAMNAME As String = "PhotoDemon"

@@ -26,7 +26,7 @@ Begin VB.Form FormPluginManager
    Begin PhotoDemon.pdListBox lstPlugins 
       Height          =   5295
       Left            =   120
-      TabIndex        =   22
+      TabIndex        =   5
       Top             =   240
       Width           =   2775
       _ExtentX        =   4895
@@ -36,7 +36,7 @@ Begin VB.Form FormPluginManager
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   75
+      TabIndex        =   1
       Top             =   6375
       Width           =   10815
       _ExtentX        =   19076
@@ -45,7 +45,7 @@ Begin VB.Form FormPluginManager
    Begin PhotoDemon.pdButton cmdReset 
       Height          =   615
       Left            =   120
-      TabIndex        =   74
+      TabIndex        =   2
       Top             =   5640
       Width           =   2775
       _ExtentX        =   4895
@@ -66,1555 +66,57 @@ Begin VB.Form FormPluginManager
       TabIndex        =   0
       Top             =   240
       Width           =   7695
-      Begin PhotoDemon.pdHyperlink hypDisable 
-         Height          =   255
-         Index           =   0
-         Left            =   4800
-         Top             =   765
-         Width           =   2535
-         _ExtentX        =   4471
-         _ExtentY        =   450
-         Alignment       =   1
-         Caption         =   "Disable FreeImage"
-         RaiseClickEvent =   -1  'True
-      End
-      Begin PhotoDemon.pdHyperlink hypDisable 
-         Height          =   255
-         Index           =   1
-         Left            =   4800
-         Top             =   1605
-         Width           =   2535
-         _ExtentX        =   4471
-         _ExtentY        =   450
-         Alignment       =   1
-         Caption         =   "Disable zLib"
-         RaiseClickEvent =   -1  'True
-      End
-      Begin PhotoDemon.pdHyperlink hypDisable 
-         Height          =   255
-         Index           =   2
-         Left            =   4800
-         Top             =   2445
-         Width           =   2535
-         _ExtentX        =   4471
-         _ExtentY        =   450
-         Alignment       =   1
-         Caption         =   "Disable EZTwain"
-         RaiseClickEvent =   -1  'True
-      End
-      Begin PhotoDemon.pdHyperlink hypDisable 
-         Height          =   255
-         Index           =   3
-         Left            =   4800
-         Top             =   3285
-         Width           =   2535
-         _ExtentX        =   4471
-         _ExtentY        =   450
-         Alignment       =   1
-         Caption         =   "Disable PNGQuant"
-         RaiseClickEvent =   -1  'True
-      End
-      Begin PhotoDemon.pdHyperlink hypDisable 
-         Height          =   255
-         Index           =   4
-         Left            =   4800
-         Top             =   4125
-         Width           =   2535
-         _ExtentX        =   4471
-         _ExtentY        =   450
-         Alignment       =   1
-         Caption         =   "Disable ExifTool"
-         RaiseClickEvent =   -1  'True
-      End
-      Begin PhotoDemon.pdHyperlink hypDisable 
-         Height          =   255
-         Index           =   5
-         Left            =   4800
-         Top             =   4965
-         Width           =   2535
-         _ExtentX        =   4471
-         _ExtentY        =   450
-         Alignment       =   1
-         Caption         =   "Disable LittleCMS"
-         RaiseClickEvent =   -1  'True
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "LittleCMS"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   5
-         Left            =   240
-         TabIndex        =   67
-         Top             =   4920
-         Width           =   975
-      End
-      Begin VB.Label lblInterfaceSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "status:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   5
-         Left            =   480
-         TabIndex        =   69
-         Top             =   5280
-         Width           =   675
-      End
-      Begin VB.Label lblStatus 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "installed, enabled, and up to date"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   5
-         Left            =   1260
-         TabIndex        =   77
-         Top             =   5280
-         Width           =   3255
-      End
-      Begin VB.Label lblStatus 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "installed, enabled, and up to date"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   4
-         Left            =   1260
-         TabIndex        =   72
-         Top             =   4440
-         Width           =   3255
-      End
-      Begin VB.Label lblInterfaceSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "status:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   4
-         Left            =   480
-         TabIndex        =   71
-         Top             =   4440
-         Width           =   675
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "ExifTool"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   4
-         Left            =   240
-         TabIndex        =   70
-         Top             =   4080
-         Width           =   870
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "current plugin status:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   300
          Index           =   0
          Left            =   120
-         TabIndex        =   14
          Top             =   15
          Width           =   2265
+         _ExtentX        =   3995
+         _ExtentY        =   529
+         Caption         =   "current plugin status:"
+         FontSize        =   12
+         ForeColor       =   4210752
+         Layout          =   2
       End
-      Begin VB.Label lblPluginStatus 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "GOOD"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000B909&
+      Begin PhotoDemon.pdLabel lblPluginStatus 
          Height          =   285
          Left            =   2460
-         TabIndex        =   13
          Top             =   15
          Width           =   690
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "GOOD"
+         FontSize        =   12
+         ForeColor       =   47369
+         Layout          =   2
+         UseCustomForeColor=   -1  'True
       End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "PNGQuant"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   3
-         Left            =   240
-         TabIndex        =   12
-         Top             =   3240
-         Width           =   1110
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "zLib"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   1
-         Left            =   240
-         TabIndex        =   11
-         Top             =   1560
-         Width           =   420
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "EZTwain"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   2
-         Left            =   240
-         TabIndex        =   10
-         Top             =   2400
-         Width           =   915
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "FreeImage"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
          Height          =   285
          Index           =   0
          Left            =   240
-         TabIndex        =   9
          Top             =   720
-         Width           =   1125
-      End
-      Begin VB.Label lblInterfaceSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
+         Width           =   705
+         _ExtentX        =   0
+         _ExtentY        =   0
          Caption         =   "status:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
+         FontSize        =   11
+         ForeColor       =   4210752
+         Layout          =   2
+      End
+      Begin PhotoDemon.pdLabel lblStatus 
+         Height          =   285
          Index           =   0
-         Left            =   480
-         TabIndex        =   8
-         Top             =   1080
-         Width           =   675
-      End
-      Begin VB.Label lblStatus 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
+         Left            =   1080
+         Top             =   720
+         Width           =   3540
+         _ExtentX        =   0
+         _ExtentY        =   0
          Caption         =   "installed, enabled, and up to date"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   0
-         Left            =   1260
-         TabIndex        =   7
-         Top             =   1080
-         Width           =   3255
-      End
-      Begin VB.Label lblInterfaceSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "status:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   1
-         Left            =   480
-         TabIndex        =   6
-         Top             =   1920
-         Width           =   675
-      End
-      Begin VB.Label lblStatus 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "installed, enabled, and up to date"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   1
-         Left            =   1260
-         TabIndex        =   5
-         Top             =   1920
-         Width           =   3255
-      End
-      Begin VB.Label lblInterfaceSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "status:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   2
-         Left            =   480
-         TabIndex        =   4
-         Top             =   2760
-         Width           =   675
-      End
-      Begin VB.Label lblStatus 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "installed, enabled, and up to date"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   2
-         Left            =   1260
-         TabIndex        =   3
-         Top             =   2760
-         Width           =   3255
-      End
-      Begin VB.Label lblInterfaceSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "status:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   3
-         Left            =   480
-         TabIndex        =   2
-         Top             =   3600
-         Width           =   675
-      End
-      Begin VB.Label lblStatus 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "installed, enabled, and up to date"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   3
-         Left            =   1260
-         TabIndex        =   1
-         Top             =   3600
-         Width           =   3255
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   5895
-      Index           =   4
-      Left            =   3000
-      ScaleHeight     =   393
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   513
-      TabIndex        =   45
-      Top             =   240
-      Width           =   7695
-      Begin PhotoDemon.pdCheckBox chkPNGQuantIE6 
-         Height          =   330
-         Left            =   480
-         TabIndex        =   59
-         Top             =   2970
-         Width           =   7050
-         _ExtentX        =   12435
-         _ExtentY        =   582
-         Caption         =   "improve IE6 compatibility (reduces image quality; use with caution)"
-      End
-      Begin PhotoDemon.pdCheckBox chkPNGQuantDither 
-         Height          =   330
-         Left            =   480
-         TabIndex        =   58
-         Top             =   2520
-         Width           =   7050
-         _ExtentX        =   12435
-         _ExtentY        =   582
-         Caption         =   "use dithering to improve output"
-      End
-      Begin PhotoDemon.pdSlider sltPNGQuantSpeed 
-         Height          =   675
-         Left            =   480
-         TabIndex        =   73
-         Top             =   3720
-         Width           =   7095
-         _ExtentX        =   12515
-         _ExtentY        =   1191
-         Caption         =   "performance vs image quality"
-         FontSizeCaption =   10
-         Min             =   1
-         Max             =   11
-         SliderTrackStyle=   1
-         Value           =   3
-         NotchPosition   =   2
-         NotchValueCustom=   3
-      End
-      Begin PhotoDemon.pdHyperlink lblLicenseLink 
-         Height          =   270
-         Index           =   3
-         Left            =   3060
-         Top             =   1560
-         Width           =   4470
-         _ExtentX        =   7885
-         _ExtentY        =   476
-         Caption         =   "BSD license"
          FontSize        =   11
-         ForeColor       =   12611633
-         URL             =   "https://raw.githubusercontent.com/pornel/pngquant/master/COPYRIGHT"
-      End
-      Begin PhotoDemon.pdHyperlink lblHomepageLink 
-         Height          =   270
-         Index           =   3
-         Left            =   3060
-         Top             =   1080
-         Width           =   4560
-         _ExtentX        =   8043
-         _ExtentY        =   476
-         Caption         =   "http://pngquant.org/"
-         FontSize        =   11
-         ForeColor       =   12611633
-         URL             =   "http://pngquant.org/"
-      End
-      Begin VB.Label lblHSDescription 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "fast, low quality"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   -1  'True
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   195
-         Index           =   1
-         Left            =   5280
-         TabIndex        =   57
-         Top             =   4560
-         Width           =   1155
-      End
-      Begin VB.Label lblHSDescription 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "slow, high quality"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   -1  'True
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   195
-         Index           =   0
-         Left            =   960
-         TabIndex        =   56
-         Top             =   4560
-         Width           =   1245
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "PNGQuant settings"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   5
-         Left            =   120
-         TabIndex        =   55
-         Top             =   2160
-         Width           =   1995
-      End
-      Begin VB.Label lblLicense 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "PNGQuant license:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   3
-         Left            =   480
-         TabIndex        =   53
-         Top             =   1560
-         Width           =   1800
-      End
-      Begin VB.Label lblHomepage 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "PNGQuant homepage:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   3
-         Left            =   480
-         TabIndex        =   51
-         Top             =   1080
-         Width           =   2205
-      End
-      Begin VB.Label lbPluginSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "version found:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   13
-         Left            =   3960
-         TabIndex        =   50
-         Top             =   600
-         Width           =   1395
-      End
-      Begin VB.Label lblPluginVersionTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "XX.XX.XX"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   3
-         Left            =   2400
-         TabIndex        =   49
-         Top             =   600
-         Width           =   960
-      End
-      Begin VB.Label lblPluginVersion 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "XX.XX.XX"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   3
-         Left            =   5520
-         TabIndex        =   48
-         Top             =   600
-         Width           =   960
-      End
-      Begin VB.Label lbPluginSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "expected version:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   12
-         Left            =   480
-         TabIndex        =   47
-         Top             =   600
-         Width           =   1740
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "PNGQuant plugin information"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   4
-         Left            =   120
-         TabIndex        =   46
-         Top             =   15
-         Width           =   3150
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   5895
-      Index           =   6
-      Left            =   3000
-      ScaleHeight     =   393
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   513
-      TabIndex        =   76
-      Top             =   240
-      Width           =   7695
-      Begin PhotoDemon.pdHyperlink lblHomepageLink 
-         Height          =   270
-         Index           =   5
-         Left            =   2760
-         Top             =   1080
-         Width           =   4680
-         _ExtentX        =   8255
-         _ExtentY        =   476
-         Caption         =   "http://www.littlecms.com/"
-         FontSize        =   11
-         ForeColor       =   12611633
-         URL             =   "http://www.littlecms.com/"
-      End
-      Begin PhotoDemon.pdHyperlink lblLicenseLink 
-         Height          =   270
-         Index           =   5
-         Left            =   2760
-         Top             =   1560
-         Width           =   4605
-         _ExtentX        =   8123
-         _ExtentY        =   476
-         Caption         =   "MIT license"
-         FontSize        =   11
-         ForeColor       =   12611633
-         URL             =   "https://opensource.org/licenses/mit-license.php"
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "LittleCMS plugin information"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   7
-         Left            =   120
-         TabIndex        =   24
-         Top             =   15
-         Width           =   3015
-      End
-      Begin VB.Label lbPluginSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "expected version:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   5
-         Left            =   480
-         TabIndex        =   26
-         Top             =   600
-         Width           =   1740
-      End
-      Begin VB.Label lblPluginVersion 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "XX.XX.XX"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   5
-         Left            =   5520
-         TabIndex        =   28
-         Top             =   600
-         Width           =   960
-      End
-      Begin VB.Label lblPluginVersionTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "XX.XX.XX"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   5
-         Left            =   2400
-         TabIndex        =   36
-         Top             =   600
-         Width           =   960
-      End
-      Begin VB.Label lbPluginSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "version found:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   4
-         Left            =   3960
-         TabIndex        =   38
-         Top             =   600
-         Width           =   1395
-      End
-      Begin VB.Label lblHomepage 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "LittleCMS homepage:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   5
-         Left            =   480
-         TabIndex        =   52
-         Top             =   1080
-         Width           =   2055
-      End
-      Begin VB.Label lblLicense 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "LittleCMS license:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   5
-         Left            =   480
-         TabIndex        =   54
-         Top             =   1560
-         Width           =   1650
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   5895
-      Index           =   5
-      Left            =   3000
-      ScaleHeight     =   393
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   513
-      TabIndex        =   60
-      Top             =   240
-      Width           =   7695
-      Begin PhotoDemon.pdHyperlink lblLicenseLink 
-         Height          =   270
-         Index           =   4
-         Left            =   2640
-         Top             =   1560
-         Width           =   4725
-         _ExtentX        =   8334
-         _ExtentY        =   476
-         Caption         =   "open-source Perl license"
-         FontSize        =   11
-         ForeColor       =   12611633
-         URL             =   "http://www.sno.phy.queensu.ca/~phil/exiftool/#license"
-      End
-      Begin PhotoDemon.pdHyperlink lblHomepageLink 
-         Height          =   270
-         Index           =   4
-         Left            =   2640
-         Top             =   1080
-         Width           =   5055
-         _ExtentX        =   8916
-         _ExtentY        =   476
-         Caption         =   "http://www.sno.phy.queensu.ca/~phil/exiftool/"
-         FontSize        =   11
-         ForeColor       =   12611633
-         URL             =   "http://www.sno.phy.queensu.ca/~phil/exiftool/"
-      End
-      Begin VB.Label lblLicense 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "ExifTool license:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   4
-         Left            =   480
-         TabIndex        =   68
-         Top             =   1560
-         Width           =   1545
-      End
-      Begin VB.Label lblHomepage 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "ExifTool homepage:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   4
-         Left            =   480
-         TabIndex        =   66
-         Top             =   1080
-         Width           =   1950
-      End
-      Begin VB.Label lbPluginSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "version found:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   3
-         Left            =   3960
-         TabIndex        =   65
-         Top             =   600
-         Width           =   1395
-      End
-      Begin VB.Label lblPluginVersionTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "XX.XX.XX"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   4
-         Left            =   2400
-         TabIndex        =   64
-         Top             =   600
-         Width           =   960
-      End
-      Begin VB.Label lblPluginVersion 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "XX.XX.XX"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   4
-         Left            =   5520
-         TabIndex        =   63
-         Top             =   600
-         Width           =   960
-      End
-      Begin VB.Label lbPluginSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "expected version:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   2
-         Left            =   480
-         TabIndex        =   62
-         Top             =   600
-         Width           =   1740
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "ExifTool plugin information"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   6
-         Left            =   120
-         TabIndex        =   61
-         Top             =   15
-         Width           =   2910
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   5895
-      Index           =   3
-      Left            =   3000
-      ScaleHeight     =   393
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   513
-      TabIndex        =   35
-      Top             =   240
-      Width           =   7695
-      Begin PhotoDemon.pdHyperlink lblHomepageLink 
-         Height          =   270
-         Index           =   2
-         Left            =   2640
-         Top             =   1080
-         Width           =   4860
-         _ExtentX        =   8573
-         _ExtentY        =   476
-         Caption         =   "http://www.eztwain.com/eztwain1.htm"
-         FontSize        =   11
-         ForeColor       =   12611633
-         URL             =   "http://www.eztwain.com/eztwain1.htm"
-      End
-      Begin PhotoDemon.pdHyperlink lblLicenseLink 
-         Height          =   270
-         Index           =   2
-         Left            =   2640
-         Top             =   1560
-         Width           =   4785
-         _ExtentX        =   8440
-         _ExtentY        =   476
-         Caption         =   "public domain"
-         FontSize        =   11
-         ForeColor       =   12611633
-         URL             =   "http://www.eztwain.com/ezt1faq.htm"
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "EZTwain plugin information"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   3
-         Left            =   120
-         TabIndex        =   44
-         Top             =   15
-         Width           =   2955
-      End
-      Begin VB.Label lbPluginSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "expected version:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   11
-         Left            =   480
-         TabIndex        =   43
-         Top             =   600
-         Width           =   1740
-      End
-      Begin VB.Label lblPluginVersion 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "XX.XX.XX"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   2
-         Left            =   5520
-         TabIndex        =   42
-         Top             =   600
-         Width           =   960
-      End
-      Begin VB.Label lblPluginVersionTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "XX.XX.XX"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   2
-         Left            =   2400
-         TabIndex        =   41
-         Top             =   600
-         Width           =   960
-      End
-      Begin VB.Label lbPluginSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "version found:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   10
-         Left            =   3960
-         TabIndex        =   40
-         Top             =   600
-         Width           =   1395
-      End
-      Begin VB.Label lblHomepage 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "EZTwain homepage:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   2
-         Left            =   480
-         TabIndex        =   39
-         Top             =   1080
-         Width           =   1995
-      End
-      Begin VB.Label lblLicense 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "EZTwain license:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   2
-         Left            =   480
-         TabIndex        =   37
-         Top             =   1560
-         Width           =   1590
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   5895
-      Index           =   2
-      Left            =   3000
-      ScaleHeight     =   393
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   513
-      TabIndex        =   15
-      Top             =   240
-      Width           =   7695
-      Begin PhotoDemon.pdHyperlink lblLicenseLink 
-         Height          =   270
-         Index           =   1
-         Left            =   2280
-         Top             =   1560
-         Width           =   5145
-         _ExtentX        =   9075
-         _ExtentY        =   476
-         Caption         =   "zLib license"
-         FontSize        =   11
-         ForeColor       =   12611633
-         URL             =   "http://www.zlib.net/zlib_license.html"
-      End
-      Begin PhotoDemon.pdHyperlink lblHomepageLink 
-         Height          =   270
-         Index           =   1
-         Left            =   2280
-         Top             =   1080
-         Width           =   4935
-         _ExtentX        =   8705
-         _ExtentY        =   476
-         Caption         =   "http://www.zlib.net/"
-         FontSize        =   11
-         ForeColor       =   12611633
-         URL             =   "http://www.zlib.net/"
-      End
-      Begin VB.Label lblLicense 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "zLib license:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   1
-         Left            =   480
-         TabIndex        =   23
-         Top             =   1560
-         Width           =   1140
-      End
-      Begin VB.Label lblHomepage 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "zLib homepage:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   1
-         Left            =   480
-         TabIndex        =   21
-         Top             =   1080
-         Width           =   1545
-      End
-      Begin VB.Label lbPluginSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "version found:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   6
-         Left            =   3960
-         TabIndex        =   20
-         Top             =   600
-         Width           =   1395
-      End
-      Begin VB.Label lblPluginVersionTitle 
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "XX.XX.XX"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   1
-         Left            =   2400
-         TabIndex        =   19
-         Top             =   600
-         Width           =   960
-      End
-      Begin VB.Label lblPluginVersion 
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "XX.XX.XX"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   1
-         Left            =   5520
-         TabIndex        =   18
-         Top             =   600
-         Width           =   960
-      End
-      Begin VB.Label lbPluginSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "expected version:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   7
-         Left            =   480
-         TabIndex        =   17
-         Top             =   600
-         Width           =   1740
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "zLib plugin information"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   2
-         Left            =   120
-         TabIndex        =   16
-         Top             =   15
-         Width           =   2460
+         ForeColor       =   49152
+         UseCustomForeColor=   -1  'True
       End
    End
    Begin VB.PictureBox picContainer 
@@ -1628,183 +130,129 @@ Begin VB.Form FormPluginManager
       ScaleHeight     =   393
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   513
-      TabIndex        =   25
+      TabIndex        =   3
       Top             =   240
       Width           =   7695
-      Begin PhotoDemon.pdHyperlink lblHomepageLink 
+      Begin PhotoDemon.pdButtonStrip btsDisablePlugin 
+         Height          =   1095
+         Left            =   360
+         TabIndex        =   4
+         Top             =   2520
+         Width           =   7095
+         _ExtentX        =   12515
+         _ExtentY        =   1931
+         Caption         =   "forcibly disable this plugin:"
+         FontSizeCaption =   11
+      End
+      Begin PhotoDemon.pdHyperlink hypHomepage 
          Height          =   270
-         Index           =   0
-         Left            =   2880
-         Top             =   1080
-         Width           =   4650
-         _ExtentX        =   8202
+         Left            =   1680
+         Top             =   600
+         Width           =   5850
+         _ExtentX        =   10319
          _ExtentY        =   476
-         Caption         =   "http://freeimage.sourceforge.net/"
+         Caption         =   "homepage"
          FontSize        =   11
          ForeColor       =   12611633
          URL             =   "http://freeimage.sourceforge.net/"
       End
-      Begin PhotoDemon.pdHyperlink lblLicenseLink 
+      Begin PhotoDemon.pdHyperlink hypLicense 
          Height          =   270
-         Index           =   0
-         Left            =   2880
-         Top             =   1560
-         Width           =   4695
-         _ExtentX        =   8281
+         Left            =   1680
+         Top             =   1080
+         Width           =   5895
+         _ExtentX        =   10398
          _ExtentY        =   476
-         Caption         =   "FreeImage Public License (FIPL)"
+         Caption         =   "license"
          FontSize        =   11
          ForeColor       =   12611633
          URL             =   "http://freeimage.sourceforge.net/freeimage-license.txt"
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "FreeImage plugin information"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblPluginTitle 
          Height          =   285
-         Index           =   1
          Left            =   120
-         TabIndex        =   34
          Top             =   15
-         Width           =   3165
+         Width           =   7440
+         _ExtentX        =   13123
+         _ExtentY        =   503
+         Caption         =   "%1 summary"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
-      Begin VB.Label lbPluginSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "expected version:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblSubheader 
          Height          =   270
-         Index           =   0
-         Left            =   480
-         TabIndex        =   33
-         Top             =   600
-         Width           =   1740
-      End
-      Begin VB.Label lblPluginVersion 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "XX.XX.XX"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H0000C000&
-         Height          =   270
-         Index           =   0
-         Left            =   5520
-         TabIndex        =   32
-         Top             =   600
-         Width           =   960
-      End
-      Begin VB.Label lblPluginVersionTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "XX.XX.XX"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   0
-         Left            =   2400
-         TabIndex        =   31
-         Top             =   600
-         Width           =   960
-      End
-      Begin VB.Label lbPluginSubheader 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "version found:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   1
-         Left            =   3960
-         TabIndex        =   30
-         Top             =   600
-         Width           =   1395
-      End
-      Begin VB.Label lblHomepage 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "FreeImage homepage:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   0
-         Left            =   480
-         TabIndex        =   29
-         Top             =   1080
-         Width           =   2265
-      End
-      Begin VB.Label lblLicense 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "FreeImage license:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   270
-         Index           =   0
-         Left            =   480
-         TabIndex        =   27
+         Index           =   2
+         Left            =   360
          Top             =   1560
          Width           =   1860
+         _ExtentX        =   3281
+         _ExtentY        =   476
+         Caption         =   "expected version:"
+         FontSize        =   11
+         ForeColor       =   4210752
+         Layout          =   2
+      End
+      Begin PhotoDemon.pdLabel lblPluginVersion 
+         Height          =   270
+         Left            =   2400
+         Top             =   2040
+         Width           =   4920
+         _ExtentX        =   8678
+         _ExtentY        =   476
+         Caption         =   "XX.XX.XX"
+         FontSize        =   11
+         ForeColor       =   49152
+         UseCustomForeColor=   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblPluginExpectedVersion 
+         Height          =   270
+         Left            =   2400
+         Top             =   1560
+         Width           =   4920
+         _ExtentX        =   8678
+         _ExtentY        =   476
+         Caption         =   "XX.XX.XX"
+         FontSize        =   11
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblSubheader 
+         Height          =   270
+         Index           =   3
+         Left            =   360
+         Top             =   2040
+         Width           =   1875
+         _ExtentX        =   3307
+         _ExtentY        =   476
+         Caption         =   "version found:"
+         FontSize        =   11
+         ForeColor       =   4210752
+         Layout          =   2
+      End
+      Begin PhotoDemon.pdLabel lblSubheader 
+         Height          =   270
+         Index           =   0
+         Left            =   360
+         Top             =   600
+         Width           =   1215
+         _ExtentX        =   2143
+         _ExtentY        =   476
+         Caption         =   "homepage:"
+         FontSize        =   11
+         ForeColor       =   4210752
+         Layout          =   2
+      End
+      Begin PhotoDemon.pdLabel lblSubheader 
+         Height          =   270
+         Index           =   1
+         Left            =   360
+         Top             =   1080
+         Width           =   1185
+         _ExtentX        =   2090
+         _ExtentY        =   476
+         Caption         =   "license:"
+         FontSize        =   11
+         ForeColor       =   4210752
+         Layout          =   2
       End
    End
 End
@@ -1817,17 +265,17 @@ Attribute VB_Exposed = False
 'PhotoDemon Plugin Manager
 'Copyright 2012-2016 by Tanner Helland
 'Created: 21/December/12
-'Last updated: 02/July/14
-'Last update: replaced all pngnq-s9 interactions with PNGQuant
+'Last updated: 20/April/16
+'Last update: overhaul the dialog so that it never needs to be updated against new plugins.  (Instead, all settings
+'             are dynamically pulled from the PluginManager module, and a matching UI is generated at run-time.)
 '
-'Dialog for presenting the user data related to the currently installed plugins.
+'I've considered merging this form with the main Tools > Options dialog, but that dialog is already cluttered,
+' and I really prefer that users don't mess around with plugin settings.  So this dialog exists as a standalone UI,
+' and it should really be used only if there are problems.
 '
-'I seriously considered merging this form with the main Preferences (now Options) dialog, but there are simply
-' too many settings present.  Rather than clutter up the main Preferences dialog with plugin-related settings,
-' I have moved those all here.
-'
-'In the future, I suppose this could be merged with the plugin updater to form one giant plugin handler, but
-' for now it makes sense to make both available (and to keep them separate).
+'As of April '16, this dialog should never need to be updated against new plugins.  All plugin information is
+' dynamically pulled from the PluginManager module, so simply update that module with a new plugin's information,
+' and this dialog will pull the changes at run-time.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -1836,86 +284,41 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Green and red hues for use with our GOOD and BAD labels
-Private Const GOODCOLOR As Long = 49152 'RGB(0,192,0)
-Private Const BADCOLOR As Long = 192    'RGB(192,0,0)
-
-'Much of the version-checking code used in this form was derived from http://allapi.mentalis.org/apilist/GetFileVersionInfo.shtml
-' Many thanks to those authors for their work on demystifying some of these more obscure API calls
-Private Type VS_FIXEDFILEINFO
-   dwSignature As Long
-   dwStrucVersionl As Integer     ' e.g. = &h0000 = 0
-   dwStrucVersionh As Integer     ' e.g. = &h0042 = .42
-   dwFileVersionMSl As Integer    ' e.g. = &h0003 = 3
-   dwFileVersionMSh As Integer    ' e.g. = &h0075 = .75
-   dwFileVersionLSl As Integer    ' e.g. = &h0000 = 0
-   dwFileVersionLSh As Integer    ' e.g. = &h0031 = .31
-   dwProductVersionMSl As Integer ' e.g. = &h0003 = 3
-   dwProductVersionMSh As Integer ' e.g. = &h0010 = .1
-   dwProductVersionLSl As Integer ' e.g. = &h0000 = 0
-   dwProductVersionLSh As Integer ' e.g. = &h0031 = .31
-   dwFileFlagsMask As Long        ' = &h3F for version "0.42"
-   dwFileFlags As Long            ' e.g. VFF_DEBUG Or VFF_PRERELEASE
-   dwFileOS As Long               ' e.g. VOS_DOS_WINDOWS16
-   dwFileType As Long             ' e.g. VFT_DRIVER
-   dwFileSubtype As Long          ' e.g. VFT2_DRV_KEYBOARD
-   dwFileDateMS As Long           ' e.g. 0
-   dwFileDateLS As Long           ' e.g. 0
-End Type
-Private Declare Function GetFileVersionInfo Lib "Version" Alias "GetFileVersionInfoA" (ByVal lptstrFilename As String, ByVal dwhandle As Long, ByVal dwlen As Long, lpData As Any) As Long
-Private Declare Function GetFileVersionInfoSize Lib "Version" Alias "GetFileVersionInfoSizeA" (ByVal lptstrFilename As String, lpdwHandle As Long) As Long
-Private Declare Function VerQueryValue Lib "Version" Alias "VerQueryValueA" (pBlock As Any, ByVal lpSubBlock As String, lplpBuffer As Any, puLen As Long) As Long
-Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, ByVal Source As Long, ByVal Length As Long)
-
-'This array will contain the full version strings of our various plugins
-Private vString(0 To 5) As String
+'These arrays will contain the full version strings of our various plugins, and the expected version strings
+Private m_PluginVersion() As String
 
 'If the user presses "cancel", we need to restore the previous enabled/disabled values
-Private pEnabled(0 To 5) As Boolean
+Private m_PluginEnabled() As Boolean
 
-Private Sub CollectVersionInfo(ByVal FullFileName As String, ByVal strIndex As Long)
-   
-   Dim StrucVer As String, FileVer As String, ProdVer As String
-   
-   Dim rc As Long, lDummy As Long, sBuffer() As Byte
-   Dim lBufferLen As Long, lVerPointer As Long, udtVerBuffer As VS_FIXEDFILEINFO
-   Dim lVerbufferLen As Long
+'We need to distinguish between the user clicking on the "disable plugin" button strip, and programmatically
+' changing the button strip to reflect the current setting.
+Private m_IgnoreButtonStripEvents As Boolean
 
-   '*** Get size ****
-   lBufferLen = GetFileVersionInfoSize(FullFileName, lDummy)
-   If lBufferLen < 1 Then
-      'Debug.Print "Could not retrieve version information for (" & FullFileName & ")"
-      Exit Sub
-   End If
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PDPM_COLOR_LIST
+    [_First] = 0
+    PDPM_GoodText = 0
+    PDPM_BadText = 1
+    [_Last] = 1
+    [_Count] = 2
+End Enum
 
-   '**** Store info to udtVerBuffer struct ****
-   ReDim sBuffer(lBufferLen)
-   rc = GetFileVersionInfo(FullFileName, 0&, lBufferLen, sBuffer(0))
-   rc = VerQueryValue(sBuffer(0), "\", lVerPointer, lVerbufferLen)
-   MoveMemory udtVerBuffer, lVerPointer, Len(udtVerBuffer)
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
 
-   '**** Determine Structure Version number - NOT USED ****
-   StrucVer = Trim(Format$(udtVerBuffer.dwStrucVersionh)) & "." & Trim(Format$(udtVerBuffer.dwStrucVersionl))
-
-   '**** Determine File Version number ****
-   FileVer = Trim(Format$(udtVerBuffer.dwFileVersionMSh)) & "." & Trim(Format$(udtVerBuffer.dwFileVersionMSl)) & "." & Trim(Format$(udtVerBuffer.dwFileVersionLSh)) & "." & Trim(Format$(udtVerBuffer.dwFileVersionLSl))
-
-   '**** Determine Product Version number ****
-   ProdVer = Trim(Format$(udtVerBuffer.dwProductVersionMSh)) & "." & Trim(Format$(udtVerBuffer.dwProductVersionMSl)) & "." & Trim(Format$(udtVerBuffer.dwProductVersionLSh)) & "." & Trim(Format$(udtVerBuffer.dwProductVersionLSl))
-
-   vString(strIndex) = ProdVer
-
+Private Sub btsDisablePlugin_Click(ByVal buttonIndex As Long)
+    If m_IgnoreButtonStripEvents Then Exit Sub
+    m_PluginEnabled(lstPlugins.ListIndex - 1) = CBool(btsDisablePlugin.ListIndex = 0)
+    UpdatePluginLabels
 End Sub
 
+'Upon cancellation, we don't propagate any local changes back to the plugin manager
 Private Sub cmdBarMini_CancelClick()
-    
-    'Restore the original values for enabled or disabled plugins
-    g_ImageFormats.FreeImageEnabled = pEnabled(0)
-    g_ZLibEnabled = pEnabled(1)
-    g_ScanEnabled = pEnabled(2)
-    g_ImageFormats.pngQuantEnabled = pEnabled(3)
-    g_ExifToolEnabled = pEnabled(4)
-    g_LCMSEnabled = pEnabled(5)
     
 End Sub
 
@@ -1927,68 +330,24 @@ Private Sub cmdBarMini_OKClick()
     Me.Visible = False
     
     'Remember the current container the user is viewing
-    g_UserPreferences.startBatchPreferenceMode
+    g_UserPreferences.StartBatchPreferenceMode
     g_UserPreferences.SetPref_Long "Plugins", "Last Plugin Preferences Page", lstPlugins.ListIndex
     
-    'Save all plugin-specific settings to the preferences file
+    'Look for any changes to plugin settings
+    Dim settingsChanged As Boolean: settingsChanged = False
     
-    'PNGQuant settings
-        
-        'Dithering
-        g_UserPreferences.SetPref_Boolean "Plugins", "PNGQuant Dithering", CBool(chkPNGQuantDither.Value)
-        
-        'IE6 compatibility
-        g_UserPreferences.SetPref_Boolean "Plugins", "PNGQuant IE6 Compatibility", CBool(chkPNGQuantIE6.Value)
-        
-        'Performance vs speed
-        g_UserPreferences.SetPref_Long "Plugins", "PNGQuant Performance", sltPNGQuantSpeed.Value
-            
-            
-    'Write all enabled/disabled plugin changes to the preferences file
-    If g_ImageFormats.FreeImageEnabled Then
-        g_UserPreferences.SetPref_Boolean "Plugins", "Force FreeImage Disable", False
-    Else
-        g_UserPreferences.SetPref_Boolean "Plugins", "Force FreeImage Disable", True
-    End If
-            
-    'zLib
-    If g_ZLibEnabled Then
-        g_UserPreferences.SetPref_Boolean "Plugins", "Force ZLib Disable", False
-    Else
-        g_UserPreferences.SetPref_Boolean "Plugins", "Force ZLib Disable", True
-    End If
-        
-    'EZTwain
-    If g_ScanEnabled Then
-        g_UserPreferences.SetPref_Boolean "Plugins", "Force EZTwain Disable", False
-    Else
-        g_UserPreferences.SetPref_Boolean "Plugins", "Force EZTwain Disable", True
-    End If
-        
-    'PNGQuant
-    If g_ImageFormats.pngQuantEnabled Then
-        g_UserPreferences.SetPref_Boolean "Plugins", "Force PNGQuant Disable", False
-    Else
-        g_UserPreferences.SetPref_Boolean "Plugins", "Force PNGQuant Disable", True
-    End If
-    
-    'ExifTool
-    If g_ExifToolEnabled Then
-        g_UserPreferences.SetPref_Boolean "Plugins", "Force ExifTool Disable", False
-    Else
-        g_UserPreferences.SetPref_Boolean "Plugins", "Force ExifTool Disable", True
-    End If
-    
-    'LittleCMS
-    If g_LCMSEnabled Then
-        g_UserPreferences.SetPref_Boolean "Plugins", "Force LittleCMS Disable", False
-    Else
-        g_UserPreferences.SetPref_Boolean "Plugins", "Force LittleCMS Disable", True
-    End If
+    Dim i As Long
+    For i = 0 To PluginManager.GetNumOfPlugins - 1
+        If PluginManager.IsPluginCurrentlyEnabled(i) <> m_PluginEnabled(i) Then
+            PluginManager.SetPluginEnablement i, m_PluginEnabled(i)
+            PluginManager.SetPluginAllowed i, m_PluginEnabled(i)
+            settingsChanged = True
+        End If
+    Next i
     
     'If the user has changed any plugin enable/disable settings, a number of things must be refreshed program-wide
-    If (pEnabled(0) <> g_ImageFormats.FreeImageEnabled) Or (pEnabled(1) <> g_ZLibEnabled) Or (pEnabled(2) <> g_ScanEnabled) Or (pEnabled(3) <> g_ImageFormats.pngQuantEnabled) Or (pEnabled(4) <> g_ExifToolEnabled) Then
-        Plugin_Management.LoadAllPlugins
+    If settingsChanged Then
+        PluginManager.LoadAllPlugins
         ApplyAllMenuIcons
         Icons_and_Cursors.ResetMenuIcons
         g_ImageFormats.GenerateInputFormats
@@ -1996,7 +355,7 @@ Private Sub cmdBarMini_OKClick()
     End If
     
     'End batch preference update mode, which will force a write-to-file operation
-    g_UserPreferences.endBatchPreferenceMode
+    g_UserPreferences.EndBatchPreferenceMode
     
     Message "Plugin options saved."
     
@@ -2008,29 +367,14 @@ Private Sub cmdReset_Click()
     'Set current container to zero
     g_UserPreferences.SetPref_Long "Plugins", "Last Plugin Preferences Page", 0
     
-    'Reset all plugin-specific settings in the preferences file
-    
-    'PNGQuant settings
-        
-        'Dithering
-        g_UserPreferences.SetPref_Boolean "Plugins", "PNGQuant Dithering", True
-        
-        'IE6 compatibility
-        g_UserPreferences.SetPref_Boolean "Plugins", "PNGQuant IE6 Compatibility", False
-        
-        'Performance vs speed
-        g_UserPreferences.SetPref_Long "Plugins", "PNGQuant Performance", 3
-
     'Enable all plugins if possible
-    g_UserPreferences.SetPref_Boolean "Plugins", "Force FreeImage Disable", False
-    g_UserPreferences.SetPref_Boolean "Plugins", "Force ZLib Disable", False
-    g_UserPreferences.SetPref_Boolean "Plugins", "Force EZTwain Disable", False
-    g_UserPreferences.SetPref_Boolean "Plugins", "Force PNGQuant Disable", False
-    g_UserPreferences.SetPref_Boolean "Plugins", "Force ExifTool Disable", False
-    g_UserPreferences.SetPref_Boolean "Plugins", "Force LittleCMS Disable", False
+    Dim i As Long
+    For i = 0 To PluginManager.GetNumOfPlugins - 1
+        PluginManager.SetPluginAllowed i, True
+    Next i
     
-    'Reload the plugins (from a system standpoint)
-    Plugin_Management.LoadAllPlugins
+    'Reload all plugins (which will also refresh all plugin-related settings)
+    PluginManager.LoadAllPlugins
     
     'Reload the dialog
     LoadAllPluginSettings
@@ -2040,61 +384,104 @@ End Sub
 'LOAD the form
 Private Sub Form_Load()
     
-    'Remember which plugins the user has enabled or disabled
-    pEnabled(0) = g_ImageFormats.FreeImageEnabled
-    pEnabled(1) = g_ZLibEnabled
-    pEnabled(2) = g_ScanEnabled
-    pEnabled(3) = g_ImageFormats.pngQuantEnabled
-    pEnabled(4) = g_ExifToolEnabled
-    pEnabled(5) = g_LCMSEnabled
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PDPM_COLOR_LIST: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDPluginManager", colorCount
+    UpdateColorList
     
     'Populate the left-hand list box with all relevant plugins
     lstPlugins.Clear
-    lstPlugins.AddItem "Overview", 0
-    lstPlugins.AddItem "FreeImage", 1
-    lstPlugins.AddItem "zLib", 2
-    lstPlugins.AddItem "EZTwain", 3
-    lstPlugins.AddItem "PNGQuant", 4
-    lstPlugins.AddItem "ExifTool", 5
-    lstPlugins.AddItem "LittleCMS", 6
+    lstPlugins.AddItem "Overview", 0, True
+    
+    Dim i As Long
+    For i = 0 To PluginManager.GetNumOfPlugins - 1
+        lstPlugins.AddItem PluginManager.GetPluginName(i), i + 1
+    Next i
     
     lstPlugins.ListIndex = 0
     
+    'Dynamically generate all text on the overview page
+    Dim maxWidth As Long
+    For i = 0 To PluginManager.GetNumOfPlugins - 1
+        
+        'Load two new label instances
+        If (i > 0) Then
+            Load lblInterfaceTitle(i): lblInterfaceTitle(i).Visible = True
+            Load lblStatus(i): lblStatus(i).Visible = True
+        End If
+        
+        'Assign title captions and position accordingly
+        lblInterfaceTitle(i).Caption = g_Language.TranslateMessage("%1 status:", PluginManager.GetPluginName(i))
+        If lblInterfaceTitle(i).GetWidth > maxWidth Then maxWidth = lblInterfaceTitle(i).GetWidth
+        
+        'Align the top position of each status label with its matching title label
+        If (i > 0) Then lblInterfaceTitle(i).SetTop lblInterfaceTitle(i - 1).GetTop + lblInterfaceTitle(i - 1).GetHeight + FixDPI(12)
+        lblStatus(i).SetTop lblInterfaceTitle(i).GetTop
+        
+    Next i
+    
+    'Left-align all status labels to the same position
+    maxWidth = maxWidth + lblInterfaceTitle(0).GetLeft + FixDPI(8)
+    For i = 0 To PluginManager.GetNumOfPlugins - 1
+        lblStatus(i).SetLeft maxWidth
+        lblStatus(i).SetWidth picContainer(0).ScaleWidth - lblStatus(i).GetLeft
+    Next i
+    
     'Load all user-editable settings from the preferences file, and populate all plugin information
     LoadAllPluginSettings
-        
+    
     'For some reason, the container picture boxes automatically acquire the pointer of children objects.
     ' Manually force those cursors to arrows to prevent this.
-    Dim i As Long
     For i = 0 To picContainer.Count - 1
         setArrowCursor picContainer(i)
     Next i
-            
+    
+    m_IgnoreButtonStripEvents = True
+    btsDisablePlugin.AddItem "no", 0
+    btsDisablePlugin.AddItem "yes", 1
+    btsDisablePlugin.ListIndex = 0
+    m_IgnoreButtonStripEvents = False
+    
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     
-    'If a translation is active, realign text as necessary
-    If g_Language.translationActive Then
-        lblPluginStatus.Left = lblTitle(0).Left + lblTitle(0).Width + FixDPI(8)
-        
-        For i = 0 To lblStatus.Count - 1
-            lblStatus(i).Left = lblInterfaceSubheader(i).Left + lblInterfaceSubheader(i).Width + FixDPI(8)
-        Next i
-        
-        For i = 0 To lblHomepage.Count - 1
-            lblHomepageLink(i).Left = lblHomepage(i).Left + lblHomepage(i).Width + FixDPI(8)
-            lblLicenseLink(i).Left = lblLicense(i).Left + lblLicense(i).Width + FixDPI(8)
-        Next i
-        
-    End If
+    'Adjust the positioning of some labels to account for translation widths
+    Dim maxPosition As Long
+    maxPosition = lblSubheader(0).GetLeft + lblSubheader(0).GetWidth
+    If (lblSubheader(1).GetLeft + lblSubheader(1).GetWidth) > maxPosition Then maxPosition = lblSubheader(1).GetLeft + lblSubheader(1).GetWidth
+    hypHomepage.SetLeft maxPosition + FixDPI(12)
+    hypLicense.SetLeft hypHomepage.GetLeft
     
+    maxPosition = lblSubheader(2).GetLeft + lblSubheader(2).GetWidth
+    If (lblSubheader(3).GetLeft + lblSubheader(3).GetWidth) > maxPosition Then maxPosition = lblSubheader(3).GetLeft + lblSubheader(3).GetWidth
+    lblPluginExpectedVersion.SetLeft maxPosition + FixDPI(12)
+    lblPluginVersion.SetLeft lblPluginExpectedVersion.GetLeft
+    
+    hypHomepage.SetWidth picContainer(1).ScaleWidth - hypHomepage.GetLeft
+    hypLicense.SetWidth picContainer(1).ScaleWidth - hypLicense.GetLeft
+    lblPluginExpectedVersion.SetWidth picContainer(1).ScaleWidth - lblPluginExpectedVersion.GetLeft
+    lblPluginVersion.SetWidth picContainer(1).ScaleWidth - lblPluginVersion.GetLeft
+    
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
 End Sub
 
 'When the dialog is first launched, use this to populate the dialog with any settings the user may have modified
 Private Sub LoadAllPluginSettings()
     
+    'Remember which plugins the user has enabled or disabled.  (We store these locally, instead of directly invoking
+    ' the plugin manager, so that no changes are applied if the user clicks "Cancel".)
+    ReDim m_PluginEnabled(0 To PluginManager.GetNumOfPlugins - 1) As Boolean
+    Dim i As Long
+    For i = 0 To PluginManager.GetNumOfPlugins - 1
+        m_PluginEnabled(i) = PluginManager.IsPluginCurrentlyEnabled(i)
+    Next i
+    
     'Start batch preference processing mode.
-    g_UserPreferences.startBatchPreferenceMode
+    g_UserPreferences.StartBatchPreferenceMode
     
     'Now, check version numbers of each plugin.  This is more complicated than it needs to be, on account of
     ' each plugin having its own unique mechanism for version-checking, but I have wrapped these various functions
@@ -2105,206 +492,159 @@ Private Sub LoadAllPluginSettings()
     ' "good/bad" labels for each plugin.
     UpdatePluginLabels
     
-    'Hide all plugin control containers
-    Dim i As Long
-    For i = 0 To picContainer.Count - 1
-        picContainer(i).Visible = False
-    Next i
-    
     'Enable the last container the user selected
     lstPlugins.ListIndex = g_UserPreferences.GetPref_Long("Plugins", "Last Plugin Preferences Page", 0)
-    picContainer(lstPlugins.ListIndex).Visible = True
+    PluginChanged
     
-    'Load all specialty plugin settings from the preferences file
-    
-    'PNGQuant settings
-        
-        'Dithering
-        If g_UserPreferences.GetPref_Boolean("Plugins", "PNGQuant Dithering", True) Then chkPNGQuantDither.Value = vbChecked Else chkPNGQuantDither.Value = vbUnchecked
-        
-        'IE6 compatibility
-        If g_UserPreferences.GetPref_Boolean("Plugins", "PNGQuant IE6 Compatibility", False) Then chkPNGQuantIE6.Value = vbChecked Else chkPNGQuantIE6.Value = vbUnchecked
-        
-        'Performance vs speed
-        sltPNGQuantSpeed.Value = g_UserPreferences.GetPref_Long("Plugins", "PNGQuant Performance", 3)
-        
     'End batch preference mode
-    g_UserPreferences.endBatchPreferenceMode
-        
+    g_UserPreferences.EndBatchPreferenceMode
+    
 End Sub
 
 'Assuming version numbers have been successfully retrieved, this function can be called to update the
 ' green/red plugin label display on the main panel.
 Private Sub UpdatePluginLabels()
     
-    Dim pluginStatus As Boolean
+    Dim pluginStatus As Boolean: pluginStatus = True
     
-    'FreeImage
-    pluginStatus = PopPluginLabel(0, "FreeImage", EXPECTED_FREEIMAGE_VERSION, IsFreeImageAvailable, g_ImageFormats.FreeImageEnabled)
-    
-    'zLib
-    pluginStatus = pluginStatus And PopPluginLabel(1, "zLib", EXPECTED_ZLIB_VERSION, IsZLibAvailable, g_ZLibEnabled)
-    
-    'EZTwain
-    pluginStatus = pluginStatus And PopPluginLabel(2, "EZTwain", EXPECTED_EZTWAIN_VERSION, isEZTwainAvailable, g_ScanEnabled)
-    
-    'PNGQuant
-    pluginStatus = pluginStatus And PopPluginLabel(3, "PNGQuant", EXPECTED_PNGQUANT_VERSION, isPngQuantAvailable, g_ImageFormats.pngQuantEnabled)
-    
-    'ExifTool
-    pluginStatus = pluginStatus And PopPluginLabel(4, "ExifTool", EXPECTED_EXIFTOOL_VERSION, IsExifToolAvailable, g_ExifToolEnabled)
-    
-    'LittleCMS
-    ' TODO!
-    pluginStatus = pluginStatus And PopPluginLabel(5, "LittleCMS", EXPECTED_LITTLECMS_VERSION, True, g_LCMSEnabled)
+    Dim i As Long
+    For i = 0 To PluginManager.GetNumOfPlugins - 1
+        pluginStatus = pluginStatus And PopPluginLabel(i)
+    Next i
     
     If pluginStatus Then
-        lblPluginStatus.ForeColor = GOODCOLOR
+        lblPluginStatus.ForeColor = m_Colors.RetrieveColor(PDPM_GoodText)
         lblPluginStatus.Caption = UCase(g_Language.TranslateMessage("GOOD"))
     Else
-        lblPluginStatus.ForeColor = BADCOLOR
+        lblPluginStatus.ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
         lblPluginStatus.Caption = g_Language.TranslateMessage("problems detected")
     End If
         
 End Sub
 
-'Retrieve all relevant plugin version numbers and store them in the vString() array
+'Retrieve all relevant plugin version numbers and store them in the m_PluginVersion() array
 Private Sub CollectAllVersionNumbers()
-
-    'Start by analyzing plugin file metadata for version information.  This works for FreeImage and zLib (but
-    ' do it for all four, just in case).
-    If IsFreeImageAvailable Then CollectVersionInfo g_PluginPath & "freeimage.dll", 0 Else vString(0) = "none"
-    If IsZLibAvailable Then CollectVersionInfo g_PluginPath & "zlibwapi.dll", 1 Else vString(1) = "none"
-    If isEZTwainAvailable Then CollectVersionInfo g_PluginPath & "eztw32.dll", 2 Else vString(2) = "none"
-    If isPngQuantAvailable Then CollectVersionInfo g_PluginPath & "pngquant.exe", 3 Else vString(3) = "none"
-    If IsExifToolAvailable Then CollectVersionInfo g_PluginPath & "exiftool.exe", 4 Else vString(4) = "none"
-    If IsExifToolAvailable Then CollectVersionInfo g_PluginPath & "lcms2.dll", 5 Else vString(5) = "none"
     
-    'Special version-checking techniques are required for some plugins.
+    ReDim m_PluginVersion(0 To PluginManager.GetNumOfPlugins - 1) As String
     
-    'The EZTwain DLL provides its own version-checking function
-    If isEZTwainAvailable Then vString(2) = getEZTwainVersion Else vString(2) = "none"
-    
-    'PNGQuant can write its version number to stdout.  Capture that now.
-    If isPngQuantAvailable Then vString(3) = getPngQuantVersion() Else vString(3) = "none"
-    
-    'ExifTool can write its version number to stdout.  Capture that now.
-    If IsExifToolAvailable Then vString(4) = GetExifToolVersion() Else vString(4) = "none"
-    
-    'Remove trailing build numbers from version strings as necessary.  (Note: (4) is left off, as ExifTool
-    ' does not report a build number)
+    'Start by querying the plugin file's metadata for version information.  This only works for some plugins,
+    ' unfortunately, but we'll manually fill in outliers afterward.
     Dim i As Long
-    For i = 0 To 5
-        If (i <> 4) Then
-            If vString(i) <> "none" Then StripOffExtension vString(i)
+    For i = 0 To PluginManager.GetNumOfPlugins - 1
+        If PluginManager.IsPluginCurrentlyInstalled(i) Then
+            m_PluginVersion(i) = PluginManager.GetPluginVersion(i)
+        Else
+            m_PluginVersion(i) = vbNullString
         End If
     Next i
-
+    
+    'Remove trailing build numbers from version strings as necessary.  (Note: ExifTool is ignored, as it does not
+    ' actually report a build number)
+    For i = 0 To PluginManager.GetNumOfPlugins - 1
+        If (i <> CCP_ExifTool) Then
+            If Len(m_PluginVersion(i)) <> 0 Then
+                StripOffExtension m_PluginVersion(i)
+            Else
+                m_PluginVersion(i) = g_Language.TranslateMessage("none")
+            End If
+        End If
+    Next i
+    
 End Sub
 
 'Given a plugin's availability, expected version, and index on this form, populate the relevant labels associated with it.
 ' This function will return TRUE if the plugin is in good status, FALSE if it isn't (for any reason)
-Private Function PopPluginLabel(ByVal curPlugin As Long, ByRef pluginName As String, ByRef expectedVersion As String, ByVal isAvailable As Boolean, ByVal isEnabled As Boolean) As Boolean
-        
-    'Make the individual plugin panels display the expected version
-    lblPluginVersionTitle(curPlugin).Caption = expectedVersion
-        
-    'Is this plugin present on the machine?
-    If isAvailable Then
+Private Function PopPluginLabel(ByVal pluginID As CORE_PLUGINS) As Boolean
     
-        'Make the individual plugin panels display the discovered version
-        lblPluginVersion(curPlugin).Caption = vString(curPlugin)
-        If StrComp(vString(curPlugin), expectedVersion, vbTextCompare) = 0 Then
-            lblPluginVersion(curPlugin).ForeColor = GOODCOLOR
-        Else
-            lblPluginVersion(curPlugin).ForeColor = BADCOLOR
-        End If
-        
-        'If present, has it been forcibly disabled?
-        If isEnabled Then
-            lblStatus(curPlugin).Caption = g_Language.TranslateMessage("installed")
-            hypDisable(curPlugin).Caption = g_Language.TranslateMessage("disable") & " " & pluginName
+    'Is this plugin present on the machine?
+    If PluginManager.IsPluginCurrentlyInstalled(pluginID) Then
+    
+        'If present, has it been forcibly disabled?  (Note that we use our internal enablement tracker for this,
+        ' to reflect any changes the user has just made.)
+        If m_PluginEnabled(pluginID) Then
             
             'If this plugin is present and enabled, does its version match what we expect?
-            If StrComp(vString(curPlugin), expectedVersion, vbTextCompare) = 0 Then
-                lblStatus(curPlugin).Caption = lblStatus(curPlugin).Caption & " " & g_Language.TranslateMessage("and up to date")
-                lblStatus(curPlugin).ForeColor = GOODCOLOR
+            If StrComp(m_PluginVersion(pluginID), PluginManager.ExpectedPluginVersion(pluginID), vbBinaryCompare) = 0 Then
+                lblStatus(pluginID).Caption = g_Language.TranslateMessage("installed and up to date")
+                lblStatus(pluginID).ForeColor = m_Colors.RetrieveColor(PDPM_GoodText)
                 PopPluginLabel = True
                 
             'Version mismatch
             Else
-                lblStatus(curPlugin).Caption = lblStatus(curPlugin).Caption & ", " & g_Language.TranslateMessage("but incorrect version (%1 found, %2 expected)", vString(curPlugin), expectedVersion)
-                lblStatus(curPlugin).ForeColor = BADCOLOR
+                lblStatus(pluginID).Caption = g_Language.TranslateMessage("installed, but version is unexpected")
+                lblStatus(pluginID).ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
                 PopPluginLabel = False
             End If
             
         'Plugin is disabled
         Else
-            lblStatus(curPlugin).Caption = g_Language.TranslateMessage("installed, but disabled by user")
-            lblStatus(curPlugin).ForeColor = BADCOLOR
-            hypDisable(curPlugin).Caption = g_Language.TranslateMessage("enable") & " " & pluginName
+            lblStatus(pluginID).Caption = g_Language.TranslateMessage("installed, but disabled by user")
+            lblStatus(pluginID).ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
             PopPluginLabel = False
         End If
         
     'Plugin is not present on the machine
     Else
-        lblStatus(curPlugin).Caption = g_Language.TranslateMessage("missing")
-        lblStatus(curPlugin).ForeColor = BADCOLOR
-        hypDisable(curPlugin).Visible = False
+        lblStatus(pluginID).Caption = g_Language.TranslateMessage("not installed")
+        lblStatus(pluginID).ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
         PopPluginLabel = False
-        lblPluginVersion(curPlugin).Caption = g_Language.TranslateMessage("missing")
-        lblPluginVersion(curPlugin).ForeColor = BADCOLOR
     End If
     
 End Function
 
-Private Sub Form_Unload(Cancel As Integer)
-    ReleaseFormTheming Me
-End Sub
-
-'The user is now allowed to selectively disable/enable various plugins.  This can be used to test certain program
-' parameters, or to force certain behaviors.
-Private Sub hypDisable_Click(Index As Integer)
-
-    Select Case Index
-    
-        'FreeImage
-        Case 0
-            g_ImageFormats.FreeImageEnabled = Not g_ImageFormats.FreeImageEnabled
-            
-        'zLib
-        Case 1
-            g_ZLibEnabled = Not g_ZLibEnabled
-            
-        'EZTwain
-        Case 2
-            g_ScanEnabled = Not g_ScanEnabled
-            
-        'PNGQuant
-        Case 3
-            g_ImageFormats.pngQuantEnabled = Not g_ImageFormats.pngQuantEnabled
-        
-        'ExifTool
-        Case 4
-            g_ExifToolEnabled = Not g_ExifToolEnabled
-            
-        'LittleCMS
-        Case 5
-            g_LCMSEnabled = Not g_LCMSEnabled
-            
-    End Select
-    
-    'Update the various labels to match the new situation
-    UpdatePluginLabels
-    
+'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    m_Colors.LoadThemeColor PDPM_GoodText, "PluginOK", RGB(0, 255, 0)
+    m_Colors.LoadThemeColor PDPM_BadText, "PluginError", RGB(255, 0, 0)
 End Sub
 
 'When a new plugin is selected, display only the relevant plugin panel
 Private Sub lstPlugins_Click()
+    PluginChanged
+End Sub
 
-    Dim i As Long
-    For i = 0 To picContainer.Count - 1
-        If i = lstPlugins.ListIndex Then picContainer(i).Visible = True Else picContainer(i).Visible = False
-    Next i
+Private Sub PluginChanged()
+
+    'Display the overview panel
+    If (lstPlugins.ListIndex = 0) Then
+        picContainer(0).Visible = True
+        picContainer(1).Visible = False
+    
+    'Display the plugin-specific panel, including populating a bunch of run-time text
+    Else
+        picContainer(0).Visible = False
+        picContainer(1).Visible = True
+        
+        Dim pluginIndex As CORE_PLUGINS, pluginName As String
+        pluginIndex = lstPlugins.ListIndex - 1
+        pluginName = PluginManager.GetPluginName(pluginIndex)
+        
+        lblPluginTitle.Caption = g_Language.TranslateMessage("%1 summary", pluginName)
+        lblPluginExpectedVersion.Caption = PluginManager.ExpectedPluginVersion(pluginIndex)
+        
+        If PluginManager.IsPluginCurrentlyInstalled(pluginIndex) Then
+            lblPluginVersion.Caption = m_PluginVersion(pluginIndex)
+            If StrComp(m_PluginVersion(pluginIndex), PluginManager.ExpectedPluginVersion(pluginIndex), vbBinaryCompare) = 0 Then
+                lblPluginVersion.ForeColor = m_Colors.RetrieveColor(PDPM_GoodText)
+            Else
+                lblPluginVersion.ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
+            End If
+        Else
+            lblPluginVersion.Caption = g_Language.TranslateMessage("missing")
+            lblPluginVersion.ForeColor = m_Colors.RetrieveColor(PDPM_BadText)
+        End If
+        
+        hypHomepage.Caption = PluginManager.GetPluginHomepage(pluginIndex)
+        hypHomepage.URL = PluginManager.GetPluginHomepage(pluginIndex)
+        hypLicense.Caption = PluginManager.GetPluginLicenseName(pluginIndex)
+        hypLicense.URL = PluginManager.GetPluginLicenseURL(pluginIndex)
+        
+        m_IgnoreButtonStripEvents = True
+        If m_PluginEnabled(pluginIndex) Then btsDisablePlugin.ListIndex = 0 Else btsDisablePlugin.ListIndex = 1
+        m_IgnoreButtonStripEvents = False
+        
+    End If
     
 End Sub
+

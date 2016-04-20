@@ -49,18 +49,8 @@ Private m_toeStrength As Double, m_toeNumerator As Double, m_toeDenominator As D
 
 'Cache for post-export image previews.  This array can be safely freed, as it will be properly initialized on-demand.
 Private m_ExportPreviewBytes() As Byte
-    
-'Is FreeImage available as a plugin?  (NOTE: this is now determined separately from FreeImageEnabled.)
-Public Function IsFreeImageAvailable() As Boolean
-    
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If cFile.FileExist(g_PluginPath & "freeimage.dll") Then IsFreeImageAvailable = True Else IsFreeImageAvailable = False
-    
-End Function
 
-'Initialize FreeImage.  Do not call this until you have verified FreeImage's existence (typically via isFreeImageAvailable(), above)
+'Initialize FreeImage.  Do not call this until you have verified FreeImage's existence (typically via the PluginManager module)
 Public Function InitializeFreeImage() As Boolean
     
     'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
@@ -124,7 +114,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     End If
     
     'Store this file format inside the DIB
-    dstDIB.setOriginalFormat fileFIF
+    dstDIB.SetOriginalFormat fileFIF
     
     
     '****************************************************************************
@@ -276,7 +266,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     End If
     
     'Store this original, untouched color depth now
-    If fi_hDIB <> 0 Then dstDIB.setOriginalFreeImageColorDepth FreeImage_GetBPP(fi_hDIB)
+    If fi_hDIB <> 0 Then dstDIB.SetOriginalFreeImageColorDepth FreeImage_GetBPP(fi_hDIB)
     
     'Icon files may use a simple mask for their alpha channel; in this case, re-load the icon with the FILO_ICO_MAKEALPHA flag
     If fileFIF = FIF_ICO Then
@@ -356,18 +346,18 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             If rQuad.alpha <> 0 Then
                 Dim fi_Palette() As Long
                 fi_Palette = FreeImage_GetPaletteExLong(fi_hDIB)
-                dstDIB.setBackgroundColor fi_Palette(rQuad.alpha)
+                dstDIB.SetBackgroundColor fi_Palette(rQuad.alpha)
                 
             'Otherwise it's easy - just reassemble the RGB values from the quad
             Else
-                dstDIB.setBackgroundColor RGB(rQuad.Red, rQuad.Green, rQuad.Blue)
+                dstDIB.SetBackgroundColor RGB(rQuad.Red, rQuad.Green, rQuad.Blue)
             End If
         
         End If
      
     'No background color found; write -1 to notify of this.
     Else
-        dstDIB.setBackgroundColor -1
+        dstDIB.SetBackgroundColor -1
     End If
     
     
@@ -469,7 +459,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' Now that we have filtered out > 32bpp images, store the current color depth of the original image.
     '****************************************************************************
     
-    dstDIB.setOriginalColorDepth FreeImage_GetBPP(fi_hDIB)
+    dstDIB.SetOriginalColorDepth FreeImage_GetBPP(fi_hDIB)
     
     
     '****************************************************************************
@@ -626,12 +616,12 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         Dim tmpCMYKDIB As pdDIB
         Set tmpCMYKDIB = New pdDIB
         tmpCMYKDIB.createBlank FreeImage_GetWidth(fi_hDIB), FreeImage_GetHeight(fi_hDIB), 32
-        SetDIBitsToDevice tmpCMYKDIB.getDIBDC, 0, 0, tmpCMYKDIB.getDIBWidth, tmpCMYKDIB.getDIBHeight, 0, 0, 0, tmpCMYKDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
+        SetDIBitsToDevice tmpCMYKDIB.GetDIBDC, 0, 0, tmpCMYKDIB.GetDIBWidth, tmpCMYKDIB.GetDIBHeight, 0, 0, 0, tmpCMYKDIB.GetDIBHeight, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
         
         'Prepare a blank 24bpp DIB to receive the transformed sRGB data
         Dim tmpRGBDIB As pdDIB
         Set tmpRGBDIB = New pdDIB
-        tmpRGBDIB.createBlank tmpCMYKDIB.getDIBWidth, tmpCMYKDIB.getDIBHeight, 24
+        tmpRGBDIB.createBlank tmpCMYKDIB.GetDIBWidth, tmpCMYKDIB.GetDIBHeight, 24
         
         'Apply the transformation using the dedicated CMYK transform handler
         If Color_Management.ApplyCMYKTransform(dstDIB.ICCProfile.GetICCDataPointer, dstDIB.ICCProfile.GetICCDataSize, tmpCMYKDIB, tmpRGBDIB, dstDIB.ICCProfile.GetSourceRenderIntent) Then
@@ -642,7 +632,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         
             'The transform was successful.  Copy the new sRGB data back into the FreeImage object, so the load process can continue.
             FreeImage_Unload fi_hDIB
-            fi_hDIB = FreeImage_CreateFromDC(tmpRGBDIB.getDIBDC)
+            fi_hDIB = FreeImage_CreateFromDC(tmpRGBDIB.GetDIBDC)
             fi_BPP = FreeImage_GetBPP(fi_hDIB)
             dstDIB.ICCProfile.MarkSuccessfulProfileApplication
             
@@ -772,7 +762,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     #End If
         
     'Copy the bits from the FreeImage DIB to our DIB
-    SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
+    SetDIBitsToDevice dstDIB.GetDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
     
     
     '****************************************************************************
@@ -809,7 +799,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     End If
     
     'Regardless of original bit-depth, the final PhotoDemon image will always be 32-bits, with pre-multiplied alpha.
-    dstDIB.setInitialAlphaPremultiplicationState True
+    dstDIB.SetInitialAlphaPremultiplicationState True
     
     
     '****************************************************************************
@@ -940,7 +930,7 @@ Public Function GetPDDibFromFreeImageHandle(ByVal srcFI_Handle As Long, ByRef ds
     fi_Width = FreeImage_GetWidth(srcFI_Handle)
     fi_Height = FreeImage_GetHeight(srcFI_Handle)
     dstDIB.createBlank fi_Width, fi_Height, fiBPP, 0
-    SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(srcFI_Handle), ByVal FreeImage_GetInfo(srcFI_Handle), 0&
+    SetDIBitsToDevice dstDIB.GetDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(srcFI_Handle), ByVal FreeImage_GetInfo(srcFI_Handle), 0&
     
     'If we created a temporary DIB, free it now
     If srcFI_Handle <> fiHandleBackup Then
@@ -962,7 +952,7 @@ End Function
 'ALSO NOTE!  The function returns zero for failure state; please check the return value before trying to use it!
 Public Function GetFIHandleFromPDDib_NoCopy(ByRef srcDIB As pdDIB, Optional ByVal reverseScanlines As Boolean = False) As Long
     With srcDIB
-        GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .getActualDIBBits, FIT_Bitmap, .getDIBWidth, .getDIBHeight, .getDIBArrayWidth, .getDIBColorDepth, , , , reverseScanlines)
+        GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .GetActualDIBBits, FIT_Bitmap, .GetDIBWidth, .GetDIBHeight, .GetDIBArrayWidth, .GetDIBColorDepth, , , , reverseScanlines)
     End With
 End Function
 
@@ -975,11 +965,11 @@ Public Function PaintFIDibToPDDib(ByRef dstDIB As pdDIB, ByVal fi_Handle As Long
         If dstDIB.IsDIBTopDown Then bmpInfo.bmiHeader.biHeight = -1 * (bmpInfo.bmiHeader.biHeight)
         
         Dim iHeight As Long: iHeight = Abs(bmpInfo.bmiHeader.biHeight)
-        PaintFIDibToPDDib = (SetDIBitsToDevice(dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, 0, 0, 0, iHeight, ByVal FreeImage_GetBits(fi_Handle), bmpInfo, 0&) <> 0)
+        PaintFIDibToPDDib = (SetDIBitsToDevice(dstDIB.GetDIBDC, dstX, dstY, dstWidth, dstHeight, 0, 0, 0, iHeight, ByVal FreeImage_GetBits(fi_Handle), bmpInfo, 0&) <> 0)
         
         'When painting from a 24-bpp source to a 32-bpp target, the destination alpha channel will be ignored by GDI.
         ' We must forcibly fill it with opaque alpha values, or the resulting image will retain its existing alpha (typically 0!)
-        If (dstDIB.getDIBColorDepth = 32) And (FreeImage_GetBPP(fi_Handle) = 24) Then dstDIB.ForceNewAlpha 255
+        If (dstDIB.GetDIBColorDepth = 32) And (FreeImage_GetBPP(fi_Handle) = 24) Then dstDIB.ForceNewAlpha 255
         
     Else
         Debug.Print "WARNING!  Destination DIB is empty or FreeImage handle is null.  Cannot proceed with painting."
@@ -1416,7 +1406,7 @@ Private Function ConvertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     
     'Create a FreeImage object from our pdDIB object, then release our pdDIB copy
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.GetDIBDC)
     
     Set tmpDIB = Nothing
     
@@ -1617,7 +1607,7 @@ Private Function ToneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
     
     'Create a FreeImage object from our pdDIB object, then release our pdDIB copy
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.GetDIBDC)
     
     Set tmpDIB = Nothing
     
@@ -1760,10 +1750,10 @@ Public Function FreeImageResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, By
         'Create a temporary DIB at the size of the source image
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
-        tmpDIB.createBlank srcWidth, srcHeight, srcDIB.getDIBColorDepth, 0
+        tmpDIB.createBlank srcWidth, srcHeight, srcDIB.GetDIBColorDepth, 0
         
         'Copy the relevant source portion of the image into the temporary DIB
-        BitBlt tmpDIB.getDIBDC, 0, 0, srcWidth, srcHeight, srcDIB.getDIBDC, srcX, srcY, vbSrcCopy
+        BitBlt tmpDIB.GetDIBDC, 0, 0, srcWidth, srcHeight, srcDIB.GetDIBDC, srcX, srcY, vbSrcCopy
         
         'Create a FreeImage copy of the temporary DIB
         Dim fi_DIB As Long
@@ -1782,9 +1772,9 @@ Public Function FreeImageResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, By
             'If the destinationIsBlank flag is true, we can use BitBlt in place of AlphaBlend to copy the result
             ' onto the destination DIB; this shaves off a tiny bit of time.
             If destinationIsBlank Then
-                BitBlt dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+                BitBlt dstDIB.GetDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
             Else
-                AlphaBlend dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 255 * &H10000 Or &H1000000
+                AlphaBlend dstDIB.GetDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, 255 * &H10000 Or &H1000000
             End If
             
             'With the transfer complete, release the FreeImage DIB and unload the library
@@ -1835,7 +1825,7 @@ Public Function FreeImageResizeDIBFast(ByRef dstDIB As pdDIB, ByVal dstX As Long
                 Set tmpDIB = New pdDIB
                 tmpDIB.createBlank dstWidth, dstHeight, 32, 0
                 Plugin_FreeImage.PaintFIDibToPDDib tmpDIB, returnDIB, 0, 0, dstWidth, dstHeight
-                AlphaBlend dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 255 * &H10000 Or &H1000000
+                AlphaBlend dstDIB.GetDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.GetDIBDC, 0, 0, dstWidth, dstHeight, 255 * &H10000 Or &H1000000
                 Set tmpDIB = Nothing
             End If
             
@@ -1849,7 +1839,7 @@ Public Function FreeImageResizeDIBFast(ByRef dstDIB As pdDIB, ByVal dstX As Long
     End If
     
     'If alpha is present, copy the alpha parameters between DIBs, as it will not have changed
-    dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
+    dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
     
     'Uncomment the line below to receive timing reports
     'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
@@ -1877,8 +1867,8 @@ Public Function FreeImageRotateDIBFast(ByRef srcDIB As pdDIB, ByRef dstDIB As pd
         'One of the FreeImage rotation variants requires an explicit center point; calculate one in advance.
         Dim cx As Double, cy As Double
         
-        cx = srcDIB.getDIBWidth / 2
-        cy = srcDIB.getDIBHeight / 2
+        cx = srcDIB.GetDIBWidth / 2
+        cy = srcDIB.GetDIBHeight / 2
             
         'Give FreeImage a handle to our temporary rotation image
         fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB)
@@ -1933,7 +1923,7 @@ Public Function FreeImageRotateDIBFast(ByRef srcDIB As pdDIB, ByRef dstDIB As pd
     End If
     
     'If alpha is present, copy the alpha parameters between DIBs, as it will not have changed
-    dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
+    dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
     
     'Uncomment the line below to receive timing reports
     'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
@@ -2006,7 +1996,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
         If (Not tmpDIBRequired) Then
             tmpDIBRequired = True
             Set tmpDIB = New pdDIB
-            tmpDIB.createFromExistingDIB srcDIB
+            tmpDIB.CreateFromExistingDIB srcDIB
         End If
         
         'Apply new alpha.  (This function will return false if no color matches are found; this lets us use a 24-bpp output.)
@@ -2029,7 +2019,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
         If (Not tmpDIBRequired) Then
             tmpDIBRequired = True
             Set tmpDIB = New pdDIB
-            tmpDIB.createFromExistingDIB srcDIB
+            tmpDIB.CreateFromExistingDIB srcDIB
         End If
         
         'Apply grayscale now
@@ -2050,7 +2040,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
             If (Not tmpDIBRequired) Then
                 tmpDIBRequired = True
                 Set tmpDIB = New pdDIB
-                tmpDIB.createFromExistingDIB srcDIB
+                tmpDIB.CreateFromExistingDIB srcDIB
             End If
             
             tmpDIB.ApplyAlphaCutoff alphaCutoffOrColor, , BackgroundColor
@@ -2077,9 +2067,9 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
     'We will also forcibly reduce the incoming image to 24bpp if it doesn't contain any meaningful alpha values
     If (Not reduceTo24bpp) Then
         If tmpDIBRequired Then
-            If (tmpDIB.getDIBColorDepth = 32) Then reduceTo24bpp = DIB_Handler.IsDIBAlphaBinary(tmpDIB, False)
+            If (tmpDIB.GetDIBColorDepth = 32) Then reduceTo24bpp = DIB_Handler.IsDIBAlphaBinary(tmpDIB, False)
         Else
-            If (srcDIB.getDIBColorDepth = 32) Then reduceTo24bpp = DIB_Handler.IsDIBAlphaBinary(srcDIB, False)
+            If (srcDIB.GetDIBColorDepth = 32) Then reduceTo24bpp = DIB_Handler.IsDIBAlphaBinary(srcDIB, False)
         End If
     End If
     
@@ -2090,11 +2080,11 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
         If (Not tmpDIBRequired) Then
             tmpDIBRequired = True
             Set tmpDIB = New pdDIB
-            tmpDIB.createFromExistingDIB srcDIB
+            tmpDIB.CreateFromExistingDIB srcDIB
         End If
         
         'Forcibly remove alpha now
-        If Not tmpDIB.convertTo24bpp(BackgroundColor) Then
+        If Not tmpDIB.ConvertTo24bpp(BackgroundColor) Then
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "WARNING!  GetFIDib_SpecificColorMode could not convert the incoming DIB to 24-bpp."
             #End If
@@ -2108,9 +2098,9 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
     'Create a default FreeImage handle now
     Dim fi_DIB As Long, tmpFIHandle As Long
     If tmpDIBRequired Then
-        fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+        fi_DIB = FreeImage_CreateFromDC(tmpDIB.GetDIBDC)
     Else
-        fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+        fi_DIB = FreeImage_CreateFromDC(srcDIB.GetDIBDC)
     End If
     
     #If DEBUGMODE = 1 Then
@@ -2291,7 +2281,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                     
                         'fi_DIB now contains an 8-bpp image.  We next need to find the palette index of a known transparent pixel
                         Dim transpX As Long, transpY As Long
-                        srcDIB.getTransparentLocation transpX, transpY
+                        srcDIB.GetTransparentLocation transpX, transpY
                         
                         'Use that location to retrieve the matching index from the palette; we will mark this index as transparent,
                         ' which is FreeImage's internal means of handling GIF-like transparency
@@ -2426,7 +2416,7 @@ Public Function GetExportPreview(ByRef srcFI_Handle As Long, ByRef dstDIB As pdD
                 
             End If
             
-            If Not Plugin_FreeImage.PaintFIDibToPDDib(dstDIB, fi_DIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight) Then
+            If Not Plugin_FreeImage.PaintFIDibToPDDib(dstDIB, fi_DIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight) Then
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "WARNING!  Plugin_FreeImage.PaintFIDibToPDDib failed for unknown reasons."
                 #End If

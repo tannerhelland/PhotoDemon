@@ -98,7 +98,7 @@ Private m_BatchModeActive As Boolean
 'Initialize batch preference mode.  This is used by the preferences dialog to allow us to write a whole swath of preferences in one fell swoop,
 ' without writing the updates out to file after each updated.
 ' NOTE!  You must remember to deactivate this mode when finished; otherwise, preferences may not get written out to file for that session.
-Public Sub startBatchPreferenceMode()
+Public Sub StartBatchPreferenceMode()
 
     m_BatchModeActive = True
 
@@ -110,36 +110,36 @@ End Sub
 
 'When you have finished updating multiple preferences, use this function to terminate batch mode.  The updated XML file will be
 ' immediately written to file.
-Public Sub endBatchPreferenceMode()
+Public Sub EndBatchPreferenceMode()
     m_BatchModeActive = False
     xmlEngine.writeXMLToFile PreferencesPath
 End Sub
 
 'Get the current Theme path.  Note that there are /App (program default) and /Data (userland) variants of this folder.
-Public Function getThemePath(Optional ByVal getUserThemePathInstead As Boolean = False) As String
+Public Function GetThemePath(Optional ByVal getUserThemePathInstead As Boolean = False) As String
     If getUserThemePathInstead Then
-        getThemePath = UserThemePath
+        GetThemePath = UserThemePath
     Else
-        getThemePath = ThemePath
+        GetThemePath = ThemePath
     End If
 End Function
 
 'Get the current Debug path
-Public Function getDebugPath() As String
-    getDebugPath = DebugPath
+Public Function GetDebugPath() As String
+    GetDebugPath = DebugPath
 End Function
 
 'Get the current Preset path
-Public Function getPresetPath() As String
-    getPresetPath = PresetPath
+Public Function GetPresetPath() As String
+    GetPresetPath = PresetPath
 End Function
 
 'Get/set the current Selection directory
-Public Function getSelectionPath() As String
-    getSelectionPath = SelectionPath
+Public Function GetSelectionPath() As String
+    GetSelectionPath = SelectionPath
 End Function
 
-Public Sub setSelectionPath(ByVal newSelectionPath As String)
+Public Sub SetSelectionPath(ByVal newSelectionPath As String)
     StripDirectory newSelectionPath
     newSelectionPath = FixPath(newSelectionPath)
     SelectionPath = newSelectionPath
@@ -147,11 +147,11 @@ Public Sub setSelectionPath(ByVal newSelectionPath As String)
 End Sub
 
 'Return the current Language directory
-Public Function getLanguagePath(Optional ByVal getUserLanguagePathInstead As Boolean = False) As String
+Public Function GetLanguagePath(Optional ByVal getUserLanguagePathInstead As Boolean = False) As String
     If getUserLanguagePathInstead Then
-        getLanguagePath = UserLanguagePath
+        GetLanguagePath = UserLanguagePath
     Else
-        getLanguagePath = LanguagePath
+        GetLanguagePath = LanguagePath
     End If
 End Function
 
@@ -162,7 +162,7 @@ Public Function GetTempPath() As String
 End Function
 
 'Set the current temp directory
-Public Sub setTempPath(ByVal newTempPath As String)
+Public Sub SetTempPath(ByVal newTempPath As String)
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -193,27 +193,27 @@ Public Sub setTempPath(ByVal newTempPath As String)
 End Sub
 
 'Return the current program directory
-Public Function getProgramPath() As String
-    getProgramPath = ProgramPath
+Public Function GetProgramPath() As String
+    GetProgramPath = ProgramPath
 End Function
 
 'Return the current app data directory
-Public Function getAppPath() As String
-    getAppPath = AppPath
+Public Function GetAppPath() As String
+    GetAppPath = AppPath
 End Function
 
 'Return the current user data directory
-Public Function getDataPath() As String
-    getDataPath = DataPath
+Public Function GetDataPath() As String
+    GetDataPath = DataPath
 End Function
 
 'Return the current macro directory
-Public Function getMacroPath() As String
-    getMacroPath = MacroPath
+Public Function GetMacroPath() As String
+    GetMacroPath = MacroPath
 End Function
 
 'Set the current macro directory
-Public Sub setMacroPath(ByVal newMacroPath As String)
+Public Sub SetMacroPath(ByVal newMacroPath As String)
     StripDirectory newMacroPath
     newMacroPath = FixPath(newMacroPath)
     MacroPath = newMacroPath
@@ -221,13 +221,13 @@ Public Sub setMacroPath(ByVal newMacroPath As String)
 End Sub
 
 'Return the current MRU icon directory
-Public Function getIconPath() As String
-    getIconPath = IconPath
+Public Function GetIconPath() As String
+    GetIconPath = IconPath
 End Function
 
 'Return the current update-specific temp path
-Public Function getUpdatePath() As String
-    getUpdatePath = UpdatesPath
+Public Function GetUpdatePath() As String
+    GetUpdatePath = UpdatesPath
 End Function
 
 'Initialize key program directories
@@ -317,7 +317,7 @@ Public Sub InitializePaths()
 End Sub
 
 'Load all user settings from file
-Public Sub loadUserSettings()
+Public Sub LoadUserSettings()
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -327,7 +327,7 @@ Public Sub loadUserSettings()
     
     'Start batch processing mode for preferences, which is much faster (as we don't have to go out to the hard drive
     ' for each preference access).
-    startBatchPreferenceMode
+    StartBatchPreferenceMode
         
     'Pull the temp file path from the preferences file and make sure it exists. (If it doesn't, transparently set it to
     ' the system temp path.)
@@ -366,12 +366,12 @@ Public Sub loadUserSettings()
     'Initialize a few other settings to default values, despite them not coming from the preferences file
     
     'Terminate batch preference mode before exiting
-    endBatchPreferenceMode
+    EndBatchPreferenceMode
                 
 End Sub
 
 'Reset the preferences file to its default state.  (Basically, delete any existing file, then create a new one from scratch.)
-Public Sub resetPreferences()
+Public Sub ResetPreferences()
 
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -379,7 +379,7 @@ Public Sub resetPreferences()
     If cFile.FileExist(PreferencesPath) Then cFile.KillFile PreferencesPath
     
     CreateNewPreferencesFile
-    loadUserSettings
+    LoadUserSettings
     
 End Sub
 
@@ -677,10 +677,10 @@ Public Sub SetPref_String(ByRef preferenceSection As String, ByRef preferenceNam
 End Sub
 
 'Sometimes we want to know if a value exists at all.  This function handles that.
-Public Function doesValueExist(ByRef preferenceSection As String, ByRef preferenceName As String) As Boolean
+Public Function DoesValueExist(ByRef preferenceSection As String, ByRef preferenceName As String) As Boolean
     Dim tmpString As String
     tmpString = GetPreference(preferenceSection, preferenceName)
-    doesValueExist = CBool(Len(tmpString) <> 0)
+    DoesValueExist = CBool(Len(tmpString) <> 0)
 End Function
 
 'Read a value from the preferences file and return it (as a string)
