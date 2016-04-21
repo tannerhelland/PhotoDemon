@@ -994,6 +994,11 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     'Move the dialog into place, but do not repaint it (that will be handled in a moment by the .Show event)
     MoveWindow dialogHwnd, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
     
+    'Mirror the current run-time window icons to the dialog; this allows the icons to appear in places like Alt+Tab
+    ' on older OSes, even though a toolbox window has focus.
+    If (Not g_IsWin8OrLater) Then g_WindowManager.ForceWindowAppearInAltTab dialogHwnd, True
+    MirrorCurrentIconsToWindow dialogHwnd
+    
     'Use VB to actually display the dialog.  Note that the sub will pause here until the form is closed.
     dialogForm.Show dialogModality, FormMain
     
@@ -1362,7 +1367,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     ' during the above eControl.UpdateAgainstCurrentTheme step.  This translation step only handles the form caption (which must be
     ' set specially), and some other oddities like menus, which have not been replaced yet.
     ' TODO 6.8: once all controls are migrated, consider killing this step entirely, and moving the specialized translation bits here.
-    If g_Language.translationActive And dstForm.Enabled Then
+    If g_Language.TranslationActive And dstForm.Enabled Then
         g_Language.ApplyTranslations dstForm, useDoEvents
     End If
     
@@ -1535,8 +1540,8 @@ Public Function PDMsgBox(ByVal pMessage As String, ByVal pButtons As VbMsgBoxSty
 
     'All messages are translatable, but we don't want to translate them if the translation object isn't ready yet
     If (Not (g_Language Is Nothing)) Then
-        If g_Language.readyToTranslate Then
-            If g_Language.translationActive Then
+        If g_Language.ReadyToTranslate Then
+            If g_Language.TranslationActive Then
                 newMessage = g_Language.TranslateMessage(pMessage)
                 newTitle = g_Language.TranslateMessage(pTitle)
             End If
@@ -1609,8 +1614,8 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         ' This only happens for a few messages when the program is first loaded, and at some point, I will eventually getting
         ' around to removing them entirely.
         If (Not (g_Language Is Nothing)) Then
-            If g_Language.readyToTranslate Then
-                If g_Language.translationActive Then newString = g_Language.TranslateMessage(mString)
+            If g_Language.ReadyToTranslate Then
+                If g_Language.TranslationActive Then newString = g_Language.TranslateMessage(mString)
             End If
         End If
         
@@ -1739,7 +1744,7 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
     'Create the target DIB
     Set GetRuntimeUIDIB = New pdDIB
     GetRuntimeUIDIB.createBlank dibSize, dibSize, 32, BackColor, 0
-    GetRuntimeUIDIB.setInitialAlphaPremultiplicationState True
+    GetRuntimeUIDIB.SetInitialAlphaPremultiplicationState True
     
     Dim paintColor As Long
     
@@ -1758,7 +1763,7 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
             End If
             
             'Draw a colored circle just within the bounds of the DIB
-            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.getDIBDC, dibPadding, dibPadding, dibSize - dibPadding * 2, dibSize - dibPadding * 2, paintColor, True
+            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibPadding, dibPadding, dibSize - dibPadding * 2, dibSize - dibPadding * 2, paintColor, True
         
         'The RGB DIB is a triad of the individual RGB circles
         Case PDRUID_CHANNEL_RGB
@@ -1767,9 +1772,9 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
             Dim circleSize As Long
             circleSize = (dibSize - dibPadding) * 0.55
             
-            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.getDIBDC, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.GetThemeColor(PDTC_CHANNEL_BLUE), True, 210
-            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.getDIBDC, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.GetThemeColor(PDTC_CHANNEL_GREEN), True, 210
-            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.getDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, g_Themer.GetThemeColor(PDTC_CHANNEL_RED), True, 210
+            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.GetThemeColor(PDTC_CHANNEL_BLUE), True, 210
+            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.GetThemeColor(PDTC_CHANNEL_GREEN), True, 210
+            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, g_Themer.GetThemeColor(PDTC_CHANNEL_RED), True, 210
     
     End Select
     
@@ -1779,15 +1784,15 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
 End Function
 
 'New test functions to (hopefully) help address high-DPI issues where VB's internal scale properties report false values
-Public Function APIWidth(ByVal srcHwnd As Long) As Long
+Public Function APIWidth(ByVal srcHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect srcHwnd, tmpRect
+    GetWindowRect srcHWnd, tmpRect
     APIWidth = tmpRect.x2 - tmpRect.x1
 End Function
 
-Public Function APIHeight(ByVal srcHwnd As Long) As Long
+Public Function APIHeight(ByVal srcHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect srcHwnd, tmpRect
+    GetWindowRect srcHWnd, tmpRect
     APIHeight = tmpRect.y2 - tmpRect.y1
 End Function
 
@@ -1955,9 +1960,9 @@ Public Sub ShowDisabledPreviewImage(ByRef dstPreview As pdFxPreviewCtl)
     notifyFont.SetFontBold True
     notifyFont.SetTextAlignment vbCenter
     notifyFont.CreateFontObject
-    notifyFont.AttachToDC tmpDIB.getDIBDC
+    notifyFont.AttachToDC tmpDIB.GetDIBDC
 
-    notifyFont.FastRenderText tmpDIB.getDIBWidth \ 2, tmpDIB.getDIBHeight \ 2, g_Language.TranslateMessage("preview not available")
+    notifyFont.FastRenderText tmpDIB.GetDIBWidth \ 2, tmpDIB.GetDIBHeight \ 2, g_Language.TranslateMessage("preview not available")
     dstPreview.SetOriginalImage tmpDIB
     dstPreview.SetFXImage tmpDIB
     

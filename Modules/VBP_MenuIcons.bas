@@ -717,7 +717,7 @@ Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long 
     
     'If the iconSize parameter is 0, use the current DIB's dimensions.  Otherwise, resize it as requested.
     If iconSize = 0 Then
-        iconSize = srcDIB.getDIBWidth
+        iconSize = srcDIB.GetDIBWidth
     Else
         fi_DIB = FreeImage_RescaleByPixel(fi_DIB, iconSize, iconSize, True, FILTER_BILINEAR)
     End If
@@ -883,13 +883,13 @@ Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVa
             Dim dpiDIB As pdDIB
             Set dpiDIB = New pdDIB
             
-            dpiDIB.createFromExistingDIB resDIB
+            dpiDIB.CreateFromExistingDIB resDIB
             
             'Erase and resize the primary DIB
-            resDIB.createBlank FixDPI(dpiDIB.getDIBWidth), FixDPI(dpiDIB.getDIBHeight), dpiDIB.getDIBColorDepth
+            resDIB.createBlank FixDPI(dpiDIB.GetDIBWidth), FixDPI(dpiDIB.GetDIBHeight), dpiDIB.GetDIBColorDepth
             
             'Use GDI+ to resize the cursor from dpiDIB into resDIB
-            GDIPlusResizeDIB resDIB, 0, 0, resDIB.getDIBWidth, resDIB.getDIBHeight, dpiDIB, 0, 0, dpiDIB.getDIBWidth, dpiDIB.getDIBHeight, InterpolationModeNearestNeighbor
+            GDIPlusResizeDIB resDIB, 0, 0, resDIB.GetDIBWidth, resDIB.GetDIBHeight, dpiDIB, 0, 0, dpiDIB.GetDIBWidth, dpiDIB.GetDIBHeight, InterpolationModeNearestNeighbor
         
             'Release our temporary DIB
             Set dpiDIB = Nothing
@@ -901,7 +901,7 @@ Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVa
         '  the presence of a mask bitmap, so we have to submit one even if we want the PNG's alpha channel
         '  used for transparency!)
         Dim monoBmp As Long
-        monoBmp = CreateBitmap(resDIB.getDIBWidth, resDIB.getDIBHeight, 1, 1, ByVal 0&)
+        monoBmp = CreateBitmap(resDIB.GetDIBWidth, resDIB.GetDIBHeight, 1, 1, ByVal 0&)
         
         'Create an icon header and point it at our temp mask bitmap and our PNG resource
         Dim icoInfo As ICONINFO
@@ -910,7 +910,7 @@ Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVa
             .xHotspot = FixDPI(curHotspotX)
             .yHotspot = FixDPI(curHotspotY)
             .hbmMask = monoBmp
-            .hbmColor = resDIB.getDIBHandle
+            .hbmColor = resDIB.GetDIBHandle
         End With
                     
         'Create the cursor
@@ -1107,7 +1107,7 @@ Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
             'If the image has an alpha channel, create a 32bpp DIB to receive it
             If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
                 dstDIB.createBlank tmpRect.Width, tmpRect.Height, 32
-                dstDIB.setInitialAlphaPremultiplicationState True
+                dstDIB.SetInitialAlphaPremultiplicationState True
             Else
                 dstDIB.createBlank tmpRect.Width, tmpRect.Height, 24
             End If
@@ -1124,7 +1124,7 @@ Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
                 oldBitmap = SelectObject(gdiDC, hBitmap)
                 
                 'Copy the GDI+ bitmap into the DIB
-                BitBlt dstDIB.getDIBDC, 0, 0, tmpRect.Width, tmpRect.Height, gdiDC, 0, 0, vbSrcCopy
+                BitBlt dstDIB.GetDIBDC, 0, 0, tmpRect.Width, tmpRect.Height, gdiDC, 0, 0, vbSrcCopy
                 
                 'Release the original DDB and temporary device context
                 SelectObject gdiDC, oldBitmap
@@ -1162,6 +1162,21 @@ Public Sub ChangeAppIcons(ByVal hIconSmall As Long, ByVal hIconLarge As Long)
     If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
     SendMessageA FormMain.hWnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall
     SendMessageA FormMain.hWnd, WM_SETICON, ICON_BIG, ByVal hIconLarge
+End Sub
+
+'When loading a modal dialog, the dialog will not have an icon by default.  We can assign an icon at run-time to ensure that icons
+' appear in the Alt+Tab dialog of older OSes.
+Public Sub ChangeWindowIcon(ByVal targetHWnd As Long, ByVal hIconSmall As Long, ByVal hIconLarge As Long)
+    SendMessageA targetHWnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall
+    SendMessageA targetHWnd, WM_SETICON, ICON_BIG, ByVal hIconLarge
+End Sub
+
+Public Sub MirrorCurrentIconsToWindow(ByVal targetHWnd As Long)
+    If (g_OpenImageCount > 0) Then
+        ChangeWindowIcon targetHWnd, pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
+    Else
+        ChangeWindowIcon targetHWnd, m_DefaultIconSmall, m_DefaultIconLarge
+    End If
 End Sub
 
 'When all images are unloaded (or when the program is first loaded), we must reset the program icon to its default values.
