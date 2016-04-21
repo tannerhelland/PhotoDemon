@@ -22,7 +22,7 @@ Private Declare Function compress Lib "zlibwapi" (Dest As Any, destLen As Any, s
 Private Declare Function uncompress Lib "zlibwapi" (Dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
 Private Declare Function zlibVersion Lib "zlibwapi" () As Long
 
-'A single zLib handle is maintained for the life of a PD instance; see initializeZLib and releaseZLib, below.
+'A single zLib handle is maintained for the life of a PD instance; see InitializeZLib and ReleaseZLib, below.
 Private m_ZLibHandle As Long
 
 'Initialize zLib.  Do not call this until you have verified zLib's existence (typically via the PluginManager module)
@@ -44,8 +44,8 @@ Public Function InitializeZLib() As Boolean
 End Function
 
 'When PD closes, make sure to release our open zLib handle!
-Public Sub releaseZLib()
-    If m_ZLibHandle <> 0 Then FreeLibrary m_ZLibHandle
+Public Sub ReleaseZLib()
+    If (m_ZLibHandle <> 0) Then FreeLibrary m_ZLibHandle
     g_ZLibEnabled = False
 End Sub
 
