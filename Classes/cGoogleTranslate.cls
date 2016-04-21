@@ -20,8 +20,8 @@ Attribute VB_Exposed = False
 'Google Translate Interface
 'Copyright 2013-2016 by Frank Donckers
 'Created: 19/February/13
-'Last updated: 10/September/13
-'Last update: (by Tanner) moved all relevant code into this singular class, various minor modifications
+'Last updated: 20/April/16
+'Last update: add failsafe error-checking if IE is not installed.  (Thank you to Chen Lin for reporting!)
 '
 'This class requires your project to have a reference to the Microsoft Scripting Library (scrrun.dll).
 '
@@ -59,14 +59,19 @@ End Sub
 
 Private Sub Class_Initialize()
     
+    On Error GoTo IENotAvailable
+    
     'Prepare an Internet Explorer scripting object
     If Not (ie Is Nothing) Then
         ie.quit
         Set ie = Nothing
     End If
     
+    'IE is now uninstallable, so it is possible for this line to fail
     Set ie = CreateObject("InternetExplorer.application")
     ie.Visible = False
+    
+IENotAvailable:
     
     'By default, translate from English to English
     srcLanguage = "en"
@@ -77,14 +82,16 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-    ie.quit
+    If Not (ie Is Nothing) Then ie.quit
     Set ie = Nothing
 End Sub
 
 'Given a string, return the Google Translate equivalent (per the set source and destination language codes).
 ' Optionally, the HTML of the translation can also be returned for further parsing.
-Public Function getGoogleTranslation(ByVal srcText As String, Optional ByRef copyOfHtml As String) As String
-
+Public Function GetGoogleTranslation(ByVal srcText As String, Optional ByRef copyOfHtml As String) As String
+    
+    On Error GoTo NoTranslationAvailable
+    
     Dim origHTML As String, processedHTML As String
     origHTML = ""
     processedHTML = ""
@@ -98,7 +105,7 @@ Public Function getGoogleTranslation(ByVal srcText As String, Optional ByRef cop
     If InStr(srcText, vbLf) <> 0 Then srcText = Replace(srcText, vbLf, "VBCRLF")
     If InStr(srcText, vbCr) <> 0 Then srcText = Replace(srcText, vbCr, "VBCRLF")
     
-    getGoogleTranslation = ""
+    GetGoogleTranslation = ""
     
     'If translation fails, we will try again twice.  (Could be changed to as many times as you want, but twice is sufficient IMO.)
     Dim numOfRetries As Long
@@ -145,7 +152,7 @@ RetryTranslation:
     If InStr(origHTML, "VBCRLF") <> 0 Then origHTML = Replace(origHTML, "VBCRLF", vbCrLf)
     
     'Remove all irrelevant HTML tags
-    processedHTML = stripHTMLTags(origHTML)
+    processedHTML = StripHTMLTags(origHTML)
     
     'Finally, fix some weird quirks of the Google translate service.  For example, spaces are frequently
     ' added to translated text for no good reason - so remove these in an attempt to preserve the original
@@ -168,8 +175,10 @@ RetryTranslation:
     If InStr(processedHTML, ChrW$(174)) <> 0 Then processedHTML = Replace(processedHTML, ChrW$(174), "'", 1, , vbTextCompare)
     If InStr(processedHTML, ChrW$(175)) <> 0 Then processedHTML = Replace(processedHTML, ChrW$(175), "'", 1, , vbTextCompare)
     
+NoTranslationAvailable:
+    
     'Return the translated data
-    getGoogleTranslation = processedHTML
+    GetGoogleTranslation = processedHTML
     
     'Optionally, return the original translation HTML as well.
     copyOfHtml = origHTML
@@ -178,38 +187,42 @@ End Function
 
 'Simple function to strip all HTML tags from a string.  Angle brackets that are part of content should
 ' (mostly) be properly preserved by this function.
-Private Function stripHTMLTags(ByVal srcString As String) As String
-
-    Dim curPosition As Long
-    curPosition = InStr(1, srcString, "<")
+Private Function StripHTMLTags(ByVal srcString As String) As String
     
-    Dim closePosition As Long, nextPosition As Long
+    If (Len(srcString) <> 0) Then
     
-    Do While curPosition > 0
+        Dim curPosition As Long
+        curPosition = InStr(1, srcString, "<")
         
-        'curPosition points to the location of a "<" sign.  We need to find the matching close bracket, with the
-        ' following condition: if we find another "<" sign before finding a ">" sign, this "<" sign is part of
-        ' the document content - so do not remove it.
+        Dim closePosition As Long, nextPosition As Long
         
-        'Find the close bracket
-        closePosition = InStr(curPosition + 1, srcString, ">")
+        Do While curPosition > 0
+            
+            'curPosition points to the location of a "<" sign.  We need to find the matching close bracket, with the
+            ' following condition: if we find another "<" sign before finding a ">" sign, this "<" sign is part of
+            ' the document content - so do not remove it.
+            
+            'Find the close bracket
+            closePosition = InStr(curPosition + 1, srcString, ">")
+            
+            'Find the next "<"
+            nextPosition = InStr(curPosition + 1, srcString, "<")
+            If nextPosition = 0 Then nextPosition = Len(srcString) + 1
+            
+            If closePosition < nextPosition Then
+            
+                'Remove this tag
+                srcString = Left$(srcString, curPosition - 1) & Right$(srcString, Len(srcString) - closePosition)
+            
+            End If
         
-        'Find the next "<"
-        nextPosition = InStr(curPosition + 1, srcString, "<")
-        If nextPosition = 0 Then nextPosition = Len(srcString) + 1
+            'Find the next occurrence
+            curPosition = InStr(curPosition, srcString, "<")
         
-        If closePosition < nextPosition Then
-        
-            'Remove this tag
-            srcString = Left$(srcString, curPosition - 1) & Right$(srcString, Len(srcString) - closePosition)
-        
-        End If
+        Loop
     
-        'Find the next occurrence
-        curPosition = InStr(curPosition, srcString, "<")
+    End If
     
-    Loop
-    
-    stripHTMLTags = srcString
+    StripHTMLTags = srcString
 
 End Function
