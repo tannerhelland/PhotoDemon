@@ -37,17 +37,17 @@ Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_C
 Public Function convertEntireDIBToLabColor(ByRef srcDIB As pdDIB, ByRef dstArray() As Single) As Boolean
 
     'This only works on 24bpp images; exit prematurely on 32bpp encounters
-    If srcDIB.getDIBColorDepth = 32 Then
+    If srcDIB.GetDIBColorDepth = 32 Then
         convertEntireDIBToLabColor = False
         Exit Function
     End If
 
     'Redim the destination array to proper dimensions
-    ReDim dstArray(0 To srcDIB.getDIBArrayWidth, 0 To srcDIB.getDIBHeight) As Single
+    ReDim dstArray(0 To srcDIB.GetDIBArrayWidth, 0 To srcDIB.GetDIBHeight) As Single
     
     'Request a pointer to the source dib
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcDIB
+    PrepSafeArray tmpSA, srcDIB
     
     Dim ImageData() As Byte
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
@@ -55,8 +55,8 @@ Public Function convertEntireDIBToLabColor(ByRef srcDIB As pdDIB, ByRef dstArray
     'Iterate through the image, converting colors as we go
     Dim x As Long, y As Long, finalX As Long, finalY As Long, quickX As Long
     
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
     
     Dim r As Long, g As Long, b As Long
     Dim labL As Double, labA As Double, labB As Double
@@ -137,7 +137,7 @@ Public Function getColorDepthFromColorCount(ByVal srcColors As Long, ByRef refDI
         
     Else
     
-        If refDIB.getDIBColorDepth = 24 Then
+        If refDIB.GetDIBColorDepth = 24 Then
             getColorDepthFromColorCount = 24
         Else
             getColorDepthFromColorCount = 32
@@ -161,18 +161,18 @@ Public Function GetQuickColorCount(ByRef srcDIB As pdDIB, Optional ByVal imageID
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcDIB
+    PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, finalX As Long, finalY As Long
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = (srcDIB.getDIBColorDepth) \ 8
+    qvDepth = (srcDIB.GetDIBColorDepth) \ 8
     
     'This array will track whether or not a given color has been detected in the image. (I don't know if powers of two
     ' are allocated more efficiently, but it doesn't hurt to stick to that rule.)

@@ -219,6 +219,10 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
         Case CCP_EZTwain
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_Scanner_Interface.GetEZTwainVersion()
         
+        'LittleCMS provides a dedicated version-checking function
+        Case CCP_LittleCMS
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = LittleCMS.GetLCMSVersion()
+        
         'OptiPNG can write its version number to stdout
         Case CCP_OptiPNG
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_OptiPNG.GetOptiPNGVersion()
@@ -433,10 +437,10 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
     Dim initializationSuccessful As Boolean
     
     Select Case pluginEnumID
-    
+        
+        'Unlike most plugins, ExifTool is an .exe file.  Because we interact with it asynchronously, we start it now, then leave
+        ' it in "wait" mode.
         Case CCP_ExifTool
-            'Unlike most plugins, ExifTool is an .exe file.  Because we interact with it asynchronously, we start it now, then leave
-            ' it in "wait" mode.
             
             'Crashes (or IDE stop button use) can result in stranded ExifTool instances.  As a convenience to the caller, we attempt
             ' to kill any stranded instances before starting new ones.
@@ -453,13 +457,13 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         Case CCP_EZTwain
             initializationSuccessful = True
         
+        'FreeImage maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_FreeImage
-            'FreeImage maintains a program-wide handle for the life of the program, which we attempt to generate now.
             initializationSuccessful = Plugin_FreeImage.InitializeFreeImage()
         
-        'TODO!
+        'LittleCMS maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_LittleCMS
-            initializationSuccessful = True
+            initializationSuccessful = LittleCMS.InitializeLCMS()
         
         'TODO!
         Case CCP_OptiPNG

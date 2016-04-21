@@ -2910,7 +2910,7 @@ Public Function IsGDIPlusAvailable() As Boolean
 End Function
 
 'At shutdown, this function must be called to release our GDI+ instance
-Public Function releaseGDIPlus()
+Public Function ReleaseGDIPlus()
 
     'Release any dummy containers we have created
     GdipDeleteGraphics m_TransformGraphics

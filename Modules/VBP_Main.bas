@@ -683,10 +683,17 @@ Public Sub FinalShutdown()
         
     End If
     
+    'Release LittleCMS (if available)
+    LittleCMS.ReleaseLCMS
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "LittleCMS released"
+    #End If
+    
     'Release zLib (if available)
     If g_ZLibEnabled Then
     
-        Plugin_zLib_Interface.releaseZLib
+        Plugin_zLib_Interface.ReleaseZLib
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "zLib released"
@@ -697,7 +704,7 @@ Public Sub FinalShutdown()
     'Release GDIPlus (if applicable)
     If g_ImageFormats.GDIPlusEnabled Then
         
-        releaseGDIPlus
+        ReleaseGDIPlus
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "GDI+ released"
