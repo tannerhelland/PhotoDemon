@@ -223,17 +223,17 @@ Private Const WM_GETTEXTLENGTH = &HE
 Private Const WM_SETTEXT = &HC
 
 'APIs for changing window style
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
-Private Declare Function GetParent Lib "user32" (ByVal targetHwnd As Long) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long) As Long
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Function GetParent Lib "user32" (ByVal targetHWnd As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long) As Long
-Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
-Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
-Private Declare Function AnimateWindow Lib "user32" (ByVal targetHwnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
+Private Declare Function InvalidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
+Private Declare Function UpdateWindow Lib "user32" (ByVal targetHWnd As Long) As Long
+Private Declare Function AnimateWindow Lib "user32" (ByVal targetHWnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
 Private Declare Function GetFocus Lib "user32" () As Long
-Private Declare Function SetFocus Lib "user32" (ByVal targetHwnd As Long) As Long
+Private Declare Function SetFocus Lib "user32" (ByVal targetHWnd As Long) As Long
 Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByVal lprcUpdateRectPtr As Long, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
 
 'RedrawWindow API constants
@@ -319,7 +319,7 @@ End Type
 Private Type MINMAXINFO
     Reserved As POINTL
     MaxSize As POINTL
-    MaxPosition As POINTL
+    maxPosition As POINTL
     MinTrackSize As POINTL
     MaxTrackSize As POINTL
 End Type
@@ -332,15 +332,15 @@ Private m_tmpMinMax As MINMAXINFO
 
 'The VB-specific "Form.Caption = <string>" statement isn't Unicode-compatible.  It also has the quirk of causing a docked child form
 ' to un-dock.  Thus, all caption requests must be passed through the window manager, who will then use the API to change caption text.
-Public Sub SetWindowCaptionW(ByRef targetHwnd As Long, ByRef newCaption As String)
-    DefWindowProcW targetHwnd, WM_SETTEXT, 0&, ByVal StrPtr(newCaption)
+Public Sub SetWindowCaptionW(ByRef targetHWnd As Long, ByRef newCaption As String)
+    DefWindowProcW targetHWnd, WM_SETTEXT, 0&, ByVal StrPtr(newCaption)
 End Sub
 
-Public Sub SetVisibilityByHWnd(ByVal srcHwnd As Long, ByVal visibilityState As Boolean, Optional ByVal activateWindowToo As Boolean = False)
+Public Sub SetVisibilityByHWnd(ByVal srcHWnd As Long, ByVal visibilityState As Boolean, Optional ByVal activateWindowToo As Boolean = False)
     If visibilityState Then
-        If activateWindowToo Then ShowWindow srcHwnd, SW_RESTORE Else ShowWindow srcHwnd, SW_SHOWNA
+        If activateWindowToo Then ShowWindow srcHWnd, SW_RESTORE Else ShowWindow srcHWnd, SW_SHOWNA
     Else
-        ShowWindow srcHwnd, SW_HIDE
+        ShowWindow srcHWnd, SW_HIDE
     End If
 End Sub
 
@@ -348,31 +348,31 @@ Public Sub SetEnablementByHWnd(ByVal dstHwnd As Long, ByVal enabledState As Bool
     EnableWindow dstHwnd, IIf(enabledState, 1&, 0&)
 End Sub
 
-Friend Sub GetClientWinRect(ByVal srcHwnd As Long, ByRef dstRect As winRect)
-    GetClientRect srcHwnd, dstRect
+Friend Sub GetClientWinRect(ByVal srcHWnd As Long, ByRef dstRect As winRect)
+    GetClientRect srcHWnd, dstRect
 End Sub
 
-Public Function GetClientWidth(ByVal targetHwnd As Long) As Long
+Public Function GetClientWidth(ByVal targetHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetClientRect targetHwnd, tmpRect
+    GetClientRect targetHWnd, tmpRect
     GetClientWidth = tmpRect.x2
 End Function
 
-Public Function GetClientHeight(ByVal targetHwnd As Long) As Long
+Public Function GetClientHeight(ByVal targetHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetClientRect targetHwnd, tmpRect
+    GetClientRect targetHWnd, tmpRect
     GetClientHeight = tmpRect.y2
 End Function
 
-Private Function GetWindowWidth(ByVal targetHwnd As Long) As Long
+Private Function GetWindowWidth(ByVal targetHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect targetHwnd, tmpRect
+    GetWindowRect targetHWnd, tmpRect
     GetWindowWidth = tmpRect.x2 - tmpRect.x1
 End Function
 
-Private Function GetWindowHeight(ByVal targetHwnd As Long) As Long
+Private Function GetWindowHeight(ByVal targetHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect targetHwnd, tmpRect
+    GetWindowRect targetHWnd, tmpRect
     GetWindowHeight = tmpRect.y2 - tmpRect.y1
 End Function
 
@@ -446,26 +446,26 @@ Public Sub DeactivateToolPanel(ByVal programIsGoingDown As Boolean, Optional ByV
     'By default, this function will automatically apply the new settings to the last tool options panel it created.
     ' However, the caller can specify a custom hWnd if they so desire.  (PD uses this when the program is closing,
     ' so the window manager can reset all necessary window bits, allowing VB to close the window normally.)
-    Dim targetHwnd As Long
-    If useCustomHwnd = 0 Then targetHwnd = m_CurrentToolPanelHwnd Else targetHwnd = useCustomHwnd
+    Dim targetHWnd As Long
+    If useCustomHwnd = 0 Then targetHWnd = m_CurrentToolPanelHwnd Else targetHWnd = useCustomHwnd
     
     'Release the parent reference for the previous activated tool panel
-    If targetHwnd <> 0 Then
+    If targetHWnd <> 0 Then
         
         If programIsGoingDown Then
             
-            If GetParent(targetHwnd) <> 0 Then
+            If GetParent(targetHWnd) <> 0 Then
                 
                 'This is a dirty cheat, but basically, this function restores the initial WindowLong GWL_STYLE flags the window had
                 ' when it was first passed to the window manager.  This lets us reset the window state to whatever VB's defaults are,
                 ' which reduces the risk for error as we shut the program down.
-                SetWindowLong targetHwnd, GWL_STYLE, m_ToolPanelDictionary.GetEntry_Long(targetHwnd, GetWindowLong(targetHwnd, GWL_STYLE))
+                SetWindowLong targetHWnd, GWL_STYLE, m_ToolPanelDictionary.GetEntry_Long(targetHWnd, GetWindowLong(targetHWnd, GWL_STYLE))
                 
             End If
             
         End If
         
-        Me.SetVisibilityByHWnd targetHwnd, False
+        Me.SetVisibilityByHWnd targetHWnd, False
         
     End If
     
@@ -504,6 +504,24 @@ End Sub
 Public Sub ForceWindowRepaint(ByVal hWnd As Long)
     InvalidateRect hWnd, ByVal 0&, 0&
     UpdateWindow hWnd
+End Sub
+
+'By default, tool windows do not show up in the taskbar or in the Alt+Tab rotation.  Thanks to excellent debug work by Chen Lin,
+' this is a problem on older OSes that only display window icons in the Alt+Tab rotation.  We can work around this problem by
+' manually setting the WS_EX_APPWINDOW bit after a window is created, but before the window is shown.
+Public Sub ForceWindowAppearInAltTab(ByVal srcHWnd As Long, ByVal appearState As Boolean)
+    
+    Dim curExStyle As Long
+    curExStyle = GetWindowLong(srcHWnd, GWL_EXSTYLE)
+    
+    If appearState Then
+        curExStyle = curExStyle Or WS_EX_APPWINDOW
+    Else
+        curExStyle = curExStyle And (Not WS_EX_APPWINDOW)
+    End If
+    
+    SetWindowLong srcHWnd, GWL_EXSTYLE, curExStyle
+    
 End Sub
 
 'The first time PhotoDemon is run, this sub can be called to nicely center the window on the user's primary monitor.
@@ -574,7 +592,7 @@ Public Function RestoreWindowLocation(ByVal windowIndex As Long, ByVal preferred
     'Start by looking for this form's location data in the XML engine.
     
     'If an entry is found, restore the window to that location.
-    If xmlEngine.doesTagExist("windowEntry", "id", pdWindows(windowIndex).windowName) Then
+    If xmlEngine.DoesTagExist("windowEntry", "id", pdWindows(windowIndex).windowName) Then
     
         'Retrieve this window's location data from the XML file.
         With pdWindows(windowIndex)
@@ -656,7 +674,7 @@ Public Function SaveAllWindowLocations() As Boolean
     For i = 0 To numOfPDWindows - 1
     
         'Check for this window preset in the file.  If it does not exist, add it now.
-        If Not xmlEngine.doesTagExist("windowEntry", "id", pdWindows(i).windowName) Then
+        If Not xmlEngine.DoesTagExist("windowEntry", "id", pdWindows(i).windowName) Then
         
             xmlEngine.writeTagWithAttribute "windowEntry", "id", pdWindows(i).windowName, "", True
             xmlEngine.closeTag "windowEntry"
@@ -802,7 +820,7 @@ Private Sub Class_Initialize()
     
     'Prepare the XML handler, and retrieve window location data from file (if it exists)
     Set xmlEngine = New pdXML
-    windowDataPath = g_UserPreferences.getPresetPath & "Program_WindowLocations.xml"
+    windowDataPath = g_UserPreferences.GetPresetPath & "Program_WindowLocations.xml"
     LoadAllWindowLocations
     
     'To prevent circular redraws, we disable certain subclassing when we know we are responsible for triggering the window messages.  Initialize
@@ -826,10 +844,10 @@ End Sub
 
 'Use this function to set minimum and/or maximum sizes for any arbitrary window.  (Note that this requires us to subclass
 ' the window in question; plan accordingly!)
-Friend Sub RequestMinMaxTracking(ByVal srcHwnd As Long, Optional ByVal internalID As Long, Optional ByVal minWidth As Long = 0, Optional ByVal minHeight As Long = 0, Optional ByVal maxWidth As Long = 0, Optional ByVal maxHeight As Long = 0)
+Friend Sub RequestMinMaxTracking(ByVal srcHWnd As Long, Optional ByVal internalID As Long, Optional ByVal minWidth As Long = 0, Optional ByVal minHeight As Long = 0, Optional ByVal maxWidth As Long = 0, Optional ByVal maxHeight As Long = 0)
 
     With m_MinMaxEntries(m_numOfMinMaxEntries)
-        .hWnd = srcHwnd
+        .hWnd = srcHWnd
         .internalID = internalID
         .minWidth = minWidth
         .minHeight = minHeight
@@ -844,8 +862,8 @@ Friend Sub RequestMinMaxTracking(ByVal srcHwnd As Long, Optional ByVal internalI
     
     'Unfortunately, there's no simple way to set min/max values in advance.  Instead, we must subclass the window, and respond
     ' to any received WM_GETMINMAXINFO messages.
-    cSubclass.ssc_Subclass srcHwnd, , 1, Me
-    cSubclass.ssc_AddMsg srcHwnd, MSG_BEFORE, WM_GETMINMAXINFO
+    cSubclass.ssc_Subclass srcHWnd, , 1, Me
+    cSubclass.ssc_AddMsg srcHWnd, MSG_BEFORE, WM_GETMINMAXINFO
 
 End Sub
 
