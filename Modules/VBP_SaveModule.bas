@@ -237,22 +237,25 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
         Select Case outputPDIF
             
             Case PDIF_BMP
-                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptBMPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                GetExportParamsFromDialog = CBool(DialogManager.PromptBMPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
             Case PDIF_GIF
-                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptGIFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                GetExportParamsFromDialog = CBool(DialogManager.PromptGIFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
             Case PDIF_JPEG
-                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptJPEGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                GetExportParamsFromDialog = CBool(DialogManager.PromptJPEGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 
             Case PDIF_JP2
-                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptJP2Settings(srcImage, dstParamString) = vbOK)
+                GetExportParamsFromDialog = CBool(DialogManager.PromptJP2Settings(srcImage, dstParamString) = vbOK)
+                
+            Case PDIF_PNG
+                GetExportParamsFromDialog = CBool(DialogManager.PromptPNGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 
             Case PDIF_WEBP
-                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptWebPSettings(srcImage, dstParamString) = vbOK)
+                GetExportParamsFromDialog = CBool(DialogManager.PromptWebPSettings(srcImage, dstParamString) = vbOK)
                 
             Case PDIF_JXR
-                GetExportParamsFromDialog = CBool(Dialog_Handler.PromptJXRSettings(srcImage, dstParamString) = vbOK)
+                GetExportParamsFromDialog = CBool(DialogManager.PromptJXRSettings(srcImage, dstParamString) = vbOK)
         
         End Select
         
@@ -372,20 +375,20 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     ' and storing everything to a running byte stream.
     Dim pdiWriter As pdPackager
     Set pdiWriter = New pdPackager
-    pdiWriter.init_ZLib "", True, g_ZLibEnabled
+    pdiWriter.Init_ZLib "", True, g_ZLibEnabled
     
     'When creating the actual package, we specify numOfLayers + 1 nodes.  The +1 is for the pdImage header itself, which
     ' gets its own node, separate from the individual layer nodes.
-    pdiWriter.prepareNewPackage srcPDImage.GetNumOfLayers + 1, PD_IMAGE_IDENTIFIER, srcPDImage.estimateRAMUsage
+    pdiWriter.PrepareNewPackage srcPDImage.GetNumOfLayers + 1, PD_IMAGE_IDENTIFIER, srcPDImage.estimateRAMUsage
         
     'The first node we'll add is the pdImage header, in XML format.
     Dim nodeIndex As Long
-    nodeIndex = pdiWriter.addNode("pdImage Header", -1, 0)
+    nodeIndex = pdiWriter.AddNode("pdImage Header", -1, 0)
     
     Dim dataString As String
     srcPDImage.WriteExternalData dataString, True
     
-    pdiWriter.addNodeDataFromString nodeIndex, True, dataString, compressHeaders, , embedChecksums
+    pdiWriter.AddNodeDataFromString nodeIndex, True, dataString, compressHeaders, , embedChecksums
     
     'The pdImage header only requires one of the two buffers in its node; the other can be happily left blank.
     
@@ -400,14 +403,14 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     
         'Create a new node for this layer.  Note that the index is stored directly in the node name ("pdLayer (n)")
         ' while the layerID is stored as the nodeID.
-        nodeIndex = pdiWriter.addNode("pdLayer " & i, srcPDImage.GetLayerByIndex(i).getLayerID, 1)
+        nodeIndex = pdiWriter.AddNode("pdLayer " & i, srcPDImage.GetLayerByIndex(i).getLayerID, 1)
         
         'Retrieve the layer header and add it to the header section of this node.
         ' (Note: compression level of text data, like layer headers, is not controlled by the user.  For short strings like
         '        these headers, there is no meaningful gain from higher compression settings, but higher settings kills
         '        performance, so we stick with the default recommended zLib compression level.)
         layerXMLHeader = srcPDImage.GetLayerByIndex(i).getLayerHeaderAsXML(True)
-        pdiWriter.addNodeDataFromString nodeIndex, True, layerXMLHeader, compressHeaders, , embedChecksums
+        pdiWriter.AddNodeDataFromString nodeIndex, True, layerXMLHeader, compressHeaders, , embedChecksums
         
         'If this is not a header-only file, retrieve any layer-type-specific data and add it to the data section of this node
         ' (Note: the user's compression setting *is* used for this data section, as it can be quite large for raster layers
@@ -420,15 +423,15 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
             If srcPDImage.GetLayerByIndex(i).isLayerRaster Then
                 
                 Debug.Print "Writing layer index " & i & " out to file as RASTER layer."
-                srcPDImage.GetLayerByIndex(i).layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
-                pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
+                srcPDImage.GetLayerByIndex(i).layerDIB.RetrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
+                pdiWriter.AddNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
                 
             'Text (and other vector layers) save their vector contents in XML format
             ElseIf srcPDImage.GetLayerByIndex(i).isLayerVector Then
                 
                 Debug.Print "Writing layer index " & i & " out to file as VECTOR layer."
                 layerXMLData = srcPDImage.GetLayerByIndex(i).getVectorDataAsXML(True)
-                pdiWriter.addNodeDataFromString nodeIndex, False, layerXMLData, compressLayers, compressionLevel, embedChecksums
+                pdiWriter.AddNodeDataFromString nodeIndex, False, layerXMLData, compressLayers, compressionLevel, embedChecksums
             
             'No other layer types are currently supported
             Else
@@ -444,15 +447,15 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     If (Not writeHeaderOnlyFile) And WriteMetadata And Not (srcPDImage.imgMetadata Is Nothing) Then
     
         If srcPDImage.imgMetadata.HasMetadata Then
-            nodeIndex = pdiWriter.addNode("pdMetadata_Raw", -1, 2)
-            pdiWriter.addNodeDataFromString nodeIndex, True, srcPDImage.imgMetadata.GetOriginalXMLMetadataString, compressHeaders, , embedChecksums
-            pdiWriter.addNodeDataFromString nodeIndex, False, srcPDImage.imgMetadata.GetSerializedXMLData, compressHeaders, , embedChecksums
+            nodeIndex = pdiWriter.AddNode("pdMetadata_Raw", -1, 2)
+            pdiWriter.AddNodeDataFromString nodeIndex, True, srcPDImage.imgMetadata.GetOriginalXMLMetadataString, compressHeaders, , embedChecksums
+            pdiWriter.AddNodeDataFromString nodeIndex, False, srcPDImage.imgMetadata.GetSerializedXMLData, compressHeaders, , embedChecksums
         End If
     
     End If
     
     'That's all there is to it!  Write the completed pdPackage out to file.
-    SavePhotoDemonImage = pdiWriter.writePackageToFile(PDIPath, secondPassDirectoryCompression, secondPassDataCompression, srcIsUndo)
+    SavePhotoDemonImage = pdiWriter.WritePackageToFile(PDIPath, secondPassDirectoryCompression, secondPassDataCompression, srcIsUndo)
     
     If Not suppressMessages Then Message "%1 save complete.", sFileType
     
@@ -483,11 +486,11 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     'First things first: create a pdPackage instance.  It will handle all the messy business of assembling the layer file.
     Dim pdiWriter As pdPackager
     Set pdiWriter = New pdPackager
-    pdiWriter.init_ZLib "", True, g_ZLibEnabled
+    pdiWriter.Init_ZLib "", True, g_ZLibEnabled
     
     'Unlike an actual PDI file, which stores a whole bunch of images, these temp layer files only have two pieces of data:
     ' the layer header, and the DIB bytestream.  Thus, we know there will only be 1 node required.
-    pdiWriter.prepareNewPackage 1, PD_LAYER_IDENTIFIER, srcLayer.estimateRAMUsage
+    pdiWriter.PrepareNewPackage 1, PD_LAYER_IDENTIFIER, srcLayer.estimateRAMUsage
         
     'The first (and only) node we'll add is the specific pdLayer header and DIB data.
     ' To help us reconstruct the node later, we also note the current layer's ID (stored as the node ID)
@@ -496,13 +499,13 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     'Start by creating the node entry; if successful, this will return the index of the node, which we can use
     ' to supply the actual header and DIB data.
     Dim nodeIndex As Long
-    nodeIndex = pdiWriter.addNode("pdLayer", srcLayer.getLayerID, pdImages(g_CurrentImage).GetLayerIndexFromID(srcLayer.getLayerID))
+    nodeIndex = pdiWriter.AddNode("pdLayer", srcLayer.getLayerID, pdImages(g_CurrentImage).GetLayerIndexFromID(srcLayer.getLayerID))
     
     'Retrieve the layer header (in XML format), then write the XML stream to the pdPackage instance
     Dim dataString As String
     dataString = srcLayer.getLayerHeaderAsXML(True)
     
-    pdiWriter.addNodeDataFromString nodeIndex, True, dataString, compressHeaders, , embedChecksums
+    pdiWriter.AddNodeDataFromString nodeIndex, True, dataString, compressHeaders, , embedChecksums
     
     'If this is not a header-only request, retrieve the layer DIB (as a byte array), then copy the array
     ' into the pdPackage instance
@@ -514,14 +517,14 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
         If srcLayer.isLayerRaster Then
         
             Dim layerDIBPointer As Long, layerDIBLength As Long
-            srcLayer.layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
-            pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
+            srcLayer.layerDIB.RetrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
+            pdiWriter.AddNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
         
         'Text (and other vector layers) save their vector contents in XML format
         ElseIf srcLayer.isLayerVector Then
             
             dataString = srcLayer.getVectorDataAsXML(True)
-            pdiWriter.addNodeDataFromString nodeIndex, False, dataString, compressLayers, compressionLevel, embedChecksums
+            pdiWriter.AddNodeDataFromString nodeIndex, False, dataString, compressLayers, compressionLevel, embedChecksums
         
         'Other layer types are not currently supported
         Else
@@ -531,7 +534,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     End If
     
     'That's all there is to it!  Write the completed pdPackage out to file.
-    SavePhotoDemonLayer = pdiWriter.writePackageToFile(PDIPath, , , srcIsUndo)
+    SavePhotoDemonLayer = pdiWriter.WritePackageToFile(PDIPath, , , srcIsUndo)
     
     If Not suppressMessages Then Message "%1 save complete.", sFileType
     
@@ -585,7 +588,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
-    If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth <= 8) Then handleAlpha = True Else handleAlpha = False
+    If (tmpDIB.GetDIBColorDepth = 32) And (outputColorDepth <= 8) Then handleAlpha = True Else handleAlpha = False
     
     'If this image is 32bpp but the output color depth is less than that, make necessary preparations
     If handleAlpha Then
@@ -627,7 +630,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
                     'If the alpha dialog is canceled, abandon the entire save
                     If alphaCheck = vbCancel Then
                     
-                        tmpDIB.eraseDIB
+                        tmpDIB.EraseDIB
                         Set tmpDIB = Nothing
                         SavePNGImage = False
                         Exit Function
@@ -650,11 +653,11 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     
         'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
         ' If we are, composite the image against a white background.
-        If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.CompositeBackgroundColor 255, 255, 255
+        If (tmpDIB.GetDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.CompositeBackgroundColor 255, 255, 255
     
         'Also, if PNGquant is enabled, use it for the transformation - and note that we need to reset the
         ' first PNG save (pre-PNGQuant) color depth to 24bpp
-        If (tmpDIB.getDIBColorDepth = 24) And (outputColorDepth = 8) And g_ImageFormats.pngQuantEnabled Then outputColorDepth = 24
+        If (tmpDIB.GetDIBColorDepth = 24) And (outputColorDepth = 8) And g_ImageFormats.pngQuantEnabled Then outputColorDepth = 24
     
     End If
     
@@ -662,7 +665,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     
     'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.GetDIBDC)
     
     'If the image is being reduced from some higher bit-depth to 1bpp, manually force a conversion with dithering
     If outputColorDepth = 1 Then fi_DIB = FreeImage_Dither(fi_DIB, FID_FS)
@@ -675,7 +678,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         
         'We now need to find the palette index of a known transparent pixel
         Dim transpX As Long, transpY As Long
-        tmpDIB.getTransparentLocation transpX, transpY
+        tmpDIB.GetTransparentLocation transpX, transpY
         
         Dim palIndex As Byte
         FreeImage_GetPixelIndex fi_DIB, transpX, transpY, palIndex
@@ -748,7 +751,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
                 'Now, add options that the user may have specified.
                 
                 'Dithering override
-                If tmpDIB.getDIBColorDepth = 32 Then
+                If tmpDIB.GetDIBColorDepth = 32 Then
                     If Not g_UserPreferences.GetPref_Boolean("Plugins", "PNGQuant Dithering", True) Then
                         shellPath = shellPath & "--nofs "
                     End If
@@ -863,11 +866,11 @@ Public Function SavePPMImage(ByRef srcPDImage As pdImage, ByVal PPMPath As Strin
     srcPDImage.GetCompositedImage tmpDIB, False
     
     'PPM only supports 24bpp
-    If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.convertTo24bpp
+    If tmpDIB.GetDIBColorDepth = 32 Then tmpDIB.ConvertTo24bpp
         
     'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.GetDIBDC)
         
     'Use that handle to save the image to PPM format (ASCII)
     If fi_DIB <> 0 Then
@@ -934,7 +937,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
-    If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
+    If (tmpDIB.GetDIBColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
     
     'If this image is 32bpp but the output color depth is less than that, make necessary preparations
     If handleAlpha Then
@@ -958,7 +961,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
                 'If the alpha dialog is canceled, abandon the entire save
                 If alphaCheck = vbCancel Then
                 
-                    tmpDIB.eraseDIB
+                    tmpDIB.EraseDIB
                     Set tmpDIB = Nothing
                     SaveTGAImage = False
                     Exit Function
@@ -975,13 +978,13 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     
         'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
         ' If we are, composite the image against a white background.
-        If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.CompositeBackgroundColor 255, 255, 255
+        If (tmpDIB.GetDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.CompositeBackgroundColor 255, 255, 255
     
     End If
     
     'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.GetDIBDC)
     
     'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
     If handleAlpha Then
@@ -990,7 +993,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
         
         'We now need to find the palette index of a known transparent pixel
         Dim transpX As Long, transpY As Long
-        tmpDIB.getTransparentLocation transpX, transpY
+        tmpDIB.GetTransparentLocation transpX, transpY
         
         Dim palIndex As Byte
         FreeImage_GetPixelIndex fi_DIB, transpX, transpY, palIndex
@@ -1100,7 +1103,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
-    If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
+    If (tmpDIB.GetDIBColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
     
     'If this image is 32bpp but the output color depth is less than that, make necessary preparations
     If handleAlpha Then
@@ -1123,7 +1126,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
                 'If the alpha dialog is canceled, abandon the entire save
                 If alphaCheck = vbCancel Then
                 
-                    tmpDIB.eraseDIB
+                    tmpDIB.EraseDIB
                     Set tmpDIB = Nothing
                     SaveTIFImage = False
                     Exit Function
@@ -1140,13 +1143,13 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     
         'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
         ' If we are, composite the image against a white background.
-        If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.CompositeBackgroundColor 255, 255, 255
+        If (tmpDIB.GetDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.CompositeBackgroundColor 255, 255, 255
     
     End If
     
     'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.GetDIBDC)
     
     'If the image is being reduced from some higher bit-depth to 1bpp, manually force a conversion with dithering
     If outputColorDepth = 1 Then fi_DIB = FreeImage_Dither(fi_DIB, FID_FS)
@@ -1158,7 +1161,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
         
         'We now need to find the palette index of a known transparent pixel
         Dim transpX As Long, transpY As Long
-        tmpDIB.getTransparentLocation transpX, transpY
+        tmpDIB.GetTransparentLocation transpX, transpY
         
         Dim palIndex As Byte
         FreeImage_GetPixelIndex fi_DIB, transpX, transpY, palIndex
@@ -1233,7 +1236,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
             Set tmpCMYKDIB = New pdDIB
             
             DIB_Handler.createCMYKDIB tmpDIB, tmpCMYKDIB
-            fi_DIB = FreeImage_CreateFromDC(tmpCMYKDIB.getDIBDC)
+            fi_DIB = FreeImage_CreateFromDC(tmpCMYKDIB.GetDIBDC)
             
             'Release our temporary DIB
             Set tmpCMYKDIB = Nothing
@@ -1302,11 +1305,11 @@ Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As Strin
     srcPDImage.GetCompositedImage tmpDIB, False
     
     'If the output color depth is 24 but the current image is 32, composite the image against a white background
-    If (outputColorDepth < 32) And (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
+    If (outputColorDepth < 32) And (tmpDIB.GetDIBColorDepth = 32) Then tmpDIB.ConvertTo24bpp
     
     'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.GetDIBDC)
     
     'Use that handle to save the image to JPEG format
     If fi_DIB <> 0 Then
@@ -1370,11 +1373,11 @@ Public Function SaveJXRImage(ByRef srcPDImage As pdImage, ByVal jxrPath As Strin
     srcPDImage.GetCompositedImage tmpDIB, False
     
     'If the output color depth is 24 but the current image is 32, composite the image against a white background
-    If (outputColorDepth < 32) And (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
+    If (outputColorDepth < 32) And (tmpDIB.GetDIBColorDepth = 32) Then tmpDIB.ConvertTo24bpp
     
     'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.GetDIBDC)
     
     'Use that handle to save the image to JPEG XR format
     If fi_DIB <> 0 Then
@@ -1435,11 +1438,11 @@ Public Function SaveWebPImage(ByRef srcPDImage As pdImage, ByVal WebPPath As Str
     srcPDImage.GetCompositedImage tmpDIB, False
     
     'If the output color depth is 24 but the current image is 32, composite the image against a white background
-    If (outputColorDepth < 32) And (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
+    If (outputColorDepth < 32) And (tmpDIB.GetDIBColorDepth = 32) Then tmpDIB.ConvertTo24bpp
     
     'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.GetDIBDC)
     
     'Use that handle to save the image to WebP format
     If fi_DIB <> 0 Then
@@ -1474,7 +1477,7 @@ End Function
 Public Sub FillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal jpegQuality As Long, Optional ByVal jpegSubsample As Long = JPEG_SUBSAMPLING_422)
 
     'srcDIB may be 32bpp.  Convert it to 24bpp if necessary.
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.convertTo24bpp
+    If srcDIB.GetDIBColorDepth = 32 Then srcDIB.ConvertTo24bpp
 
     'Pass the DIB to FreeImage, which will make a copy for itself.
     Dim fi_DIB As Long
@@ -1493,7 +1496,7 @@ Public Sub FillDIBWithJPEGVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     fi_DIB = FreeImage_LoadFromMemoryEx(jpegArray, FILO_JPEG_FAST)
     
     'Copy the newly decompressed JPEG into the destination pdDIB object.
-    Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight
+    Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
     
     'Release the FreeImage copy of the DIB
     FreeImage_Unload fi_DIB
@@ -1564,7 +1567,7 @@ Public Function FindQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByV
     Do
     
         'Retrieve a copy of the original image at the current JPEG quality
-        tmpJPEGImage.createFromExistingDIB srcImage
+        tmpJPEGImage.CreateFromExistingDIB srcImage
         FillDIBWithJPEGVersion tmpJPEGImage, tmpJPEGImage, curJPEGQuality
         
         'Here is where high-quality and low-quality color-matching diverge.
@@ -1574,7 +1577,7 @@ Public Function FindQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByV
             convertEntireDIBToLabColor tmpJPEGImage, dstImageData
             
             'Retrieve a mean RMSD for the two images
-            rmsdCheck = FindMeanRMSDForTwoArrays(srcImageData, dstImageData, srcImage.getDIBWidth - 1, srcImage.getDIBHeight - 1)
+            rmsdCheck = FindMeanRMSDForTwoArrays(srcImageData, dstImageData, srcImage.GetDIBWidth - 1, srcImage.GetDIBHeight - 1)
             
         Else
         
@@ -1604,7 +1607,7 @@ Public Function FindQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByV
     Do
     
         'Retrieve a copy of the original image at the current JPEG quality
-        tmpJPEGImage.createFromExistingDIB srcImage
+        tmpJPEGImage.CreateFromExistingDIB srcImage
         FillDIBWithJPEGVersion tmpJPEGImage, tmpJPEGImage, curJPEGQuality
         
         'Here is where high-quality and low-quality color-matching diverge.
@@ -1614,7 +1617,7 @@ Public Function FindQualityForDesiredJPEGPerception(ByRef srcImage As pdDIB, ByV
             convertEntireDIBToLabColor tmpJPEGImage, dstImageData
             
             'Retrieve a mean RMSD for the two images
-            rmsdCheck = FindMeanRMSDForTwoArrays(srcImageData, dstImageData, srcImage.getDIBWidth - 1, srcImage.getDIBHeight - 1)
+            rmsdCheck = FindMeanRMSDForTwoArrays(srcImageData, dstImageData, srcImage.GetDIBWidth - 1, srcImage.GetDIBHeight - 1)
             
         Else
         
@@ -1663,8 +1666,8 @@ Public Function FindMeanRMSDForTwoDIBs(ByRef srcDib1 As pdDIB, ByRef srcDib2 As 
     CopyMemory ByVal VarPtrArray(srcArray2()), VarPtr(tmpSA2), 4
     
     Dim imgWidth As Long, imgHeight As Long
-    imgWidth = srcDib1.getDIBWidth
-    imgHeight = srcDib2.getDIBHeight
+    imgWidth = srcDib1.GetDIBWidth
+    imgHeight = srcDib2.GetDIBHeight
     
     For x = 0 To imgWidth - 1
         quickX = x * 3
@@ -1751,7 +1754,7 @@ Public Sub FillDIBWithJP2Version(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
     fi_DIB = FreeImage_LoadFromMemoryEx(jp2Array, 0, , PDIF_JP2)
     
     'Copy the newly decompressed JPEG-2000 into the destination pdDIB object.
-    Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight
+    Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
     
     'Release the FreeImage copy of the DIB.
     FreeImage_Unload fi_DIB
@@ -1777,10 +1780,10 @@ Public Sub FillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     'Random fact: the WebP encoder will automatically downsample 32-bit images with pointless alpha channels to 24-bit.  This causes problems when
     ' we try to preview WebP files prior to encoding, as it may randomly change the bit-depth on us.  Check for this case, and recreate the target
     ' DIB as necessary.
-    If FreeImage_GetBPP(fi_DIB) <> dstDIB.getDIBColorDepth Then dstDIB.createBlank dstDIB.getDIBWidth, dstDIB.getDIBHeight, FreeImage_GetBPP(fi_DIB)
+    If FreeImage_GetBPP(fi_DIB) <> dstDIB.GetDIBColorDepth Then dstDIB.createBlank dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, FreeImage_GetBPP(fi_DIB)
         
     'Copy the newly decompressed image into the destination pdDIB object.
-    Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight
+    Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
     
     'Release the FreeImage copy of the DIB.
     FreeImage_Unload fi_DIB
@@ -1808,7 +1811,7 @@ Public Sub FillDIBWithJXRVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
         
         'Copy the newly decompressed image into the destination pdDIB object.
         If fi_DIB <> 0 Then
-            Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight
+            Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
         Else
             Debug.Print "Failed to load JXR from memory; FreeImage didn't return a DIB from FreeImage_LoadFromMemoryEx()"
         End If
@@ -1886,7 +1889,7 @@ Public Function QuickSaveDIBAsPNG(ByVal dstFilename As String, ByRef srcDIB As p
         Exit Function
     End If
     
-    If (srcDIB.getDIBWidth = 0) Or (srcDIB.getDIBHeight = 0) Then
+    If (srcDIB.GetDIBWidth = 0) Or (srcDIB.GetDIBHeight = 0) Then
         QuickSaveDIBAsPNG = False
         Exit Function
     End If
@@ -1898,7 +1901,7 @@ Public Function QuickSaveDIBAsPNG(ByVal dstFilename As String, ByRef srcDIB As p
         ' Saved files always use non-premultiplied alpha.  If the source image is premultiplied, we want to create a
         ' temporary non-premultiplied copy.
         Dim alphaWasChanged As Boolean
-        If srcDIB.getAlphaPremultiplication Then
+        If srcDIB.GetAlphaPremultiplication Then
             srcDIB.SetAlphaPremultiplication False
             alphaWasChanged = True
         End If
@@ -1913,7 +1916,7 @@ Public Function QuickSaveDIBAsPNG(ByVal dstFilename As String, ByRef srcDIB As p
             
             'Output the PNG file at the proper color depth
             Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
-            If srcDIB.getDIBColorDepth = 24 Then
+            If srcDIB.GetDIBColorDepth = 24 Then
                 fi_OutputColorDepth = FICD_24BPP
             Else
                 fi_OutputColorDepth = FICD_32BPP

@@ -191,13 +191,13 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
 End Sub
 
 'Allow the user to load an image file as a layer
-Public Sub LoadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal imagePath As String = "", Optional ByVal customLayerName As String = "", Optional ByVal createUndo As Boolean = False)
+Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = "", Optional ByVal customLayerName As String = "", Optional ByVal createUndo As Boolean = False)
 
     'This function handles two cases: retrieving the filename from a common dialog box, and actually
     ' loading the image file and applying it to the current pdImage as a new layer.
     
     'If showDialog is TRUE, we need to get a file path from the user
-    If showDialog Then
+    If ShowDialog Then
     
         'Retrieve a filepath
         Dim imgFilePath As String
@@ -216,7 +216,7 @@ Public Sub LoadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal image
         If Loading.QuickLoadImageToDIB(imagePath, tmpDIB) Then
             
             'Forcibly convert the new layer to 32bpp
-            If tmpDIB.getDIBColorDepth = 24 Then tmpDIB.convertTo32bpp
+            If tmpDIB.GetDIBColorDepth = 24 Then tmpDIB.ConvertTo32bpp
             
             'Ask the current image to prepare a blank layer for us
             Dim newLayerID As Long
@@ -836,7 +836,7 @@ Public Sub ResizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizePa
     'Create a parameter parser to help us interpret the passed param string
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.setParamString resizeParams
+    cParams.SetParamString resizeParams
     
     'Apply the passed parameters to the specified layer
     With pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex)
@@ -860,7 +860,7 @@ Public Sub RotateLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizePa
     'Create a parameter parser to help us interpret the passed param string
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.setParamString resizeParams
+    cParams.SetParamString resizeParams
     
     'Apply the passed parameter to the specified layer
     With pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex)
@@ -881,7 +881,7 @@ Public Sub MoveLayerOnCanvas(ByVal srcLayerIndex As Long, ByVal resizeParams As 
     'Create a parameter parser to help us interpret the passed param string
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.setParamString resizeParams
+    cParams.SetParamString resizeParams
     
     'Apply the passed parameters to the specified layer
     With pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex)
@@ -936,7 +936,7 @@ Public Sub ModifyLayerByParamString(ByVal pString As String)
     'Create a param string parser
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.setParamString pString
+    cParams.SetParamString pString
     
     'Retrieve the ID of the layer in question
     Dim curLayerID As Long
@@ -944,7 +944,7 @@ Public Sub ModifyLayerByParamString(ByVal pString As String)
     
     'Remove that initial entry from the param string, then forward the rest of the string on to the specified layer class
     cParams.removeParamAtPosition 1
-    pdImages(g_CurrentImage).GetLayerByID(curLayerID).setLayerHeaderFromParamString cParams.getParamString
+    pdImages(g_CurrentImage).GetLayerByID(curLayerID).setLayerHeaderFromParamString cParams.GetParamString
 
 End Sub
 
@@ -979,20 +979,20 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal x As Long,
         ' Retrieve the color (and alpha, if relevant) at that point.
         Dim tmpData() As Byte
         Dim tSA As SAFEARRAY2D
-        prepSafeArray tSA, tmpLayerRef.layerDIB
+        PrepSafeArray tSA, tmpLayerRef.layerDIB
         CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4
         
         Dim quickX As Long
-        quickX = x * (tmpLayerRef.layerDIB.getDIBColorDepth \ 8)
+        quickX = x * (tmpLayerRef.layerDIB.GetDIBColorDepth \ 8)
         
         'Failsafe bounds check
-        If ((quickX + 3) < tmpLayerRef.layerDIB.getDIBArrayWidth) And (y < tmpLayerRef.layerDIB.getDIBHeight) Then
+        If ((quickX + 3) < tmpLayerRef.layerDIB.GetDIBArrayWidth) And (y < tmpLayerRef.layerDIB.GetDIBHeight) Then
         
             With dstQuad
                 .Red = tmpData(quickX + 2, y)
                 .Green = tmpData(quickX + 1, y)
                 .Blue = tmpData(quickX, y)
-                If tmpLayerRef.layerDIB.getDIBColorDepth = 32 Then .alpha = tmpData(quickX + 3, y)
+                If tmpLayerRef.layerDIB.GetDIBColorDepth = 32 Then .alpha = tmpData(quickX + 3, y)
             End With
             
         End If
@@ -1166,7 +1166,7 @@ Public Function AskIfOkayToRasterizeLayer(Optional ByVal srcLayerType As LAYER_T
     dialogTitle = "Rasterization required"
     
     'Display the dialog and return the result
-    AskIfOkayToRasterizeLayer = Dialog_Handler.PromptGenericYesNoDialog_SingleOutcome(questionID, questionText, yesText, noText, cancelText, rememberText, dialogTitle, vbYes, IDI_EXCLAMATION, vbYes)
+    AskIfOkayToRasterizeLayer = DialogManager.PromptGenericYesNoDialog_SingleOutcome(questionID, questionText, yesText, noText, cancelText, rememberText, dialogTitle, vbYes, IDI_EXCLAMATION, vbYes)
 
 End Function
 
@@ -1230,10 +1230,10 @@ Public Function GenerateInitialLayerName(ByRef srcFile As String, Optional ByVal
                 
             'Icons have their actual dimensions added to the layer name
             Case FIF_ICO
-                If srcDIB.getOriginalFreeImageColorDepth = 0 Then
-                    layerNameAddon = g_Language.TranslateMessage("icon (%1x%2)", CStr(srcDIB.getDIBWidth), CStr(srcDIB.getDIBHeight))
+                If srcDIB.GetOriginalFreeImageColorDepth = 0 Then
+                    layerNameAddon = g_Language.TranslateMessage("icon (%1x%2)", CStr(srcDIB.GetDIBWidth), CStr(srcDIB.GetDIBHeight))
                 Else
-                    layerNameAddon = g_Language.TranslateMessage("icon (%1x%2, %3 bpp)", CStr(srcDIB.getDIBWidth), CStr(srcDIB.getDIBHeight), CStr(srcDIB.getOriginalFreeImageColorDepth))
+                    layerNameAddon = g_Language.TranslateMessage("icon (%1x%2, %3 bpp)", CStr(srcDIB.GetDIBWidth), CStr(srcDIB.GetDIBHeight), CStr(srcDIB.GetOriginalFreeImageColorDepth))
                 End If
                 
             'Any other format is treated as "pages"

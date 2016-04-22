@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.151</langversion>
+<langversion>6.7.152</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -15019,6 +15019,12 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <!-- Plugin_OptiPNG.bas contains 0 phrases. -->
 
 <!-- END text for Plugin_OptiPNG.bas-->
+
+<!-- BEGIN text for Plugin_LittleCMS.bas -->
+
+<!-- Plugin_LittleCMS.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_LittleCMS.bas-->
 
 <!-- Automatic text extraction complete. -->
 
