@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.151</langversion>
+<langversion>6.7.152</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -15018,6 +15018,12 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <!-- Plugin_OptiPNG.bas contains 0 phrases. -->
 
 <!-- END text for Plugin_OptiPNG.bas-->
+
+<!-- BEGIN text for Plugin_LittleCMS.bas -->
+
+<!-- Plugin_LittleCMS.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_LittleCMS.bas-->
 
 <!-- Automatic text extraction complete. -->
 

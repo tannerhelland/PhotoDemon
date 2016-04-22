@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.93</langversion>
+<langversion>6.6.94</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -15024,6 +15024,12 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <!-- Plugin_OptiPNG.bas contains 0 phrases. -->
 
 <!-- END text for Plugin_OptiPNG.bas-->
+
+<!-- BEGIN text for Plugin_LittleCMS.bas -->
+
+<!-- Plugin_LittleCMS.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_LittleCMS.bas-->
 
 <!-- Automatic text extraction complete. -->
 

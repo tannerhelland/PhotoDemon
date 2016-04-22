@@ -1,4 +1,4 @@
-Attribute VB_Name = "Dialog_Handler"
+Attribute VB_Name = "DialogManager"
 '***************************************************************************
 'Custom Dialog Interface
 'Copyright 2012-2016 by Tanner Helland
@@ -81,7 +81,6 @@ Public Function PromptBMPSettings(ByRef srcImage As pdImage, ByRef dstFormatPara
     
 End Function
 
-'Present a dialog box to ask the user for various GIF export settings
 Public Function PromptGIFSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportGIF
@@ -96,7 +95,6 @@ Public Function PromptGIFSettings(ByRef srcImage As pdImage, ByRef dstFormatPara
     
 End Function
 
-'Present a dialog box to ask the user for various JPEG export settings
 Public Function PromptJPEGSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportJPEG
@@ -108,6 +106,20 @@ Public Function PromptJPEGSettings(ByRef srcImage As pdImage, ByRef dstFormatPar
     
     Unload dialog_ExportJPEG
     Set dialog_ExportJPEG = Nothing
+    
+End Function
+
+Public Function PromptPNGSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+    
+    Load dialog_ExportPNG
+    dialog_ExportPNG.ShowDialog srcImage
+    
+    PromptPNGSettings = dialog_ExportPNG.GetDialogResult
+    dstFormatParams = dialog_ExportPNG.GetFormatParams
+    dstMetadataParams = dialog_ExportPNG.GetMetadataParams
+    
+    Unload dialog_ExportPNG
+    Set dialog_ExportPNG = Nothing
     
 End Function
 
@@ -343,7 +355,7 @@ Public Function PromptGenericYesNoDialog(ByVal questionID As String, ByVal quest
     questionID = xmlEngine.getXMLSafeTagName(questionID)
     
     'See if the user has already answered this question in the past.
-    If g_UserPreferences.doesValueExist("Dialogs", questionID) Then
+    If g_UserPreferences.DoesValueExist("Dialogs", questionID) Then
         
         'The user has already answered this question and saved their answer.  Retrieve the previous answer and exit.
         PromptGenericYesNoDialog = g_UserPreferences.GetPref_Long("Dialogs", questionID, defaultAnswer)
@@ -380,7 +392,7 @@ Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As Strin
     questionID = xmlEngine.getXMLSafeTagName(questionID)
     
     'See if the user has already answered this question in the past.
-    If g_UserPreferences.doesValueExist("Dialogs", questionID) Then
+    If g_UserPreferences.DoesValueExist("Dialogs", questionID) Then
         
         'The user has already answered this question and saved their answer.  Retrieve the previous answer and exit.
         PromptGenericYesNoDialog_SingleOutcome = g_UserPreferences.GetPref_Long("Dialogs", questionID, defaultAnswer)

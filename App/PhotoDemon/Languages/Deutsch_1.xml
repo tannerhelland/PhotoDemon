@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.151</langversion>
+<langversion>6.7.152</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -15017,6 +15017,12 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 <!-- Plugin_OptiPNG.bas contains 0 phrases. -->
 
 <!-- END text for Plugin_OptiPNG.bas-->
+
+<!-- BEGIN text for Plugin_LittleCMS.bas -->
+
+<!-- Plugin_LittleCMS.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_LittleCMS.bas-->
 
 <!-- Automatic text extraction complete. -->
 

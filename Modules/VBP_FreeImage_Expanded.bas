@@ -991,7 +991,7 @@ Private Function RaiseToneMapDialog(ByVal fi_Handle As Long, ByRef dst_fiHandle 
     ' use previous settings."  If that happens, it will retrieve the proper conversion settings for us, and return a dummy
     ' value of OK (as if the dialog were actually raised).
     Dim howToProceed As VbMsgBoxResult, toneMapSettings As String
-    howToProceed = Dialog_Handler.PromptToneMapSettings(fi_Handle, toneMapSettings)
+    howToProceed = DialogManager.PromptToneMapSettings(fi_Handle, toneMapSettings)
     
     'Check for a cancellation state; if encountered, abandon ship now.
     If (howToProceed <> vbOK) Then

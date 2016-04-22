@@ -447,7 +447,7 @@ Private Function SavePreset() As Boolean
 
     'Prompt the user for a name
     Dim newNameReturn As VbMsgBoxResult, newPresetName As String
-    newNameReturn = Dialog_Handler.PromptNewPreset(m_Presets, UserControl.Parent, newPresetName)
+    newNameReturn = DialogManager.PromptNewPreset(m_Presets, UserControl.Parent, newPresetName)
     
     If newNameReturn = vbOK Then
     
@@ -781,7 +781,7 @@ Private Sub UserControl_Show()
         If Len(m_userSuppliedToolName) <> 0 Then m_parentToolName = m_parentToolName & "_" & m_userSuppliedToolName
         
         'PD stores all preset files in a set preset folder.  This folder is not user-editable.
-        m_parentToolPath = g_UserPreferences.getPresetPath & m_parentToolName & ".xml"
+        m_parentToolPath = g_UserPreferences.GetPresetPath & m_parentToolName & ".xml"
         
         'If our parent tool has an XML settings file, load it now.  (If one doesn't exist, the preset engine will create
         ' a default one for us.)

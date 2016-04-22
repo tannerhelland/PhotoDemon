@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.152</langversion>
+<langversion>6.7.153</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -15019,6 +15019,12 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <!-- Plugin_OptiPNG.bas contains 0 phrases. -->
 
 <!-- END text for Plugin_OptiPNG.bas-->
+
+<!-- BEGIN text for Plugin_LittleCMS.bas -->
+
+<!-- Plugin_LittleCMS.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_LittleCMS.bas-->
 
 <!-- Automatic text extraction complete. -->
 
