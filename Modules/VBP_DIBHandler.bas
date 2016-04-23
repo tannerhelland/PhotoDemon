@@ -34,10 +34,10 @@ Public Function IsDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZ
     If (srcDIB Is Nothing) Then Exit Function
 
     'Make sure this DIB is 32bpp. If it isn't, running this function is pointless.
-    If srcDIB.getDIBColorDepth = 32 Then
+    If srcDIB.GetDIBColorDepth = 32 Then
 
         'Make sure this DIB isn't empty
-        If (srcDIB.getDIBDC <> 0) And (srcDIB.getDIBWidth <> 0) And (srcDIB.getDIBHeight <> 0) Then
+        If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
     
             'Loop through the image and compare each alpha value against 0 and 255. If a value doesn't
             ' match either of this, this is a non-binary alpha channel and it must be handled specially.
@@ -56,9 +56,9 @@ Public Function IsDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZ
             Dim chkAlpha As Byte
                 
             'Loop through the image, checking alphas as we go
-            For x = 0 To srcDIB.getDIBWidth - 1
+            For x = 0 To srcDIB.GetDIBWidth - 1
                 quickX = x * 4
-            For y = 0 To srcDIB.getDIBHeight - 1
+            For y = 0 To srcDIB.GetDIBHeight - 1
             
                 'Retrieve the alpha value of the current pixel
                 chkAlpha = iData(quickX + 3, y)
@@ -102,7 +102,7 @@ Public Function isDIBGrayscale(ByRef srcDIB As pdDIB) As Boolean
     If srcDIB Is Nothing Then Exit Function
     
     'Make sure this DIB isn't empty
-    If (srcDIB.getDIBDC <> 0) And (srcDIB.getDIBWidth <> 0) And (srcDIB.getDIBHeight <> 0) Then
+    If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
     
         'Loop through the image and compare RGB values to determine grayscale or not.
         Dim iData() As Byte
@@ -115,12 +115,12 @@ Public Function isDIBGrayscale(ByRef srcDIB As pdDIB) As Boolean
         Dim r As Long, g As Long, b As Long
         
         Dim qvDepth As Long
-        qvDepth = srcDIB.getDIBColorDepth \ 8
+        qvDepth = srcDIB.GetDIBColorDepth \ 8
                         
         'Loop through the image, checking alphas as we go
-        For x = 0 To srcDIB.getDIBWidth - 1
+        For x = 0 To srcDIB.GetDIBWidth - 1
             quickX = x * qvDepth
-        For y = 0 To srcDIB.getDIBHeight - 1
+        For y = 0 To srcDIB.GetDIBHeight - 1
             
             r = iData(quickX + 2, y)
             g = iData(quickX + 1, y)
@@ -179,13 +179,13 @@ Public Function createCMYKDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As B
     If srcDIB Is Nothing Then Exit Function
     
     'Make sure the source DIB isn't empty
-    If (srcDIB.getDIBDC <> 0) And (srcDIB.getDIBWidth <> 0) And (srcDIB.getDIBHeight <> 0) Then
+    If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
     
         'Create the destination DIB as necessary
         If dstDIB Is Nothing Then Set dstDIB = New pdDIB
         
         'Create a 32-bit destination DIB with identical size to the source DIB
-        dstDIB.createBlank srcDIB.getDIBWidth, srcDIB.getDIBHeight, 32, 0, 0
+        dstDIB.createBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 32, 0, 0
         
         'Prepare direct access to the source and destination DIB data
         Dim srcData() As Byte, dstData() As Byte
@@ -200,13 +200,13 @@ Public Function createCMYKDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As B
         Dim cyan As Long, magenta As Long, yellow As Long, k As Long
         
         Dim srcQVDepth As Long
-        srcQVDepth = srcDIB.getDIBColorDepth \ 8
+        srcQVDepth = srcDIB.GetDIBColorDepth \ 8
                         
         'Loop through the image, checking alphas as we go
-        For x = 0 To srcDIB.getDIBWidth - 1
+        For x = 0 To srcDIB.GetDIBWidth - 1
             QuickXSrc = x * srcQVDepth
             QuickXDst = x * 4
-        For y = 0 To srcDIB.getDIBHeight - 1
+        For y = 0 To srcDIB.GetDIBHeight - 1
                         
             'Cyan
             cyan = 255 - srcData(QuickXSrc + 2, y)
@@ -254,7 +254,7 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
     If srcDIB Is Nothing Then Exit Function
     
     'Make sure the source DIB isn't empty
-    If (srcDIB.getDIBDC <> 0) And (srcDIB.getDIBWidth <> 0) And (srcDIB.getDIBHeight <> 0) Then
+    If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
     
         'Create a local array and point it at the pixel data we want to operate on
         Dim ImageData() As Byte
@@ -266,8 +266,8 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
         initY = 0
-        finalX = srcDIB.getDIBWidth - 1
-        finalY = srcDIB.getDIBHeight - 1
+        finalX = srcDIB.GetDIBWidth - 1
+        finalY = srcDIB.GetDIBHeight - 1
         
         'Prep the destination array
         ReDim dstGrayArray(initX To finalX, initY To finalY) As Byte
@@ -275,7 +275,7 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
         Dim QuickVal As Long, qvDepth As Long
-        qvDepth = srcDIB.getDIBColorDepth \ 8
+        qvDepth = srcDIB.GetDIBColorDepth \ 8
         
         Dim r As Long, g As Long, b As Long, grayVal As Long
         Dim minVal As Long, maxVal As Long
@@ -377,13 +377,13 @@ Public Function CreateDIBFromGrayscaleMap(ByRef dstDIB As pdDIB, ByRef srcGrayAr
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
         initY = 0
-        finalX = dstDIB.getDIBWidth - 1
-        finalY = dstDIB.getDIBHeight - 1
+        finalX = dstDIB.GetDIBWidth - 1
+        finalY = dstDIB.GetDIBHeight - 1
         
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
         Dim QuickVal As Long, qvDepth As Long
-        qvDepth = dstDIB.getDIBColorDepth \ 8
+        qvDepth = dstDIB.GetDIBColorDepth \ 8
         
         'Now we can loop through each pixel in the image, converting values as we go
         For x = initX To finalX
@@ -414,7 +414,7 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
     If srcDIB Is Nothing Then Exit Function
     
     'Make sure the source DIB isn't empty
-    If (srcDIB.getDIBDC <> 0) And (srcDIB.getDIBWidth <> 0) And (srcDIB.getDIBHeight <> 0) Then
+    If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
     
         'Create a local array and point it at the pixel data we want to operate on
         Dim ImageData() As Byte
@@ -425,24 +425,23 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
         Dim QuickVal As Long, qvDepth As Long
-        qvDepth = srcDIB.getDIBColorDepth \ 8
+        qvDepth = srcDIB.GetDIBColorDepth \ 8
         
         'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
         initY = 0
-        finalX = (srcDIB.getDIBWidth - 1) * qvDepth
-        finalY = (srcDIB.getDIBHeight - 1)
+        finalX = (srcDIB.GetDIBWidth - 1) * qvDepth
+        finalY = (srcDIB.GetDIBHeight - 1)
         
         Dim r As Long, g As Long, b As Long, a As Long, grayVal As Long
         
         'Premultiplication requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table
         ' for converting single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-        Dim alphaIsPremultiplied As Boolean: alphaIsPremultiplied = srcDIB.getAlphaPremultiplication
-        
+        Dim alphaIsPremultiplied As Boolean: alphaIsPremultiplied = srcDIB.GetAlphaPremultiplication
         Dim applyPremult() As Single, removePremult() As Single, tmpAlphaModifier As Single
-        ReDim applyPremult(0 To 255) As Single
-        ReDim removePremult(0 To 255) As Single
+        ReDim applyPremult(0 To 255) As Single: ReDim removePremult(0 To 255) As Single
+        
         If alphaIsPremultiplied Then
             For x = 0 To 255
                 applyPremult(x) = x / 255
@@ -486,24 +485,26 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
             grayVal = (213 * r + 715 * g + 72 * b) \ 1000
             If grayVal > 255 Then grayVal = 255
             
-            'We could probably skip the lookup table entirely when numOfShades = 256, but the speed hit is near-trivial.
-            ' (Frankly, the bigger problem is premultiplied alpha, as usual.)
+            'If less than 256 shades are in play, calculate that now as well
+            grayVal = gLookUp(grayVal)
+            
+            'If alpha is premultiplied, calculate that now
             If alphaIsPremultiplied Then
                 If (a <> 255) Then
                     tmpAlphaModifier = applyPremult(a)
-                    grayVal = (grayVal * tmpAlphaModifier)
+                    grayVal = grayVal * tmpAlphaModifier
                 End If
             End If
             
             If ignoreMagicMagenta Then
-                ImageData(x, y) = gLookUp(grayVal)
-                ImageData(x + 1, y) = gLookUp(grayVal)
-                ImageData(x + 2, y) = gLookUp(grayVal)
+                ImageData(x, y) = grayVal
+                ImageData(x + 1, y) = grayVal
+                ImageData(x + 2, y) = grayVal
             Else
                 If (r <> 253) Or (g <> 0) Or (b <> 253) Then
-                    ImageData(x, y) = gLookUp(grayVal)
-                    ImageData(x + 1, y) = gLookUp(grayVal)
-                    ImageData(x + 2, y) = gLookUp(grayVal)
+                    ImageData(x, y) = grayVal
+                    ImageData(x + 1, y) = grayVal
+                    ImageData(x + 2, y) = grayVal
                 End If
             End If
             
