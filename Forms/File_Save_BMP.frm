@@ -243,7 +243,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     Set m_SrcImage = srcImage
     If Not (m_SrcImage Is Nothing) Then
         m_SrcImage.GetCompositedImage m_CompositedImage, True
-        pdFxPreview.NotifyNonStandardSource m_CompositedImage.getDIBWidth, m_CompositedImage.getDIBHeight
+        pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
     End If
     If (Not g_ImageFormats.FreeImageEnabled) Or (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
     
@@ -477,7 +477,7 @@ Private Function GetExportParamString() As String
     cParams.AddParam "BMPRLECompression", CBool(chkRLE.Value)
     cParams.AddParam "BMPForceGrayscale", CBool(btsColorModel.ListIndex = 3)
     cParams.AddParam "BMP16bpp555", CBool(chk16555.Value)
-    If CBool(chkColorCount.Value) Then cParams.AddParam "BMPIndexedColorCount", sldColorCount.Value
+    If CBool(chkColorCount.Value) And (btsColorModel.ListIndex <> 3) Then cParams.AddParam "BMPIndexedColorCount", sldColorCount.Value Else cParams.AddParam "BMPIndexedColorCount", 256
     cParams.AddParam "BMPBackgroundColor", clsBackground.Color
     cParams.AddParam "BMPFlipRowOrder", CBool(chkFlipRows.Value)
     
@@ -510,7 +510,6 @@ Private Sub UpdatePreviewSource()
             prvColorDepth = 32
         Else
             
-            
             If (btsColorModel.ListIndex = 1) Then
                 prvColorDepth = 32
             ElseIf (btsColorModel.ListIndex = 2) Then
@@ -540,7 +539,7 @@ Private Sub UpdatePreviewSource()
         BMP16bpp555 = CBool(chk16555.Value)
         
         Dim BMPIndexedColorCount As Long
-        If CBool(chkColorCount.Value) Then
+        If CBool(chkColorCount.Value) And (Not forceGrayscale) Then
             If sldColorCount.IsValid Then BMPIndexedColorCount = sldColorCount.Value Else BMPIndexedColorCount = 256
         Else
             BMPIndexedColorCount = 256
