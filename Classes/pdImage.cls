@@ -186,7 +186,7 @@ Public Function createBlankLayer(Optional ByVal layerPosition As Long = -1) As L
 
 End Function
 
-Public Sub rebuildCompositeBuffer()
+Public Sub RebuildCompositeBuffer()
 
     'If the buffer is already clean, ignore this request
     If m_CompositeCacheClean Then
@@ -258,14 +258,14 @@ End Sub
 Public Sub GetCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True)
     
     'If the current composite cache is dirty, rebuild it
-    If (Not m_CompositeCacheClean) Then rebuildCompositeBuffer
+    If (Not m_CompositeCacheClean) Then RebuildCompositeBuffer
     
     'Give the caller a copy of the composited image
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    dstDIB.createFromExistingDIB compositeBuffer
+    dstDIB.CreateFromExistingDIB compositeBuffer
     
     'Change premultiplication, if requested by the caller.  (By default, the composite image is stored in premultiplied format.)
-    If dstDIB.getAlphaPremultiplication <> premultiplicationStatus Then dstDIB.SetAlphaPremultiplication premultiplicationStatus
+    If dstDIB.GetAlphaPremultiplication <> premultiplicationStatus Then dstDIB.SetAlphaPremultiplication premultiplicationStatus
     
 End Sub
 
@@ -630,7 +630,7 @@ Public Function ReadExternalData(ByRef srcFilename As String, Optional ByVal fil
             
             'Dictionary tags are conditional, and may not exist in the PDI file.  Check for their existence, and load them
             ' only as necessary.
-            If xmlEngine.doesTagExist("pngBackgroundColor") Then imgStorage.AddEntry "pngBackgroundColor", xmlEngine.getUniqueTag_Long("pngBackgroundColor")
+            If xmlEngine.DoesTagExist("pngBackgroundColor") Then imgStorage.AddEntry "pngBackgroundColor", xmlEngine.getUniqueTag_Long("pngBackgroundColor")
             
         End If
         
@@ -672,17 +672,17 @@ End Function
 
 'Get/Set image resolution (in DPI).  Note that the vertical resolution is optional; if the two values
 ' differ, PD will average them when image DPI is requested.
-Public Function getDPI() As Double
+Public Function GetDPI() As Double
     
     If imageDPI = 0 Then
-        getDPI = 96
+        GetDPI = 96
     Else
-        getDPI = imageDPI
+        GetDPI = imageDPI
     End If
     
 End Function
 
-Public Sub setDPI(ByVal xRes As Double, ByVal yRes As Double, Optional ByVal sourceIsFreeImage As Boolean = False)
+Public Sub SetDPI(ByVal xRes As Double, ByVal yRes As Double, Optional ByVal sourceIsFreeImage As Boolean = False)
     
     'Many image types do not store resolution information; default to 96 in this case
     If xRes = 0 Then xRes = 96
@@ -761,10 +761,10 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     
     'Prepare the destination DIB
     If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
-    If (dstThumbnailDIB.getDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.getDIBHeight <> thumbnailSize) Then
+    If (dstThumbnailDIB.GetDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.GetDIBHeight <> thumbnailSize) Then
         dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
     Else
-        dstThumbnailDIB.resetDIB 0
+        dstThumbnailDIB.ResetDIB 0
     End If
     
     'Note that the user's thumbnail performance setting affects the quality used here.
@@ -793,7 +793,7 @@ Public Sub DeactivateImage()
         
     'Deactivate the Undo/Redo handler
     If Not (undoManager Is Nothing) Then
-        undoManager.clearUndos
+        undoManager.ClearUndos
         Set undoManager.parentPDImage = Nothing
         Set undoManager = Nothing
     End If
@@ -943,22 +943,22 @@ End Sub
 ' mind as to whether it's an issue that needs resolving or not.  I will revisit in the future, once I have a better idea of
 ' the workflow implications.
 ' TODO: determine if off-image layer cropping is an acceptable solution in all scenarios.
-Public Sub retrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srcLayerIndex As Long)
+Public Sub RetrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srcLayerIndex As Long)
 
     'Create a blank destination DIB at the size of the image
     dstDIB.createBlank Width, Height, 32, 0
     
     'Copy the source layer into the blank DIB
-    BitBlt dstDIB.getDIBDC, imgLayers(srcLayerIndex).getLayerOffsetX, imgLayers(srcLayerIndex).getLayerOffsetY, imgLayers(srcLayerIndex).getLayerWidth(False), imgLayers(srcLayerIndex).getLayerHeight(False), imgLayers(srcLayerIndex).layerDIB.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt dstDIB.GetDIBDC, imgLayers(srcLayerIndex).getLayerOffsetX, imgLayers(srcLayerIndex).getLayerOffsetY, imgLayers(srcLayerIndex).getLayerWidth(False), imgLayers(srcLayerIndex).getLayerHeight(False), imgLayers(srcLayerIndex).layerDIB.GetDIBDC, 0, 0, vbSrcCopy
     
 End Sub
 
 'Return a DIB that contains the currently selected area, fully processed according to the selection mask
-Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal preMultipliedAlphaState As Boolean = False, Optional ByVal useMergedImage As Boolean = False) As Boolean
+Public Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal preMultipliedAlphaState As Boolean = False, Optional ByVal useMergedImage As Boolean = False) As Boolean
 
     'If this image does not contain an active selection, exit now.
     If (Not IsActive) Or (Not selectionActive) Then
-        retrieveProcessedSelection = False
+        RetrieveProcessedSelection = False
         Exit Function
     End If
     
@@ -971,7 +971,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     If useMergedImage Then
         GetCompositedImage srcDIB, True
     Else
-        retrieveNullPaddedLayer srcDIB, m_curLayer
+        RetrieveNullPaddedLayer srcDIB, m_curLayer
     End If
     
     'Selections can be one of several types.  Right now, we don't give special handling to simple rectangular selections - all selections
@@ -980,22 +980,22 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     'Start by initializing the destination DIB to the size of the active selection
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     dstDIB.createBlank mainSelection.boundWidth, mainSelection.boundHeight, 32, 0
-    dstDIB.setInitialAlphaPremultiplicationState True
+    dstDIB.SetInitialAlphaPremultiplicationState True
     
     'We now need pointers to three separate sets of image data: destination DIB, source DIB, and selection mask.
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     Dim selData() As Byte
     Dim selSA As SAFEARRAY2D
-    prepSafeArray selSA, mainSelection.selMask
+    PrepSafeArray selSA, mainSelection.selMask
     CopyMemory ByVal VarPtrArray(selData()), VarPtr(selSA), 4
             
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, dstDIB
+    PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     Dim leftOffset As Long, topOffset As Long
@@ -1008,16 +1008,16 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     Dim blendAlpha As Double
     
     Dim srcDIBCD As Long, srcQuickX As Long, srcQuickY As Long, selQuickX As Long
-    srcDIBCD = srcDIB.getDIBColorDepth \ 8
+    srcDIBCD = srcDIB.GetDIBColorDepth \ 8
     
     Dim dstDIBCD As Long, dstQuickX As Long
-    dstDIBCD = dstDIB.getDIBColorDepth \ 8
+    dstDIBCD = dstDIB.GetDIBColorDepth \ 8
             
-    For x = 0 To dstDIB.getDIBWidth - 1
+    For x = 0 To dstDIB.GetDIBWidth - 1
         dstQuickX = x * dstDIBCD
         srcQuickX = (leftOffset + x) * srcDIBCD
         selQuickX = (leftOffset + x) * 3
-    For y = 0 To dstDIB.getDIBHeight - 1
+    For y = 0 To dstDIB.GetDIBHeight - 1
     
         srcQuickY = topOffset + y
         thisAlpha = selData(selQuickX, srcQuickY)
@@ -1078,7 +1078,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     'If the calling function requested un-premultiplied alpha, apply it now
     If (Not preMultipliedAlphaState) Then dstDIB.SetAlphaPremultiplication False
         
-    retrieveProcessedSelection = True
+    RetrieveProcessedSelection = True
 
 End Function
 
@@ -1100,12 +1100,12 @@ Public Function eraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     'We now need pointers to two separate sets of image data: destination DIB, and selection mask.
     Dim selData() As Byte
     Dim selSA As SAFEARRAY2D
-    prepSafeArray selSA, mainSelection.selMask
+    PrepSafeArray selSA, mainSelection.selMask
     CopyMemory ByVal VarPtrArray(selData()), VarPtr(selSA), 4
             
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, imgLayers(targetLayerIndex).layerDIB
+    PrepSafeArray dstSA, imgLayers(targetLayerIndex).layerDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     Dim leftOffset As Long, topOffset As Long
@@ -1118,7 +1118,7 @@ Public Function eraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     Dim blendAlpha As Double
     
     Dim dstDIBCD As Long, dstQuickX As Long, selQuickX As Long
-    dstDIBCD = imgLayers(targetLayerIndex).layerDIB.getDIBColorDepth \ 8
+    dstDIBCD = imgLayers(targetLayerIndex).layerDIB.GetDIBColorDepth \ 8
             
     For x = mainSelection.boundLeft To mainSelection.boundLeft + mainSelection.boundWidth - 1
         dstQuickX = x * dstDIBCD

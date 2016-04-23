@@ -498,10 +498,10 @@ Public Function getLayerWidth(Optional ByVal applyCanvasModifier As Boolean = Tr
             If Not (layerDIB Is Nothing) Then
         
                 If applyCanvasModifier Then
-                    getLayerWidth = layerDIB.getDIBWidth * getLayerCanvasXModifier
+                    getLayerWidth = layerDIB.GetDIBWidth * getLayerCanvasXModifier
                     If getLayerWidth < 1 Then getLayerWidth = 1
                 Else
-                    getLayerWidth = layerDIB.getDIBWidth
+                    getLayerWidth = layerDIB.GetDIBWidth
                 End If
                 
             Else
@@ -528,10 +528,10 @@ Public Function getLayerHeight(Optional ByVal applyCanvasModifier As Boolean = T
             If Not (layerDIB Is Nothing) Then
         
                 If applyCanvasModifier Then
-                    getLayerHeight = layerDIB.getDIBHeight * getLayerCanvasYModifier
+                    getLayerHeight = layerDIB.GetDIBHeight * getLayerCanvasYModifier
                     If getLayerHeight < 1 Then getLayerHeight = 1
                 Else
-                    getLayerHeight = layerDIB.getDIBHeight
+                    getLayerHeight = layerDIB.GetDIBHeight
                 End If
                 
             Else
@@ -935,7 +935,7 @@ Public Sub makeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Op
             
             With tmpTransformDIB
                 .createBlank getLayerWidth(True), getLayerHeight(True), 32, 0
-                GDIPlusResizeDIB tmpTransformDIB, 0, 0, .getDIBWidth, .getDIBHeight, layerDIB, 0, 0, getLayerWidth(False), getLayerHeight(False), Me.getLayerResizeQuality_GDIPlus
+                GDIPlusResizeDIB tmpTransformDIB, 0, 0, .GetDIBWidth, .GetDIBHeight, layerDIB, 0, 0, getLayerWidth(False), getLayerHeight(False), Me.getLayerResizeQuality_GDIPlus
             End With
             
             Set Me.layerDIB = tmpTransformDIB
@@ -1242,11 +1242,11 @@ Friend Function getAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
     
         'Next, prepare the destination DIB.  If at all possible, we try to optimize this by reusing DIBs that are already
         ' an acceptable size.
-        If (dstDIB.getDIBWidth <> intLayerWidth) Or (dstDIB.getDIBHeight <> intLayerHeight) Then
+        If (dstDIB.GetDIBWidth <> intLayerWidth) Or (dstDIB.GetDIBHeight <> intLayerHeight) Then
             dstDIB.createBlank intLayerWidth, intLayerHeight, 32, 0, 0
-            dstDIB.setInitialAlphaPremultiplicationState True
+            dstDIB.SetInitialAlphaPremultiplicationState True
         Else
-            dstDIB.resetDIB
+            dstDIB.ResetDIB
         End If
         
         'It is now time to render the affine-transformed DIB.  If normalization factors or custom destination offsets are active,
@@ -1265,7 +1265,7 @@ Friend Function getAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
             GDI_Plus.GDIPlus_StretchBlt dstDIB, normalizeX, normalizeY, Me.getLayerWidth(True), Me.getLayerHeight(True), Me.layerDIB, 0, 0, Me.getLayerWidth(False), Me.getLayerHeight(False), 1, Me.getLayerResizeQuality_GDIPlus
         End If
         
-        dstDIB.setInitialAlphaPremultiplicationState True
+        dstDIB.SetInitialAlphaPremultiplicationState True
         
         'Return success
         getAffineTransformedDIB = True
@@ -1443,11 +1443,11 @@ Public Function getLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
     'Next, write out the header of the layer's DIB contents.  These values are necessary for reconstructing the layer's DIB
     ' in the future.
     With xmlEngine
-        .writeTag "DIB_ColorDepth", layerDIB.getDIBColorDepth
-        .writeTag "DIB_Width", layerDIB.getDIBWidth
-        .writeTag "DIB_Height", layerDIB.getDIBHeight
-        .writeTag "DIB_ArrayWidth", layerDIB.getDIBArrayWidth
-        .writeTag "DIB_AlphaPremultiplication", layerDIB.getAlphaPremultiplication
+        .writeTag "DIB_ColorDepth", layerDIB.GetDIBColorDepth
+        .writeTag "DIB_Width", layerDIB.GetDIBWidth
+        .writeTag "DIB_Height", layerDIB.GetDIBHeight
+        .writeTag "DIB_ArrayWidth", layerDIB.GetDIBArrayWidth
+        .writeTag "DIB_AlphaPremultiplication", layerDIB.GetAlphaPremultiplication
     End With
     
     'Note: we obviously do not write out the layer's DIB contents.  It must be handled via separate binary methods.
@@ -1482,7 +1482,7 @@ Public Sub setLayerHeaderFromParamString(ByVal srcParamString As String)
     'Create a param string parser
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.setParamString srcParamString
+    cParams.SetParamString srcParamString
     
     'Assign all params to the layer header
     With myLayerData
@@ -1590,7 +1590,7 @@ Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
                 layerDIB.createBlank .getUniqueTag_Long("DIB_Width", 1), .getUniqueTag_Long("DIB_Height", 1), .getUniqueTag_Long("DIB_ColorDepth", 32)
                 
                 'Mark alpha premultiplication in advance
-                layerDIB.setInitialAlphaPremultiplicationState .getUniqueTag_Boolean("DIB_AlphaPremultiplication", True)
+                layerDIB.SetInitialAlphaPremultiplicationState .getUniqueTag_Boolean("DIB_AlphaPremultiplication", True)
             
             End With
             
@@ -1747,7 +1747,7 @@ Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal n
     
     'If passed, create a local copy of the passed DIB.
     Set layerDIB = New pdDIB
-    If Not (srcDIB Is Nothing) Then layerDIB.createFromExistingDIB srcDIB
+    If Not (srcDIB Is Nothing) Then layerDIB.CreateFromExistingDIB srcDIB
     
     'Set default offsets
     myLayerData.l_OffsetX = 0
@@ -1798,7 +1798,7 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
     End With
     
     'Copy the source layer's DIB, if one exists.
-    If Not (srcLayer.layerDIB Is Nothing) Then layerDIB.createFromExistingDIB srcLayer.layerDIB
+    If Not (srcLayer.layerDIB Is Nothing) Then layerDIB.CreateFromExistingDIB srcLayer.layerDIB
     
     'Depending on the type of layer we are copying, copy any extra layer data, or generate a new layer mask to
     ' match the layer's vector contents.
@@ -1835,19 +1835,19 @@ Public Function CropNullPaddedLayer() As Boolean
     
     'Make sure the source DIB isn't empty; (this should never happen, but I'm trying to be better about catching
     ' edge error conditions).
-    If (layerDIB.getDIBDC <> 0) And (layerDIB.getDIBWidth <> 0) And (layerDIB.getDIBHeight <> 0) And (layerDIB.getDIBColorDepth = 32) Then
+    If (layerDIB.GetDIBDC <> 0) And (layerDIB.GetDIBWidth <> 0) And (layerDIB.GetDIBHeight <> 0) And (layerDIB.GetDIBColorDepth = 32) Then
     
         'Point an array at the layer's DIB data
         Dim srcImageData() As Byte
         Dim srcSA As SAFEARRAY2D
-        prepInternalSafeArray srcSA
+        PrepInternalSafeArray srcSA
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
         Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
         initY = 0
-        finalX = layerDIB.getDIBWidth - 1
-        finalY = layerDIB.getDIBHeight - 1
+        finalX = layerDIB.GetDIBWidth - 1
+        finalY = layerDIB.GetDIBHeight - 1
         
         'Each edge will be scanned independently, and these variables will be calculated with the new bounding
         ' RECT for this layer.
@@ -1989,11 +1989,11 @@ Public Function CropNullPaddedLayer() As Boolean
             Set tmpCropDIB = New pdDIB
             tmpCropDIB.createBlank newRight - newLeft + 1, newBottom - newTop + 1, 32, 0
             Debug.Print "Crop rect: (" & newLeft & "," & newTop & ") - (" & newRight & "," & newBottom & ")"
-            BitBlt tmpCropDIB.getDIBDC, 0, 0, newRight - newLeft + 1, newBottom - newTop + 1, layerDIB.getDIBDC, newLeft, newTop, vbSrcCopy
-            tmpCropDIB.setInitialAlphaPremultiplicationState layerDIB.getAlphaPremultiplication
+            BitBlt tmpCropDIB.GetDIBDC, 0, 0, newRight - newLeft + 1, newBottom - newTop + 1, layerDIB.GetDIBDC, newLeft, newTop, vbSrcCopy
+            tmpCropDIB.SetInitialAlphaPremultiplicationState layerDIB.GetAlphaPremultiplication
             
             'Replace the current layer DIB with our temporary DIB
-            layerDIB.createFromExistingDIB tmpCropDIB
+            layerDIB.CreateFromExistingDIB tmpCropDIB
             
             'Modify our layer offsets to reflect our new size
             myLayerData.l_OffsetX = newLeft
@@ -2047,12 +2047,12 @@ Public Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
         tmpPaddingDIB.createBlank parentImageWidth, parentImageHeight, 32, 0
     
         'Copy the current layer into the temporary DIB, with proper offsets applied
-        BitBlt tmpPaddingDIB.getDIBDC, myLayerData.l_OffsetX, myLayerData.l_OffsetY, layerDIB.getDIBWidth, layerDIB.getDIBHeight, layerDIB.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt tmpPaddingDIB.GetDIBDC, myLayerData.l_OffsetX, myLayerData.l_OffsetY, layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, layerDIB.GetDIBDC, 0, 0, vbSrcCopy
     
         'Replace our current layer DIB with the temporary DIB
-        Dim alphaPremultiplicationState As Boolean: alphaPremultiplicationState = layerDIB.getAlphaPremultiplication
+        Dim alphaPremultiplicationState As Boolean: alphaPremultiplicationState = layerDIB.GetAlphaPremultiplication
         Set Me.layerDIB = tmpPaddingDIB
-        Me.layerDIB.setInitialAlphaPremultiplicationState alphaPremultiplicationState
+        Me.layerDIB.SetInitialAlphaPremultiplicationState alphaPremultiplicationState
     
         'Reset layer offset values
         myLayerData.l_OffsetX = 0
@@ -2075,7 +2075,7 @@ Private Sub UpdateInternalThumbnail()
     
     'If the layer has not been instantiated properly, reject the thumbnail request
     If (layerDIB Is Nothing) Then Exit Sub
-    If (layerDIB.getDIBWidth = 0) Or (layerDIB.getDIBHeight = 0) Then Exit Sub
+    If (layerDIB.GetDIBWidth = 0) Or (layerDIB.GetDIBHeight = 0) Then Exit Sub
     
     'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
     ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
@@ -2085,7 +2085,7 @@ Private Sub UpdateInternalThumbnail()
     Dim tIcoWidth As Long, tIcoHeight As Long, tX As Double, tY As Double
     
     'Start by determining proper dimensions for the resized thumbnail image.
-    ConvertAspectRatio layerDIB.getDIBWidth, layerDIB.getDIBHeight, LAYER_THUMB_SIZE, LAYER_THUMB_SIZE, tIcoWidth, tIcoHeight
+    ConvertAspectRatio layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, LAYER_THUMB_SIZE, LAYER_THUMB_SIZE, tIcoWidth, tIcoHeight
     
     'If the form is wider than it is tall, center the thumbnail vertically
     If tIcoWidth > tIcoHeight Then
@@ -2099,10 +2099,10 @@ Private Sub UpdateInternalThumbnail()
     End If
     
     'Prepare the destination DIB
-    If (layerThumbnail.getDIBWidth <> LAYER_THUMB_SIZE) Or (layerThumbnail.getDIBHeight <> LAYER_THUMB_SIZE) Then
+    If (layerThumbnail.GetDIBWidth <> LAYER_THUMB_SIZE) Or (layerThumbnail.GetDIBHeight <> LAYER_THUMB_SIZE) Then
         layerThumbnail.createBlank LAYER_THUMB_SIZE, LAYER_THUMB_SIZE, 32, 0
     Else
-        layerThumbnail.resetDIB 0
+        layerThumbnail.ResetDIB 0
     End If
     
     'There are two possible ways to create a thumbnail image.  If FreeImage is available, we prefer to use it, as it
@@ -2110,7 +2110,7 @@ Private Sub UpdateInternalThumbnail()
     If g_ImageFormats.FreeImageEnabled Then
         FreeImageResizeDIBFast layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, FILTER_BOX, FILTER_BILINEAR), True
     Else
-        GDIPlusResizeDIB layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, 0, 0, layerDIB.getDIBWidth, layerDIB.getDIBHeight, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, InterpolationModeNearestNeighbor, InterpolationModeHighQualityBicubic)
+        GDIPlusResizeDIB layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, 0, 0, layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, InterpolationModeNearestNeighbor, InterpolationModeHighQualityBicubic)
     End If
     
     'Uncomment the line below to profile different thumbnail resize strategies
@@ -2133,22 +2133,22 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     'If the requested thumbnail size differs from our cached version, resize the thumbnail prior to passing it along
     If thumbnailSize <> LAYER_THUMB_SIZE Then
         
-        If (dstThumbnailDIB.getDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.getDIBHeight <> thumbnailSize) Then
+        If (dstThumbnailDIB.GetDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.GetDIBHeight <> thumbnailSize) Then
             dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
         Else
-            dstThumbnailDIB.resetDIB 0
+            dstThumbnailDIB.ResetDIB 0
         End If
         
         If g_ImageFormats.FreeImageEnabled Then
             FreeImageResizeDIBFast dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, FILTER_BOX, FILTER_BILINEAR), True
         Else
-            GDIPlusResizeDIB dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, 0, 0, layerThumbnail.getDIBWidth, layerThumbnail.getDIBHeight, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, InterpolationModeNearestNeighbor, InterpolationModeHighQualityBicubic)
+            GDIPlusResizeDIB dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, 0, 0, layerThumbnail.GetDIBWidth, layerThumbnail.GetDIBHeight, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, InterpolationModeNearestNeighbor, InterpolationModeHighQualityBicubic)
         End If
         
-        dstThumbnailDIB.setInitialAlphaPremultiplicationState True
+        dstThumbnailDIB.SetInitialAlphaPremultiplicationState True
         
     Else
-        dstThumbnailDIB.createFromExistingDIB layerThumbnail
+        dstThumbnailDIB.CreateFromExistingDIB layerThumbnail
     End If
     
     RequestThumbnail = True
@@ -2156,17 +2156,17 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
 End Function
 
 'This function can be used to populate a valid SAFEARRAY2D structure against the layer's current DIB
-Private Sub prepInternalSafeArray(ByRef srcSA As SAFEARRAY2D)
+Private Sub PrepInternalSafeArray(ByRef srcSA As SAFEARRAY2D)
     
     'Populate a relevant SafeArray variable for the supplied DIB
     With srcSA
         .cbElements = 1
         .cDims = 2
         .Bounds(0).lBound = 0
-        .Bounds(0).cElements = layerDIB.getDIBHeight
+        .Bounds(0).cElements = layerDIB.GetDIBHeight
         .Bounds(1).lBound = 0
-        .Bounds(1).cElements = layerDIB.getDIBArrayWidth
-        .pvData = layerDIB.getActualDIBBits
+        .Bounds(1).cElements = layerDIB.GetDIBArrayWidth
+        .pvData = layerDIB.GetActualDIBBits
     End With
     
 End Sub
@@ -2331,13 +2331,13 @@ Public Function syncInternalDIB(Optional ByVal levelOfDetail As COMPOSITOR_LOD_C
             'Initialize the backer DIB as necessary
             If (layerDIB Is Nothing) Then Set layerDIB = New pdDIB
             
-            If (layerDIB.getDIBWidth <> myVectorData.vd_Width) Or (layerDIB.getDIBHeight <> myVectorData.vd_Height) Then
+            If (layerDIB.GetDIBWidth <> myVectorData.vd_Width) Or (layerDIB.GetDIBHeight <> myVectorData.vd_Height) Then
                 layerDIB.createBlank myVectorData.vd_Width, myVectorData.vd_Height, 32, 0, 0
             Else
-                layerDIB.resetDIB
+                layerDIB.ResetDIB
             End If
             
-            layerDIB.setInitialAlphaPremultiplicationState True
+            layerDIB.SetInitialAlphaPremultiplicationState True
             
             'Use pdTextRenderer to paint the string onto the backer DIB
             myTextRenderer.renderTextToDIB layerDIB, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height
@@ -2354,12 +2354,12 @@ End Function
 Public Function estimateRAMUsage() As Double
 
     'Calculate the raw memory size of both the layer and the cached thumbnail DIB, if any
-    If Not (layerDIB Is Nothing) Then estimateRAMUsage = layerDIB.getDIBArrayWidth * layerDIB.getDIBHeight
-    If Not (layerThumbnail Is Nothing) Then estimateRAMUsage = estimateRAMUsage + layerThumbnail.getDIBArrayWidth * layerThumbnail.getDIBHeight
+    If Not (layerDIB Is Nothing) Then estimateRAMUsage = layerDIB.GetDIBArrayWidth * layerDIB.GetDIBHeight
+    If Not (layerThumbnail Is Nothing) Then estimateRAMUsage = estimateRAMUsage + layerThumbnail.GetDIBArrayWidth * layerThumbnail.GetDIBHeight
     
     Dim i As Long
     For i = 0 To NUM_OF_LOD_CACHES - 1
-        If Not (lodDIB(i) Is Nothing) Then estimateRAMUsage = estimateRAMUsage + lodDIB(i).getDIBArrayWidth * lodDIB(i).getDIBHeight
+        If Not (lodDIB(i) Is Nothing) Then estimateRAMUsage = estimateRAMUsage + lodDIB(i).GetDIBArrayWidth * lodDIB(i).GetDIBHeight
     Next i
     
     'Assume a 10% overhead for this class instance and other miscellaneous layer data

@@ -702,7 +702,7 @@ Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
             Else
             
                 'Create a new, blank DIB the same size as the source DIB
-                If createBlank(srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBColorDepth) Then
+                If CreateBlank(srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBColorDepth) Then
                     
                     'Copy the image data without modification
                     BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
@@ -721,7 +721,7 @@ Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
         Else
         
             'Create a new, blank DIB at the requested size
-            If createBlank(newWidth, newHeight, srcDIB.GetDIBColorDepth) Then
+            If CreateBlank(newWidth, newHeight, srcDIB.GetDIBColorDepth) Then
 
                 'We now break up the resize request into two branches: 24bpp data, and 32bpp data.
                 If srcDIB.GetDIBColorDepth = 24 Then
@@ -789,7 +789,7 @@ Public Function ConvertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As
             EraseDIB
             
             'Create a new DIB that's exactly the same size as the old one
-            If createBlank(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, 24) Then
+            If CreateBlank(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, 24) Then
                 
                 'Copy the image data from the temporary DIB without modification
                 BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
@@ -865,7 +865,7 @@ Public Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
             EraseDIB
     
             'Create a new DIB that's exactly the same size as the old one
-            If Me.createBlank(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, 32) Then
+            If Me.CreateBlank(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, 32) Then
                 
                 'Copy the image data from the temporary DIB without modification
                 BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
@@ -921,7 +921,7 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
             GetObject srcPicture.Handle, Len(tmpBitmap), tmpBitmap
             
             'Use that bitmap object to create a new, blank DIB of the same size
-            If createBlank(tmpBitmap.Width, tmpBitmap.Height, tmpBitmap.BitsPerPixel) Then
+            If CreateBlank(tmpBitmap.Width, tmpBitmap.Height, tmpBitmap.BitsPerPixel) Then
             
                 'Create a new DC
                 Dim tmpDC As Long
@@ -969,7 +969,7 @@ End Function
 
 'Create a blank DIB. If no colorDepth is specified, it will default to 24bpp (16 million colors, no alpha-channel).
 ' If the DIB is 32bpp, an optional alpha parameter can be set for the DIB.
-Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal BackColor As Long = vbWhite, Optional ByVal dibAlpha As Long = 0) As Boolean
+Public Function CreateBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal BackColor As Long = vbWhite, Optional ByVal dibAlpha As Long = 0) As Boolean
     
     'Erase any existing DIB data
     EraseDIB
@@ -1074,7 +1074,7 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     End If
     
     'Return success contingent on whether we have a DIB pointer or not
-    createBlank = CBool(m_dibHandle <> 0)
+    CreateBlank = CBool(m_dibHandle <> 0)
     
 End Function
 
@@ -1207,7 +1207,7 @@ Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
         'Create a temporary DIB to house the stretched image.  This is required for proper GDI-based color management.
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
-        tmpDIB.createBlank dWidth, dHeight, 24
+        tmpDIB.CreateBlank dWidth, dHeight, 24
         
         'For 24bpp images, simply copy over the current image data
         If m_DibColorDepth = 24 Then
@@ -1370,7 +1370,7 @@ Public Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
     
     'Initialize a blank DIB at the requested size.  Besides giving us a memory target, this will also initialize all module-level
     ' parameters to match the file's settings.
-    If createBlank(fWidth, fHeight, fColorDepth) Then
+    If CreateBlank(fWidth, fHeight, fColorDepth) Then
         
         'Now it's time to overwrite the DIB memory region with the pixel data in the file.
         Dim tmpDIBPointer As Long, tmpDIBLength As Long
@@ -1741,9 +1741,9 @@ Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     'Populate a unique lookup table for each color, based on each possible alpha value (0 to 255)
     For x = 0 To 255
         tmpAlpha = 1 - (x / 255)
-        rLookup(x) = newR * tmpAlpha
-        gLookUp(x) = newG * tmpAlpha
-        bLookup(x) = newB * tmpAlpha
+        rLookup(x) = Int(newR * tmpAlpha)
+        gLookUp(x) = Int(newG * tmpAlpha)
+        bLookup(x) = Int(newB * tmpAlpha)
     Next x
     
     'Loop through the image, compositing as we go
@@ -1763,9 +1763,9 @@ Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
             
             'Handle transparent pixels specially (this improves performance)
             If (checkAlpha = 0) Then
-                dibPixels(x + 2) = newR
-                dibPixels(x + 1) = newG
                 dibPixels(x) = newB
+                dibPixels(x + 1) = newG
+                dibPixels(x + 2) = newR
             Else
             
                 'Use that alpha value to blend the current colors with the newly requested color

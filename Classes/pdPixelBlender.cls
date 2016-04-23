@@ -47,22 +47,22 @@ Private m_topDIBCopy As pdDIB
 ' - A full blend (including alpha handling) will be applied.
 ' - The bottom DIB must already be large enough to hold the result of the composition.
 ' - The two DIBs should overlap at least partially.  If they don't, correctness of the function is not guaranteed.
-Friend Sub blendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal alphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal applyFinalBlend As Boolean = True)
+Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal alphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal applyFinalBlend As Boolean = True)
     
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long, xOffsetBottom As Long, yOffsetBottom As Long
     
     'Calculate the overlap between the top and bottom DIBs.  The overlap function will automatically determine loop bounds for us,
     ' including safely rounding all floating-point coordinates to loop-friendly integers.
-    If calculateDIBOverlap(topDIB, bottomDIB, dstX, dstY, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom) Then
+    If CalculateDIBOverlap(topDIB, bottomDIB, dstX, dstY, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom) Then
         
         'With loop bounds safely calculated, we can now proceed with blending.
         
         'Because we are potentially doing a *lot* of calculations here, we need to make a temporary copy of the top DIB.  (Our copy will
         ' be a beaten, mangled mess by the end of this function, and we aren't allowed to make changes to the caller's copy.)
-        If (m_topDIBCopy.getDIBWidth < topDIB.getDIBWidth) Or (m_topDIBCopy.getDIBHeight < topDIB.getDIBHeight) Then
-            m_topDIBCopy.createBlank topDIB.getDIBWidth, topDIB.getDIBHeight, 32, 0, 0
+        If (m_topDIBCopy.GetDIBWidth < topDIB.GetDIBWidth) Or (m_topDIBCopy.GetDIBHeight < topDIB.GetDIBHeight) Then
+            m_topDIBCopy.CreateBlank topDIB.GetDIBWidth, topDIB.GetDIBHeight, 32, 0, 0
         End If
-        BitBlt m_topDIBCopy.getDIBDC, 0, 0, topDIB.getDIBWidth, topDIB.getDIBHeight, topDIB.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt m_topDIBCopy.GetDIBDC, 0, 0, topDIB.GetDIBWidth, topDIB.GetDIBHeight, topDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'To keep our individual blend functions as simple as possible, we apply a pre-processing alpha pass that handles several things:
         ' 1) Apply layer masks (if any)
@@ -71,7 +71,7 @@ Friend Sub blendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
         'Note that we can skip these steps if none of these special alpha modes are active for the top DIB.
         
         If (alphaMode <> LA_NORMAL) Then
-            preProcessAlphaEffects m_topDIBCopy, bottomDIB, alphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, False
+            PreProcessAlphaEffects m_topDIBCopy, bottomDIB, alphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, False
         End If
         
         'With alpha inheritance successfully applied to non-overlapping regions of the bottom layer, we can now forward further handling to
@@ -84,34 +84,37 @@ Friend Sub blendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
             
             'Blend modes with already-optimized functions are listed here
             Case BL_DARKEN
-                applyBlendMode_Darken m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
-                
-            Case BL_MULTIPLY
-                applyBlendMode_Multiply m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
-            
-            Case BL_SCREEN
-                applyBlendMode_Screen m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
-            
-            Case BL_LINEARDODGE
-                applyBlendMode_LinearDodge m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
-                
-            Case BL_OVERLAY
-                applyBlendMode_Overlay m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
-                
-            Case BL_SOFTLIGHT
-                applyBlendMode_SoftLight m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                ApplyBlendMode_Darken m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
             Case BL_HARDLIGHT
-                applyBlendMode_HardLight m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                ApplyBlendMode_HardLight m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+            
+            Case BL_LIGHTEN
+                ApplyBlendMode_Lighten m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+            
+            Case BL_LINEARDODGE
+                ApplyBlendMode_LinearDodge m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                
+            Case BL_MULTIPLY
+                ApplyBlendMode_Multiply m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                
+            Case BL_OVERLAY
+                ApplyBlendMode_Overlay m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+            
+            Case BL_SCREEN
+                ApplyBlendMode_Screen m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+            
+            Case BL_SOFTLIGHT
+                ApplyBlendMode_SoftLight m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
             'Some blendmodes don't have dedicated, optimized subs just yet.  This catch-all function handles their code for now.
             Case Else
-                applyBlendMode_Generic m_topDIBCopy, bottomDIB, blendMode, alphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                ApplyBlendMode_Generic m_topDIBCopy, bottomDIB, blendMode, alphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
         
         End Select
         
         'Composited results will have been placed inside the temporary top DIB copy.  Apply the final blend now!
-        If applyFinalBlend Then m_topDIBCopy.alphaBlendToDCEx bottomDIB.getDIBDC, xOffsetBottom, yOffsetBottom, finalX - initX, finalY - initY, 0, 0, finalX - initX, finalY - initY, alphaModifier * 255
+        If applyFinalBlend Then m_topDIBCopy.AlphaBlendToDCEx bottomDIB.GetDIBDC, xOffsetBottom, yOffsetBottom, finalX - initX, finalY - initY, 0, 0, finalX - initX, finalY - initY, alphaModifier * 255
         
         'That's all there is to it!
 
@@ -125,7 +128,7 @@ End Sub
 'Besides top and bottom DIB references, the destination (x, y) of the top DIB (relative to the bottom DIB) must be supplied.
 '
 'Returns: TRUE and filled destination coordinates if overlap occurs; FALSE otherwise.
-Private Function calculateDIBOverlap(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByRef initX As Long, ByRef initY As Long, ByRef finalX As Long, ByRef finalY As Long, ByRef xOffsetBottom As Long, ByRef yOffsetBottom As Long) As Boolean
+Private Function CalculateDIBOverlap(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByRef initX As Long, ByRef initY As Long, ByRef finalX As Long, ByRef finalY As Long, ByRef xOffsetBottom As Long, ByRef yOffsetBottom As Long) As Boolean
     
     'Start by calculating bounds for the main per-pixel compositor loop.  These bounds are relative to the *top layer*, as we do
     ' not perform compositing on areas of the bottom layer that *are not overlapped* by the top layer.  (We just treat them as if
@@ -137,15 +140,15 @@ Private Function calculateDIBOverlap(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     With topRect
         .Left = 0
         .Top = 0
-        .Width = topDIB.getDIBWidth
-        .Height = topDIB.getDIBHeight
+        .Width = topDIB.GetDIBWidth
+        .Height = topDIB.GetDIBHeight
     End With
     
     With bottomRect
         .Left = -dstX
         .Top = -dstY
-        .Width = bottomDIB.getDIBWidth
-        .Height = bottomDIB.getDIBHeight
+        .Width = bottomDIB.GetDIBWidth
+        .Height = bottomDIB.GetDIBHeight
     End With
     
     Dim dibsOverlap As Boolean
@@ -160,26 +163,26 @@ Private Function calculateDIBOverlap(ByRef topDIB As pdDIB, ByRef bottomDIB As p
         initY = Int(IntersectRect.Top)
         finalX = Int(IntersectRect.Left + IntersectRect.Width + 0.9999)
         finalY = Int(IntersectRect.Top + IntersectRect.Height + 0.9999)
-        If finalX > (topDIB.getDIBWidth - 1) Then finalX = topDIB.getDIBWidth - 1
-        If finalY > (topDIB.getDIBHeight - 1) Then finalY = topDIB.getDIBHeight - 1
+        If finalX > (topDIB.GetDIBWidth - 1) Then finalX = topDIB.GetDIBWidth - 1
+        If finalY > (topDIB.GetDIBHeight - 1) Then finalY = topDIB.GetDIBHeight - 1
         
         'Individual blend functions need to know where the offset into the bottom DIB is, so calculate those last.
         xOffsetBottom = Fix(dstX)
         yOffsetBottom = Fix(dstY)
         
         'As a final failsafe, make sure the loop bounds never travel outside the *bottom* DIB's boundaries.
-        If (xOffsetBottom + finalX) > (bottomDIB.getDIBWidth - 1) Then finalX = (bottomDIB.getDIBWidth - 1) - xOffsetBottom
-        If (yOffsetBottom + finalY) > (bottomDIB.getDIBHeight - 1) Then finalY = (bottomDIB.getDIBHeight - 1) - yOffsetBottom
+        If (xOffsetBottom + finalX) > (bottomDIB.GetDIBWidth - 1) Then finalX = (bottomDIB.GetDIBWidth - 1) - xOffsetBottom
+        If (yOffsetBottom + finalY) > (bottomDIB.GetDIBHeight - 1) Then finalY = (bottomDIB.GetDIBHeight - 1) - yOffsetBottom
         
     End If
     
-    calculateDIBOverlap = dibsOverlap
+    CalculateDIBOverlap = dibsOverlap
     
 End Function
 
 'Prior to blending two DIBs, call this function preprocess any alpha-specific effects (masks, inheritance, etc).  This greatly simplifies
 ' the actual blending code inside each blend function, because special alpha handling is never required.
-Private Sub preProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal alphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False)
+Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal alphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False)
     
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
@@ -199,16 +202,16 @@ Private Sub preProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.getDIBArrayWidth:  bottomDIBPointer = bottomDIB.getActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.getDIBArrayWidth:  topDIBPointer = topDIB.getActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
-    prepInternalSafeArray1D bottomSA, bottomDIB
+    PrepInternalSafeArray1D bottomSA, bottomDIB
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
-    prepInternalSafeArray1D topSA, topDIB
+    PrepInternalSafeArray1D topSA, topDIB
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -289,13 +292,13 @@ Private Sub preProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
     
     'All blend mode functions return premultiplied DIBs, by design.
-    topDIB.setInitialAlphaPremultiplicationState True
+    topDIB.SetInitialAlphaPremultiplicationState True
     
 End Sub
 
 'Current catch-all for unoptimized blend mode calculations.  The goal is to move as many of these as possible to dedicated subs, where we can make
 ' things like dedicated lookup tables, contingent on the actual blend mode being applied.
-Private Sub applyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal alphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+Private Sub ApplyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal alphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
 
     'In this generic blend sub, we will potentially be doing a lot of int/float conversions.  To speed things up, use a persistent look-up table.
     Dim intToFloat() As Single
@@ -313,12 +316,12 @@ Private Sub applyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     ' the "destination", because it will receive the full composite results.
     Dim bImageData() As Byte
     Dim bottomSA As SAFEARRAY2D
-    prepSafeArray bottomSA, bottomDIB
+    PrepSafeArray bottomSA, bottomDIB
     CopyMemory ByVal VarPtrArray(bImageData()), VarPtr(bottomSA), 4
 
     Dim tImageData() As Byte
     Dim topSA As SAFEARRAY2D
-    prepSafeArray topSA, topDIB
+    PrepSafeArray topSA, topDIB
     CopyMemory ByVal VarPtrArray(tImageData()), VarPtr(topSA), 4
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
@@ -413,11 +416,6 @@ Private Sub applyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                         If newG < 0 Then newG = 0
                         If newB < 0 Then newB = 0
                         
-                    Case BL_LIGHTEN
-                        If bottomR > topR Then newR = bottomR Else newR = topR
-                        If bottomG > topG Then newG = bottomG Else newG = topG
-                        If bottomB > topB Then newB = bottomB Else newB = topB
-                    
                     Case BL_COLORDODGE
                         If topR = 1 Then newR = 1 Else newR = bottomR / (1 - topR)
                         If topG = 1 Then newG = 1 Else newG = bottomG / (1 - topG)
@@ -485,23 +483,23 @@ Private Sub applyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                         If newB > 1 Then newB = 1
                         
                     Case BL_HUE
-                        fastRGBtoHSV topR, topG, topB, topH, topS, topV
-                        fastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
+                        FastRGBtoHSV topR, topG, topB, topH, topS, topV
+                        FastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
                         fHSVtoRGB topH, bottomS, bottomV, newR, newG, newB
                     
                     Case BL_SATURATION
-                        fastRGBtoHSV topR, topG, topB, topH, topS, topV
-                        fastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
+                        FastRGBtoHSV topR, topG, topB, topH, topS, topV
+                        FastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
                         fHSVtoRGB bottomH, topS, bottomV, newR, newG, newB
                     
                     Case BL_COLOR
-                        fastRGBtoHSV topR, topG, topB, topH, topS, topV
+                        FastRGBtoHSV topR, topG, topB, topH, topS, topV
                         bottomV = fMax3(bottomR, bottomG, bottomB)
                         fHSVtoRGB topH, topS, bottomV, newR, newG, newB
                     
                     Case BL_LUMINOSITY
                         topV = fMax3(topR, topG, topB)
-                        fastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
+                        FastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
                         fHSVtoRGB bottomH, bottomS, topV, newR, newG, newB
                         
                     Case BL_GRAINEXTRACT
@@ -530,19 +528,24 @@ Private Sub applyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                     ' IMPORTANT NOTE!
                     '
                     ' Blend modes that have already been optimized are included beneath this comment as a temporary
-                    ' measure only.  They should not actually be applied via this function.  Use their dedicated functions
-                    ' instead, as they are significantly faster.
+                    ' measure only.  They should not actually be applied via this function.  Use their dedicated functions,
+                    ' as they are significantly faster.
                     '****************************************************************************************************
                     
                     Case BL_DARKEN
                         If bottomR < topR Then newR = bottomR Else newR = topR
                         If bottomG < topG Then newG = bottomG Else newG = topG
                         If bottomB < topB Then newB = bottomB Else newB = topB
-                
-                    Case BL_MULTIPLY
-                        newR = topR * bottomR
-                        newG = topG * bottomG
-                        newB = topB * bottomB
+                    
+                    Case BL_HARDLIGHT
+                        If topR < 0.5 Then newR = 2 * bottomR * topR Else newR = 1 - 2 * (1 - bottomR) * (1 - topR)
+                        If topG < 0.5 Then newG = 2 * bottomG * topG Else newG = 1 - 2 * (1 - bottomG) * (1 - topG)
+                        If topB < 0.5 Then newB = 2 * bottomB * topB Else newB = 1 - 2 * (1 - bottomB) * (1 - topB)
+                        
+                    Case BL_LIGHTEN
+                        If bottomR > topR Then newR = bottomR Else newR = topR
+                        If bottomG > topG Then newG = bottomG Else newG = topG
+                        If bottomB > topB Then newB = bottomB Else newB = topB
                     
                     Case BL_LINEARDODGE
                         newR = topR + bottomR
@@ -552,10 +555,10 @@ Private Sub applyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                         If newG > 1 Then newG = 1
                         If newB > 1 Then newB = 1
                     
-                    Case BL_HARDLIGHT
-                        If topR < 0.5 Then newR = 2 * bottomR * topR Else newR = 1 - 2 * (1 - bottomR) * (1 - topR)
-                        If topG < 0.5 Then newG = 2 * bottomG * topG Else newG = 1 - 2 * (1 - bottomG) * (1 - topG)
-                        If topB < 0.5 Then newB = 2 * bottomB * topB Else newB = 1 - 2 * (1 - bottomB) * (1 - topB)
+                    Case BL_MULTIPLY
+                        newR = topR * bottomR
+                        newG = topG * bottomG
+                        newB = topB * bottomB
                         
                     Case Else
                         newR = topR
@@ -595,14 +598,14 @@ Private Sub applyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     CopyMemory ByVal VarPtrArray(tImageData), 0&, 4
     
     'DIBs must be premultiplied for this function to work, and they'll always leave the function in a premultiplied state.
-    topDIB.setInitialAlphaPremultiplicationState True
+    topDIB.SetInitialAlphaPremultiplicationState True
 
 End Sub
 
 'Optimized "darken" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
 ' blendmode calculations, which should then be alpha-blended onto the target via some other function.
 ' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
-Private Sub applyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+Private Sub ApplyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
     
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
@@ -622,16 +625,16 @@ Private Sub applyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.getDIBArrayWidth:  bottomDIBPointer = bottomDIB.getActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.getDIBArrayWidth:  topDIBPointer = topDIB.getActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
-    prepInternalSafeArray1D bottomSA, bottomDIB
+    PrepInternalSafeArray1D bottomSA, bottomDIB
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
-    prepInternalSafeArray1D topSA, topDIB
+    PrepInternalSafeArray1D topSA, topDIB
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -727,14 +730,15 @@ Private Sub applyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
     
     'All blend mode functions return premultiplied DIBs, by design.
-    topDIB.setInitialAlphaPremultiplicationState True
+    topDIB.SetInitialAlphaPremultiplicationState True
     
 End Sub
 
-'Optimized "multiply" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+
+'Optimized "lighten" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
 ' blendmode calculations, which should then be alpha-blended onto the target via some other function.
 ' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
-Private Sub applyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+Private Sub ApplyBlendMode_Lighten(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
     
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
@@ -754,16 +758,148 @@ Private Sub applyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.getDIBArrayWidth:  bottomDIBPointer = bottomDIB.getActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.getDIBArrayWidth:  topDIBPointer = topDIB.getActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
-    prepInternalSafeArray1D bottomSA, bottomDIB
+    PrepInternalSafeArray1D bottomSA, bottomDIB
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
-    prepInternalSafeArray1D topSA, topDIB
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If topAInt <> 0 Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If bottomAInt = 0 Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If topA <> 1 Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If bottomA <> 1 Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                '"Lighten" blend mode is very simple
+                If bottomR > topR Then newR = bottomR Else newR = topR
+                If bottomG > topG Then newG = bottomG Else newG = topG
+                If bottomB > topB Then newB = bottomB Else newB = topB
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If bottomA <> 1 Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "multiply" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blendmode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -859,14 +995,14 @@ Private Sub applyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
     
     'All blend mode functions return premultiplied DIBs, by design.
-    topDIB.setInitialAlphaPremultiplicationState True
+    topDIB.SetInitialAlphaPremultiplicationState True
     
 End Sub
 
 'Optimized "linear dodge" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
 ' blend mode calculations, which should then be alpha-blended onto the target via some other function.
 ' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
-Private Sub applyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
     
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
@@ -886,16 +1022,16 @@ Private Sub applyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.getDIBArrayWidth:  bottomDIBPointer = bottomDIB.getActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.getDIBArrayWidth:  topDIBPointer = topDIB.getActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
-    prepInternalSafeArray1D bottomSA, bottomDIB
+    PrepInternalSafeArray1D bottomSA, bottomDIB
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
-    prepInternalSafeArray1D topSA, topDIB
+    PrepInternalSafeArray1D topSA, topDIB
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -994,14 +1130,14 @@ Private Sub applyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
     CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
     
     'All blend mode functions return premultiplied DIBs, by design.
-    topDIB.setInitialAlphaPremultiplicationState True
+    topDIB.SetInitialAlphaPremultiplicationState True
     
 End Sub
 
 'Optimized "hard light" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
 ' blend mode calculations, which should then be alpha-blended onto the target via some other function.
 ' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
-Private Sub applyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+Private Sub ApplyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
     
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
@@ -1021,16 +1157,16 @@ Private Sub applyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.getDIBArrayWidth:  bottomDIBPointer = bottomDIB.getActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.getDIBArrayWidth:  topDIBPointer = topDIB.getActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
-    prepInternalSafeArray1D bottomSA, bottomDIB
+    PrepInternalSafeArray1D bottomSA, bottomDIB
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
-    prepInternalSafeArray1D topSA, topDIB
+    PrepInternalSafeArray1D topSA, topDIB
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -1126,14 +1262,14 @@ Private Sub applyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
     
     'All blend mode functions return premultiplied DIBs, by design.
-    topDIB.setInitialAlphaPremultiplicationState True
+    topDIB.SetInitialAlphaPremultiplicationState True
     
 End Sub
 
 'Optimized "screen" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
 ' blendmode calculations, which should then be alpha-blended onto the target via some other function.
 ' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
-Private Sub applyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
     
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
@@ -1153,16 +1289,16 @@ Private Sub applyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.getDIBArrayWidth:  bottomDIBPointer = bottomDIB.getActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.getDIBArrayWidth:  topDIBPointer = topDIB.getActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
-    prepInternalSafeArray1D bottomSA, bottomDIB
+    PrepInternalSafeArray1D bottomSA, bottomDIB
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
-    prepInternalSafeArray1D topSA, topDIB
+    PrepInternalSafeArray1D topSA, topDIB
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -1258,14 +1394,14 @@ Private Sub applyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
     
     'All blend mode functions return premultiplied DIBs, by design.
-    topDIB.setInitialAlphaPremultiplicationState True
+    topDIB.SetInitialAlphaPremultiplicationState True
     
 End Sub
 
 'Optimized "overlay" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
 ' blendmode calculations, which should then be alpha-blended onto the target via some other function.
 ' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
-Private Sub applyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+Private Sub ApplyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
     
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
@@ -1285,16 +1421,16 @@ Private Sub applyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.getDIBArrayWidth:  bottomDIBPointer = bottomDIB.getActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.getDIBArrayWidth:  topDIBPointer = topDIB.getActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
-    prepInternalSafeArray1D bottomSA, bottomDIB
+    PrepInternalSafeArray1D bottomSA, bottomDIB
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
-    prepInternalSafeArray1D topSA, topDIB
+    PrepInternalSafeArray1D topSA, topDIB
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -1390,14 +1526,14 @@ Private Sub applyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
     
     'All blend mode functions return premultiplied DIBs, by design.
-    topDIB.setInitialAlphaPremultiplicationState True
+    topDIB.SetInitialAlphaPremultiplicationState True
     
 End Sub
 
 'Optimized "soft light" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
 ' blendmode calculations, which should then be alpha-blended onto the target via some other function.
 ' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
-Private Sub applyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
     
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
@@ -1417,16 +1553,16 @@ Private Sub applyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.getDIBArrayWidth:  bottomDIBPointer = bottomDIB.getActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.getDIBArrayWidth:  topDIBPointer = topDIB.getActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
-    prepInternalSafeArray1D bottomSA, bottomDIB
+    PrepInternalSafeArray1D bottomSA, bottomDIB
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
-    prepInternalSafeArray1D topSA, topDIB
+    PrepInternalSafeArray1D topSA, topDIB
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -1522,27 +1658,27 @@ Private Sub applyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
     
     'All blend mode functions return premultiplied DIBs, by design.
-    topDIB.setInitialAlphaPremultiplicationState True
+    topDIB.SetInitialAlphaPremultiplicationState True
     
 End Sub
 
 'Given a 1D SafeArray struct and a target DIB, point the 1D array at the first scanline of the DIB, and initialize all relevant
 ' SafeArray parameters to match.
-Private Sub prepInternalSafeArray1D(ByRef dstSafeArray As SAFEARRAY1D, ByRef srcDIB As pdDIB)
+Private Sub PrepInternalSafeArray1D(ByRef dstSafeArray As SAFEARRAY1D, ByRef srcDIB As pdDIB)
 
     With dstSafeArray
         .cbElements = 1
         .cDims = 1
         .lBound = 0
-        .cElements = srcDIB.getDIBArrayWidth
-        .pvData = srcDIB.getActualDIBBits
+        .cElements = srcDIB.GetDIBArrayWidth
+        .pvData = srcDIB.GetActualDIBBits
     End With
     
 End Sub
 
 'A heavily modified RGB to HSV transform, courtesy of http://lolengine.net/blog/2013/01/13/fast-rgb-to-hsv.
 ' Note that the code assumes RGB values already in the [0, 1] range, and it will return HSV values in the [0, 1] range.
-Private Sub fastRGBtoHSV(ByVal r As Single, ByVal g As Single, ByVal b As Single, ByRef h As Single, ByRef s As Single, ByRef v As Single)
+Private Sub FastRGBtoHSV(ByVal r As Single, ByVal g As Single, ByVal b As Single, ByRef h As Single, ByRef s As Single, ByRef v As Single)
 
     Dim k As Single, tmpSwap As Single, chroma As Single
     
@@ -1679,11 +1815,8 @@ End Function
 'In order to render complex images quickly, this class must generate a lot of temporary objects.  If PD is under memory pressure, call this function
 ' to forcibly release as many temporary objects as possible.  (It should be obvious, but subsequent render calls will result in temporary objects
 ' being recreated, as necessary.)
-Public Sub attemptToFreeMemory()
-    
-    'Erase any temporary DIBs we may have created
-    m_topDIBCopy.eraseDIB
-    
+Public Sub AttemptToFreeMemory()
+    m_topDIBCopy.EraseDIB
 End Sub
 
 Private Sub Class_Initialize()
