@@ -273,7 +273,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     Set m_SrcImage = srcImage
     If Not (m_SrcImage Is Nothing) Then
         m_SrcImage.GetCompositedImage m_CompositedImage, True
-        pdFxPreview.NotifyNonStandardSource m_CompositedImage.getDIBWidth, m_CompositedImage.getDIBHeight
+        pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
     End If
     If (Not g_ImageFormats.FreeImageEnabled) Or (m_SrcImage Is Nothing) Then Interface.ShowDisabledPreviewImage pdFxPreview
     
@@ -526,6 +526,7 @@ Private Sub UpdatePreviewSource()
             desiredAlphaCutoff = clsAlphaColor.Color
         End If
         
+        If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
         m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 8, desiredAlphaMode, PDAS_ComplicatedAlpha, desiredAlphaCutoff, clsBackground.Color, forceGrayscale, paletteCount)
         
     End If

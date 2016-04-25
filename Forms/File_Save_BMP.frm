@@ -545,6 +545,7 @@ Private Sub UpdatePreviewSource()
             BMPIndexedColorCount = 256
         End If
         
+        If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
         If prvColorDepth = 32 Then
             m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, prvColorDepth, PDAS_ComplicatedAlpha, PDAS_ComplicatedAlpha)
         Else
