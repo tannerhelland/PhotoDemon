@@ -442,7 +442,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     ' when absolutely necessary.
     If Not (m_SrcImage Is Nothing) Then
         m_SrcImage.GetCompositedImage m_CompositedImage, True
-        pdFxPreview.NotifyNonStandardSource m_CompositedImage.getDIBWidth, m_CompositedImage.getDIBHeight
+        pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
     End If
     
     If (Not g_ImageFormats.FreeImageEnabled) Then
@@ -486,9 +486,10 @@ Private Sub UpdatePreviewSource()
         FastDrawing.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
         
         'JPEGs don't support transparency, so we can save some time by forcibly converting to 24-bpp in advance
-        If (workingDIB.getDIBColorDepth = 32) Then workingDIB.convertTo24bpp clsBackground.Color
+        If (workingDIB.GetDIBColorDepth = 32) Then workingDIB.ConvertTo24bpp clsBackground.Color
         
         'Finally, convert that preview copy to a FreeImage-compatible handle.
+        If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
         If (btsDepth.ListIndex = 0) Or (btsDepth.ListIndex = 1) Then
             m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 24, PDAS_NoAlpha)
         Else
