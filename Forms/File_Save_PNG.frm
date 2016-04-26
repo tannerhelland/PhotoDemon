@@ -85,94 +85,6 @@ Begin VB.Form dialog_ExportPNG
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
          HasDC           =   0   'False
-         Height          =   5535
-         Index           =   0
-         Left            =   0
-         ScaleHeight     =   369
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   473
-         TabIndex        =   13
-         Top             =   720
-         Width           =   7095
-         Begin PhotoDemon.pdCheckBox chkInterlace 
-            Height          =   375
-            Left            =   120
-            TabIndex        =   15
-            Top             =   1200
-            Width           =   6975
-            _ExtentX        =   12303
-            _ExtentY        =   661
-            Caption         =   "use interlacing"
-            Value           =   0
-         End
-         Begin PhotoDemon.pdSlider sldCompression 
-            Height          =   975
-            Left            =   0
-            TabIndex        =   14
-            Top             =   240
-            Width           =   7095
-            _ExtentX        =   12515
-            _ExtentY        =   1720
-            Caption         =   "compression level"
-            Max             =   9
-            Value           =   9
-            GradientColorRight=   1703935
-            NotchPosition   =   2
-            NotchValueCustom=   9
-         End
-         Begin PhotoDemon.pdColorSelector clsBackground 
-            Height          =   975
-            Left            =   0
-            TabIndex        =   17
-            Top             =   1800
-            Width           =   7095
-            _ExtentX        =   15690
-            _ExtentY        =   1720
-            Caption         =   "background color"
-         End
-         Begin PhotoDemon.pdCheckBox chkEmbedBackground 
-            Height          =   375
-            Left            =   120
-            TabIndex        =   18
-            Top             =   2880
-            Width           =   6975
-            _ExtentX        =   12303
-            _ExtentY        =   661
-            Caption         =   "embed background color in file"
-            Value           =   0
-         End
-      End
-      Begin VB.PictureBox picContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         HasDC           =   0   'False
-         Height          =   5535
-         Index           =   2
-         Left            =   0
-         ScaleHeight     =   369
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   473
-         TabIndex        =   11
-         Top             =   720
-         Width           =   7095
-         Begin PhotoDemon.pdMetadataExport mtdManager 
-            Height          =   3255
-            Left            =   0
-            TabIndex        =   12
-            Top             =   0
-            Width           =   7095
-            _ExtentX        =   12515
-            _ExtentY        =   5741
-         End
-      End
-      Begin VB.PictureBox picContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         HasDC           =   0   'False
          Height          =   5175
          Index           =   1
          Left            =   0
@@ -271,6 +183,94 @@ Begin VB.Form dialog_ExportPNG
             _ExtentX        =   15690
             _ExtentY        =   1931
             Caption         =   "depth"
+         End
+      End
+      Begin VB.PictureBox picContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         HasDC           =   0   'False
+         Height          =   5535
+         Index           =   0
+         Left            =   0
+         ScaleHeight     =   369
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   473
+         TabIndex        =   13
+         Top             =   720
+         Width           =   7095
+         Begin PhotoDemon.pdCheckBox chkInterlace 
+            Height          =   375
+            Left            =   120
+            TabIndex        =   15
+            Top             =   1200
+            Width           =   6975
+            _ExtentX        =   12303
+            _ExtentY        =   661
+            Caption         =   "use interlacing"
+            Value           =   0
+         End
+         Begin PhotoDemon.pdSlider sldCompression 
+            Height          =   975
+            Left            =   0
+            TabIndex        =   14
+            Top             =   240
+            Width           =   7095
+            _ExtentX        =   12515
+            _ExtentY        =   1720
+            Caption         =   "compression level"
+            Max             =   9
+            Value           =   3
+            GradientColorRight=   1703935
+            NotchPosition   =   2
+            NotchValueCustom=   3
+         End
+         Begin PhotoDemon.pdColorSelector clsBackground 
+            Height          =   975
+            Left            =   0
+            TabIndex        =   17
+            Top             =   1800
+            Width           =   7095
+            _ExtentX        =   15690
+            _ExtentY        =   1720
+            Caption         =   "background color"
+         End
+         Begin PhotoDemon.pdCheckBox chkEmbedBackground 
+            Height          =   375
+            Left            =   120
+            TabIndex        =   18
+            Top             =   2880
+            Width           =   6975
+            _ExtentX        =   12303
+            _ExtentY        =   661
+            Caption         =   "embed background color in file"
+            Value           =   0
+         End
+      End
+      Begin VB.PictureBox picContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         HasDC           =   0   'False
+         Height          =   5535
+         Index           =   2
+         Left            =   0
+         ScaleHeight     =   369
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   473
+         TabIndex        =   11
+         Top             =   720
+         Width           =   7095
+         Begin PhotoDemon.pdMetadataExport mtdManager 
+            Height          =   3255
+            Left            =   0
+            TabIndex        =   12
+            Top             =   0
+            Width           =   7095
+            _ExtentX        =   12515
+            _ExtentY        =   5741
          End
       End
    End
@@ -492,10 +492,14 @@ End Sub
 
 Private Sub btsDepthColor_Click(ByVal buttonIndex As Long)
     UpdateColorDepthOptions
+    UpdatePreviewSource
+    UpdatePreview
 End Sub
 
 Private Sub btsDepthGrayscale_Click(ByVal buttonIndex As Long)
     UpdateColorDepthOptions
+    UpdatePreviewSource
+    UpdatePreview
 End Sub
 
 Private Sub btsMasterType_Click(ByVal buttonIndex As Long)
@@ -587,15 +591,14 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     btsColorModel.AddItem "grayscale", 2
     btsColorModel.ListIndex = 0
     
-    btsDepthColor.AddItem "48-bpp (HDR)", 0
-    btsDepthColor.AddItem "24-bpp (standard)", 1
-    btsDepthColor.AddItem "8-bpp (indexed)", 2
+    btsDepthColor.AddItem "HDR", 0
+    btsDepthColor.AddItem "standard", 1
+    btsDepthColor.AddItem "indexed", 2
     btsDepthColor.ListIndex = 1
     
-    btsDepthGrayscale.AddItem "16-bpp (HDR)", 0
-    btsDepthGrayscale.AddItem "8-bpp (standard)", 1
-    btsDepthGrayscale.AddItem "4-bpp", 2
-    btsDepthGrayscale.AddItem "1-bpp (monochrome)", 3
+    btsDepthGrayscale.AddItem "HDR", 0
+    btsDepthGrayscale.AddItem "standard", 1
+    btsDepthGrayscale.AddItem "monochrome", 2
     btsDepthGrayscale.ListIndex = 1
     
     UpdateColorDepthVisibility
@@ -656,49 +659,88 @@ Private Function GetExportParamString() As String
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     
-    'Convert the color depth option buttons into a usable numeric value
-    Dim outputColorMode As String
+    'The parameters this function returns vary based on the current PNG mode (standard vs web-optimized).
+    cParams.AddParam "PNGCreateWebOptimized", CBool(btsMasterType.ListIndex = 1)
     
-    Select Case btsColorModel.ListIndex
-        Case 0
-            outputColorMode = "Auto"
-        Case 1
-            outputColorMode = "Color"
-        Case 2
-            outputColorMode = "Gray"
-    End Select
+    'Standard parameters are the more complicated ones, if you can believe it
+    If (btsMasterType.ListIndex = 0) Then
     
-    cParams.AddParam "GIFColorMode", outputColorMode
-    
-    Dim outputAlphaMode As String
-    Select Case btsAlpha.ListIndex
-        Case 0
-            outputAlphaMode = "Auto"
-        Case 1
-            outputAlphaMode = "None"
-        Case 2
-            outputAlphaMode = "ByCutoff"
-        Case 3
-            outputAlphaMode = "ByColor"
-    End Select
-    
-    cParams.AddParam "GIFAlphaMode", outputAlphaMode
-    
-    'If "auto" mode is selected, we currently enforce a hard-coded cut-off value.  There may be a better way to do this,
-    ' but I'm not currently aware of it!
-    Dim outputAlphaCutoff As Long
-    If (btsAlpha.ListIndex = 0) Or (Not sldAlphaCutoff.IsValid) Then outputAlphaCutoff = DEFAULT_ALPHA_CUTOFF Else outputAlphaCutoff = sldAlphaCutoff.Value
-    cParams.AddParam "GIFAlphaCutoff", outputAlphaCutoff
-    
-    Dim colorCount As Long
-    If (btsColorModel.ListIndex <> 0) Then
-        If sldColorCount.IsValid Then colorCount = sldColorCount.Value Else colorCount = 256
+        'Start with the standard PNG settings, which are consistent across all standard PNG types
+        If sldCompression.IsValid Then cParams.AddParam "PNGCompressionLevel", sldCompression.Value Else cParams.AddParam "PNGCompressionLevel", sldCompression.NotchValueCustom
+        cParams.AddParam "PNGInterlacing", CBool(chkInterlace.Value)
+        cParams.AddParam "PNGBackgroundColor", clsBackground.Color
+        cParams.AddParam "PNGCreateBkgdChunk", CBool(chkEmbedBackground.Value)
+        
+        'Next come all the messy color-depth possibilities
+        Dim outputColorModel As String
+        Select Case btsColorModel.ListIndex
+            Case 0
+                outputColorModel = "Auto"
+            Case 1
+                outputColorModel = "Color"
+            Case 2
+                outputColorModel = "Gray"
+        End Select
+        cParams.AddParam "PNGColorModel", outputColorModel
+        
+        'Which color depth we write is contingent on the color model, as color and gray use different button strips.
+        ' (Gray supports some depths that color does not, e.g. 1-bit and 4-bit.)
+        Dim outputColorDepth As String, outputPaletteSize As String
+        
+        'Color modes
+        If (btsColorModel.ListIndex = 1) Then
+            
+            Select Case btsDepthColor.ListIndex
+                Case 0
+                    outputColorDepth = "48"
+                Case 1
+                    outputColorDepth = "24"
+                Case 2
+                    outputColorDepth = "8"
+                    If sldColorCount.IsValid Then outputPaletteSize = CStr(sldColorCount.Value) Else outputPaletteSize = "256"
+            End Select
+            
+        'Gray modes
+        ElseIf (btsColorModel.ListIndex = 2) Then
+            
+            Select Case btsDepthGrayscale.ListIndex
+                Case 0
+                    outputColorDepth = "16"
+                Case 1
+                    outputColorDepth = "8"
+                    If sldColorCount.IsValid Then outputPaletteSize = CStr(sldColorCount.Value) Else outputPaletteSize = "256"
+                Case 2
+                    outputColorDepth = "1"
+            End Select
+        
+        End If
+        
+        If (Len(outputColorDepth) <> 0) Then cParams.AddParam "PNGBitDepth", outputColorDepth
+        If (Len(outputPaletteSize) <> 0) Then cParams.AddParam "PNGPaletteSize", outputPaletteSize
+        
+        'Next, we've got a bunch of possible alpha modes to deal with (uuuuuugh)
+        Dim outputAlphaModel As String
+        Select Case btsAlpha.ListIndex
+            Case 0
+                outputAlphaModel = "Auto"
+            Case 1
+                outputAlphaModel = "Full"
+            Case 2
+                outputAlphaModel = "ByCutoff"
+            Case 3
+                outputAlphaModel = "ByColor"
+            Case 4
+                outputAlphaModel = "None"
+        End Select
+        
+        cParams.AddParam "PNGAlphaModel", outputAlphaModel
+        If sldAlphaCutoff.IsValid Then cParams.AddParam "PNGAlphaCutoff", sldAlphaCutoff.Value Else cParams.AddParam "PNGAlphaCutoff", DEFAULT_ALPHA_CUTOFF
+        cParams.AddParam "PNGAlphaColor", clsAlphaColor.Color
+        
+    'Web-optimized parameters must not use any UI elements not visible on the web-optimization panel!
     Else
-        colorCount = 256
+    
     End If
-    cParams.AddParam "GIFColorCount", colorCount
-    cParams.AddParam "GIFBackgroundColor", clsBackground.Color
-    cParams.AddParam "GIFAlphaColor", clsAlphaColor.Color
     
     GetExportParamString = cParams.GetParamString
     
@@ -713,9 +755,9 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-'When a parameter changes that requires a new source DIB for the preview (e.g. changing the background composite color),
-' call this function to generate a new preview DIB.  Note that you *do not* need to call this function for format-specific
-' changes (like quality, subsampling, etc).
+'When a parameter changes that requires a new source DIB for the preview (e.g. changing the background composite color,
+' changing the output color depth), you must call this function to generate a new preview DIB.  Note that you *do not*
+' need to call this function for format-specific changes (e.g. compression settings).
 Private Sub UpdatePreviewSource()
     If Not (m_CompositedImage Is Nothing) Then
         
@@ -724,38 +766,71 @@ Private Sub UpdatePreviewSource()
         Dim tmpSafeArray As SAFEARRAY2D
         FastDrawing.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
         
-        'Convert the DIB to a FreeImage-compatible handle, at a color-depth that matches the current settings.
-        ' (Note that one way or another, we'll always be converting the image to an 8-bpp mode.)
+        'To reduce the chance of bugs, we use the same parameter parsing technique as the core PNG encoder
+        Dim cParams As pdParamXML
+        Set cParams = New pdParamXML
+        cParams.SetParamString GetExportParamString()
+        
+        'Color and grayscale modes require different processing, so start there
         Dim forceGrayscale As Boolean
-        forceGrayscale = CBool(btsColorModel.ListIndex = 2)
+        forceGrayscale = ParamsEqual(cParams.GetString("PNGColorModel", "Auto"), "Gray")
         
-        Dim paletteCount As Long
-        If (btsColorModel.ListIndex = 0) Then
-            paletteCount = 256
+        'For 8-bit modes, grab a palette size.  (This parameter will be ignored in other color modes.)
+        Dim newPaletteSize As Long
+        newPaletteSize = cParams.GetLong("PNGPaletteSize", 256)
+        
+        Dim newColorDepth As Long
+        
+        If ParamsEqual(cParams.GetString("PNGColorModel", "Auto"), "Auto") Then
+            newColorDepth = 32
         Else
-            If sldColorCount.IsValid Then paletteCount = sldColorCount.Value Else paletteCount = 256
+            
+            'HDR modes do not need to be previewed, so we forcibly downsample them here
+            If forceGrayscale Then
+                newColorDepth = cParams.GetLong("PNGBitDepth", 8)
+                If newColorDepth > 8 Then newColorDepth = 8
+                If newColorDepth = 1 Then
+                    newPaletteSize = 2
+                    newColorDepth = 8
+                End If
+            Else
+                newColorDepth = cParams.GetLong("PNGBitDepth", 24)
+                If newColorDepth = 48 Then newColorDepth = 24
+                If newColorDepth = 64 Then newColorDepth = 32
+            End If
+        
         End If
         
+        'Next comes transparency, which is somewhat messy because PNG alpha behavior deviates significantly from normal alpha behavior.
         Dim desiredAlphaMode As PD_ALPHA_STATUS, desiredAlphaCutoff As Long
-        If btsAlpha.ListIndex = 0 Then
-            desiredAlphaMode = PDAS_BinaryAlpha       'Auto
-            desiredAlphaCutoff = DEFAULT_ALPHA_CUTOFF
-        ElseIf btsAlpha.ListIndex = 1 Then
-            desiredAlphaMode = PDAS_NoAlpha           'None
+        
+        If ParamsEqual(cParams.GetString("PNGAlphaModel", "Auto"), "Auto") Or ParamsEqual(cParams.GetString("PNGAlphaModel", "Auto"), "Full") Then
+            desiredAlphaMode = PDAS_ComplicatedAlpha
+            If newColorDepth = 24 Then newColorDepth = 32
+        ElseIf ParamsEqual(cParams.GetString("PNGAlphaModel", "Auto"), "None") Then
+            desiredAlphaMode = PDAS_NoAlpha
+            If newColorDepth = 32 Then newColorDepth = 24
             desiredAlphaCutoff = 0
-        ElseIf btsAlpha.ListIndex = 2 Then
-            desiredAlphaMode = PDAS_BinaryAlpha       'By cut-off
-            If sldAlphaCutoff.IsValid Then desiredAlphaCutoff = sldAlphaCutoff.Value Else desiredAlphaCutoff = 96
-        Else
-            desiredAlphaMode = PDAS_NewAlphaFromColor 'By color
-            desiredAlphaCutoff = clsAlphaColor.Color
+        ElseIf ParamsEqual(cParams.GetString("PNGAlphaModel", "Auto"), "ByCutoff") Then
+            desiredAlphaMode = PDAS_BinaryAlpha
+            desiredAlphaCutoff = cParams.GetLong("PNGAlphaCutoff", DEFAULT_ALPHA_CUTOFF)
+            If newColorDepth = 24 Then newColorDepth = 32
+        ElseIf ParamsEqual(cParams.GetString("PNGAlphaModel", "Auto"), "ByColor") Then
+            desiredAlphaMode = PDAS_NewAlphaFromColor
+            desiredAlphaCutoff = cParams.GetLong("PNGAlphaColor", vbWhite)
+            If newColorDepth = 24 Then newColorDepth = 32
         End If
         
-        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 8, desiredAlphaMode, PDAS_ComplicatedAlpha, desiredAlphaCutoff, clsBackground.Color, forceGrayscale, paletteCount)
+        If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
+        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, newColorDepth, desiredAlphaMode, PDAS_ComplicatedAlpha, desiredAlphaCutoff, cParams.GetLong("PNGBackgroundColor", vbWhite), forceGrayscale, newPaletteSize, , True)
         
     End If
     
 End Sub
+
+Private Function ParamsEqual(ByVal param1 As String, ByVal param2 As String) As Boolean
+    ParamsEqual = CBool(StrComp(param1, param2, vbTextCompare) = 0)
+End Function
 
 Private Sub UpdatePreview()
 
@@ -764,9 +839,9 @@ Private Sub UpdatePreview()
         'Make sure the preview source is up-to-date
         If (m_FIHandle = 0) Then UpdatePreviewSource
         
-        'Retrieve a BMP-saved version of the current preview image
+        'Retrieve a PNG-saved version of the current preview image
         workingDIB.ResetDIB
-        If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_GIF) Then
+        If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_PNG) Then
             FinalizeNonstandardPreview pdFxPreview, True
         End If
         
