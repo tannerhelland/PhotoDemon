@@ -147,16 +147,21 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
                 
                 'Non-truecolor images are less pleasant to work with, as the presence of alpha complicates everything.
                 Else
-                    If (currentAlphaStatus = PDAS_ComplicatedAlpha) Then
-                        AutoDetectOutputColorDepth = 8
+                    If (currentAlphaStatus <> PDAS_NoAlpha) Then
+                        
+                        If currentAlphaStatus = PDAS_ComplicatedAlpha Then
+                            AutoDetectOutputColorDepth = 32
+                        Else
+                            AutoDetectOutputColorDepth = 8
+                        End If
                     
-                    'Binary alpha is technically supported by any color-depth, so we don't have to treat it differently from
-                    ' non-alpha images
                     Else
                         If isMonochrome Then
                             AutoDetectOutputColorDepth = 1
                         Else
-                            If uniqueColorCount <= 16 Then
+                            'I'm debating whether to provide 4-bpp as an output depth.  It has limited usage, and there
+                            ' are complications with binary alpha... this is marked as TODO for now
+                            If (uniqueColorCount <= 16) Then
                                 AutoDetectOutputColorDepth = 4
                             Else
                                 AutoDetectOutputColorDepth = 8
@@ -355,7 +360,7 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
             
             'If the image is grayscale and it only contains two colors, check for monochrome next
             ' (where monochrome = pure black and pure white, only).
-            If isGrayscale And (numUniqueColors = 2) Then
+            If isGrayscale And (numUniqueColors <= 2) Then
             
                 r = ExtractR(UniqueColors(0))
                 g = ExtractG(UniqueColors(0))
@@ -365,7 +370,7 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
                     r = ExtractR(UniqueColors(1))
                     g = ExtractG(UniqueColors(1))
                     b = ExtractB(UniqueColors(1))
-                    If ((r = 0) And (g = 0) And (b = 0)) Or ((r = 255) And (g = 255) And (b = 255)) Then isGrayscale = True
+                    If ((r = 0) And (g = 0) And (b = 0)) Or ((r = 255) And (g = 255) And (b = 255)) Then isMonochrome = True
                 End If
             
             'End monochrome check
@@ -520,12 +525,12 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
 
             'If the image is grayscale and it only contains two colors, check for monochrome next
             ' (where monochrome = pure black and pure white, only).
-            If isGrayscale And (numUniqueColors = 2) Then
-            
-                If ((UniqueColors(i).Red = 0) And (UniqueColors(i).Green = 0) And (UniqueColors(i).Blue = 0)) Or ((UniqueColors(i).Red = 255) And (UniqueColors(i).Green = 255) And (UniqueColors(i).Blue = 255)) Then
-                    If ((UniqueColors(i).Red = 0) And (UniqueColors(i).Green = 0) And (UniqueColors(i).Blue = 0)) Or ((UniqueColors(i).Red = 255) And (UniqueColors(i).Green = 255) And (UniqueColors(i).Blue = 255)) Then isGrayscale = True
+            If isGrayscale And (numUniqueColors <= 2) Then
+                
+                If ((UniqueColors(0).Red = 0) And (UniqueColors(0).Green = 0) And (UniqueColors(0).Blue = 0)) Or ((UniqueColors(0).Red = 255) And (UniqueColors(0).Green = 255) And (UniqueColors(0).Blue = 255)) Then
+                    If ((UniqueColors(1).Red = 0) And (UniqueColors(1).Green = 0) And (UniqueColors(1).Blue = 0)) Or ((UniqueColors(1).Red = 255) And (UniqueColors(1).Green = 255) And (UniqueColors(1).Blue = 255)) Then isMonochrome = True
                 End If
-
+                
             'End monochrome check
             End If
 
@@ -1013,6 +1018,163 @@ ExportHDRError:
     
 End Function
 
+Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportPNGError
+    
+    ExportPNG = False
+    Dim sFileType As String: sFileType = "PNG"
+    
+    'Parse all relevant PNG parameters.  (See the PNG export dialog for details on how these are generated.)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString formatParams
+    
+    Dim useWebOptimizedPath As Boolean
+    useWebOptimizedPath = cParams.GetBool("PNGCreateWebOptimized", False)
+    
+    'Web-optimized PNGs use their own path, and they supply their own special variables
+    If useWebOptimizedPath Then
+    
+    'As of 7.0, standard-mode PNGs support a ton of user-editable parameters.
+    Else
+        
+        'First come the PNG-specific settings (compression level, chunks, etc)
+        Dim pngCompressionLevel As Long, pngInterlacing As Boolean
+        pngCompressionLevel = cParams.GetLong("PNGCompressionLevel", 3)
+        pngInterlacing = cParams.GetBool("PNGInterlacing", False)
+        
+        Dim pngBackgroundColor As Long, pngCreateBkgdChunk As Boolean
+        pngBackgroundColor = cParams.GetLong("PNGBackgroundColor", vbWhite)
+        pngCreateBkgdChunk = cParams.GetBool("PNGCreateBkgdChunk", False)
+        
+        'Next come the various color-depth and alpha modes
+        Dim outputColorModel As String
+        outputColorModel = cParams.GetString("PNGColorModel", "Auto")
+        
+        Dim forceGrayscale As Boolean
+        forceGrayscale = CBool(StrComp(LCase$(outputColorModel), "gray", vbBinaryCompare) = 0)
+        
+        Dim outputColorDepth As Long, outputPaletteSize As Long
+        If forceGrayscale Then outputColorDepth = cParams.GetLong("PNGBitDepth", 8) Else outputColorDepth = cParams.GetLong("PNGBitDepth", 24)
+        outputPaletteSize = cParams.GetLong("PNGPaletteSize", 256)
+        
+        Dim outputAlphaModel As String
+        outputAlphaModel = cParams.GetString("PNGAlphaModel", "Auto")
+        
+        Dim outputPNGCutoff As Long, outputPNGColor As Long
+        outputPNGCutoff = cParams.GetLong("PNGAlphaCutoff", 64)
+        outputPNGColor = cParams.GetLong("PNGAlphaColor", vbMagenta)
+        
+        'Generate a composited image copy, with alpha automatically un-premultiplied
+        Dim tmpImageCopy As pdDIB
+        Set tmpImageCopy = New pdDIB
+        srcPDImage.GetCompositedImage tmpImageCopy, False
+    
+        'If "automatic" mode is selected for either color space or transparency, we need to determine appropriate
+        ' color-depth and alpha-detection values now.
+        Dim autoColorModeActive As Boolean, autoTransparencyModeActive As Boolean
+        autoColorModeActive = ParamsEqual(outputColorModel, "auto")
+        autoTransparencyModeActive = ParamsEqual(outputColorModel, "auto")
+        
+        Dim autoColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+        If autoColorModeActive Or autoTransparencyModeActive Then
+            autoColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_PNG, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+            ExportDebugMsg "Color depth auto-detection returned " & CStr(autoColorDepth) & "bpp"
+        Else
+            currentAlphaStatus = PDAS_ComplicatedAlpha
+        End If
+        
+        'From the automatic values, construct matching output values as relevant
+        If autoColorModeActive Then
+            outputColorDepth = autoColorDepth
+            forceGrayscale = isGrayscale
+            If (Not isTrueColor) Then outputPaletteSize = netColorCount
+        End If
+        
+        If autoTransparencyModeActive Then
+            desiredAlphaStatus = currentAlphaStatus
+            
+        'If transparency mode is not automatic, we need to construct a new output color depth that correctly represents
+        ' the combination of color depth + alpha depth.  Note that this also requires us to workaround some FreeImage
+        ' deficiencies, so these depths may not match what PNG formally supports.
+        Else
+            If ParamsEqual(outputAlphaModel, "full") Then
+                desiredAlphaStatus = PDAS_ComplicatedAlpha
+                If (Not forceGrayscale) Then
+                    If outputColorDepth = 24 Then outputColorDepth = 32
+                    If outputColorDepth = 48 Then outputColorDepth = 64
+                End If
+            ElseIf ParamsEqual(outputAlphaModel, "none") Then
+                desiredAlphaStatus = PDAS_NoAlpha
+                If (Not forceGrayscale) Then
+                    If outputColorDepth = 64 Then outputColorDepth = 48
+                    If outputColorDepth = 32 Then outputColorDepth = 24
+                End If
+                outputPNGCutoff = 0
+            ElseIf ParamsEqual(outputAlphaModel, "bycutoff") Then
+                desiredAlphaStatus = PDAS_BinaryAlpha
+                If (Not forceGrayscale) Then
+                    If outputColorDepth = 24 Then outputColorDepth = 32
+                    If outputColorDepth = 48 Then outputColorDepth = 64
+                End If
+            ElseIf ParamsEqual(outputAlphaModel, "bycolor") Then
+                desiredAlphaStatus = PDAS_NewAlphaFromColor
+                outputPNGCutoff = outputPNGColor
+                If (Not forceGrayscale) Then
+                    If outputColorDepth = 24 Then outputColorDepth = 32
+                    If outputColorDepth = 48 Then outputColorDepth = 64
+                End If
+            End If
+            
+        End If
+        
+        'Monochrome depths require special treatment if alpha is active
+        If (outputColorDepth = 1) And (desiredAlphaStatus <> PDAS_NoAlpha) Then
+            outputColorDepth = 8
+            outputPaletteSize = 2
+        End If
+        
+    End If
+    
+    'The PNG export engine supports both FreeImage and GDI+.  Note that many, *many* features are disabled under GDI+,
+    ' so the FreeImage path is definitely preferred!
+    If g_ImageFormats.FreeImageEnabled Then
+        
+        Dim fi_DIB As Long
+        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, outputPNGCutoff, pngBackgroundColor, forceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
+        
+        'Finally, prepare some PNG save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,
+        ' request RLE encoding from FreeImage.
+        Dim PNGflags As Long: PNGflags = PNG_DEFAULT
+        If pngCompressionLevel = 0 Then PNGflags = PNGflags Or PNG_Z_NO_COMPRESSION Else PNGflags = PNGflags Or pngCompressionLevel
+        If pngInterlacing Then PNGflags = PNGflags Or PNG_INTERLACED
+                
+        'Use that handle to save the image to PNG format, with required color conversion based on the outgoing color depth
+        If (fi_DIB <> 0) Then
+            ExportPNG = FreeImage_SaveEx(fi_DIB, dstFile, PDIF_PNG, PNGflags, outputColorDepth, , , , , True)
+            If ExportPNG Then
+                ExportDebugMsg "Export to " & sFileType & " appears successful."
+            Else
+                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+            End If
+        Else
+            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            ExportPNG = False
+        End If
+        
+    Else
+        ExportPNG = GDIPlusSavePicture(srcPDImage, dstFile, ImagePNG, outputColorDepth)
+    End If
+    
+    Exit Function
+    
+ExportPNGError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportPNG = False
+    
+End Function
+
 'Save to PSD (or PSB) format using the FreeImage library
 Public Function ExportPSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
@@ -1083,4 +1245,8 @@ ExportPSDError:
     ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
     ExportPSD = False
     
+End Function
+
+Private Function ParamsEqual(ByVal param1 As String, ByVal param2 As String) As Boolean
+    ParamsEqual = CBool(StrComp(LCase$(param1), LCase$(param2), vbBinaryCompare) = 0)
 End Function

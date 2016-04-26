@@ -298,13 +298,7 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
             ExportToSpecificFormat = ImageExporter.ExportGIF(srcImage, dstPath, saveParameters, metadataParameters)
             
         Case PDIF_PNG
-            If g_ImageFormats.FreeImageEnabled Then
-                ExportToSpecificFormat = SavePNGImage(srcImage, dstPath, , saveParameters)
-            ElseIf g_ImageFormats.GDIPlusEnabled Then
-                ExportToSpecificFormat = GDIPlusSavePicture(srcImage, dstPath, ImagePNG, 32)
-            Else
-                ExportToSpecificFormat = False
-            End If
+            ExportToSpecificFormat = ImageExporter.ExportPNG(srcImage, dstPath, saveParameters, metadataParameters)
             
         Case PDIF_PPM
             ExportToSpecificFormat = SavePPMImage(srcImage, dstPath, saveParameters)
@@ -711,17 +705,17 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         End If
     
         'Finally, prepare some PNG save flags based on the parameters we were passed
-        Dim PNGFlags As Long
+        Dim PNGflags As Long
         
         'Compression level (1 to 9, but FreeImage also has a "no compression" option with a unique flag)
-        PNGFlags = pngCompressionLevel
-        If PNGFlags = 0 Then PNGFlags = PNG_Z_NO_COMPRESSION
+        PNGflags = pngCompressionLevel
+        If PNGflags = 0 Then PNGflags = PNG_Z_NO_COMPRESSION
         
         'Interlacing
-        If pngUseInterlacing Then PNGFlags = (PNGFlags Or PNG_INTERLACED)
+        If pngUseInterlacing Then PNGflags = (PNGflags Or PNG_INTERLACED)
     
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, PDIF_PNG, PNGFlags, outputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, PNGPath, PDIF_PNG, PNGflags, outputColorDepth, , , , , True)
         
         If Not fi_Check Then
             
@@ -1780,7 +1774,7 @@ Public Sub FillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     'Random fact: the WebP encoder will automatically downsample 32-bit images with pointless alpha channels to 24-bit.  This causes problems when
     ' we try to preview WebP files prior to encoding, as it may randomly change the bit-depth on us.  Check for this case, and recreate the target
     ' DIB as necessary.
-    If FreeImage_GetBPP(fi_DIB) <> dstDIB.GetDIBColorDepth Then dstDIB.createBlank dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, FreeImage_GetBPP(fi_DIB)
+    If FreeImage_GetBPP(fi_DIB) <> dstDIB.GetDIBColorDepth Then dstDIB.CreateBlank dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, FreeImage_GetBPP(fi_DIB)
         
     'Copy the newly decompressed image into the destination pdDIB object.
     Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
