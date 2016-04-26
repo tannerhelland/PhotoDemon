@@ -862,8 +862,8 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
 
             'Immediately prior to saving, pass this image's resolution values (if any) to FreeImage.
             ' These values will be embedded in the JFIF header.
-            FreeImage_SetResolutionX fi_DIB, srcPDImage.getDPI
-            FreeImage_SetResolutionY fi_DIB, srcPDImage.getDPI
+            FreeImage_SetResolutionX fi_DIB, srcPDImage.GetDPI
+            FreeImage_SetResolutionY fi_DIB, srcPDImage.GetDPI
             
             ExportJPEG = FreeImage_SaveEx(fi_DIB, dstFile, PDIF_JPEG, jpegFlags, outputColorDepth, , , , , True)
             If ExportJPEG Then
