@@ -2560,7 +2560,7 @@ Public Function FreeImage_Save(ByVal Format As FREE_IMAGE_FORMAT, _
 
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_Save = (FreeImage_SaveUInt(Format, Bitmap, StrPtr(FileName), Flags) = 1)
+   FreeImage_Save = CBool(FreeImage_SaveUInt(Format, Bitmap, StrPtr(FileName), Flags) = 1)
 
 End Function
 

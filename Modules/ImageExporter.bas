@@ -1075,7 +1075,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         ' color-depth and alpha-detection values now.
         Dim autoColorModeActive As Boolean, autoTransparencyModeActive As Boolean
         autoColorModeActive = ParamsEqual(outputColorModel, "auto")
-        autoTransparencyModeActive = ParamsEqual(outputColorModel, "auto")
+        autoTransparencyModeActive = ParamsEqual(outputAlphaModel, "auto")
         
         Dim autoColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
         If autoColorModeActive Or autoTransparencyModeActive Then
@@ -1092,43 +1092,54 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             If (Not isTrueColor) Then outputPaletteSize = netColorCount
         End If
         
+        'Convert the auto-detected transparency mode to a usable string parameter.  (We need this later in the function,
+        ' so we can combine color depth and alpha depth into a single usable bit-depth.)
         If autoTransparencyModeActive Then
             desiredAlphaStatus = currentAlphaStatus
-            
-        'If transparency mode is not automatic, we need to construct a new output color depth that correctly represents
-        ' the combination of color depth + alpha depth.  Note that this also requires us to workaround some FreeImage
-        ' deficiencies, so these depths may not match what PNG formally supports.
-        Else
-            If ParamsEqual(outputAlphaModel, "full") Then
-                desiredAlphaStatus = PDAS_ComplicatedAlpha
-                If (Not forceGrayscale) Then
-                    If outputColorDepth = 24 Then outputColorDepth = 32
-                    If outputColorDepth = 48 Then outputColorDepth = 64
-                End If
-            ElseIf ParamsEqual(outputAlphaModel, "none") Then
-                desiredAlphaStatus = PDAS_NoAlpha
-                If (Not forceGrayscale) Then
-                    If outputColorDepth = 64 Then outputColorDepth = 48
-                    If outputColorDepth = 32 Then outputColorDepth = 24
-                End If
-                outputPNGCutoff = 0
-            ElseIf ParamsEqual(outputAlphaModel, "bycutoff") Then
-                desiredAlphaStatus = PDAS_BinaryAlpha
-                If (Not forceGrayscale) Then
-                    If outputColorDepth = 24 Then outputColorDepth = 32
-                    If outputColorDepth = 48 Then outputColorDepth = 64
-                End If
-            ElseIf ParamsEqual(outputAlphaModel, "bycolor") Then
-                desiredAlphaStatus = PDAS_NewAlphaFromColor
-                outputPNGCutoff = outputPNGColor
-                If (Not forceGrayscale) Then
-                    If outputColorDepth = 24 Then outputColorDepth = 32
-                    If outputColorDepth = 48 Then outputColorDepth = 64
-                End If
+            If desiredAlphaStatus = PDAS_NoAlpha Then
+                outputAlphaModel = "none"
+            ElseIf desiredAlphaStatus = PDAS_BinaryAlpha Then
+                outputAlphaModel = "bycutoff"
+            ElseIf desiredAlphaStatus = PDAS_NewAlphaFromColor Then
+                outputAlphaModel = "bycolor"
+            ElseIf desiredAlphaStatus = PDAS_ComplicatedAlpha Then
+                outputAlphaModel = "full"
+            Else
+                outputAlphaModel = "full"
             End If
-            
         End If
         
+        'Use the current transparency mode (whether auto-created or manually requested) to construct a new output
+        ' depth that correctly represents the combination of color depth + alpha depth.  Note that this also requires
+        ' us to workaround some FreeImage deficiencies, so these depths may not match what PNG formally supports.
+        If ParamsEqual(outputAlphaModel, "full") Then
+            desiredAlphaStatus = PDAS_ComplicatedAlpha
+            If (Not forceGrayscale) Then
+                If outputColorDepth = 24 Then outputColorDepth = 32
+                If outputColorDepth = 48 Then outputColorDepth = 64
+            End If
+        ElseIf ParamsEqual(outputAlphaModel, "none") Then
+            desiredAlphaStatus = PDAS_NoAlpha
+            If (Not forceGrayscale) Then
+                If outputColorDepth = 64 Then outputColorDepth = 48
+                If outputColorDepth = 32 Then outputColorDepth = 24
+            End If
+            outputPNGCutoff = 0
+        ElseIf ParamsEqual(outputAlphaModel, "bycutoff") Then
+            desiredAlphaStatus = PDAS_BinaryAlpha
+            If (Not forceGrayscale) Then
+                If outputColorDepth = 24 Then outputColorDepth = 32
+                If outputColorDepth = 48 Then outputColorDepth = 64
+            End If
+        ElseIf ParamsEqual(outputAlphaModel, "bycolor") Then
+            desiredAlphaStatus = PDAS_NewAlphaFromColor
+            outputPNGCutoff = outputPNGColor
+            If (Not forceGrayscale) Then
+                If outputColorDepth = 24 Then outputColorDepth = 32
+                If outputColorDepth = 48 Then outputColorDepth = 64
+            End If
+        End If
+            
         'Monochrome depths require special treatment if alpha is active
         If (outputColorDepth = 1) And (desiredAlphaStatus <> PDAS_NoAlpha) Then
             outputColorDepth = 8
@@ -1144,6 +1155,16 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         Dim fi_DIB As Long
         fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, outputPNGCutoff, pngBackgroundColor, forceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
         
+        'FreeImage supports the embedding of a bkgd chunk; this doesn't make a lot of sense in modern image development,
+        ' but it is part of the PNG spec, so we provide it as an option
+        If pngCreateBkgdChunk Then
+            Dim rQuad As RGBQUAD
+            rQuad.Red = ExtractR(pngBackgroundColor)
+            rQuad.Green = ExtractG(pngBackgroundColor)
+            rQuad.Blue = ExtractB(pngBackgroundColor)
+            FreeImage_SetBackgroundColor fi_DIB, rQuad
+        End If
+        
         'Finally, prepare some PNG save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,
         ' request RLE encoding from FreeImage.
         Dim PNGflags As Long: PNGflags = PNG_DEFAULT
@@ -1152,7 +1173,8 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
                 
         'Use that handle to save the image to PNG format, with required color conversion based on the outgoing color depth
         If (fi_DIB <> 0) Then
-            ExportPNG = FreeImage_SaveEx(fi_DIB, dstFile, PDIF_PNG, PNGflags, outputColorDepth, , , , , True)
+            ExportPNG = FreeImage_Save(PDIF_PNG, fi_DIB, dstFile, PNGflags)
+            FreeImage_Unload fi_DIB
             If ExportPNG Then
                 ExportDebugMsg "Export to " & sFileType & " appears successful."
             Else
