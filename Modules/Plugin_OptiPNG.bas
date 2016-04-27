@@ -64,3 +64,52 @@ Public Function GetOptiPNGVersion() As String
     
 End Function
 
+'Use OptiPNG to optimize a PNG file.  By default, a "wait for processing to finish" mechanism is used.
+Public Function ApplyOptiPNGToFile(ByVal dstFilename As String, Optional ByVal optimizeLevel As Long = 1) As String
+    
+    If g_OptiPNGEnabled Then
+        
+        'Build a full shell path for the pngquant operation
+        Dim shellPath As String
+        shellPath = g_PluginPath & "optipng.exe "
+        
+        Dim optimizeFlags As String
+        Select Case optimizeLevel
+            
+            Case 1
+                optimizeFlags = "-o1 -nz"
+            
+            Case 2
+                optimizeFlags = "-o1"
+            
+            Case 3
+                optimizeFlags = "-o2"
+            
+            Case Else
+                optimizeFlags = ""
+        
+        End Select
+        
+        shellPath = shellPath & optimizeFlags & " "
+        
+        'Add the target filename
+        shellPath = shellPath & """" & dstFilename & """"
+        
+        Message "Using OptiPNG to optimize the PNG file.  This may take a moment..."
+                
+        'Before launching the shell, launch a single DoEvents.  This gives us some leeway before Windows marks the program
+        ' as unresponsive (relevant since we may have already paused for awhile while writing the PNG file)...
+        DoEvents
+        
+        Dim shellCheck As Boolean
+        shellCheck = ShellAndWait(shellPath, vbMinimizedNoFocus)
+    
+        'If the shell was successful and the image was created successfully, overwrite the original 32bpp save
+        ' (from FreeImage) with the newly optimized one (from OptiPNG)
+        If shellCheck Then
+            Message "OptiPNG successful.  Overwriting original file with optimized copy..."
+        End If
+        
+    End If
+    
+End Function

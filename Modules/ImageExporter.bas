@@ -1048,6 +1048,13 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         pngBackgroundColor = cParams.GetLong("PNGBackgroundColor", vbWhite)
         pngCreateBkgdChunk = cParams.GetBool("PNGCreateBkgdChunk", False)
         
+        Dim pngStandardOptimizeLevel As Long
+        pngStandardOptimizeLevel = cParams.GetLong("PNGStandardOptimization", 1)
+        
+        'If we're applying some measure of optimization, reset the PNG compression level (as we're just going to
+        ' overwrite it during the optimization step)
+        If (pngStandardOptimizeLevel >= 2) Then pngCompressionLevel = 1
+        
         'Next come the various color-depth and alpha modes
         Dim outputColorModel As String
         outputColorModel = cParams.GetString("PNGColorModel", "Auto")
@@ -1177,6 +1184,16 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             FreeImage_Unload fi_DIB
             If ExportPNG Then
                 ExportDebugMsg "Export to " & sFileType & " appears successful."
+                
+                'There are some color+alpha variants that PNG supports, but FreeImage cannot write.  OptiPNG is capable
+                ' of converting existing PNG images to these more compact formats.  Engage it now.
+                If g_OptiPNGEnabled And (pngStandardOptimizeLevel > 0) Then
+                
+                    'Look for criteria that make OptiPNG useful??
+                    Plugin_OptiPNG.ApplyOptiPNGToFile dstFile, pngStandardOptimizeLevel
+                
+                End If
+                
             Else
                 Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
             End If

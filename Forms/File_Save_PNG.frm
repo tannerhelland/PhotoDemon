@@ -86,6 +86,129 @@ Begin VB.Form dialog_ExportPNG
          ForeColor       =   &H80000008&
          HasDC           =   0   'False
          Height          =   5175
+         Index           =   0
+         Left            =   0
+         ScaleHeight     =   345
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   473
+         TabIndex        =   13
+         Top             =   720
+         Width           =   7095
+         Begin PhotoDemon.pdLabel lblHint 
+            Height          =   255
+            Index           =   0
+            Left            =   180
+            Top             =   960
+            Width           =   2700
+            _ExtentX        =   4763
+            _ExtentY        =   450
+            Caption         =   "fast, larger file"
+            FontItalic      =   -1  'True
+            FontSize        =   9
+         End
+         Begin PhotoDemon.pdCheckBox chkInterlace 
+            Height          =   375
+            Left            =   120
+            TabIndex        =   15
+            Top             =   1440
+            Width           =   6975
+            _ExtentX        =   12303
+            _ExtentY        =   661
+            Caption         =   "use interlacing"
+            Value           =   0
+         End
+         Begin PhotoDemon.pdSlider sldCompression 
+            Height          =   735
+            Left            =   0
+            TabIndex        =   14
+            Top             =   240
+            Width           =   7095
+            _ExtentX        =   12515
+            _ExtentY        =   1720
+            Caption         =   "compression level"
+            Max             =   9
+            Value           =   3
+            GradientColorRight=   1703935
+            NotchPosition   =   2
+            NotchValueCustom=   3
+         End
+         Begin PhotoDemon.pdColorSelector clsBackground 
+            Height          =   975
+            Left            =   0
+            TabIndex        =   17
+            Top             =   1920
+            Width           =   7095
+            _ExtentX        =   15690
+            _ExtentY        =   1720
+            Caption         =   "background color"
+         End
+         Begin PhotoDemon.pdCheckBox chkEmbedBackground 
+            Height          =   375
+            Left            =   120
+            TabIndex        =   18
+            Top             =   3000
+            Width           =   6975
+            _ExtentX        =   12303
+            _ExtentY        =   661
+            Caption         =   "embed background color in file"
+            Value           =   0
+         End
+         Begin PhotoDemon.pdLabel lblHint 
+            Height          =   255
+            Index           =   1
+            Left            =   3075
+            Top             =   960
+            Width           =   2655
+            _ExtentX        =   4683
+            _ExtentY        =   450
+            Alignment       =   1
+            Caption         =   "slow, smaller file"
+            FontItalic      =   -1  'True
+            FontSize        =   9
+         End
+         Begin PhotoDemon.pdButtonStrip btsStandardOptimize 
+            Height          =   1095
+            Left            =   0
+            TabIndex        =   21
+            Top             =   3480
+            Width           =   7095
+            _ExtentX        =   12515
+            _ExtentY        =   1931
+            Caption         =   "file size optimization"
+         End
+      End
+      Begin VB.PictureBox picContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         HasDC           =   0   'False
+         Height          =   5175
+         Index           =   2
+         Left            =   0
+         ScaleHeight     =   345
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   473
+         TabIndex        =   11
+         Top             =   720
+         Width           =   7095
+         Begin PhotoDemon.pdMetadataExport mtdManager 
+            Height          =   3255
+            Left            =   0
+            TabIndex        =   12
+            Top             =   0
+            Width           =   7095
+            _ExtentX        =   12515
+            _ExtentY        =   5741
+         End
+      End
+      Begin VB.PictureBox picContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         HasDC           =   0   'False
+         Height          =   5175
          Index           =   1
          Left            =   0
          ScaleHeight     =   345
@@ -183,94 +306,6 @@ Begin VB.Form dialog_ExportPNG
             _ExtentX        =   15690
             _ExtentY        =   1931
             Caption         =   "depth"
-         End
-      End
-      Begin VB.PictureBox picContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         HasDC           =   0   'False
-         Height          =   5535
-         Index           =   0
-         Left            =   0
-         ScaleHeight     =   369
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   473
-         TabIndex        =   13
-         Top             =   720
-         Width           =   7095
-         Begin PhotoDemon.pdCheckBox chkInterlace 
-            Height          =   375
-            Left            =   120
-            TabIndex        =   15
-            Top             =   1200
-            Width           =   6975
-            _ExtentX        =   12303
-            _ExtentY        =   661
-            Caption         =   "use interlacing"
-            Value           =   0
-         End
-         Begin PhotoDemon.pdSlider sldCompression 
-            Height          =   975
-            Left            =   0
-            TabIndex        =   14
-            Top             =   240
-            Width           =   7095
-            _ExtentX        =   12515
-            _ExtentY        =   1720
-            Caption         =   "compression level"
-            Max             =   9
-            Value           =   3
-            GradientColorRight=   1703935
-            NotchPosition   =   2
-            NotchValueCustom=   3
-         End
-         Begin PhotoDemon.pdColorSelector clsBackground 
-            Height          =   975
-            Left            =   0
-            TabIndex        =   17
-            Top             =   1800
-            Width           =   7095
-            _ExtentX        =   15690
-            _ExtentY        =   1720
-            Caption         =   "background color"
-         End
-         Begin PhotoDemon.pdCheckBox chkEmbedBackground 
-            Height          =   375
-            Left            =   120
-            TabIndex        =   18
-            Top             =   2880
-            Width           =   6975
-            _ExtentX        =   12303
-            _ExtentY        =   661
-            Caption         =   "embed background color in file"
-            Value           =   0
-         End
-      End
-      Begin VB.PictureBox picContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         HasDC           =   0   'False
-         Height          =   5535
-         Index           =   2
-         Left            =   0
-         ScaleHeight     =   369
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   473
-         TabIndex        =   11
-         Top             =   720
-         Width           =   7095
-         Begin PhotoDemon.pdMetadataExport mtdManager 
-            Height          =   3255
-            Left            =   0
-            TabIndex        =   12
-            Top             =   0
-            Width           =   7095
-            _ExtentX        =   12515
-            _ExtentY        =   5741
          End
       End
    End
@@ -585,6 +620,13 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     btsCategory.AddItem "metadata", 2
     btsCategory.ListIndex = 0
     
+    'Populate standard model options
+    btsStandardOptimize.AddItem "none", 0
+    btsStandardOptimize.AddItem "basic (default)", 1
+    btsStandardOptimize.AddItem "moderate", 2
+    btsStandardOptimize.AddItem "maximum", 3
+    btsStandardOptimize.ListIndex = 1
+    
     'Color model and color depth are closely related; populate all button strips, then show/hide the relevant pairings
     btsColorModel.AddItem "auto", 0
     btsColorModel.AddItem "color", 1
@@ -670,6 +712,7 @@ Private Function GetExportParamString() As String
         cParams.AddParam "PNGInterlacing", CBool(chkInterlace.Value)
         cParams.AddParam "PNGBackgroundColor", clsBackground.Color
         cParams.AddParam "PNGCreateBkgdChunk", CBool(chkEmbedBackground.Value)
+        cParams.AddParam "PNGStandardOptimization", btsStandardOptimize.ListIndex
         
         'Next come all the messy color-depth possibilities
         Dim outputColorModel As String
