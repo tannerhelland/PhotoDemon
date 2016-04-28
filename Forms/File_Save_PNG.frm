@@ -46,14 +46,192 @@ Begin VB.Form dialog_ExportPNG
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
-      Height          =   6630
+      Height          =   6615
       Left            =   120
       TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   11695
+      _ExtentY        =   11668
       ColorSelection  =   -1  'True
+   End
+   Begin VB.PictureBox picCategory 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      HasDC           =   0   'False
+      Height          =   5895
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   393
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   473
+      TabIndex        =   19
+      Top             =   960
+      Width           =   7095
+      Begin PhotoDemon.pdTitle ttlWebOptimize 
+         Height          =   375
+         Index           =   0
+         Left            =   120
+         TabIndex        =   27
+         Top             =   120
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   661
+         Caption         =   "lossy optimization options"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdHyperlink hypWebOptimize 
+         Height          =   300
+         Index           =   0
+         Left            =   120
+         Top             =   3450
+         Width           =   6855
+         _ExtentX        =   12091
+         _ExtentY        =   529
+         Alignment       =   1
+         Caption         =   "lossy optimization provided by pngquant"
+         URL             =   "https://pngquant.org/"
+      End
+      Begin PhotoDemon.pdCheckBox chkOptimizeDither 
+         Height          =   375
+         Left            =   360
+         TabIndex        =   25
+         Top             =   1080
+         Width           =   6495
+         _ExtentX        =   11456
+         _ExtentY        =   661
+         Caption         =   "use dithering to improve quality"
+      End
+      Begin PhotoDemon.pdSlider sltTargetQuality 
+         Height          =   735
+         Left            =   360
+         TabIndex        =   23
+         Top             =   1560
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1296
+         Caption         =   "target quality"
+         FontSizeCaption =   10
+         Max             =   100
+         Value           =   80
+         NotchPosition   =   2
+         NotchValueCustom=   80
+      End
+      Begin PhotoDemon.pdCheckBox chkOptimizeLossy 
+         Height          =   375
+         Left            =   360
+         TabIndex        =   22
+         Top             =   630
+         Width           =   6735
+         _ExtentX        =   12515
+         _ExtentY        =   661
+         Caption         =   "apply lossy optimizations"
+      End
+      Begin PhotoDemon.pdSlider sltLossyPerformance 
+         Height          =   735
+         Left            =   360
+         TabIndex        =   24
+         Top             =   2310
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1296
+         Caption         =   "optimization level"
+         FontSizeCaption =   10
+         Value           =   8
+         NotchPosition   =   2
+         NotchValueCustom=   8
+      End
+      Begin PhotoDemon.pdSlider sltLosslessPerformance 
+         Height          =   735
+         Left            =   360
+         TabIndex        =   26
+         Top             =   4440
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1296
+         Caption         =   "optimization level"
+         FontSizeCaption =   10
+         Max             =   7
+         Value           =   2
+         NotchPosition   =   2
+         NotchValueCustom=   2
+      End
+      Begin PhotoDemon.pdHyperlink hypWebOptimize 
+         Height          =   300
+         Index           =   1
+         Left            =   120
+         Top             =   5550
+         Width           =   6855
+         _ExtentX        =   12091
+         _ExtentY        =   529
+         Alignment       =   1
+         Caption         =   "lossless optimization provided by OptiPNG"
+         URL             =   "http://optipng.sourceforge.net/"
+      End
+      Begin PhotoDemon.pdLabel lblHint 
+         Height          =   255
+         Index           =   2
+         Left            =   510
+         Top             =   3090
+         Width           =   2580
+         _ExtentX        =   4551
+         _ExtentY        =   450
+         Caption         =   "fast, larger file"
+         FontItalic      =   -1  'True
+         FontSize        =   9
+      End
+      Begin PhotoDemon.pdLabel lblHint 
+         Height          =   255
+         Index           =   3
+         Left            =   3180
+         Top             =   3090
+         Width           =   2655
+         _ExtentX        =   4683
+         _ExtentY        =   450
+         Alignment       =   1
+         Caption         =   "slow, smaller file"
+         FontItalic      =   -1  'True
+         FontSize        =   9
+      End
+      Begin PhotoDemon.pdLabel lblHint 
+         Height          =   255
+         Index           =   4
+         Left            =   525
+         Top             =   5220
+         Width           =   2580
+         _ExtentX        =   4551
+         _ExtentY        =   450
+         Caption         =   "fast, larger file"
+         FontItalic      =   -1  'True
+         FontSize        =   9
+      End
+      Begin PhotoDemon.pdLabel lblHint 
+         Height          =   255
+         Index           =   5
+         Left            =   3180
+         Top             =   5220
+         Width           =   2655
+         _ExtentX        =   4683
+         _ExtentY        =   450
+         Alignment       =   1
+         Caption         =   "slow, smaller file"
+         FontItalic      =   -1  'True
+         FontSize        =   9
+      End
+      Begin PhotoDemon.pdTitle ttlWebOptimize 
+         Height          =   375
+         Index           =   1
+         Left            =   120
+         TabIndex        =   28
+         Top             =   3960
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   661
+         Caption         =   "lossless optimization options"
+         FontSize        =   12
+      End
    End
    Begin VB.PictureBox picCategory 
       Appearance      =   0  'Flat
@@ -78,129 +256,6 @@ Begin VB.Form dialog_ExportPNG
          Width           =   7095
          _ExtentX        =   12515
          _ExtentY        =   1085
-      End
-      Begin VB.PictureBox picContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         HasDC           =   0   'False
-         Height          =   5175
-         Index           =   0
-         Left            =   0
-         ScaleHeight     =   345
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   473
-         TabIndex        =   13
-         Top             =   720
-         Width           =   7095
-         Begin PhotoDemon.pdLabel lblHint 
-            Height          =   255
-            Index           =   0
-            Left            =   180
-            Top             =   960
-            Width           =   2700
-            _ExtentX        =   4763
-            _ExtentY        =   450
-            Caption         =   "fast, larger file"
-            FontItalic      =   -1  'True
-            FontSize        =   9
-         End
-         Begin PhotoDemon.pdCheckBox chkInterlace 
-            Height          =   375
-            Left            =   120
-            TabIndex        =   15
-            Top             =   1440
-            Width           =   6975
-            _ExtentX        =   12303
-            _ExtentY        =   661
-            Caption         =   "use interlacing"
-            Value           =   0
-         End
-         Begin PhotoDemon.pdSlider sldCompression 
-            Height          =   735
-            Left            =   0
-            TabIndex        =   14
-            Top             =   240
-            Width           =   7095
-            _ExtentX        =   12515
-            _ExtentY        =   1720
-            Caption         =   "compression level"
-            Max             =   9
-            Value           =   3
-            GradientColorRight=   1703935
-            NotchPosition   =   2
-            NotchValueCustom=   3
-         End
-         Begin PhotoDemon.pdColorSelector clsBackground 
-            Height          =   975
-            Left            =   0
-            TabIndex        =   17
-            Top             =   1920
-            Width           =   7095
-            _ExtentX        =   15690
-            _ExtentY        =   1720
-            Caption         =   "background color"
-         End
-         Begin PhotoDemon.pdCheckBox chkEmbedBackground 
-            Height          =   375
-            Left            =   120
-            TabIndex        =   18
-            Top             =   3000
-            Width           =   6975
-            _ExtentX        =   12303
-            _ExtentY        =   661
-            Caption         =   "embed background color in file"
-            Value           =   0
-         End
-         Begin PhotoDemon.pdLabel lblHint 
-            Height          =   255
-            Index           =   1
-            Left            =   3075
-            Top             =   960
-            Width           =   2655
-            _ExtentX        =   4683
-            _ExtentY        =   450
-            Alignment       =   1
-            Caption         =   "slow, smaller file"
-            FontItalic      =   -1  'True
-            FontSize        =   9
-         End
-         Begin PhotoDemon.pdButtonStrip btsStandardOptimize 
-            Height          =   1095
-            Left            =   0
-            TabIndex        =   21
-            Top             =   3480
-            Width           =   7095
-            _ExtentX        =   12515
-            _ExtentY        =   1931
-            Caption         =   "file size optimization"
-         End
-      End
-      Begin VB.PictureBox picContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         HasDC           =   0   'False
-         Height          =   5175
-         Index           =   2
-         Left            =   0
-         ScaleHeight     =   345
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   473
-         TabIndex        =   11
-         Top             =   720
-         Width           =   7095
-         Begin PhotoDemon.pdMetadataExport mtdManager 
-            Height          =   3255
-            Left            =   0
-            TabIndex        =   12
-            Top             =   0
-            Width           =   7095
-            _ExtentX        =   12515
-            _ExtentY        =   5741
-         End
       End
       Begin VB.PictureBox picContainer 
          Appearance      =   0  'Flat
@@ -308,22 +363,129 @@ Begin VB.Form dialog_ExportPNG
             Caption         =   "depth"
          End
       End
-   End
-   Begin VB.PictureBox picCategory 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
-      Height          =   5895
-      Index           =   1
-      Left            =   5880
-      ScaleHeight     =   393
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   473
-      TabIndex        =   19
-      Top             =   960
-      Width           =   7095
+      Begin VB.PictureBox picContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         HasDC           =   0   'False
+         Height          =   5175
+         Index           =   0
+         Left            =   0
+         ScaleHeight     =   345
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   473
+         TabIndex        =   13
+         Top             =   720
+         Width           =   7095
+         Begin PhotoDemon.pdLabel lblHint 
+            Height          =   255
+            Index           =   0
+            Left            =   180
+            Top             =   960
+            Width           =   2700
+            _ExtentX        =   4763
+            _ExtentY        =   450
+            Caption         =   "fast, larger file"
+            FontItalic      =   -1  'True
+            FontSize        =   9
+         End
+         Begin PhotoDemon.pdCheckBox chkInterlace 
+            Height          =   375
+            Left            =   120
+            TabIndex        =   15
+            Top             =   1440
+            Width           =   6975
+            _ExtentX        =   12303
+            _ExtentY        =   661
+            Caption         =   "use interlacing"
+            Value           =   0
+         End
+         Begin PhotoDemon.pdSlider sldCompression 
+            Height          =   735
+            Left            =   0
+            TabIndex        =   14
+            Top             =   240
+            Width           =   7095
+            _ExtentX        =   12515
+            _ExtentY        =   1720
+            Caption         =   "compression level"
+            Max             =   9
+            Value           =   3
+            GradientColorRight=   1703935
+            NotchPosition   =   2
+            NotchValueCustom=   3
+         End
+         Begin PhotoDemon.pdColorSelector clsBackground 
+            Height          =   975
+            Left            =   0
+            TabIndex        =   17
+            Top             =   2160
+            Width           =   7095
+            _ExtentX        =   15690
+            _ExtentY        =   1720
+            Caption         =   "background color"
+         End
+         Begin PhotoDemon.pdCheckBox chkEmbedBackground 
+            Height          =   375
+            Left            =   120
+            TabIndex        =   18
+            Top             =   3240
+            Width           =   6975
+            _ExtentX        =   12303
+            _ExtentY        =   661
+            Caption         =   "embed background color in file"
+            Value           =   0
+         End
+         Begin PhotoDemon.pdLabel lblHint 
+            Height          =   255
+            Index           =   1
+            Left            =   3075
+            Top             =   960
+            Width           =   2655
+            _ExtentX        =   4683
+            _ExtentY        =   450
+            Alignment       =   1
+            Caption         =   "slow, smaller file"
+            FontItalic      =   -1  'True
+            FontSize        =   9
+         End
+         Begin PhotoDemon.pdButtonStrip btsStandardOptimize 
+            Height          =   1095
+            Left            =   0
+            TabIndex        =   21
+            Top             =   3960
+            Width           =   7095
+            _ExtentX        =   12515
+            _ExtentY        =   1931
+            Caption         =   "file size optimization"
+         End
+      End
+      Begin VB.PictureBox picContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         HasDC           =   0   'False
+         Height          =   5175
+         Index           =   2
+         Left            =   0
+         ScaleHeight     =   345
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   473
+         TabIndex        =   11
+         Top             =   720
+         Width           =   7095
+         Begin PhotoDemon.pdMetadataExport mtdManager 
+            Height          =   3255
+            Left            =   0
+            TabIndex        =   12
+            Top             =   0
+            Width           =   7095
+            _ExtentX        =   12515
+            _ExtentY        =   5741
+         End
+      End
    End
 End
 Attribute VB_Name = "dialog_ExportPNG"
@@ -541,6 +703,23 @@ Private Sub btsMasterType_Click(ByVal buttonIndex As Long)
     UpdateMasterPanelVisibility
 End Sub
 
+Private Sub chkOptimizeLossy_Click()
+    EnableLossyOptimizationOptions
+End Sub
+
+Private Sub EnableLossyOptimizationOptions()
+    
+    Dim enabledState As Boolean
+    enabledState = CBool(chkOptimizeLossy.Value)
+    
+    sltTargetQuality.Enabled = enabledState
+    sltLossyPerformance.Enabled = enabledState
+    lblHint(2).Enabled = enabledState
+    lblHint(3).Enabled = enabledState
+    chkOptimizeDither.Enabled = enabledState
+    
+End Sub
+
 Private Sub clsAlphaColor_ColorChanged()
     UpdatePreviewSource
     UpdatePreview
@@ -569,8 +748,10 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     
+    cmdBar.MarkPreviewStatus False
+    
     'General panel settings
-    sldCompression.Value = sldCompression.Max
+    sldCompression.Value = sldCompression.NotchValueCustom
     chkInterlace.Value = vbUnchecked
     
     If (Not m_SrcImage Is Nothing) Then
@@ -596,8 +777,19 @@ Private Sub cmdBar_ResetClick()
     sldAlphaCutoff.Value = DEFAULT_ALPHA_CUTOFF
     clsAlphaColor.Color = RGB(255, 0, 255)
     
+    'Web-optimized settings
+    chkOptimizeLossy.Value = vbChecked
+    sltTargetQuality.Value = sltTargetQuality.NotchValueCustom
+    sltLossyPerformance.Value = sltLossyPerformance.NotchValueCustom
+    chkOptimizeDither.Value = vbChecked
+    sltLosslessPerformance.Value = sltLosslessPerformance.NotchValueCustom
+    
     'Metadata settings
     mtdManager.Reset
+    
+    cmdBar.MarkPreviewStatus True
+    UpdatePreviewSource
+    UpdatePreview
     
 End Sub
 
@@ -653,6 +845,9 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     btsAlpha.AddItem "none", 4
     
     sldAlphaCutoff.NotchValueCustom = DEFAULT_ALPHA_CUTOFF
+    
+    'Populate web-optimized options
+    EnableLossyOptimizationOptions
     
     'Prep a preview (if any)
     Set m_SrcImage = srcImage
@@ -780,9 +975,19 @@ Private Function GetExportParamString() As String
         If sldAlphaCutoff.IsValid Then cParams.AddParam "PNGAlphaCutoff", sldAlphaCutoff.Value Else cParams.AddParam "PNGAlphaCutoff", DEFAULT_ALPHA_CUTOFF
         cParams.AddParam "PNGAlphaColor", clsAlphaColor.Color
         
-    'Web-optimized parameters must not use any UI elements not visible on the web-optimization panel!
+    'Remember: web-optimized parameters must not use any UI elements not visible from the web-optimization panel!
     Else
     
+        cParams.AddParam "PNGOptimizeLossy", CBool(chkOptimizeLossy.Value)
+        cParams.AddParam "PNGOptimizeLossyQuality", sltTargetQuality.Value
+        
+        'pngquant accepts this value on a 1-11 scale, with 1 being slowest and 11 being fastest.  We show the user a
+        ' [0, 10] scale where [10] is slowest (like the other settings on the form); reset to the proper range now.
+        cParams.AddParam "PNGOptimizeLossyPerformance", 11 - sltLossyPerformance.Value
+        cParams.AddMultipleParams "PNGOptimizeLossyDithering", CBool(chkOptimizeDither.Value)
+        
+        cParams.AddParam "PNGOptimizeLosslessPerformance", sltLosslessPerformance.Value
+        
     End If
     
     GetExportParamString = cParams.GetParamString
@@ -900,4 +1105,53 @@ End Sub
 Private Sub sldColorCount_Change()
     UpdatePreviewSource
     UpdatePreview
+End Sub
+
+Private Sub ttlWebOptimize_Click(Index As Integer, ByVal newState As Boolean)
+    ReflowWebOptimizePanel
+End Sub
+
+'The web optimization panel supports a couple different collapsible sections
+Private Sub ReflowWebOptimizePanel()
+    
+    Dim offsetY As Long
+    Dim isVisible As Boolean
+    
+    'Show/hide the lossy compression options
+    isVisible = ttlWebOptimize(0).Value
+    
+    chkOptimizeLossy.Visible = isVisible
+    sltTargetQuality.Visible = isVisible
+    sltLossyPerformance.Visible = isVisible
+    lblHint(2).Visible = isVisible
+    lblHint(3).Visible = isVisible
+    chkOptimizeDither.Visible = isVisible
+    hypWebOptimize(0).Visible = isVisible
+    
+    'Determine a vertical offset for the bottom part of the panel, contingent on the top panel being open or shut
+    If isVisible Then
+        offsetY = hypWebOptimize(0).GetTop + hypWebOptimize(0).GetHeight + FixDPI(16)
+    Else
+        offsetY = ttlWebOptimize(0).GetTop + ttlWebOptimize(0).GetHeight + FixDPI(16)
+    End If
+    
+    'Show/hide the lossless compression options
+    ttlWebOptimize(1).SetTop offsetY
+    isVisible = ttlWebOptimize(1).Value
+    
+    If isVisible Then
+        offsetY = ttlWebOptimize(1).GetTop + ttlWebOptimize(1).GetHeight + FixDPI(6)
+        sltLosslessPerformance.SetTop offsetY
+        offsetY = sltLosslessPerformance.GetTop + sltLosslessPerformance.GetHeight + FixDPI(3)
+        lblHint(4).SetTop offsetY
+        lblHint(5).SetTop offsetY
+        offsetY = lblHint(5).GetTop + lblHint(5).GetHeight + FixDPI(4)
+        hypWebOptimize(1).SetTop offsetY
+    End If
+    
+    sltLosslessPerformance.Visible = isVisible
+    lblHint(4).Visible = isVisible
+    lblHint(5).Visible = isVisible
+    hypWebOptimize(1).Visible = isVisible
+    
 End Sub

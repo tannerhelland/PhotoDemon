@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.153</langversion>
+<langversion>6.7.155</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -651,11 +651,6 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 </phrase>
 
 <phrase>
-<original>Initializing GDI+</original>
-<translation>Initializzazione GDI+</translation>
-</phrase>
-
-<phrase>
 <original>Creating GDI+ compatible image copy</original>
 <translation>Creazione della copia dell'immagine compatibile con GDI+</translation>
 </phrase>
@@ -680,7 +675,7 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 <translation>Salvataggio completo.</translation>
 </phrase>
 
-<!-- VBP_GDIPlus.bas contains 9 phrases.  All 9 were unique, so 9 new phrases were written to file. -->
+<!-- VBP_GDIPlus.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
 
 <!-- END text for VBP_GDIPlus.bas-->
 
@@ -738,7 +733,7 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 <translation>Il salvataggio non può essere completato senza la libreria FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 20 phrases. 15 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -1506,7 +1501,22 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 
 <!-- BEGIN text for VBP_pngnqInterface.bas -->
 
-<!-- VBP_pngnqInterface.bas contains 0 phrases. -->
+<phrase>
+<original>Using pngquant to optimize the PNG file.  This may take a moment</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pngquant optimization successful!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_pngnqInterface.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for VBP_pngnqInterface.bas-->
 
@@ -15014,7 +15024,17 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- BEGIN text for Plugin_OptiPNG.bas -->
 
-<!-- Plugin_OptiPNG.bas contains 0 phrases. -->
+<phrase>
+<original>Using OptiPNG to optimize the PNG file.  This may take a moment</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>OptiPNG optimization successful!</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_OptiPNG.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for Plugin_OptiPNG.bas-->
 
@@ -15028,6 +15048,56 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <phrase>
 <original>PNG export options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>lossy optimization options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>lossy optimization provided by pngquant</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use dithering to improve quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>target quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>apply lossy optimizations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>optimization level</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>lossless optimization provided by OptiPNG</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fast, larger file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>lossless optimization options</original>
 <translation></translation>
 </phrase>
 
@@ -15052,12 +15122,27 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 </phrase>
 
 <phrase>
+<original>file size optimization</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>standard PNG</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>web-optimized PNG</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>basic (default)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>moderate</original>
 <translation></translation>
 </phrase>
 
@@ -15081,16 +15166,16 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 32 phrases. 21 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2585</phrasecount>
+<phrasecount>2602</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4478 phrases. -->
-<!-- 1893 are duplicates, so only 2585 unique phrases have been written to file. -->
-<!-- These 2585 phrases contain approximately 13379 total words. -->
+<!-- As of this build, PhotoDemon contains 4504 phrases. -->
+<!-- 1902 are duplicates, so only 2602 unique phrases have been written to file. -->
+<!-- These 2602 phrases contain approximately 13461 total words. -->
 
 </pdData>

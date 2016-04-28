@@ -229,7 +229,7 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
             
         'PNGQuant can write its version number to stdout
         Case CCP_PNGQuant
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_PNGQuant_Interface.GetPngQuantVersion()
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_PNGQuant.GetPngQuantVersion()
         
         'All other plugins pull their version info directly from file metadata
         Case Else

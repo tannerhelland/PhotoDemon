@@ -65,7 +65,9 @@ Public Function GetOptiPNGVersion() As String
 End Function
 
 'Use OptiPNG to optimize a PNG file.  By default, a "wait for processing to finish" mechanism is used.
-Public Function ApplyOptiPNGToFile(ByVal dstFilename As String, Optional ByVal optimizeLevel As Long = 1) As String
+Public Function ApplyOptiPNGToFile_Synchronous(ByVal dstFilename As String, Optional ByVal optimizeLevel As Long = 1) As Boolean
+    
+    ApplyOptiPNGToFile_Synchronous = False
     
     If g_OptiPNGEnabled Then
         
@@ -92,6 +94,9 @@ Public Function ApplyOptiPNGToFile(ByVal dstFilename As String, Optional ByVal o
         
         shellPath = shellPath & optimizeFlags & " "
         
+        'Strip any metadata.  (If the user requested custom metadata embedding, we will apply it in a subsequent step.)
+        shellPath = shellPath & "-strip all "
+        
         'Add the target filename
         shellPath = shellPath & """" & dstFilename & """"
         
@@ -107,7 +112,8 @@ Public Function ApplyOptiPNGToFile(ByVal dstFilename As String, Optional ByVal o
         'If the shell was successful and the image was created successfully, overwrite the original 32bpp save
         ' (from FreeImage) with the newly optimized one (from OptiPNG)
         If shellCheck Then
-            Message "OptiPNG successful.  Overwriting original file with optimized copy..."
+            Message "OptiPNG optimization successful!"
+            ApplyOptiPNGToFile_Synchronous = True
         End If
         
     End If

@@ -775,7 +775,7 @@ Public Function GDIPlusRotateFlipDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     GdipGetImageWidth tBitmap, newWidth
     GdipGetImageHeight tBitmap, newHeight
     
-    dstDIB.createBlank newWidth, newHeight, srcDIB.GetDIBColorDepth, 0
+    dstDIB.CreateBlank newWidth, newHeight, srcDIB.GetDIBColorDepth, 0
     
     'Obtain a GDI+ handle to the target DIB
     Dim iGraphics As Long
@@ -1704,7 +1704,7 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
     GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.GetActualDIBBits, srcBitmap
     
     'Next, recreate the destination DIB as 32bpp
-    dstDIB.createBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 32, , 255
+    dstDIB.CreateBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 32, , 255
     
     'Clone the bitmap area from source to destination, while converting format as necessary
     Dim gdipReturn As Long
@@ -1853,7 +1853,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     Dim imgHResolution As Single, imgVResolution As Single
     GdipGetImageHorizontalResolution hImage, imgHResolution
     GdipGetImageVerticalResolution hImage, imgVResolution
-    dstDIB.setDPI imgHResolution, imgVResolution
+    dstDIB.SetDPI imgHResolution, imgVResolution
     
     'Metafile containers (EMF, WMF) require special handling.
     Dim emfPlusConversionSuccessful As Boolean
@@ -1885,7 +1885,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             'Create a temporary GDI+ graphics object, whose properties will be used to control the render state of the EMF
             Dim tmpSettingsDIB As pdDIB
             Set tmpSettingsDIB = New pdDIB
-            tmpSettingsDIB.createBlank 8, 8, 32, 0, 0
+            tmpSettingsDIB.CreateBlank 8, 8, 32, 0, 0
             
             Dim tmpGraphics As Long
             If GdipCreateFromHDC(tmpSettingsDIB.GetDIBDC, tmpGraphics) = 0 Then
@@ -1944,21 +1944,21 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'Create a blank PD-compatible DIB
     If isCMYK Then
-        dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 24
+        dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 24
     Else
         
         'Metafiles require special handling on Vista and earlier
         If isMetafile Then
             
             If emfPlusConversionSuccessful Or hasAlpha Or g_IsWin7OrLater Then
-                dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 32
+                dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 32
             Else
-                dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 24
+                dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 24
             End If
         
         'Non-metafiles can always be placed into a 32bpp container.
         Else
-            dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 32
+            dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 32
         End If
         
     End If
@@ -2009,7 +2009,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             'Create a blank 32bpp DIB, which will hold the CMYK data
             Dim tmpCMYKDIB As pdDIB
             Set tmpCMYKDIB = New pdDIB
-            tmpCMYKDIB.createBlank imgWidth, imgHeight, 32
+            tmpCMYKDIB.CreateBlank imgWidth, imgHeight, 32
         
             'Next, prepare a BitmapData variable with instructions on where GDI+ should paste the bitmap data
             With copyBitmapData
@@ -2109,7 +2109,9 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
 
     On Error GoTo GDIPlusSaveError
 
-    Message "Initializing GDI+..."
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Prepping image for GDI+ export..."
+    #End If
 
     'If the output format is 24bpp (e.g. JPEG) but the input image is 32bpp, composite it against white
     Dim tmpDIB As pdDIB
@@ -2373,7 +2375,6 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
     'Check to see if a file already exists at this location
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    
     If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename
     
     'Perform the encode and save
@@ -2515,7 +2516,7 @@ Public Function getGDIPlusUnionFromPointsAndImage(ByVal numOfPoints As Long, ByV
     ' but we don't care about transforms in this function.)
     Dim tmpSettingsDIB As pdDIB
     Set tmpSettingsDIB = New pdDIB
-    tmpSettingsDIB.createBlank 8, 8, 32, 0, 0
+    tmpSettingsDIB.CreateBlank 8, 8, 32, 0, 0
     
     Dim tmpGraphics As Long
     If GdipCreateFromHDC(tmpSettingsDIB.GetDIBDC, tmpGraphics) = 0 Then
@@ -2703,7 +2704,7 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
         nHeight = dstDIB.GetDIBHeight
     Else
         If dstDIB Is Nothing Then Set dstDIB = New pdDIB
-        dstDIB.createBlank nWidth, nHeight, srcDIB.GetDIBColorDepth, 0, 0
+        dstDIB.CreateBlank nWidth, nHeight, srcDIB.GetDIBColorDepth, 0, 0
     End If
     
     'We also want a copy of the corner points of the rotated rect; we'll use these to perform a fast PlgBlt-like operation,
@@ -2744,7 +2745,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     'Use these dimensions to size the destination image
     If dstDIB Is Nothing Then Set dstDIB = New pdDIB
     If (dstDIB.GetDIBWidth <> nWidth) Or (dstDIB.GetDIBHeight <> nHeight) Or (dstDIB.GetDIBColorDepth <> srcDIB.GetDIBColorDepth) Then
-        dstDIB.createBlank nWidth, nHeight, srcDIB.GetDIBColorDepth, 0, 0
+        dstDIB.CreateBlank nWidth, nHeight, srcDIB.GetDIBColorDepth, 0, 0
     Else
         dstDIB.ResetDIB 0
     End If
@@ -2879,7 +2880,7 @@ Public Function IsGDIPlusAvailable() As Boolean
         
         'Next, we're going to create a dummy graphics container.  This is useful for GDI+ functions that require world transformation data.
         Set m_TransformDIB = New pdDIB
-        m_TransformDIB.createBlank 8, 8, 32, 0, 0
+        m_TransformDIB.CreateBlank 8, 8, 32, 0, 0
         GdipCreateFromHDC m_TransformDIB.GetDIBDC, m_TransformGraphics
         
         'Note that these dummy objects are released when GDI+ terminates.
