@@ -733,10 +733,20 @@ Private Sub cmdBar_CancelClick()
 End Sub
 
 Private Sub cmdBar_OKClick()
+    
     m_FormatParamString = GetExportParamString
-    m_MetadataParamString = mtdManager.GetMetadataSettings
+    
+    If (btsMasterType.ListIndex = 0) Then
+        m_MetadataParamString = mtdManager.GetMetadataSettings
+    
+    'While in web optimization mode, we forcibly request no metadata writing
+    Else
+        m_MetadataParamString = mtdManager.GetNullMetadataSettings
+    End If
+    
     m_UserDialogAnswer = vbOK
     Me.Hide
+    
 End Sub
 
 Private Sub cmdBar_ReadCustomPresetData()
