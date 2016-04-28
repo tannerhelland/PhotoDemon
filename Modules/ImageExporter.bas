@@ -1025,6 +1025,13 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ExportPNG = False
     Dim sFileType As String: sFileType = "PNG"
     
+    'Generate a composited image copy, with alpha automatically un-premultiplied
+    Dim tmpImageCopy As pdDIB
+    Set tmpImageCopy = New pdDIB
+    srcPDImage.GetCompositedImage tmpImageCopy, False
+    
+    Dim fi_DIB As Long
+    
     'Parse all relevant PNG parameters.  (See the PNG export dialog for details on how these are generated.)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
@@ -1034,8 +1041,45 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     useWebOptimizedPath = cParams.GetBool("PNGCreateWebOptimized", False)
     
     'Web-optimized PNGs use their own path, and they supply their own special variables
-    If useWebOptimizedPath Then
+    If useWebOptimizedPath And (g_ImageFormats.pngQuantEnabled Or g_OptiPNGEnabled) Then
     
+        Dim pngLossyEnabled As Boolean, pngLossyQuality As Long
+        pngLossyEnabled = cParams.GetBool("PNGOptimizeLossy", True)
+        pngLossyQuality = cParams.GetLong("PNGOptimizeLossyQuality", 80)
+        
+        Dim pngLossyPerformance As Long, pngLossyDithering As Boolean
+        pngLossyPerformance = cParams.GetLong("PNGOptimizeLossyPerformance", 3)
+        pngLossyDithering = cParams.GetBool("PNGOptimizeLossyDithering", True)
+        
+        Dim pngLosslessPerformance As Long
+        pngLosslessPerformance = cParams.GetLong("PNGOptimizeLosslessPerformance")
+        
+        'Quickly dump out a PNG file; we don't need to spend time here finding optimal outputs, as subsequent
+        ' optimization passes will find the most appropriate color depth for us.
+        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, 32, PDAS_ComplicatedAlpha, PDAS_ComplicatedAlpha)
+        If FreeImage_Save(FIF_PNG, fi_DIB, dstFile, FISO_PNG_Z_BEST_SPEED) Then
+            FreeImage_Unload fi_DIB
+            
+            'Start with pngquant's lossy optimization, if it's enabled
+            If pngLossyEnabled Then
+                If Plugin_PNGQuant.ApplyPNGQuantToFile_Synchronous(dstFile, pngLossyQuality, pngLossyPerformance, pngLossyDithering) Then
+                    ExportDebugMsg "pngquant pass successful!"
+                End If
+            End If
+            
+            'We always finish with at least one OptiPNG pass
+            If g_OptiPNGEnabled And (pngLosslessPerformance > 0) Then
+                Plugin_OptiPNG.ApplyOptiPNGToFile_Synchronous dstFile, pngLosslessPerformance
+                ExportDebugMsg "OptiPNG pass successful!"
+            End If
+            
+            ExportPNG = True
+            
+        Else
+            ExportDebugMsg "WARNING!  GDI+ failed to save an initial PNG copy.  Subsequent optimizations were not performed."
+            ExportPNG = False
+        End If
+        
     'As of 7.0, standard-mode PNGs support a ton of user-editable parameters.
     Else
         
@@ -1073,11 +1117,6 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         outputPNGCutoff = cParams.GetLong("PNGAlphaCutoff", 64)
         outputPNGColor = cParams.GetLong("PNGAlphaColor", vbMagenta)
         
-        'Generate a composited image copy, with alpha automatically un-premultiplied
-        Dim tmpImageCopy As pdDIB
-        Set tmpImageCopy = New pdDIB
-        srcPDImage.GetCompositedImage tmpImageCopy, False
-    
         'If "automatic" mode is selected for either color space or transparency, we need to determine appropriate
         ' color-depth and alpha-detection values now.
         Dim autoColorModeActive As Boolean, autoTransparencyModeActive As Boolean
@@ -1153,57 +1192,53 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             outputPaletteSize = 2
         End If
         
-    End If
-    
-    'The PNG export engine supports both FreeImage and GDI+.  Note that many, *many* features are disabled under GDI+,
-    ' so the FreeImage path is definitely preferred!
-    If g_ImageFormats.FreeImageEnabled Then
-        
-        Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, outputPNGCutoff, pngBackgroundColor, forceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
-        
-        'FreeImage supports the embedding of a bkgd chunk; this doesn't make a lot of sense in modern image development,
-        ' but it is part of the PNG spec, so we provide it as an option
-        If pngCreateBkgdChunk Then
-            Dim rQuad As RGBQUAD
-            rQuad.Red = ExtractR(pngBackgroundColor)
-            rQuad.Green = ExtractG(pngBackgroundColor)
-            rQuad.Blue = ExtractB(pngBackgroundColor)
-            FreeImage_SetBackgroundColor fi_DIB, rQuad
-        End If
-        
-        'Finally, prepare some PNG save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,
-        ' request RLE encoding from FreeImage.
-        Dim PNGflags As Long: PNGflags = PNG_DEFAULT
-        If pngCompressionLevel = 0 Then PNGflags = PNGflags Or PNG_Z_NO_COMPRESSION Else PNGflags = PNGflags Or pngCompressionLevel
-        If pngInterlacing Then PNGflags = PNGflags Or PNG_INTERLACED
-                
-        'Use that handle to save the image to PNG format, with required color conversion based on the outgoing color depth
-        If (fi_DIB <> 0) Then
-            ExportPNG = FreeImage_Save(PDIF_PNG, fi_DIB, dstFile, PNGflags)
-            FreeImage_Unload fi_DIB
-            If ExportPNG Then
-                ExportDebugMsg "Export to " & sFileType & " appears successful."
-                
-                'There are some color+alpha variants that PNG supports, but FreeImage cannot write.  OptiPNG is capable
-                ' of converting existing PNG images to these more compact formats.  Engage it now.
-                If g_OptiPNGEnabled And (pngStandardOptimizeLevel > 0) Then
-                
-                    'Look for criteria that make OptiPNG useful??
-                    Plugin_OptiPNG.ApplyOptiPNGToFile dstFile, pngStandardOptimizeLevel
-                
-                End If
-                
-            Else
-                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+        'The PNG export engine supports both FreeImage and GDI+.  Note that many, *many* features are disabled under GDI+,
+        ' so the FreeImage path is definitely preferred!
+        If g_ImageFormats.FreeImageEnabled Then
+            
+            fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, outputPNGCutoff, pngBackgroundColor, forceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
+            
+            'FreeImage supports the embedding of a bkgd chunk; this doesn't make a lot of sense in modern image development,
+            ' but it is part of the PNG spec, so we provide it as an option
+            If pngCreateBkgdChunk Then
+                Dim rQuad As RGBQUAD
+                rQuad.Red = ExtractR(pngBackgroundColor)
+                rQuad.Green = ExtractG(pngBackgroundColor)
+                rQuad.Blue = ExtractB(pngBackgroundColor)
+                FreeImage_SetBackgroundColor fi_DIB, rQuad
             End If
+            
+            'Finally, prepare some PNG save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,
+            ' request RLE encoding from FreeImage.
+            Dim PNGflags As Long: PNGflags = PNG_DEFAULT
+            If pngCompressionLevel = 0 Then PNGflags = PNGflags Or PNG_Z_NO_COMPRESSION Else PNGflags = PNGflags Or pngCompressionLevel
+            If pngInterlacing Then PNGflags = PNGflags Or PNG_INTERLACED
+                    
+            'Use that handle to save the image to PNG format, with required color conversion based on the outgoing color depth
+            If (fi_DIB <> 0) Then
+                ExportPNG = FreeImage_Save(PDIF_PNG, fi_DIB, dstFile, PNGflags)
+                FreeImage_Unload fi_DIB
+                If ExportPNG Then
+                    ExportDebugMsg "Export to " & sFileType & " appears successful."
+                    
+                    'There are some color+alpha variants that PNG supports, but FreeImage cannot write.  OptiPNG is capable
+                    ' of converting existing PNG images to these more compact formats.  Engage it now.
+                    If g_OptiPNGEnabled And (pngStandardOptimizeLevel > 0) Then
+                        Plugin_OptiPNG.ApplyOptiPNGToFile_Synchronous dstFile, pngStandardOptimizeLevel
+                    End If
+                    
+                Else
+                    Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+                End If
+            Else
+                Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+                ExportPNG = False
+            End If
+            
         Else
-            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-            ExportPNG = False
+            ExportPNG = GDIPlusSavePicture(srcPDImage, dstFile, ImagePNG, outputColorDepth)
         End If
         
-    Else
-        ExportPNG = GDIPlusSavePicture(srcPDImage, dstFile, ImagePNG, outputColorDepth)
     End If
     
     Exit Function
