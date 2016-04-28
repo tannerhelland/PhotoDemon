@@ -126,7 +126,16 @@ Public Function ApplyPNGQuantToFile_Synchronous(ByVal dstFilename As String, Opt
                 cFile.ReplaceFile dstFilename, filenameCheck
                 Message "pngquant optimization successful!"
             Else
-                Message "PNGQuant could not write file.  Default 32bpp image was saved instead."
+            
+                'If the original filename's extension was not ".png", pngquant will just cram "-8bpp.png" onto
+                ' the existing filename+extension.  Check for this case now.
+                If cFile.FileExist(dstFilename & "-8bpp.png") And cFile.FileExist(dstFilename) Then
+                    cFile.ReplaceFile dstFilename, dstFilename & "-8bpp.png"
+                    Message "pngquant optimization successful!"
+                Else
+                    Message "PNGQuant could not write file.  Default 32bpp image was saved instead."
+                End If
+                
             End If
         
             ApplyPNGQuantToFile_Synchronous = True

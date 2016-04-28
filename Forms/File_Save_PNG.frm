@@ -70,6 +70,16 @@ Begin VB.Form dialog_ExportPNG
       TabIndex        =   19
       Top             =   960
       Width           =   7095
+      Begin PhotoDemon.pdButton cmdUpdateLossyPreview 
+         Height          =   615
+         Left            =   360
+         TabIndex        =   29
+         Top             =   3480
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1085
+         Caption         =   "click to generate a new preview image"
+      End
       Begin PhotoDemon.pdTitle ttlWebOptimize 
          Height          =   375
          Index           =   0
@@ -81,18 +91,6 @@ Begin VB.Form dialog_ExportPNG
          _ExtentY        =   661
          Caption         =   "lossy optimization options"
          FontSize        =   12
-      End
-      Begin PhotoDemon.pdHyperlink hypWebOptimize 
-         Height          =   300
-         Index           =   0
-         Left            =   120
-         Top             =   3450
-         Width           =   6855
-         _ExtentX        =   12091
-         _ExtentY        =   529
-         Alignment       =   1
-         Caption         =   "lossy optimization provided by pngquant"
-         URL             =   "https://pngquant.org/"
       End
       Begin PhotoDemon.pdCheckBox chkOptimizeDither 
          Height          =   375
@@ -147,7 +145,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   735
          Left            =   360
          TabIndex        =   26
-         Top             =   4440
+         Top             =   4800
          Width           =   6615
          _ExtentX        =   11668
          _ExtentY        =   1296
@@ -157,18 +155,6 @@ Begin VB.Form dialog_ExportPNG
          Value           =   2
          NotchPosition   =   2
          NotchValueCustom=   2
-      End
-      Begin PhotoDemon.pdHyperlink hypWebOptimize 
-         Height          =   300
-         Index           =   1
-         Left            =   120
-         Top             =   5550
-         Width           =   6855
-         _ExtentX        =   12091
-         _ExtentY        =   529
-         Alignment       =   1
-         Caption         =   "lossless optimization provided by OptiPNG"
-         URL             =   "http://optipng.sourceforge.net/"
       End
       Begin PhotoDemon.pdLabel lblHint 
          Height          =   255
@@ -199,7 +185,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   255
          Index           =   4
          Left            =   525
-         Top             =   5220
+         Top             =   5580
          Width           =   2580
          _ExtentX        =   4551
          _ExtentY        =   450
@@ -211,7 +197,7 @@ Begin VB.Form dialog_ExportPNG
          Height          =   255
          Index           =   5
          Left            =   3180
-         Top             =   5220
+         Top             =   5580
          Width           =   2655
          _ExtentX        =   4683
          _ExtentY        =   450
@@ -225,7 +211,7 @@ Begin VB.Form dialog_ExportPNG
          Index           =   1
          Left            =   120
          TabIndex        =   28
-         Top             =   3960
+         Top             =   4320
          Width           =   6975
          _ExtentX        =   12303
          _ExtentY        =   661
@@ -703,6 +689,10 @@ Private Sub btsMasterType_Click(ByVal buttonIndex As Long)
     UpdateMasterPanelVisibility
 End Sub
 
+Private Sub chkOptimizeDither_Click()
+    UpdatePreviewButtonText
+End Sub
+
 Private Sub chkOptimizeLossy_Click()
     EnableLossyOptimizationOptions
 End Sub
@@ -712,12 +702,19 @@ Private Sub EnableLossyOptimizationOptions()
     Dim enabledState As Boolean
     enabledState = CBool(chkOptimizeLossy.Value)
     
+    chkOptimizeDither.Enabled = enabledState
     sltTargetQuality.Enabled = enabledState
     sltLossyPerformance.Enabled = enabledState
     lblHint(2).Enabled = enabledState
     lblHint(3).Enabled = enabledState
-    chkOptimizeDither.Enabled = enabledState
+    cmdUpdateLossyPreview.Enabled = enabledState
     
+End Sub
+
+Private Sub UpdatePreviewButtonText()
+    If (StrComp(cmdUpdateLossyPreview.Caption, g_Language.TranslateMessage("click to generate a new preview image"), vbBinaryCompare) <> 0) Then
+        cmdUpdateLossyPreview.Caption = g_Language.TranslateMessage("click to generate a new preview image")
+    End If
 End Sub
 
 Private Sub clsAlphaColor_ColorChanged()
@@ -740,6 +737,10 @@ Private Sub cmdBar_OKClick()
     m_MetadataParamString = mtdManager.GetMetadataSettings
     m_UserDialogAnswer = vbOK
     Me.Hide
+End Sub
+
+Private Sub cmdBar_ReadCustomPresetData()
+    ReflowWebOptimizePanel
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -880,10 +881,76 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     UpdatePanelVisibility
     UpdateColorDepthVisibility
     UpdateTransparencyOptions
+    ReflowWebOptimizePanel
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True
 
+End Sub
+
+'Lossy previews are time-consuming to generate, so we cannot provide them "on-demand".  Instead, the user must
+' manually compress them via button click.
+Private Sub cmdUpdateLossyPreview_Click()
+
+    cmdUpdateLossyPreview.Caption = g_Language.TranslateMessage("please wait while a new preview image is created...")
+    
+    Dim updateSuccess As Boolean
+    updateSuccess = False
+    
+    'Make sure a composite image was created successfully
+    If Not (m_CompositedImage Is Nothing) Then
+        
+        'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
+        ' since the last preview.  Prep a new preview now.
+        Dim tmpSafeArray As SAFEARRAY2D
+        FastDrawing.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, False
+        
+        'Create a FreeImage copy of the current preview image
+        If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
+        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 32, PDAS_ComplicatedAlpha, PDAS_ComplicatedAlpha)
+        
+        'Write that image out to a temporary file
+        Dim tmpFilename As String
+        tmpFilename = FileSystem.RequestTempFile()
+        If FreeImage_Save(FIF_PNG, m_FIHandle, tmpFilename, FISO_PNG_Z_BEST_SPEED) Then
+            
+            'Retrieve the size of the base PNG file
+            Dim cFile As pdFSO
+            Set cFile = New pdFSO
+            
+            Dim oldFileSize As Long
+            oldFileSize = cFile.FileLenW(tmpFilename)
+            
+            'Next, request optimization from pngquant
+            If Plugin_PNGQuant.ApplyPNGQuantToFile_Synchronous(tmpFilename, sltTargetQuality.Value, 11 - sltLossyPerformance.Value, CBool(chkOptimizeDither.Value)) Then
+                
+                Dim newFileSize As Long
+                newFileSize = cFile.FileLenW(tmpFilename)
+                
+                'If successful, pngquant will overwrite the original file with its optimized copy.  Retrieve it now.
+                If Loading.QuickLoadImageToDIB(tmpFilename, workingDIB, False) Then
+                    FastDrawing.FinalizeNonstandardPreview Me.pdFxPreview, False
+                    updateSuccess = True
+                End If
+                
+            Else
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING!  The pngquant preview step failed for reasons unknown!"
+                #End If
+            End If
+            
+            If cFile.FileExist(tmpFilename) Then cFile.KillFile tmpFilename
+            
+        End If
+        
+    End If
+    
+    If updateSuccess Then
+        cmdUpdateLossyPreview.Caption = g_Language.TranslateMessage("These lossy optimization settings reduced file size by %1.", Format$((1 - (newFileSize / oldFileSize)) * 100, "0.0") & "%")
+    Else
+        UpdatePreviewButtonText
+    End If
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -984,7 +1051,7 @@ Private Function GetExportParamString() As String
         'pngquant accepts this value on a 1-11 scale, with 1 being slowest and 11 being fastest.  We show the user a
         ' [0, 10] scale where [10] is slowest (like the other settings on the form); reset to the proper range now.
         cParams.AddParam "PNGOptimizeLossyPerformance", 11 - sltLossyPerformance.Value
-        cParams.AddMultipleParams "PNGOptimizeLossyDithering", CBool(chkOptimizeDither.Value)
+        cParams.AddParam "PNGOptimizeLossyDithering", CBool(chkOptimizeDither.Value)
         
         cParams.AddParam "PNGOptimizeLosslessPerformance", sltLosslessPerformance.Value
         
@@ -1107,6 +1174,14 @@ Private Sub sldColorCount_Change()
     UpdatePreview
 End Sub
 
+Private Sub sltLossyPerformance_Change()
+    UpdatePreviewButtonText
+End Sub
+
+Private Sub sltTargetQuality_Change()
+    UpdatePreviewButtonText
+End Sub
+
 Private Sub ttlWebOptimize_Click(Index As Integer, ByVal newState As Boolean)
     ReflowWebOptimizePanel
 End Sub
@@ -1126,11 +1201,11 @@ Private Sub ReflowWebOptimizePanel()
     lblHint(2).Visible = isVisible
     lblHint(3).Visible = isVisible
     chkOptimizeDither.Visible = isVisible
-    hypWebOptimize(0).Visible = isVisible
+    cmdUpdateLossyPreview.Visible = isVisible
     
     'Determine a vertical offset for the bottom part of the panel, contingent on the top panel being open or shut
     If isVisible Then
-        offsetY = hypWebOptimize(0).GetTop + hypWebOptimize(0).GetHeight + FixDPI(16)
+        offsetY = cmdUpdateLossyPreview.GetTop + cmdUpdateLossyPreview.GetHeight + FixDPI(16)
     Else
         offsetY = ttlWebOptimize(0).GetTop + ttlWebOptimize(0).GetHeight + FixDPI(16)
     End If
@@ -1145,13 +1220,10 @@ Private Sub ReflowWebOptimizePanel()
         offsetY = sltLosslessPerformance.GetTop + sltLosslessPerformance.GetHeight + FixDPI(3)
         lblHint(4).SetTop offsetY
         lblHint(5).SetTop offsetY
-        offsetY = lblHint(5).GetTop + lblHint(5).GetHeight + FixDPI(4)
-        hypWebOptimize(1).SetTop offsetY
     End If
     
     sltLosslessPerformance.Visible = isVisible
     lblHint(4).Visible = isVisible
     lblHint(5).Visible = isVisible
-    hypWebOptimize(1).Visible = isVisible
     
 End Sub

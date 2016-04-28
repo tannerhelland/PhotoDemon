@@ -172,20 +172,18 @@ Public Function ShellAndWait(ByVal sPath As String, ByVal winStyle As VbAppWinSt
     Dim procID As Long
     Dim procHandle As Long
 
-    ' Start the program.
+    'Start the program
     On Error GoTo ShellError
     procID = Shell(sPath, winStyle)
     On Error GoTo 0
 
-    ' Wait for the program to finish.
-    ' Get the process handle.
+    'Use the external program's handle to initiate a wait process
     procHandle = OpenProcess(SYNCHRONIZE, 0, procID)
     If procHandle <> 0 Then
         WaitForSingleObject procHandle, WAIT_INFINITE
         CloseHandle procHandle
     End If
-
-    ' Reappear.
+    
     ShellAndWait = True
     Exit Function
 
