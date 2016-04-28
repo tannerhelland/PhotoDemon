@@ -17,33 +17,33 @@ Begin VB.UserControl pdMetadataExport
       Left            =   0
       Top             =   1200
       Width           =   5055
-      _extentx        =   8916
-      _extenty        =   661
-      caption         =   "general metadata settings"
-      fontsize        =   12
+      _ExtentX        =   8916
+      _ExtentY        =   661
+      Caption         =   "general metadata settings"
+      FontSize        =   12
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   495
       Left            =   120
       Top             =   0
       Width           =   4935
-      _extentx        =   8705
-      _extenty        =   873
-      alignment       =   2
-      caption         =   ""
-      fontbold        =   -1
-      fontsize        =   12
+      _ExtentX        =   8705
+      _ExtentY        =   873
+      Alignment       =   2
+      Caption         =   ""
+      FontBold        =   -1  'True
+      FontSize        =   12
    End
    Begin PhotoDemon.pdHyperlink hplReviewMetadata 
       Height          =   375
       Left            =   120
       Top             =   600
       Width           =   4935
-      _extentx        =   8705
-      _extenty        =   661
-      alignment       =   2
-      caption         =   "click to review this image's metadata"
-      raiseclickevent =   -1
+      _ExtentX        =   8705
+      _ExtentY        =   661
+      Alignment       =   2
+      Caption         =   "click to review this image's metadata"
+      RaiseClickEvent =   -1  'True
    End
    Begin PhotoDemon.pdCheckBox chkMetadata 
       Height          =   375
@@ -51,9 +51,9 @@ Begin VB.UserControl pdMetadataExport
       TabIndex        =   0
       Top             =   1680
       Width           =   4935
-      _extentx        =   8705
-      _extenty        =   661
-      caption         =   "copy all relevant metadata to the new file"
+      _ExtentX        =   8705
+      _ExtentY        =   661
+      Caption         =   "copy all relevant metadata to the new file"
    End
    Begin PhotoDemon.pdCheckBox chkAnonymize 
       Height          =   375
@@ -61,9 +61,9 @@ Begin VB.UserControl pdMetadataExport
       TabIndex        =   1
       Top             =   2160
       Width           =   4935
-      _extentx        =   8705
-      _extenty        =   661
-      caption         =   "erase tags that might be personal (including GPS and location)"
+      _ExtentX        =   8705
+      _ExtentY        =   661
+      Caption         =   "erase tags that might be personal (including GPS and location)"
    End
    Begin PhotoDemon.pdLabel lblInfo 
       Height          =   375
@@ -72,10 +72,10 @@ Begin VB.UserControl pdMetadataExport
       Top             =   2640
       Visible         =   0   'False
       Width           =   5055
-      _extentx        =   8916
-      _extenty        =   661
-      caption         =   ""
-      fontsize        =   12
+      _ExtentX        =   8916
+      _ExtentY        =   661
+      Caption         =   ""
+      FontSize        =   12
    End
    Begin PhotoDemon.pdCheckBox chkThumbnail 
       Height          =   375
@@ -84,10 +84,10 @@ Begin VB.UserControl pdMetadataExport
       Top             =   3120
       Visible         =   0   'False
       Width           =   4935
-      _extentx        =   8705
-      _extenty        =   661
-      caption         =   "embed thumbnail image"
-      value           =   0
+      _ExtentX        =   8705
+      _ExtentY        =   661
+      Caption         =   "embed thumbnail image"
+      Value           =   0
    End
 End
 Attribute VB_Name = "pdMetadataExport"
@@ -290,6 +290,15 @@ Public Function GetMetadataSettings() As String
     
     GetMetadataSettings = cParams.GetParamString
 
+End Function
+
+'Retrieve a stock metadata XML packet that corresponds to "don't write metadata".  This gives the dialog a way to
+' forcibly prevent metadata from being written (which we do with web-optimized images, for example).
+Public Function GetNullMetadataSettings() As String
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.AddParam "MetadataExportAllowed", False
+    GetNullMetadataSettings = cParams.GetParamString
 End Function
 
 'Update the UI against a previously saved set of metadata settings in XML format
