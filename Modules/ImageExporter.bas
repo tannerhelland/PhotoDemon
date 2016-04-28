@@ -846,9 +846,9 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         'Use that handle to save the image to JPEG format, with required color conversion based on the outgoing color depth
         If (fi_DIB <> 0) Then
             
-            'Next, we need to see if thumbnail embedding is enabled.  If it is, we need to embed a second, smaller copy
-            ' of the JPEG within the parent JPEG object.
-            If cParamsMetadata.GetBool("MetadataEmbedThumbnail", False) Then
+            'Next, we need to see if thumbnail embedding is enabled.  If it is, we need to write out a tiny copy
+            ' of the main image, which ExifTool will use to generate a thumbnail metadata entry
+            If cParams.GetBool("MetadataExportAllowed", True) And cParamsMetadata.GetBool("MetadataEmbedThumbnail", False) Then
                 
                 Dim fThumbnail As Long, tmpFile As String
                 fThumbnail = FreeImage_MakeThumbnail(fi_DIB, 100)
