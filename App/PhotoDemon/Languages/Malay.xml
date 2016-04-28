@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.155</langversion>
+<langversion>6.7.156</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -1526,7 +1526,7 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 <translation></translation>
 </phrase>
 
-<!-- VBP_pngnqInterface.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- VBP_pngnqInterface.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_pngnqInterface.bas-->
 
@@ -15063,12 +15063,12 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 </phrase>
 
 <phrase>
-<original>lossy optimization options</original>
+<original>click to generate a new preview image</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>lossy optimization provided by pngquant</original>
+<original>lossy optimization options</original>
 <translation></translation>
 </phrase>
 
@@ -15089,11 +15089,6 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <phrase>
 <original>optimization level</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>lossless optimization provided by OptiPNG</original>
 <translation></translation>
 </phrase>
 
@@ -15177,16 +15172,26 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 52 phrases. 28 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<phrase>
+<original>please wait while a new preview image is created</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>These lossy optimization settings reduced file size by %1.</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_PNG.frm contains 59 phrases. 34 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2602</phrasecount>
+<phrasecount>2603</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4504 phrases. -->
-<!-- 1902 are duplicates, so only 2602 unique phrases have been written to file. -->
-<!-- These 2602 phrases contain approximately 13461 total words. -->
+<!-- As of this build, PhotoDemon contains 4512 phrases. -->
+<!-- 1909 are duplicates, so only 2603 unique phrases have been written to file. -->
+<!-- These 2603 phrases contain approximately 13475 total words. -->
 
 </pdData>
