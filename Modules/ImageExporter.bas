@@ -1321,6 +1321,204 @@ ExportPSDError:
     
 End Function
 
+Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportTIFFError
+    
+    ExportTIFF = False
+    Dim sFileType As String: sFileType = "TIFF"
+    
+    Dim fi_DIB As Long
+    
+    'Parse all relevant TIFF parameters.  (See the TIFF export dialog for details on how these are generated.)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString formatParams
+    
+    'First come generic TIFF settings (compression methods, basically)
+    Dim TIFFCompressionColor As String, TIFFCompressionMono As String
+    TIFFCompressionColor = cParams.GetString("TIFFCompressionColor", "LZW")
+    TIFFCompressionMono = cParams.GetString("TIFFCompressionMono", "Fax4")
+    
+    Dim TIFFBackgroundColor As Long
+    TIFFBackgroundColor = cParams.GetLong("TIFFBackgroundColor", vbWhite)
+        
+    'Next come the various color-depth and alpha modes
+    Dim outputColorModel As String
+    outputColorModel = cParams.GetString("TIFFColorModel", "Auto")
+    
+    Dim forceGrayscale As Boolean
+    forceGrayscale = CBool(StrComp(LCase$(outputColorModel), "gray", vbBinaryCompare) = 0)
+    
+    Dim outputColorDepth As Long, outputPaletteSize As Long
+    If forceGrayscale Then outputColorDepth = cParams.GetLong("TIFFBitDepth", 8) Else outputColorDepth = cParams.GetLong("TIFFBitDepth", 24)
+    outputPaletteSize = cParams.GetLong("TIFFPaletteSize", 256)
+    
+    Dim outputAlphaModel As String
+    outputAlphaModel = cParams.GetString("TIFFAlphaModel", "Auto")
+    
+    Dim outputTIFFCutoff As Long, outputTIFFColor As Long
+    outputTIFFCutoff = cParams.GetLong("TIFFAlphaCutoff", 64)
+    outputTIFFColor = cParams.GetLong("TIFFAlphaColor", vbMagenta)
+    
+    'If "automatic" mode is selected for either color space or transparency, we need to determine appropriate
+    ' color-depth and alpha-detection values for each output image (either a single page composite image,
+    ' or each layer in the image if outputting a multipage TIFF).
+    Dim autoColorModeActive As Boolean, autoTransparencyModeActive As Boolean
+    autoColorModeActive = ParamsEqual(outputColorModel, "auto")
+    autoTransparencyModeActive = ParamsEqual(outputAlphaModel, "auto")
+    
+    'These values are used by the automatic color-depth detection tool; see below for how they are used
+    Dim autoColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+    Dim TIFFflags As Long: TIFFflags = TIFF_DEFAULT
+    
+    'Next comes the multipage settings, which is crucial as we have to use a totally different codepath for multipage images
+    Dim writeMultipage As Boolean
+    writeMultipage = cParams.GetBool("TIFFMultipage", False)
+    
+    'Multipage TIFFs use their own custom path (this is due to the way the FreeImage API works; it's convoluted!)
+    If writeMultipage And g_ImageFormats.FreeImageEnabled And False Then
+    
+        'Multipage files use a fairly simple format:
+        ' 1) Iterate through each visible layer
+        ' 2) Convert each layer to a null-padded layer at the size of the current image
+        ' 3) Create a FreeImage copy of the null-padded layer
+        ' 4) Insert that layer into a running FreeImage Multipage object
+        ' 5) When all layers are finished, write the TIFF out to file
+        
+    'Single-page TIFFs are simpler to write
+    Else
+        
+        'Generate a composited image copy, with alpha automatically un-premultiplied
+        Dim tmpImageCopy As pdDIB
+        Set tmpImageCopy = New pdDIB
+        srcPDImage.GetCompositedImage tmpImageCopy, False
+        
+        'If automatic color or transparency detection is active, find the best output now
+        If autoColorModeActive Or autoTransparencyModeActive Then
+            autoColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_TIFF, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+            ExportDebugMsg "Color depth auto-detection returned " & CStr(autoColorDepth) & "bpp"
+        Else
+            currentAlphaStatus = PDAS_ComplicatedAlpha
+        End If
+        
+        'From the automatic values, construct matching output values as relevant
+        If autoColorModeActive Then
+            outputColorDepth = autoColorDepth
+            forceGrayscale = isGrayscale
+            If (Not isTrueColor) Then outputPaletteSize = netColorCount
+        End If
+        
+        'Convert the auto-detected transparency mode to a usable string parameter.  (We need this later in the function,
+        ' so we can combine color depth and alpha depth into a single usable bit-depth.)
+        If autoTransparencyModeActive Then
+            desiredAlphaStatus = currentAlphaStatus
+            If desiredAlphaStatus = PDAS_NoAlpha Then
+                outputAlphaModel = "none"
+            ElseIf desiredAlphaStatus = PDAS_BinaryAlpha Then
+                outputAlphaModel = "bycutoff"
+            ElseIf desiredAlphaStatus = PDAS_NewAlphaFromColor Then
+                outputAlphaModel = "bycolor"
+            ElseIf desiredAlphaStatus = PDAS_ComplicatedAlpha Then
+                outputAlphaModel = "full"
+            Else
+                outputAlphaModel = "full"
+            End If
+        End If
+        
+        'Use the current transparency mode (whether auto-created or manually requested) to construct a new output
+        ' depth that correctly represents the combination of color depth + alpha depth.  Note that this also requires
+        ' us to workaround some FreeImage deficiencies, so these depths may not match what TIFF formally supports.
+        If ParamsEqual(outputAlphaModel, "full") Then
+            desiredAlphaStatus = PDAS_ComplicatedAlpha
+            If (Not forceGrayscale) Then
+                If outputColorDepth = 24 Then outputColorDepth = 32
+                If outputColorDepth = 48 Then outputColorDepth = 64
+            End If
+        ElseIf ParamsEqual(outputAlphaModel, "none") Then
+            desiredAlphaStatus = PDAS_NoAlpha
+            If (Not forceGrayscale) Then
+                If outputColorDepth = 64 Then outputColorDepth = 48
+                If outputColorDepth = 32 Then outputColorDepth = 24
+            End If
+            outputTIFFCutoff = 0
+        ElseIf ParamsEqual(outputAlphaModel, "bycutoff") Then
+            desiredAlphaStatus = PDAS_BinaryAlpha
+            If (Not forceGrayscale) Then
+                If outputColorDepth = 24 Then outputColorDepth = 32
+                If outputColorDepth = 48 Then outputColorDepth = 64
+            End If
+        ElseIf ParamsEqual(outputAlphaModel, "bycolor") Then
+            desiredAlphaStatus = PDAS_NewAlphaFromColor
+            outputTIFFCutoff = outputTIFFColor
+            If (Not forceGrayscale) Then
+                If outputColorDepth = 24 Then outputColorDepth = 32
+                If outputColorDepth = 48 Then outputColorDepth = 64
+            End If
+        End If
+            
+        'Monochrome depths require special treatment if alpha is active
+        If (outputColorDepth = 1) And (desiredAlphaStatus <> PDAS_NoAlpha) Then
+            outputColorDepth = 8
+            outputPaletteSize = 2
+        End If
+        
+        'The TIFF export engine supports both FreeImage and GDI+.  Note that many, *many* features are disabled under GDI+,
+        ' so the FreeImage path is absolutely preferred.
+        If g_ImageFormats.FreeImageEnabled Then
+            
+            fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, outputTIFFCutoff, TIFFBackgroundColor, forceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
+            
+            'Finally, prepare some TIFF save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,
+            ' request RLE encoding from FreeImage.
+            If (outputColorDepth = 1) Then
+                TIFFflags = TIFFflags Or GetFreeImageTIFFConstant(TIFFCompressionMono)
+            Else
+                TIFFflags = TIFFflags Or GetFreeImageTIFFConstant(TIFFCompressionColor)
+            End If
+                    
+            'Use that handle to save the image to TIFF format, with required color conversion based on the outgoing color depth
+            If (fi_DIB <> 0) Then
+                ExportTIFF = FreeImage_Save(PDIF_TIFF, fi_DIB, dstFile, TIFFflags)
+                FreeImage_Unload fi_DIB
+                If ExportTIFF Then
+                    ExportDebugMsg "Export to " & sFileType & " appears successful."
+                Else
+                    Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+                End If
+            Else
+                Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+                ExportTIFF = False
+            End If
+            
+        Else
+            ExportTIFF = GDIPlusSavePicture(srcPDImage, dstFile, ImageTIFF, outputColorDepth)
+        End If
+        
+    End If
+    
+    Exit Function
+    
+ExportTIFFError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportTIFF = False
+    
+End Function
+
+Private Function GetFreeImageTIFFConstant(ByVal compressionName As String) As Long
+    If ParamsEqual(compressionName, "LZW") Then
+        GetFreeImageTIFFConstant = TIFF_LZW
+    ElseIf ParamsEqual(compressionName, "ZIP") Then
+        GetFreeImageTIFFConstant = TIFF_ADOBE_DEFLATE
+    ElseIf ParamsEqual(compressionName, "Fax4") Then
+        GetFreeImageTIFFConstant = TIFF_CCITTFAX4
+    ElseIf ParamsEqual(compressionName, "Fax3") Then
+        GetFreeImageTIFFConstant = TIFF_CCITTFAX3
+    ElseIf ParamsEqual(compressionName, "none") Then
+        GetFreeImageTIFFConstant = TIFF_NONE
+    End If
+End Function
+
 Private Function ParamsEqual(ByVal param1 As String, ByVal param2 As String) As Boolean
     ParamsEqual = CBool(StrComp(LCase$(param1), LCase$(param2), vbBinaryCompare) = 0)
 End Function

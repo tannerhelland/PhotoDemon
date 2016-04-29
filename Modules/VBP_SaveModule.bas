@@ -251,6 +251,9 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
             Case PDIF_PNG
                 GetExportParamsFromDialog = CBool(DialogManager.PromptPNGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 
+            Case PDIF_TIFF
+                GetExportParamsFromDialog = CBool(DialogManager.PromptTIFFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+            
             Case PDIF_WEBP
                 GetExportParamsFromDialog = CBool(DialogManager.PromptWebPSettings(srcImage, dstParamString) = vbOK)
                 
@@ -281,6 +284,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         
         Case PDIF_BMP
             ExportToSpecificFormat = ImageExporter.ExportBMP(srcImage, dstPath, saveParameters, metadataParameters)
+        
+        Case PDIF_GIF
+            ExportToSpecificFormat = ImageExporter.ExportGIF(srcImage, dstPath, saveParameters, metadataParameters)
             
         Case PDIF_JPEG
             ExportToSpecificFormat = ImageExporter.ExportJPEG(srcImage, dstPath, saveParameters, metadataParameters)
@@ -292,14 +298,13 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
                 ExportToSpecificFormat = False
             End If
         
-        'GIFs are preferentially exported by FreeImage, then GDI+ (if available).  I don't know how to control the algorithm
-        ' GDI+ uses for 8-bpp color reduction, so the results of its encoder are likely to be poor.
-        Case PDIF_GIF
-            ExportToSpecificFormat = ImageExporter.ExportGIF(srcImage, dstPath, saveParameters, metadataParameters)
-            
         Case PDIF_PNG
             ExportToSpecificFormat = ImageExporter.ExportPNG(srcImage, dstPath, saveParameters, metadataParameters)
+        
+        Case PDIF_TIFF
+            ExportToSpecificFormat = ImageExporter.ExportTIFF(srcImage, dstPath, saveParameters, metadataParameters)
             
+        'Formats past this line are still using the old export engine; their migration is in progress!
         Case PDIF_PPM
             ExportToSpecificFormat = SavePPMImage(srcImage, dstPath, saveParameters)
             
@@ -308,16 +313,6 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
             
         Case PDIF_JP2
             ExportToSpecificFormat = SaveJP2Image(srcImage, dstPath, , saveParameters)
-            
-        'TIFFs are preferentially exported by FreeImage, then GDI+ (if available)
-        Case PDIF_TIFF
-            If g_ImageFormats.FreeImageEnabled Then
-                ExportToSpecificFormat = SaveTIFImage(srcImage, dstPath, , saveParameters)
-            ElseIf g_ImageFormats.GDIPlusEnabled Then
-                ExportToSpecificFormat = GDIPlusSavePicture(srcImage, dstPath, ImageTIFF, 32)
-            Else
-                ExportToSpecificFormat = False
-            End If
         
         Case PDIF_WEBP
             ExportToSpecificFormat = SaveWebPImage(srcImage, dstPath, , saveParameters)
@@ -1177,45 +1172,45 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     If fi_DIB <> 0 Then
         
         'Prepare TIFF export flags based on the user's preferences
-        Dim TIFFFlags As Long
+        Dim TIFFflags As Long
         
         Select Case tiffEncoding
         
             'Default settings (LZW for > 1bpp, CCITT Group 4 fax encoding for 1bpp)
             Case 0
-                TIFFFlags = TIFF_DEFAULT
+                TIFFflags = TIFF_DEFAULT
                 
             'No compression
             Case 1
-                TIFFFlags = TIFF_NONE
+                TIFFflags = TIFF_NONE
             
             'Macintosh Packbits (RLE)
             Case 2
-                TIFFFlags = TIFF_PACKBITS
+                TIFFflags = TIFF_PACKBITS
             
             'Proper deflate (Adobe-style)
             Case 3
-                TIFFFlags = TIFF_ADOBE_DEFLATE
+                TIFFflags = TIFF_ADOBE_DEFLATE
             
             'Obsolete deflate (PKZIP or zLib-style)
             Case 4
-                TIFFFlags = TIFF_DEFLATE
+                TIFFflags = TIFF_DEFLATE
             
             'LZW
             Case 5
-                TIFFFlags = TIFF_LZW
+                TIFFflags = TIFF_LZW
                 
             'JPEG
             Case 6
-                TIFFFlags = TIFF_JPEG
+                TIFFflags = TIFF_JPEG
             
             'Fax Group 3
             Case 7
-                TIFFFlags = TIFF_CCITTFAX3
+                TIFFflags = TIFF_CCITTFAX3
             
             'Fax Group 4
             Case 8
-                TIFFFlags = TIFF_CCITTFAX4
+                TIFFflags = TIFF_CCITTFAX4
                 
         End Select
         
@@ -1223,7 +1218,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
         If (outputColorDepth = 24) And tiffUseCMYK Then
         
             outputColorDepth = 32
-            TIFFFlags = (TIFFFlags Or TIFF_CMYK)
+            TIFFflags = (TIFFflags Or TIFF_CMYK)
             FreeImage_UnloadEx fi_DIB
             
             Dim tmpCMYKDIB As pdDIB
@@ -1238,7 +1233,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
         End If
         
         Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, PDIF_TIFF, TIFFFlags, outputColorDepth, , , , , True)
+        fi_Check = FreeImage_SaveEx(fi_DIB, TIFPath, PDIF_TIFF, TIFFflags, outputColorDepth, , , , , True)
         
         If fi_Check Then
             Message "%1 save complete.", sFileType

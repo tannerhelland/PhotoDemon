@@ -40,66 +40,45 @@ Begin VB.Form dialog_ExportTIFF
       TabIndex        =   5
       Top             =   840
       Width           =   7095
-      Begin PhotoDemon.pdLabel lblHint 
-         Height          =   255
-         Index           =   0
-         Left            =   180
-         Top             =   960
-         Width           =   2700
-         _ExtentX        =   4763
-         _ExtentY        =   450
-         Caption         =   "fast, larger file"
-         FontItalic      =   -1  'True
-         FontSize        =   9
-      End
-      Begin PhotoDemon.pdCheckBox chkInterlace 
-         Height          =   375
-         Left            =   120
-         TabIndex        =   6
-         Top             =   1440
-         Width           =   6975
-         _ExtentX        =   12303
-         _ExtentY        =   661
-         Caption         =   "use interlacing"
-         Value           =   0
-      End
-      Begin PhotoDemon.pdSlider sldCompression 
-         Height          =   735
+      Begin PhotoDemon.pdButtonStrip btsCompressionColor 
+         Height          =   1095
          Left            =   0
-         TabIndex        =   7
-         Top             =   240
+         TabIndex        =   15
+         Top             =   120
          Width           =   7095
          _ExtentX        =   12515
-         _ExtentY        =   1720
-         Caption         =   "compression level"
-         Max             =   9
-         Value           =   3
-         GradientColorRight=   1703935
-         NotchPosition   =   2
-         NotchValueCustom=   3
+         _ExtentY        =   1931
+         Caption         =   "color compression"
       End
       Begin PhotoDemon.pdColorSelector clsBackground 
          Height          =   975
          Left            =   0
-         TabIndex        =   8
-         Top             =   2160
+         TabIndex        =   6
+         Top             =   2520
          Width           =   7095
          _ExtentX        =   15690
          _ExtentY        =   1720
          Caption         =   "background color"
       End
-      Begin PhotoDemon.pdLabel lblHint 
-         Height          =   255
-         Index           =   1
-         Left            =   3075
-         Top             =   960
-         Width           =   2655
-         _ExtentX        =   4683
-         _ExtentY        =   450
-         Alignment       =   1
-         Caption         =   "slow, smaller file"
-         FontItalic      =   -1  'True
-         FontSize        =   9
+      Begin PhotoDemon.pdButtonStrip btsCompressionMono 
+         Height          =   1095
+         Left            =   0
+         TabIndex        =   16
+         Top             =   1320
+         Width           =   7095
+         _ExtentX        =   12515
+         _ExtentY        =   1931
+         Caption         =   "monochrome compression"
+      End
+      Begin PhotoDemon.pdButtonStrip btsMultipage 
+         Height          =   1095
+         Left            =   0
+         TabIndex        =   17
+         Top             =   3600
+         Width           =   7095
+         _ExtentX        =   12515
+         _ExtentY        =   1931
+         Caption         =   "page format"
       End
    End
    Begin VB.PictureBox picContainer 
@@ -168,13 +147,13 @@ Begin VB.Form dialog_ExportTIFF
       ScaleHeight     =   345
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   473
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   840
       Width           =   7095
       Begin PhotoDemon.pdSlider sldAlphaCutoff 
          Height          =   855
          Left            =   0
-         TabIndex        =   10
+         TabIndex        =   8
          Top             =   4080
          Width           =   7095
          _ExtentX        =   12515
@@ -199,7 +178,7 @@ Begin VB.Form dialog_ExportTIFF
       Begin PhotoDemon.pdSlider sldColorCount 
          Height          =   375
          Left            =   240
-         TabIndex        =   11
+         TabIndex        =   9
          Top             =   2400
          Width           =   4575
          _ExtentX        =   8070
@@ -213,7 +192,7 @@ Begin VB.Form dialog_ExportTIFF
       Begin PhotoDemon.pdButtonStrip btsAlpha 
          Height          =   1095
          Left            =   0
-         TabIndex        =   12
+         TabIndex        =   10
          Top             =   2880
          Width           =   7095
          _ExtentX        =   15690
@@ -223,7 +202,7 @@ Begin VB.Form dialog_ExportTIFF
       Begin PhotoDemon.pdButtonStrip btsColorModel 
          Height          =   1095
          Left            =   0
-         TabIndex        =   13
+         TabIndex        =   11
          Top             =   0
          Width           =   7095
          _ExtentX        =   15690
@@ -233,7 +212,7 @@ Begin VB.Form dialog_ExportTIFF
       Begin PhotoDemon.pdButtonStrip btsDepthColor 
          Height          =   1095
          Left            =   0
-         TabIndex        =   14
+         TabIndex        =   12
          Top             =   1200
          Width           =   7095
          _ExtentX        =   15690
@@ -243,7 +222,7 @@ Begin VB.Form dialog_ExportTIFF
       Begin PhotoDemon.pdColorSelector clsAlphaColor 
          Height          =   975
          Left            =   0
-         TabIndex        =   15
+         TabIndex        =   13
          Top             =   4080
          Width           =   7095
          _ExtentX        =   15690
@@ -254,7 +233,7 @@ Begin VB.Form dialog_ExportTIFF
       Begin PhotoDemon.pdButtonStrip btsDepthGrayscale 
          Height          =   1095
          Left            =   0
-         TabIndex        =   16
+         TabIndex        =   14
          Top             =   1200
          Width           =   7095
          _ExtentX        =   15690
@@ -498,9 +477,9 @@ Private Sub cmdBar_ResetClick()
     cmdBar.MarkPreviewStatus False
     
     'General panel settings
-    sldCompression.Value = sldCompression.NotchValueCustom
-    chkInterlace.Value = vbUnchecked
-    clsBackground.Color = vbWhite
+    btsCompressionColor.ListIndex = 0
+    btsCompressionMono.ListIndex = 0
+    btsMultipage.ListIndex = 0
     
     'Color and transparency settings
     btsColorModel.ListIndex = 0
@@ -534,6 +513,28 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     btsCategory.AddItem "advanced", 1
     btsCategory.AddItem "metadata", 2
     btsCategory.ListIndex = 0
+    
+    'Basic options
+    btsMultipage.AddItem "single page (composited image)", 0
+    btsMultipage.AddItem "multipage (one page per layer)", 1
+    btsMultipage.ListIndex = 0
+    
+    If Not (srcImage Is Nothing) Then
+        btsMultipage.Visible = CBool(srcImage.GetNumOfLayers > 0)
+    End If
+    
+    btsCompressionColor.AddItem "auto", 0
+    btsCompressionColor.AddItem "LZW", 1
+    btsCompressionColor.AddItem "ZIP", 2
+    btsCompressionColor.AddItem "none", 3
+    btsCompressionColor.ListIndex = 0
+    
+    btsCompressionMono.AddItem "auto", 0
+    btsCompressionMono.AddItem "CCITT Fax 4", 1
+    btsCompressionMono.AddItem "CCITT Fax 3", 2
+    btsCompressionMono.AddItem "LZW", 3
+    btsCompressionMono.AddItem "none", 4
+    btsCompressionMono.ListIndex = 0
     
     'Color model and color depth are closely related; populate all button strips, then show/hide the relevant pairings
     btsColorModel.AddItem "auto", 0
@@ -592,7 +593,7 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-    Plugin_FreeImage.ReleasePreviewCache
+    Plugin_FreeImage.ReleasePreviewCache m_FIHandle
 End Sub
 
 Private Function GetExportParamString() As String
@@ -600,10 +601,56 @@ Private Function GetExportParamString() As String
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     
-    'Start with the standard TIFF settings, which are consistent across all standard TIFF types
-    If sldCompression.IsValid Then cParams.AddParam "PNGCompressionLevel", sldCompression.Value Else cParams.AddParam "PNGCompressionLevel", sldCompression.NotchValueCustom
-    cParams.AddParam "PNGInterlacing", CBool(chkInterlace.Value)
-    cParams.AddParam "PNGBackgroundColor", clsBackground.Color
+    'Start with the standard TIFF settings
+    Dim compressName As String
+    
+    Select Case btsCompressionColor.ListIndex
+        'Auto
+        Case 0
+            compressName = "LZW"
+        'LZW
+        Case 1
+            compressName = "LZW"
+        'ZIP
+        Case 2
+            compressName = "ZIP"
+        'NONE
+        Case 3
+            compressName = "none"
+        Case Else
+            compressName = "LZW"
+    End Select
+    
+    cParams.AddParam "TIFFCompressionColor", compressName
+    
+    Select Case btsCompressionColor.ListIndex
+        'Auto
+        Case 0
+            compressName = "Fax4"
+        'CCITT Fax 4
+        Case 1
+            compressName = "Fax4"
+        'CCITT Fax 3
+        Case 2
+            compressName = "Fax3"
+        'LZW
+        Case 3
+            compressName = "LZW"
+        'NONE
+        Case 4
+            compressName = "none"
+        Case Else
+            compressName = "Fax4"
+    End Select
+    
+    cParams.AddParam "TIFFCompressionMono", compressName
+    
+    cParams.AddParam "TIFFBackgroundColor", clsBackground.Color
+    If (btsMultipage.Visible And btsMultipage.ListIndex > 0) Then
+        cParams.AddParam "TIFFMultipage", True
+    Else
+        cParams.AddParam "TIFFMultipage", False
+    End If
         
     'Next come all the messy color-depth possibilities
     Dim outputColorModel As String
@@ -615,7 +662,7 @@ Private Function GetExportParamString() As String
         Case 2
             outputColorModel = "Gray"
     End Select
-    cParams.AddParam "PNGColorModel", outputColorModel
+    cParams.AddParam "TIFFColorModel", outputColorModel
         
     'Which color depth we write is contingent on the color model, as color and gray use different button strips.
     ' (Gray supports some depths that color does not, e.g. 1-bit and 4-bit.)
@@ -649,8 +696,8 @@ Private Function GetExportParamString() As String
     
     End If
     
-    If (Len(outputColorDepth) <> 0) Then cParams.AddParam "PNGBitDepth", outputColorDepth
-    If (Len(outputPaletteSize) <> 0) Then cParams.AddParam "PNGPaletteSize", outputPaletteSize
+    If (Len(outputColorDepth) <> 0) Then cParams.AddParam "TIFFBitDepth", outputColorDepth
+    If (Len(outputPaletteSize) <> 0) Then cParams.AddParam "TIFFPaletteSize", outputPaletteSize
     
     'Next, we've got a bunch of possible alpha modes to deal with (uuuuuugh)
     Dim outputAlphaModel As String
@@ -667,9 +714,9 @@ Private Function GetExportParamString() As String
             outputAlphaModel = "None"
     End Select
     
-    cParams.AddParam "PNGAlphaModel", outputAlphaModel
-    If sldAlphaCutoff.IsValid Then cParams.AddParam "PNGAlphaCutoff", sldAlphaCutoff.Value Else cParams.AddParam "PNGAlphaCutoff", DEFAULT_ALPHA_CUTOFF
-    cParams.AddParam "PNGAlphaColor", clsAlphaColor.Color
+    cParams.AddParam "TIFFAlphaModel", outputAlphaModel
+    If sldAlphaCutoff.IsValid Then cParams.AddParam "TIFFAlphaCutoff", sldAlphaCutoff.Value Else cParams.AddParam "TIFFAlphaCutoff", DEFAULT_ALPHA_CUTOFF
+    cParams.AddParam "TIFFAlphaColor", clsAlphaColor.Color
     
     GetExportParamString = cParams.GetParamString
     
@@ -695,63 +742,63 @@ Private Sub UpdatePreviewSource()
         Dim tmpSafeArray As SAFEARRAY2D
         FastDrawing.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
         
-        'To reduce the chance of bugs, we use the same parameter parsing technique as the core PNG encoder
+        'To reduce the chance of bugs, we use the same parameter parsing technique as the core TIFF encoder
         Dim cParams As pdParamXML
         Set cParams = New pdParamXML
         cParams.SetParamString GetExportParamString()
         
         'Color and grayscale modes require different processing, so start there
         Dim forceGrayscale As Boolean
-        forceGrayscale = ParamsEqual(cParams.GetString("PNGColorModel", "Auto"), "Gray")
+        forceGrayscale = ParamsEqual(cParams.GetString("TIFFColorModel", "Auto"), "Gray")
         
         'For 8-bit modes, grab a palette size.  (This parameter will be ignored in other color modes.)
         Dim newPaletteSize As Long
-        newPaletteSize = cParams.GetLong("PNGPaletteSize", 256)
+        newPaletteSize = cParams.GetLong("TIFFPaletteSize", 256)
         
         Dim newColorDepth As Long
         
-        If ParamsEqual(cParams.GetString("PNGColorModel", "Auto"), "Auto") Then
+        If ParamsEqual(cParams.GetString("TIFFColorModel", "Auto"), "Auto") Then
             newColorDepth = 32
         Else
             
             'HDR modes do not need to be previewed, so we forcibly downsample them here
             If forceGrayscale Then
-                newColorDepth = cParams.GetLong("PNGBitDepth", 8)
+                newColorDepth = cParams.GetLong("TIFFBitDepth", 8)
                 If newColorDepth > 8 Then newColorDepth = 8
                 If newColorDepth = 1 Then
                     newPaletteSize = 2
                     newColorDepth = 8
                 End If
             Else
-                newColorDepth = cParams.GetLong("PNGBitDepth", 24)
+                newColorDepth = cParams.GetLong("TIFFBitDepth", 24)
                 If newColorDepth = 48 Then newColorDepth = 24
                 If newColorDepth = 64 Then newColorDepth = 32
             End If
         
         End If
         
-        'Next comes transparency, which is somewhat messy because PNG alpha behavior deviates significantly from normal alpha behavior.
+        'Next comes transparency, which is somewhat messy because we offer alpha behavior identical to the PNG plugin
         Dim desiredAlphaMode As PD_ALPHA_STATUS, desiredAlphaCutoff As Long
         
-        If ParamsEqual(cParams.GetString("PNGAlphaModel", "Auto"), "Auto") Or ParamsEqual(cParams.GetString("PNGAlphaModel", "Auto"), "Full") Then
+        If ParamsEqual(cParams.GetString("TIFFAlphaModel", "Auto"), "Auto") Or ParamsEqual(cParams.GetString("TIFFAlphaModel", "Auto"), "Full") Then
             desiredAlphaMode = PDAS_ComplicatedAlpha
             If newColorDepth = 24 Then newColorDepth = 32
-        ElseIf ParamsEqual(cParams.GetString("PNGAlphaModel", "Auto"), "None") Then
+        ElseIf ParamsEqual(cParams.GetString("TIFFAlphaModel", "Auto"), "None") Then
             desiredAlphaMode = PDAS_NoAlpha
             If newColorDepth = 32 Then newColorDepth = 24
             desiredAlphaCutoff = 0
-        ElseIf ParamsEqual(cParams.GetString("PNGAlphaModel", "Auto"), "ByCutoff") Then
+        ElseIf ParamsEqual(cParams.GetString("TIFFAlphaModel", "Auto"), "ByCutoff") Then
             desiredAlphaMode = PDAS_BinaryAlpha
-            desiredAlphaCutoff = cParams.GetLong("PNGAlphaCutoff", DEFAULT_ALPHA_CUTOFF)
+            desiredAlphaCutoff = cParams.GetLong("TIFFAlphaCutoff", DEFAULT_ALPHA_CUTOFF)
             If newColorDepth = 24 Then newColorDepth = 32
-        ElseIf ParamsEqual(cParams.GetString("PNGAlphaModel", "Auto"), "ByColor") Then
+        ElseIf ParamsEqual(cParams.GetString("TIFFAlphaModel", "Auto"), "ByColor") Then
             desiredAlphaMode = PDAS_NewAlphaFromColor
-            desiredAlphaCutoff = cParams.GetLong("PNGAlphaColor", vbWhite)
+            desiredAlphaCutoff = cParams.GetLong("TIFFAlphaColor", vbWhite)
             If newColorDepth = 24 Then newColorDepth = 32
         End If
         
         If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
-        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, newColorDepth, desiredAlphaMode, PDAS_ComplicatedAlpha, desiredAlphaCutoff, cParams.GetLong("PNGBackgroundColor", vbWhite), forceGrayscale, newPaletteSize, , True)
+        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, newColorDepth, desiredAlphaMode, PDAS_ComplicatedAlpha, desiredAlphaCutoff, cParams.GetLong("TIFFBackgroundColor", vbWhite), forceGrayscale, newPaletteSize, , True)
         
     End If
     
@@ -768,9 +815,9 @@ Private Sub UpdatePreview()
         'Make sure the preview source is up-to-date
         If (m_FIHandle = 0) Then UpdatePreviewSource
         
-        'Retrieve a PNG-saved version of the current preview image
+        'Retrieve a TIFF-saved version of the current preview image
         workingDIB.ResetDIB
-        If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_PNG) Then
+        If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_TIFF, FISO_TIFF_NONE) Then
             FinalizeNonstandardPreview pdFxPreview, True
         End If
         

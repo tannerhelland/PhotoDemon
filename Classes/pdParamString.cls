@@ -45,16 +45,16 @@ Private m_numOfParams As Long
 
 'Return the number of parameters in the current param string.  This function has no effect if a param string
 ' has not yet been assigned to the class.
-Public Function getParamCount() As Long
-    getParamCount = m_numOfParams
+Public Function GetParamCount() As Long
+    GetParamCount = m_numOfParams
 End Function
 
-Public Function getParamString() As String
-    getParamString = m_ParamString
+Public Function GetParamString() As String
+    GetParamString = m_ParamString
 End Function
 
 'Assign the class a parameter string, and parse it as necessary into its individual components
-Public Sub setParamString(ByVal pString As String)
+Public Sub SetParamString(ByVal pString As String)
 
     m_ParamString = pString
     
@@ -88,20 +88,20 @@ Public Sub setParamString(ByVal pString As String)
 End Sub
 
 'Does the parameter at location X exist?
-Public Function doesParamExist(ByVal pIndex As Long) As Boolean
+Public Function DoesParamExist(ByVal pIndex As Long) As Boolean
     If m_numOfParams = 0 Then
-        doesParamExist = False
+        DoesParamExist = False
     Else
         If pIndex <= m_numOfParams And pIndex > 0 Then
-            doesParamExist = True
+            DoesParamExist = True
         Else
-            doesParamExist = False
+            DoesParamExist = False
         End If
     End If
 End Function
 
 'Change the value at a given location.  (This assumes setParamString has already been called, obviously.)
-Public Sub setNewValueAtLocation(ByVal pIndex As Long, ByVal newValue As String)
+Public Sub SetNewValueAtLocation(ByVal pIndex As Long, ByVal newValue As String)
     
     'Replace the entry at pIndex with the new string value
     If pIndex <= m_numOfParams Then
@@ -111,7 +111,7 @@ Public Sub setNewValueAtLocation(ByVal pIndex As Long, ByVal newValue As String)
 End Sub
 
 'If setNewValueAtLocation has been used, this sub needs to be called to reassemble the modified parameter string
-Public Sub reassembleModifiedParamString()
+Public Sub ReassembleModifiedParamString()
 
     'Build a new param string by concatenating all values into a single "|"-delimited string
     Dim tmpString As String
@@ -124,14 +124,14 @@ Public Sub reassembleModifiedParamString()
     Next i
     
     'Re-initialize this object with that string
-    setParamString tmpString
+    SetParamString tmpString
 
 End Sub
 
 'Remove a parameter from the current param string.  This is typically used when a function needs to preface a param string
 ' with some kind of target ID (e.g. layer ID for actions that affect layers), but then it needs to forward the rest of
 ' the param string onto that target for additional handling.
-Public Sub removeParamAtPosition(ByVal pIndex As Long)
+Public Sub RemoveParamAtPosition(ByVal pIndex As Long)
 
     'If there's only one parameter in the list, we can't remove it!
     If m_numOfParams = 1 Then Exit Sub
@@ -143,7 +143,7 @@ Public Sub removeParamAtPosition(ByVal pIndex As Long)
     Next i
     
     'Reassemble the modified param string
-    reassembleModifiedParamString
+    ReassembleModifiedParamString
 
 End Sub
 
@@ -153,7 +153,7 @@ Public Function GetBool(ByVal pIndex As Long, Optional ByVal defaultReturn As Bo
     If m_numOfParams = 1 Then
         GetBool = CBool(m_ParamString)
     Else
-        If doesParamExist(pIndex) Then
+        If DoesParamExist(pIndex) Then
             GetBool = CBool(Trim$(m_Params(pIndex - 1)))
         Else
             GetBool = defaultReturn
@@ -168,7 +168,7 @@ Public Function GetByte(ByVal pIndex As Long, Optional ByVal defaultReturn As By
     If m_numOfParams = 1 Then
         GetByte = CByte(m_ParamString)
     Else
-        If doesParamExist(pIndex) Then
+        If DoesParamExist(pIndex) Then
             GetByte = CByte(m_Params(pIndex - 1))
         Else
             GetByte = defaultReturn
@@ -183,7 +183,7 @@ Public Function GetInteger(ByVal pIndex As Long, Optional ByVal defaultReturn As
     If m_numOfParams = 1 Then
         GetInteger = CInt(CDblCustom(m_ParamString))
     Else
-        If doesParamExist(pIndex) Then
+        If DoesParamExist(pIndex) Then
             GetInteger = CInt(CDblCustom(m_Params(pIndex - 1)))
         Else
             GetInteger = defaultReturn
@@ -198,7 +198,7 @@ Public Function GetLong(ByVal pIndex As Long, Optional ByVal defaultReturn As Lo
     If m_numOfParams = 1 Then
         GetLong = CLng(CDblCustom(m_ParamString))
     Else
-        If doesParamExist(pIndex) Then
+        If DoesParamExist(pIndex) Then
             GetLong = CLng(CDblCustom(m_Params(pIndex - 1)))
         Else
             GetLong = defaultReturn
@@ -213,7 +213,7 @@ Public Function GetSingle(ByVal pIndex As Long, Optional ByVal defaultReturn As 
     If m_numOfParams = 1 Then
         GetSingle = CDblCustom(m_ParamString)
     Else
-        If doesParamExist(pIndex) Then
+        If DoesParamExist(pIndex) Then
             GetSingle = CDblCustom(m_Params(pIndex - 1))
         Else
             GetSingle = defaultReturn
@@ -228,7 +228,7 @@ Public Function GetDouble(ByVal pIndex As Long, Optional ByVal defaultReturn As 
     If m_numOfParams = 1 Then
         GetDouble = CDblCustom(m_ParamString)
     Else
-        If doesParamExist(pIndex) Then
+        If DoesParamExist(pIndex) Then
             GetDouble = CDblCustom(m_Params(pIndex - 1))
         Else
             GetDouble = defaultReturn
@@ -243,7 +243,7 @@ Public Function GetString(ByVal pIndex As Long, Optional ByVal defaultReturn As 
     If m_numOfParams = 1 Then
         GetString = m_ParamString
     Else
-        If doesParamExist(pIndex) Then
+        If DoesParamExist(pIndex) Then
             GetString = m_Params(pIndex - 1)
         Else
             GetString = defaultReturn
@@ -258,7 +258,7 @@ Public Function GetVariant(ByVal pIndex As Long, Optional ByVal defaultReturn As
     If m_numOfParams = 1 Then
         GetVariant = m_ParamString
     Else
-        If doesParamExist(pIndex) Then
+        If DoesParamExist(pIndex) Then
             GetVariant = CVar(m_Params(pIndex - 1))
         Else
             GetVariant = defaultReturn
