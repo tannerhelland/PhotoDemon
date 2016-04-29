@@ -363,7 +363,7 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-    Plugin_FreeImage.ReleasePreviewCache
+    Plugin_FreeImage.ReleasePreviewCache m_FIHandle
 End Sub
 
 'Used to keep the "image quality" text box, scroll bar, and combo box in sync

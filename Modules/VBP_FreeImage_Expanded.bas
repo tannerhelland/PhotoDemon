@@ -2662,9 +2662,10 @@ End Function
 'PD uses a persistent cache for generating post-export preview images.  This costs several MB of memory but greatly improves
 ' responsiveness of export dialogs.  When such a dialog is unloaded, you can call this function to forcibly reclaim the memory
 ' associated with that cache.
-Public Sub ReleasePreviewCache()
+Public Sub ReleasePreviewCache(Optional ByVal unloadThisFIHandleToo As Long = 0)
     Erase m_ExportPreviewBytes
     Set m_ExportPreviewDIB = Nothing
+    If (unloadThisFIHandleToo <> 0) Then ReleaseFreeImageObject unloadThisFIHandleToo
 End Sub
 
 Public Sub ReleaseFreeImageObject(ByVal srcFIHandle As Long)

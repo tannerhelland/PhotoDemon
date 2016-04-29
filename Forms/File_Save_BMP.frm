@@ -406,7 +406,7 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-    Plugin_FreeImage.ReleasePreviewCache
+    Plugin_FreeImage.ReleasePreviewCache m_FIHandle
 End Sub
 
 Private Function GetExportParamString() As String
