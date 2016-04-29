@@ -1978,6 +1978,12 @@ End Function
 'Returns: a non-zero FI handle if successful; 0 if something goes horribly wrong.
 Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputColorDepth As Long, Optional ByVal desiredAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal currentAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal alphaCutoffOrColor As Long = 127, Optional ByVal BackgroundColor As Long = vbWhite, Optional ByVal forceGrayscale As Boolean = False, Optional ByVal paletteCount As Long = 256, Optional ByVal RGB16bppUse565 As Boolean = True, Optional ByVal doNotUseFIGrayscale As Boolean = False) As Long
     
+    'If FreeImage is not enabled, exit immediately
+    If (Not g_ImageFormats.FreeImageEnabled) Then
+        GetFIDib_SpecificColorMode = 0
+        Exit Function
+    End If
+    
     'Before proceeding, we first need to manually correct conditions that FreeImage cannot currently meet.
     ' Most significant among these is the combination of grayscale images + alpha channels; these must be forcibly expanded
     ' to RGBA at a matching bit-depth.

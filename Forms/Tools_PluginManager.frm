@@ -428,9 +428,6 @@ Private Sub Form_Load()
         lblStatus(i).SetWidth picContainer(0).ScaleWidth - lblStatus(i).GetLeft
     Next i
     
-    'Load all user-editable settings from the preferences file, and populate all plugin information
-    LoadAllPluginSettings
-    
     'For some reason, the container picture boxes automatically acquire the pointer of children objects.
     ' Manually force those cursors to arrows to prevent this.
     For i = 0 To picContainer.Count - 1
@@ -442,6 +439,9 @@ Private Sub Form_Load()
     btsDisablePlugin.AddItem "yes", 1
     btsDisablePlugin.ListIndex = 0
     m_IgnoreButtonStripEvents = False
+    
+    'Load all user-editable settings from the preferences file, and populate all plugin information
+    LoadAllPluginSettings
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
