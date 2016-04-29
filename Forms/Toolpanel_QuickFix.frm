@@ -326,8 +326,10 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'Save all last-used settings to file
-    lastUsedSettings.SaveAllControlValues
-    lastUsedSettings.SetParentForm Nothing
+    If Not (lastUsedSettings Is Nothing) Then
+        lastUsedSettings.SaveAllControlValues
+        lastUsedSettings.SetParentForm Nothing
+    End If
 
 End Sub
 
@@ -364,7 +366,7 @@ Private Sub sltQuickFix_Change(Index As Integer)
         End If
         
         'Even though this action is not destructive, we want to allow the user to save after making non-destructive changes.
-        If pdImages(g_CurrentImage).getSaveState(pdSE_AnySave) And (pdImages(g_CurrentImage).GetActiveLayer.getLayerNonDestructiveFXState <> initFXState) Then
+        If pdImages(g_CurrentImage).GetSaveState(pdSE_AnySave) And (pdImages(g_CurrentImage).GetActiveLayer.getLayerNonDestructiveFXState <> initFXState) Then
             pdImages(g_CurrentImage).SetSaveState False, pdSE_AnySave
             SyncInterfaceToCurrentImage
         End If

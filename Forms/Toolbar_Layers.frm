@@ -214,7 +214,10 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
     'Save all last-used settings to file
-    m_lastUsedSettings.SaveAllControlValues
+    If Not (m_lastUsedSettings Is Nothing) Then
+        m_lastUsedSettings.SaveAllControlValues
+        m_lastUsedSettings.SetParentForm Nothing
+    End If
     
 End Sub
 

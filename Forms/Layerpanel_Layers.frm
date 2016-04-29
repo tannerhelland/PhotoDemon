@@ -1005,8 +1005,10 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'Save all last-used settings to file
-    lastUsedSettings.SaveAllControlValues
-    lastUsedSettings.SetParentForm Nothing
+    If Not (lastUsedSettings Is Nothing) Then
+        lastUsedSettings.SaveAllControlValues
+        lastUsedSettings.SetParentForm Nothing
+    End If
 
 End Sub
 
@@ -1022,7 +1024,7 @@ Private Sub initializeUIDib(ByRef dstDIB As pdDIB, ByRef resString As String)
     
     'If the screen is high DPI, resize all DIBs to match
     If FixDPIFloat(1) > 1 Then
-        dstDIB.createBlank FixDPI(tmpDIB.GetDIBWidth), FixDPI(tmpDIB.GetDIBHeight), tmpDIB.GetDIBColorDepth, 0
+        dstDIB.CreateBlank FixDPI(tmpDIB.GetDIBWidth), FixDPI(tmpDIB.GetDIBHeight), tmpDIB.GetDIBColorDepth, 0
         GDIPlusResizeDIB dstDIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, InterpolationModeHighQualityBicubic
     Else
         dstDIB.CreateFromExistingDIB tmpDIB
@@ -1035,7 +1037,7 @@ End Sub
 Private Sub ResizeLayerUI()
 
     'Resize the DIB to be the same size as the Layer UI box
-    bufferDIB.createBlank picLayers.ScaleWidth, picLayers.ScaleHeight
+    bufferDIB.CreateBlank picLayers.ScaleWidth, picLayers.ScaleHeight
     
     'Initialize a few other variables now (for performance reasons)
     m_BufferWidth = picLayers.ScaleWidth
@@ -1133,7 +1135,7 @@ Private Sub RedrawLayerBox()
     'Erase the current DIB
     If (bufferDIB Is Nothing) Then Set bufferDIB = New pdDIB
     If (bufferDIB.GetDIBWidth <> m_BufferWidth) Or (bufferDIB.GetDIBHeight <> m_BufferHeight) Then
-        bufferDIB.createBlank m_BufferWidth, m_BufferHeight, 24
+        bufferDIB.CreateBlank m_BufferWidth, m_BufferHeight, 24
     Else
         bufferDIB.ResetDIB 255
     End If

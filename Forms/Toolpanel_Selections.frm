@@ -858,8 +858,10 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'Save all last-used settings to file
-    lastUsedSettings.SaveAllControlValues
-    lastUsedSettings.SetParentForm Nothing
+    If Not (lastUsedSettings Is Nothing) Then
+        lastUsedSettings.SaveAllControlValues
+        lastUsedSettings.SetParentForm Nothing
+    End If
 
 End Sub
 
@@ -920,11 +922,11 @@ Public Sub UpdateSelectionPanelLayout()
     End If
     
     'Display the border slider as necessary
-    If (Selection_Handler.getSelectionSubPanelFromCurrentTool < cboSelArea.Count - 1) And (Selection_Handler.getSelectionSubPanelFromCurrentTool > 0) Then
-        If cboSelArea(Selection_Handler.getSelectionSubPanelFromCurrentTool).ListIndex = sBorder Then
-            sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromCurrentTool).Visible = True
+    If (Selection_Handler.GetSelectionSubPanelFromCurrentTool < cboSelArea.Count - 1) And (Selection_Handler.GetSelectionSubPanelFromCurrentTool > 0) Then
+        If cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex = sBorder Then
+            sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Visible = True
         Else
-            sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromCurrentTool).Visible = False
+            sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Visible = False
         End If
     End If
     

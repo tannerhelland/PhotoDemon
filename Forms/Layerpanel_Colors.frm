@@ -89,8 +89,8 @@ Private Sub Form_Load()
     
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
-    lastUsedSettings.setParentForm Me
-    lastUsedSettings.loadAllControlValues
+    lastUsedSettings.SetParentForm Me
+    lastUsedSettings.LoadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
     UpdateAgainstCurrentTheme
@@ -136,8 +136,10 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
     'Save all last-used settings to file
-    lastUsedSettings.saveAllControlValues
-    lastUsedSettings.setParentForm Nothing
+    If Not (lastUsedSettings Is Nothing) Then
+        lastUsedSettings.SaveAllControlValues
+        lastUsedSettings.SetParentForm Nothing
+    End If
     
 End Sub
 
