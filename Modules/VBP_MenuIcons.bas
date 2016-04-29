@@ -576,7 +576,7 @@ Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subM
     Next i
     
     'If the icon was not found, load it and add it to the list
-    If Not iconAlreadyLoaded Then
+    If (Not iconAlreadyLoaded) Then
         
         If Not (cMenuImage Is Nothing) Then
             cMenuImage.AddImageFromStream LoadResData(resID, "CUSTOM")
@@ -886,7 +886,7 @@ Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVa
             dpiDIB.CreateFromExistingDIB resDIB
             
             'Erase and resize the primary DIB
-            resDIB.createBlank FixDPI(dpiDIB.GetDIBWidth), FixDPI(dpiDIB.GetDIBHeight), dpiDIB.GetDIBColorDepth
+            resDIB.CreateBlank FixDPI(dpiDIB.GetDIBWidth), FixDPI(dpiDIB.GetDIBHeight), dpiDIB.GetDIBColorDepth
             
             'Use GDI+ to resize the cursor from dpiDIB into resDIB
             GDIPlusResizeDIB resDIB, 0, 0, resDIB.GetDIBWidth, resDIB.GetDIBHeight, dpiDIB, 0, 0, dpiDIB.GetDIBWidth, dpiDIB.GetDIBHeight, InterpolationModeNearestNeighbor
@@ -1106,10 +1106,10 @@ Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
             
             'If the image has an alpha channel, create a 32bpp DIB to receive it
             If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
-                dstDIB.createBlank tmpRect.Width, tmpRect.Height, 32
+                dstDIB.CreateBlank tmpRect.Width, tmpRect.Height, 32
                 dstDIB.SetInitialAlphaPremultiplicationState True
             Else
-                dstDIB.createBlank tmpRect.Width, tmpRect.Height, 24
+                dstDIB.CreateBlank tmpRect.Width, tmpRect.Height, 24
             End If
             
             'Convert the GDI+ bitmap to a standard Windows hBitmap
@@ -1166,16 +1166,16 @@ End Sub
 
 'When loading a modal dialog, the dialog will not have an icon by default.  We can assign an icon at run-time to ensure that icons
 ' appear in the Alt+Tab dialog of older OSes.
-Public Sub ChangeWindowIcon(ByVal targetHWnd As Long, ByVal hIconSmall As Long, ByVal hIconLarge As Long)
-    SendMessageA targetHWnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall
-    SendMessageA targetHWnd, WM_SETICON, ICON_BIG, ByVal hIconLarge
+Public Sub ChangeWindowIcon(ByVal targetHwnd As Long, ByVal hIconSmall As Long, ByVal hIconLarge As Long)
+    SendMessageA targetHwnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall
+    SendMessageA targetHwnd, WM_SETICON, ICON_BIG, ByVal hIconLarge
 End Sub
 
-Public Sub MirrorCurrentIconsToWindow(ByVal targetHWnd As Long)
+Public Sub MirrorCurrentIconsToWindow(ByVal targetHwnd As Long)
     If (g_OpenImageCount > 0) Then
-        ChangeWindowIcon targetHWnd, pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
+        ChangeWindowIcon targetHwnd, pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
     Else
-        ChangeWindowIcon targetHWnd, m_DefaultIconSmall, m_DefaultIconLarge
+        ChangeWindowIcon targetHwnd, m_DefaultIconSmall, m_DefaultIconLarge
     End If
 End Sub
 

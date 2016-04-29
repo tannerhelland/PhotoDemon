@@ -415,7 +415,7 @@ Private Sub cboLayerResizeQuality_Click()
     Tool_Support.setToolBusyState True
     
     'Apply the new quality mode
-    pdImages(g_CurrentImage).getActiveLayer.setLayerResizeQuality cboLayerResizeQuality.ListIndex
+    pdImages(g_CurrentImage).GetActiveLayer.setLayerResizeQuality cboLayerResizeQuality.ListIndex
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -448,12 +448,12 @@ Private Sub chkRotateNode_Click()
 End Sub
 
 Private Sub cmdLayerAffinePermanent_Click()
-    Process "Make layer changes permanent", , buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYER
+    Process "Make layer changes permanent", , buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
 End Sub
 
 'Reset layer angle to 0.0 degrees.  (This action is non-destructive.)
 Private Sub cmdLayerAngleReset_Click()
-    Process "Reset layer angle", , buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYERHEADER
+    Process "Reset layer angle", , buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
 End Sub
 
 Private Sub cmdLayerMove_Click(Index As Integer)
@@ -462,11 +462,11 @@ Private Sub cmdLayerMove_Click(Index As Integer)
     
         'Reset layer to original size
         Case 0
-            Process "Reset layer size", , buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYERHEADER
+            Process "Reset layer size", , buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
         
         'Make non-destructive resize permanent
         Case 1
-            Process "Make layer changes permanent", , buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYER
+            Process "Make layer changes permanent", , buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
     
     End Select
     
@@ -479,11 +479,11 @@ Private Sub cmdLayerShearReset_Click(Index As Integer)
     
         'Reset x
         Case 0
-            Process "Reset horizontal layer shear", , buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYERHEADER
+            Process "Reset horizontal layer shear", , buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
         
         'Reset y
         Case 1
-            Process "Reset vertical layer shear", , buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYERHEADER
+            Process "Reset vertical layer shear", , buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
     
     End Select
     
@@ -522,8 +522,8 @@ Private Sub Form_Load()
         
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
-    lastUsedSettings.setParentForm Me
-    lastUsedSettings.loadAllControlValues
+    lastUsedSettings.SetParentForm Me
+    lastUsedSettings.LoadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
     UpdateAgainstCurrentTheme
@@ -533,8 +533,10 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
     'Save all last-used settings to file
-    lastUsedSettings.saveAllControlValues
-    lastUsedSettings.setParentForm Nothing
+    If Not (lastUsedSettings Is Nothing) Then
+        lastUsedSettings.SaveAllControlValues
+        lastUsedSettings.SetParentForm Nothing
+    End If
     
 End Sub
 
@@ -548,7 +550,7 @@ Private Sub sltLayerAngle_Change()
     Tool_Support.setToolBusyState True
     
     'Notify the layer of the setting change
-    pdImages(g_CurrentImage).getActiveLayer.setLayerAngle sltLayerAngle.Value
+    pdImages(g_CurrentImage).GetActiveLayer.setLayerAngle sltLayerAngle.Value
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -562,14 +564,14 @@ Private Sub sltLayerAngle_Change()
     If cmdLayerAngleReset.Enabled <> resetAvailable Then cmdLayerAngleReset.Enabled = resetAvailable
     
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
-    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
+    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
+    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
     
 End Sub
 
 Private Sub sltLayerAngle_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Generic pgp_Angle, sltLayerAngle.Value, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Generic pgp_Angle, sltLayerAngle.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltLayerAngle_LostFocusAPI()
@@ -586,7 +588,7 @@ Private Sub sltLayerShearX_Change()
     Tool_Support.setToolBusyState True
     
     'Notify the layer of the setting change
-    pdImages(g_CurrentImage).getActiveLayer.setLayerShearX sltLayerShearX.Value
+    pdImages(g_CurrentImage).GetActiveLayer.setLayerShearX sltLayerShearX.Value
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -600,14 +602,14 @@ Private Sub sltLayerShearX_Change()
     If cmdLayerShearReset(0).Enabled <> resetAvailable Then cmdLayerShearReset(0).Enabled = resetAvailable
     
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
-    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
+    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
+    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
     
 End Sub
 
 Private Sub sltLayerShearX_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Generic pgp_ShearX, sltLayerShearX.Value, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Generic pgp_ShearX, sltLayerShearX.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltLayerShearX_LostFocusAPI()
@@ -624,7 +626,7 @@ Private Sub sltLayerShearY_Change()
     Tool_Support.setToolBusyState True
     
     'Notify the layer of the setting change
-    pdImages(g_CurrentImage).getActiveLayer.setLayerShearY sltLayerShearY.Value
+    pdImages(g_CurrentImage).GetActiveLayer.setLayerShearY sltLayerShearY.Value
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -638,14 +640,14 @@ Private Sub sltLayerShearY_Change()
     If cmdLayerShearReset(1).Enabled <> resetAvailable Then cmdLayerShearReset(1).Enabled = resetAvailable
     
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
-    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
+    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
+    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
     
 End Sub
 
 Private Sub sltLayerShearY_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Generic pgp_ShearY, sltLayerShearY.Value, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Generic pgp_ShearY, sltLayerShearY.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltLayerShearY_LostFocusAPI()
@@ -665,19 +667,19 @@ Private Sub tudLayerMove_Change(Index As Integer)
     
         'Layer position (x)
         Case 0
-            pdImages(g_CurrentImage).getActiveLayer.setLayerOffsetX tudLayerMove(Index).Value
+            pdImages(g_CurrentImage).GetActiveLayer.setLayerOffsetX tudLayerMove(Index).Value
         
         'Layer position (y)
         Case 1
-            pdImages(g_CurrentImage).getActiveLayer.setLayerOffsetY tudLayerMove(Index).Value
+            pdImages(g_CurrentImage).GetActiveLayer.setLayerOffsetY tudLayerMove(Index).Value
         
         'Layer width
         Case 2
-            pdImages(g_CurrentImage).getActiveLayer.setLayerCanvasXModifier tudLayerMove(Index).Value / pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False)
+            pdImages(g_CurrentImage).GetActiveLayer.setLayerCanvasXModifier tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.getLayerWidth(False)
             
         'Layer height
         Case 3
-            pdImages(g_CurrentImage).getActiveLayer.setLayerCanvasYModifier tudLayerMove(Index).Value / pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False)
+            pdImages(g_CurrentImage).GetActiveLayer.setLayerCanvasYModifier tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.getLayerHeight(False)
         
     End Select
     
@@ -688,8 +690,8 @@ Private Sub tudLayerMove_Change(Index As Integer)
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
-    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
+    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
+    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
 
 End Sub
 

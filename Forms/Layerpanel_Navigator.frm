@@ -67,8 +67,8 @@ Private Sub Form_Load()
     
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
-    lastUsedSettings.setParentForm Me
-    lastUsedSettings.loadAllControlValues
+    lastUsedSettings.SetParentForm Me
+    lastUsedSettings.LoadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
     UpdateAgainstCurrentTheme
@@ -108,8 +108,10 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
     'Save all last-used settings to file
-    lastUsedSettings.saveAllControlValues
-    lastUsedSettings.setParentForm Nothing
+    If Not (lastUsedSettings Is Nothing) Then
+        lastUsedSettings.SaveAllControlValues
+        lastUsedSettings.SetParentForm Nothing
+    End If
     
 End Sub
 
@@ -127,17 +129,17 @@ Private Sub nvgMain_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single,
         Dim thumbImageWidth As Long, thumbImageHeight As Long
         
         'Start by determining proper dimensions for the resized thumbnail image.
-        Math_Functions.convertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, thumbDIB.getDIBWidth, thumbDIB.getDIBHeight, thumbImageWidth, thumbImageHeight
+        Math_Functions.ConvertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, thumbDIB.GetDIBWidth, thumbDIB.GetDIBHeight, thumbImageWidth, thumbImageHeight
         
         'From there, solve for the top-left corner of the centered image
-        If thumbImageWidth < thumbDIB.getDIBWidth Then
-            thumbX = (thumbDIB.getDIBWidth - thumbImageWidth) / 2
+        If thumbImageWidth < thumbDIB.GetDIBWidth Then
+            thumbX = (thumbDIB.GetDIBWidth - thumbImageWidth) / 2
         Else
             thumbX = 0
         End If
         
-        If thumbImageHeight < thumbDIB.getDIBHeight Then
-            thumbY = (thumbDIB.getDIBHeight - thumbImageHeight) / 2
+        If thumbImageHeight < thumbDIB.GetDIBHeight Then
+            thumbY = (thumbDIB.GetDIBHeight - thumbImageHeight) / 2
         Else
             thumbY = 0
         End If
@@ -157,7 +159,7 @@ Private Sub nvgMain_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single,
         
         End Select
         
-        pdImages(g_CurrentImage).getCompositedRect thumbDIB, thumbX, thumbY, thumbImageWidth, thumbImageHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, iQuality, , CLC_Thumbnail
+        pdImages(g_CurrentImage).GetCompositedRect thumbDIB, thumbX, thumbY, thumbImageWidth, thumbImageHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, iQuality, , CLC_Thumbnail
     
     Else
         thumbX = 0

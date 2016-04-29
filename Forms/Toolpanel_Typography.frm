@@ -824,7 +824,7 @@ Private Sub bsText_BrushChanged()
     Tool_Support.setToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FillBrush, bsText.Brush
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_FillBrush, bsText.Brush
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -836,7 +836,7 @@ End Sub
 
 Private Sub bsText_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_FillBrush, bsText.Brush, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_FillBrush, bsText.Brush, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub bsText_LostFocusAPI()
@@ -853,7 +853,7 @@ Private Sub bsTextBackground_BrushChanged()
     Tool_Support.setToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_BackgroundBrush, bsTextBackground.Brush
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_BackgroundBrush, bsTextBackground.Brush
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -865,7 +865,7 @@ End Sub
 
 Private Sub bsTextBackground_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub bsTextBackground_LostFocusAPI()
@@ -886,19 +886,19 @@ Private Sub btnFontStyles_Click(Index As Integer)
     
         'Bold
         Case 0
-            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FontBold, btnFontStyles(Index).Value
+            pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_FontBold, btnFontStyles(Index).Value
         
         'Italic
         Case 1
-            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FontItalic, btnFontStyles(Index).Value
+            pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_FontItalic, btnFontStyles(Index).Value
         
         'Underline
         Case 2
-            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FontUnderline, btnFontStyles(Index).Value
+            pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_FontUnderline, btnFontStyles(Index).Value
         
         'Strikeout
         Case 3
-            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FontStrikeout, btnFontStyles(Index).Value
+            pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_FontStrikeout, btnFontStyles(Index).Value
     
     End Select
     
@@ -920,19 +920,19 @@ Private Sub btnFontStyles_GotFocusAPI(Index As Integer)
     
         'Bold
         Case 0
-            Processor.flagInitialNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+            Processor.flagInitialNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
             
         'Italic
         Case 1
-            Processor.flagInitialNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+            Processor.flagInitialNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
         
         'Underline
         Case 2
-            Processor.flagInitialNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+            Processor.flagInitialNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
         
         'Strikeout
         Case 3
-            Processor.flagInitialNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+            Processor.flagInitialNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
     
     End Select
     
@@ -1003,7 +1003,7 @@ Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
     Tool_Support.setToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_HorizontalAlignment, buttonIndex
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_HorizontalAlignment, buttonIndex
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1015,7 +1015,7 @@ End Sub
 
 Private Sub btsHAlignment_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub btsHAlignment_LostFocusAPI()
@@ -1032,7 +1032,7 @@ Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
     Tool_Support.setToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_VerticalAlignment, buttonIndex
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_VerticalAlignment, buttonIndex
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1044,7 +1044,7 @@ End Sub
 
 Private Sub btsVAlignment_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub btsVAlignment_LostFocusAPI()
@@ -1061,7 +1061,7 @@ Private Sub cboCharCase_Click()
     Tool_Support.setToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_CharRemap, cboCharCase.ListIndex
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_CharRemap, cboCharCase.ListIndex
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1073,7 +1073,7 @@ End Sub
 
 Private Sub cboCharCase_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboCharCase_LostFocusAPI()
@@ -1090,7 +1090,7 @@ Private Sub cboCharMirror_Click()
     Tool_Support.setToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_CharMirror, cboCharMirror.ListIndex
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_CharMirror, cboCharMirror.ListIndex
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1102,7 +1102,7 @@ End Sub
 
 Private Sub cboCharMirror_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboCharMirror_LostFocusAPI()
@@ -1119,7 +1119,7 @@ Private Sub cboTextFontFace_Click()
     Tool_Support.setToolBusyState True
     
     'Update the current layer font size
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1131,7 +1131,7 @@ End Sub
 
 Private Sub cboTextFontFace_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex), pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex), pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboTextFontFace_LostFocusAPI()
@@ -1148,7 +1148,7 @@ Private Sub cboTextRenderingHint_Click()
     Tool_Support.setToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1160,7 +1160,7 @@ End Sub
 
 Private Sub cboTextRenderingHint_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboTextRenderingHint_LostFocusAPI()
@@ -1177,7 +1177,7 @@ Private Sub cboWordWrap_Click()
     Tool_Support.setToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_WordWrap, cboWordWrap.ListIndex
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_WordWrap, cboWordWrap.ListIndex
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1189,7 +1189,7 @@ End Sub
 
 Private Sub cboWordWrap_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboWordWrap_LostFocusAPI()
@@ -1206,7 +1206,7 @@ Private Sub chkBackground_Click()
     Tool_Support.setToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_BackgroundActive, CBool(chkBackground.Value)
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_BackgroundActive, CBool(chkBackground.Value)
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1218,7 +1218,7 @@ End Sub
 
 Private Sub chkBackground_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_BackgroundActive, CBool(chkBackground.Value), pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_BackgroundActive, CBool(chkBackground.Value), pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkBackground_LostFocusAPI()
@@ -1235,7 +1235,7 @@ Private Sub chkBackgroundBorder_Click()
     Tool_Support.setToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_BackBorderActive, CBool(chkBackgroundBorder.Value)
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_BackBorderActive, CBool(chkBackgroundBorder.Value)
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1247,7 +1247,7 @@ End Sub
 
 Private Sub chkBackgroundBorder_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_BackBorderActive, CBool(chkBackgroundBorder.Value), pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_BackBorderActive, CBool(chkBackgroundBorder.Value), pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkBackgroundBorder_LostFocusAPI()
@@ -1264,7 +1264,7 @@ Private Sub chkFillText_Click()
     Tool_Support.setToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FillActive, CBool(chkFillText.Value)
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_FillActive, CBool(chkFillText.Value)
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1276,7 +1276,7 @@ End Sub
 
 Private Sub chkFillText_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_FillActive, chkFillText.Value, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_FillActive, chkFillText.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkFillText_LostFocusAPI()
@@ -1293,7 +1293,7 @@ Private Sub chkHinting_Click()
     Tool_Support.setToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_TextHinting, CBool(chkHinting.Value)
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_TextHinting, CBool(chkHinting.Value)
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1305,7 +1305,7 @@ End Sub
 
 Private Sub chkHinting_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value), pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value), pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkHinting_LostFocusAPI()
@@ -1322,7 +1322,7 @@ Private Sub chkOutlineText_Click()
     Tool_Support.setToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_OutlineActive, CBool(chkOutlineText.Value)
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_OutlineActive, CBool(chkOutlineText.Value)
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1334,7 +1334,7 @@ End Sub
 
 Private Sub chkOutlineText_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_OutlineActive, chkOutlineText.Value, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_OutlineActive, chkOutlineText.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkOutlineText_LostFocusAPI()
@@ -1432,8 +1432,8 @@ Private Sub Form_Load()
         
         'Load any last-used settings for this form
         Set lastUsedSettings = New pdLastUsedSettings
-        lastUsedSettings.setParentForm Me
-        lastUsedSettings.loadAllControlValues
+        lastUsedSettings.SetParentForm Me
+        lastUsedSettings.LoadAllControlValues
         
         'Update everything against the current theme.  This will also set tooltips for various controls.
         UpdateAgainstCurrentTheme
@@ -1445,8 +1445,10 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
     'Save all last-used settings to file
-    lastUsedSettings.saveAllControlValues
-    lastUsedSettings.setParentForm Nothing
+    If Not (lastUsedSettings Is Nothing) Then
+        lastUsedSettings.SaveAllControlValues
+        lastUsedSettings.SetParentForm Nothing
+    End If
     
 End Sub
 
@@ -1466,8 +1468,8 @@ End Sub
 Private Sub lblConvertLayerConfirm_Click()
     
     'Because of the way this warning panel is constructed, this label will not be visible unless a click is valid.
-    pdImages(g_CurrentImage).getActiveLayer.setLayerType PDL_TYPOGRAPHY
-    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).getActiveLayerIndex
+    pdImages(g_CurrentImage).GetActiveLayer.setLayerType PDL_TYPOGRAPHY
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetActiveLayerIndex
     
     'Hide the warning panel and redraw both the viewport, and the UI (as new UI options may now be available)
     Me.UpdateAgainstCurrentLayer
@@ -1486,7 +1488,7 @@ Private Sub psText_PenChanged()
     Tool_Support.setToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_OutlinePen, psText.Pen
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_OutlinePen, psText.Pen
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1498,7 +1500,7 @@ End Sub
 
 Private Sub psText_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_OutlinePen, psText.Pen, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_OutlinePen, psText.Pen, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub psText_LostFocusAPI()
@@ -1515,7 +1517,7 @@ Private Sub psTextBackground_PenChanged()
     Tool_Support.setToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_BackBorderPen, psTextBackground.Pen
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_BackBorderPen, psTextBackground.Pen
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1527,7 +1529,7 @@ End Sub
 
 Private Sub psTextBackground_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub psTextBackground_LostFocusAPI()
@@ -1544,7 +1546,7 @@ Private Sub sltCharInflation_Change()
     Tool_Support.setToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_CharInflation, sltCharInflation.Value
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_CharInflation, sltCharInflation.Value
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1556,7 +1558,7 @@ End Sub
 
 Private Sub sltCharInflation_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_CharInflation, sltCharInflation.Value, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_CharInflation, sltCharInflation.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltCharInflation_LostFocusAPI()
@@ -1573,7 +1575,7 @@ Private Sub sltCharOrientation_Change()
     Tool_Support.setToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_CharOrientation, sltCharOrientation.Value
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_CharOrientation, sltCharOrientation.Value
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1585,7 +1587,7 @@ End Sub
 
 Private Sub sltCharOrientation_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltCharOrientation_LostFocusAPI()
@@ -1602,7 +1604,7 @@ Private Sub sltCharSpacing_Change()
     Tool_Support.setToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_CharSpacing, sltCharSpacing.Value
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_CharSpacing, sltCharSpacing.Value
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1614,7 +1616,7 @@ End Sub
 
 Private Sub sltCharSpacing_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltCharSpacing_LostFocusAPI()
@@ -1631,7 +1633,7 @@ Private Sub tudJitter_Change(Index As Integer)
     Tool_Support.setToolBusyState True
         
     'Update the current layer text alignment
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_CharJitterX + Index, tudJitter(Index).Value
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_CharJitterX + Index, tudJitter(Index).Value
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1643,7 +1645,7 @@ End Sub
 
 Private Sub tudJitter_GotFocusAPI(Index As Integer)
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub tudJitter_LostFocusAPI(Index As Integer)
@@ -1660,7 +1662,7 @@ Private Sub tudLineSpacing_Change()
     Tool_Support.setToolBusyState True
     
     'Update the setting
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_LineSpacing, tudLineSpacing.Value
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_LineSpacing, tudLineSpacing.Value
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1672,7 +1674,7 @@ End Sub
 
 Private Sub tudLineSpacing_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_LineSpacing, tudLineSpacing.Value, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_LineSpacing, tudLineSpacing.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub tudLineSpacing_LostFocusAPI()
@@ -1692,16 +1694,16 @@ Private Sub tudMargin_Change(Index As Integer)
     Select Case Index
     
         Case 0
-            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_MarginLeft, tudMargin(Index).Value
+            pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_MarginLeft, tudMargin(Index).Value
         
         Case 1
-            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_MarginRight, tudMargin(Index).Value
+            pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_MarginRight, tudMargin(Index).Value
         
         Case 2
-            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_MarginTop, tudMargin(Index).Value
+            pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_MarginTop, tudMargin(Index).Value
         
         Case 3
-            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_MarginBottom, tudMargin(Index).Value
+            pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_MarginBottom, tudMargin(Index).Value
     
     End Select
         
@@ -1720,16 +1722,16 @@ Private Sub tudMargin_GotFocusAPI(Index As Integer)
     Select Case Index
     
         Case 0
-            Processor.flagInitialNDFXState_Text ptp_MarginLeft, tudMargin(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+            Processor.flagInitialNDFXState_Text ptp_MarginLeft, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
         
         Case 1
-            Processor.flagInitialNDFXState_Text ptp_MarginRight, tudMargin(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+            Processor.flagInitialNDFXState_Text ptp_MarginRight, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
         
         Case 2
-            Processor.flagInitialNDFXState_Text ptp_MarginTop, tudMargin(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+            Processor.flagInitialNDFXState_Text ptp_MarginTop, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
         
         Case 3
-            Processor.flagInitialNDFXState_Text ptp_MarginBottom, tudMargin(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+            Processor.flagInitialNDFXState_Text ptp_MarginBottom, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
         
     End Select
     
@@ -1769,7 +1771,7 @@ Private Sub tudTextFontSize_Change()
     Tool_Support.setToolBusyState True
     
     'Update the current layer font size
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FontSize, tudTextFontSize.Value
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_FontSize, tudTextFontSize.Value
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1781,7 +1783,7 @@ End Sub
 
 Private Sub tudTextFontSize_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_FontSize, tudTextFontSize.Value, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_FontSize, tudTextFontSize.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub tudTextFontSize_LostFocusAPI()
@@ -1798,7 +1800,7 @@ Private Sub txtTextTool_Change()
     Tool_Support.setToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_Text, txtTextTool.Text
+    pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_Text, txtTextTool.Text
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1810,7 +1812,7 @@ End Sub
 
 Private Sub txtTextTool_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_Text, txtTextTool.Text, pdImages(g_CurrentImage).getActiveLayerID
+    Processor.flagInitialNDFXState_Text ptp_Text, txtTextTool.Text, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub txtTextTool_LostFocusAPI()
@@ -1823,12 +1825,12 @@ Public Sub UpdateAgainstCurrentLayer()
     
     If g_OpenImageCount > 0 Then
     
-        If pdImages(g_CurrentImage).getActiveLayer.isLayerText Then
+        If pdImages(g_CurrentImage).GetActiveLayer.isLayerText Then
         
             'Check for non-typography layers.
-            If pdImages(g_CurrentImage).getActiveLayer.getLayerType <> PDL_TYPOGRAPHY Then
+            If pdImages(g_CurrentImage).GetActiveLayer.getLayerType <> PDL_TYPOGRAPHY Then
             
-                Select Case pdImages(g_CurrentImage).getActiveLayer.getLayerType
+                Select Case pdImages(g_CurrentImage).GetActiveLayer.getLayerType
                 
                     Case PDL_TEXT
                         Dim newMessage As String
