@@ -17,7 +17,6 @@ Begin VB.Form FormMain
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
-   Icon            =   "MainWindow.frx":0000
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
@@ -2716,7 +2715,7 @@ Private Sub Form_Load()
         'Initiate an asynchronous download of the standard PD update file (photodemon.org/downloads/updates.xml).
         ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
         ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-        Me.asyncDownloader.AddToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.getUpdatePath & "updates.xml"
+        Me.asyncDownloader.AddToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.GetUpdatePath & "updates.xml"
         
         'As of v6.6, PhotoDemon now supports independent language file updates, separate from updating PD as a whole.
         ' Check that preference, and if allowed, initiate a separate language file check.  (If no core program update is found, but a language
@@ -3600,7 +3599,7 @@ Private Sub MnuHelp_Click(Index As Integer)
             'Initiate an asynchronous download of the standard PD update file (photodemon.org/downloads/updates.xml).
             ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
             ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-            Me.asyncDownloader.AddToQueue "PROGRAM_UPDATE_CHECK_USER", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.getUpdatePath & "updates.xml"
+            Me.asyncDownloader.AddToQueue "PROGRAM_UPDATE_CHECK_USER", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.GetUpdatePath & "updates.xml"
             
         
         'Submit feedback
@@ -3613,7 +3612,7 @@ Private Sub MnuHelp_Click(Index As Integer)
             Dim msgReturn As VbMsgBoxResult
             
             'If the user has previously been prompted about having a GitHub account, use their previous answer
-            If g_UserPreferences.doesValueExist("Core ", "Has GitHub Account") Then
+            If g_UserPreferences.DoesValueExist("Core ", "Has GitHub Account") Then
             
                 Dim hasGitHub As Boolean
                 hasGitHub = g_UserPreferences.GetPref_Boolean("Core", "Has GitHub Account", False)
