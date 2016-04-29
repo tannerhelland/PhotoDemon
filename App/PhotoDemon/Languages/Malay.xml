@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.156</langversion>
+<langversion>6.7.157</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -15186,12 +15186,23 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for File_Save_PNG.frm-->
 
+<!-- BEGIN text for File_Save_TIFF.frm (dialog_ExportTIFF) -->
+
+<phrase>
+<original>TIFF export options</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_TIFF.frm contains 31 phrases. 30 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for File_Save_TIFF.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2603</phrasecount>
+<phrasecount>2604</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4512 phrases. -->
-<!-- 1909 are duplicates, so only 2603 unique phrases have been written to file. -->
-<!-- These 2603 phrases contain approximately 13475 total words. -->
+<!-- As of this build, PhotoDemon contains 4543 phrases. -->
+<!-- 1939 are duplicates, so only 2604 unique phrases have been written to file. -->
+<!-- These 2604 phrases contain approximately 13478 total words. -->
 
 </pdData>

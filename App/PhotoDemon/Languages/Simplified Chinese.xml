@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1422</langversion>
+<langversion>6.8.1447</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1170,7 +1170,7 @@ If this image was originally located on removable media (DVD, USB drive, etc), p
 
 Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
 <translation>PhotoDemon无法加载以下图像：
-% 1 
+%1
 请使用另一个程序在一个通用的格式保存该图像（如JPEG或PNG）前加载。谢谢!</translation>
 </phrase>
 
@@ -1215,8 +1215,8 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 %1
 Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
-<translation>不幸的是，PhotoDemon无法加载下面的图像：
-1%
+<translation>PhotoDemon无法加载下面的图像：
+%1
 请验证这些图像是否存在，以及是否使用支持的图像格式（如JPEG或PNG）。 谢谢！</translation>
 </phrase>
 
@@ -1469,7 +1469,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>artistic license</original>
-<translation></translation>
+<translation>艺术照</translation>
 </phrase>
 
 <phrase>
@@ -1479,12 +1479,12 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>FreeImage public license</original>
-<translation></translation>
+<translation>FreeImage公共许可证</translation>
 </phrase>
 
 <phrase>
 <original>MIT license</original>
-<translation></translation>
+<translation>MIT许可证</translation>
 </phrase>
 
 <phrase>
@@ -1494,7 +1494,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>GNU GPLv3</original>
-<translation></translation>
+<translation>GNU GPLv3</translation>
 </phrase>
 
 <!-- Plugin_Management.bas contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -1505,17 +1505,17 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Using pngquant to optimize the PNG file.  This may take a moment</original>
-<translation></translation>
+<translation>使用pngquant优化PNG文件。这可能需要一些时间</translation>
 </phrase>
 
 <phrase>
 <original>pngquant optimization successful!</original>
-<translation></translation>
+<translation>pngquant优化成功！</translation>
 </phrase>
 
 <phrase>
 <original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
-<translation></translation>
+<translation>pngquant无法写入文件，默认32bpp图像已经保存。</translation>
 </phrase>
 
 <!-- VBP_pngnqInterface.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
@@ -1700,7 +1700,7 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 - If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again.
 
 - If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.</original>
-<translation>不幸的是，这种图像文件似乎无效。这可能发生，如果文件不包含图像数据，或者如果它包含不支持的格式的图像数据。
+<translation>这种图像文件似乎无效。这可能发生，如果文件不包含图像数据，或者如果它包含不支持的格式的图像数据。
 
 - 如果你从互联网上下载这个图片，下载可能会提前终止。请尝试重新下载图像。
 
@@ -3077,7 +3077,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
-<translation>不幸的是，你选择的图像的数量超过了什么的Windows®允许单个加载操作。请一组选定的图像较小再试一次。</translation>
+<translation>你选择的图像的数量超过了什么的Windows®允许单个加载操作。请一组选定的图像较小再试一次。</translation>
 </phrase>
 
 <phrase>
@@ -3153,7 +3153,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt.</original>
-<translation></translation>
+<translation>文件节点未压缩，但大小被列为零。放弃加载。</translation>
 </phrase>
 
 <phrase>
@@ -4006,7 +4006,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>JPEG-specific settings</original>
-<translation></translation>
+<translation>JPEG特定设置</translation>
 </phrase>
 
 <!-- pdMetadataExport.ctl contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -11502,7 +11502,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Unfortunately, that program has exited.</original>
-<translation>不幸的是，该程序已经退出。</translation>
+<translation>错误：该程序已经退出。</translation>
 </phrase>
 
 <phrase>
@@ -12862,7 +12862,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>n-d</original>
-<translation>非破坏</translation>
+<translation>移动</translation>
 </phrase>
 
 <phrase>
@@ -13002,27 +13002,27 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Elliptical (Oval) Selection</original>
-<translation>椭圆（椭圆形）选择</translation>
+<translation>椭圆</translation>
 </phrase>
 
 <phrase>
 <original>Line Selection</original>
-<translation>选线</translation>
+<translation>点线</translation>
 </phrase>
 
 <phrase>
 <original>Polygon Selection</original>
-<translation>多边形选择</translation>
+<translation>多边形</translation>
 </phrase>
 
 <phrase>
 <original>Lasso (Freehand) Selection</original>
-<translation>套索（手动）选择</translation>
+<translation>套索（手动）</translation>
 </phrase>
 
 <phrase>
 <original>Magic Wand Selection</original>
-<translation>魔棒选择</translation>
+<translation>魔法棒</translation>
 </phrase>
 
 <phrase>
@@ -13032,7 +13032,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Typography (advanced)</original>
-<translation>印刷术（高级）</translation>
+<translation>排版（高级）</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 52 phrases. 14 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
@@ -13602,7 +13602,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>This layer is a basic text layer.  To edit it with the typography tool, you must first convert it to a typography layer.</original>
-<translation>这层是一个基本的文本层。要用印刷字体来编辑它，你必须先把它转换为一个印刷层。</translation>
+<translation>这个层是基本文本层，要用排版字体来编辑它，你必须先把它转换为一个排版层。</translation>
 </phrase>
 
 <phrase>
@@ -14886,22 +14886,22 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>forcibly disable</original>
-<translation></translation>
+<translation>强行关闭</translation>
 </phrase>
 
 <phrase>
 <original>homepage</original>
-<translation></translation>
+<translation>主页</translation>
 </phrase>
 
 <phrase>
 <original>license</original>
-<translation></translation>
+<translation>许可证</translation>
 </phrase>
 
 <phrase>
 <original>%1 summary</original>
-<translation></translation>
+<translation>%1 概要</translation>
 </phrase>
 
 <phrase>
@@ -14956,12 +14956,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>installed and up to date</original>
-<translation></translation>
+<translation>安装并更新到最新</translation>
 </phrase>
 
 <phrase>
 <original>installed, but version is unexpected</original>
-<translation></translation>
+<translation>安装但忽略版本</translation>
 </phrase>
 
 <phrase>
@@ -14971,7 +14971,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>not installed</original>
-<translation></translation>
+<translation>不安装</translation>
 </phrase>
 
 <phrase>
@@ -15023,12 +15023,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Using OptiPNG to optimize the PNG file.  This may take a moment</original>
-<translation></translation>
+<translation>通过使用OptiPNG优化PNG文件。这可能需要一些时间</translation>
 </phrase>
 
 <phrase>
 <original>OptiPNG optimization successful!</original>
-<translation></translation>
+<translation>使用OptiPNG优化成功！</translation>
 </phrase>
 
 <!-- Plugin_OptiPNG.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -15045,139 +15045,150 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>PNG export options</original>
-<translation></translation>
+<translation>PNG导出选项</translation>
 </phrase>
 
 <phrase>
 <original>click to generate a new preview image</original>
-<translation></translation>
+<translation>单击以生成新的预览图像</translation>
 </phrase>
 
 <phrase>
 <original>lossy optimization options</original>
-<translation></translation>
+<translation>有损优化选项</translation>
 </phrase>
 
 <phrase>
 <original>use dithering to improve quality</original>
-<translation></translation>
+<translation>使用抖动提高质量</translation>
 </phrase>
 
 <phrase>
 <original>target quality</original>
-<translation></translation>
+<translation>目标质量</translation>
 </phrase>
 
 <phrase>
 <original>apply lossy optimizations</original>
-<translation></translation>
+<translation>适用于有损优化</translation>
 </phrase>
 
 <phrase>
 <original>optimization level</original>
-<translation></translation>
+<translation>优化级别</translation>
 </phrase>
 
 <phrase>
 <original>fast, larger file</original>
-<translation></translation>
+<translation>快速，更大的文件</translation>
 </phrase>
 
 <phrase>
 <original>slow, smaller file</original>
-<translation></translation>
+<translation>慢，较小的文件</translation>
 </phrase>
 
 <phrase>
 <original>lossless optimization options</original>
-<translation></translation>
+<translation>无损优化选项</translation>
 </phrase>
 
 <phrase>
 <original>palette size</original>
-<translation></translation>
+<translation>调色板大小</translation>
 </phrase>
 
 <phrase>
 <original>use interlacing</original>
-<translation></translation>
+<translation>使用交错</translation>
 </phrase>
 
 <phrase>
 <original>compression level</original>
-<translation></translation>
+<translation>压缩级别</translation>
 </phrase>
 
 <phrase>
 <original>embed background color in file</original>
-<translation></translation>
+<translation>文件中的背景颜色</translation>
 </phrase>
 
 <phrase>
 <original>file size optimization</original>
-<translation></translation>
+<translation>文件大小优化</translation>
 </phrase>
 
 <phrase>
 <original>standard PNG</original>
-<translation></translation>
+<translation>标准PNG</translation>
 </phrase>
 
 <phrase>
 <original>web-optimized PNG</original>
-<translation></translation>
+<translation>网站优化PNG</translation>
 </phrase>
 
 <phrase>
 <original>basic (default)</original>
-<translation></translation>
+<translation>基本（默认）</translation>
 </phrase>
 
 <phrase>
 <original>moderate</original>
-<translation></translation>
+<translation>中等</translation>
 </phrase>
 
 <phrase>
 <original>indexed</original>
-<translation></translation>
+<translation>索引</translation>
 </phrase>
 
 <phrase>
 <original>full</original>
-<translation></translation>
+<translation>全部</translation>
 </phrase>
 
 <phrase>
 <original>binary (by cut-off)</original>
-<translation></translation>
+<translation>二进制（截断）</translation>
 </phrase>
 
 <phrase>
 <original>binary (by color)</original>
-<translation></translation>
+<translation>二进制（按颜色）</translation>
 </phrase>
 
 <phrase>
 <original>please wait while a new preview image is created</original>
-<translation></translation>
+<translation>请稍候正在创建一个新的预览图像</translation>
 </phrase>
 
 <phrase>
 <original>These lossy optimization settings reduced file size by %1.</original>
-<translation></translation>
+<translation>这些有损优化设置减少了 %1 的文件大小。</translation>
 </phrase>
 
 <!-- File_Save_PNG.frm contains 59 phrases. 34 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
+<!-- BEGIN text for File_Save_TIFF.frm (dialog_ExportTIFF) -->
+
+<phrase>
+<original>TIFF export options</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_TIFF.frm contains 31 phrases. 30 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for File_Save_TIFF.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2603</phrasecount>
+<phrasecount>2604</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4512 phrases. -->
-<!-- 1909 are duplicates, so only 2603 unique phrases have been written to file. -->
-<!-- These 2603 phrases contain approximately 13475 total words. -->
+<!-- As of this build, PhotoDemon contains 4543 phrases. -->
+<!-- 1939 are duplicates, so only 2604 unique phrases have been written to file. -->
+<!-- These 2604 phrases contain approximately 13478 total words. -->
 
 </pdData>
