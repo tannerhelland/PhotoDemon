@@ -153,9 +153,7 @@ Begin VB.Form FormPrintNew
          EndProperty
          ForeColor       =   &H00800000&
          Height          =   360
-         ItemData        =   "File_PrintModern.frx":0000
          Left            =   480
-         List            =   "File_PrintModern.frx":0002
          Style           =   2  'Dropdown List
          TabIndex        =   11
          Top             =   1455

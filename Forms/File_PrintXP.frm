@@ -141,9 +141,7 @@ Begin VB.Form FormPrint
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      ItemData        =   "File_PrintXP.frx":0000
       Left            =   4080
-      List            =   "File_PrintXP.frx":0002
       Style           =   2  'Dropdown List
       TabIndex        =   5
       Top             =   2550
@@ -161,9 +159,7 @@ Begin VB.Form FormPrint
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      ItemData        =   "File_PrintXP.frx":0004
       Left            =   4080
-      List            =   "File_PrintXP.frx":0006
       Style           =   2  'Dropdown List
       TabIndex        =   3
       Top             =   1575
@@ -970,15 +966,15 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
     
     'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
     If useOtherPictureSrc Then
-        srcWidth = otherPictureSrc.getDIBWidth
-        srcHeight = otherPictureSrc.getDIBHeight
+        srcWidth = otherPictureSrc.GetDIBWidth
+        srcHeight = otherPictureSrc.GetDIBHeight
     Else
         If pdImages(g_CurrentImage).selectionActive Then
             srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
             srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
         Else
-            srcWidth = pdImages(g_CurrentImage).GetActiveDIB().getDIBWidth
-            srcHeight = pdImages(g_CurrentImage).GetActiveDIB().getDIBHeight
+            srcWidth = pdImages(g_CurrentImage).GetActiveDIB().GetDIBWidth
+            srcHeight = pdImages(g_CurrentImage).GetActiveDIB().GetDIBHeight
         End If
     End If
             
@@ -993,9 +989,9 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
         'Check to see if a selection is active; if it isn't, simply render the full form
         If Not pdImages(g_CurrentImage).selectionActive Then
         
-            If pdImages(g_CurrentImage).GetActiveDIB().getDIBColorDepth = 32 Then
+            If pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth = 32 Then
                 Set tmpDIB = New pdDIB
-                tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).GetActiveDIB(), newWidth, newHeight, True
+                tmpDIB.CreateFromExistingDIB pdImages(g_CurrentImage).GetActiveDIB(), newWidth, newHeight, True
                 If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
                 tmpDIB.RenderToPictureBox dstPicture
             Else
@@ -1006,11 +1002,11 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
         
             'Copy the current selection into a temporary DIB
             Set tmpDIB = New pdDIB
-            tmpDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).GetActiveDIB().getDIBColorDepth
-            BitBlt tmpDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).GetActiveDIB().getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+            tmpDIB.CreateBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
+            BitBlt tmpDIB.GetDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
         
             'If the image is transparent, composite it; otherwise, render the preview using the temporary object
-            If pdImages(g_CurrentImage).GetActiveDIB().getDIBColorDepth = 32 Then
+            If pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth = 32 Then
                 If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
             End If
             
@@ -1020,9 +1016,9 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
         
     Else
     
-        If otherPictureSrc.getDIBColorDepth = 32 Then
+        If otherPictureSrc.GetDIBColorDepth = 32 Then
             Set tmpDIB = New pdDIB
-            tmpDIB.createFromExistingDIB otherPictureSrc, newWidth, newHeight, True
+            tmpDIB.CreateFromExistingDIB otherPictureSrc, newWidth, newHeight, True
             If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
             tmpDIB.RenderToPictureBox dstPicture
         Else
