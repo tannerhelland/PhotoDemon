@@ -34,7 +34,7 @@ Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
     ' and initialize it to the size of the image.
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0, 0
+    tmpDIB.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0, 0
     pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer newLayerType, g_Language.TranslateMessage("Blank layer"), tmpDIB
     
     'Make the blank layer the new active layer
@@ -81,26 +81,26 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
         
             'Transparent (blank)
             Case 0
-                tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0, 0
+                tmpDIB.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0, 0
             
             'Black
             Case 1
-                tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, vbBlack, 255
+                tmpDIB.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, vbBlack, 255
             
             'White
             Case 2
-                tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, vbWhite, 255
+                tmpDIB.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, vbWhite, 255
             
             'Custom color
             Case 3
-                tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, dLayerColor, 255
+                tmpDIB.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, dLayerColor, 255
             
         End Select
         
     Else
     
         'Create a 4x4 transparent DIB to avoid errors; subsequent functions will resize the DIB as required
-        tmpDIB.createBlank 1, 1, 32, 0, 0
+        tmpDIB.CreateBlank 1, 1, 32, 0, 0
     
     End If
     
@@ -126,8 +126,8 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
     pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer dLayerType, dLayerName, tmpDIB
     
     'Apply initial layer offsets
-    pdImages(g_CurrentImage).GetLayerByID(newLayerID).setLayerOffsetX initialXOffset
-    pdImages(g_CurrentImage).GetLayerByID(newLayerID).setLayerOffsetY initialYOffset
+    pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerOffsetX initialXOffset
+    pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerOffsetY initialYOffset
     
     'Some layer types may require extra initialization steps in the future
     Select Case dLayerType
@@ -136,8 +136,8 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
         
         'Set an initial width/height of 1x1
         Case PDL_TEXT, PDL_TYPOGRAPHY
-            pdImages(g_CurrentImage).GetLayerByID(newLayerID).setLayerWidth 1
-            pdImages(g_CurrentImage).GetLayerByID(newLayerID).setLayerHeight 1
+            pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerWidth 1
+            pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerHeight 1
         
     End Select
         
@@ -229,7 +229,7 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
                 pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, customLayerName, tmpDIB, pdImages(g_CurrentImage)
             End If
             
-            Debug.Print "Layer created successfully (ID# " & pdImages(g_CurrentImage).GetLayerByID(newLayerID).getLayerName & ")"
+            Debug.Print "Layer created successfully (ID# " & pdImages(g_CurrentImage).GetLayerByID(newLayerID).GetLayerName & ")"
             
             'Notify the parent image that the entire image now needs to be recomposited
             pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE_VECTORSAFE
@@ -261,19 +261,19 @@ Public Sub EraseLayerByIndex(ByVal layerIndex As Long)
     If Not pdImages(g_CurrentImage) Is Nothing Then
     
         'How we "clear" the layer varies by layer type
-        Select Case pdImages(g_CurrentImage).GetLayerByIndex(layerIndex).getLayerType
+        Select Case pdImages(g_CurrentImage).GetLayerByIndex(layerIndex).GetLayerType
         
             'For image layers, force the layer DIB to all zeroes
             Case PDL_IMAGE
                 With pdImages(g_CurrentImage).GetLayerByIndex(layerIndex)
-                    .layerDIB.createBlank .getLayerWidth(False), .getLayerHeight(False), 32, 0, 0
+                    .layerDIB.CreateBlank .GetLayerWidth(False), .GetLayerHeight(False), 32, 0, 0
                 End With
             
             'For text layers, simply erase the current text.  (This has the effect of making the layer fully transparent,
             ' while retaining all text settings... I'm not sure of a better solution at present.)
             Case PDL_TEXT, PDL_TYPOGRAPHY
                 With pdImages(g_CurrentImage).GetLayerByIndex(layerIndex)
-                    .setTextLayerProperty ptp_Text, ""
+                    .SetTextLayerProperty ptp_Text, ""
                 End With
         
         End Select
@@ -307,7 +307,7 @@ End Sub
 Public Sub SetActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal alsoRedrawViewport As Boolean = False, Optional ByVal alsoSyncInterface As Boolean = True)
 
     'If this layer is already active, ignore the request
-    If pdImages(g_CurrentImage).GetActiveLayerID = pdImages(g_CurrentImage).GetLayerByIndex(newLayerIndex).getLayerID Then Exit Sub
+    If pdImages(g_CurrentImage).GetActiveLayerID = pdImages(g_CurrentImage).GetLayerByIndex(newLayerIndex).GetLayerID Then Exit Sub
     
     'Notify the parent PD image of the change
     pdImages(g_CurrentImage).SetActiveLayerByIndex newLayerIndex
@@ -324,13 +324,13 @@ End Sub
 Public Sub SetLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisibility As Boolean, Optional ByVal alsoRedrawViewport As Boolean = False)
     
     'Store the new visibility setting in the parent pdImage object
-    pdImages(g_CurrentImage).GetLayerByIndex(dLayerIndex).setLayerVisibility layerVisibility
+    pdImages(g_CurrentImage).GetLayerByIndex(dLayerIndex).SetLayerVisibility layerVisibility
     
     'Notify the parent image of the change
     pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYERHEADER, dLayerIndex
     
     'Redraw the layer box, but note that thumbnails don't need to be re-cached
-    toolbar_Layers.NotifyLayerChange pdImages(g_CurrentImage).GetLayerByIndex(dLayerIndex).getLayerID
+    toolbar_Layers.NotifyLayerChange pdImages(g_CurrentImage).GetLayerByIndex(dLayerIndex).GetLayerID
     
     'Synchronize the interface to the new image
     SyncInterfaceToCurrentImage
@@ -354,7 +354,7 @@ Public Sub DuplicateLayerByIndex(ByVal dLayerIndex As Long)
     
     'Also copy the ID of the layer we are creating.
     Dim dupedLayerID As Long
-    dupedLayerID = pdImages(g_CurrentImage).GetLayerByIndex(dLayerIndex).getLayerID
+    dupedLayerID = pdImages(g_CurrentImage).GetLayerByIndex(dLayerIndex).GetLayerID
     
     'Ask the parent pdImage to create a new layer object
     Dim newLayerID As Long
@@ -458,14 +458,14 @@ Public Function IsLayerAllowedToMergeAdjacent(ByVal srcLayerIndex As Long, ByVal
         If moveDown Then
         
             'As an easy check, make sure this layer is visible, and not already at the bottom.
-            If (srcLayerIndex <= 0) Or (Not pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).getLayerVisibility) Then
+            If (srcLayerIndex <= 0) Or (Not pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).GetLayerVisibility) Then
                 IsLayerAllowedToMergeAdjacent = -1
                 Exit Function
             End If
             
             'Search for the nearest valid layer beneath this one.
             For i = srcLayerIndex - 1 To 0 Step -1
-                If pdImages(g_CurrentImage).GetLayerByIndex(i).getLayerVisibility Then
+                If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
                     IsLayerAllowedToMergeAdjacent = i
                     Exit Function
                 End If
@@ -478,14 +478,14 @@ Public Function IsLayerAllowedToMergeAdjacent(ByVal srcLayerIndex As Long, ByVal
         Else
         
             'As an easy check, make sure this layer isn't already at the top.
-            If (srcLayerIndex >= pdImages(g_CurrentImage).GetNumOfLayers - 1) Or (Not pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).getLayerVisibility) Then
+            If (srcLayerIndex >= pdImages(g_CurrentImage).GetNumOfLayers - 1) Or (Not pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).GetLayerVisibility) Then
                 IsLayerAllowedToMergeAdjacent = -1
                 Exit Function
             End If
             
             'Search for the nearest valid layer above this one.
             For i = srcLayerIndex + 1 To pdImages(g_CurrentImage).GetNumOfLayers - 1
-                If pdImages(g_CurrentImage).GetLayerByIndex(i).getLayerVisibility Then
+                If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
                     IsLayerAllowedToMergeAdjacent = i
                     Exit Function
                 End If
@@ -532,10 +532,10 @@ Public Sub DeleteHiddenLayers()
     ' against bad requests, but better safe than sorry.
     
     'If there are no hidden layers, exit
-    If pdImages(g_CurrentImage).getNumOfHiddenLayers = 0 Then Exit Sub
+    If pdImages(g_CurrentImage).GetNumOfHiddenLayers = 0 Then Exit Sub
     
     'If all layers are hidden, exit
-    If pdImages(g_CurrentImage).getNumOfHiddenLayers = pdImages(g_CurrentImage).GetNumOfLayers Then Exit Sub
+    If pdImages(g_CurrentImage).GetNumOfHiddenLayers = pdImages(g_CurrentImage).GetNumOfLayers Then Exit Sub
     
     'We can now assume that the image in question has at least one visible layer, and at least one hidden layer.
     
@@ -543,7 +543,7 @@ Public Sub DeleteHiddenLayers()
     ' so we must pick a new arbitrary layer (why not the bottom layer?).
     Dim activeLayerID As Long
     
-    If pdImages(g_CurrentImage).GetActiveLayer.getLayerVisibility Then
+    If pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility Then
         activeLayerID = pdImages(g_CurrentImage).GetActiveLayerID
     Else
         activeLayerID = -1
@@ -553,7 +553,7 @@ Public Sub DeleteHiddenLayers()
     Dim i As Long
     For i = pdImages(g_CurrentImage).GetNumOfLayers - 1 To 0 Step -1
     
-        If Not pdImages(g_CurrentImage).GetLayerByIndex(i).getLayerVisibility Then
+        If Not pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
             pdImages(g_CurrentImage).DeleteLayerByIndex i
         End If
     Next i
@@ -664,7 +664,7 @@ Public Sub FlattenImage()
     
     'Also, grab the name of the bottom-most layer.  This will be used as the name of our only layer in the flattened image.
     Dim flattenedName As String
-    flattenedName = pdImages(g_CurrentImage).GetLayerByIndex(0).getLayerName
+    flattenedName = pdImages(g_CurrentImage).GetLayerByIndex(0).GetLayerName
     
     'With this information, we can now delete all image layers.
     Do
@@ -676,7 +676,7 @@ Public Sub FlattenImage()
     ' we will have to manually overwrite.
         
     'Reset any optional layer parameters to their default state
-    pdImages(g_CurrentImage).GetLayerByIndex(0).resetLayerParameters
+    pdImages(g_CurrentImage).GetLayerByIndex(0).ResetLayerParameters
     
     'Overwrite the final layer with the composite DIB.
     pdImages(g_CurrentImage).GetLayerByIndex(0).InitializeNewLayer PDL_IMAGE, flattenedName, compositeDIB
@@ -704,7 +704,7 @@ Public Sub MergeVisibleLayers()
     If pdImages(g_CurrentImage).GetNumOfLayers = 1 Then Exit Sub
     
     'Similarly, if there's only one *visible* layer, this function should not be called - but just in case, exit in advance.
-    If pdImages(g_CurrentImage).getNumOfVisibleLayers = 1 Then Exit Sub
+    If pdImages(g_CurrentImage).GetNumOfVisibleLayers = 1 Then Exit Sub
     
     'By this point, we can assume there are at least two visible layers in the image.  Rather than deal with the messiness
     ' of finding the lowest base layer and gradually merging everything into it, we're going to just create a new blank
@@ -721,7 +721,7 @@ Public Sub MergeVisibleLayers()
     'Fill that new layer with a blank DIB at the dimensions of the image.
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0
+    tmpDIB.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0
     pdImages(g_CurrentImage).GetLayerByIndex(0).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Merged layers"), tmpDIB
     
     'With that done, merging visible layers is actually not that hard.  Loop through the layer collection,
@@ -730,7 +730,7 @@ Public Sub MergeVisibleLayers()
     For i = 1 To pdImages(g_CurrentImage).GetNumOfLayers - 1
     
         'If this layer is visible, merge it with the base layer
-        If pdImages(g_CurrentImage).GetLayerByIndex(i).getLayerVisibility Then
+        If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
             pdImages(g_CurrentImage).MergeTwoLayers pdImages(g_CurrentImage).GetLayerByIndex(i), pdImages(g_CurrentImage).GetLayerByIndex(0), True
         End If
     
@@ -739,7 +739,7 @@ Public Sub MergeVisibleLayers()
     'Now that our base layer contains the result of merging all visible layers, we can now delete all
     ' other visible layers.
     For i = pdImages(g_CurrentImage).GetNumOfLayers - 1 To 1 Step -1
-        If pdImages(g_CurrentImage).GetLayerByIndex(i).getLayerVisibility Then
+        If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
             pdImages(g_CurrentImage).DeleteLayerByIndex i
         End If
     Next i
@@ -762,8 +762,8 @@ End Sub
 'If a layer has been transformed using the on-canvas tools, this will reset it to its default size.
 Public Sub ResetLayerSize(ByVal srcLayerIndex As Long)
 
-    pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).setLayerCanvasXModifier 1
-    pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).setLayerCanvasYModifier 1
+    pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).SetLayerCanvasXModifier 1
+    pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).SetLayerCanvasYModifier 1
     
     'Notify the parent image of the change
     pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
@@ -780,7 +780,7 @@ End Sub
 Public Sub MakeLayerAffineTransformsPermanent(ByVal srcLayerIndex As Long)
     
     'Layers are capable of making this change internally
-    pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).makeCanvasTransformsPermanent
+    pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).MakeCanvasTransformsPermanent
     
     'Notify the parent object of this change
     pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, srcLayerIndex
@@ -796,7 +796,7 @@ End Sub
 'If a layer has been rotated using the on-canvas tools, this will reset it to its default orientation.
 Public Sub ResetLayerAngle(ByVal srcLayerIndex As Long)
 
-    pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).setLayerAngle 0
+    pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).SetLayerAngle 0
     
     'Notify the parent image of the change
     pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
@@ -814,9 +814,9 @@ Public Sub ResetLayerShear(ByVal srcLayerIndex As Long, Optional ByVal shearDire
 
     'Reset the shear value we were passed
     If shearDirectionHorizontal Then
-        pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).setLayerShearX 0
+        pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).SetLayerShearX 0
     Else
-        pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).setLayerShearY 0
+        pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).SetLayerShearY 0
     End If
     
     'Notify the parent image of the change
@@ -840,10 +840,10 @@ Public Sub ResizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizePa
     
     'Apply the passed parameters to the specified layer
     With pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex)
-        .setLayerOffsetX cParams.GetDouble(1)
-        .setLayerOffsetY cParams.GetDouble(2)
-        .setLayerCanvasXModifier cParams.GetDouble(3)
-        .setLayerCanvasYModifier cParams.GetDouble(4)
+        .SetLayerOffsetX cParams.GetDouble(1)
+        .SetLayerOffsetY cParams.GetDouble(2)
+        .SetLayerCanvasXModifier cParams.GetDouble(3)
+        .SetLayerCanvasYModifier cParams.GetDouble(4)
     End With
     
     'Notify the parent image of the change
@@ -864,7 +864,7 @@ Public Sub RotateLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizePa
     
     'Apply the passed parameter to the specified layer
     With pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex)
-        .setLayerAngle cParams.GetDouble(1, 0)
+        .SetLayerAngle cParams.GetDouble(1, 0)
     End With
     
     'Notify the parent image of the change
@@ -885,8 +885,8 @@ Public Sub MoveLayerOnCanvas(ByVal srcLayerIndex As Long, ByVal resizeParams As 
     
     'Apply the passed parameters to the specified layer
     With pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex)
-        .setLayerOffsetX cParams.GetDouble(1)
-        .setLayerOffsetY cParams.GetDouble(2)
+        .SetLayerOffsetX cParams.GetDouble(1)
+        .SetLayerOffsetY cParams.GetDouble(2)
     End With
     
     'Notify the parent of the change
@@ -901,10 +901,10 @@ End Sub
 Public Sub FillRectForLayer(ByRef srcLayer As pdLayer, ByRef dstRect As RECT, Optional ByVal useCanvasModifiers As Boolean = False)
     
     With srcLayer
-        dstRect.Left = .getLayerOffsetX
-        dstRect.Right = .getLayerOffsetX + .getLayerWidth(useCanvasModifiers)
-        dstRect.Top = .getLayerOffsetY
-        dstRect.Bottom = .getLayerOffsetY + .getLayerHeight(useCanvasModifiers)
+        dstRect.Left = .GetLayerOffsetX
+        dstRect.Right = .GetLayerOffsetX + .GetLayerWidth(useCanvasModifiers)
+        dstRect.Top = .GetLayerOffsetY
+        dstRect.Bottom = .GetLayerOffsetY + .GetLayerHeight(useCanvasModifiers)
     End With
     
 End Sub
@@ -917,12 +917,12 @@ Public Sub FillRectForLayerF(ByRef srcLayer As pdLayer, ByRef dstRect As RECTF, 
     With srcLayer
         
         If includeAffineTransforms Then
-            .getLayerBoundaryRect dstRect
+            .GetLayerBoundaryRect dstRect
         Else
-            dstRect.Left = .getLayerOffsetX
-            dstRect.Width = .getLayerWidth(useCanvasModifiers)
-            dstRect.Top = .getLayerOffsetY
-            dstRect.Height = .getLayerHeight(useCanvasModifiers)
+            dstRect.Left = .GetLayerOffsetX
+            dstRect.Width = .GetLayerWidth(useCanvasModifiers)
+            dstRect.Top = .GetLayerOffsetY
+            dstRect.Height = .GetLayerHeight(useCanvasModifiers)
         End If
         
     End With
@@ -943,8 +943,8 @@ Public Sub ModifyLayerByParamString(ByVal pString As String)
     curLayerID = cParams.GetLong(1)
     
     'Remove that initial entry from the param string, then forward the rest of the string on to the specified layer class
-    cParams.removeParamAtPosition 1
-    pdImages(g_CurrentImage).GetLayerByID(curLayerID).setLayerHeaderFromParamString cParams.GetParamString
+    cParams.RemoveParamAtPosition 1
+    pdImages(g_CurrentImage).GetLayerByID(curLayerID).SetLayerHeaderFromParamString cParams.GetParamString
 
 End Sub
 
@@ -968,12 +968,12 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal x As Long,
         GetRGBAPixelFromLayer = True
         
         'Re-calculate x and y to layer coordinates
-        x = x - tmpLayerRef.getLayerOffsetX
-        y = y - tmpLayerRef.getLayerOffsetY
+        x = x - tmpLayerRef.GetLayerOffsetX
+        y = y - tmpLayerRef.GetLayerOffsetY
         
         'If a non-destructive resize is active, remap the x/y coordinates to match
-        If tmpLayerRef.getLayerCanvasXModifier <> 1 Then x = x / tmpLayerRef.getLayerCanvasXModifier
-        If tmpLayerRef.getLayerCanvasYModifier <> 1 Then y = y / tmpLayerRef.getLayerCanvasYModifier
+        If tmpLayerRef.GetLayerCanvasXModifier <> 1 Then x = x / tmpLayerRef.GetLayerCanvasXModifier
+        If tmpLayerRef.GetLayerCanvasYModifier <> 1 Then y = y / tmpLayerRef.GetLayerCanvasYModifier
         
         'X and Y now represent the passed coordinate, but translated into the specified layer's coordinate space.
         ' Retrieve the color (and alpha, if relevant) at that point.
@@ -1055,7 +1055,7 @@ Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, O
     
         'See if the mouse is over a POI for the current layer (which may extend outside a layer's boundaries, because the clickable
         ' nodes have a radius greater than 0).  If the mouse is over a POI, return the active layer index immediately.
-        curPOI = pdImages(g_CurrentImage).GetActiveLayer.checkForPointOfInterest(layerX, layerY)
+        curPOI = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
         
         'If the mouse is over a point of interest, return this layer and immediately exit
         If curPOI >= 0 And curPOI <= 7 Then
@@ -1071,7 +1071,7 @@ Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, O
     For i = pdImages(g_CurrentImage).GetNumOfLayers - 1 To 0 Step -1
     
         'Only evaluate the current layer if it is visible
-        If pdImages(g_CurrentImage).GetLayerByIndex(i).getLayerVisibility Then
+        If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
         
             'Convert the image (x, y) coordinate into the layer's coordinate space
             Drawing.ConvertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetLayerByIndex(i), imgX, imgY, layerX, layerY
@@ -1178,10 +1178,10 @@ Public Sub RasterizeLayer(Optional ByVal srcLayerIndex As Long = -1)
     
         Dim i As Long
         For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
-            If pdImages(g_CurrentImage).GetLayerByIndex(i).isLayerVector Then
+            If pdImages(g_CurrentImage).GetLayerByIndex(i).IsLayerVector Then
             
                 'Rasterize this layer, and notify the parent image of the change
-                pdImages(g_CurrentImage).GetLayerByIndex(i).rasterizeVectorData
+                pdImages(g_CurrentImage).GetLayerByIndex(i).RasterizeVectorData
                 pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
             
             End If
@@ -1190,7 +1190,7 @@ Public Sub RasterizeLayer(Optional ByVal srcLayerIndex As Long = -1)
     Else
         
         'Rasterize just this one layer, and notify the parent image of the change
-        pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).rasterizeVectorData
+        pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex).RasterizeVectorData
         pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, srcLayerIndex
         
     End If
@@ -1209,42 +1209,38 @@ End Sub
 '  (We do this to simplify interactions with the FreeImage plugin, which handles the bulk of our multipage interface.)
 Public Function GenerateInitialLayerName(ByRef srcFile As String, Optional ByVal suggestedFilename As String = vbNullString, Optional ByVal imageHasMultiplePages As Boolean = False, Optional ByRef srcImage As pdImage, Optional ByRef srcDIB As pdDIB, Optional ByVal currentPageIndex As Long = 0) As String
     
-    If Len(suggestedFilename) = 0 Then
-        GenerateInitialLayerName = FileSystem.GetFilenameWithoutExtension(srcFile)
-    Else
-        GenerateInitialLayerName = suggestedFilename
-    End If
-    
     'If a multipage image is loaded as individual layers, each layer will receive a custom name to reflect its position in the
     ' original file.  (For example, when loading .ICO files with multiple icons inside, PD will automatically add the name and
-    ' original bit-depth to each layer, as relevant.)  For normal files, the filename is used as the initial layer name.
-    'Images with multiple pages/frames/icons receive special layer naming considering
-    Dim layerNameAddon As String
+    ' original bit-depth to each layer, as relevant.)
     If imageHasMultiplePages Or (srcImage.originalFileFormat = FIF_ICO) Then
         
         Select Case srcImage.originalFileFormat
         
             'GIFs are called "frames" instead of pages
             Case PDIF_GIF
-                layerNameAddon = "(" & g_Language.TranslateMessage("frame %1", CStr(currentPageIndex)) & ")"
+                GenerateInitialLayerName = g_Language.TranslateMessage("Frame %1", CStr(currentPageIndex))
                 
             'Icons have their actual dimensions added to the layer name
             Case FIF_ICO
                 If srcDIB.GetOriginalFreeImageColorDepth = 0 Then
-                    layerNameAddon = g_Language.TranslateMessage("icon (%1x%2)", CStr(srcDIB.GetDIBWidth), CStr(srcDIB.GetDIBHeight))
+                    GenerateInitialLayerName = g_Language.TranslateMessage("Icon (%1x%2)", CStr(srcDIB.GetDIBWidth), CStr(srcDIB.GetDIBHeight))
                 Else
-                    layerNameAddon = g_Language.TranslateMessage("icon (%1x%2, %3 bpp)", CStr(srcDIB.GetDIBWidth), CStr(srcDIB.GetDIBHeight), CStr(srcDIB.GetOriginalFreeImageColorDepth))
+                    GenerateInitialLayerName = g_Language.TranslateMessage("Icon (%1x%2, %3 bpp)", CStr(srcDIB.GetDIBWidth), CStr(srcDIB.GetDIBHeight), CStr(srcDIB.GetOriginalFreeImageColorDepth))
                 End If
                 
-            'Any other format is treated as "pages"
+            'Any other format is treated as "pages" (0-based index)
             Case Else
-                layerNameAddon = "(" & g_Language.TranslateMessage("page %1", CStr(currentPageIndex)) & ")"
+                GenerateInitialLayerName = g_Language.TranslateMessage("Page %1", CStr(currentPageIndex + 1))
                 
         End Select
-        
+    
+    'The first layer of single-layer images use a simpler naming system
+    Else
+        If Len(suggestedFilename) = 0 Then
+            GenerateInitialLayerName = FileSystem.GetFilenameWithoutExtension(srcFile)
+        Else
+            GenerateInitialLayerName = suggestedFilename
+        End If
     End If
-                
-    'Merge this newly created add-on string with the original name
-    If Len(layerNameAddon) <> 0 Then GenerateInitialLayerName = GenerateInitialLayerName & " " & layerNameAddon
-
+    
 End Function

@@ -836,7 +836,10 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     cmdParams = cmdParams & dstImageFile & vbCrLf
     
     'Do *not* transfer over any thumbnail information (otherwise, this risks overwriting PD's existing thumbnail, if any!)
-    cmdParams = cmdParams & "--IFD1:all" & vbCrLf
+    ' Note that we ignore this when writing TIFFs, as they may be multipage, and there will be tons of IFD### blocks.
+    If (srcPDImage.currentFileFormat <> PDIF_TIFF) Then
+        cmdParams = cmdParams & "--IFD1:all" & vbCrLf
+    End If
     
     'Allow HTML entities (we need these for things like newlines)
     cmdParams = cmdParams & "-E" & vbCrLf
@@ -878,7 +881,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'Regardless of the type of metadata copy we're performing, we need to alter or remove some tags because their
     ' original values are no longer relevant.
-    cmdParams = cmdParams & "-IFD2:ImageWidth=" & vbCrLf & "-IFD2:ImageHeight=" & vbCrLf
+    If (srcPDImage.currentFileFormat <> PDIF_TIFF) Then cmdParams = cmdParams & "-IFD2:ImageWidth=" & vbCrLf & "-IFD2:ImageHeight=" & vbCrLf
     cmdParams = cmdParams & "--Padding" & vbCrLf
     
     'Remove YCbCr subsampling data from the tags, as we may be using a different system than the previous save, and this information
@@ -921,7 +924,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'Other software may have added tags related to an embedded thumbnail.  If PD is *not* embedding its own thumbnail, we want to
     ' forcibly remove any existing thumbnail information.
-    If (Not needToEmbedThumbnail) Then
+    If (Not needToEmbedThumbnail) And (srcPDImage.currentFileFormat <> PDIF_TIFF) Then
         cmdParams = cmdParams & "-IFD1:Compression=" & vbCrLf
         cmdParams = cmdParams & "-IFD1:all=" & vbCrLf
     End If
@@ -929,8 +932,8 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     'Now, we want to add a number of tags whose values should always be written, as they can be crucial to understanding the
     ' contents of the image.
     cmdParams = cmdParams & "-" & tagGroupPrefix & "Orientation=Horizontal" & vbCrLf
-    cmdParams = cmdParams & "-" & tagGroupPrefix & "XResolution=" & srcPDImage.getDPI() & vbCrLf
-    cmdParams = cmdParams & "-" & tagGroupPrefix & "YResolution=" & srcPDImage.getDPI() & vbCrLf
+    cmdParams = cmdParams & "-" & tagGroupPrefix & "XResolution=" & srcPDImage.GetDPI() & vbCrLf
+    cmdParams = cmdParams & "-" & tagGroupPrefix & "YResolution=" & srcPDImage.GetDPI() & vbCrLf
     cmdParams = cmdParams & "-" & tagGroupPrefix & "ResolutionUnit=inches" & vbCrLf
     
     'Various specs are unclear on the meaning of sRGB checks, and browser developers also have varying views on what an sRGB chunk means
@@ -959,8 +962,8 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     'JPEGs have the unique issue of needing their resolution values also updated in the JFIF header, so we make
     ' an additional request here for JPEGs specifically.
     If (srcPDImage.currentFileFormat = PDIF_JPEG) Then
-        cmdParams = cmdParams & "-JFIF:XResolution=" & srcPDImage.getDPI() & vbCrLf
-        cmdParams = cmdParams & "-JFIF:YResolution=" & srcPDImage.getDPI() & vbCrLf
+        cmdParams = cmdParams & "-JFIF:XResolution=" & srcPDImage.GetDPI() & vbCrLf
+        cmdParams = cmdParams & "-JFIF:YResolution=" & srcPDImage.GetDPI() & vbCrLf
         cmdParams = cmdParams & "-JFIF:ResolutionUnit=inches" & vbCrLf
     End If
     

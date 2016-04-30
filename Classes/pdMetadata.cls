@@ -415,7 +415,7 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             'Next, we want to improve the grouping of tags.  ExifTool's grouping is somewhat erratic; for example, all software
             ' treats ICC profiles as single, contiguous units, but ExifTool tends to group ICC properties into a bunch of
             ' highly specific subcategories.  I prefer to use the same grouping as other software, to avoid confusing users.
-            CalculateIdealGroupName m_Tags(i), i
+            CalculateIdealGroupName m_Tags(i), i, parentImageID
             
         Next i
     
@@ -429,13 +429,11 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     ' this is quite rare, so this function will be used very rarely.
     If (m_NumOfTags <> 0) Then ApplyMetadataPostProcessing parentImageID
     
-    
-    
     LoadAllMetadata = CBool(m_NumOfTags <> 0)
     
 End Function
 
-Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem, ByVal tagIndex As Long) As Boolean
+Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem, ByVal tagIndex As Long, ByVal parentImageID As Long) As Boolean
     
     Dim i As Long
     
@@ -455,10 +453,13 @@ Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem, By
     If StrComp(groupNameCheck, "COMPOSITE", vbBinaryCompare) = 0 Then dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Inferred")
     
     'Next, ExifTool breaks down EXIF tags into their individual IFD blocks.  Simplify all of these under a single "Exif" header.
-    If InStr(1, groupNameCheck, "IFD1", vbBinaryCompare) > 0 Then
-        dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif (thumbnail)")
-    ElseIf InStr(1, groupNameCheck, "IFD", vbBinaryCompare) > 0 Then
-        dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif")
+    ' (For TIFFs, which may have multiple pages, we handle this differently.)
+    If pdImages(parentImageID).originalFileFormat <> PDIF_TIFF Then
+        If InStr(1, groupNameCheck, "IFD1", vbBinaryCompare) > 0 Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif (thumbnail)")
+        ElseIf InStr(1, groupNameCheck, "IFD", vbBinaryCompare) > 0 Then
+            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif")
+        End If
     End If
 
     'Next, ExifTool separates color profiles into header, profile, and measurement subcategories.  Condense these into

@@ -297,11 +297,11 @@ End Sub
 '
 'Note that the set function is preferenced by "assign" - I do this on purpose, to help me remember that the function should only
 ' ever be called once, right after the layer is first created.  After that, it should never, ever be changed!
-Public Function getLayerID() As Long
-    getLayerID = layerID
+Public Function GetLayerID() As Long
+    GetLayerID = layerID
 End Function
 
-Public Sub assignLayerID(ByVal thisLayerID As Long)
+Public Sub AssignLayerID(ByVal thisLayerID As Long)
     
     'As a failsafe, warn me if this layer has already been assigned an ID.  (This should *never* happen, but I like to verify.)
     If Not g_IsProgramCompiled Then
@@ -313,28 +313,28 @@ Public Sub assignLayerID(ByVal thisLayerID As Long)
 End Sub
 
 'Get layer type.
-Public Function getLayerType() As LAYER_TYPE
-    getLayerType = myLayerType
+Public Function GetLayerType() As LAYER_TYPE
+    GetLayerType = myLayerType
 End Function
 
 'Set layer type.  Note that this only sets the layer type flag; changing the actual layer contents to match (e.g. rasterization)
 ' must be handled separately.
-Public Function setLayerType(ByVal newLayerType As LAYER_TYPE)
+Public Function SetLayerType(ByVal newLayerType As LAYER_TYPE)
     myLayerType = newLayerType
     m_VectorDIBSynched = False
 End Function
 
 'If a caller simply wants to determine vector vs raster layers, this helper function takes care of it.  Note that text layers are
 ' considered vector layers, because all changes are non-destructive.
-Public Function isLayerVector() As Boolean
+Public Function IsLayerVector() As Boolean
 
     Select Case myLayerType
     
         Case PDL_IMAGE
-            isLayerVector = False
+            IsLayerVector = False
         
         Case PDL_TEXT, PDL_TYPOGRAPHY
-            isLayerVector = True
+            IsLayerVector = True
         
         Case Else
             Debug.Print "Layer type unknown!  Returning VECTOR = FALSE by default."
@@ -344,21 +344,21 @@ Public Function isLayerVector() As Boolean
 End Function
 
 'Counterpart to isLayerVector(), above
-Public Function isLayerRaster() As Boolean
-    isLayerRaster = Not isLayerVector()
+Public Function IsLayerRaster() As Boolean
+    IsLayerRaster = Not IsLayerVector()
 End Function
 
 'If a caller simply wants to determine text vs other layers, this helper function takes care of it.  Text layers currently include text and
 ' typography layers, and may include additional types (e.g. "WordArt") in the future
-Public Function isLayerText() As Boolean
+Public Function IsLayerText() As Boolean
 
     Select Case myLayerType
     
         Case PDL_TEXT, PDL_TYPOGRAPHY
-            isLayerText = True
+            IsLayerText = True
         
         Case Else
-            isLayerText = False
+            IsLayerText = False
     
     End Select
 
@@ -366,10 +366,10 @@ End Function
 
 'Rasterize a layer.  In the future, it may be possible to "Undo" this (e.g. restore the original vector state, since that data is
 ' easy to retain), but I haven't implemented it at present.  Rasterization is currently immutable, short of the Undo/Redo menu.
-Public Sub rasterizeVectorData()
+Public Sub RasterizeVectorData()
 
     'If the layer is already rasterized, ignore this request
-    If Me.isLayerRaster Then
+    If Me.IsLayerRaster Then
         Debug.Print "WARNING!  You just requested rasterization of a raster layer.  Fix this!"
         Exit Sub
     End If
@@ -384,97 +384,95 @@ Public Sub rasterizeVectorData()
 End Sub
 
 'Get/set name
-Public Function getLayerName() As String
-    getLayerName = myLayerData.l_Name
+Public Function GetLayerName() As String
+    GetLayerName = myLayerData.l_Name
 End Function
 
-Public Sub setLayerName(ByRef newLayerName As String)
+Public Sub SetLayerName(ByRef newLayerName As String)
     myLayerData.l_Name = newLayerName
 End Sub
 
 'Get/set layer group
-Public Function getLayerGroup() As Long
-    getLayerGroup = myLayerData.l_GroupID
+Public Function GetLayerGroup() As Long
+    GetLayerGroup = myLayerData.l_GroupID
 End Function
 
-Public Sub setLayerGroup(ByVal newLayerGroup As Long)
+Public Sub SetLayerGroup(ByVal newLayerGroup As Long)
     myLayerData.l_GroupID = newLayerGroup
 End Sub
 
 'Get/set opacity
-Public Function getLayerOpacity() As Long
-    getLayerOpacity = myLayerData.l_Opacity
+Public Function GetLayerOpacity() As Long
+    GetLayerOpacity = myLayerData.l_Opacity
 End Function
 
-Public Sub setLayerOpacity(ByVal newLayerOpacity As Long)
-    
+Public Sub SetLayerOpacity(ByVal newLayerOpacity As Long)
     If newLayerOpacity > 100 Then newLayerOpacity = 100
     If newLayerOpacity < 0 Then newLayerOpacity = 0
     myLayerData.l_Opacity = newLayerOpacity
-    
 End Sub
 
 'Get/set alpha and blend modes
-Public Function getLayerAlphaMode() As LAYER_ALPHAMODE
-    getLayerAlphaMode = myLayerData.l_AlphaMode
+Public Function GetLayerAlphaMode() As LAYER_ALPHAMODE
+    GetLayerAlphaMode = myLayerData.l_AlphaMode
 End Function
 
-Public Sub setLayerAlphaMode(ByVal newLayerAlphaMode As LAYER_ALPHAMODE)
+Public Sub SetLayerAlphaMode(ByVal newLayerAlphaMode As LAYER_ALPHAMODE)
     myLayerData.l_AlphaMode = newLayerAlphaMode
 End Sub
 
-Public Function getLayerBlendMode() As LAYER_BLENDMODE
-    getLayerBlendMode = myLayerData.l_BlendMode
+Public Function GetLayerBlendMode() As LAYER_BLENDMODE
+    GetLayerBlendMode = myLayerData.l_BlendMode
 End Function
 
-Public Sub setLayerBlendMode(ByVal newLayerBlendMode As LAYER_BLENDMODE)
+Public Sub SetLayerBlendMode(ByVal newLayerBlendMode As LAYER_BLENDMODE)
     myLayerData.l_BlendMode = newLayerBlendMode
 End Sub
 
 'Get/set visibility
-Public Function getLayerVisibility() As Boolean
-    getLayerVisibility = myLayerData.l_Visibility
+Public Function GetLayerVisibility() As Boolean
+    GetLayerVisibility = myLayerData.l_Visibility
 End Function
 
-Public Sub setLayerVisibility(ByVal newVisibility As Boolean)
+Public Sub SetLayerVisibility(ByVal newVisibility As Boolean)
     myLayerData.l_Visibility = newVisibility
 End Sub
 
 'Get/set layer offsets
-Public Function getLayerOffsetX() As Double
-    getLayerOffsetX = myLayerData.l_OffsetX
+Public Function GetLayerOffsetX() As Double
+    GetLayerOffsetX = myLayerData.l_OffsetX
 End Function
 
-Public Function getLayerOffsetY() As Double
-    getLayerOffsetY = myLayerData.l_OffsetY
+Public Function GetLayerOffsetY() As Double
+    GetLayerOffsetY = myLayerData.l_OffsetY
 End Function
 
-Public Sub setLayerOffsetX(ByVal newOffsetX As Double)
+Public Sub SetLayerOffsetX(ByVal newOffsetX As Double)
     myLayerData.l_OffsetX = newOffsetX
 End Sub
 
-Public Sub setLayerOffsetY(ByVal newOffsetY As Double)
+Public Sub SetLayerOffsetY(ByVal newOffsetY As Double)
     myLayerData.l_OffsetY = newOffsetY
 End Sub
 
-'Helper set function for setting layer offset and non-destructive width/height all at once.
-Friend Sub setOffsetsAndModifiersTogether(ByVal topLeftX As Single, ByVal topLeftY As Single, ByVal bottomRightX As Single, ByVal bottomRightY As Single)
+'Helper function for setting layer offset and non-destructive width/height all at once.
+Friend Sub SetOffsetsAndModifiersTogether(ByVal topLeftX As Single, ByVal topLeftY As Single, ByVal bottomRightX As Single, ByVal bottomRightY As Single)
     
     With myLayerData
         
         .l_OffsetX = topLeftX
         .l_OffsetY = topLeftY
         
-        If getLayerWidth(False) <> 0 Then
-            setLayerCanvasXModifier (bottomRightX - topLeftX) / getLayerWidth(False)
+        If GetLayerWidth(False) <> 0 Then
+            SetLayerCanvasXModifier (bottomRightX - topLeftX) / GetLayerWidth(False)
         Else
-            setLayerCanvasXModifier 1#
+            SetLayerCanvasXModifier 1#
         End If
         
-        If getLayerHeight(False) <> 0 Then
-            setLayerCanvasYModifier (bottomRightY - topLeftY) / getLayerHeight(False)
+        If GetLayerHeight(False) <> 0 Then
+            SetLayerCanvasYModifier (bottomRightY - topLeftY) / GetLayerHeight(False)
         Else
-            setLayerCanvasYModifier 1#
+            SetLayerCanvasYModifier 1#
         End If
         
     End With
@@ -487,7 +485,7 @@ End Sub
 '
 'Also, at present, these values are not stored persistently.  They are simply generated on-the-fly by taking the layerDIB object's dimensions,
 ' and multiplying them by the current canvas x/y modifiers.  The caller can override the canvas modifier calculation by passing FALSE to the function.
-Public Function getLayerWidth(Optional ByVal applyCanvasModifier As Boolean = True) As Double
+Public Function GetLayerWidth(Optional ByVal applyCanvasModifier As Boolean = True) As Double
     
     'The returned width varies by layer type
     Select Case myLayerType
@@ -498,26 +496,26 @@ Public Function getLayerWidth(Optional ByVal applyCanvasModifier As Boolean = Tr
             If Not (layerDIB Is Nothing) Then
         
                 If applyCanvasModifier Then
-                    getLayerWidth = layerDIB.GetDIBWidth * getLayerCanvasXModifier
-                    If getLayerWidth < 1 Then getLayerWidth = 1
+                    GetLayerWidth = layerDIB.GetDIBWidth * GetLayerCanvasXModifier
+                    If GetLayerWidth < 1 Then GetLayerWidth = 1
                 Else
-                    getLayerWidth = layerDIB.GetDIBWidth
+                    GetLayerWidth = layerDIB.GetDIBWidth
                 End If
                 
             Else
-                getLayerWidth = 0
+                GetLayerWidth = 0
             End If
         
         'Vector layers do actually store persistent width/height values.  This is important because these values may fall
         ' out of sync with the backer DIB, which is only updated on an as-needed basis
         Case PDL_TEXT, PDL_TYPOGRAPHY
-            getLayerWidth = myVectorData.vd_Width
+            GetLayerWidth = myVectorData.vd_Width
     
     End Select
     
 End Function
 
-Public Function getLayerHeight(Optional ByVal applyCanvasModifier As Boolean = True) As Double
+Public Function GetLayerHeight(Optional ByVal applyCanvasModifier As Boolean = True) As Double
     
     'The returned height varies by layer type
     Select Case myLayerType
@@ -528,26 +526,26 @@ Public Function getLayerHeight(Optional ByVal applyCanvasModifier As Boolean = T
             If Not (layerDIB Is Nothing) Then
         
                 If applyCanvasModifier Then
-                    getLayerHeight = layerDIB.GetDIBHeight * getLayerCanvasYModifier
-                    If getLayerHeight < 1 Then getLayerHeight = 1
+                    GetLayerHeight = layerDIB.GetDIBHeight * GetLayerCanvasYModifier
+                    If GetLayerHeight < 1 Then GetLayerHeight = 1
                 Else
-                    getLayerHeight = layerDIB.GetDIBHeight
+                    GetLayerHeight = layerDIB.GetDIBHeight
                 End If
                 
             Else
-                getLayerHeight = 0
+                GetLayerHeight = 0
             End If
         
         'Vector layers do actually store persistent width/height values.  This is important because these values may fall
         ' out of sync with the backer DIB, which is only updated on an as-needed basis
         Case PDL_TEXT, PDL_TYPOGRAPHY
-            getLayerHeight = myVectorData.vd_Height
+            GetLayerHeight = myVectorData.vd_Height
     
     End Select
     
 End Function
 
-Public Sub setLayerWidth(ByVal newSize As Single)
+Public Sub SetLayerWidth(ByVal newSize As Single)
     
     'Force size in-bounds
     If newSize < 1 Then newSize = 1
@@ -565,7 +563,7 @@ Public Sub setLayerWidth(ByVal newSize As Single)
     
 End Sub
 
-Public Sub setLayerHeight(ByVal newSize As Single)
+Public Sub SetLayerHeight(ByVal newSize As Single)
     
     'Force size in-bounds
     If newSize < 1 Then newSize = 1
@@ -585,15 +583,15 @@ End Sub
 
 'Get/set layer canvas modifiers (necessary for non-destructive on-canvas resizing).  For vector layers, these have no effect.
 ' Vector layers always maintain canvas x/y modifiers of 1, and they simply translate these requests into setLayerWidth/Height calls.
-Public Function getLayerCanvasXModifier() As Double
-    getLayerCanvasXModifier = myLayerData.l_CanvasXModifier
+Public Function GetLayerCanvasXModifier() As Double
+    GetLayerCanvasXModifier = myLayerData.l_CanvasXModifier
 End Function
 
-Public Function getLayerCanvasYModifier() As Double
-    getLayerCanvasYModifier = myLayerData.l_CanvasYModifier
+Public Function GetLayerCanvasYModifier() As Double
+    GetLayerCanvasYModifier = myLayerData.l_CanvasYModifier
 End Function
 
-Public Sub setLayerCanvasXModifier(ByVal newXModifier As Double)
+Public Sub SetLayerCanvasXModifier(ByVal newXModifier As Double)
     
     'Check bounds
     If newXModifier <= 0 Then newXModifier = 0.00000001
@@ -606,13 +604,13 @@ Public Sub setLayerCanvasXModifier(ByVal newXModifier As Double)
             
         Case PDL_TEXT, PDL_TYPOGRAPHY
             myLayerData.l_CanvasXModifier = 1
-            setLayerWidth newXModifier * getLayerWidth
+            SetLayerWidth newXModifier * GetLayerWidth
     
     End Select
     
 End Sub
 
-Public Sub setLayerCanvasYModifier(ByVal newYModifier As Double)
+Public Sub SetLayerCanvasYModifier(ByVal newYModifier As Double)
     
     'Check bounds
     If newYModifier <= 0 Then newYModifier = 0.00000001
@@ -625,7 +623,7 @@ Public Sub setLayerCanvasYModifier(ByVal newYModifier As Double)
             
         Case PDL_TEXT, PDL_TYPOGRAPHY
             myLayerData.l_CanvasYModifier = 1
-            setLayerHeight newYModifier * getLayerHeight
+            SetLayerHeight newYModifier * GetLayerHeight
     
     End Select
     
@@ -634,71 +632,71 @@ End Sub
 'Get/set non-destructive resize algorithm.  Note that there are two GET functions:
 ' - One that uses PD's internal LAYER_RESIZE_QUALITY enum
 ' - One that converts the internal LAYER_RESIZE_QUALITY value into a GDI+ resize constant
-Public Function getLayerResizeQuality() As LAYER_RESIZE_QUALITY
-    getLayerResizeQuality = myLayerData.l_ResizeQuality
+Public Function GetLayerResizeQuality() As LAYER_RESIZE_QUALITY
+    GetLayerResizeQuality = myLayerData.l_ResizeQuality
 End Function
 
-Public Function getLayerResizeQuality_GDIPlus() As Long
+Public Function GetLayerResizeQuality_GDIPlus() As Long
     
     Select Case myLayerData.l_ResizeQuality
         
         Case LRQ_NEAREST_NEIGHBOR
-            getLayerResizeQuality_GDIPlus = InterpolationModeNearestNeighbor
+            GetLayerResizeQuality_GDIPlus = InterpolationModeNearestNeighbor
         
         Case LRQ_BILINEAR_NORMAL
-            getLayerResizeQuality_GDIPlus = InterpolationModeHighQualityBilinear
+            GetLayerResizeQuality_GDIPlus = InterpolationModeHighQualityBilinear
         
         Case LRQ_BICUBIC_NORMAL
-            getLayerResizeQuality_GDIPlus = InterpolationModeHighQualityBicubic
+            GetLayerResizeQuality_GDIPlus = InterpolationModeHighQualityBicubic
         
     End Select
     
 End Function
 
-Public Sub setLayerResizeQuality(ByVal newQuality As LAYER_RESIZE_QUALITY)
+Public Sub SetLayerResizeQuality(ByVal newQuality As LAYER_RESIZE_QUALITY)
     myLayerData.l_ResizeQuality = newQuality
 End Sub
 
 'Get/set non-destructive FX status.  Note that these functions work a little differently than other get/set functions.  Get() works
 ' normally, but Set() requires the user to activate or deactivate a specific
-Public Function getLayerNonDestructiveFXState() As Boolean
-    getLayerNonDestructiveFXState = myLayerData.l_NonDestructiveFXActive
+Public Function GetLayerNonDestructiveFXState() As Boolean
+    GetLayerNonDestructiveFXState = myLayerData.l_NonDestructiveFXActive
 End Function
 
-Public Function getLayerNonDestructiveFXValue(ByVal ndEffect As LAYER_NONDESTRUCTIVE_FX) As Double
+Public Function GetLayerNonDestructiveFXValue(ByVal ndEffect As LAYER_NONDESTRUCTIVE_FX) As Double
     
     'Return a new value contigent on the supplied ndEffect value
     Select Case ndEffect
     
         'Exposure
         Case NDFX_EXPOSURE
-            getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Exposure
+            GetLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Exposure
             
         'Contrast
         Case NDFX_CONTRAST
-            getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Contrast
+            GetLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Contrast
             
         'Clarity
         Case NDFX_CLARITY
-            getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Clarity
+            GetLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Clarity
             
         'Vibrance
         Case NDFX_VIBRANCE
-            getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Vibrance
+            GetLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Vibrance
             
         'Temperature
         Case NDFX_TEMPERATURE
-            getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Temperature
+            GetLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Temperature
             
         'Tint
         Case NDFX_TINT
-            getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Tint
+            GetLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Tint
             
     End Select
     
 End Function
 
-Public Sub setLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_FX, Optional ByVal newEffectValue As Double = 0#)
+Public Sub SetLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_FX, Optional ByVal newEffectValue As Double = 0#)
     
     'Assign the new value to the appropriate entry in this layer's non-destructive FX array
     Select Case ndEffect
@@ -755,7 +753,7 @@ Public Sub setLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_
 End Sub
 
 'This shortcut function can be used to deactivate all NDFX settings at once
-Public Sub deactivateAllNDFX()
+Public Sub DeactivateAllNDFX()
     
     myLayerData.l_NonDestructiveFXActive = False
     
@@ -774,60 +772,60 @@ End Sub
 ' as layer properties include a lot of different types.  As such, these aren't suitable for use inside a performance-sensitive
 ' loop (like pdCompositor, for example).  Instead, these are primarily used by UI elements and the Undo/Redo processor, where
 ' it is much simpler to use a single generic function.
-Friend Function getGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC_PROPERTY) As Variant
+Friend Function GetGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC_PROPERTY) As Variant
 
     Select Case desiredProperty
     
         Case pgp_Name
-            getGenericLayerProperty = myLayerData.l_Name
+            GetGenericLayerProperty = myLayerData.l_Name
             
         Case pgp_GroupID
-            getGenericLayerProperty = myLayerData.l_GroupID
+            GetGenericLayerProperty = myLayerData.l_GroupID
             
         Case pgp_Opacity
-            getGenericLayerProperty = myLayerData.l_Opacity
+            GetGenericLayerProperty = myLayerData.l_Opacity
             
         Case pgp_BlendMode
-            getGenericLayerProperty = myLayerData.l_BlendMode
+            GetGenericLayerProperty = myLayerData.l_BlendMode
             
         Case pgp_OffsetX
-            getGenericLayerProperty = myLayerData.l_OffsetX
+            GetGenericLayerProperty = myLayerData.l_OffsetX
             
         Case pgp_OffsetY
-            getGenericLayerProperty = myLayerData.l_OffsetY
+            GetGenericLayerProperty = myLayerData.l_OffsetY
             
         Case pgp_CanvasXModifier
-            getGenericLayerProperty = myLayerData.l_CanvasXModifier
+            GetGenericLayerProperty = myLayerData.l_CanvasXModifier
             
         Case pgp_CanvasYModifier
-            getGenericLayerProperty = myLayerData.l_CanvasYModifier
+            GetGenericLayerProperty = myLayerData.l_CanvasYModifier
             
         Case pgp_Angle
-            getGenericLayerProperty = myLayerData.l_Angle
+            GetGenericLayerProperty = myLayerData.l_Angle
             
         Case pgp_Visibility
-            getGenericLayerProperty = myLayerData.l_Visibility
+            GetGenericLayerProperty = myLayerData.l_Visibility
             
         Case pgp_NonDestructiveFXActive
-            getGenericLayerProperty = myLayerData.l_NonDestructiveFXActive
+            GetGenericLayerProperty = myLayerData.l_NonDestructiveFXActive
             
         Case pgp_ResizeQuality
-            getGenericLayerProperty = myLayerData.l_ResizeQuality
+            GetGenericLayerProperty = myLayerData.l_ResizeQuality
             
         Case pgp_ShearX
-            getGenericLayerProperty = myLayerData.l_ShearX
+            GetGenericLayerProperty = myLayerData.l_ShearX
             
         Case pgp_ShearY
-            getGenericLayerProperty = myLayerData.l_ShearY
+            GetGenericLayerProperty = myLayerData.l_ShearY
             
         Case pgp_AlphaMode
-            getGenericLayerProperty = myLayerData.l_AlphaMode
+            GetGenericLayerProperty = myLayerData.l_AlphaMode
     
     End Select
 
 End Function
 
-Friend Sub setGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC_PROPERTY, ByVal newValue As Variant)
+Friend Sub SetGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC_PROPERTY, ByVal newValue As Variant)
 
     Select Case desiredProperty
         
@@ -838,7 +836,7 @@ Friend Sub setGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC_PROP
             If myLayerData.l_GroupID <> CLng(newValue) Then myLayerData.l_GroupID = CLng(newValue)
             
         Case pgp_Opacity
-            If myLayerData.l_Opacity <> CLng(newValue) Then Me.setLayerOpacity CLng(newValue)
+            If myLayerData.l_Opacity <> CLng(newValue) Then Me.SetLayerOpacity CLng(newValue)
             
         Case pgp_BlendMode
             If myLayerData.l_BlendMode <> CLng(newValue) Then myLayerData.l_BlendMode = CLng(newValue)
@@ -850,10 +848,10 @@ Friend Sub setGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC_PROP
             If myLayerData.l_OffsetY <> CDbl(newValue) Then myLayerData.l_OffsetY = CDbl(newValue)
             
         Case pgp_CanvasXModifier
-            If myLayerData.l_CanvasXModifier <> CDbl(newValue) Then Me.setLayerCanvasXModifier CDbl(newValue)
+            If myLayerData.l_CanvasXModifier <> CDbl(newValue) Then Me.SetLayerCanvasXModifier CDbl(newValue)
             
         Case pgp_CanvasYModifier
-            If myLayerData.l_CanvasYModifier <> CDbl(newValue) Then Me.setLayerCanvasYModifier CDbl(newValue)
+            If myLayerData.l_CanvasYModifier <> CDbl(newValue) Then Me.SetLayerCanvasYModifier CDbl(newValue)
             
         Case pgp_Angle
             If myLayerData.l_Angle <> CDbl(newValue) Then myLayerData.l_Angle = CDbl(newValue)
@@ -881,14 +879,14 @@ Friend Sub setGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC_PROP
 End Sub
 
 'Text layer properties can be get/set via these singular functions.
-Friend Function getTextLayerProperty(ByVal desiredProperty As PD_TEXT_PROPERTY) As Variant
+Friend Function GetTextLayerProperty(ByVal desiredProperty As PD_TEXT_PROPERTY) As Variant
 
     'All text properties are managed by the pdTextRenderer class.  This function is simply a passthrough.
-    getTextLayerProperty = myTextRenderer.getGenericTextProperty(desiredProperty)
+    GetTextLayerProperty = myTextRenderer.getGenericTextProperty(desiredProperty)
     
 End Function
 
-Friend Sub setTextLayerProperty(ByVal desiredProperty As PD_TEXT_PROPERTY, ByVal newValue As Variant)
+Friend Sub SetTextLayerProperty(ByVal desiredProperty As PD_TEXT_PROPERTY, ByVal newValue As Variant)
     
     'All text properties are managed by the pdTextRenderer class.  This function is simply a passthrough.
     
@@ -900,23 +898,23 @@ End Sub
 
 'If this layer needs to have its on-canvas transformations made permanent (for example, when applying an action
 ' that involves a selection), this function can be used.
-Public Sub makeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Optional ByVal maxHeight As Long = 0)
+Public Sub MakeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Optional ByVal maxHeight As Long = 0)
 
     'If this layer does not have any active transforms, ignore this request
-    If Me.affineTransformsActive(True) Then
+    If Me.AffineTransformsActive(True) Then
         
         'Unfortunately, a temporary DIB will be required for the rescale operation
         Dim tmpTransformDIB As pdDIB
         Set tmpTransformDIB = New pdDIB
         
         'If complex affine transforms are active (e.g. rotation), this step becomes more complicated.
-        If Me.affineTransformsActive(False) Then
+        If Me.AffineTransformsActive(False) Then
         
             'Affine transforms can cause the layer's x/y offset to change
             Dim newOffsetX As Long, newOffsetY As Long
             
             'Retrieve a copy of the current DIB using the layer's automated affine-transformation function
-            Me.getAffineTransformedDIB tmpTransformDIB, newOffsetX, newOffsetY, maxWidth, maxHeight
+            Me.GetAffineTransformedDIB tmpTransformDIB, newOffsetX, newOffsetY, maxWidth, maxHeight
             
             'Update our internal DIB and offsets to match
             Set Me.layerDIB = tmpTransformDIB
@@ -934,8 +932,8 @@ Public Sub makeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Op
         Else
             
             With tmpTransformDIB
-                .createBlank getLayerWidth(True), getLayerHeight(True), 32, 0
-                GDIPlusResizeDIB tmpTransformDIB, 0, 0, .GetDIBWidth, .GetDIBHeight, layerDIB, 0, 0, getLayerWidth(False), getLayerHeight(False), Me.getLayerResizeQuality_GDIPlus
+                .CreateBlank GetLayerWidth(True), GetLayerHeight(True), 32, 0
+                GDIPlusResizeDIB tmpTransformDIB, 0, 0, .GetDIBWidth, .GetDIBHeight, layerDIB, 0, 0, GetLayerWidth(False), GetLayerHeight(False), Me.GetLayerResizeQuality_GDIPlus
             End With
             
             Set Me.layerDIB = tmpTransformDIB
@@ -956,40 +954,40 @@ Public Sub makeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Op
 End Sub
 
 'Get/set layer angle
-Public Function getLayerAngle() As Double
-    getLayerAngle = myLayerData.l_Angle
+Public Function GetLayerAngle() As Double
+    GetLayerAngle = myLayerData.l_Angle
 End Function
 
-Public Sub setLayerAngle(ByVal newAngle As Double)
+Public Sub SetLayerAngle(ByVal newAngle As Double)
     myLayerData.l_Angle = newAngle
 End Sub
 
 'Get/set layer shear
-Public Function getLayerShearX() As Double
-    getLayerShearX = myLayerData.l_ShearX
+Public Function GetLayerShearX() As Double
+    GetLayerShearX = myLayerData.l_ShearX
 End Function
 
-Public Sub setLayerShearX(ByVal newShear As Double)
+Public Sub SetLayerShearX(ByVal newShear As Double)
     myLayerData.l_ShearX = newShear
 End Sub
 
-Public Function getLayerShearY() As Double
-    getLayerShearY = myLayerData.l_ShearY
+Public Function GetLayerShearY() As Double
+    GetLayerShearY = myLayerData.l_ShearY
 End Function
 
-Public Sub setLayerShearY(ByVal newShear As Double)
+Public Sub SetLayerShearY(ByVal newShear As Double)
     myLayerData.l_ShearY = newShear
 End Sub
 
 'If one or more affine transformations are active (rotation, shear, etc), this function will return TRUE.
 ' This is used, for example, by pdCompositor to branch across several rendering paths.
-Public Function affineTransformsActive(Optional ByVal includeScaling As Boolean = False) As Boolean
+Public Function AffineTransformsActive(Optional ByVal includeScaling As Boolean = False) As Boolean
     
     'Most PD operations handle scaling separate from other affine operations, so we can typically skip this check
     If includeScaling Then
     
         If (myLayerData.l_CanvasXModifier <> 1) Or (myLayerData.l_CanvasYModifier <> 1) Then
-            affineTransformsActive = True
+            AffineTransformsActive = True
             Exit Function
         End If
     
@@ -997,9 +995,9 @@ Public Function affineTransformsActive(Optional ByVal includeScaling As Boolean 
     
     'Rotate and shear are the only other relevant affine transforms
     If (myLayerData.l_Angle <> 0) Or (myLayerData.l_ShearX <> 0) Or (myLayerData.l_ShearY <> 0) Then
-        affineTransformsActive = True
+        AffineTransformsActive = True
     Else
-        affineTransformsActive = False
+        AffineTransformsActive = False
     End If
     
 End Function
@@ -1012,28 +1010,28 @@ End Function
 ' 1) Top-Right
 ' 2) Bottom-Left
 ' 3) (optionally) Bottom-Right.  This point is optional because it can be inferred from the previous three
-Friend Sub getLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional ByVal includeOffsets As Boolean = True, Optional ByVal normalizeToNewOrigin As Boolean = False, Optional ByVal normalizeX As Single = 0#, Optional ByVal normalizeY As Single = 0#, Optional ByVal includeNonDestructiveScaling As Boolean = True)
+Friend Sub GetLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional ByVal includeOffsets As Boolean = True, Optional ByVal normalizeToNewOrigin As Boolean = False, Optional ByVal normalizeX As Single = 0#, Optional ByVal normalizeY As Single = 0#, Optional ByVal includeNonDestructiveScaling As Boolean = True)
     
     'To simplify the work of translating layer boundaries by one or more affine transformations, we use a GraphicsMatrix object.
     Dim tmpMatrix As pdGraphicsMatrix
     
     'Retrieve a copy of the current layer transform matrix
-    Me.getCopyOfLayerTransformationMatrix tmpMatrix, includeOffsets
+    Me.GetCopyOfLayerTransformationMatrix tmpMatrix, includeOffsets
     
     'Fill the dstPoints array with the current image corners *without* translation applied (but *with* scaling)
     dstPoints(0).x = 0
     dstPoints(0).y = 0
     
-    dstPoints(1).x = Me.getLayerWidth(includeNonDestructiveScaling)
+    dstPoints(1).x = Me.GetLayerWidth(includeNonDestructiveScaling)
     dstPoints(1).y = 0
     
     dstPoints(2).x = 0
-    dstPoints(2).y = Me.getLayerHeight(includeNonDestructiveScaling)
+    dstPoints(2).y = Me.GetLayerHeight(includeNonDestructiveScaling)
     
     'If the third point exists, fill it too
     If UBound(dstPoints) = 3 Then
-        dstPoints(3).x = Me.getLayerWidth(includeNonDestructiveScaling)
-        dstPoints(3).y = Me.getLayerHeight(includeNonDestructiveScaling)
+        dstPoints(3).x = Me.GetLayerWidth(includeNonDestructiveScaling)
+        dstPoints(3).y = Me.GetLayerHeight(includeNonDestructiveScaling)
     End If
     
     'Translate each point in turn
@@ -1048,7 +1046,7 @@ Friend Sub getLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional B
         
         'Find the largest and smallest (x, y) coordinates
         Dim minX As Single, maxX As Single, MinY As Single, MaxY As Single
-        findMaxMinOfPointFs dstPoints, UBound(dstPoints) + 1, minX, MinY, maxX, MaxY
+        FindMaxMinOfPointFs dstPoints, UBound(dstPoints) + 1, minX, MinY, maxX, MaxY
         
         'Normalize all points against the minimum values
         Dim i As Long
@@ -1070,28 +1068,28 @@ End Sub
 ' rotation node *IN IMAGE COORDINATES*.  Note that an array is required, and it must be at least (0, 4) in size.  The first point contains
 ' the center point of the rotation node (e.g. the center of the current image), while subsequent points contain valid rotation nodes, which
 ' sit on the halfway point at each image boundary.
-Friend Sub getLayerRotationNodeCoordinates(ByRef dstPoints() As POINTFLOAT, Optional ByVal includeOffsets As Boolean = True, Optional ByVal includeNonDestructiveScaling As Boolean = True)
+Friend Sub GetLayerRotationNodeCoordinates(ByRef dstPoints() As POINTFLOAT, Optional ByVal includeOffsets As Boolean = True, Optional ByVal includeNonDestructiveScaling As Boolean = True)
     
     'Retrieve a copy of the current layer transform matrix
     Dim tmpMatrix As pdGraphicsMatrix
-    Me.getCopyOfLayerTransformationMatrix tmpMatrix, includeOffsets
+    Me.GetCopyOfLayerTransformationMatrix tmpMatrix, includeOffsets
     
     'Fill the destination with two coordinates: the center if the image, and the position of the current rotation node.
     '  Note that both if these points are generated *without* translation applied (but *with* scaling).
-    dstPoints(0).x = Me.getLayerWidth(includeNonDestructiveScaling) / 2
-    dstPoints(0).y = Me.getLayerHeight(includeNonDestructiveScaling) / 2
+    dstPoints(0).x = Me.GetLayerWidth(includeNonDestructiveScaling) / 2
+    dstPoints(0).y = Me.GetLayerHeight(includeNonDestructiveScaling) / 2
     
     'Also, note that changes to the outer node position *must be mirrored* to the checkPointOfInterest() function below!
-    dstPoints(1).x = Me.getLayerWidth(includeNonDestructiveScaling)
-    dstPoints(1).y = Me.getLayerHeight(includeNonDestructiveScaling) / 2
+    dstPoints(1).x = Me.GetLayerWidth(includeNonDestructiveScaling)
+    dstPoints(1).y = Me.GetLayerHeight(includeNonDestructiveScaling) / 2
     
-    dstPoints(2).x = Me.getLayerWidth(includeNonDestructiveScaling) / 2
-    dstPoints(2).y = Me.getLayerHeight(includeNonDestructiveScaling)
+    dstPoints(2).x = Me.GetLayerWidth(includeNonDestructiveScaling) / 2
+    dstPoints(2).y = Me.GetLayerHeight(includeNonDestructiveScaling)
     
     dstPoints(3).x = 0
-    dstPoints(3).y = Me.getLayerHeight(includeNonDestructiveScaling) / 2
+    dstPoints(3).y = Me.GetLayerHeight(includeNonDestructiveScaling) / 2
     
-    dstPoints(4).x = Me.getLayerWidth(includeNonDestructiveScaling) / 2
+    dstPoints(4).x = Me.GetLayerWidth(includeNonDestructiveScaling) / 2
     dstPoints(4).y = 0
     
     'Apply the transformation matrix to each point
@@ -1108,7 +1106,7 @@ End Sub
 ' layer's current transformation matrix, it can use this function to retrieve it.
 '
 'Note that scaling is not applied, by design.  The caller should handle scaling manually.
-Friend Sub getCopyOfLayerTransformationMatrix(ByRef dstMatrix As pdGraphicsMatrix, Optional ByVal applyTranslation As Boolean = True)
+Friend Sub GetCopyOfLayerTransformationMatrix(ByRef dstMatrix As pdGraphicsMatrix, Optional ByVal applyTranslation As Boolean = True)
 
     'Create and/or reset the destination matrix, as necessary
     If dstMatrix Is Nothing Then
@@ -1120,10 +1118,10 @@ Friend Sub getCopyOfLayerTransformationMatrix(ByRef dstMatrix As pdGraphicsMatri
     With myLayerData
     
         'If an angle is active, rotate the matrix accordingly
-        If .l_Angle <> 0 Then dstMatrix.RotateMatrix .l_Angle, Me.getLayerWidth(True) / 2, Me.getLayerHeight(True) / 2
+        If .l_Angle <> 0 Then dstMatrix.RotateMatrix .l_Angle, Me.GetLayerWidth(True) / 2, Me.GetLayerHeight(True) / 2
         
         'If shearing is active, shear the matrix accordingly
-        If (.l_ShearX <> 0) Or (.l_ShearY <> 0) Then dstMatrix.ShearMatrix .l_ShearX, .l_ShearY, Me.getLayerWidth(True) / 2, Me.getLayerHeight(True) / 2
+        If (.l_ShearX <> 0) Or (.l_ShearY <> 0) Then dstMatrix.ShearMatrix .l_ShearX, .l_ShearY, Me.GetLayerWidth(True) / 2, Me.GetLayerHeight(True) / 2
         
         'Finally, if translation is desired, scale all points by the current layer offset
         If applyTranslation Then dstMatrix.TranslateMatrix .l_OffsetX, .l_OffsetY
@@ -1134,17 +1132,17 @@ End Sub
 
 'As of PhotoDemon 7.0, layers support one or more affine transformations (rotation, skew, etc).  If the caller needs to determine
 ' layer boundaries with all affine transform operations considered, use this function.
-Friend Sub getLayerBoundaryRect(ByRef dstRect As RECTF, Optional ByVal applyTranslation As Boolean = True, Optional ByVal normalizeToNewOrigin As Boolean = False, Optional ByVal normalizeX As Single = 0#, Optional ByVal normalizeY As Single = 0#)
+Friend Sub GetLayerBoundaryRect(ByRef dstRect As RECTF, Optional ByVal applyTranslation As Boolean = True, Optional ByVal normalizeToNewOrigin As Boolean = False, Optional ByVal normalizeX As Single = 0#, Optional ByVal normalizeY As Single = 0#)
     
     'Get a copy of the current layer coordinates
     Dim layerCorners() As POINTFLOAT
     ReDim layerCorners(0 To 3) As POINTFLOAT
     
-    Me.getLayerCornerCoordinates layerCorners, applyTranslation, normalizeToNewOrigin, normalizeX, normalizeY
+    Me.GetLayerCornerCoordinates layerCorners, applyTranslation, normalizeToNewOrigin, normalizeX, normalizeY
     
     'Find the largest and smallest (x, y) coordinates
     Dim minX As Single, maxX As Single, MinY As Single, MaxY As Single
-    findMaxMinOfPointFs layerCorners, 4, minX, MinY, maxX, MaxY
+    FindMaxMinOfPointFs layerCorners, 4, minX, MinY, maxX, MaxY
     
     'The difference between max and min values define the boundary rect for this layer
     With dstRect
@@ -1169,15 +1167,15 @@ End Sub
 ' (if the only active non-destructive transform is scaling, we can bypass certain steps, for example).
 '
 'RETURNS: TRUE if the destination DIB was filled, FALSE if the DIB lies outside the crop area (e.g. entirely off the image)
-Friend Function getAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Long, ByRef dstY As Long, Optional ByVal cropWidth As Long = 0, Optional ByVal cropHeight As Long = 0) As Boolean
+Friend Function GetAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Long, ByRef dstY As Long, Optional ByVal cropWidth As Long = 0, Optional ByVal cropHeight As Long = 0) As Boolean
     
     'Retrieve a copy of the layer corner points, in image coordinates (of course!)
     'Get a copy of the current layer coordinates
-    Me.getLayerCornerCoordinates m_PlgPoints, True, False
+    Me.GetLayerCornerCoordinates m_PlgPoints, True, False
     
     'From our boundary points, find the largest and smallest (x, y) values.  These give us a bounding box for the layer as a whole.
     Dim minX As Single, maxX As Single, MinY As Single, MaxY As Single
-    findMaxMinOfPointFs m_PlgPoints, 4, minX, MinY, maxX, MaxY
+    FindMaxMinOfPointFs m_PlgPoints, 4, minX, MinY, maxX, MaxY
     
     'Copy those values into a RECTF struct, for convenience
     Dim layerRect As RECTF
@@ -1243,7 +1241,7 @@ Friend Function getAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
         'Next, prepare the destination DIB.  If at all possible, we try to optimize this by reusing DIBs that are already
         ' an acceptable size.
         If (dstDIB.GetDIBWidth <> intLayerWidth) Or (dstDIB.GetDIBHeight <> intLayerHeight) Then
-            dstDIB.createBlank intLayerWidth, intLayerHeight, 32, 0, 0
+            dstDIB.CreateBlank intLayerWidth, intLayerHeight, 32, 0, 0
             dstDIB.SetInitialAlphaPremultiplicationState True
         Else
             dstDIB.ResetDIB
@@ -1259,21 +1257,21 @@ Friend Function getAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
         
         'Copy a resized chunk of the source image onto the temporary DIB.  (Note that this branches according to the
         ' presence of more complicated affine functions, which require a parallelogram-style blit process).
-        If Me.affineTransformsActive(False) Then
-            GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, Me.layerDIB, 0, 0, Me.getLayerWidth(False), Me.getLayerHeight(False), 1, Me.getLayerResizeQuality_GDIPlus
+        If Me.AffineTransformsActive(False) Then
+            GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, Me.layerDIB, 0, 0, Me.GetLayerWidth(False), Me.GetLayerHeight(False), 1, Me.GetLayerResizeQuality_GDIPlus
         Else
-            GDI_Plus.GDIPlus_StretchBlt dstDIB, normalizeX, normalizeY, Me.getLayerWidth(True), Me.getLayerHeight(True), Me.layerDIB, 0, 0, Me.getLayerWidth(False), Me.getLayerHeight(False), 1, Me.getLayerResizeQuality_GDIPlus
+            GDI_Plus.GDIPlus_StretchBlt dstDIB, normalizeX, normalizeY, Me.GetLayerWidth(True), Me.GetLayerHeight(True), Me.layerDIB, 0, 0, Me.GetLayerWidth(False), Me.GetLayerHeight(False), 1, Me.GetLayerResizeQuality_GDIPlus
         End If
         
         dstDIB.SetInitialAlphaPremultiplicationState True
         
         'Return success
-        getAffineTransformedDIB = True
+        GetAffineTransformedDIB = True
         
     Else
     
         'Return failure (e.g. the transformed DIB lies completely off the image, so there is no need for a temporary DIB)
-        getAffineTransformedDIB = False
+        GetAffineTransformedDIB = False
         
     End If
     
@@ -1283,7 +1281,7 @@ End Function
 ' of the layer *IN IMAGE COORDINATES*.
 
 'Given an array with at least upper bound 2, find the max and min x/y values.
-Private Sub findMaxMinOfPointFs(ByRef srcPoints() As POINTFLOAT, ByVal numOfPoints As Long, ByRef minX As Single, ByRef MinY As Single, ByRef maxX As Single, ByRef MaxY As Single)
+Private Sub FindMaxMinOfPointFs(ByRef srcPoints() As POINTFLOAT, ByVal numOfPoints As Long, ByRef minX As Single, ByRef MinY As Single, ByRef maxX As Single, ByRef MaxY As Single)
     
     If srcPoints(0).x < srcPoints(1).x Then
         minX = srcPoints(0).x
@@ -1387,7 +1385,7 @@ End Sub
 'If the optional parameter "avoidFluffEntries" is set, descriptive comments and pretty formatting will not be
 ' applied to the XML string.  This helpful for improving read/write performance of the data, such as when writing
 ' Undo/Redo entries.
-Public Function getLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean = False) As String
+Public Function GetLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean = False) As String
 
     'Prepare an XML engine, which greatly simplifies the process of assembling XML data
     Dim xmlEngine As pdXML
@@ -1455,29 +1453,29 @@ Public Function getLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
     If Not avoidFluffEntries Then xmlEngine.writeBlankLine
     
     'The layer XML string is now complete.  Return it.
-    getLayerHeaderAsXML = xmlEngine.returnCurrentXMLString(avoidFluffEntries)
+    GetLayerHeaderAsXML = xmlEngine.returnCurrentXMLString(avoidFluffEntries)
 
 End Function
 
 'Retrieve the layer's key data bits, but in PD's native param-string format.  This is used internally to check for
 ' non-destructive changes to layer data; if any are found, the Undo/Redo engine knows to create a new point on the stack.
-Public Function getLayerHeaderAsParamString() As String
+Public Function GetLayerHeaderAsParamString() As String
 
     'Start by compiling a layer header
     With myLayerData
-        getLayerHeaderAsParamString = buildParams(.l_Name, .l_GroupID, .l_Opacity, .l_BlendMode, .l_OffsetX, .l_OffsetY, .l_CanvasXModifier, .l_CanvasYModifier, .l_Angle, .l_Visibility, .l_NonDestructiveFXActive, .l_ResizeQuality, .l_ShearX, .l_ShearY, .l_AlphaMode)
+        GetLayerHeaderAsParamString = buildParams(.l_Name, .l_GroupID, .l_Opacity, .l_BlendMode, .l_OffsetX, .l_OffsetY, .l_CanvasXModifier, .l_CanvasYModifier, .l_Angle, .l_Visibility, .l_NonDestructiveFXActive, .l_ResizeQuality, .l_ShearX, .l_ShearY, .l_AlphaMode)
     End With
     
     'Next, add any non-destructive FX parameters
     With myNonDestructiveFX
-        getLayerHeaderAsParamString = getLayerHeaderAsParamString & "|" & buildParams(.fx_Exposure, .fx_Contrast, .fx_Clarity, .fx_Vibrance, .fx_Temperature, .fx_Tint)
+        GetLayerHeaderAsParamString = GetLayerHeaderAsParamString & "|" & buildParams(.fx_Exposure, .fx_Contrast, .fx_Clarity, .fx_Vibrance, .fx_Temperature, .fx_Tint)
     End With
     
 End Function
 
 'Given a param string, recreate the layer header accordingly.  Note that BY DESIGN, immutable layer parameters - including
 ' layer ID and layer type - are never stored in param strings, and thus cannot be changed by this function.
-Public Sub setLayerHeaderFromParamString(ByVal srcParamString As String)
+Public Sub SetLayerHeaderFromParamString(ByVal srcParamString As String)
 
     'Create a param string parser
     Dim cParams As pdParamString
@@ -1587,7 +1585,7 @@ Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
         
             Set layerDIB = New pdDIB
             With xmlEngine
-                layerDIB.createBlank .getUniqueTag_Long("DIB_Width", 1), .getUniqueTag_Long("DIB_Height", 1), .getUniqueTag_Long("DIB_ColorDepth", 32)
+                layerDIB.CreateBlank .getUniqueTag_Long("DIB_Width", 1), .getUniqueTag_Long("DIB_Height", 1), .getUniqueTag_Long("DIB_ColorDepth", 32)
                 
                 'Mark alpha premultiplication in advance
                 layerDIB.SetInitialAlphaPremultiplicationState .getUniqueTag_Boolean("DIB_AlphaPremultiplication", True)
@@ -1616,10 +1614,10 @@ End Function
 'If the optional parameter "avoidFluffEntries" is set, descriptive comments and pretty formatting will not be
 ' applied to the XML string.  This helpful for improving read/write performance of the data, such as when writing
 ' Undo/Redo entries.
-Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean = False) As String
+Public Function GetVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean = False) As String
     
     'First, make sure this is not an image layer
-    If Not Me.isLayerVector() Then
+    If Not Me.IsLayerVector() Then
         Debug.Print "WARNING!  The getVectorDataAsXML() function is only valid for vector layers!"
         Exit Function
     End If
@@ -1657,7 +1655,7 @@ Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
     If Not avoidFluffEntries Then xmlEngine.writeBlankLine
     
     'The layer XML string is now complete.  Return it.
-    getVectorDataAsXML = xmlEngine.returnCurrentXMLString(avoidFluffEntries)
+    GetVectorDataAsXML = xmlEngine.returnCurrentXMLString(avoidFluffEntries)
 
 End Function
 
@@ -1767,34 +1765,34 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
 
     'Copy all generic layer properties from the source layer.  (Note that canonical layer ID is *not* copied; that must always
     ' be unique for every created layer!)
-    myLayerType = srcLayer.getLayerType
+    myLayerType = srcLayer.GetLayerType
     
     With myLayerData
-        .l_Name = IncrementTrailingNumber(srcLayer.getLayerName)
-        .l_GroupID = srcLayer.getLayerGroup
-        .l_Opacity = srcLayer.getLayerOpacity
-        .l_BlendMode = srcLayer.getLayerBlendMode
-        .l_OffsetX = srcLayer.getLayerOffsetX
-        .l_OffsetY = srcLayer.getLayerOffsetY
-        .l_CanvasXModifier = srcLayer.getLayerCanvasXModifier
-        .l_CanvasYModifier = srcLayer.getLayerCanvasYModifier
-        .l_Angle = srcLayer.getLayerAngle
-        .l_Visibility = srcLayer.getLayerVisibility
-        .l_NonDestructiveFXActive = srcLayer.getLayerNonDestructiveFXState
-        .l_ResizeQuality = srcLayer.getLayerResizeQuality
-        .l_ShearX = srcLayer.getLayerShearX
-        .l_ShearY = srcLayer.getLayerShearY
-        .l_AlphaMode = srcLayer.getLayerAlphaMode
+        .l_Name = IncrementTrailingNumber(srcLayer.GetLayerName)
+        .l_GroupID = srcLayer.GetLayerGroup
+        .l_Opacity = srcLayer.GetLayerOpacity
+        .l_BlendMode = srcLayer.GetLayerBlendMode
+        .l_OffsetX = srcLayer.GetLayerOffsetX
+        .l_OffsetY = srcLayer.GetLayerOffsetY
+        .l_CanvasXModifier = srcLayer.GetLayerCanvasXModifier
+        .l_CanvasYModifier = srcLayer.GetLayerCanvasYModifier
+        .l_Angle = srcLayer.GetLayerAngle
+        .l_Visibility = srcLayer.GetLayerVisibility
+        .l_NonDestructiveFXActive = srcLayer.GetLayerNonDestructiveFXState
+        .l_ResizeQuality = srcLayer.GetLayerResizeQuality
+        .l_ShearX = srcLayer.GetLayerShearX
+        .l_ShearY = srcLayer.GetLayerShearY
+        .l_AlphaMode = srcLayer.GetLayerAlphaMode
     End With
     
     'Next, copy any non-destructive FX parameters
     With myNonDestructiveFX
-        .fx_Exposure = srcLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE)
-        .fx_Contrast = srcLayer.getLayerNonDestructiveFXValue(NDFX_CONTRAST)
-        .fx_Clarity = srcLayer.getLayerNonDestructiveFXValue(NDFX_CLARITY)
-        .fx_Vibrance = srcLayer.getLayerNonDestructiveFXValue(NDFX_VIBRANCE)
-        .fx_Temperature = srcLayer.getLayerNonDestructiveFXValue(NDFX_TEMPERATURE)
-        .fx_Tint = srcLayer.getLayerNonDestructiveFXValue(NDFX_TINT)
+        .fx_Exposure = srcLayer.GetLayerNonDestructiveFXValue(NDFX_EXPOSURE)
+        .fx_Contrast = srcLayer.GetLayerNonDestructiveFXValue(NDFX_CONTRAST)
+        .fx_Clarity = srcLayer.GetLayerNonDestructiveFXValue(NDFX_CLARITY)
+        .fx_Vibrance = srcLayer.GetLayerNonDestructiveFXValue(NDFX_VIBRANCE)
+        .fx_Temperature = srcLayer.GetLayerNonDestructiveFXValue(NDFX_TEMPERATURE)
+        .fx_Tint = srcLayer.GetLayerNonDestructiveFXValue(NDFX_TINT)
     End With
     
     'Copy the source layer's DIB, if one exists.
@@ -1802,17 +1800,17 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
     
     'Depending on the type of layer we are copying, copy any extra layer data, or generate a new layer mask to
     ' match the layer's vector contents.
-    Select Case srcLayer.getLayerType
+    Select Case srcLayer.GetLayerType
     
         Case PDL_IMAGE
         
         'Vector layers copy additional vector-specific data
         Case PDL_TEXT, PDL_TYPOGRAPHY
-            myVectorData.vd_Width = srcLayer.getLayerWidth
-            myVectorData.vd_Height = srcLayer.getLayerHeight
+            myVectorData.vd_Width = srcLayer.GetLayerWidth
+            myVectorData.vd_Height = srcLayer.GetLayerHeight
             
             'Other vector-specific data can be transferred via XML, saving us the hassle of explicitly copying it here
-            Me.CreateVectorDataFromXML srcLayer.getVectorDataAsXML(True)
+            Me.CreateVectorDataFromXML srcLayer.GetVectorDataAsXML(True)
         
         Case PDL_ADJUSTMENT
     
@@ -1987,7 +1985,7 @@ Public Function CropNullPaddedLayer() As Boolean
             'Trimmable borders were found.  Use the calculated values to crop the image to its smallest relevant size.
             Dim tmpCropDIB As pdDIB
             Set tmpCropDIB = New pdDIB
-            tmpCropDIB.createBlank newRight - newLeft + 1, newBottom - newTop + 1, 32, 0
+            tmpCropDIB.CreateBlank newRight - newLeft + 1, newBottom - newTop + 1, 32, 0
             Debug.Print "Crop rect: (" & newLeft & "," & newTop & ") - (" & newRight & "," & newBottom & ")"
             BitBlt tmpCropDIB.GetDIBDC, 0, 0, newRight - newLeft + 1, newBottom - newTop + 1, layerDIB.GetDIBDC, newLeft, newTop, vbSrcCopy
             tmpCropDIB.SetInitialAlphaPremultiplicationState layerDIB.GetAlphaPremultiplication
@@ -2026,16 +2024,16 @@ Public Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
     ' of the layer relative to the (x, y) domain of the image.
     Dim mustMakeCanvasTransformsPermanent As Boolean
     mustMakeCanvasTransformsPermanent = applyCanvasTransformsFirst
-    mustMakeCanvasTransformsPermanent = mustMakeCanvasTransformsPermanent Or Me.affineTransformsActive(False)
+    mustMakeCanvasTransformsPermanent = mustMakeCanvasTransformsPermanent Or Me.AffineTransformsActive(False)
     
-    If mustMakeCanvasTransformsPermanent Then makeCanvasTransformsPermanent parentImageWidth, parentImageHeight
+    If mustMakeCanvasTransformsPermanent Then MakeCanvasTransformsPermanent parentImageWidth, parentImageHeight
     
     'We can skip this step for layers that are already the size of the image.  This is common for background layers.
     Dim nullPaddingUnnecessary As Boolean
     nullPaddingUnnecessary = False
     
     With myLayerData
-        nullPaddingUnnecessary = (.l_OffsetX = 0) And (.l_OffsetY = 0) And (Me.getLayerWidth(True) = parentImageWidth) And (Me.getLayerHeight(True) = parentImageHeight)
+        nullPaddingUnnecessary = (.l_OffsetX = 0) And (.l_OffsetY = 0) And (Me.GetLayerWidth(True) = parentImageWidth) And (Me.GetLayerHeight(True) = parentImageHeight)
     End With
     
     'If the layer still requires specialized padding, carry on
@@ -2044,7 +2042,7 @@ Public Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
         'Create a blank destination DIB at the size of the parent image
         Dim tmpPaddingDIB As pdDIB
         Set tmpPaddingDIB = New pdDIB
-        tmpPaddingDIB.createBlank parentImageWidth, parentImageHeight, 32, 0
+        tmpPaddingDIB.CreateBlank parentImageWidth, parentImageHeight, 32, 0
     
         'Copy the current layer into the temporary DIB, with proper offsets applied
         BitBlt tmpPaddingDIB.GetDIBDC, myLayerData.l_OffsetX, myLayerData.l_OffsetY, layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, layerDIB.GetDIBDC, 0, 0, vbSrcCopy
@@ -2100,7 +2098,7 @@ Private Sub UpdateInternalThumbnail()
     
     'Prepare the destination DIB
     If (layerThumbnail.GetDIBWidth <> LAYER_THUMB_SIZE) Or (layerThumbnail.GetDIBHeight <> LAYER_THUMB_SIZE) Then
-        layerThumbnail.createBlank LAYER_THUMB_SIZE, LAYER_THUMB_SIZE, 32, 0
+        layerThumbnail.CreateBlank LAYER_THUMB_SIZE, LAYER_THUMB_SIZE, 32, 0
     Else
         layerThumbnail.ResetDIB 0
     End If
@@ -2134,7 +2132,7 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     If thumbnailSize <> LAYER_THUMB_SIZE Then
         
         If (dstThumbnailDIB.GetDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.GetDIBHeight <> thumbnailSize) Then
-            dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
+            dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0
         Else
             dstThumbnailDIB.ResetDIB 0
         End If
@@ -2179,7 +2177,7 @@ End Sub
 'INPUTS: current mouse coords, already translated into the LAYER coordinate space (not the canvas coordinate space!)
 '
 'OUTPUT: index of the POI, if any.  If the mouse is not over a POI, -1 is returned.
-Public Function checkForPointOfInterest(ByVal layerX As Long, ByVal layerY As Long) As Long
+Public Function CheckForPointOfInterest(ByVal layerX As Long, ByVal layerY As Long) As Long
     
     'MouseAccuracy in PD is a global value, but because we are working in image coordinates, we must compensate for the
     ' current zoom value.  (Otherwise, when zoomed out the user would be forced to work with tighter accuracy!)
@@ -2210,44 +2208,44 @@ Public Function checkForPointOfInterest(ByVal layerX As Long, ByVal layerY As Lo
             
             'Manually populate the point of interest array with the layer's corner coordinates.
             ReDim poiList(0 To 7) As POINTAPI
-            poiList(0).x = getLayerOffsetX
-            poiList(0).y = getLayerOffsetY
-            poiList(1).x = getLayerOffsetX + getLayerWidth(True)
-            poiList(1).y = getLayerOffsetY
-            poiList(2).x = getLayerOffsetX
-            poiList(2).y = getLayerOffsetY + getLayerHeight(True)
-            poiList(3).x = getLayerOffsetX + getLayerWidth(True)
-            poiList(3).y = getLayerOffsetY + getLayerHeight(True)
+            poiList(0).x = GetLayerOffsetX
+            poiList(0).y = GetLayerOffsetY
+            poiList(1).x = GetLayerOffsetX + GetLayerWidth(True)
+            poiList(1).y = GetLayerOffsetY
+            poiList(2).x = GetLayerOffsetX
+            poiList(2).y = GetLayerOffsetY + GetLayerHeight(True)
+            poiList(3).x = GetLayerOffsetX + GetLayerWidth(True)
+            poiList(3).y = GetLayerOffsetY + GetLayerHeight(True)
             
             'As of PD 7.7, rotation handles are also provided.  Note that changes to these positions *must be mirrored* in the
             ' getLayerRotationNodeCoordinates() function above!
-            poiList(4).x = getLayerOffsetX + getLayerWidth(True)
-            poiList(4).y = getLayerOffsetY + getLayerHeight(True) \ 2
+            poiList(4).x = GetLayerOffsetX + GetLayerWidth(True)
+            poiList(4).y = GetLayerOffsetY + GetLayerHeight(True) \ 2
             
-            poiList(5).x = getLayerOffsetX + getLayerWidth(True) \ 2
-            poiList(5).y = getLayerOffsetY + getLayerHeight(True)
+            poiList(5).x = GetLayerOffsetX + GetLayerWidth(True) \ 2
+            poiList(5).y = GetLayerOffsetY + GetLayerHeight(True)
             
-            poiList(6).x = getLayerOffsetX
-            poiList(6).y = getLayerOffsetY + getLayerHeight(True) \ 2
+            poiList(6).x = GetLayerOffsetX
+            poiList(6).y = GetLayerOffsetY + GetLayerHeight(True) \ 2
             
-            poiList(7).x = getLayerOffsetX + getLayerWidth(True) \ 2
-            poiList(7).y = getLayerOffsetY
+            poiList(7).x = GetLayerOffsetX + GetLayerWidth(True) \ 2
+            poiList(7).y = GetLayerOffsetY
             
             'Check to see if one of the corners has been clicked
             closestPoint = findClosestPointInArray(layerX, layerY, minDistance, poiList)
             
             'If a corner was clicked, return its value and exit
             If closestPoint <> -1 Then
-                checkForPointOfInterest = closestPoint
+                CheckForPointOfInterest = closestPoint
                 Exit Function
             End If
             
             'If we're at this line of code, a POI was not clicked. Perform one final check to see if the mouse is within
             ' the layer's boundaries, and if it is, return the "move" ID, then exit.
             If (layerX > poiList(0).x) And (layerX < poiList(1).x) And (layerY > poiList(0).y) And (layerY < poiList(2).y) Then
-                checkForPointOfInterest = 8
+                CheckForPointOfInterest = 8
             Else
-                checkForPointOfInterest = -1
+                CheckForPointOfInterest = -1
             End If
     
     End Select
@@ -2256,7 +2254,7 @@ End Function
 
 'Sometimes, it is helpful to reset all non-destructive parameters to their default values.  (For example, after flattening
 ' an image, we want to reset the base layer.)  Use this function to do so.
-Public Sub resetLayerParameters()
+Public Sub ResetLayerParameters()
 
     'Assign default values to this instance's header
     With myLayerData
@@ -2302,17 +2300,17 @@ End Sub
 'For raster DIBs, returns TRUE if the image has changed since the last viewport hash was set; FALSE otherwise.
 '
 'If the return value is TRUE, any DIBs derived from this layer (e.g. viewport ones) must be recreated
-Public Function syncInternalDIB(Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic) As Boolean
+Public Function SyncInternalDIB(Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic) As Boolean
 
     'If this is not a vector layer, rely on the "DIB has changed since last hash request" marker.
     If myLayerType = PDL_IMAGE Then
-        syncInternalDIB = m_DIBChangedSinceLastHash(levelOfDetail)
+        SyncInternalDIB = m_DIBChangedSinceLastHash(levelOfDetail)
         Exit Function
     End If
     
     'If the DIB is already synched, disregard this request
     If m_VectorDIBSynched Then
-        syncInternalDIB = False
+        SyncInternalDIB = False
         Exit Function
     End If
     
@@ -2332,7 +2330,7 @@ Public Function syncInternalDIB(Optional ByVal levelOfDetail As COMPOSITOR_LOD_C
             If (layerDIB Is Nothing) Then Set layerDIB = New pdDIB
             
             If (layerDIB.GetDIBWidth <> myVectorData.vd_Width) Or (layerDIB.GetDIBHeight <> myVectorData.vd_Height) Then
-                layerDIB.createBlank myVectorData.vd_Width, myVectorData.vd_Height, 32, 0, 0
+                layerDIB.CreateBlank myVectorData.vd_Width, myVectorData.vd_Height, 32, 0, 0
             Else
                 layerDIB.ResetDIB
             End If
@@ -2346,48 +2344,48 @@ Public Function syncInternalDIB(Optional ByVal levelOfDetail As COMPOSITOR_LOD_C
     
     'Note that the DIB is ready to go!
     m_VectorDIBSynched = True
-    syncInternalDIB = True
+    SyncInternalDIB = True
 
 End Function
 
 'Estimate the RAM usage for this layer, based on known heavy memory users (layer DIB, in particular)
-Public Function estimateRAMUsage() As Double
+Public Function EstimateRAMUsage() As Double
 
     'Calculate the raw memory size of both the layer and the cached thumbnail DIB, if any
-    If Not (layerDIB Is Nothing) Then estimateRAMUsage = layerDIB.GetDIBArrayWidth * layerDIB.GetDIBHeight
-    If Not (layerThumbnail Is Nothing) Then estimateRAMUsage = estimateRAMUsage + layerThumbnail.GetDIBArrayWidth * layerThumbnail.GetDIBHeight
+    If Not (layerDIB Is Nothing) Then EstimateRAMUsage = layerDIB.GetDIBArrayWidth * layerDIB.GetDIBHeight
+    If Not (layerThumbnail Is Nothing) Then EstimateRAMUsage = EstimateRAMUsage + layerThumbnail.GetDIBArrayWidth * layerThumbnail.GetDIBHeight
     
     Dim i As Long
     For i = 0 To NUM_OF_LOD_CACHES - 1
-        If Not (lodDIB(i) Is Nothing) Then estimateRAMUsage = estimateRAMUsage + lodDIB(i).GetDIBArrayWidth * lodDIB(i).GetDIBHeight
+        If Not (lodDIB(i) Is Nothing) Then EstimateRAMUsage = EstimateRAMUsage + lodDIB(i).GetDIBArrayWidth * lodDIB(i).GetDIBHeight
     Next i
     
     'Assume a 10% overhead for this class instance and other miscellaneous layer data
-    estimateRAMUsage = estimateRAMUsage * 1.1
+    EstimateRAMUsage = EstimateRAMUsage * 1.1
 
 End Function
 
 'Update the layer's current "viewport state hash".  This is used by the compositor, only.
-Public Sub setViewportHash(ByVal cacheID As COMPOSITOR_LOD_CLUE, ParamArray allParams() As Variant)
-    m_ViewportStateHashes(cacheID) = getViewportHash_Theoretical(allParams)
+Public Sub SetViewportHash(ByVal cacheID As COMPOSITOR_LOD_CLUE, ParamArray allParams() As Variant)
+    m_ViewportStateHashes(cacheID) = GetViewportHash_Theoretical(allParams)
     m_DIBChangedSinceLastHash(cacheID) = False
 End Sub
 
 'If the viewport generates a hash via getViewportHash_Theoretical(), it can pass that hash directly to this function to improve performance
-Public Sub setViewportHash_FromLong(ByVal cacheID As COMPOSITOR_LOD_CLUE, ByVal newHash As Long)
+Public Sub SetViewportHash_FromLong(ByVal cacheID As COMPOSITOR_LOD_CLUE, ByVal newHash As Long)
     m_ViewportStateHashes(cacheID) = newHash
     m_DIBChangedSinceLastHash(cacheID) = False
 End Sub
 
 'Retrieve the layer's current viewport hash
-Public Function getViewportHash(ByVal cacheID As COMPOSITOR_LOD_CLUE) As Long
-    getViewportHash = m_ViewportStateHashes(cacheID)
+Public Function GetViewportHash(ByVal cacheID As COMPOSITOR_LOD_CLUE) As Long
+    GetViewportHash = m_ViewportStateHashes(cacheID)
 End Function
 
 'Given a set of caller-specified parameters, generate a matching viewport hash.  This is used by the compositor to detect changes to the current layer.
 ' Caller-specified params are relevant because the compositor will also pass viewport settings, and if *those* change (but the layer is unchanged),
 ' we still need to regenerate the function.
-Public Function getViewportHash_Theoretical(ParamArray allParams() As Variant) As Long
+Public Function GetViewportHash_Theoretical(ParamArray allParams() As Variant) As Long
     
     'First, generate a hash of relevant internals.
     Dim tmpHash As Long
@@ -2418,13 +2416,13 @@ Public Function getViewportHash_Theoretical(ParamArray allParams() As Variant) A
     
     End If
     
-    getViewportHash_Theoretical = tmpHash
+    GetViewportHash_Theoretical = tmpHash
     
 End Function
 
 'Access a specific level-of-detail (LOD) cache.
-Friend Function tmpLODDIB(Optional ByVal cacheID As COMPOSITOR_LOD_CLUE = CLC_Generic) As pdDIB
-    Set tmpLODDIB = lodDIB(cacheID)
+Friend Function TmpLODDIB(Optional ByVal cacheID As COMPOSITOR_LOD_CLUE = CLC_Generic) As pdDIB
+    Set TmpLODDIB = lodDIB(cacheID)
 End Function
 
 Private Sub Class_Terminate()
