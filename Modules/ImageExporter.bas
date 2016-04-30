@@ -1373,7 +1373,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     'Next comes the multipage settings, which is crucial as we have to use a totally different codepath for multipage images
     Dim writeMultipage As Boolean
     writeMultipage = cParams.GetBool("TIFFMultipage", False)
-        
+    
     'Multipage TIFFs use their own custom path (this is due to the way the FreeImage API works; it's convoluted!)
     If writeMultipage And g_ImageFormats.FreeImageEnabled And (srcPDImage.GetNumOfVisibleLayers > 1) Then
         

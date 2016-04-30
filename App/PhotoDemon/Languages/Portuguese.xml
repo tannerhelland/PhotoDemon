@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.157</langversion>
+<langversion>6.7.159</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -733,7 +733,7 @@ To ativar o suporte para esse formato de imagem, copie o arquivo FreeImage.dll (
 <translation>Salvar não pode ser concluída sem biblioteca FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 20 phrases. 15 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 23 phrases. 18 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -1111,23 +1111,23 @@ To ativar o suporte para arquivos compactados PDI, clique em Ajuda> Verificar at
 </phrase>
 
 <phrase>
-<original>frame %1</original>
-<translation>quadro 1%</translation>
+<original>Frame %1</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>icon (%1x%2)</original>
-<translation>ícone ( %1x 2%)</translation>
+<original>Icon (%1x%2)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>icon (%1x%2, %3 bpp)</original>
-<translation>icon ( %1x %2, %3 bpp)</translation>
+<original>Icon (%1x%2, %3 bpp)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>page %1</original>
-<translation>Página 1%</translation>
+<original>Page %1</original>
+<translation></translation>
 </phrase>
 
 <!-- VBP_LayerHandler.bas contains 42 phrases. 22 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
@@ -2014,11 +2014,6 @@ When terminar, clique no botão Enviar. Obrigado!</translation>
 </phrase>
 
 <phrase>
-<original>No metadata to export.  Continuing save</original>
-<translation>Sem metadados para exportar. continuando save</translation>
-</phrase>
-
-<phrase>
 <original>An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: 
 
 %1
@@ -2096,7 +2091,7 @@ In Enquanto isso, por favor, tente salvar a imagem para um formato alternativo. 
 <translation>Miniatura salvar falhou (erro GDI não especificada).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 71 phrases. 55 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 70 phrases. 55 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -15193,16 +15188,56 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 <translation></translation>
 </phrase>
 
-<!-- File_Save_TIFF.frm contains 31 phrases. 30 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>color compression</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>monochrome compression</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>page format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>single page (composited image)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>multipage (one page per layer)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ZIP</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>CCITT Fax 4</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>CCITT Fax 3</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_TIFF.frm contains 41 phrases. 32 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for File_Save_TIFF.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2604</phrasecount>
+<phrasecount>2611</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4543 phrases. -->
-<!-- 1939 are duplicates, so only 2604 unique phrases have been written to file. -->
-<!-- These 2604 phrases contain approximately 13478 total words. -->
+<!-- As of this build, PhotoDemon contains 4555 phrases. -->
+<!-- 1944 are duplicates, so only 2611 unique phrases have been written to file. -->
+<!-- These 2611 phrases contain approximately 13491 total words. -->
 
 </pdData>

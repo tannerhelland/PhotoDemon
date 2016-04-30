@@ -48,11 +48,11 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     'While this function stays busy loading the image in question, the ExifTool plugin runs asynchronously, parsing image metadata
     ' and forwarding the results to a ShellPipe instance on PD's primary form.  By using DoEvents throughout this function, we periodically
     ' yield control to that ShellPipe instance, which allows it to clear stdout so ExifTool can continue pushing metadata through.
-    ' (If we don't do this, ExifTool will freeze when stdout fills its buffer, which is not just possible but probable, given how much
-    ' metadata your average JPEG can contain.)
+    ' (If we don't do this, ExifTool will freeze when stdout fills its buffer, which is not just possible but *probable*, given how much
+    ' metadata the average JPEG contains.)
     
     'That said, please note that a LOT of precautions have been taken to make sure DoEvents doesn't cause reentry and other issues.
-    ' Do *not* mimic this behavior in your own software unless you understand the repercussions involved!
+    ' Do *not* mimic this behavior in your own code unless you understand the repercussions involved!
     
     '*** END MESSAGE ***
     
@@ -338,14 +338,18 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         ' If it does, load each page into its own layer.
         If imageHasMultiplePages Then
             
-            'TODO: deal with prompt options now
+            'TODO: deal with prompt options here!
+            
+            'Add a flag to this pdImage object noting that the multipage loading path *was* utilized.
+            targetImage.imgStorage.AddEntry "MultipageImportActive", True
+            
             Dim pageTracker As Long
             
             'Call LoadFileAsNewImage again for each individual frame in the multipage file
             For pageTracker = 1 To numOfPages - 1
                 
                 'Create a blank layer in the receiving image, and retrieve a pointer to it
-                newLayerID = pdImages(g_CurrentImage).createBlankLayer
+                newLayerID = targetImage.createBlankLayer
                 
                 'Load the next page into the temporary DIB
                 targetDIB.ResetDIB 0
@@ -378,6 +382,9 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             'With all pages/frames/icons successfully loaded, redraw the main viewport
             Viewport_Engine.Stage1_InitializeBuffer targetImage, FormMain.mainCanvas(0), VSR_ResetToZero
             
+        'Add a flag to this pdImage object noting that the multipage loading path was *not* utilized.
+        Else
+            targetImage.imgStorage.AddEntry "MultipageImportActive", False
         End If
             
         '*************************************************************************************************************************************
