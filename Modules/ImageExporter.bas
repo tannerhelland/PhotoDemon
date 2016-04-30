@@ -1328,8 +1328,6 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     ExportTIFF = False
     Dim sFileType As String: sFileType = "TIFF"
     
-    Dim fi_DIB As Long
-    
     'Parse all relevant TIFF parameters.  (See the TIFF export dialog for details on how these are generated.)
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
@@ -1375,16 +1373,160 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     'Next comes the multipage settings, which is crucial as we have to use a totally different codepath for multipage images
     Dim writeMultipage As Boolean
     writeMultipage = cParams.GetBool("TIFFMultipage", False)
-    
+        
     'Multipage TIFFs use their own custom path (this is due to the way the FreeImage API works; it's convoluted!)
-    If writeMultipage And g_ImageFormats.FreeImageEnabled And False Then
-    
+    If writeMultipage And g_ImageFormats.FreeImageEnabled And (srcPDImage.GetNumOfVisibleLayers > 1) Then
+        
         'Multipage files use a fairly simple format:
         ' 1) Iterate through each visible layer
         ' 2) Convert each layer to a null-padded layer at the size of the current image
         ' 3) Create a FreeImage copy of the null-padded layer
         ' 4) Insert that layer into a running FreeImage Multipage object
         ' 5) When all layers are finished, write the TIFF out to file
+        
+        'Start by creating a blank multipage object
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        If cFile.FileExist(dstFile) Then cFile.KillFile dstFile
+        
+        Dim fi_MasterHandle As Long
+        fi_MasterHandle = FreeImage_OpenMultiBitmap(PDIF_TIFF, dstFile, True, False, False)
+        
+        'If all pages are monochrome, we can encode the final TIFF object using monochrome compression settings, but if even
+        ' one page is color, it complicates that.
+        Dim allPagesMonochrome As Boolean: allPagesMonochrome = True
+        
+        Dim fi_PageHandle As Long
+        Dim tmpLayerDIB As pdDIB, tmpLayer As pdLayer
+        
+        Dim i As Long
+        For i = 0 To srcPDImage.GetNumOfLayers - 1
+            
+            If srcPDImage.GetLayerByIndex(i).GetLayerVisibility Then
+                
+                'Clone the current layer
+                If (tmpLayer Is Nothing) Then Set tmpLayer = New pdLayer
+                tmpLayer.CopyExistingLayer srcPDImage.GetLayerByIndex(i)
+                
+                'Rasterize as necessary
+                If (Not tmpLayer.IsLayerRaster) Then tmpLayer.RasterizeVectorData
+                
+                'Convert the layer to a flat, null-padded layer at the same size as the master image
+                tmpLayer.ConvertToNullPaddedLayer srcPDImage.Width, srcPDImage.Height, True
+                
+                'Un-premultiply alpha, if any
+                tmpLayer.layerDIB.SetAlphaPremultiplication False
+                
+                'Point a DIB wrapper at the fully processed layer
+                Set tmpLayerDIB = tmpLayer.layerDIB
+                
+                'If automatic color or transparency detection is active, find the best output now
+                If autoColorModeActive Or autoTransparencyModeActive Then
+                    autoColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpLayerDIB, PDIF_TIFF, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+                    ExportDebugMsg "Color depth auto-detection returned " & CStr(autoColorDepth) & "bpp"
+                Else
+                    currentAlphaStatus = PDAS_ComplicatedAlpha
+                End If
+                
+                'From the automatic values, construct matching output values as relevant
+                If autoColorModeActive Then
+                    outputColorDepth = autoColorDepth
+                    forceGrayscale = isGrayscale
+                    If (Not isTrueColor) Then outputPaletteSize = netColorCount
+                End If
+                
+                'Convert the auto-detected transparency mode to a usable string parameter.  (We need this later in the function,
+                ' so we can combine color depth and alpha depth into a single usable bit-depth.)
+                If autoTransparencyModeActive Then
+                    desiredAlphaStatus = currentAlphaStatus
+                    If desiredAlphaStatus = PDAS_NoAlpha Then
+                        outputAlphaModel = "none"
+                    ElseIf desiredAlphaStatus = PDAS_BinaryAlpha Then
+                        outputAlphaModel = "bycutoff"
+                    ElseIf desiredAlphaStatus = PDAS_NewAlphaFromColor Then
+                        outputAlphaModel = "bycolor"
+                    ElseIf desiredAlphaStatus = PDAS_ComplicatedAlpha Then
+                        outputAlphaModel = "full"
+                    Else
+                        outputAlphaModel = "full"
+                    End If
+                End If
+                
+                'Use the current transparency mode (whether auto-created or manually requested) to construct a new output
+                ' depth that correctly represents the combination of color depth + alpha depth.  Note that this also requires
+                ' us to workaround some FreeImage deficiencies, so these depths may not match what TIFF formally supports.
+                If ParamsEqual(outputAlphaModel, "full") Then
+                    desiredAlphaStatus = PDAS_ComplicatedAlpha
+                    If (Not forceGrayscale) Then
+                        If outputColorDepth = 24 Then outputColorDepth = 32
+                        If outputColorDepth = 48 Then outputColorDepth = 64
+                    End If
+                ElseIf ParamsEqual(outputAlphaModel, "none") Then
+                    desiredAlphaStatus = PDAS_NoAlpha
+                    If (Not forceGrayscale) Then
+                        If outputColorDepth = 64 Then outputColorDepth = 48
+                        If outputColorDepth = 32 Then outputColorDepth = 24
+                    End If
+                    outputTIFFCutoff = 0
+                ElseIf ParamsEqual(outputAlphaModel, "bycutoff") Then
+                    desiredAlphaStatus = PDAS_BinaryAlpha
+                    If (Not forceGrayscale) Then
+                        If outputColorDepth = 24 Then outputColorDepth = 32
+                        If outputColorDepth = 48 Then outputColorDepth = 64
+                    End If
+                ElseIf ParamsEqual(outputAlphaModel, "bycolor") Then
+                    desiredAlphaStatus = PDAS_NewAlphaFromColor
+                    outputTIFFCutoff = outputTIFFColor
+                    If (Not forceGrayscale) Then
+                        If outputColorDepth = 24 Then outputColorDepth = 32
+                        If outputColorDepth = 48 Then outputColorDepth = 64
+                    End If
+                End If
+                    
+                'Monochrome depths require special treatment if alpha is active
+                If (outputColorDepth = 1) And (desiredAlphaStatus <> PDAS_NoAlpha) Then
+                    outputColorDepth = 8
+                    outputPaletteSize = 2
+                End If
+                
+                If (outputColorDepth <> 1) Then allPagesMonochrome = False
+                
+                'We now have enough information to create a FreeImage copy of this DIB
+                fi_PageHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpLayerDIB, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, outputTIFFCutoff, TIFFBackgroundColor, forceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
+                
+                If (fi_PageHandle <> 0) Then
+                
+                    'Insert this page at the *end* of the current multipage file, then free our copy of it
+                    FreeImage_AppendPage fi_MasterHandle, fi_PageHandle
+                    Plugin_FreeImage.ReleaseFreeImageObject fi_PageHandle
+                    
+                Else
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "WARNING!  PD was unable to create a FreeImage handle for layer # " & i
+                    #End If
+                End If
+                
+            'End "is layer visible?"
+            End If
+            
+        Next i
+        
+        'With all pages inserted, we can now write the multipage TIFF out to file
+        If allPagesMonochrome Then
+            TIFFflags = TIFFflags Or GetFreeImageTIFFConstant(TIFFCompressionMono)
+        Else
+            TIFFflags = TIFFflags Or GetFreeImageTIFFConstant(TIFFCompressionColor)
+        End If
+        
+        ExportTIFF = FreeImage_CloseMultiBitmap(fi_MasterHandle, TIFFflags)
+        If ExportTIFF Then
+            ExportDebugMsg "Export to " & sFileType & " appears successful."
+        Else
+            Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+        End If
+        
+        'FreeImage unloads the multipage bitmap automatically when it is closed; this is different from single-page bitmaps,
+        ' which must be manually unloaded.
         
     'Single-page TIFFs are simpler to write
     Else
@@ -1467,6 +1609,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         ' so the FreeImage path is absolutely preferred.
         If g_ImageFormats.FreeImageEnabled Then
             
+            Dim fi_DIB As Long
             fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus, outputTIFFCutoff, TIFFBackgroundColor, forceGrayscale, outputPaletteSize, , (desiredAlphaStatus <> PDAS_NoAlpha))
             
             'Finally, prepare some TIFF save flags.  If the user has requested RLE encoding, and this image is <= 8bpp,

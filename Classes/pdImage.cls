@@ -757,12 +757,12 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     'Retrieve a composite version of the image
     Dim compositeImage As pdDIB
     Set compositeImage = New pdDIB
-    compositeImage.createBlank tIcoWidth, tIcoHeight, 32, 0
+    compositeImage.CreateBlank tIcoWidth, tIcoHeight, 32, 0
     
     'Prepare the destination DIB
     If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
     If (dstThumbnailDIB.GetDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.GetDIBHeight <> thumbnailSize) Then
-        dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
+        dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0
     Else
         dstThumbnailDIB.ResetDIB 0
     End If
@@ -946,7 +946,7 @@ End Sub
 Public Sub RetrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srcLayerIndex As Long)
 
     'Create a blank destination DIB at the size of the image
-    dstDIB.createBlank Width, Height, 32, 0
+    dstDIB.CreateBlank Width, Height, 32, 0
     
     'Copy the source layer into the blank DIB
     BitBlt dstDIB.GetDIBDC, imgLayers(srcLayerIndex).getLayerOffsetX, imgLayers(srcLayerIndex).getLayerOffsetY, imgLayers(srcLayerIndex).getLayerWidth(False), imgLayers(srcLayerIndex).getLayerHeight(False), imgLayers(srcLayerIndex).layerDIB.GetDIBDC, 0, 0, vbSrcCopy
@@ -979,7 +979,7 @@ Public Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     
     'Start by initializing the destination DIB to the size of the active selection
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    dstDIB.createBlank mainSelection.boundWidth, mainSelection.boundHeight, 32, 0
+    dstDIB.CreateBlank mainSelection.boundWidth, mainSelection.boundHeight, 32, 0
     dstDIB.SetInitialAlphaPremultiplicationState True
     
     'We now need pointers to three separate sets of image data: destination DIB, source DIB, and selection mask.
@@ -1209,7 +1209,7 @@ Private Sub Class_Terminate()
 End Sub
 
 'Get number of visible/hidden layers
-Public Function getNumOfVisibleLayers() As Long
+Public Function GetNumOfVisibleLayers() As Long
 
     Dim i As Long, visLayerCount As Long
     visLayerCount = 0
@@ -1218,11 +1218,11 @@ Public Function getNumOfVisibleLayers() As Long
         If imgLayers(i).getLayerVisibility Then visLayerCount = visLayerCount + 1
     Next i
     
-    getNumOfVisibleLayers = visLayerCount
+    GetNumOfVisibleLayers = visLayerCount
 
 End Function
 
-Public Function getNumOfHiddenLayers() As Long
+Public Function GetNumOfHiddenLayers() As Long
 
     Dim i As Long, hidLayerCount As Long
     hidLayerCount = 0
@@ -1231,31 +1231,31 @@ Public Function getNumOfHiddenLayers() As Long
         If Not imgLayers(i).getLayerVisibility Then hidLayerCount = hidLayerCount + 1
     Next i
     
-    getNumOfHiddenLayers = hidLayerCount
+    GetNumOfHiddenLayers = hidLayerCount
 
 End Function
 
 'Estimate the RAM usage for this image, based on the number of layers and the size of each layer
-Public Function estimateRAMUsage() As Double
+Public Function EstimateRAMUsage() As Double
 
-    estimateRAMUsage = 0
+    EstimateRAMUsage = 0
 
     Dim i As Long
     
     For i = 0 To m_numOfLayers - 1
         
         'Layers provide their own RAM estimation, based on their current cache state, layer DIB, active styles, and more
-        estimateRAMUsage = estimateRAMUsage + imgLayers(i).estimateRAMUsage
+        EstimateRAMUsage = EstimateRAMUsage + imgLayers(i).EstimateRAMUsage
         
     Next i
     
     'Assume a 10% overhead for the pdImage as a whole, to cover things like metadata, loose ICC profiles, class instances, and more
-    estimateRAMUsage = CDbl(estimateRAMUsage) * 1.1
+    EstimateRAMUsage = CDbl(EstimateRAMUsage) * 1.1
 
 End Function
 
 'Helper function to identify the presence of vector layers.  PD's UI synchonization service makes use of this.
-Public Function getNumOfVectorLayers() As Long
+Public Function GetNumOfVectorLayers() As Long
 
     Dim i As Long, vectorLayerCount As Long
     vectorLayerCount = 0
@@ -1264,12 +1264,12 @@ Public Function getNumOfVectorLayers() As Long
         If imgLayers(i).isLayerVector Then vectorLayerCount = vectorLayerCount + 1
     Next i
     
-    getNumOfVectorLayers = vectorLayerCount
+    GetNumOfVectorLayers = vectorLayerCount
 
 End Function
 
 'Helper function to identify the presence of raster layers.  PD's UI synchonization service makes use of this.
-Public Function getNumOfRasterLayers() As Long
+Public Function GetNumOfRasterLayers() As Long
 
     Dim i As Long, rasterLayerCount As Long
     rasterLayerCount = 0
@@ -1278,6 +1278,6 @@ Public Function getNumOfRasterLayers() As Long
         If imgLayers(i).isLayerRaster Then rasterLayerCount = rasterLayerCount + 1
     Next i
     
-    getNumOfRasterLayers = rasterLayerCount
+    GetNumOfRasterLayers = rasterLayerCount
 
 End Function

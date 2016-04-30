@@ -286,7 +286,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             pdDebug.LogAction vbTab & "Detected format: " & g_ImageFormats.GetInputFormatDescription(g_ImageFormats.GetIndexOfInputPDIF(targetImage.originalFileFormat)), , True
             pdDebug.LogAction vbTab & "Image dimensions: " & targetImage.Width & "x" & targetImage.Height, , True
             pdDebug.LogAction vbTab & "Image size (original file): " & Format(CStr(targetImage.imgStorage.GetEntry_Long("OriginalFileSize")), "###,###,###,###") & " Bytes", , True
-            pdDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format(CStr(targetImage.estimateRAMUsage), "###,###,###,###") & " Bytes", , True
+            pdDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format(CStr(targetImage.EstimateRAMUsage), "###,###,###,###") & " Bytes", , True
             pdDebug.LogAction vbTab & "Original color depth: " & targetImage.originalColorDepth, , True
             pdDebug.LogAction vbTab & "Grayscale: " & CStr(g_IsImageGray), , True
             pdDebug.LogAction vbTab & "ICC profile embedded: " & targetDIB.ICCProfile.HasICCData, , True
@@ -366,10 +366,11 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             
             Next pageTracker
             
-            'As a convenience, make all but the first page/frame/icon invisible.
-            If targetImage.GetNumOfLayers > 1 Then
+            'As a convenience, make all but the first page/frame/icon invisible when the source is a GIF or ICON.
+            ' (TIFFs don't require this, as all pages are typically the same size.)
+            If (targetImage.GetNumOfLayers > 1) And (targetImage.originalFileFormat <> PDIF_TIFF) Then
                 For pageTracker = 1 To targetImage.GetNumOfLayers - 1
-                    targetImage.GetLayerByIndex(pageTracker).setLayerVisibility False
+                    targetImage.GetLayerByIndex(pageTracker).SetLayerVisibility False
                 Next pageTracker
                 targetImage.SetActiveLayerByIndex 0
             End If
@@ -401,7 +402,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             'Next, retrieve any specific metadata-related entries that may be useful to further processing, like image resolution
             Dim xResolution As Double, yResolution As Double
             If targetImage.imgMetadata.GetResolution(xResolution, yResolution) Then
-                targetImage.setDPI xResolution, yResolution
+                targetImage.SetDPI xResolution, yResolution
             End If
         
         End If
@@ -440,7 +441,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             
             'Also report an estimated memory delta, based on the pdImage object's self-reported memory usage.
             ' This provides a nice baseline for making sure PD's memory usage isn't out of whack for a given image.
-            pdDebug.LogAction "(FYI, expected delta was approximately " & Format(CStr(targetImage.estimateRAMUsage \ 1000), "###,###,###,###") & " K)"
+            pdDebug.LogAction "(FYI, expected delta was approximately " & Format(CStr(targetImage.EstimateRAMUsage \ 1000), "###,###,###,###") & " K)"
         #End If
     
     'This ELSE block is hit when the image fails post-load verification checks.  Treat the load as unsuccessful.

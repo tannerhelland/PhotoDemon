@@ -37,11 +37,11 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
     ' from the source file.
     Dim pdiReader As pdPackager
     Set pdiReader = New pdPackager
-    pdiReader.init_ZLib "", True, g_ZLibEnabled
+    pdiReader.Init_ZLib "", True, g_ZLibEnabled
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
-    If pdiReader.readPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER) Then
+    If pdiReader.ReadPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER) Then
     
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "pdPackage successfully read and initialized.  Starting package parsing..."
@@ -51,14 +51,14 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
         Dim retBytes() As Byte, retString As String
         
-        If pdiReader.getNodeDataByIndex(0, True, retBytes, sourceIsUndoFile) Then
+        If pdiReader.GetNodeDataByIndex(0, True, retBytes, sourceIsUndoFile) Then
             
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Initial PDI node retrieved.  Initializing corresponding pdImage object..."
             #End If
             
             'Copy the received bytes into a string
-            If pdiReader.getPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
+            If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
                 retString = Space$((UBound(retBytes) + 1) \ 2)
                 CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
             Else
@@ -91,10 +91,10 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
             #End If
         
             'First, retrieve the layer's header
-            If pdiReader.getNodeDataByIndex(i + 1, True, retBytes, sourceIsUndoFile) Then
+            If pdiReader.GetNodeDataByIndex(i + 1, True, retBytes, sourceIsUndoFile) Then
             
                 'Copy the received bytes into a string
-                If pdiReader.getPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
+                If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
                     retString = Space$((UBound(retBytes) + 1) \ 2)
                     CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
                 Else
@@ -119,7 +119,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
             nodeLoadedSuccessfully = False
             
             'Image (raster) layers
-            If dstImage.GetLayerByIndex(i).isLayerRaster Then
+            If dstImage.GetLayerByIndex(i).IsLayerRaster Then
                 
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "Raster layer identified.  Retrieving pixel bits..."
@@ -127,21 +127,21 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
                 
                 'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
                 Dim tmpDIBPointer As Long, tmpDIBLength As Long
-                dstImage.GetLayerByIndex(i).layerDIB.retrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                dstImage.GetLayerByIndex(i).layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                 
                 'At present, all pdPackage layers will contain premultiplied alpha, so force the corresponding state now
-                dstImage.GetLayerByIndex(i).layerDIB.setInitialAlphaPremultiplicationState True
+                dstImage.GetLayerByIndex(i).layerDIB.SetInitialAlphaPremultiplicationState True
                 
-                nodeLoadedSuccessfully = pdiReader.getNodeDataByIndex_UnsafeDstPointer(i + 1, False, tmpDIBPointer, sourceIsUndoFile)
+                nodeLoadedSuccessfully = pdiReader.GetNodeDataByIndex_UnsafeDstPointer(i + 1, False, tmpDIBPointer, sourceIsUndoFile)
             
             'Text and other vector layers
-            ElseIf dstImage.GetLayerByIndex(i).isLayerVector Then
+            ElseIf dstImage.GetLayerByIndex(i).IsLayerVector Then
                 
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "Vector layer identified.  Retrieving layer XML..."
                 #End If
                 
-                If pdiReader.getNodeDataByIndex(i + 1, False, retBytes, sourceIsUndoFile) Then
+                If pdiReader.GetNodeDataByIndex(i + 1, False, retBytes, sourceIsUndoFile) Then
                 
                     'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
                     ' as vector layers were implemented after pdPackager gained full Unicode compatibility.
@@ -161,7 +161,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
                     
             'In the future, additional layer types can be handled here
             Else
-                Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstImage.GetLayerByIndex(i).getLayerType
+                Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstImage.GetLayerByIndex(i).GetLayerType
             
             End If
             
@@ -179,14 +179,14 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         #End If
         
         'Finally, check to see if the PDI image has a metadata entry.  If it does, load that data now.
-        If pdiReader.getNodeDataByName("pdMetadata_Raw", True, retBytes, sourceIsUndoFile) Then
+        If pdiReader.GetNodeDataByName("pdMetadata_Raw", True, retBytes, sourceIsUndoFile) Then
         
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Raw metadata chunk found.  Retrieving now..."
             #End If
         
             'Copy the received bytes into a string
-            If pdiReader.getPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
+            If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
                 retString = Space$((UBound(retBytes) + 1) \ 2)
                 CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
             Else
@@ -206,14 +206,14 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         
         '(As of v7.0, a serialized copy of the image's metadata is also stored.  This copy contains all user edits
         ' and other changes.)
-        If pdiReader.getNodeDataByName("pdMetadata_Raw", False, retBytes, sourceIsUndoFile) Then
+        If pdiReader.GetNodeDataByName("pdMetadata_Raw", False, retBytes, sourceIsUndoFile) Then
         
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Serialized metadata chunk found.  Retrieving now..."
             #End If
         
             'Copy the received bytes into a string
-            If pdiReader.getPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
+            If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
                 retString = Space$((UBound(retBytes) + 1) \ 2)
                 CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
             Else
@@ -233,7 +233,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
         ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
         If dstDIB Is Nothing Then Set dstDIB = New pdDIB
-        dstDIB.createBlank 16, 16, 32, 0
+        dstDIB.CreateBlank 16, 16, 32, 0
         
         'That's all there is to it!  Mark the load as successful and carry on.
         LoadPhotoDemonImage = True
@@ -257,7 +257,7 @@ LoadPDIFail:
     'Before falling back to a generic error message, check for a couple known problem states.
     
     'Case 1: zLib is required for this file, but the user doesn't have the zLib plugin
-    If pdiReader.getPackageFlag(PDP_FLAG_ZLIB_REQUIRED, PDP_LOCATION_ANY) And (Not g_ZLibEnabled) Then
+    If pdiReader.GetPackageFlag(PDP_FLAG_ZLIB_REQUIRED, PDP_LOCATION_ANY) And (Not g_ZLibEnabled) Then
         PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", GetFilename(PDIPath)
         Exit Function
     End If
@@ -287,20 +287,20 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal PDIPath As String, ByRef dst
     ' from the source file.
     Dim pdiReader As pdPackager
     Set pdiReader = New pdPackager
-    pdiReader.init_ZLib "", True, g_ZLibEnabled
+    pdiReader.Init_ZLib "", True, g_ZLibEnabled
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
-    If pdiReader.readPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER) Then
+    If pdiReader.ReadPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER) Then
     
         'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
         ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
         Dim retBytes() As Byte, retString As String
         
-        If pdiReader.getNodeDataByIndex(0, True, retBytes, True) Then
+        If pdiReader.GetNodeDataByIndex(0, True, retBytes, True) Then
         
             'Copy the received bytes into a string
-            If pdiReader.getPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
+            If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
                 retString = Space$((UBound(retBytes) + 1) \ 2)
                 CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
             Else
@@ -331,17 +331,17 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal PDIPath As String, ByRef dst
         
             'Before doing anything else, retrieve the ID of the node at this position.  (Retrieve the rest of the node
             ' header too, although we don't actually have a use for those values at present.)
-            pdiReader.getNodeInfo i + 1, layerNodeName, layerNodeID, layerNodeType
+            pdiReader.GetNodeInfo i + 1, layerNodeName, layerNodeID, layerNodeType
             
             'We now know what layer ID is supposed to appear at this position in the layer stack.  If that layer ID
             ' is *not* in its proper position, move it now.
             If dstImage.GetLayerIndexFromID(layerNodeID) <> i Then dstImage.SwapTwoLayers dstImage.GetLayerIndexFromID(layerNodeID), i
             
             'Now that the node is in place, we can retrieve its header.
-            If pdiReader.getNodeDataByIndex(i + 1, True, retBytes, True) Then
+            If pdiReader.GetNodeDataByIndex(i + 1, True, retBytes, True) Then
             
                 'Copy the received bytes into a string
-                If pdiReader.getPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
+                If pdiReader.GetPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
                     retString = Space$((UBound(retBytes) + 1) \ 2)
                     CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
                 Else
@@ -404,11 +404,11 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
     ' from the source file.
     Dim pdiReader As pdPackager
     Set pdiReader = New pdPackager
-    pdiReader.init_ZLib "", True, g_ZLibEnabled
+    pdiReader.Init_ZLib "", True, g_ZLibEnabled
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
-    If pdiReader.readPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER) Then
+    If pdiReader.ReadPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER) Then
     
         'PDI files all follow a standard format: a pdImage node at the top, which contains the full pdImage header,
         ' followed by individual nodes for each layer.  Layers are stored in stack order, which makes it very fast and easy
@@ -420,7 +420,7 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
         
         Dim retBytes() As Byte, retString As String
         
-        If pdiReader.getNodeDataByID(targetLayerID, True, retBytes, True) Then
+        If pdiReader.GetNodeDataByID(targetLayerID, True, retBytes, True) Then
         
             'Copy the received bytes into a string
             retString = Space$((UBound(retBytes) + 1) \ 2)
@@ -450,18 +450,18 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
             nodeLoadedSuccessfully = False
             
             'Image (raster) layers
-            If dstLayer.isLayerRaster Then
+            If dstLayer.IsLayerRaster Then
                 
                 'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
                 Dim tmpDIBPointer As Long, tmpDIBLength As Long
-                dstLayer.layerDIB.retrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                dstLayer.layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                 
-                nodeLoadedSuccessfully = pdiReader.getNodeDataByID_UnsafeDstPointer(targetLayerID, False, tmpDIBPointer, True)
+                nodeLoadedSuccessfully = pdiReader.GetNodeDataByID_UnsafeDstPointer(targetLayerID, False, tmpDIBPointer, True)
                     
             'Text and other vector layers
-            ElseIf dstLayer.isLayerVector Then
+            ElseIf dstLayer.IsLayerVector Then
                 
-                If pdiReader.getNodeDataByID(targetLayerID, False, retBytes, True) Then
+                If pdiReader.GetNodeDataByID(targetLayerID, False, retBytes, True) Then
                 
                     'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
                     ' as vector layers were implemented after pdPackager was given Unicode compatibility.
@@ -481,7 +481,7 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
             
             'In the future, additional layer types can be handled here
             Else
-                Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstLayer.getLayerType
+                Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstLayer.GetLayerType
             
             End If
                 
@@ -538,11 +538,11 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
     ' from the source file.
     Dim pdiReader As pdPackager
     Set pdiReader = New pdPackager
-    pdiReader.init_ZLib "", True, g_ZLibEnabled
+    pdiReader.Init_ZLib "", True, g_ZLibEnabled
     
     'Load the file into the pdPackager instance.  pdPackager It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
-    If pdiReader.readPackageFromFile(PDIPath, PD_LAYER_IDENTIFIER) Then
+    If pdiReader.ReadPackageFromFile(PDIPath, PD_LAYER_IDENTIFIER) Then
     
         'Layer variants of PDI files contain a single node.  The layer's header is stored to the node's header chunk
         ' (in XML format, as expected).  The layer's DIB data is stored to the node's data chunk (in binary format, as expected).
@@ -550,7 +550,7 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
         ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
         Dim retBytes() As Byte, retString As String
         
-        If pdiReader.getNodeDataByIndex(0, True, retBytes, True) Then
+        If pdiReader.GetNodeDataByIndex(0, True, retBytes, True) Then
         
             'Copy the received bytes into a string
             retString = Space$((UBound(retBytes) + 1) \ 2)
@@ -580,18 +580,18 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
             nodeLoadedSuccessfully = False
             
             'Image (raster) layers
-            If dstLayer.isLayerRaster Then
+            If dstLayer.IsLayerRaster Then
                 
                 'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
                 Dim tmpDIBPointer As Long, tmpDIBLength As Long
-                dstLayer.layerDIB.retrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                dstLayer.layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                 
-                nodeLoadedSuccessfully = pdiReader.getNodeDataByIndex_UnsafeDstPointer(0, False, tmpDIBPointer, True)
+                nodeLoadedSuccessfully = pdiReader.GetNodeDataByIndex_UnsafeDstPointer(0, False, tmpDIBPointer, True)
                 
             'Text and other vector layers
-            ElseIf dstLayer.isLayerVector Then
+            ElseIf dstLayer.IsLayerVector Then
                 
-                If pdiReader.getNodeDataByIndex(0, False, retBytes, True) Then
+                If pdiReader.GetNodeDataByIndex(0, False, retBytes, True) Then
                 
                     'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
                     ' as vector layers were implemented after pdPackager was given Unicode compatibility.
@@ -611,7 +611,7 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
             
             'In the future, additional layer types can be handled here
             Else
-                Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstLayer.getLayerType
+                Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstLayer.GetLayerType
             
             End If
                 
@@ -665,7 +665,7 @@ End Function
 Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDIB) As Boolean
     Dim verifyGDISuccess As Boolean
     verifyGDISuccess = GDIPlusLoadPicture(imagePath, dstDIB)
-    LoadGDIPlusImage = CBool(verifyGDISuccess And (dstDIB.getDIBWidth <> 0) And (dstDIB.getDIBHeight <> 0))
+    LoadGDIPlusImage = CBool(verifyGDISuccess And (dstDIB.GetDIBWidth <> 0) And (dstDIB.GetDIBHeight <> 0))
 End Function
 
 'BITMAP loading
@@ -863,7 +863,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         'Start by seeing if the image file contains multiple pages.  If it does, we will load each page as a separate layer.
         ' TODO: preferences or prompt for how to handle such files??
         numOfPages = Plugin_FreeImage.IsMultiImage(srcFile)
-        imageHasMultiplePages = (numOfPages > 0)
+        imageHasMultiplePages = (numOfPages > 1)
         freeImage_Return = LoadFreeImageV4(srcFile, dstDIB)
         CascadeLoadGenericImage = CBool(freeImage_Return = PD_SUCCESS)
         
@@ -873,12 +873,12 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
             
             decoderUsed = PDIDE_FREEIMAGE
             
-            dstImage.originalFileFormat = dstDIB.getOriginalFormat
-            dstImage.setDPI dstDIB.getDPI, dstDIB.getDPI
-            dstImage.originalColorDepth = dstDIB.getOriginalColorDepth
+            dstImage.originalFileFormat = dstDIB.GetOriginalFormat
+            dstImage.SetDPI dstDIB.GetDPI, dstDIB.GetDPI
+            dstImage.originalColorDepth = dstDIB.GetOriginalColorDepth
             
-            If (dstImage.originalFileFormat = PDIF_PNG) And (dstDIB.getBackgroundColor <> -1) Then
-                dstImage.imgStorage.AddEntry "pngBackgroundColor", dstDIB.getBackgroundColor
+            If (dstImage.originalFileFormat = PDIF_PNG) And (dstDIB.GetBackgroundColor <> -1) Then
+                dstImage.imgStorage.AddEntry "pngBackgroundColor", dstDIB.GetBackgroundColor
             End If
             
         End If
@@ -898,9 +898,9 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
             
             If CascadeLoadGenericImage Then
                 decoderUsed = PDIDE_GDIPLUS
-                dstImage.originalFileFormat = dstDIB.getOriginalFormat
-                dstImage.setDPI dstDIB.getDPI, dstDIB.getDPI
-                dstImage.originalColorDepth = dstDIB.getOriginalColorDepth
+                dstImage.originalFileFormat = dstDIB.GetOriginalFormat
+                dstImage.SetDPI dstDIB.GetDPI, dstDIB.GetDPI
+                dstImage.originalColorDepth = dstDIB.GetOriginalColorDepth
             End If
                 
         End If
@@ -1028,9 +1028,9 @@ Public Function ApplyPostLoadICCHandling(ByRef targetDIB As pdDIB, Optional ByRe
             End If
         
             If colorManagementNeeded Then
-                If targetDIB.getDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication False
+                If targetDIB.GetDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication False
                 targetDIB.ICCProfile.ApplyICCtoSelf targetDIB
-                If targetDIB.getDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication True
+                If targetDIB.GetDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication True
                 ApplyPostLoadICCHandling = True
             End If
             
@@ -1045,8 +1045,8 @@ Public Function ForceTo32bppMode(ByRef targetDIB As pdDIB) As Boolean
     
     ForceTo32bppMode = False
     
-    If targetDIB.getDIBColorDepth <> 32 Then
-        If g_GDIPlusAvailable Then GDI_Plus.GDIPlusConvertDIB24to32 targetDIB Else targetDIB.convertTo32bpp
+    If targetDIB.GetDIBColorDepth <> 32 Then
+        If g_GDIPlusAvailable Then GDI_Plus.GDIPlusConvertDIB24to32 targetDIB Else targetDIB.ConvertTo32bpp
         ForceTo32bppMode = True
     End If
 

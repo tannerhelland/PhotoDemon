@@ -646,7 +646,7 @@ Private Function GetExportParamString() As String
     cParams.AddParam "TIFFCompressionMono", compressName
     
     cParams.AddParam "TIFFBackgroundColor", clsBackground.Color
-    If (btsMultipage.Visible And btsMultipage.ListIndex > 0) Then
+    If (btsMultipage.ListIndex <> 0) Then
         cParams.AddParam "TIFFMultipage", True
     Else
         cParams.AddParam "TIFFMultipage", False
