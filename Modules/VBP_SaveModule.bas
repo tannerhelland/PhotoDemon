@@ -148,6 +148,11 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     BeginSaveProcess
     Message "Saving %1 file...", saveExtension
     
+    'If the image is being saved to a layered format (like multipage TIFF), various parts of the export engine may
+    ' want to inject useful information into the finished file (e.g. ExifTool can append things like page names).
+    ' Mark the outgoing file now.
+    MarkMultipageExportStatus srcImage, saveFormat, saveParameters, metadataParameters
+    
     'With all save parameters collected, we can offload the rest of the save process to per-format save functions.
     saveSuccessful = ExportToSpecificFormat(srcImage, dstPath, saveFormat, saveParameters, metadataParameters)
     If saveSuccessful Then
@@ -171,17 +176,8 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
         ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant metadata file
         ' to be used as its source.  It cannot operate purely in-memory - but hey, that's why it's asynchronous!)
-        If g_ExifToolEnabled Then
-            
-            'Only attempt to export metadata if ExifTool was able to successfully cache and parse metadata prior to saving
-            If Not (srcImage.imgMetadata Is Nothing) Then
-                If srcImage.imgMetadata.HasMetadata Then
-                    srcImage.imgMetadata.WriteAllMetadata dstPath, srcImage
-                Else
-                    Message "No metadata to export.  Continuing save..."
-                End If
-            End If
-            
+        If g_ExifToolEnabled And (Not (srcImage.imgMetadata Is Nothing)) Then
+            srcImage.imgMetadata.WriteAllMetadata dstPath, srcImage
         End If
         
         'With all save work complete, we can now update various UI bits to reflect the new image.  Note that these changes are
@@ -224,6 +220,27 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     PhotoDemon_SaveImage = saveSuccessful
     
 End Function
+
+Private Sub MarkMultipageExportStatus(ByRef srcImage As pdImage, ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString, Optional ByVal metadataParameters As String = vbNullString)
+    
+    Dim saveIsMultipage As Boolean: saveIsMultipage = False
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString saveParameters
+    
+    'TIFF is currently the only image format that supports multipage export
+    If (outputPDIF = PDIF_TIFF) Then
+    
+        'The format parameter string contains the multipage indicator, if any.  (Default is to write a single-page TIFF.)
+        If cParams.GetBool("TIFFMultipage", False) Then saveIsMultipage = True
+        
+    End If
+    
+    'If the outgoing image is multipage, add a special dictionary entry that other functions can easily test.
+    srcImage.imgStorage.AddEntry "MultipageExportActive", saveIsMultipage
+    
+End Sub
 
 'Given a source image, a desired export format, and a destination string, fill the destination string with format-specific parameters
 ' returned from the associated format-specific dialog.
@@ -368,7 +385,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     
     'When creating the actual package, we specify numOfLayers + 1 nodes.  The +1 is for the pdImage header itself, which
     ' gets its own node, separate from the individual layer nodes.
-    pdiWriter.PrepareNewPackage srcPDImage.GetNumOfLayers + 1, PD_IMAGE_IDENTIFIER, srcPDImage.estimateRAMUsage
+    pdiWriter.PrepareNewPackage srcPDImage.GetNumOfLayers + 1, PD_IMAGE_IDENTIFIER, srcPDImage.EstimateRAMUsage
         
     'The first node we'll add is the pdImage header, in XML format.
     Dim nodeIndex As Long
@@ -392,13 +409,13 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     
         'Create a new node for this layer.  Note that the index is stored directly in the node name ("pdLayer (n)")
         ' while the layerID is stored as the nodeID.
-        nodeIndex = pdiWriter.AddNode("pdLayer " & i, srcPDImage.GetLayerByIndex(i).getLayerID, 1)
+        nodeIndex = pdiWriter.AddNode("pdLayer " & i, srcPDImage.GetLayerByIndex(i).GetLayerID, 1)
         
         'Retrieve the layer header and add it to the header section of this node.
         ' (Note: compression level of text data, like layer headers, is not controlled by the user.  For short strings like
         '        these headers, there is no meaningful gain from higher compression settings, but higher settings kills
         '        performance, so we stick with the default recommended zLib compression level.)
-        layerXMLHeader = srcPDImage.GetLayerByIndex(i).getLayerHeaderAsXML(True)
+        layerXMLHeader = srcPDImage.GetLayerByIndex(i).GetLayerHeaderAsXML(True)
         pdiWriter.AddNodeDataFromString nodeIndex, True, layerXMLHeader, compressHeaders, , embedChecksums
         
         'If this is not a header-only file, retrieve any layer-type-specific data and add it to the data section of this node
@@ -409,17 +426,17 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
             'Specific handling varies by layer type
             
             'Image layers save their raster contents as a raw byte stream
-            If srcPDImage.GetLayerByIndex(i).isLayerRaster Then
+            If srcPDImage.GetLayerByIndex(i).IsLayerRaster Then
                 
                 Debug.Print "Writing layer index " & i & " out to file as RASTER layer."
                 srcPDImage.GetLayerByIndex(i).layerDIB.RetrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
                 pdiWriter.AddNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
                 
             'Text (and other vector layers) save their vector contents in XML format
-            ElseIf srcPDImage.GetLayerByIndex(i).isLayerVector Then
+            ElseIf srcPDImage.GetLayerByIndex(i).IsLayerVector Then
                 
                 Debug.Print "Writing layer index " & i & " out to file as VECTOR layer."
-                layerXMLData = srcPDImage.GetLayerByIndex(i).getVectorDataAsXML(True)
+                layerXMLData = srcPDImage.GetLayerByIndex(i).GetVectorDataAsXML(True)
                 pdiWriter.AddNodeDataFromString nodeIndex, False, layerXMLData, compressLayers, compressionLevel, embedChecksums
             
             'No other layer types are currently supported
@@ -479,7 +496,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     
     'Unlike an actual PDI file, which stores a whole bunch of images, these temp layer files only have two pieces of data:
     ' the layer header, and the DIB bytestream.  Thus, we know there will only be 1 node required.
-    pdiWriter.PrepareNewPackage 1, PD_LAYER_IDENTIFIER, srcLayer.estimateRAMUsage
+    pdiWriter.PrepareNewPackage 1, PD_LAYER_IDENTIFIER, srcLayer.EstimateRAMUsage
         
     'The first (and only) node we'll add is the specific pdLayer header and DIB data.
     ' To help us reconstruct the node later, we also note the current layer's ID (stored as the node ID)
@@ -488,11 +505,11 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     'Start by creating the node entry; if successful, this will return the index of the node, which we can use
     ' to supply the actual header and DIB data.
     Dim nodeIndex As Long
-    nodeIndex = pdiWriter.AddNode("pdLayer", srcLayer.getLayerID, pdImages(g_CurrentImage).GetLayerIndexFromID(srcLayer.getLayerID))
+    nodeIndex = pdiWriter.AddNode("pdLayer", srcLayer.GetLayerID, pdImages(g_CurrentImage).GetLayerIndexFromID(srcLayer.GetLayerID))
     
     'Retrieve the layer header (in XML format), then write the XML stream to the pdPackage instance
     Dim dataString As String
-    dataString = srcLayer.getLayerHeaderAsXML(True)
+    dataString = srcLayer.GetLayerHeaderAsXML(True)
     
     pdiWriter.AddNodeDataFromString nodeIndex, True, dataString, compressHeaders, , embedChecksums
     
@@ -503,16 +520,16 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
         'Specific handling varies by layer type
         
         'Image layers save their raster contents as a raw byte stream
-        If srcLayer.isLayerRaster Then
+        If srcLayer.IsLayerRaster Then
         
             Dim layerDIBPointer As Long, layerDIBLength As Long
             srcLayer.layerDIB.RetrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
             pdiWriter.AddNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
         
         'Text (and other vector layers) save their vector contents in XML format
-        ElseIf srcLayer.isLayerVector Then
+        ElseIf srcLayer.IsLayerVector Then
             
-            dataString = srcLayer.getVectorDataAsXML(True)
+            dataString = srcLayer.GetVectorDataAsXML(True)
             pdiWriter.AddNodeDataFromString nodeIndex, False, dataString, compressLayers, compressionLevel, embedChecksums
         
         'Other layer types are not currently supported

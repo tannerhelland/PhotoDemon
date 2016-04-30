@@ -363,12 +363,12 @@ Private Sub StopVerificationMode()
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If Not technicalReportModeActive Then
-    
+    If (Not technicalReportModeActive) Then
+        
         m_VerificationString = ""
         
         'Verification mode is a bit different.  We need to erase our temporary metadata file if it exists; then we can exit.
-        cFile.KillFile tmpMetadataFilePath
+        If cFile.FileExist(tmpMetadataFilePath) Then cFile.KillFile tmpMetadataFilePath
         
     Else
     
@@ -780,11 +780,18 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     Dim outputMetadataFormat As PD_METADATA_FORMAT
     outputMetadataFormat = g_ImageFormats.GetIdealMetadataFormatFromPDIF(srcPDImage.currentFileFormat)
     
-    If outputMetadataFormat = PDMF_NONE Then
+    If (outputMetadataFormat = PDMF_NONE) Then
         Message "This file format does not support metadata.  Metadata processing skipped."
         WriteMetadata = True
         Exit Function
     End If
+    
+    'If we are exporting a multipage image, different considerations are in place.  (For example, exporting a multipage
+    ' TIFF requires us to not mess with the IFD### blocks - in JPEGs, these represent thumbnail images, but in a TIFF
+    ' image they might be entire useful pages!)
+    Dim saveIsMultipage As Boolean, saveIsMultipageTIFF As Boolean
+    saveIsMultipage = srcPDImage.imgStorage.GetEntry_Boolean("MultipageExportActive", False)
+    If saveIsMultipage Then saveIsMultipageTIFF = CBool(srcPDImage.currentFileFormat = PDIF_TIFF) Else saveIsMultipageTIFF = False
     
     'If an additional metadata parameter string was supplied, create a parser for it.  This may contain specialized
     ' processing instructions.
@@ -830,14 +837,21 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     'To support Unicode filenames, explicitly request UTF-8-compatible parsing.
     cmdParams = cmdParams & "-charset" & vbCrLf & "filename=UTF8" & vbCrLf
     
-    'Copy all tags.  It is important to do this first, because ExifTool applies operations in a left-to-right order - so we must
-    ' start by copying all tags, then applying manual updates as necessary.
-    cmdParams = cmdParams & "-tagsfromfile" & vbCrLf & srcMetadataFile & vbCrLf
-    cmdParams = cmdParams & dstImageFile & vbCrLf
+    'If a temporary file was given, mark it now.  It serves as our initial source of all metadata operations.
+    Dim srcFileAvailable As Boolean
+    srcFileAvailable = CBool(Len(srcMetadataFile) <> 0)
+    If srcFileAvailable Then
+    
+        'Copy all tags.  It is important to do this first, because ExifTool applies operations in a left-to-right order - so we must
+        ' start by copying all tags, then applying manual updates as necessary.
+        cmdParams = cmdParams & "-tagsfromfile" & vbCrLf & srcMetadataFile & vbCrLf
+        cmdParams = cmdParams & dstImageFile & vbCrLf
+    
+    End If
     
     'Do *not* transfer over any thumbnail information (otherwise, this risks overwriting PD's existing thumbnail, if any!)
     ' Note that we ignore this when writing TIFFs, as they may be multipage, and there will be tons of IFD### blocks.
-    If (srcPDImage.currentFileFormat <> PDIF_TIFF) Then
+    If (Not saveIsMultipageTIFF) Then
         cmdParams = cmdParams & "--IFD1:all" & vbCrLf
     End If
     
@@ -849,66 +863,74 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'Next, we need to manually request the update of any tags that the user has manually modified via the metadata editor.
     Dim i As Long, tmpMetadata As PDMetadataItem, tmpEscapedValue As String
-    For i = 0 To srcPDImage.imgMetadata.GetMetadataCount - 1
-        tmpMetadata = srcPDImage.imgMetadata.GetMetadataEntry(i)
-        
-        If tmpMetadata.UserModifiedAllSessions Then
-            cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "="
+    If srcPDImage.imgMetadata.HasMetadata Then
+    
+        For i = 0 To srcPDImage.imgMetadata.GetMetadataCount - 1
+            tmpMetadata = srcPDImage.imgMetadata.GetMetadataEntry(i)
             
-            'Some tag-types require special escaping behavior (e.g. multiline comments, list-type values)
-            If DoesTagValueRequireEscaping(tmpMetadata, tmpEscapedValue) Then
-                cmdParams = cmdParams & tmpEscapedValue
+            If tmpMetadata.UserModifiedAllSessions Then
+                cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "="
+                
+                'Some tag-types require special escaping behavior (e.g. multiline comments, list-type values)
+                If DoesTagValueRequireEscaping(tmpMetadata, tmpEscapedValue) Then
+                    cmdParams = cmdParams & tmpEscapedValue
+                Else
+                    cmdParams = cmdParams & tmpMetadata.UserValueNew
+                End If
+                
+                cmdParams = cmdParams & vbCrLf
+            
+            'For reasons I don't currently understand, unedited list-type tags may not be handled correctly by ExifTool.
+            ' As such, specifically request their writing.
             Else
-                cmdParams = cmdParams & tmpMetadata.UserValueNew
+                If tmpMetadata.IsTagList Or tmpMetadata.DBF_IsBag Or tmpMetadata.DBF_IsList Or tmpMetadata.DBF_IsSequence Then
+                    cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "=" & tmpMetadata.TagValueFriendly & vbCrLf
+                End If
+            End If
+                
+            'Also, if the user has manually requested removal of a tag, mirror that request to ExifTool.
+            If tmpMetadata.TagMarkedForRemoval Then
+                cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "=" & vbCrLf
             End If
             
-            cmdParams = cmdParams & vbCrLf
+        Next i
         
-        'For reasons I don't currently understand, unedited list-type tags may not be handled correctly by ExifTool.
-        ' As such, specifically request their writing.
-        Else
-            If tmpMetadata.IsTagList Or tmpMetadata.DBF_IsBag Or tmpMetadata.DBF_IsList Or tmpMetadata.DBF_IsSequence Then
-                cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "=" & tmpMetadata.TagValueFriendly & vbCrLf
-            End If
-        End If
-            
-        'Also, if the user has manually requested removal of a tag, mirror that request to ExifTool.
-        If tmpMetadata.TagMarkedForRemoval Then
-            cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "=" & vbCrLf
-        End If
-        
-    Next i
+    End If
     
     'Regardless of the type of metadata copy we're performing, we need to alter or remove some tags because their
     ' original values are no longer relevant.
-    If (srcPDImage.currentFileFormat <> PDIF_TIFF) Then cmdParams = cmdParams & "-IFD2:ImageWidth=" & vbCrLf & "-IFD2:ImageHeight=" & vbCrLf
-    cmdParams = cmdParams & "--Padding" & vbCrLf
+    If srcFileAvailable Then
     
-    'Remove YCbCr subsampling data from the tags, as we may be using a different system than the previous save, and this information
-    ' is not useful anyway - the JPEG header contains a copy of the subsampling data for the decoder, and that's sufficient!
-    cmdParams = cmdParams & "-YCbCrSubSampling=" & vbCrLf
-    cmdParams = cmdParams & "-IFD0:YCbCrSubSampling=" & vbCrLf
+        If (Not saveIsMultipageTIFF) Then cmdParams = cmdParams & "-IFD2:ImageWidth=" & vbCrLf & "-IFD2:ImageHeight=" & vbCrLf
+        cmdParams = cmdParams & "--Padding" & vbCrLf
     
-    'Remove YCbCrPositioning tags as well.  If no previous values are found, ExifTool will automatically repopulate these with
-    ' the right value according to the JPEG header.
-    cmdParams = cmdParams & "-YCbCrPositioning=" & vbCrLf
-    
-    'Photoshop embeds a bunch of problematic Photoshop-specific data, whose values may no longer be relevant
-    cmdParams = cmdParams & "-XMP-photoshop:ColorMode=" & vbCrLf
-    cmdParams = cmdParams & "-XMP-photoshop:ICCProfileName=" & vbCrLf
-    
-    'Note that some EXIF tags do not translate well to XMP.  ExifTool will copy these over anyway, but we want to manually
-    ' remove them.
-    cmdParams = cmdParams & "-ExifIFD:BitsPerSample=" & vbCrLf
-    cmdParams = cmdParams & "-ExifIFD:ColorSpace=" & vbCrLf
-    cmdParams = cmdParams & "-ExifIFD:ComponentsConfiguration=" & vbCrLf
-    cmdParams = cmdParams & "-ExifIFD:CompressedBitsPerPixel=" & vbCrLf
-    cmdParams = cmdParams & "-ExifIFD:Compression=" & vbCrLf
-    cmdParams = cmdParams & "-xmp:BitsPerSample=" & vbCrLf
-    cmdParams = cmdParams & "-xmp:ColorSpace=" & vbCrLf
-    cmdParams = cmdParams & "-xmp:ComponentsConfiguration=" & vbCrLf
-    cmdParams = cmdParams & "-xmp:CompressedBitsPerPixel=" & vbCrLf
-    cmdParams = cmdParams & "-xmp:Compression=" & vbCrLf
+        'Remove YCbCr subsampling data from the tags, as we may be using a different system than the previous save, and this information
+        ' is not useful anyway - the JPEG header contains a copy of the subsampling data for the decoder, and that's sufficient!
+        cmdParams = cmdParams & "-YCbCrSubSampling=" & vbCrLf
+        cmdParams = cmdParams & "-IFD0:YCbCrSubSampling=" & vbCrLf
+        
+        'Remove YCbCrPositioning tags as well.  If no previous values are found, ExifTool will automatically repopulate these with
+        ' the right value according to the JPEG header.
+        cmdParams = cmdParams & "-YCbCrPositioning=" & vbCrLf
+        
+        'Photoshop embeds a bunch of problematic Photoshop-specific data, whose values may no longer be relevant
+        cmdParams = cmdParams & "-XMP-photoshop:ColorMode=" & vbCrLf
+        cmdParams = cmdParams & "-XMP-photoshop:ICCProfileName=" & vbCrLf
+        
+        'Note that some EXIF tags do not translate well to XMP.  ExifTool will copy these over anyway, but we want to manually
+        ' remove them.
+        cmdParams = cmdParams & "-ExifIFD:BitsPerSample=" & vbCrLf
+        cmdParams = cmdParams & "-ExifIFD:ColorSpace=" & vbCrLf
+        cmdParams = cmdParams & "-ExifIFD:ComponentsConfiguration=" & vbCrLf
+        cmdParams = cmdParams & "-ExifIFD:CompressedBitsPerPixel=" & vbCrLf
+        cmdParams = cmdParams & "-ExifIFD:Compression=" & vbCrLf
+        cmdParams = cmdParams & "-xmp:BitsPerSample=" & vbCrLf
+        cmdParams = cmdParams & "-xmp:ColorSpace=" & vbCrLf
+        cmdParams = cmdParams & "-xmp:ComponentsConfiguration=" & vbCrLf
+        cmdParams = cmdParams & "-xmp:CompressedBitsPerPixel=" & vbCrLf
+        cmdParams = cmdParams & "-xmp:Compression=" & vbCrLf
+        
+    End If
     
     'If PD is embedding its own thumbnail, FreeImage will have created a temporary thumbnail file for us.  Use it now.
     Dim needToEmbedThumbnail As Boolean: needToEmbedThumbnail = False
@@ -924,7 +946,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'Other software may have added tags related to an embedded thumbnail.  If PD is *not* embedding its own thumbnail, we want to
     ' forcibly remove any existing thumbnail information.
-    If (Not needToEmbedThumbnail) And (srcPDImage.currentFileFormat <> PDIF_TIFF) Then
+    If (Not needToEmbedThumbnail) And (Not saveIsMultipageTIFF) And srcFileAvailable Then
         cmdParams = cmdParams & "-IFD1:Compression=" & vbCrLf
         cmdParams = cmdParams & "-IFD1:all=" & vbCrLf
     End If
@@ -967,8 +989,13 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
         cmdParams = cmdParams & "-JFIF:ResolutionUnit=inches" & vbCrLf
     End If
     
+    'If we are exporting a multipage TIFF object, add some per-page information now
+    If saveIsMultipageTIFF And (Not forciblyAnonymize) Then
+        AddMultipageData srcPDImage, cmdParams, originalMetadataParams
+    End If
+    
     'If we were asked to remove GPS data, do so now
-    If forciblyAnonymize Then cmdParams = cmdParams & "-gps:all=" & vbCrLf
+    If forciblyAnonymize And srcFileAvailable Then cmdParams = cmdParams & "-gps:all=" & vbCrLf
     
     'The incoming parameter "forciblyAnonymize" indicates the user wants privacy tags removed.
     ' If the user has NOT requested anonymization, list PD as the processing software.  (Note that this behavior can also be
@@ -982,7 +1009,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     If forciblyAnonymize Then cmdParams = cmdParams & "-XMPToolkit=" & vbCrLf
     
     'On some files, we prefer to use XMP over Exif.  This command instructs ExifTool to convert Exif tags to XMP tags where possible.
-    If (outputMetadataFormat = PDMF_XMP) Then
+    If (outputMetadataFormat = PDMF_XMP) And srcFileAvailable Then
         
         'Convert all tags to XMP
         cmdParams = cmdParams & "-xmp:all<all" & vbCrLf
@@ -991,8 +1018,13 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'If the output format does not support Exif whatsoever, we can ask ExifTool to forcibly remove any remaining Exif tags.
     ' (This includes any tags it was unable to convert to XMP or IPTC format.)
-    If Not g_ImageFormats.IsExifAllowedForPDIF(srcPDImage.currentFileFormat) Then
+    If (Not g_ImageFormats.IsExifAllowedForPDIF(srcPDImage.currentFileFormat)) And srcFileAvailable Then
         cmdParams = cmdParams & "-exif:all=" & vbCrLf
+    End If
+    
+    'If a temporary file was *not* given, supply our filename last
+    If (Not srcFileAvailable) Then
+        cmdParams = cmdParams & dstImageFile & vbCrLf
     End If
     
     'Finally, add the special command "-execute" which tells ExifTool to start operations
@@ -1009,6 +1041,18 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     WriteMetadata = True
     
 End Function
+
+'Current, only TIFFs support specialty multipage metadata
+Private Sub AddMultipageData(ByRef srcPDImage As pdImage, ByRef cmdParams As String, Optional ByVal originalMetadataParams As String = vbNullString)
+
+    Dim i As Long
+    For i = 0 To srcPDImage.GetNumOfLayers - 1
+        If srcPDImage.GetLayerByIndex(i).GetLayerVisibility Then
+            cmdParams = cmdParams & "-IFD" & CStr(i) & ":PageName=" & srcPDImage.GetLayerByIndex(i).GetLayerName & vbCrLf
+        End If
+    Next i
+    
+End Sub
 
 Private Function DoesTagValueRequireEscaping(ByRef srcMetadata As PDMetadataItem, ByRef dstEscapedTag As String) As Boolean
     If InStr(1, srcMetadata.UserValueNew, vbCrLf, vbBinaryCompare) <> 0 Then

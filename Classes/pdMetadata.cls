@@ -425,9 +425,10 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     ' provided by ExifTool.
     
     'The last task we need to perform is looking for obscure metadata tags that might affect the image's on-screen appearance.
-    ' (At present, these are limited to esoteric PNG chunks that FreeImage is incapable of reporting on its own.)  The need for
-    ' this is quite rare, so this function will be used very rarely.
-    If (m_NumOfTags <> 0) Then ApplyMetadataPostProcessing parentImageID
+    ' (The need for this is generally rare, FYI - mostly weird PNG chunks and multipage TIFFs that have per-page details.)
+    If (m_NumOfTags <> 0) Then
+        If ApplyMetadataPostProcessing(parentImageID) Then Interface.SyncInterfaceToCurrentImage
+    End If
     
     LoadAllMetadata = CBool(m_NumOfTags <> 0)
     
@@ -637,187 +638,218 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
     If ppMayBeNeeded Then ppMayBeNeeded = CBool(parentImageID <= UBound(pdImages))
     If ppMayBeNeeded Then ppMayBeNeeded = Not (pdImages(parentImageID) Is Nothing)
     
-    'At present, the only post-processing supplied by this function is rare PNG chunks that the color-management system is unable
-    ' to handle on its own.  As such, we only need to proceed if the image is 1) a PNG, and 2) not in possession of an ICC profile.
-    If ppMayBeNeeded Then ppMayBeNeeded = CBool(pdImages(parentImageID).originalFileFormat = PDIF_PNG) And (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData)
+    'At present, the only post-processing supplied by this function is limited to:
+    ' 1) Rare PNG chunks that the color-management system is unable to handle on its own
+    ' 2) Multipage TIFFs that may have per-page information stored (like lpage names)
+    
+    'Because of this, we only need to proceed if the image meets some very specific criteria.
+    If ppMayBeNeeded Then
+        
+        'Check for PNGs that do not possess an ICC profile
+        ppMayBeNeeded = CBool(pdImages(parentImageID).originalFileFormat = PDIF_PNG) And (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData)
+        
+        'Check for multipage TIFFs that were loaded using the "one layer per page" method
+        If (Not ppMayBeNeeded) Then ppMayBeNeeded = CBool(pdImages(parentImageID).originalFileFormat = PDIF_TIFF) And (pdImages(parentImageID).imgStorage.GetEntry_Boolean("MultipageImportActive", False))
+        
+    End If
     
     If ppMayBeNeeded Then
     
         Dim relevantTagIndex As Long
         
-        'First up are some PNG chunks that require special handling.  The PNG spec (http://www.libpng.org/pub/png/spec/1.2/png-1.2-pdg.html)
-        ' provides instructions on which color modification chunks should be given preference, and we mirror that behavior here.  PD's order
-        ' of operations for PNG chunk processing is: ICC, sRGB, cHRM, gAMA.
+        'PNG-specific tags:
+        If (pdImages(parentImageID).originalFileFormat = PDIF_PNG) Then
         
-        'Note that ICC handling supercedes all other chunks, so an ICC profile was found, this whole section *must* be skipped.
-        ' (We apply this check at the top of the function.)
-        
-        Dim srcGamma As Double: srcGamma = 0
-        
-        Dim cHRMHandled As Boolean, gAMAHandled As Boolean, sRGBHandled As Boolean
-        cHRMHandled = False: gAMAHandled = False: sRGBHandled = False
+            'First up are some PNG chunks that require special handling.  The PNG spec (http://www.libpng.org/pub/png/spec/1.2/png-1.2-pdg.html)
+            ' provides instructions on which color modification chunks should be given preference, and we mirror that behavior here.  PD's order
+            ' of operations for PNG chunk processing is: ICC, sRGB, cHRM, gAMA.
             
-        'First, check for an sRGB chunk.  Technically, we should use the transform requested by the chunk value, but I don't have
-        ' source code for all possible transform modes, so we're just going to do the default one (absolute colorimetric).
-        If DoesTagExistFullName("PNG:SRGBRendering", relevantTagIndex, vbBinaryCompare) Then
-        
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "PNG file contains sRGB chunk. Applying color conversion now..."
-            #End If
+            'Note that ICC handling supercedes all other chunks, so an ICC profile was found, this whole section *must* be skipped.
+            ' (We apply this check at the top of the function.)
             
-            Color_Management.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).GetActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
+            Dim srcGamma As Double: srcGamma = 0
             
-            sRGBHandled = True
-        
-        End If
-            
-        'Next, we're going to look for the "PNG:WhitePointX/Y" pair of tags.  These are found in the cHRM chunk of the
-        ' PNG file, and they specify a custom white point to be used as part of color management.  These days, cHRM has largely
-        ' been superceded by use of ICC profiles and/or sRGB identifiers, but cHRM is much more compact and may still be used by
-        ' websites obsessed with file size.  (The chunk also provides a nice way to test our custom gamut code, which is why I
-        ' implemented this feature in the first place!)
-        If (Not sRGBHandled) And DoesTagExistFullName("PNG:WhitePointX", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:WhitePointY", relevantTagIndex, vbBinaryCompare) Then
-        
-            'Both tags were found.  Use of an sRGB tag or ICC profile supercedes the use of specific cHRM values, so check for
-            ' those next.  If either are found, ignore further processing.
-            If (Not DoesTagExistFullName("PNG:ProfileName", relevantTagIndex, vbBinaryCompare)) And (Not DoesTagExistFullName("PNG:SRGBRendering", relevantTagIndex, vbBinaryCompare)) Then
-            
-                'White point values alone are not enough to properly handle color conversion.  We also need RGB tags.
-                If DoesTagExistFullName("PNG:RedX", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:RedY", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:GreenX", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:GreenY", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:BlueX", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:BlueY", relevantTagIndex, vbBinaryCompare) Then
+            Dim cHRMHandled As Boolean, gAMAHandled As Boolean, sRGBHandled As Boolean
+            cHRMHandled = False: gAMAHandled = False: sRGBHandled = False
                 
-                    'All required tags exist.  Retrieve their values now.
-                    Dim WhiteX As Double, WhiteY As Double, RedX As Double, RedY As Double, GreenX As Double, GreenY As Double, BlueX As Double, BlueY As Double
-                    WhiteX = CDblCustom(GetTagValue("PNG:WhitePointX", vbBinaryCompare))
-                    WhiteY = CDblCustom(GetTagValue("PNG:WhitePointY", vbBinaryCompare))
-                    RedX = CDblCustom(GetTagValue("PNG:RedX", vbBinaryCompare))
-                    RedY = CDblCustom(GetTagValue("PNG:RedY", vbBinaryCompare))
-                    GreenX = CDblCustom(GetTagValue("PNG:GreenX", vbBinaryCompare))
-                    GreenY = CDblCustom(GetTagValue("PNG:GreenY", vbBinaryCompare))
-                    BlueX = CDblCustom(GetTagValue("PNG:BlueX", vbBinaryCompare))
-                    BlueY = CDblCustom(GetTagValue("PNG:BlueY", vbBinaryCompare))
+            'First, check for an sRGB chunk.  Technically, we should use the transform requested by the chunk value, but I don't have
+            ' source code for all possible transform modes, so we're just going to do the default one (absolute colorimetric).
+            If DoesTagExistFullName("PNG:SRGBRendering", relevantTagIndex, vbBinaryCompare) Then
+            
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "PNG file contains sRGB chunk. Applying color conversion now..."
+                #End If
+                
+                Color_Management.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).GetActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
+                
+                sRGBHandled = True
+            
+            End If
+                
+            'Next, we're going to look for the "PNG:WhitePointX/Y" pair of tags.  These are found in the cHRM chunk of the
+            ' PNG file, and they specify a custom white point to be used as part of color management.  These days, cHRM has largely
+            ' been superceded by use of ICC profiles and/or sRGB identifiers, but cHRM is much more compact and may still be used by
+            ' websites obsessed with file size.  (The chunk also provides a nice way to test our custom gamut code, which is why I
+            ' implemented this feature in the first place!)
+            If (Not sRGBHandled) And DoesTagExistFullName("PNG:WhitePointX", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:WhitePointY", relevantTagIndex, vbBinaryCompare) Then
+            
+                'Both tags were found.  Use of an sRGB tag or ICC profile supercedes the use of specific cHRM values, so check for
+                ' those next.  If either are found, ignore further processing.
+                If (Not DoesTagExistFullName("PNG:ProfileName", relevantTagIndex, vbBinaryCompare)) And (Not DoesTagExistFullName("PNG:SRGBRendering", relevantTagIndex, vbBinaryCompare)) Then
+                
+                    'White point values alone are not enough to properly handle color conversion.  We also need RGB tags.
+                    If DoesTagExistFullName("PNG:RedX", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:RedY", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:GreenX", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:GreenY", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:BlueX", relevantTagIndex, vbBinaryCompare) And DoesTagExistFullName("PNG:BlueY", relevantTagIndex, vbBinaryCompare) Then
                     
-                    'Check for matching inputs, including zeroes.  These indicate a writer error.
-                    If ((WhiteX = 0) And (WhiteY = 0)) Or ((RedX = 0) And (RedY = 0)) Or ((GreenX = 0) And (GreenY = 0)) Or ((BlueX = 0) And (BlueY = 0)) Then
+                        'All required tags exist.  Retrieve their values now.
+                        Dim WhiteX As Double, WhiteY As Double, RedX As Double, RedY As Double, GreenX As Double, GreenY As Double, BlueX As Double, BlueY As Double
+                        WhiteX = CDblCustom(GetTagValue("PNG:WhitePointX", vbBinaryCompare))
+                        WhiteY = CDblCustom(GetTagValue("PNG:WhitePointY", vbBinaryCompare))
+                        RedX = CDblCustom(GetTagValue("PNG:RedX", vbBinaryCompare))
+                        RedY = CDblCustom(GetTagValue("PNG:RedY", vbBinaryCompare))
+                        GreenX = CDblCustom(GetTagValue("PNG:GreenX", vbBinaryCompare))
+                        GreenY = CDblCustom(GetTagValue("PNG:GreenY", vbBinaryCompare))
+                        BlueX = CDblCustom(GetTagValue("PNG:BlueX", vbBinaryCompare))
+                        BlueY = CDblCustom(GetTagValue("PNG:BlueY", vbBinaryCompare))
                         
-                        #If DEBUGMODE = 1 Then
-                            pdDebug.LogAction "FYI: custom cHRM data appears to be invalid; ignoring custom conversion.  (List of values follows, in ExifTool order.)"
-                            pdDebug.LogAction WhiteX & ", " & WhiteY & ", " & RedX & ", " & RedY & ", " & GreenX & ", " & GreenY & ", " & BlueX & ", " & BlueY
-                        #End If
-                        
-                    'End points appear to be valid!  Continue with the transform.
-                    Else
-                    
-                        'Per the spec, files using the cHRM chunk are also supposed to provide a gamma value.  Without it, we have to
-                        ' guess at the right gamma value, which defeats the whole purpose of providing color correction data.
-                        ' Look for gamma now.
-                        If DoesTagExistFullName("PNG:Gamma", relevantTagIndex, vbBinaryCompare) Then srcGamma = CDblCustom(GetTagValue("PNG:Gamma", vbBinaryCompare))
-                        
-                        'If gamma does not exist in the file, or it does exist but it is encoded incorrectly, we'll still proceed with
-                        ' the conversion, but we have no choice but to assume a default gamma value.
-                        If (srcGamma = 0) Then
-                        
+                        'Check for matching inputs, including zeroes.  These indicate a writer error.
+                        If ((WhiteX = 0) And (WhiteY = 0)) Or ((RedX = 0) And (RedY = 0)) Or ((GreenX = 0) And (GreenY = 0)) Or ((BlueX = 0) And (BlueY = 0)) Then
+                            
                             #If DEBUGMODE = 1 Then
-                                pdDebug.LogAction "WARNING! PNG file has cHRM but not gAMA. Default sRGB gamma transform will be used."
+                                pdDebug.LogAction "FYI: custom cHRM data appears to be invalid; ignoring custom conversion.  (List of values follows, in ExifTool order.)"
+                                pdDebug.LogAction WhiteX & ", " & WhiteY & ", " & RedX & ", " & RedY & ", " & GreenX & ", " & GreenY & ", " & BlueX & ", " & BlueY
                             #End If
-                        
-                        End If
-                        
-                        #If DEBUGMODE = 1 Then
-                            pdDebug.LogAction "PNG file with custom cHRM data found. Applying color conversion now..."
-                        #End If
-                        
-                        'We're now going to do something weird.  If the reported cHRM endpoints match sRGB endpoints, we're going to pass 0 to the
-                        ' gamut conversion function.  This enables the sRGB gamma function, which is a rather complicated two-part ramp (instead of
-                        ' a standard gamma function).  It also produces results identical to Firefox for libpng's test image library.
-                        '
-                        'If the cHRM chunk is any other color space, we'll use the supplied gamma value, per the PNG spec
-                        If (RedX = 0.64) And (RedY = 0.33) And (GreenX = 0.3) And (GreenY = 0.6) And (BlueX = 0.15) And (BlueY = 0.06) And (WhiteX = 0.3127) And (WhiteY = 0.329) Then
-                            Color_Management.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).GetActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, 0, False, True
+                            
+                        'End points appear to be valid!  Continue with the transform.
                         Else
-                            Color_Management.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).GetActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, srcGamma, False, True
+                        
+                            'Per the spec, files using the cHRM chunk are also supposed to provide a gamma value.  Without it, we have to
+                            ' guess at the right gamma value, which defeats the whole purpose of providing color correction data.
+                            ' Look for gamma now.
+                            If DoesTagExistFullName("PNG:Gamma", relevantTagIndex, vbBinaryCompare) Then srcGamma = CDblCustom(GetTagValue("PNG:Gamma", vbBinaryCompare))
+                            
+                            'If gamma does not exist in the file, or it does exist but it is encoded incorrectly, we'll still proceed with
+                            ' the conversion, but we have no choice but to assume a default gamma value.
+                            If (srcGamma = 0) Then
+                            
+                                #If DEBUGMODE = 1 Then
+                                    pdDebug.LogAction "WARNING! PNG file has cHRM but not gAMA. Default sRGB gamma transform will be used."
+                                #End If
+                            
+                            End If
+                            
+                            #If DEBUGMODE = 1 Then
+                                pdDebug.LogAction "PNG file with custom cHRM data found. Applying color conversion now..."
+                            #End If
+                            
+                            'We're now going to do something weird.  If the reported cHRM endpoints match sRGB endpoints, we're going to pass 0 to the
+                            ' gamut conversion function.  This enables the sRGB gamma function, which is a rather complicated two-part ramp (instead of
+                            ' a standard gamma function).  It also produces results identical to Firefox for libpng's test image library.
+                            '
+                            'If the cHRM chunk is any other color space, we'll use the supplied gamma value, per the PNG spec
+                            If (RedX = 0.64) And (RedY = 0.33) And (GreenX = 0.3) And (GreenY = 0.6) And (BlueX = 0.15) And (BlueY = 0.06) And (WhiteX = 0.3127) And (WhiteY = 0.329) Then
+                                Color_Management.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).GetActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, 0, False, True
+                            Else
+                                Color_Management.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).GetActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, srcGamma, False, True
+                            End If
+                            
+                            'FOR TESTING PURPOSES: this sample line of code uses hard-coded sRGB values
+                            'Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
+                            
+                            'FOR TESTING PURPOSES: this sample line of code uses hard-coded Adobe RGB values
+                            'Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.21, 0.71, 0.15, 0.06, 0.3127, 0.329, 2.2, False, True
+                            
+                            'Note that cHRM has been handled; this prevents subsequent gAMA checks from applying a second round of
+                            ' corrections to the image.
+                            cHRMHandled = True
+                            
+                            #If DEBUGMODE = 1 Then
+                                pdDebug.LogAction "Custom cHRM data analysis complete."
+                            #End If
+                            
+                            'Refresh the screen to reflect the new colors.  (This is necessary because metadata is parsed asynchronously,
+                            ' so the image may already be visible on the screen!)
+                            If (parentImageID = g_CurrentImage) Then
+                                Viewport_Engine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
+                                Interface.NotifyImageChanged parentImageID
+                            End If
+                            
                         End If
-                        
-                        'FOR TESTING PURPOSES: this sample line of code uses hard-coded sRGB values
-                        'Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
-                        
-                        'FOR TESTING PURPOSES: this sample line of code uses hard-coded Adobe RGB values
-                        'Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.21, 0.71, 0.15, 0.06, 0.3127, 0.329, 2.2, False, True
-                        
-                        'Note that cHRM has been handled; this prevents subsequent gAMA checks from applying a second round of
-                        ' corrections to the image.
-                        cHRMHandled = True
-                        
+                    
+                    Else
                         #If DEBUGMODE = 1 Then
-                            pdDebug.LogAction "Custom cHRM data analysis complete."
+                            pdDebug.LogAction "FYI: custom cHRM data has been ignored because not all endpoint values exist!"
                         #End If
-                        
-                        'Refresh the screen to reflect the new colors.  (This is necessary because metadata is parsed asynchronously,
-                        ' so the image may already be visible on the screen!)
-                        If (parentImageID = g_CurrentImage) Then
-                            Viewport_Engine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
-                            Interface.NotifyImageChanged parentImageID
-                        End If
-                        
                     End If
                 
                 Else
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "FYI: custom cHRM data has been ignored because not all endpoint values exist!"
-                    #End If
+                    If sRGBHandled Then
+                        #If DEBUGMODE = 1 Then
+                            pdDebug.LogAction "FYI: custom cHRM data has been ignored in favor of sRGB data."
+                        #End If
+                    End If
                 End If
             
-            Else
-                If sRGBHandled Then
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "FYI: custom cHRM data has been ignored in favor of sRGB data."
-                    #End If
-                End If
+            'End cHRM chunk handling for PNG files
             End If
-        
-        'End cHRM chunk handling for PNG files
+                
+            'The next tag we're going to look for is the "PNG:Gamma" value.  FreeImage provides an option for handling this value,
+            ' but they do not handle it correctly (by "correctly" I mean, "like web browsers, for better or worse").  Handling gamma
+            ' here also allows us to provide gamma correction when GDI+ is used.  Note that this behavior should probably be tied to
+            ' a preference, because gamma handling may screw up some images that were encoded incorrectly.
+            If (Not cHRMHandled) And (Not sRGBHandled) And DoesTagExistFullName("PNG:Gamma", relevantTagIndex, vbBinaryCompare) Then
+            
+                srcGamma = CDblCustom(GetTagValue("PNG:Gamma", vbBinaryCompare))
+                
+                'If gamma does not exist in the file, or it does exist but it is encoded incorrectly, we obviously won't make use of it.
+                If (srcGamma <= 0) Then
+                
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "WARNING! PNG file has gAMA, but the reported value is invalid.  No gamma correction applied."
+                    #End If
+                
+                'If gamma does exist, and it is encoded correctly (as far as we can tell), apply it now
+                Else
+                
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "PNG file with custom gAMA data found. Applying gamma correction now..."
+                    #End If
+                    
+                    Filters_Layers.GammaCorrectDIB pdImages(parentImageID).GetActiveDIB, 2.2 / srcGamma, True
+                    
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "Custom cHRM data analysis complete."
+                    #End If
+                    
+                    'Note that gAMA has been handled; this prevents subsequent checks from possibly applying a second round of
+                    ' corrections to the image.
+                    gAMAHandled = True
+                    
+                    'Refresh the screen to reflect the new colors
+                    If (parentImageID = g_CurrentImage) Then
+                        Viewport_Engine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
+                        Interface.NotifyImageChanged parentImageID
+                    End If
+                    
+                End If
+            
+            'END gAMA chunk handling
+            End If
+                
+        'END PNG TAGS
         End If
-            
-        'The next tag we're going to look for is the "PNG:Gamma" value.  FreeImage provides an option for handling this value,
-        ' but they do not handle it correctly (by "correctly" I mean, "like web browsers, for better or worse").  Handling gamma
-        ' here also allows us to provide gamma correction when GDI+ is used.  Note that this behavior should probably be tied to
-        ' a preference, because gamma handling may screw up some images that were encoded incorrectly.
-        If (Not cHRMHandled) And (Not sRGBHandled) And DoesTagExistFullName("PNG:Gamma", relevantTagIndex, vbBinaryCompare) Then
         
-            srcGamma = CDblCustom(GetTagValue("PNG:Gamma", vbBinaryCompare))
-            
-            'If gamma does not exist in the file, or it does exist but it is encoded incorrectly, we obviously won't make use of it.
-            If (srcGamma <= 0) Then
-            
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING! PNG file has gAMA, but the reported value is invalid.  No gamma correction applied."
-                #End If
-            
-            'If gamma does exist, and it is encoded correctly (as far as we can tell), apply it now
-            Else
-            
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "PNG file with custom gAMA data found. Applying gamma correction now..."
-                #End If
-                
-                Filters_Layers.GammaCorrectDIB pdImages(parentImageID).GetActiveDIB, 2.2 / srcGamma, True
-                
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Custom cHRM data analysis complete."
-                #End If
-                
-                'Note that gAMA has been handled; this prevents subsequent checks from possibly applying a second round of
-                ' corrections to the image.
-                gAMAHandled = True
-                
-                'Refresh the screen to reflect the new colors
-                If (parentImageID = g_CurrentImage) Then
-                    Viewport_Engine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
-                    Interface.NotifyImageChanged parentImageID
+        'TIFF-specific tags:
+        If (pdImages(parentImageID).originalFileFormat = PDIF_TIFF) Then
+        
+            'Look for page name tags.  If found, assign them to their matching image layers.
+            Dim i As Long
+            For i = 0 To pdImages(parentImageID).GetNumOfLayers - 1
+                If DoesTagExistFullName("IFD" & i & ":PageName", relevantTagIndex, vbBinaryCompare) Then
+                    pdImages(parentImageID).GetLayerByIndex(i).SetLayerName GetTagValue("IFD" & i & ":PageName", vbBinaryCompare)
                 End If
-                
-            End If
+            Next i
         
-        'END gAMA chunk handling
+        'END TIFF TAGS
         End If
         
         ApplyMetadataPostProcessing = True
@@ -826,7 +858,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
             If ApplyMetadataPostProcessing Then pdDebug.LogAction "NOTE!  Metadata-based post-processing was applied to this image."
         #End If
         
-    'END special PNG format handling
+    'END all preprocessing checks
     End If
     
 End Function
@@ -1264,77 +1296,81 @@ End Function
 '  source for writing.  In PD, this function is generally called only by the PhotoDemon_SaveImage function.)
 Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As pdImage) As Boolean
     
-    'Metadata only needs to be written out if it exists (obviously)
-    If HasMetadata Then
+    'XML writing is handled by PD's master XML engine
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    Dim newXMLString As String, tmpXMLPath As String
+    Dim fileNum As Integer
+    
+    Dim cSHA2 As CSHA256
+    Set cSHA2 = New CSHA256
+    
+    'Retrieve the XML setting, if any, from the target image object, and write metadata accordingly.
+    Dim metadataParams As String
+    metadataParams = srcImage.imgStorage.GetEntry_String("MetadataSettings", vbNullString)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString metadataParams
+    
+    'First, see if metadata export is even allowed
+    If cParams.GetBool("MetadataExportAllowed", True) Then
+    
+        'See if the caller wants their metadata anonymized prior to export
+        Dim forciblyAnonymize As Boolean
+        forciblyAnonymize = cParams.GetBool("MetadataAnonymize", True)
         
-        'XML writing is handled by PD's master XML engine
-        Dim xmlEngine As pdXML
-        Set xmlEngine = New pdXML
+        If forciblyAnonymize And Me.HasMetadata Then
         
-        Dim newXMLString As String, tmpXMLPath As String
-        Dim fileNum As Integer
+            Message "Removing metadata with potential privacy concerns..."
         
-        Dim cSHA2 As CSHA256
-        Set cSHA2 = New CSHA256
-        
-        'Retrieve the XML setting, if any, from the target image object, and write metadata accordingly.
-        Dim metadataParams As String
-        metadataParams = srcImage.imgStorage.GetEntry_String("MetadataSettings", vbNullString)
-        
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
-        cParams.SetParamString metadataParams
-        
-        'First, see if metadata export is even allowed
-        If cParams.GetBool("MetadataExportAllowed", True) Then
-        
-            'See if the caller wants their metadata anonymized prior to export
-            Dim forciblyAnonymize As Boolean
-            forciblyAnonymize = cParams.GetBool("MetadataAnonymize", True)
+            'NOTE: GPS tags will be automatically removed by a special parameter we pass to ExifTool, but any other
+            ' privacy-problematic tags must be manually flagged.
+            Dim i As Long
+            For i = 0 To m_NumOfTags - 1
+                If (Not m_Tags(i).TagMarkedForRemoval) Then m_Tags(i).TagMarkedForRemoval = ExifTool.DoesTagHavePrivacyConcerns(m_Tags(i))
+            Next i
             
-            If forciblyAnonymize Then
+        End If
             
-                Message "Removing metadata with potential privacy concerns..."
+        'Now that all problematic tags have been identified, we need to generate a modified XML string without those entries.
+        ' (NOTE: removal of these tags will *still be requested* when we interact with ExifTool, but by preemptively removing
+        '        said entries, we add an extra layer of protection against parsing errors and other glitches.)
+        newXMLString = RetrieveModifiedXMLString
+        
+        Message "Embedding metadata..."
+        
+        'Note that at this point, the image may not have any metadata.  That's okay - we just skip the part where
+        ' we copy over metadata from an existing image.
+        
+        'If, however, the image *does* have metadata, we need to write it out to a temporary XML file.
+        If (Len(newXMLString) <> 0) Then
             
-                'NOTE: GPS tags will be automatically removed by a special parameter we pass to ExifTool, but any other
-                ' privacy-problematic tags must be manually flagged.
-                Dim i As Long
-                For i = 0 To m_NumOfTags - 1
-                    If (Not m_Tags(i).TagMarkedForRemoval) Then m_Tags(i).TagMarkedForRemoval = ExifTool.DoesTagHavePrivacyConcerns(m_Tags(i))
-                Next i
-                
-            End If
-            
-            'Now that all problematic tags have been identified, we need to generate a modified XML string without those entries.
-            ' (NOTE: removal of these tags will *still be requested* when we interact with ExifTool, but by preemptively removing
-            '        said entries, we add an extra layer of protection against parsing errors and other glitches.)
-            newXMLString = RetrieveModifiedXMLString
-            
-            Message "Embedding metadata..."
-                
             'Since we can assume the user has rights to the output directory, write the temporary XML file there
             tmpXMLPath = GetDirectory(outputPath)
-                
+                    
             'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
             tmpXMLPath = tmpXMLPath & "metadata_" & Left$(cSHA2.SHA256(CStr(Timer) & outputPath), 16) & ".xml"
             
             'Write the XML file
             xmlEngine.loadXMLFromString newXMLString
             xmlEngine.writeXMLToFile tmpXMLPath, True
-                
-            'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
-            WriteAllMetadata = WriteMetadata(tmpXMLPath, outputPath, srcImage, forciblyAnonymize, metadataParams)
-            If WriteAllMetadata Then
-                Message "Metadata embedded successfully."
-            Else
-                Message "Metadata may not have been embedded (but saved image still written successfully)."
-            End If
-            
-        'If metadata export is *not* allowed, we don't have to do a thing!
+        
         Else
-            WriteAllMetadata = True
+            tmpXMLPath = vbNullString
         End If
         
+        'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
+        WriteAllMetadata = WriteMetadata(tmpXMLPath, outputPath, srcImage, forciblyAnonymize, metadataParams)
+        
+        If WriteAllMetadata Then
+            Message "Metadata embedded successfully."
+        Else
+            Message "Metadata may not have been embedded (but saved image still written successfully)."
+        End If
+        
+    'If metadata export is *not* allowed, we don't have to do a thing!
     Else
         WriteAllMetadata = True
     End If
