@@ -89,6 +89,12 @@ Private m_UniqueIDTracker As Long
 ' figure out how many of the program's GDI objects are being used by UCs, and how many are being created and used elsewhere.
 Private m_PDControlCount As Long
 
+'Dropdown boxes are problematic, because we have to play some weird window ownership games to ensure that the dropdowns
+' appear "above" or "outside" VB windows, as necessary.  As such, this function is notified whenever a listbox is raised,
+' and the hWnd is cached so we can kill that window as necessary.
+Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
+Private m_CurrentDropDownHWnd As Long, m_CurrentDropDownListHWnd As Long
+
 'Iterate through all sibling controls in our container, and if one is capable of receiving focus, activate it.  I had *really* hoped
 ' to bypass this kind of manual handling by using WM_NEXTDLGCTL, but I failed to get it working reliably with all types of VB windows.
 ' I'm honestly not sure whether VB even uses that message, or whether it uses some internal mechanism for focus tracking; the latter
@@ -547,3 +553,36 @@ End Sub
 Public Function GetPDControlCount() As Long
     GetPDControlCount = m_PDControlCount
 End Function
+
+'Whenever a dropdown raises its list box, call this function to set some program-wide flags.  Subsequent focus events
+' will also notify us, and we will kill the list box as necessary.
+Public Sub NotifyDropDownChangeState(ByVal dropDownHWnd As Long, ByVal dropDownListHWnd As Long, ByVal newState As Boolean)
+    
+    If newState Then
+        m_CurrentDropDownHWnd = dropDownHWnd
+        m_CurrentDropDownListHWnd = dropDownListHWnd
+    Else
+        m_CurrentDropDownHWnd = 0
+        m_CurrentDropDownListHWnd = 0
+    End If
+
+End Sub
+
+'Whenever a PD control loses or receives focus, we receive a corresponding notification
+Public Sub PDControlReceivedFocus(ByVal controlHWnd As Long)
+    
+    'If a dropdown window is still active, hide it now
+    If (m_CurrentDropDownHWnd <> 0) Or (m_CurrentDropDownListHWnd <> 0) Then
+    
+        If (m_CurrentDropDownHWnd <> controlHWnd) And (m_CurrentDropDownListHWnd <> controlHWnd) Then
+            SetParent m_CurrentDropDownListHWnd, m_CurrentDropDownHWnd
+            g_WindowManager.SetVisibilityByHWnd m_CurrentDropDownListHWnd, False
+        End If
+    
+    End If
+
+End Sub
+
+Public Sub PDControlLostFocus(ByVal controlHWnd As Long)
+    
+End Sub

@@ -524,21 +524,21 @@ Public Function shk_SetHook(ByVal HookType As eHookType, _
     Dim bIDE            As Boolean
     Dim z_ScMem         As Long                 'Thunk base address
 
-    If oCallback Is Nothing Then Set oCallback = Me 'If the user hasn't specified the callback owner
+    If (oCallback Is Nothing) Then Set oCallback = Me 'If the user hasn't specified the callback owner
       
     nAddr = zAddressOf(oCallback, nOrdinal)         'Get the address of the specified ordinal method
     If nAddr = 0 Then                               'Ensure that we've found the ordinal method
       zError SUB_NAME, "Callback method not found"
       Exit Function
     End If
-       
-    If Not bGlobal Then nID = App.ThreadID                      ' thread ID to be used if not global hook
+    
+    If (Not bGlobal) Then nID = App.ThreadID                      ' thread ID to be used if not global hook
       
     z_ScMem = VirtualAlloc(0, MEM_LEN, MEM_COMMIT, PAGE_RWX)    'Allocate executable memory
     
-    If z_ScMem <> 0 Then                                        'Ensure the allocation succeeded
+    If (z_ScMem <> 0) Then                                        'Ensure the allocation succeeded
       
-        If z_hkFunk Is Nothing Then Set z_hkFunk = New Collection   'If this is the first time through, do the one-time initialization
+        If (z_hkFunk Is Nothing) Then Set z_hkFunk = New Collection   'If this is the first time through, do the one-time initialization
         On Error GoTo CatchDoubleSub                                'Catch double subclassing
           z_hkFunk.Add z_ScMem, "h" & HookType                      'Add the hook/thunk-address to the collection
         On Error GoTo 0
@@ -592,6 +592,7 @@ Public Function shk_SetHook(ByVal HookType As eHookType, _
       Exit Function
     
 CatchDoubleSub:
+    Debug.Print "cSubclass error: " & Err.Number & ": " & Err.Description
       zError SUB_NAME, "Hook is already established"
       
 ReleaseMemory:
@@ -783,8 +784,11 @@ Private Sub zUnThunk(ByVal thunkID As Long, ByVal vType As eThunkType, Optional 
         'EDIT BY TANNER: check to see if the thunk exists before attempting to remove it.  Not sure why
         ' this has suddenly become necessary, but I was getting errors from this line before implementing
         ' a collection check.
-        If ExistsNonObject(z_scFunk, "h" & thunkID) Then z_scFunk.Remove "h" & thunkID        'Remove the specified thunk from the collection
-        
+        If ExistsInCollection(z_scFunk, "h" & thunkID) Then
+            z_scFunk.Remove "h" & thunkID        'Remove the specified thunk from the collection
+        Else
+            Debug.Print "WARNING!  Unsubclassing was requested for a subclasser that does not exist."
+        End If
         
     Case HookThunk
         If z_ScMem Then       'Ensure that the thunk hasn't already released its memory
@@ -792,7 +796,11 @@ Private Sub zUnThunk(ByVal thunkID As Long, ByVal vType As eThunkType, Optional 
             If zData(IDX_SHUTDOWN, z_ScMem) = 0 Then UnhookWindowsHookEx zData(IDX_PREVPROC, z_ScMem)
             If zData(0, z_ScMem) = 0 Then                   ' not recursing then
                 VirtualFree z_ScMem, 0, MEM_RELEASE 'Release allocated memory
-                z_hkFunk.Remove "h" & thunkID       'Remove the specified thunk from the collection
+                If ExistsInCollection(z_hkFunk, "h" & thunkID) Then
+                    z_hkFunk.Remove "h" & thunkID       'Remove the specified thunk from the collection
+                Else
+                    Debug.Print "WARNING!  cSubclass hook memory was freed, but thunk was not found in collection...?"
+                End If
             Else
                 zData(IDX_SHUTDOWN, z_ScMem) = 1            ' Set the shutdown indicator
                 zData(IDX_ATABLE, z_ScMem) = 0              ' want no more After messages
@@ -800,30 +808,33 @@ Private Sub zUnThunk(ByVal thunkID As Long, ByVal vType As eThunkType, Optional 
                 
                 ' when zTerminate is called this thunk's memory will be released
                 
-                'ADDED BY TANNER: let the debugger know that the hook is still technically active!
+                'ADDED BY TANNER: let the debugger know that the hook is still technically active - a problem we
+                ' can solve by upgrading to a safe unhooking solution.
                 Debug.Print "cSelfSubHookCallback couldn't release hook immediately, as another hook is still active.  Upgrade to a safe unhooking solution!"
                 
             End If
         Else
-            If ExistsNonObject(z_scFunk, "h" & thunkID) Then z_hkFunk.Remove "h" & thunkID       'Remove the specified thunk from the collection
+            If ExistsInCollection(z_hkFunk, "h" & thunkID) Then
+                z_hkFunk.Remove "h" & thunkID       'Remove the specified thunk from the collection
+            Else
+                'Debug.Print "WARNING!  Requested thunk to unhook was not found in our thunk collection!"
+            End If
         End If
     Case CallbackThunk
         If z_ScMem Then       'Ensure that the thunk hasn't already released its memory
             VirtualFree z_ScMem, 0, MEM_RELEASE 'Release allocated memory
         End If
-        If ExistsNonObject(z_scFunk, "h" & thunkID & ObjPtr(oCallback) & "." & thunkID) Then z_cbFunk.Remove "h" & ObjPtr(oCallback) & "." & thunkID           'Remove the specified thunk from the collection
+        If ExistsInCollection(z_cbFunk, "h" & ObjPtr(oCallback) & "." & thunkID) Then z_cbFunk.Remove "h" & ObjPtr(oCallback) & "." & thunkID           'Remove the specified thunk from the collection
     End Select
 
 End Sub
 
-Public Function isHookingActive() As Boolean
-
+Public Function IsHookingActive() As Boolean
     If (z_hkFunk Is Nothing) Then
-        isHookingActive = False
+        IsHookingActive = False
     Else
-        isHookingActive = True
+        IsHookingActive = True
     End If
-
 End Function
 
 Private Sub zTerminateThunks(ByVal vType As eThunkType)
@@ -866,9 +877,10 @@ Private Sub zTerminateThunks(ByVal vType As eThunkType)
         Next i                                        'Next member of the collection
       End With
       Set thunkCol = Nothing                         'Destroy the hook/thunk-address collection
+    Else
+        'Debug.Print "WARNING!  Subclasser has no thunks to terminate!"
     End If
-
-
+    
 End Sub
 
 '-SelfCallback code------------------------------------------------------------------------------------
@@ -990,6 +1002,17 @@ Public Sub scb_TerminateCallbacks()
 End Sub
 
 'This handy function comes from http://stackoverflow.com/questions/40651/check-if-a-record-exists-in-a-vb6-collection
+Private Function ExistsInCollection(col, Index) As Boolean
+On Error GoTo ExistsTryNonObject
+    Dim o As Object
+    Set o = col(Index)
+    ExistsInCollection = True
+    Exit Function
+
+ExistsTryNonObject:
+    ExistsInCollection = ExistsNonObject(col, Index)
+End Function
+
 Private Function ExistsNonObject(col, Index) As Boolean
     On Error GoTo ExistsNonObjectErrorHandler
     Dim v As Variant

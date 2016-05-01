@@ -709,7 +709,7 @@ Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVa
     cPainterBox.RequestRepaint
         
     'Set a hand cursor
-    cMouseEvents.setSystemCursor IDC_HAND
+    cMouseEvents.SetSystemCursor IDC_HAND
         
 End Sub
 
@@ -719,7 +719,7 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
     cPainterBox.RequestRepaint
     
     'Reset the cursor
-    cMouseEvents.setSystemCursor IDC_ARROW
+    cMouseEvents.SetSystemCursor IDC_ARROW
     
 End Sub
 
@@ -1003,9 +1003,9 @@ Private Function CreateComboBox() As Boolean
         
         '...and a third subclasser for mouse events
         Set cMouseEvents = New pdInputMouse
-        cMouseEvents.addInputTracker m_ComboBoxHwnd, True, , , True, True
-        cMouseEvents.setSystemCursor IDC_HAND
-        cMouseEvents.setCaptureOverride True
+        cMouseEvents.AddInputTracker m_ComboBoxHwnd, True, , , True, True
+        cMouseEvents.SetSystemCursor IDC_HAND
+        cMouseEvents.SetCaptureOverride True
         
     End If
     
@@ -1309,7 +1309,7 @@ Private Sub DrawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 
                 'Create the hatch brush and outline pen
                 Dim gdipBrush As Long
-                gdipBrush = GDI_Plus.getGDIPlusPatternBrushHandle(m_CurrentListIndex, vbBlack, 255, vbWhite, 255)
+                gdipBrush = GDI_Plus.GetGDIPlusPatternBrushHandle(m_CurrentListIndex, vbBlack, 255, vbWhite, 255)
                 
                 Dim gdipPen As Long
                 gdipPen = GDI_Plus.GetGDIPlusPenHandle(vbBlack, 192, 1, LineCapRound, LineJoinRound)
@@ -1319,7 +1319,7 @@ Private Sub DrawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 hatchPath.StrokePath_BarePen gdipPen, targetDC, True
                 
                 'Release all drawing objects
-                GDI_Plus.releaseGDIPlusBrush gdipBrush
+                GDI_Plus.ReleaseGDIPlusBrush gdipBrush
                 GDI_Plus.ReleaseGDIPlusPen gdipPen
                 
                 'Draw the button
@@ -1434,7 +1434,7 @@ Private Function DrawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             
             'Create the hatch brush and outline pen
             Dim gdipBrush As Long
-            gdipBrush = GDI_Plus.getGDIPlusPatternBrushHandle(srcDIS.itemID, vbBlack, 255, vbWhite, 255)
+            gdipBrush = GDI_Plus.GetGDIPlusPatternBrushHandle(srcDIS.itemID, vbBlack, 255, vbWhite, 255)
             
             Dim gdipPen As Long
             gdipPen = GDI_Plus.GetGDIPlusPenHandle(vbBlack, 192, 1, LineCapRound, LineJoinRound)
@@ -1444,7 +1444,7 @@ Private Function DrawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             hatchPath.StrokePath_BarePen gdipPen, srcDIS.hDC, True
             
             'Release all drawing objects
-            GDI_Plus.releaseGDIPlusBrush gdipBrush
+            GDI_Plus.ReleaseGDIPlusBrush gdipBrush
             GDI_Plus.ReleaseGDIPlusPen gdipPen
             
             'If the item has focus, draw a rectangular frame around the item.
@@ -1520,7 +1520,7 @@ End Sub
 Private Sub InstallHookConditional()
 
     'Check for an existing hook
-    If Not m_HasFocus Then
+    If (Not m_HasFocus) Then
     
         'Note the time.  This is used to prevent keypresses occurring immediately prior to the hook, from being
         ' caught within our hook proc!
@@ -1775,7 +1775,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     If GetComboBoxInfo(m_ComboBoxHwnd, cbiCombo) <> 0 Then
                     
                         'Any actions that rely on the cbiCombo item can be applied here, as necessary
-                        cMouseEvents.setSystemCursor IDC_HAND
+                        cMouseEvents.SetSystemCursor IDC_HAND
                         
                     End If
                     

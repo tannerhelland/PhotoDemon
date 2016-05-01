@@ -100,6 +100,22 @@ Public Sub setFocusManually()
     End If
 End Sub
 
+Private Function GetHiWord(ByVal lParam As Long) As Integer
+    If lParam And &H80000000 Then
+        GetHiWord = (lParam \ 65535) - 1
+    Else
+        GetHiWord = lParam \ 65535
+    End If
+End Function
+
+Private Function GetLoWord(ByVal lParam As Long) As Integer
+    If lParam And &H8000& Then
+        GetLoWord = &H8000 Or (lParam And &H7FFF&)
+    Else
+        GetLoWord = lParam And &HFFFF&
+    End If
+End Function
+
 'All events subclassed by this window are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _
                       ByRef bHandled As Boolean, _
@@ -133,20 +149,22 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         
         Case WM_ACTIVATE
             
-            'wParam contains a notification of whether we are gaining or losing focus.
-            Select Case wParam
-                    
+            'The low-order portion of wParam contains a notification of whether we are gaining or losing focus.
+            Select Case GetLoWord(wParam)
+                
                 'Window is losing focus
                 Case WA_INACTIVE
                     If m_HasFocus Then
                         m_HasFocus = False
+                        UserControl_Support.PDControlLostFocus m_hWnd
                         RaiseEvent LostFocusReliable
                     End If
                     
                 'Window is gaining focus
                 Case Else
-                    If Not m_HasFocus Then
+                    If (Not m_HasFocus) Then
                         m_HasFocus = True
+                        UserControl_Support.PDControlReceivedFocus m_hWnd
                         RaiseEvent GotFocusReliable
                     End If
                     
@@ -155,8 +173,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         'This message doesn't really apply to PD, but we cover it for completeness' sake
         Case WM_NCACTIVATE
             
-            If Not m_HasFocus Then
+            If (Not m_HasFocus) And (wParam <> 0) Then
                 m_HasFocus = True
+                UserControl_Support.PDControlReceivedFocus m_hWnd
                 RaiseEvent GotFocusReliable
             End If
             
@@ -167,14 +186,16 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             
             If m_HasFocus Then
                 m_HasFocus = False
+                UserControl_Support.PDControlLostFocus m_hWnd
                 RaiseEvent LostFocusReliable
             End If
         
         'Window is gaining focus
         Case WM_SETFOCUS
             
-            If Not m_HasFocus Then
+            If (Not m_HasFocus) Then
                 m_HasFocus = True
+                UserControl_Support.PDControlReceivedFocus m_hWnd
                 RaiseEvent GotFocusReliable
             End If
         
