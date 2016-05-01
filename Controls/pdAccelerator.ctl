@@ -161,13 +161,11 @@ Private Sub tmrAccelerator_Timer()
 End Sub
 
 Private Sub tmrRelease_Timer()
-    
     If m_HookingActive Then
         SafelyReleaseHook
     Else
         tmrRelease.Enabled = False
     End If
-    
 End Sub
 
 'Hooks cannot be released while actually inside the hookproc.  Call this function to safely release a hook, even from within a hookproc.
@@ -175,7 +173,7 @@ Private Sub SafelyReleaseHook()
     
     'If we're still inside the hook, activate the failsafe timer release mechanism
     If m_InHookNow Then
-        If Not tmrRelease.Enabled Then tmrRelease.Enabled = True
+        If (Not tmrRelease.Enabled) Then tmrRelease.Enabled = True
         
     'If we're not inside the hook, this is a perfect time to release.
     Else
@@ -183,7 +181,6 @@ Private Sub SafelyReleaseHook()
         If m_HookingActive Then
             m_HookingActive = False
             m_Subclass.shk_UnHook WH_KEYBOARD
-            m_Subclass.shk_TerminateHooks
         End If
         
         'Also deactivate the failsafe timer
@@ -243,10 +240,11 @@ Public Function ActivateHook() As Boolean
         'If we're already hooked, don't attempt to hook again
         If (Not m_HookingActive) Then
         
-            m_HookingActive = m_Subclass.shk_SetHook(WH_KEYBOARD, False, MSG_BEFORE, , 1, Me)
+            m_HookingActive = True
+            m_Subclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, , 1, Me
             
             #If DEBUGMODE = 1 Then
-                If Not m_SubsequentInitialization Then
+                If (Not m_SubsequentInitialization) Then
                     If m_HookingActive Then
                         pdDebug.LogAction "pdAccelerator.ActivateHook successful.  Hotkeys enabled for this session."
                     Else
@@ -271,7 +269,6 @@ Public Sub DeactivateHook(Optional ByVal forciblyReleaseInstantly As Boolean = T
         If forciblyReleaseInstantly Then
             m_HookingActive = False
             m_Subclass.shk_UnHook WH_KEYBOARD
-            m_Subclass.shk_TerminateHooks
         Else
             SafelyReleaseHook
         End If

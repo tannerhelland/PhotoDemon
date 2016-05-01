@@ -67,11 +67,13 @@ Public Event LostFocusAPI()
 'Positioning the dynamically raised listview window is a bit hairy; we use APIs so we can position things correctly
 ' in the screen's coordinate space (even on high-DPI displays)
 Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RECTL) As Boolean
+Private Declare Function GetParent Lib "user32" (ByVal targetHwnd As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Const GWL_EXSTYLE As Long = -20
 Private Const WS_EX_TOOLWINDOW As Long = &H80&
+Private m_WindowStyleHasBeenSet As Boolean
 
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 Private Const SWP_SHOWWINDOW As Long = &H40
@@ -80,10 +82,12 @@ Private Const SWP_NOACTIVATE As Long = &H10
 'When the popup listbox is raised, we subclass the parent control.  If it is moved or sized or clicked, we automatically
 ' unload the dropdown listview.  (This workaround is necessary for modal dialogs, among other things.)
 Private m_Subclass As cSelfSubHookCallback
+Private m_ParentHWnd As Long
 Private Const WM_ENTERSIZEMOVE As Long = &H231
 Private Const WM_LBUTTONDOWN As Long = &H201
 Private Const WM_RBUTTONDOWN As Long = &H204
 Private Const WM_MBUTTONDOWN As Long = &H207
+Private Const WM_WINDOWPOSCHANGING As Long = &H46&
 
 'Font size of the dropdown (and corresponding listview).  This controls all rendering metrics, so please don't change
 ' it at run-time.  Also, note that the optional caption fontsize is a totally different property that can (and should)
@@ -105,8 +109,8 @@ Private m_ComboRect As RECTF, m_MouseInComboRect As Boolean
 'When the control receives focus via keyboard (e.g. NOT by mouse events), we draw a focus rect to help orient the user.
 Private m_FocusRectActive As Boolean
 
-'When the popup listbox is visible, this is set to TRUE, and its
-Private m_PopUpVisible As Boolean
+'When the popup listbox is visible, this is set to TRUE.  (Also, as a failsafe the list box hWnd is cached.)
+Private m_PopUpVisible As Boolean, m_PopUpHwnd As Long
 
 'Current background color; (background color is used for the 1px border around the button, and it should always match
 ' our parent control).
@@ -122,6 +126,12 @@ Attribute listSupport.VB_VarHelpID = -1
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
+
+'If something forces us to release our subclass while in the midst of the subclass proc, we want to delay the request until
+' the subclass exits.  If we don't do this, PD will crash.
+Private m_InSubclassNow As Boolean, m_SubclassActive As Boolean
+Private WithEvents m_SubclassReleaseTimer As pdTimer
+Attribute m_SubclassReleaseTimer.VB_VarHelpID = -1
 
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
@@ -325,8 +335,14 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
 End Sub
 
 Private Sub lbPrimary_Click()
+    
+    'Mirror any changes to the base dropdown control, then hide the list box
     Me.ListIndex = lbPrimary.ListIndex
     HideListBox
+    
+    'Restore the focus to the base combo box
+    g_WindowManager.SetFocusAPI Me.hWnd
+    
 End Sub
 
 Private Sub listSupport_Click()
@@ -341,13 +357,24 @@ Private Sub listSupport_RedrawNeeded()
     If ucSupport.AmIVisible Then RedrawBackBuffer True
 End Sub
 
+'If a subclassis active, this timer will repeatedly try to kill it.  Do not enable it until you are certain the subclass
+' needs to be released.  (This is used as a failsafe if we cannot immediately release the subclass when focus is lost.)
+Private Sub m_SubclassReleaseTimer_Timer()
+    If (Not m_InSubclassNow) Then
+        m_SubclassReleaseTimer.StopTimer
+        RemoveSubclass
+    End If
+End Sub
+
 Private Sub ucSupport_GotFocusAPI()
+    m_FocusRectActive = True
     RedrawBackBuffer
     RaiseEvent GotFocusAPI
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
     If m_PopUpVisible Then HideListBox
+    m_FocusRectActive = False
     RedrawBackBuffer
     RaiseEvent LostFocusAPI
 End Sub
@@ -483,6 +510,8 @@ End Sub
 Private Sub UserControl_Terminate()
     'As a failsafe, immediately release the popup box.  (If we don't do this, PD will crash.)
     If m_PopUpVisible Then HideListBox
+    If Not (m_SubclassReleaseTimer Is Nothing) Then m_SubclassReleaseTimer.StopTimer
+    SafelyRemoveSubclass
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -497,7 +526,11 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub RaiseListBox()
-
+    
+    On Error GoTo UnexpectedListBoxTrouble
+    
+    If (Not ucSupport.AmIVisible) Or (Not ucSupport.AmIEnabled) Then Exit Sub
+    
     'We first want to retrieve this control instance's window coordinates *in the screen's coordinate space*.
     ' (We need this to know how to position the listbox element.)
     Dim myRect As RECTL
@@ -631,12 +664,16 @@ Private Sub RaiseListBox()
     
     'The list box is now ready to go.  Before displaying it, we want to convert the listbox to a floating toolbox window
     ' and a bare child of the desktop (hWnd = 0).  This allows the listbox to be positioned outside our boundary rect.
-    SetParent lbPrimary.hWnd, 0&
-    SetWindowLong lbPrimary.hWnd, GWL_EXSTYLE, GetWindowLong(lbPrimary.hWnd, GWL_EXSTYLE) Or WS_EX_TOOLWINDOW
+    m_PopUpHwnd = lbPrimary.hWnd
+    If (Not m_WindowStyleHasBeenSet) Then
+        m_WindowStyleHasBeenSet = True
+        SetWindowLong m_PopUpHwnd, GWL_EXSTYLE, GetWindowLong(lbPrimary.hWnd, GWL_EXSTYLE) Or WS_EX_TOOLWINDOW
+    End If
+    SetParent m_PopUpHwnd, 0&
     
     'Move the listbox into position *but do not display it*
     With popupRect
-        SetWindowPos lbPrimary.hWnd, 0&, .Left, .Top, .Width, .Height, SWP_NOACTIVATE
+        SetWindowPos m_PopUpHwnd, 0&, .Left, .Top, .Width, .Height, SWP_NOACTIVATE
     End With
     
     'Clone our list's contents; note that we cannot do this until *after* the list size has been established, as the
@@ -645,7 +682,7 @@ Private Sub RaiseListBox()
     
     'Now we can show the window
     With popupRect
-        SetWindowPos lbPrimary.hWnd, 0&, .Left, .Top, .Width, .Height, SWP_SHOWWINDOW
+        SetWindowPos m_PopUpHwnd, 0&, .Left, .Top, .Width, .Height, SWP_SHOWWINDOW
     End With
     
     'One last thing: because this is a (fairly?  mostly?  extremely?) hackish way to emulate a combo box, we need to cover the
@@ -653,27 +690,58 @@ Private Sub RaiseListBox()
     ' section of an underlying form).  Focusable objects are taken care of automatically, because a LostFocus event will fire,
     ' but non-focusable clicks are problematic.  To solve this, we subclass our parent control and watch for mouse events.
     ' Also, since we're subclassing the control anyway, we'll also hide the ListBox if the parent window is moved.
-    If (m_Subclass Is Nothing) Then Set m_Subclass = New cSelfSubHookCallback
-    m_Subclass.ssc_Subclass UserControl.Parent.hWnd, 0, 1, Me
-    m_Subclass.ssc_AddMsg UserControl.Parent.hWnd, MSG_BEFORE, WM_ENTERSIZEMOVE, WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN
+    m_ParentHWnd = UserControl.Parent.hWnd
+    If (m_ParentHWnd <> 0) Then
+        
+        'Make sure we're not currently trying to release a previous subclass attempt
+        Dim subclassActive As Boolean: subclassActive = False
+        If Not (m_SubclassReleaseTimer Is Nothing) Then
+            If m_SubclassReleaseTimer.IsActive Then
+                m_SubclassReleaseTimer.StopTimer
+                subclassActive = True
+            End If
+        End If
+        
+        If (Not subclassActive) And (Not m_SubclassActive) Then
+            If (m_Subclass Is Nothing) Then Set m_Subclass = New cSelfSubHookCallback
+            m_Subclass.ssc_Subclass m_ParentHWnd, 0, 1, Me
+            m_Subclass.ssc_AddMsg m_ParentHWnd, MSG_BEFORE, WM_ENTERSIZEMOVE, WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN, WM_WINDOWPOSCHANGING
+            m_SubclassActive = True
+        End If
+        
+    End If
+    
+    'As an additional failsafe, we also notify the master UserControl tracker that a list box is active.  If any other PD control
+    ' receives focus, that tracker will automatically unload our list box as well, "just in case"
+    UserControl_Support.NotifyDropDownChangeState Me.hWnd, m_PopUpHwnd, True
     
     m_PopUpVisible = True
+    
+    Exit Sub
+    
+UnexpectedListBoxTrouble:
+
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  pdDropDown.RaiseListBox failed because of Err # " & Err.Number & ", " & Err.Description
+    #End If
     
 End Sub
 
 Private Sub HideListBox()
-    If m_PopUpVisible Then
+
+    If m_PopUpVisible And (m_PopUpHwnd <> 0) Then
+        
+        'Notify the master UserControl tracker that our list box is now inactive.
+        UserControl_Support.NotifyDropDownChangeState Me.hWnd, m_PopUpHwnd, False
         
         m_PopUpVisible = False
-        lbPrimary.Visible = False
-        SetParent lbPrimary.hWnd, Me.hWnd
+        SetParent m_PopUpHwnd, Me.hWnd
+        g_WindowManager.SetVisibilityByHWnd m_PopUpHwnd, False
+        m_PopUpHwnd = 0
         
         'Note that termination may result in the client site not being available.  If this happens, we simply want
         ' to continue; the subclasser will handle clean-up automatically.
-        If Not (m_Subclass Is Nothing) Then
-            On Error GoTo UnsubclassUnnecessary
-            m_Subclass.ssc_UnSubclass UserControl.Parent.hWnd
-        End If
+        SafelyRemoveSubclass
         
         'Restoring window styles proves unnecessary (and in fact, it can fuck things up - so just leave the style bits as
         ' we set them previously!)
@@ -681,8 +749,29 @@ Private Sub HideListBox()
         
     End If
     
-UnsubclassUnnecessary:
+End Sub
 
+'If a hook exists, uninstall it.  DO NOT CALL THIS FUNCTION if the class is currently inside the hook proc.
+Private Sub RemoveSubclass()
+    If (Not (m_Subclass Is Nothing)) And (m_ParentHWnd <> 0) And m_SubclassActive Then
+        On Error GoTo UnsubclassUnnecessary
+        m_Subclass.ssc_UnSubclass m_ParentHWnd
+        m_ParentHWnd = 0
+        m_SubclassActive = False
+    End If
+UnsubclassUnnecessary:
+End Sub
+
+'Release the edit box's keyboard hook.  In some circumstances, we can't do this immediately, so we set a timer that will
+' release the hook as soon as the system allows.
+Private Sub SafelyRemoveSubclass()
+    If m_InSubclassNow Then
+        If (m_SubclassReleaseTimer Is Nothing) Then Set m_SubclassReleaseTimer = New pdTimer
+        m_SubclassReleaseTimer.Interval = 16
+        m_SubclassReleaseTimer.StartTimer
+    Else
+        RemoveSubclass
+    End If
 End Sub
 
 'Whenever a control property changes that affects control size or layout (including internal changes, like caption adjustments),
@@ -881,10 +970,13 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 '* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
 '*************************************************************************************************
     
+    m_InSubclassNow = True
+    
     'We don't actually care about parsing out individual messages here.  This function will only be called by subclassed messages
     ' that result in the listbox being closed.
     If m_PopUpVisible Then HideListBox
     
+    m_InSubclassNow = False
     bHandled = False
 
 ' *************************************************************

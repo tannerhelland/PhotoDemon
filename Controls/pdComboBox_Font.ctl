@@ -524,7 +524,7 @@ Private Sub copyFontsToComboBox()
         
         'Iterate through the string stack, adding fonts as we go
         Dim i As Long
-        For i = 0 To m_listOfFonts.getNumOfStrings - 1
+        For i = 0 To m_listOfFonts.GetNumOfStrings - 1
             SendMessage m_ComboBoxHwnd, CB_INSERTSTRING, i, ByVal m_listOfFonts.GetStringPointer(i)
         Next i
         
@@ -550,10 +550,10 @@ Private Sub dynamicallyFitDropDown(ByVal listHwnd As Long)
         totalHeight = 0
         
         'All entries have the same base size
-        If m_listOfFonts.getNumOfStrings > 8 Then
+        If m_listOfFonts.GetNumOfStrings > 8 Then
             totalHeight = (m_ItemHeight * 2 + 2) * 8
         Else
-            totalHeight = (m_ItemHeight * 2 + 2) * m_listOfFonts.getNumOfStrings
+            totalHeight = (m_ItemHeight * 2 + 2) * m_listOfFonts.GetNumOfStrings
         End If
         
         'The final height measurement includes two pixels for the non-client border of the drop-down
@@ -605,7 +605,7 @@ Public Function ListCount() As Long
     If m_ComboBoxHwnd <> 0 Then
         ListCount = SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&)
     Else
-        ListCount = m_listOfFonts.getNumOfStrings
+        ListCount = m_listOfFonts.GetNumOfStrings
     End If
     
 End Function
@@ -613,7 +613,7 @@ End Function
 'Retrieve a specified list item
 Public Property Get List(ByVal indexOfItem As Long) As String
     
-    If (indexOfItem >= 0) And (indexOfItem < m_listOfFonts.getNumOfStrings) Then
+    If (indexOfItem >= 0) And (indexOfItem < m_listOfFonts.GetNumOfStrings) Then
         List = m_listOfFonts.GetString(indexOfItem)
     Else
         List = ""
@@ -668,13 +668,13 @@ End Property
 Public Sub setListIndexByString(ByVal listString As String, Optional ByVal compareMode As VbCompareMethod = vbBinaryCompare)
     
     'Look for this string in our current array
-    If m_listOfFonts.getNumOfStrings > 0 Then
+    If m_listOfFonts.GetNumOfStrings > 0 Then
         
         Dim newIndex As Long
         newIndex = -1
         
         Dim i As Long
-        For i = 0 To m_listOfFonts.getNumOfStrings - 1
+        For i = 0 To m_listOfFonts.GetNumOfStrings - 1
             If StrComp(listString, m_listOfFonts.GetString(i), compareMode) = 0 Then
                 newIndex = i
                 Exit For
@@ -789,7 +789,7 @@ Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVa
     cPainterBox.RequestRepaint
         
     'Set a hand cursor
-    cMouseEvents.setSystemCursor IDC_HAND
+    cMouseEvents.SetSystemCursor IDC_HAND
         
 End Sub
 
@@ -799,7 +799,7 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
     cPainterBox.RequestRepaint
     
     'Reset the cursor
-    cMouseEvents.setSystemCursor IDC_ARROW
+    cMouseEvents.SetSystemCursor IDC_ARROW
     
 End Sub
 
@@ -1096,9 +1096,9 @@ Private Function CreateComboBox() As Boolean
         
         '...and a third subclasser for mouse events
         Set cMouseEvents = New pdInputMouse
-        cMouseEvents.addInputTracker m_ComboBoxHwnd, True, , , True, True
-        cMouseEvents.setSystemCursor IDC_HAND
-        cMouseEvents.setCaptureOverride True
+        cMouseEvents.AddInputTracker m_ComboBoxHwnd, True, , , True, True
+        cMouseEvents.SetSystemCursor IDC_HAND
+        cMouseEvents.SetCaptureOverride True
         
     End If
     
@@ -1106,7 +1106,7 @@ Private Function CreateComboBox() As Boolean
     RefreshFont True
     
     'If we backed up previous combo box entries at some point, we must restore those entries now.
-    If m_listOfFonts.getNumOfStrings > 0 Then
+    If m_listOfFonts.GetNumOfStrings > 0 Then
         
         copyFontsToComboBox
         
@@ -1198,7 +1198,7 @@ Private Sub RefreshFont(Optional ByVal forceRefresh As Boolean = False)
     End If
     
     'If a forcible refresh isn't required, but the list has changed since our last refresh, refresh it again now
-    If (Not forceRefresh) And (m_CountAtLastFontRefresh <> m_listOfFonts.getNumOfStrings) Then forceRefresh = True
+    If (Not forceRefresh) And (m_CountAtLastFontRefresh <> m_listOfFonts.GetNumOfStrings) Then forceRefresh = True
     
     'Request a new font, if one or more settings have changed
     If (fontRefreshRequired Or forceRefresh) And g_IsProgramRunning Then
@@ -1221,7 +1221,7 @@ Private Sub RefreshFont(Optional ByVal forceRefresh As Boolean = False)
         curFont.AttachToDC tmpDC
         
         Dim i As Long, tmpWidth As Long
-        For i = 0 To m_listOfFonts.getNumOfStrings - 1
+        For i = 0 To m_listOfFonts.GetNumOfStrings - 1
             tmpWidth = curFont.GetWidthOfString(m_listOfFonts.GetString(i))
             If tmpWidth > m_LargestWidth Then m_LargestWidth = tmpWidth
         Next i
@@ -1235,7 +1235,7 @@ Private Sub RefreshFont(Optional ByVal forceRefresh As Boolean = False)
         m_LargestWidth = m_LargestWidth * 2.35
         
         'Remember the current list count, so we don't unnecessarily refresh the font in the future
-        m_CountAtLastFontRefresh = m_listOfFonts.getNumOfStrings
+        m_CountAtLastFontRefresh = m_listOfFonts.GetNumOfStrings
                     
     End If
     
@@ -1628,10 +1628,10 @@ Public Sub SetWidthAutomatically(Optional ByVal newWidth As Long = 100, Optional
         Dim maxTextWidth As Long, testWidth As Long
         maxTextWidth = 0
         
-        If m_listOfFonts.getNumOfStrings > 0 Then
+        If m_listOfFonts.GetNumOfStrings > 0 Then
         
             Dim i As Long
-            For i = 0 To m_listOfFonts.getNumOfStrings - 1
+            For i = 0 To m_listOfFonts.GetNumOfStrings - 1
                 
                 'Calculate an ideal width for this string, using the current font
                 testWidth = getIdealStringWidth(m_listOfFonts.GetString(i))
@@ -1686,7 +1686,7 @@ End Sub
 Private Sub InstallHookConditional()
 
     'Check for an existing hook
-    If Not m_HasFocus Then
+    If (Not m_HasFocus) Then
     
         'Note the time.  This is used to prevent keypresses occurring immediately prior to the hook, from being
         ' caught within our hook proc!
@@ -1941,7 +1941,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     If GetComboBoxInfo(m_ComboBoxHwnd, cbiCombo) <> 0 Then
                     
                         'Any actions that rely on the cbiCombo item can be applied here, as necessary
-                        cMouseEvents.setSystemCursor IDC_HAND
+                        cMouseEvents.SetSystemCursor IDC_HAND
                         
                     End If
                     

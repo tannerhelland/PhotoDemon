@@ -556,7 +556,7 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
                 
                 'Activate mouse events
                 If (m_MouseEvents Is Nothing) Then Set m_MouseEvents = New pdInputMouse
-                m_MouseEvents.addInputTracker m_EditBoxHwnd, True, True, , True, , True
+                m_MouseEvents.AddInputTracker m_EditBoxHwnd, True, True, , True, , True
                 
             End If
         End If
@@ -686,7 +686,7 @@ End Sub
 
 Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     RaiseEvent MouseEnter(Button, Shift, x, y)
-    m_MouseEvents.setSystemCursor IDC_IBEAM
+    m_MouseEvents.SetSystemCursor IDC_IBEAM
 End Sub
 
 Private Sub m_MouseEvents_MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -695,7 +695,7 @@ End Sub
 
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     RaiseEvent MouseLeave(Button, Shift, x, y)
-    m_MouseEvents.setSystemCursor IDC_DEFAULT
+    m_MouseEvents.SetSystemCursor IDC_DEFAULT
 End Sub
 
 'On first click, we select all text (but only if the user hasn't manually selected text with their initial mouse action)
@@ -801,7 +801,7 @@ End Function
 Private Sub InstallKeyboardHook()
 
     'Check for an existing hook
-    If Not m_HasFocus Then
+    If (Not m_HasFocus) Then
     
         'Note that this window is now active
         m_HasFocus = True
@@ -810,8 +810,19 @@ Private Sub InstallKeyboardHook()
         ' caught within our hook proc!
         m_TimeAtFocusEnter = GetTickCount
         
-        'No hook exists.  Hook the control now.
-        If Not (cSubclass Is Nothing) Then cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_EditBoxHwnd, 2, Me, , True
+        'If a hook already exists and we haven't been able to free it, simply disable the release timer.
+        ' (Otherwise, install a new hook now.)
+        Dim hookAlreadyActive As Boolean: hookAlreadyActive = False
+        If Not (m_HookReleaseTimer Is Nothing) Then
+            If m_HookReleaseTimer.IsActive Then
+                m_HookReleaseTimer.StopTimer
+                hookAlreadyActive = True
+            End If
+        End If
+        
+        If (Not hookAlreadyActive) Then
+            If Not (cSubclass Is Nothing) Then cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_EditBoxHwnd, 2, Me, , True
+        End If
         
     End If
 
@@ -1281,7 +1292,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             
             'Start hooking keypresses so we can grab Unicode chars before VB eats 'em.  Not that this function actually sets
             ' the m_HasFocus value to TRUE.
-            If Not m_HasFocus Then
+            If (Not m_HasFocus) Then
                 InstallKeyboardHook
                 RaiseEvent GotFocusAPI
             End If

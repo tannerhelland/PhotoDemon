@@ -28,8 +28,8 @@ Begin VB.UserControl pdListBox
       Top             =   360
       Visible         =   0   'False
       Width           =   255
-      _extentx        =   450
-      _extenty        =   2778
+      _ExtentX        =   450
+      _ExtentY        =   2778
    End
    Begin PhotoDemon.pdListBoxView lbView 
       Height          =   1575
@@ -37,8 +37,8 @@ Begin VB.UserControl pdListBox
       TabIndex        =   0
       Top             =   360
       Width           =   1575
-      _extentx        =   2778
-      _extenty        =   2778
+      _ExtentX        =   2778
+      _ExtentY        =   2778
    End
 End
 Attribute VB_Name = "pdListBox"

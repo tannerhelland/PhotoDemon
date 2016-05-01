@@ -235,7 +235,9 @@ End Sub
 '  an "as-required" basis.)
 Public Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean = False, Optional ByVal customKeyEvents As Boolean = False, Optional ByVal appCommandEvents As Boolean = False)
     
-    If m_hWnd <> 0 Then
+    If (Not g_IsProgramRunning) Then Exit Sub
+    
+    If (m_hWnd <> 0) Then
     
         'Initialize special subclassers, as requested
         If customMouseEvents Then
@@ -594,7 +596,7 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
     bufferWasResized = False
     
     If (m_BackBuffer.GetDIBWidth <> m_Width) Or (m_BackBuffer.GetDIBHeight <> m_Height) Then
-        m_BackBuffer.createBlank m_Width, m_Height, 24
+        m_BackBuffer.CreateBlank m_Width, m_Height, 24
         bufferWasResized = True
     End If
     
@@ -1121,11 +1123,16 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 '* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
 '*************************************************************************************************
     
+    Dim initVisibility As Boolean
+    
     Select Case uMsg
         
         'WM_WINDOWPOSCHANGING covers some visibility change cases that WM_SHOWWINDOW does not;
         ' see http://blogs.msdn.com/b/oldnewthing/archive/2008/01/15/7113860.aspx for details
         Case WM_WINDOWPOSCHANGING
+            
+            initVisibility = m_Visibility
+            
             Dim tmpWindowPos As tagWINDOWPOS
             CopyMemory ByVal VarPtr(tmpWindowPos), ByVal lParam, Len(tmpWindowPos)
             
@@ -1140,7 +1147,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
             End If
             
+            'Finally, notify the parent of the pending visibility change (if any)
+            If (initVisibility <> m_Visibility) Then RaiseEvent VisibilityChange(m_Visibility)
+            
         Case WM_SHOWWINDOW
+            
+            initVisibility = m_Visibility
             m_Visibility = CBool(wParam <> 0)
             
             'If we haven't asked the caller for a repaint yet, ask for one now.  (This is the last possible time we can request
@@ -1148,7 +1160,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             If m_Visibility And (m_RedrawRequestCount > 0) Then AskForARepaint True, True
             
             'Finally, notify the parent of the pending visibility change
-            RaiseEvent VisibilityChange(m_Visibility)
+            If (initVisibility <> m_Visibility) Then RaiseEvent VisibilityChange(m_Visibility)
             
         'All other messages are custom requests from the window.  Use them to raise custom message events.
         Case Else
