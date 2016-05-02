@@ -137,6 +137,20 @@ Public Function PromptTIFFSettings(ByRef srcImage As pdImage, ByRef dstFormatPar
     
 End Function
 
+Public Function PromptPNMSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+    
+    Load dialog_ExportPixmap
+    dialog_ExportPixmap.ShowDialog srcImage
+    
+    PromptPNMSettings = dialog_ExportPixmap.GetDialogResult
+    dstFormatParams = dialog_ExportPixmap.GetFormatParams
+    dstMetadataParams = dialog_ExportPixmap.GetMetadataParams
+    
+    Unload dialog_ExportPixmap
+    Set dialog_ExportPixmap = Nothing
+    
+End Function
+
 'Present a dialog box to ask the user for various JPEG-2000 (JP2) export settings
 Public Function PromptJP2Settings(ByRef srcImage As pdImage, ByRef dstFormatParams As String) As VbMsgBoxResult
 

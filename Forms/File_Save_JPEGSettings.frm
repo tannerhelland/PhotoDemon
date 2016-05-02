@@ -396,6 +396,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Make sure that the proper cursor is set
     Screen.MousePointer = 0
+    Message "Waiting for user to specify export options... "
     
     'Populate the category button strip
     btsCategory.AddItem "basic", 0
@@ -411,7 +412,6 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     cboSaveQuality.AddItem " low (40)", 4
     cboSaveQuality.AddItem " custom quality", 5
     cboSaveQuality.ListIndex = 1
-    Message "Waiting for user to specify JPEG export options... "
     
     btsCompression.AddItem "baseline", 0
     btsCompression.AddItem "optimized baseline", 1

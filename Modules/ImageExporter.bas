@@ -170,9 +170,17 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
                     End If
                 End If
             
-            'PPM only support non-alpha, 24-bpp images
-            Case PDIF_PPM
-                AutoDetectOutputColorDepth = 24
+            'PNM supports only non-alpha modes, but the file extension should really be changed to match the output depth
+            Case PDIF_PNM
+                If isTrueColor Then
+                    AutoDetectOutputColorDepth = 24
+                Else
+                    If isMonochrome Then
+                        AutoDetectOutputColorDepth = 1
+                    Else
+                        AutoDetectOutputColorDepth = 8
+                    End If
+                End If
             
             'PSD supports multiple bit-depths, but at present, we limit it to 24 or 32 only
             Case PDIF_PSD
@@ -1246,6 +1254,155 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
 ExportPNGError:
     ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
     ExportPNG = False
+    
+End Function
+
+Public Function ExportPNM(ByRef srcPDImage As pdImage, ByRef dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportPNMError
+    
+    ExportPNM = False
+    Dim sFileType As String: sFileType = "PNM"
+    
+    'Parse all relevant PNM parameters.  (See the PNM export dialog for details on how these are generated.)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString formatParams
+    
+    Dim pnmColorModel As String, pnmColorDepth As String
+    pnmColorModel = cParams.GetString("PNMColorModel", "Auto")
+    pnmColorDepth = cParams.GetString("PNMColorDepth", "Standard")
+    
+    Dim pnmForceExtension As Boolean, pnmUseASCII As Boolean
+    pnmForceExtension = cParams.GetBool("PNMChangeExtensionToMatch", True)
+    pnmUseASCII = cParams.GetBool("PNMUseASCII", True)
+    
+    Dim pnmBackColor As Long
+    pnmBackColor = cParams.GetLong("PNMBackgroundColor", vbWhite)
+    
+    'Generate a composited image copy, with alpha premultiplied (as we're just going to composite it, anyway)
+    Dim tmpImageCopy As pdDIB
+    Set tmpImageCopy = New pdDIB
+    srcPDImage.GetCompositedImage tmpImageCopy, True
+    
+    'PNMs do not support alpha, so forcibly flatten the image (regardless of output color depth).
+    If (tmpImageCopy.GetDIBColorDepth = 32) Then tmpImageCopy.ConvertTo24bpp pnmBackColor
+    
+    'If any "auto" parameters are present, calculate their ideal values now
+    Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+    Dim forceGrayscale As Boolean
+    
+    If ParamsEqual(pnmColorModel, "auto") Then
+        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_PNM, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+        ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
+    Else
+        If ParamsEqual(pnmColorModel, "color") Then
+            outputColorDepth = 24
+        ElseIf ParamsEqual(pnmColorModel, "gray") Then
+            outputColorDepth = 8
+        ElseIf ParamsEqual(pnmColorModel, "monochrome") Then
+            outputColorDepth = 1
+        Else
+            outputColorDepth = 24
+        End If
+        forceGrayscale = CBool(outputColorDepth = 8)
+    End If
+    
+    'If the user wants us to modify the output file extension to match the selected encoding, apply it now
+    If pnmForceExtension Then
+    
+        Dim newExtension As String
+        If ParamsEqual(pnmColorDepth, "float") Then
+            newExtension = "pfm"
+        Else
+            Select Case outputColorDepth
+                Case 1
+                    newExtension = "pbm"
+                
+                Case 8
+                    newExtension = "pgm"
+                
+                Case Else
+                    newExtension = "ppm"
+            End Select
+        End If
+        
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        
+        Dim tmpFilename As String
+        tmpFilename = cFile.GetFilename(dstFile, True)
+        
+        dstFile = cFile.GetPathOnly(dstFile) & tmpFilename & "." & newExtension
+        Debug.Print dstFile
+    
+    End If
+    
+    'The caller can request HDR or float color-depths; calculate those now
+    Dim finalColorDepth As Long
+    If ParamsEqual(pnmColorDepth, "hdr") Then
+        finalColorDepth = outputColorDepth * 2
+    ElseIf ParamsEqual(pnmColorDepth, "float") Then
+        finalColorDepth = outputColorDepth * 4
+    Else
+        finalColorDepth = outputColorDepth
+    End If
+    
+    'Failsafe check for monochrome images
+    If (outputColorDepth = 1) Then finalColorDepth = 1
+    
+    'FreeImage is required for pixmap writing
+    If g_ImageFormats.FreeImageEnabled Then
+        
+        Dim fi_DIB As Long
+        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, finalColorDepth, PDAS_NoAlpha, PDAS_NoAlpha, , pnmBackColor, isGrayscale Or forceGrayscale)
+        
+        'Use that handle to save the image to PNM format, with required color conversion based on the outgoing color depth
+        If (fi_DIB <> 0) Then
+            
+            'From the input parameters, determine a matching FreeImage output constant
+            Dim fif_Final As FREE_IMAGE_FORMAT
+            If ParamsEqual(pnmColorDepth, "float") Then
+                fif_Final = FIF_PFM
+            Else
+                If (outputColorDepth = 1) Then
+                    If pnmUseASCII Then fif_Final = FIF_PBM Else fif_Final = FIF_PBMRAW
+                ElseIf (outputColorDepth = 8) Then
+                    If pnmUseASCII Then fif_Final = FIF_PGM Else fif_Final = FIF_PGMRAW
+                Else
+                    If pnmUseASCII Then fif_Final = FIF_PPM Else fif_Final = FIF_PPMRAW
+                End If
+            End If
+            
+            Dim fi_Flags As FREE_IMAGE_SAVE_OPTIONS
+            If (fif_Final = FIF_PBM) Or (fif_Final = FIF_PGM) Or (fif_Final = FIF_PPM) Then
+                fi_Flags = FISO_PNM_SAVE_ASCII
+            Else
+                fi_Flags = FISO_PNM_SAVE_RAW
+            End If
+            
+            ExportPNM = FreeImage_Save(fif_Final, fi_DIB, dstFile, fi_Flags)
+            If ExportPNM Then
+                ExportDebugMsg "Export to " & sFileType & " appears successful."
+            Else
+                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+            End If
+            
+        Else
+            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            ExportPNM = False
+        End If
+        
+    Else
+        ExportPNM = False
+        Message "No %1 encoder found. Save aborted.", "PNM"
+    End If
+    
+    Exit Function
+    
+ExportPNMError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportPNM = False
     
 End Function
 
