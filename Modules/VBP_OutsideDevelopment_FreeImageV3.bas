@@ -1536,6 +1536,8 @@ Public Declare Function FreeImage_GetTransparencyCount Lib "FreeImage.dll" Alias
 Public Declare Function FreeImage_GetTransparencyTable Lib "FreeImage.dll" Alias "_FreeImage_GetTransparencyTable@4" ( _
            ByVal Bitmap As Long) As Long
 
+Public Declare Function FreeImage_Invert Lib "FreeImage.dll" Alias "_FreeImage_Invert@4" (ByVal Bitmap As Long) As Long
+
 Public Declare Sub FreeImage_SetTransparencyTable Lib "FreeImage.dll" Alias "_FreeImage_SetTransparencyTable@12" ( _
            ByVal Bitmap As Long, _
            ByVal TransTablePtr As Long, _
@@ -2021,8 +2023,8 @@ Private Declare Function FreeImage_RotateExInt Lib "FreeImage.dll" Alias "_FreeI
            ByVal OriginY As Double, _
            ByVal UseMask As Long) As Long
 
-Private Declare Function FreeImage_FlipHorizontal Lib "FreeImage.dll" Alias "_FreeImage_FlipHorizontal@4" (ByVal fiBitmap As Long) As Long
-Private Declare Function FreeImage_FlipVertical Lib "FreeImage.dll" Alias "_FreeImage_FlipVertical@4" (ByVal fiBitmap As Long) As Long
+Private Declare Function FreeImage_FlipHorizontal Lib "FreeImage.dll" Alias "_FreeImage_FlipHorizontal@4" (ByVal FIBITMAP As Long) As Long
+Private Declare Function FreeImage_FlipVertical Lib "FreeImage.dll" Alias "_FreeImage_FlipVertical@4" (ByVal FIBITMAP As Long) As Long
 
 ' Upsampling and downsampling
 Public Declare Function FreeImage_Rescale Lib "FreeImage.dll" Alias "_FreeImage_Rescale@16" ( _

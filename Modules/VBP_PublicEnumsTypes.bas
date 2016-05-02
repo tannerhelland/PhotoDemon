@@ -108,10 +108,10 @@ End Enum
 Public Type pdLanguageFile
     Author As String
     FileName As String
-    LangID As String
+    langID As String
     LangName As String
     LangType As String
-    LangVersion As String
+    langVersion As String
     LangStatus As String
     InternalDisplayName As String
     UpdateChecksum As Long
@@ -569,6 +569,7 @@ Public Enum PHOTODEMON_IMAGE_FORMAT
     'Other image formats supported by PhotoDemon, but not by FreeImage
     PDIF_WMF = 110
     PDIF_EMF = 111
+    PDIF_PNM = 112      'Catch-all for various portable pixmap filetypes
     
 End Enum
 
@@ -580,6 +581,6 @@ End Enum
     Const PDIF_HDR = 26, PDIF_FAXG3 = 27, PDIF_SGI = 28, PDIF_EXR = 29, PDIF_J2K = 30, PDIF_JP2 = 31, PDIF_PFM = 32
     Const PDIF_PICT = 33, PDIF_RAW = 34, PDIF_WEBP = 35, PDIF_JXR = 36
     Const PDIF_PDI = 100, PDIF_RAWBUFFER = 101, PDIF_TMPFILE = 102
-    Const PDIF_WMF = 110, PDIF_EMF = 111
+    Const PDIF_WMF = 110, PDIF_EMF = 111, PDIF_PNM = 112
 #End If
 

@@ -2617,8 +2617,16 @@ Public Function GetExportPreview(ByRef srcFI_Handle As Long, ByRef dstDIB As pdD
         fi_DIB = FreeImage_LoadFromMemoryEx(Nothing, fi_LoadFlags, fi_Size, dstFormat, VarPtr(m_ExportPreviewBytes(0)))
         
         If (fi_DIB <> 0) Then
+        
+            'Because we're going to do a fast copy operation, we need to flip the FreeImage DIB to match DIB orientation
             FreeImage_FlipVertically fi_DIB
             
+            'If a format requires special handling, trigger it here
+            If (dstFormat = PDIF_PBM) Or (dstFormat = PDIF_PBMRAW) And (FreeImage_GetBPP(fi_DIB) = 1) Then
+                FreeImage_Invert fi_DIB
+            End If
+            
+            'Convert the incoming DIB to a 24-bpp or 32-bpp representation
             If (FreeImage_GetBPP(fi_DIB) <> 24) And (FreeImage_GetBPP(fi_DIB) <> 32) Then
                 
                 Dim newFI_Handle As Long
@@ -2635,6 +2643,7 @@ Public Function GetExportPreview(ByRef srcFI_Handle As Long, ByRef dstDIB As pdD
                 
             End If
             
+            'Copy the DIB into a PD DIB object
             If Not Plugin_FreeImage.PaintFIDibToPDDib(dstDIB, fi_DIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight) Then
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "WARNING!  Plugin_FreeImage.PaintFIDibToPDDib failed for unknown reasons."

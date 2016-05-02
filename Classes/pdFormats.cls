@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Format Manager
 'Copyright 2012-2016 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 12/March/16
-'Last update: rewrote against new PDIF constants as part of the Save... options overhaul
+'Last updated: 02/May/16
+'Last update: expand PNM variant support
 '
 'This class is the new handler for PhotoDemon's vast image format support library.  Previously, individual functions
 ' (such as batch convert) had to manage specialized versions of this data, which made it extremely cumbersome to add
@@ -248,6 +248,7 @@ Public Sub GenerateInputFormats()
     If g_ZLibEnabled Then AddInputFormat "PDI - PhotoDemon Image", "*.pdi", PDIF_PDI
         
     If FreeImageEnabled Then
+        AddInputFormat "PFM - Portable Floatmap", "*.pfm", PDIF_PFM
         AddInputFormat "PGM - Portable Graymap", "*.pgm", PDIF_PGM
         AddInputFormat "PIC/PICT - Macintosh Picture", "*.pict;*.pct;*.pic", PDIF_PICT
     End If
@@ -256,7 +257,8 @@ Public Sub GenerateInputFormats()
     If FreeImageEnabled Or GDIPlusEnabled Then AddInputFormat "PNG - Portable Network Graphic", "*.png", PDIF_PNG
         
     If FreeImageEnabled Then
-        AddInputFormat "PPM - Portable Pixelmap", "*.ppm", PDIF_PPM
+        AddInputFormat "PNM - Portable Anymap", "*.pnm", PDIF_PPM
+        AddInputFormat "PPM - Portable Pixmap", "*.ppm", PDIF_PPM
         AddInputFormat "PSD - Adobe Photoshop", "*.psd;*.psb", PDIF_PSD
         AddInputFormat "RAS - Sun Raster File", "*.ras", PDIF_RAS
         AddInputFormat "RAW, etc - Raw image data", "*.3fr;*.arw;*.bay;*.bmq;*.cap;*.cine;*.cr2;*.crw;*.cs1;*.dc2;*.dcr;*.dng;*.drf;*.dsc;*.erf;*.fff;*.ia;*.iiq;*.k25;*.kc2;*.kdc;*.mdc;*.mef;*.mos;*.mrw;*.nef;*.nrw;*.orf;*.pef;*.ptx;*.pxn;*.qtk;*.raf;*.raw;*.rdc;*.rw2;*.rwz;*.sr2;*.srf;*.sti", PDIF_RAW
@@ -290,7 +292,7 @@ Public Sub GenerateInputFormats()
     For x = 0 To numOfInputFormats
     
         'Index 0 is a special case; everything else is handled in the same manner.
-        If x <> 0 Then
+        If (x <> 0) Then
             commonDialogInputs = commonDialogInputs & "|" & inputDescriptions(x) & "|" & inputExtensions(x)
         Else
             commonDialogInputs = inputDescriptions(x) & "|" & inputExtensions(x)
@@ -356,9 +358,9 @@ Public Sub GenerateOutputFormats()
     If g_ZLibEnabled Then AddOutputFormat "PDI - PhotoDemon Image", "pdi", PDIF_PDI
     
     If FreeImageEnabled Or GDIPlusEnabled Then AddOutputFormat "PNG - Portable Network Graphic", "png", PDIF_PNG
-        
+    
     If FreeImageEnabled Then
-        AddOutputFormat "PPM - Portable Pixel Map", "ppm", PDIF_PPM
+        AddOutputFormat "PNM - Portable Anymap (Netpbm)", "pnm", PDIF_PNM
         AddOutputFormat "PSD - Photoshop Document", "psd", PDIF_PSD
         AddOutputFormat "TGA - Truevision (TARGA)", "tga", PDIF_TARGA
     End If
@@ -472,6 +474,8 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PHOTODEMON_IMAGE_FORMAT) A
             GetExtensionFromPDIF = "pct"
         Case PDIF_PNG
             GetExtensionFromPDIF = "png"
+        Case PDIF_PNM
+            GetExtensionFromPDIF = "pnm"
         Case PDIF_PPM
             GetExtensionFromPDIF = "ppm"
         Case PDIF_PPMRAW
@@ -513,7 +517,7 @@ Public Function DoesPDIFSupportMultipleColorDepths(ByVal outputPDIF As PHOTODEMO
 
     Select Case outputPDIF
     
-        Case PDIF_GIF, PDIF_HDR, PDIF_JPEG, PDIF_PPM
+        Case PDIF_GIF, PDIF_HDR, PDIF_JPEG
             DoesPDIFSupportMultipleColorDepths = False
             
         Case Else
@@ -796,7 +800,7 @@ Public Function GetClosestColorDepth(ByVal outputPDIF As Long, ByVal desiredColo
     'By default, report that 24bpp is the preferred alternative
     GetClosestColorDepth = 24
 
-    'Certain file formats only support one output color depth, so they are easily handled - these include JPEG, GIF, PPM
+    'Certain file formats only support one output color depth, so they are easily handled (e.g. GIF)
     
     'Some file formats support many color depths (PNG, for example, can handle 1/4/8/24/32)
     
@@ -961,7 +965,7 @@ Friend Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PHOTODEMON_IM
         Case PDIF_PNG
             GetIdealMetadataFormatFromPDIF = PDMF_XMP
         
-        Case PDIF_PPM
+        Case PDIF_PNM
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
             
         Case PDIF_PSD
@@ -1014,7 +1018,7 @@ Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT
         Case PDIF_PNG
             IsExifAllowedForPDIF = False
         
-        Case PDIF_PPM
+        Case PDIF_PNM
             IsExifAllowedForPDIF = False
         
         Case PDIF_PSD
@@ -1065,8 +1069,8 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PHOTODEMON_IMAGE_FOR
         Case PDIF_PNG
             IsExportDialogSupported = True
         
-        Case PDIF_PPM
-            IsExportDialogSupported = False
+        Case PDIF_PNM
+            IsExportDialogSupported = True
         
         Case PDIF_PSD
             IsExportDialogSupported = False
