@@ -775,6 +775,9 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
         End If
     End If
     
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     'See if the output file format supports metadata.  If it doesn't, exit now.
     ' (Note that we return TRUE despite not writing any metadata - this lets the caller know that there were no errors.)
     Dim outputMetadataFormat As PD_METADATA_FORMAT
@@ -782,6 +785,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     If (outputMetadataFormat = PDMF_NONE) Then
         Message "This file format does not support metadata.  Metadata processing skipped."
+        If cFile.FileExist(srcMetadataFile) Then cFile.KillFile srcMetadataFile
         WriteMetadata = True
         Exit Function
     End If
