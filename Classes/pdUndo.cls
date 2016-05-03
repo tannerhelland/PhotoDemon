@@ -503,7 +503,7 @@ Public Sub RestoreUndoData()
             For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
             
                 'Grab the current layer ID (all undo functions operate on layer ID, not index, as index may change unexpectedly)
-                curLayerID = pdImages(g_CurrentImage).GetLayerByIndex(i).getLayerID
+                curLayerID = pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerID
             
                 'Start by reconstructing a layer DIB using the default UNDO_LAYER type
                 nearestLayerDiffDIB = findNearestDiffIndex(undoNum, UNDO_LAYER, curLayerID)
@@ -731,10 +731,10 @@ End Sub
 ' this function will also return the name of the action responsible for the change.
 '
 'This function will return FALSE if no layer-specific changes have been made, and thus no Fade action would be relevant.
-Public Function fillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLayerID As Long, Optional ByRef nameOfProcessorAction As String, Optional ByVal checkStateOnly As Boolean = True) As Boolean
+Public Function FillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLayerID As Long, Optional ByRef nameOfProcessorAction As String, Optional ByVal checkStateOnly As Boolean = True) As Boolean
     
     If undoNum = 0 Then
-        fillDIBWithLastUndoCopy = 0
+        FillDIBWithLastUndoCopy = 0
         Exit Function
     End If
     
@@ -774,7 +774,7 @@ Public Function fillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
         'Some functions, like SyncInterfaceToCurrentImage, only care if a recent Layer modification exists.  They don't actually need
         ' us to return the relevant DIB.  If checkStateOnly = TRUE, exit now.
         If checkStateOnly Then
-            fillDIBWithLastUndoCopy = True
+            FillDIBWithLastUndoCopy = True
             Exit Function
         End If
         
@@ -799,14 +799,12 @@ Public Function fillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
         End If
         
         'tmpLayer will now contain a copy of the relevant DIB (inside .layerDIB).  Copy it into the destination DIB, then exit.
-        Set dstDIB = New pdDIB
-        dstDIB.createFromExistingDIB tmpLayer.layerDIB
-        
+        Set dstDIB = tmpLayer.layerDIB
         Set tmpLayer = Nothing
-        fillDIBWithLastUndoCopy = True
+        FillDIBWithLastUndoCopy = True
         
     Else
-        fillDIBWithLastUndoCopy = False
+        FillDIBWithLastUndoCopy = False
     End If
     
 End Function
@@ -1149,7 +1147,7 @@ Friend Sub CopyUndoStack(ByRef numOfUndos As Long, ByRef curUndoNumber As Long, 
             .undoType = undoStack(i).undoType
             
             Set .thumbnailLarge = New pdDIB
-            .thumbnailLarge.createFromExistingDIB undoStack(i).thumbnailLarge
+            .thumbnailLarge.CreateFromExistingDIB undoStack(i).thumbnailLarge
             
         End With
         
