@@ -32,7 +32,7 @@ Private m_LoadTime As Double, m_StartTime As Double
 
 'This constant is the number of "discrete" loading steps involved in loading the program.  It is relevant for displaying
 'the progress bar on the initial splash screen; this value is the progress bar's maximum value.
-Private Const NUMBER_OF_LOADING_STEPS As Long = 14
+Private Const NUMBER_OF_LOADING_STEPS As Long = 18
 
 'PhotoDemon starts here.  Main() is necessary as a start point (vs a form) to make sure that theming is implemented
 ' correctly.  Note that this code is irrelevant within the IDE.
