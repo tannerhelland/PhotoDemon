@@ -454,6 +454,7 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
                 
                 'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
                 Dim tmpDIBPointer As Long, tmpDIBLength As Long
+                dstLayer.layerDIB.SetInitialAlphaPremultiplicationState True
                 dstLayer.layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                 
                 nodeLoadedSuccessfully = pdiReader.GetNodeDataByID_UnsafeDstPointer(targetLayerID, False, tmpDIBPointer, True)
@@ -584,6 +585,7 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
                 
                 'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
                 Dim tmpDIBPointer As Long, tmpDIBLength As Long
+                dstLayer.layerDIB.SetInitialAlphaPremultiplicationState True
                 dstLayer.layerDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                 
                 nodeLoadedSuccessfully = pdiReader.GetNodeDataByIndex_UnsafeDstPointer(0, False, tmpDIBPointer, True)
