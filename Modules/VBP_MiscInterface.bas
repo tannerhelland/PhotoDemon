@@ -279,7 +279,7 @@ End Sub
 Private Sub SyncUI_MultipleLayerSettings()
     
     'Delete hidden layers is only available if one or more layers are hidden, but not ALL layers are hidden.
-    If (pdImages(g_CurrentImage).getNumOfHiddenLayers > 0) And (pdImages(g_CurrentImage).getNumOfHiddenLayers < pdImages(g_CurrentImage).GetNumOfLayers) Then
+    If (pdImages(g_CurrentImage).GetNumOfHiddenLayers > 0) And (pdImages(g_CurrentImage).GetNumOfHiddenLayers < pdImages(g_CurrentImage).GetNumOfLayers) Then
         FormMain.MnuLayerDelete(1).Enabled = True
     Else
         FormMain.MnuLayerDelete(1).Enabled = False
@@ -327,14 +327,14 @@ Private Sub SyncUI_MultipleLayerSettings()
     
     
     'Flatten is only available if one or more layers are actually *visible*
-    If pdImages(g_CurrentImage).getNumOfVisibleLayers > 0 Then
+    If pdImages(g_CurrentImage).GetNumOfVisibleLayers > 0 Then
         If Not FormMain.MnuLayer(15).Enabled Then FormMain.MnuLayer(15).Enabled = True
     Else
         FormMain.MnuLayer(15).Enabled = False
     End If
     
     'Merge visible is only available if *two* or more layers are visible
-    If pdImages(g_CurrentImage).getNumOfVisibleLayers > 1 Then
+    If pdImages(g_CurrentImage).GetNumOfVisibleLayers > 1 Then
         If Not FormMain.MnuLayer(16).Enabled Then FormMain.MnuLayer(16).Enabled = True
     Else
         FormMain.MnuLayer(16).Enabled = False
@@ -351,9 +351,9 @@ Private Sub SyncUI_CurrentLayerSettings()
     'First, determine if the current layer is using any form of non-destructive resizing
     Dim nonDestructiveResizeActive As Boolean
     nonDestructiveResizeActive = False
-    If (pdImages(g_CurrentImage).GetActiveLayer.getLayerCanvasXModifier <> 1) Then
+    If (pdImages(g_CurrentImage).GetActiveLayer.GetLayerCanvasXModifier <> 1) Then
         nonDestructiveResizeActive = True
-    ElseIf (pdImages(g_CurrentImage).GetActiveLayer.getLayerCanvasYModifier <> 1) Then
+    ElseIf (pdImages(g_CurrentImage).GetActiveLayer.GetLayerCanvasYModifier <> 1) Then
         nonDestructiveResizeActive = True
     End If
     
@@ -363,20 +363,20 @@ Private Sub SyncUI_CurrentLayerSettings()
         toolpanel_MoveSize.cmdLayerMove(0).Enabled = nonDestructiveResizeActive
     End If
     
-    toolpanel_MoveSize.cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
+    toolpanel_MoveSize.cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     
     'Similar logic is used for other non-destructive affine transforms
-    toolpanel_MoveSize.cmdLayerAngleReset.Enabled = CBool(pdImages(g_CurrentImage).GetActiveLayer.getLayerAngle <> 0)
-    toolpanel_MoveSize.cmdLayerShearReset(0).Enabled = CBool(pdImages(g_CurrentImage).GetActiveLayer.getLayerShearX <> 0)
-    toolpanel_MoveSize.cmdLayerShearReset(1).Enabled = CBool(pdImages(g_CurrentImage).GetActiveLayer.getLayerShearY <> 0)
-    toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
+    toolpanel_MoveSize.cmdLayerAngleReset.Enabled = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetLayerAngle <> 0)
+    toolpanel_MoveSize.cmdLayerShearReset(0).Enabled = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetLayerShearX <> 0)
+    toolpanel_MoveSize.cmdLayerShearReset(1).Enabled = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetLayerShearY <> 0)
+    toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     
     'If non-destructive FX are active on the current layer, update the non-destructive tool enablement to match
     SetUIGroupState PDUI_NonDestructiveFX, True
     
     'Layer rasterization depends on the current layer type
-    FormMain.MnuLayerRasterize(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.isLayerVector
-    FormMain.MnuLayerRasterize(1).Enabled = CBool(pdImages(g_CurrentImage).getNumOfVectorLayers > 0)
+    FormMain.MnuLayerRasterize(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.IsLayerVector
+    FormMain.MnuLayerRasterize(1).Enabled = CBool(pdImages(g_CurrentImage).GetNumOfVectorLayers > 0)
     
 End Sub
 
@@ -626,7 +626,7 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             End If
             
             'Because these changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
-            If Not suspendAssociatedRedraws Then ResetMenuIcons
+            If (Not suspendAssociatedRedraws) Then ResetMenuIcons
         
         End If
     
@@ -889,7 +889,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                     
                         .setNDFXControlState False
                         
-                        If pdImages(g_CurrentImage).GetActiveLayer.getLayerNonDestructiveFXState() Then
+                        If pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXState() Then
                             For i = 0 To .cmdQuickFix.Count - 1
                                 .cmdQuickFix(i).Enabled = True
                             Next i
@@ -901,7 +901,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                         
                         'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
                         For i = 0 To .sltQuickFix.Count - 1
-                            .sltQuickFix(i).Value = pdImages(g_CurrentImage).GetActiveLayer.getLayerNonDestructiveFXValue(i)
+                            .sltQuickFix(i).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXValue(i)
                         Next i
                         
                         .setNDFXControlState True
@@ -1029,16 +1029,15 @@ End Sub
 
 'Any commandbar-based dialog will automatically notify us of its "OK" or "Cancel" result; subsequent functions can check this return
 ' via GetLastShowDialogResult(), below.
-Public Sub NotifyShowDialogResult(ByVal msgResult As VbMsgBoxResult)
+Public Sub NotifyShowDialogResult(ByVal msgResult As VbMsgBoxResult, Optional ByVal nonStandardDialogSource As Boolean = False)
     
     'Only store the result if the dialog was initiated via ShowPDDialog, above
-    If g_ModalDialogActive Then m_LastShowDialogResult = msgResult
+    If g_ModalDialogActive Or nonStandardDialogSource Then m_LastShowDialogResult = msgResult
     
 End Sub
 
 'This function will tell you if the last commandbar-based dialog was closed via OK or CANCEL.
-'IMPORTANT NOTE: calling this function will RESET THE LAST-GENERATED RESULT, by design.  PD only calls this function from a singular place
-'                (the central Processing module), and it prevents errors to
+'IMPORTANT NOTE: calling this function will RESET THE LAST-GENERATED RESULT, by design.
 Public Function GetLastShowDialogResult() As VbMsgBoxResult
     GetLastShowDialogResult = m_LastShowDialogResult
     m_LastShowDialogResult = vbIgnore
@@ -1743,7 +1742,7 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
 
     'Create the target DIB
     Set GetRuntimeUIDIB = New pdDIB
-    GetRuntimeUIDIB.createBlank dibSize, dibSize, 32, BackColor, 0
+    GetRuntimeUIDIB.CreateBlank dibSize, dibSize, 32, BackColor, 0
     GetRuntimeUIDIB.SetInitialAlphaPremultiplicationState True
     
     Dim paintColor As Long
@@ -1784,15 +1783,15 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
 End Function
 
 'New test functions to (hopefully) help address high-DPI issues where VB's internal scale properties report false values
-Public Function APIWidth(ByVal srcHWnd As Long) As Long
+Public Function APIWidth(ByVal srcHwnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect srcHWnd, tmpRect
+    GetWindowRect srcHwnd, tmpRect
     APIWidth = tmpRect.x2 - tmpRect.x1
 End Function
 
-Public Function APIHeight(ByVal srcHWnd As Long) As Long
+Public Function APIHeight(ByVal srcHwnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect srcHWnd, tmpRect
+    GetWindowRect srcHwnd, tmpRect
     APIHeight = tmpRect.y2 - tmpRect.y1
 End Function
 
@@ -1950,7 +1949,7 @@ Public Sub ShowDisabledPreviewImage(ByRef dstPreview As pdFxPreviewCtl)
     
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createBlank dstPreview.GetPreviewWidth, dstPreview.GetPreviewHeight
+    tmpDIB.CreateBlank dstPreview.GetPreviewWidth, dstPreview.GetPreviewHeight
 
     Dim notifyFont As pdFont
     Set notifyFont = New pdFont
