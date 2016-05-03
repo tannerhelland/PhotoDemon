@@ -31,7 +31,7 @@ Begin VB.UserControl pdAccelerator
    End
    Begin VB.Timer tmrAccelerator 
       Enabled         =   0   'False
-      Interval        =   50
+      Interval        =   32
       Left            =   0
       Top             =   0
    End
@@ -138,18 +138,19 @@ End Property
 
 Private Sub tmrAccelerator_Timer()
     
-    'If we're still inside the hookproc, wait another 100 ms before testing the keypress
+    'If we're still inside the hookproc, wait another 32 ms before testing the keypress
     If (Not m_InHookNow) Then
         
         'To prevent multiple events from firing too closely together, enforce a slight action delay before processing
-        If Timer - m_TimerAtAcceleratorPress > 0.05 Then
-    
+        If (Timer - m_TimerAtAcceleratorPress) > 0.016 Then
+        
             'Because the accelerator has now been processed, we can disable the timer; this will prevent it from firing again, but the
             ' current sub will still complete its actions.
             tmrAccelerator.Enabled = False
             
             'If the accelerator index is valid, raise a corresponding event, then reset the accelerator index
-            If m_AcceleratorIndex <> -1 Then
+            If (m_AcceleratorIndex <> -1) Then
+                Debug.Print "raising accelerator-based event (#" & CStr(m_AcceleratorIndex) & ")"
                 RaiseEvent Accelerator(m_AcceleratorIndex)
                 m_AcceleratorIndex = -1
             End If
@@ -480,7 +481,7 @@ Private Function CanIRaiseAnAcceleratorEvent() As Boolean
     
     'Don't process accelerators when the main form is disabled (e.g. if a modal form is present, or if a previous
     ' action is in the middle of execution)
-    If Not FormMain.Enabled Then CanIRaiseAnAcceleratorEvent = False
+    If (Not FormMain.Enabled) Then CanIRaiseAnAcceleratorEvent = False
     
     'Don't process accelerators if the Language Editor is active
     If Not (FormLanguageEditor Is Nothing) Then
@@ -527,11 +528,13 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
         
         'MSDN states that negative codes must be passed to the next hook, without processing
         ' (see http://msdn.microsoft.com/en-us/library/ms644984.aspx)
-        If nCode >= 0 Then
+        '
+        'While here, we also skip event processing if an accelerator key is already in the queue
+        If (nCode >= 0) And (m_AcceleratorIndex = -1) Then
         
             'Bit 31 of lParam is 0 if a key is being pressed, and 1 if it is being released.  In the future, we could
             ' use this to raise separate KeyDown and KeyUp events, if desired.
-            If lParam < 0 Then
+            If (lParam < 0) Then
                 
                 'Key up events are raised twice; once in a transitionary stage, and once again in a final stage.
                 ' To prevent double-raising of KeyUp events, we check the transitionary state before proceeding
@@ -544,22 +547,22 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                     If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
                     
                     'Search our accelerator database for a match to the current keycode
-                    If m_NumOfHotkeys > 0 Then
+                    If (m_NumOfHotkeys > 0) Then
                     
                         Dim i As Long
                         For i = 0 To m_NumOfHotkeys - 1
                             
                             'First, see if the keycode matches.
-                            If m_Hotkeys(i).vKeyCode = wParam Then
+                            If (m_Hotkeys(i).vKeyCode = wParam) Then
                             
                                 'Next, see if the Ctrl+Alt+Shift state matches
                                 If m_Hotkeys(i).shiftState = retShiftConstants Then
-                                
+                                    
                                     'Boom!  This is a hit.  See if there is any reason to *not* raise an accelerator.
                                     ' (In PD, a lot of things can cause disabled accelerators - text boxes having focus,
                                     '  certain modal dialogs, no loaded images, etc.)
                                     If CanIRaiseAnAcceleratorEvent Then
-                                    
+                                        
                                         'No global PD state is preventing us from handling this accelerator.  Cache the index of the accelerator,
                                         ' note the current time, then initiate the accelerator evaluation timer.  It handles all further evaluation.
                                         m_AcceleratorIndex = i
