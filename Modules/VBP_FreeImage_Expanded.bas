@@ -1984,6 +1984,15 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
         Exit Function
     End If
     
+    Dim fi_DIB As Long, tmpFIHandle As Long
+    
+    'Perform a quick check for 32-bpp images with complex alpha; we can return those immediately!
+    If (outputColorDepth = 32) And (desiredAlphaState = PDAS_ComplicatedAlpha) And (srcDIB.GetDIBColorDepth = 32) And (Not forceGrayscale) Then
+        Debug.Print "Requested FreeImage object is 32-bpp; using shortcut path."
+        GetFIDib_SpecificColorMode = FreeImage_CreateFromDC(srcDIB.GetDIBDC)
+        Exit Function
+    End If
+    
     'Before proceeding, we first need to manually correct conditions that FreeImage cannot currently meet.
     ' Most significant among these is the combination of grayscale images + alpha channels; these must be forcibly expanded
     ' to RGBA at a matching bit-depth.
@@ -2071,23 +2080,28 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
     ElseIf (desiredAlphaState = PDAS_BinaryAlpha) Then
         
         'A cutoff of zero means all pixels are gonna be opaque
-        If alphaCutoffOrColor = 0 Then
+        If (alphaCutoffOrColor = 0) Then
             ResetExportPreviewDIB tmpDIBRequired, srcDIB
             m_ExportPreviewDIB.CompositeBackgroundColor Colors.ExtractR(BackgroundColor), Colors.ExtractG(BackgroundColor), Colors.ExtractB(BackgroundColor)
             desiredAlphaState = PDAS_NoAlpha
         Else
             
-            srcDIB.ApplyAlphaCutoff_Ex tmpTransparencyTable, alphaCutoffOrColor
-            
-            'If the output color depth is 32-bpp, apply the new transparency table immediately
-            If (outputColorDepth > 8) Then
-                ResetExportPreviewDIB tmpDIBRequired, srcDIB
-                m_ExportPreviewDIB.ApplyBinaryTransparencyTable tmpTransparencyTable, BackgroundColor
-                currentAlphaState = PDAS_BinaryAlpha
-            
-            'If the output color depth is 8-bpp, note that we need to re-apply the transparency table *after* quantization
-            Else
-                transparencyTableActive = True
+            'If the image doesn't already have binary alpha, apply it now
+            If (currentAlphaState <> PDAS_BinaryAlpha) Or (outputColorDepth < 32) Then
+                
+                srcDIB.ApplyAlphaCutoff_Ex tmpTransparencyTable, alphaCutoffOrColor
+                
+                'If the output color depth is 32-bpp, apply the new transparency table immediately
+                If (outputColorDepth > 8) Then
+                    ResetExportPreviewDIB tmpDIBRequired, srcDIB
+                    m_ExportPreviewDIB.ApplyBinaryTransparencyTable tmpTransparencyTable, BackgroundColor
+                    currentAlphaState = PDAS_BinaryAlpha
+                
+                'If the output color depth is 8-bpp, note that we need to re-apply the transparency table *after* quantization
+                Else
+                    transparencyTableActive = True
+                End If
+                
             End If
             
         End If
@@ -2151,7 +2165,6 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
     If transparencyTableActive Then desiredAlphaState = transparencyTableBackup
     
     'Create a FreeImage handle that points to our source image
-    Dim fi_DIB As Long, tmpFIHandle As Long
     If tmpDIBRequired Then
         fi_DIB = FreeImage_CreateFromDC(m_ExportPreviewDIB.GetDIBDC)
     Else

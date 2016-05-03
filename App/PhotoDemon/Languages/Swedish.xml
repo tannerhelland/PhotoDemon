@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.159</langversion>
+<langversion>6.7.161</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -733,7 +733,7 @@ To aktivera stöd för detta bildformat, vänligen kopiera FreeImage.dll filen (
 <translation>Spara kan inte slutföras utan Freeimage bibliotek.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 23 phrases. 18 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -2043,31 +2043,6 @@ In tiden, försök att spara bilden till en annan format. Du kan också låta Ph
 </phrase>
 
 <phrase>
-<original>Writing %1 file</original>
-<translation>Skriva %1 fil</translation>
-</phrase>
-
-<phrase>
-<original>Using the PNGQuant plugin to write a high-quality 8bpp PNG file.  This may take a moment</original>
-<translation>Använda pngquant plugin för att skriva en högkvalitativ 8bpp PNG-fil. Det kan ta en stund</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant transformation complete.  Verifying output</original>
-<translation>Pngquant omvandlingen komplett. Verifiera utgång</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant could not write file.  Saving 32bpp image instead</original>
-<translation>Pngquant kunde inte skriva filen. Spara 32 bpp bild istället</translation>
-</phrase>
-
-<phrase>
-<original>PPM save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>PPM spara misslyckades (FreeImage_SaveEx tyst misslyckas). Rapportera detta fel med Hjälp -> Skicka felrapport.</translation>
-</phrase>
-
-<phrase>
 <original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
 <translation>Miniatyr spara misslyckades (FreeImage_SaveEx tyst misslyckas). Vänligen rapportera detta fel genom att använda Hjälp -> Skicka felrapport.</translation>
 </phrase>
@@ -2082,7 +2057,7 @@ In tiden, försök att spara bilden till en annan format. Du kan också låta Ph
 <translation>Miniatyr spara misslyckades (ospecificerat GDI fel).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 70 phrases. 55 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 44 phrases. 34 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -11771,11 +11746,6 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
-<original>Waiting for user to specify JPEG export options</original>
-<translation>Väntar på att användaren att specificera JPEG-exportalternativ</translation>
-</phrase>
-
-<phrase>
 <original>baseline</original>
 <translation></translation>
 </phrase>
@@ -11805,7 +11775,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation></translation>
 </phrase>
 
-<!-- File_Save_JPEGSettings.frm contains 26 phrases. 9 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- File_Save_JPEGSettings.frm contains 26 phrases. 10 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for File_Save_JPEGSettings.frm-->
 
@@ -15223,12 +15193,48 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for File_Save_TIFF.frm-->
 
+<!-- BEGIN text for File_Save_Pixmap.frm (dialog_ExportPixmap) -->
+
+<phrase>
+<original>Pixmap Export Options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>change file extension to match color model</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>floating-point</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>binary</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ASCII</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for File_Save_Pixmap.frm-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2611</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4555 phrases. -->
-<!-- 1944 are duplicates, so only 2611 unique phrases have been written to file. -->
-<!-- These 2611 phrases contain approximately 13491 total words. -->
+<!-- As of this build, PhotoDemon contains 4549 phrases. -->
+<!-- 1938 are duplicates, so only 2611 unique phrases have been written to file. -->
+<!-- These 2611 phrases contain approximately 13450 total words. -->
 
 </pdData>

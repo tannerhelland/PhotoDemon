@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.159</langversion>
+<langversion>6.7.161</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -733,7 +733,7 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 <translation>Il salvataggio non può essere completato senza la libreria FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 23 phrases. 18 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -2041,31 +2041,6 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 </phrase>
 
 <phrase>
-<original>Writing %1 file</original>
-<translation>Scrittura del %1 file</translation>
-</phrase>
-
-<phrase>
-<original>Using the PNGQuant plugin to write a high-quality 8bpp PNG file.  This may take a moment</original>
-<translation>Utilizzo del plugin PNGQuant per scrivere il file PNG di alta qualità a 8bpp.  Questo potrebbe richiedere qualche istante</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant transformation complete.  Verifying output</original>
-<translation>Trasformazione PNGQuant completa.  Verifica in uscita</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant could not write file.  Saving 32bpp image instead</original>
-<translation>PNGQuant non può scrivere il file.  Salvataggio dell'immagine a 32bpp in sostituzione</translation>
-</phrase>
-
-<phrase>
-<original>PPM save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>PPM salvataggio fallito (FreeImage_SaveEx ha fallito silenziosamente). Per favore utilizza il menù Aiuto -> Invia il Rapporto sul Bug per segnalare questo inconveniente.</translation>
-</phrase>
-
-<phrase>
 <original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
 <translation>Salvataggio miniature fallito (FreeImage_SaveEx ha fallito silenziosamente). Si prega di segnalare l'errore utilizzando Aiuto -> Invia una Segnalazione sul Bug.</translation>
 </phrase>
@@ -2080,7 +2055,7 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <translation>Salvataggio della miniatura fallito (errore non specificato di GDI+).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 70 phrases. 55 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 44 phrases. 34 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -11769,11 +11744,6 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
-<original>Waiting for user to specify JPEG export options</original>
-<translation>In attesa della specifica utente per le opzioni di esportazione JPEG</translation>
-</phrase>
-
-<phrase>
 <original>baseline</original>
 <translation></translation>
 </phrase>
@@ -11803,7 +11773,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation></translation>
 </phrase>
 
-<!-- File_Save_JPEGSettings.frm contains 26 phrases. 9 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- File_Save_JPEGSettings.frm contains 26 phrases. 10 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for File_Save_JPEGSettings.frm-->
 
@@ -15221,12 +15191,48 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- END text for File_Save_TIFF.frm-->
 
+<!-- BEGIN text for File_Save_Pixmap.frm (dialog_ExportPixmap) -->
+
+<phrase>
+<original>Pixmap Export Options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>change file extension to match color model</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>floating-point</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>binary</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ASCII</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for File_Save_Pixmap.frm-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2611</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4555 phrases. -->
-<!-- 1944 are duplicates, so only 2611 unique phrases have been written to file. -->
-<!-- These 2611 phrases contain approximately 13491 total words. -->
+<!-- As of this build, PhotoDemon contains 4549 phrases. -->
+<!-- 1938 are duplicates, so only 2611 unique phrases have been written to file. -->
+<!-- These 2611 phrases contain approximately 13450 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1449</langversion>
+<langversion>6.8.1451</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -732,7 +732,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 <translation>由于缺失 FreeImage 库，没有保存成功</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 23 phrases. 18 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -2044,31 +2044,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Writing %1 file</original>
-<translation>正在保存文件 %1</translation>
-</phrase>
-
-<phrase>
-<original>Using the PNGQuant plugin to write a high-quality 8bpp PNG file.  This may take a moment</original>
-<translation>使用PNGQuant插件编写高质量8bpp PNG文件。这可能需要一点时间</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant transformation complete.  Verifying output</original>
-<translation>PNG定量改造完成。验证输出</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant could not write file.  Saving 32bpp image instead</original>
-<translation>PNGQuant无法写入文件，转为保存32BPP图像</translation>
-</phrase>
-
-<phrase>
-<original>PPM save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>PPM保存失败（FreeImage_SaveEx）。请报告此错误使用帮助->提交错误报告。</translation>
-</phrase>
-
-<phrase>
 <original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
 <translation>缩略图保存失败（freeimage_saveex沉默失败）。请报告此错误使用帮助- >提交错误报告。</translation>
 </phrase>
@@ -2083,7 +2058,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>缩略图保存失败（未指明的GDI+错误）。</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 70 phrases. 55 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 44 phrases. 34 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -11766,11 +11741,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>Waiting for user to specify JPEG export options</original>
-<translation>等待用户指定JPEG导出选项</translation>
-</phrase>
-
-<phrase>
 <original>baseline</original>
 <translation>基线</translation>
 </phrase>
@@ -11800,7 +11770,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>黑白（8 位）</translation>
 </phrase>
 
-<!-- File_Save_JPEGSettings.frm contains 26 phrases. 9 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- File_Save_JPEGSettings.frm contains 26 phrases. 10 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for File_Save_JPEGSettings.frm-->
 
@@ -15218,12 +15188,48 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for File_Save_TIFF.frm-->
 
+<!-- BEGIN text for File_Save_Pixmap.frm (dialog_ExportPixmap) -->
+
+<phrase>
+<original>Pixmap Export Options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>change file extension to match color model</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>floating-point</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>binary</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ASCII</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for File_Save_Pixmap.frm-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2611</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4555 phrases. -->
-<!-- 1944 are duplicates, so only 2611 unique phrases have been written to file. -->
-<!-- These 2611 phrases contain approximately 13491 total words. -->
+<!-- As of this build, PhotoDemon contains 4549 phrases. -->
+<!-- 1938 are duplicates, so only 2611 unique phrases have been written to file. -->
+<!-- These 2611 phrases contain approximately 13450 total words. -->
 
 </pdData>
