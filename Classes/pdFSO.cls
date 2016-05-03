@@ -1542,7 +1542,7 @@ Friend Function ConvertFileHandleToMMPtr(ByVal srcFileHandle As Long, ByRef dstM
                                  
     If (dstMappedHandle = 0) Then
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdFSO.ConvertFileHandleToMMPtr failed to create a handle for " & nameOfMap & ".  Relevant last error: " & Err.LastDllError
+            pdDebug.LogAction "WARNING!  pdFSO.ConvertFileHandleToMMPtr failed to create a handle for #" & srcFileHandle & ".  Relevant last error: " & Err.LastDllError
         #End If
         ConvertFileHandleToMMPtr = False
     

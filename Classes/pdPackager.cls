@@ -752,11 +752,17 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         m_FileHeader.DirectoryChunkSizeCompressed = 0
     End If
     
-    'Repeat the above steps for the data chunk
+    'Now, we would typically repeat the above steps for the data chunk.  HOWEVER: if the data chunk is not receiving a second
+    ' compression pass (where the entire data chunk is compressed AGAIN, as-is), we can skip this step entirely, and simply write out
+    ' the data chunk from where it currently exists in-memory.  This is faster than making a copy of the data, which may be quite large.
     originalSize = m_FileHeader.DataChunkSize
-    If CopyPtrToArray(m_DataBuffer.CurrentBytesPointer, originalSize, rawDataBuffer, compressedSize, secondPassDataCompression, , True) Then
-        m_FileHeader.DataChunkSizeCompressed = compressedSize
-        SetBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DataFlags(0)
+    If secondPassDataCompression Then
+        If CopyPtrToArray(m_DataBuffer.CurrentBytesPointer, originalSize, rawDataBuffer, compressedSize, secondPassDataCompression, , True) Then
+            m_FileHeader.DataChunkSizeCompressed = compressedSize
+            SetBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DataFlags(0)
+        Else
+            m_FileHeader.DataChunkSizeCompressed = 0
+        End If
     Else
         m_FileHeader.DataChunkSizeCompressed = 0
     End If
@@ -778,7 +784,11 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         'NEW TEST!  First, attempt to write out the package using a memory-mapped file.  This is much faster (comparable to
         ' an asynchronous write) vs raw WriteData calls.
         Dim mmapHandle As Long, mmapPtr As Long, totalWriteSize As Long
-        totalWriteSize = LenB(m_FileHeader) + UBound(rawDirectoryBuffer) + 1 + UBound(rawDataBuffer) + 1
+        If secondPassDataCompression Then
+            totalWriteSize = LenB(m_FileHeader) + UBound(rawDirectoryBuffer) + 1 + UBound(rawDataBuffer) + 1
+        Else
+            totalWriteSize = LenB(m_FileHeader) + UBound(rawDirectoryBuffer) + 1 + m_FileHeader.DataChunkSize
+        End If
         
         If m_File.ConvertFileHandleToMMPtr(hFile, mmapHandle, mmapPtr, totalWriteSize) Then
 
@@ -789,7 +799,13 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
 
             CopyMemory mmapPtr, VarPtr(m_FileHeader), mmapOffset
             CopyMemory mmapPtr + mmapOffset, VarPtr(rawDirectoryBuffer(0)), netDirectorySize
-            CopyMemory mmapPtr + mmapOffset + netDirectorySize, VarPtr(rawDataBuffer(0)), UBound(rawDataBuffer) + 1
+            
+            'If the data buffer did not receive a second compression pass, we can write it out from its current location as-is
+            If secondPassDataCompression Then
+                CopyMemory mmapPtr + mmapOffset + netDirectorySize, VarPtr(rawDataBuffer(0)), UBound(rawDataBuffer) + 1
+            Else
+                CopyMemory mmapPtr + mmapOffset + netDirectorySize, m_DataBuffer.CurrentBytesPointer, m_FileHeader.DataChunkSize
+            End If
 
             'Release the mapped view and allow the system to write the file at its leisure
             m_File.ReleaseMMHandle mmapHandle, mmapPtr
@@ -801,7 +817,14 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
             With m_File
                 .WriteDataToFile hFile, VarPtr(m_FileHeader), LenB(m_FileHeader)
                 .WriteDataToFile hFile, VarPtr(rawDirectoryBuffer(0)), UBound(rawDirectoryBuffer) + 1
-                .WriteDataToFile hFile, VarPtr(rawDataBuffer(0)), UBound(rawDataBuffer) + 1
+                
+                'If the data buffer did not receive a second compression pass, we can write it out from its current location as-is
+                If secondPassDataCompression Then
+                    .WriteDataToFile hFile, VarPtr(rawDataBuffer(0)), UBound(rawDataBuffer) + 1
+                Else
+                    .WriteDataToFile hFile, m_DataBuffer.CurrentBytesPointer, m_FileHeader.DataChunkSize
+                End If
+                
             End With
             
         End If
@@ -858,7 +881,7 @@ Private Function CopyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long,
         End If
         
         'Make sure zLib compressed the data successfully.
-        If zLibResult = 0 Then
+        If (zLibResult = 0) Then
         
             'ReDim the destination array, if requested
             If trimDestinationArray Then ReDim Preserve dstArray(0 To dstSize - 1) As Byte
@@ -931,17 +954,15 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         End If
         
         'If the caller requested a sub-type validation, perform that now
-        If subTypeValidator <> 0 Then
-            
+        If (subTypeValidator <> 0) Then
             If (m_FileHeader.PDP_SubID <> subTypeValidator) Then
                 RaiseInternalMessage "File doesn't match requested sub-type value.  Abandoning load."
                 GoTo StopPackageFileRead
             End If
-        
         End If
         
         'Finally, check the PDP version.  If it's older than the current version, loading will be handled by one of our legacy load functions.
-        If m_FileHeader.PDP_Version < THIS_PDPACKAGE_VERSION Then
+        If (m_FileHeader.PDP_Version < THIS_PDPACKAGE_VERSION) Then
             
             'Close our handle prior to continuing
             m_File.CloseFileHandle hFile
@@ -963,7 +984,7 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             End If
             
             'Next, it's time to retrieve the directory.  The size of the directory varies, based on whether it received second-pass compression.
-            If m_FileHeader.DirectoryChunkSizeCompressed = 0 Then
+            If (m_FileHeader.DirectoryChunkSizeCompressed = 0) Then
             
                 'No compression applied, so we can retrieve the node directory as-is.
                 ReDim rawBuffer(0 To m_FileHeader.DirectoryChunkSize - 1) As Byte
@@ -990,25 +1011,19 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     zLibResult = uncompress_safe(VarPtr(rawBuffer(0)), VarPtr(tmpLength), VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeCompressed)
                     
                     'Make sure the decompression size is what we expected
-                    If tmpLength <> m_FileHeader.DirectoryChunkSize Then
+                    If (tmpLength <> m_FileHeader.DirectoryChunkSize) Then
                         RaiseInternalMessage "WARNING!  Decompressed directory chunk size shows possible CRC error (" & CStr(tmpLength) & " vs " & CStr(m_FileHeader.DirectoryChunkSize) & ")"
                     End If
                     
-                    'Free the temporary compression buffer
-                    'Erase tmpCompressionBuffer
-                    
-                    If zLibResult <> 0 Then
-                        
+                    If (zLibResult <> 0) Then
                         RaiseInternalMessage "Directory is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
                         GoTo StopPackageFileRead
-                    
                     End If
                     
+                'If the directory is compressed but zLib is unavailable, we're effectively screwed
                 Else
-                
                     RaiseInternalMessage "Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
                     GoTo StopPackageFileRead
-                
                 End If
             
             End If
@@ -1019,11 +1034,16 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             CopyMemory VarPtr(m_NodeDirectory(0)), VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSize
             
             'Now, retrieve the data chunk, and apply the same decompression test that we did for the directory chunk.
-            If m_FileHeader.DataChunkSizeCompressed = 0 Then
+            Set m_DataBuffer = New clsBasicBuffer
+            If (m_FileHeader.DataChunkSizeCompressed = 0) Then
             
-                'No compression applied, so we can retrieve the node directory as-is.
-                ReDim rawBuffer(0 To m_FileHeader.DataChunkSize - 1) As Byte
-                m_File.ReadDataFromFile hFile, VarPtr(rawBuffer(0)), m_FileHeader.DataChunkSize
+                'No compression applied, so we can retrieve the data chunk as-is.  (Note that we entirely skip the use of a
+                ' temporary array, and instead read the data directly into our buffer object.)
+                m_DataBuffer.EnsureBufferSizeAvailable m_FileHeader.DataChunkSize
+                m_File.ReadDataFromFile hFile, m_DataBuffer.CurrentBytesPointer, m_FileHeader.DataChunkSize
+                
+                'Reset the buffer's internal data pointer (instead of letting it auto-position itself at the end of the buffer.)
+                m_DataBuffer.Position = 0
                 
             Else
                 
@@ -1046,38 +1066,31 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     zLibResult = uncompress_safe(VarPtr(rawBuffer(0)), VarPtr(tmpLength), VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DataChunkSizeCompressed)
                     
                     'Make sure the decompression size is what we expected
-                    If tmpLength <> m_FileHeader.DataChunkSize Then
+                    If (tmpLength <> m_FileHeader.DataChunkSize) Then
                         RaiseInternalMessage "WARNING!  Decompressed directory chunk size shows possible CRC error (" & CStr(tmpLength) & " vs " & CStr(m_FileHeader.DataChunkSize) & ")"
                     End If
                     
-                    'Free our temporary buffer
-                    'Erase tmpCompressionBuffer
-                    
-                    If zLibResult <> 0 Then
-                        
+                    If (zLibResult <> 0) Then
                         RaiseInternalMessage "Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
                         GoTo StopPackageFileRead
-                    
                     End If
                     
                 Else
-                
                     RaiseInternalMessage "Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
                     GoTo StopPackageFileRead
-                
                 End If
+                
+                'Pass the data chunk to the m_DataBuffer class (which we'll use for further parsing).  Note that we deliberately reset
+                ' the data pointer after the write, instead of letting it auto-position itself at the end of the buffer.
+                m_DataBuffer.WriteBytes rawBuffer, UBound(rawBuffer) + 1
+                m_DataBuffer.Position = 0
             
             End If
-            
-            'Pass the data chunk to the m_DataBuffer class (which we'll use for further parsing).
-            Set m_DataBuffer = New clsBasicBuffer
-            m_DataBuffer.WriteBytes rawBuffer, UBound(rawBuffer) + 1
-            m_DataBuffer.Position = 0
             
         End If
         
         'Close the handle when finished, obviously!
-        If hFile <> 0 Then m_File.CloseFileHandle hFile
+        If (hFile <> 0) Then m_File.CloseFileHandle hFile
         
         'File load complete!
         ReadPackageFromFile = True

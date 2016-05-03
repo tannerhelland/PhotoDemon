@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_FreeImage"
 'FreeImage Interface (Advanced)
 'Copyright 2012-2016 by Tanner Helland
 'Created: 3/September/12
-'Last updated: 04/December/14
-'Last update: overhaul all code related to high bit-depth images
+'Last updated: 03/May/16
+'Last update: continued work on improving the GetFIDib_SpecificColorMode() function
 '
 'This module represents a new - and significantly more comprehensive - approach to loading images via the
 ' FreeImage libary. It handles a variety of decisions on a per-format basis to ensure optimal load speed
