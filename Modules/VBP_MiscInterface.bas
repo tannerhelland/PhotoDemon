@@ -1511,7 +1511,10 @@ Public Sub DisplaySize(ByRef srcImage As pdImage)
         
         If (m_LastUILimitingSize_Small <> newLimitingSize_Small) Or (m_LastUILimitingSize_Large <> newLimitingSize_Large) Then
             
-            'Certain selection tools are size-limited by the current image
+            m_LastUILimitingSize_Small = newLimitingSize_Small
+            m_LastUILimitingSize_Large = newLimitingSize_Large
+            
+            'Certain selection tools are size-limited by the current image; update those now!
             toolpanel_Selections.sltCornerRounding.Max = m_LastUILimitingSize_Small
             toolpanel_Selections.sltSelectionLineWidth.Max = m_LastUILimitingSize_Large
         
@@ -1519,9 +1522,6 @@ Public Sub DisplaySize(ByRef srcImage As pdImage)
             For i = 0 To toolpanel_Selections.sltSelectionBorder.Count - 1
                 toolpanel_Selections.sltSelectionBorder(i).Max = m_LastUILimitingSize_Small
             Next i
-            
-            m_LastUILimitingSize_Small = newLimitingSize_Small
-            m_LastUILimitingSize_Large = newLimitingSize_Large
             
         End If
     
