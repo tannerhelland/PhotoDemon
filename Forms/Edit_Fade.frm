@@ -41,7 +41,6 @@ Begin VB.Form FormFadeLast
       Width           =   12315
       _ExtentX        =   21722
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -110,12 +109,14 @@ Option Explicit
 ' Note that we also cache a "current layer DIB" - this is a bit of misnomer, because it is *not necessarily the current
 ' active layer*.  It is the current state of the layer relevant to the Fade action, which may or may not be the currently
 ' selected layer.
-Dim m_curLayerDIB As pdDIB, m_prevLayerDIB As pdDIB
+Private m_curLayerDIB As pdDIB, m_prevLayerDIB As pdDIB
+
+'To improve preview performance, we also make local preview-sized copies of each image
+Private m_curLayerDIBCopy As pdDIB, m_prevLayerDIBCopy As pdDIB
 
 'These variables will store the layer ID of the relevant layer, and the name of the action being faded (pre-translation,
 ' so always in English).
-Dim m_relevantLayerID As Long
-Dim m_actionName As String
+Private m_relevantLayerID As Long, m_actionName As String
     
 Private Sub cboBlendMode_Click()
     UpdatePreview
@@ -123,7 +124,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Fade", , buildParams(sltOpacity, cboBlendMode.ListIndex), UNDO_LAYER
+    Process "Fade", , buildParams(sltOpacity.Value, cboBlendMode.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -136,15 +137,20 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Render a preview
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
+End Sub
+
+Private Sub Form_Deactivate()
+    Set m_curLayerDIBCopy = Nothing
+    Set m_prevLayerDIBCopy = Nothing
 End Sub
 
 Private Sub Form_Load()
 
     'Suspend previews until the dialog has been fully initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Populate the blend mode drop-down
     Interface.PopulateBlendModeComboBox cboBlendMode, BL_NORMAL
@@ -152,7 +158,7 @@ Private Sub Form_Load()
     'Retrieve a copy of the relevant previous image state
     Set m_prevLayerDIB = New pdDIB
     
-    If Not pdImages(g_CurrentImage).undoManager.fillDIBWithLastUndoCopy(m_prevLayerDIB, m_relevantLayerID, m_actionName, False) Then
+    If Not pdImages(g_CurrentImage).undoManager.FillDIBWithLastUndoCopy(m_prevLayerDIB, m_relevantLayerID, m_actionName, False) Then
         
         'Many checks are performed prior to initiating this form, to make sure a valid previous Undo state exists - so this failsafe
         ' code should never trigger.  FYI!
@@ -164,7 +170,7 @@ Private Sub Form_Load()
     'Also retrieve a copy of the layer being operated on, as it appears right now; this is faster than re-retrieving a copy
     ' every time we need to redraw the preview box.
     Set m_curLayerDIB = New pdDIB
-    m_curLayerDIB.createFromExistingDIB pdImages(g_CurrentImage).getLayerByID(m_relevantLayerID).layerDIB
+    m_curLayerDIB.CreateFromExistingDIB pdImages(g_CurrentImage).GetLayerByID(m_relevantLayerID).layerDIB
     
 End Sub
 
@@ -178,67 +184,52 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
     'Status bar and message updates are only provided for non-previews.  Also, because PD's central compositor does all the legwork
     ' for this function, and it does not provide detailed progress reports, we use a cheap progress bar estimation method.
     ' (It really shouldn't matter as this function is extremely fast.)
-    If Not toPreview Then
+    If (Not toPreview) Then
         SetProgBarMax 2
         SetProgBarVal 0
         Message "Fading previous action (%1)...", g_Language.TranslateMessage(m_actionName)
     End If
     
-    'During a preview, this function will operate on small, preview-sized copies of both the old and current layer states.
-    ' This approach allows us to render a much faster preview (vs entire full-size layers).
-    Dim curLayerDIBCopy As pdDIB, prevLayerDIBCopy As pdDIB
-    
-    Dim tmpSafeArray As SAFEARRAY2D
-    
-    'Retrieve previous layer; note that the method used to retrieve this layer varies according to preview state.
+    'During a preview, we only retrieve the portion of each layer that's visible in the current preview box
     If toPreview Then
-        previewNonStandardImage tmpSafeArray, m_prevLayerDIB, pdFxPreview, True
-        Set prevLayerDIBCopy = New pdDIB
-        prevLayerDIBCopy.createFromExistingDIB workingDIB
+        Dim tmpSafeArray As SAFEARRAY2D
+        
+        'Retrieve the preview box portion of the previous layer image
+        FastDrawing.ResetPreviewIDs
+        PreviewNonStandardImage tmpSafeArray, m_prevLayerDIB, pdFxPreview, True
+        If (m_prevLayerDIBCopy Is Nothing) Then Set m_prevLayerDIBCopy = New pdDIB
+        m_prevLayerDIBCopy.CreateFromExistingDIB workingDIB
+        
+        'Retrieve the preview box portion of the current layer image
+        FastDrawing.ResetPreviewIDs
+        PreviewNonStandardImage tmpSafeArray, m_curLayerDIB, pdFxPreview, True
+        If (m_curLayerDIBCopy Is Nothing) Then Set m_curLayerDIBCopy = New pdDIB
+        m_curLayerDIBCopy.CreateFromExistingDIB workingDIB
+        
     Else
-        Set prevLayerDIBCopy = m_prevLayerDIB
-    End If
-    
-    'Retrieve current layer (same steps as above)
-    If toPreview Then
-        previewNonStandardImage tmpSafeArray, m_curLayerDIB, pdFxPreview, True
-        Set curLayerDIBCopy = New pdDIB
-        curLayerDIBCopy.createFromExistingDIB workingDIB
-    Else
-        Set curLayerDIBCopy = m_curLayerDIB
+        Set m_prevLayerDIBCopy = m_prevLayerDIB
+        Set m_curLayerDIBCopy = m_curLayerDIB
     End If
     
     'All of the hard blending work will be handled by PD's central compositor, which makes our lives much easier!
     Dim cComposite As pdCompositor
     Set cComposite = New pdCompositor
     
-    'Composite the current image state against the previous image state, using the supplied opacity and blend mode.
-    Dim tmpLayerTop As pdLayer, tmpLayerBottom As pdLayer
-    Set tmpLayerTop = New pdLayer
-    Set tmpLayerBottom = New pdLayer
-    
-    tmpLayerTop.InitializeNewLayer PDL_IMAGE, , curLayerDIBCopy
-    tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , prevLayerDIBCopy
-    
-    tmpLayerTop.setLayerBlendMode dstBlendMode
-    tmpLayerTop.setLayerOpacity fadeOpacity
-    
-    SetProgBarVal 1
-    cComposite.mergeLayers tmpLayerTop, tmpLayerBottom, False
+    If (Not toPreview) Then SetProgBarVal 1
+    cComposite.QuickMergeTwoDibsOfEqualSize m_prevLayerDIBCopy, m_curLayerDIBCopy, dstBlendMode, fadeOpacity
     
     'If this is a preview, draw the composited image to the picture box and exit.
     If toPreview Then
-    
-        workingDIB.createFromExistingDIB tmpLayerBottom.layerDIB
-        finalizeNonstandardPreview pdFxPreview, True
+        workingDIB.CreateFromExistingDIB m_prevLayerDIBCopy
+        FinalizeNonstandardPreview pdFxPreview, True
         
     'If this is not a preview, overwrite the relevant layer's contents, then refresh the interface to match.
     Else
         
-        pdImages(g_CurrentImage).getLayerByID(m_relevantLayerID).layerDIB.createFromExistingDIB tmpLayerBottom.layerDIB
+        pdImages(g_CurrentImage).GetLayerByID(m_relevantLayerID).layerDIB.CreateFromExistingDIB m_prevLayerDIBCopy
         
         'Notify the parent of the change
-        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).getLayerIndexFromID(m_relevantLayerID)
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetLayerIndexFromID(m_relevantLayerID)
         
         SyncInterfaceToCurrentImage
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -254,7 +245,7 @@ End Sub
 
 'Use this sub to update the on-screen preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxFadeLastAction sltOpacity, cboBlendMode.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then fxFadeLastAction sltOpacity.Value, cboBlendMode.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -265,8 +256,4 @@ End Sub
 Private Sub sltOpacity_Change()
     UpdatePreview
 End Sub
-
-
-
-
 
