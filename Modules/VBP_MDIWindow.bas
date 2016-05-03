@@ -374,7 +374,7 @@ End Function
 Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActivation As String = "", Optional ByVal refreshScreen As Boolean = True)
 
     'If this form is already the active image, don't waste time re-activating it
-    If g_CurrentImage <> imageID Then
+    If (g_CurrentImage <> imageID) Then
         
         'Update the current form variable
         g_CurrentImage = imageID
@@ -386,28 +386,18 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         'Double-check which monitor we are appearing on (for color management reasons)
         CheckParentMonitor True
         
-        'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
-        If Not (pdImages(g_CurrentImage) Is Nothing) Then
-            
-            If refreshScreen Then
-            
-                Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.getHScrollValue, pdImages(g_CurrentImage).imgViewport.getVScrollValue
-                
-                'This is ugly, but I'm working on a fix.  We need to restore the original scroll bar values, which we should
-                ' really do by passing the values to the viewport in the previous step.  But I need to rework the whole
-                ' way that damn function accepts parameters, so in the meantime, force the new values now.
-                
-                'TODO: fix this!
-                
-                'Reflow any image-window-specific chrome (status bar, rulers, etc)
-                FormMain.mainCanvas(0).AlignCanvasView
-            
-                'Notify the thumbnail bar that a new image has been selected
-                Interface.NotifyNewActiveImage g_CurrentImage
-                
-            End If
-            
-        End If
+    End If
+    
+    'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
+    If (Not (pdImages(g_CurrentImage) Is Nothing)) And refreshScreen Then
+        
+        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.getHScrollValue, pdImages(g_CurrentImage).imgViewport.getVScrollValue
+        
+        'Reflow any image-window-specific chrome (status bar, rulers, etc)
+        FormMain.mainCanvas(0).AlignCanvasView
+        
+        'Notify the thumbnail bar that a new image has been selected
+        Interface.NotifyNewActiveImage g_CurrentImage
         
     End If
     
@@ -446,8 +436,8 @@ Public Function IsMouseOverLayer(ByVal imgX As Long, ByVal imgY As Long, ByRef s
     
     With srcImage.GetLayerByIndex(srcLayerIndex)
     
-        If (imgX >= .getLayerOffsetX) And (imgX <= .getLayerOffsetX + .getLayerWidth(False)) Then
-            If (imgY >= .getLayerOffsetY) And (imgY <= .getLayerOffsetY + .getLayerHeight(False)) Then
+        If (imgX >= .GetLayerOffsetX) And (imgX <= .GetLayerOffsetX + .GetLayerWidth(False)) Then
+            If (imgY >= .GetLayerOffsetY) And (imgY <= .GetLayerOffsetY + .GetLayerHeight(False)) Then
                 IsMouseOverLayer = True
                 Exit Function
             Else

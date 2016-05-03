@@ -182,6 +182,9 @@ Private Sub cmdAnswer_Click(Index As Integer)
     'Note the user's preference for remembering this decision
     rememberMyChoice = CBool(chkRemember.Value)
     
+    'Notify the central interface manager of this result
+    Interface.NotifyShowDialogResult userAnswer, True
+    
     'If a non-standard cursor was in use prior to displaying the dialog, restore it now
     If restoreCursor Then Screen.MousePointer = vbHourglass
     
