@@ -826,8 +826,8 @@ Public Sub LoadAccelerators()
         
             'File -> Import submenu
             .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask Or vbAltMask, "Scan image", FormMain.MnuScanImage, True, False, True, UNDO_NOTHING
-            .AddAccelerator vbKeyD, vbCtrlMask Or vbShiftMask, "Internet import", FormMain.MnuImportFromInternet, True, True, True, UNDO_NOTHING
-            .AddAccelerator vbKeyI, vbCtrlMask Or vbAltMask, "Screen capture", FormMain.MnuScreenCapture, True, True, True, UNDO_NOTHING
+            .AddAccelerator vbKeyD, vbCtrlMask Or vbShiftMask, "Internet import", FormMain.MnuImportFromInternet, True, False, True, UNDO_NOTHING
+            .AddAccelerator vbKeyI, vbCtrlMask Or vbAltMask, "Screen capture", FormMain.MnuScreenCapture, True, False, True, UNDO_NOTHING
         
             'Most-recently used files.  Note that we cannot automatically associate these with a menu, as these menus may not
             ' exist at run-time.  (They are dynamically created as necessary.)
