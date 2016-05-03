@@ -75,10 +75,10 @@ Private m_Blender As pdPixelBlender
 ' the finished top DIB over the bottom DIB to achieve full composition.
 '
 'TODO: profile an integer-based implementation.
-Friend Sub compositeDIBsWithoutBlending(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaMode As LAYER_ALPHAMODE = LA_NORMAL)
+Friend Sub CompositeDIBsWithoutBlending(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaMode As LAYER_ALPHAMODE = LA_NORMAL)
 
     'The pixel blender class handles this for us
-    m_Blender.blendDIBs topDIB, bottomDIB, blendMode, dstX, dstY, 1, alphaMode, False
+    m_Blender.BlendDIBs topDIB, bottomDIB, blendMode, dstX, dstY, 1, alphaMode, False
 
 End Sub
 
@@ -93,10 +93,10 @@ End Sub
 ' *will crash* if you call it directly without meeting this criteria.
 '
 'TODO: profile an integer-based implementation.
-Friend Sub compositeAndBlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal alphaMode As LAYER_ALPHAMODE = LA_NORMAL)
+Friend Sub CompositeAndBlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal alphaMode As LAYER_ALPHAMODE = LA_NORMAL)
     
     'The blend class handles this for us
-    m_Blender.blendDIBs topDIB, bottomDIB, blendMode, dstX, dstY, alphaModifier, alphaMode, True
+    m_Blender.BlendDIBs topDIB, bottomDIB, blendMode, dstX, dstY, alphaModifier, alphaMode, True
     
 End Sub
 
@@ -105,7 +105,7 @@ End Sub
 '
 'The optional parameter, "bottomLayerIsFullSize", should be set to TRUE if the bottom layer is the size of the image.  This saves
 ' us some processing time, because we don't have to check for rect intersection.
-Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True)
+Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True)
 
     Dim xOffset As Double, yOffset As Double
     Dim i As Long
@@ -115,19 +115,19 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     
     'If the layers are vector layers, make sure their DIBs are properly synchronized.  (If the layers are not vector layers,
     ' this action does nothing.)
-    topLayer.syncInternalDIB
-    bottomLayer.syncInternalDIB
+    topLayer.SyncInternalDIB
+    bottomLayer.SyncInternalDIB
     
     'We also need to commit any non-destructive effects; otherwise, the merged layer may look different from its on-screen representation,
     ' as the settings of the bottom layer will be "assumed" for the merged layer as well.
-    If bottomLayer.getLayerNonDestructiveFXState Then
+    If bottomLayer.GetLayerNonDestructiveFXState Then
         Me.applyNDFXToDIB bottomLayer, bottomLayer.layerDIB
-        bottomLayer.deactivateAllNDFX
+        bottomLayer.DeactivateAllNDFX
     End If
     
-    If topLayer.getLayerNonDestructiveFXState Then
+    If topLayer.GetLayerNonDestructiveFXState Then
         Me.applyNDFXToDIB topLayer, topLayer.layerDIB
-        topLayer.deactivateAllNDFX
+        topLayer.DeactivateAllNDFX
     End If
     
     'Next, we need to find the union rect of the two layers.  This is the smallest rectangle that holds both layers.
@@ -143,32 +143,32 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     ' creating a temporary one.  This can provide a nice performance boost depending on the complexity of subsequent layers.
     If bottomLayerIsFullSize Then
     
-        xOffset = topLayer.getLayerOffsetX
-        yOffset = topLayer.getLayerOffsetY
+        xOffset = topLayer.GetLayerOffsetX
+        yOffset = topLayer.GetLayerOffsetY
     
     'The top and bottom layer sizes are totally independent.  This makes our life somewhat unpleasant.
     Else
         
         'Create a blank DIB at the dimensions of the union rect.
-        tmpDIB.createBlank finalRect.Width, finalRect.Height, 32, 0
-        tmpDIB.setInitialAlphaPremultiplicationState True
+        tmpDIB.CreateBlank finalRect.Width, finalRect.Height, 32, 0
+        tmpDIB.SetInitialAlphaPremultiplicationState True
         
         'We now need to do a couple of things.  Let's start by copying the bottom DIB into this new temporary DIB.
         xOffset = bottomRect.Left - finalRect.Left
         yOffset = bottomRect.Top - finalRect.Top
         
         'If no non-destructive resizes are active, we can simply copy the layer over as-is
-        If Not bottomLayer.affineTransformsActive(True) Then
+        If Not bottomLayer.AffineTransformsActive(True) Then
         
-            If bottomLayer.getLayerOpacity = 100 Then
+            If bottomLayer.GetLayerOpacity = 100 Then
                 
                 With bottomLayer
-                    BitBlt tmpDIB.getDIBDC, xOffset, yOffset, .getLayerWidth(False), .getLayerHeight(False), .layerDIB.getDIBDC, 0, 0, vbSrcCopy
+                    BitBlt tmpDIB.GetDIBDC, xOffset, yOffset, .GetLayerWidth(False), .GetLayerHeight(False), .layerDIB.GetDIBDC, 0, 0, vbSrcCopy
                 End With
                 
             Else
                 With bottomLayer
-                    .layerDIB.alphaBlendToDC tmpDIB.getDIBDC, .getLayerOpacity * 2.55, xOffset, yOffset
+                    .layerDIB.AlphaBlendToDC tmpDIB.GetDIBDC, .GetLayerOpacity * 2.55, xOffset, yOffset
                 End With
             End If
         
@@ -176,17 +176,17 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         Else
             
             'If the only active transform is rescaling, we can use a shortcut StretchBlt function for a performance boost.
-            If Not bottomLayer.affineTransformsActive(False) Then
+            If Not bottomLayer.AffineTransformsActive(False) Then
             
                 With bottomLayer
-                    GDI_Plus.GDIPlus_StretchBlt tmpDIB, xOffset, yOffset, .getLayerWidth(True), .getLayerHeight(True), .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerOpacity / 100, .getLayerResizeQuality_GDIPlus
+                    GDI_Plus.GDIPlus_StretchBlt tmpDIB, xOffset, yOffset, .GetLayerWidth(True), .GetLayerHeight(True), .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
                 End With
             
             'If rotation or other affine transforms are active, a more complicated solution is required.
             Else
             
                 'First, retrieve the layer's coordinates in the default image coordinate space
-                bottomLayer.getLayerCornerCoordinates m_PlgPoints
+                bottomLayer.GetLayerCornerCoordinates m_PlgPoints
                 
                 'Next, we need to convert those to the union rect coordinate space
                 For i = 0 To 3
@@ -196,30 +196,30 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
                 
                 'Render the transformed DIB now.
                 With bottomLayer
-                    GDI_Plus.GDIPlus_PlgBlt tmpDIB, m_PlgPoints, .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerOpacity / 100, .getLayerResizeQuality_GDIPlus
+                    GDI_Plus.GDIPlus_PlgBlt tmpDIB, m_PlgPoints, .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
                 End With
             
             End If
             
             'With the bottom layer successfully rendered onto the destination DIB, we can reset all non-destructive size modifiers now.
-            bottomLayer.setLayerCanvasXModifier 1
-            bottomLayer.setLayerCanvasYModifier 1
-            bottomLayer.setLayerAngle 0
+            bottomLayer.SetLayerCanvasXModifier 1
+            bottomLayer.SetLayerCanvasYModifier 1
+            bottomLayer.SetLayerAngle 0
             
         End If
         
         'We now need to calculate a new layer offset for this temporary DIB, which will eventually be copied into the bottom layer.
         ' Without this, the main composite won't know where to stick the layer!
-        bottomLayer.setLayerOffsetX finalRect.Left
-        bottomLayer.setLayerOffsetY finalRect.Top
+        bottomLayer.SetLayerOffsetX finalRect.Left
+        bottomLayer.SetLayerOffsetY finalRect.Top
         
         'Copy the temporary DIB into the bottom layer.  (We can't simply reference it as we're likely to need a temporary DIB for
         ' processing the top layer as well.)
-        bottomLayer.layerDIB.createFromExistingDIB tmpDIB
-        tmpDIB.eraseDIB
+        bottomLayer.layerDIB.CreateFromExistingDIB tmpDIB
+        tmpDIB.EraseDIB
         
         'Reset the layer's opacity, as we have already applied it in the previous steps.
-        bottomLayer.setLayerOpacity 100
+        bottomLayer.SetLayerOpacity 100
         
         'Calculate new offsets for the top layer, then carry on with business as usual!
         xOffset = topRect.Left - finalRect.Left
@@ -234,25 +234,25 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     'Now all we need to do is merge the top layer onto it.
     
     'If the top layer has no non-destructive resizing active, this step becomes much easier.
-    If Not topLayer.affineTransformsActive(True) Then
+    If Not topLayer.AffineTransformsActive(True) Then
         
         'We don't even need a temporary DIB - just composite the current layer as-is
-        If (topLayer.getLayerBlendMode = BL_NORMAL) And (topLayer.getLayerAlphaMode = LA_NORMAL) Then
-            topLayer.layerDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, topLayer.getLayerOpacity * 2.55, xOffset, yOffset
+        If (topLayer.GetLayerBlendMode = BL_NORMAL) And (topLayer.GetLayerAlphaMode = LA_NORMAL) Then
+            topLayer.layerDIB.AlphaBlendToDC bottomLayer.layerDIB.GetDIBDC, topLayer.GetLayerOpacity * 2.55, xOffset, yOffset
         Else
-            compositeAndBlendDIBs topLayer.layerDIB, bottomLayer.layerDIB, topLayer.getLayerBlendMode, xOffset, yOffset, topLayer.getLayerOpacity / 100, topLayer.getLayerAlphaMode
+            CompositeAndBlendDIBs topLayer.layerDIB, bottomLayer.layerDIB, topLayer.GetLayerBlendMode, xOffset, yOffset, topLayer.GetLayerOpacity / 100, topLayer.GetLayerAlphaMode
         End If
     
     'Non-destructive transforms are active, so we must prep a temporary DIB for the top layer (containing a transformed copy of its DIB)
     Else
     
         'Rescale-only transforms can use a shortcut copy method
-        If Not topLayer.affineTransformsActive(False) Then
+        If Not topLayer.AffineTransformsActive(False) Then
             
             With topLayer
-                tmpDIB.createBlank .getLayerWidth(True), .getLayerHeight(True), 32, 0
-                tmpDIB.setInitialAlphaPremultiplicationState True
-                GDIPlusResizeDIB tmpDIB, 0, 0, .getLayerWidth(True), .getLayerHeight(True), .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerResizeQuality_GDIPlus
+                tmpDIB.CreateBlank .GetLayerWidth(True), .GetLayerHeight(True), 32, 0
+                tmpDIB.SetInitialAlphaPremultiplicationState True
+                GDIPlusResizeDIB tmpDIB, 0, 0, .GetLayerWidth(True), .GetLayerHeight(True), .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerResizeQuality_GDIPlus
             End With
         
         'Full affine transforms are hairier
@@ -260,7 +260,7 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
             
             'Ask the layer to give us a copy of its transformed DIB
             Dim xOffsetLong As Long, yOffsetLong As Long
-            topLayer.getAffineTransformedDIB tmpDIB, xOffsetLong, yOffsetLong, 0, 0
+            topLayer.GetAffineTransformedDIB tmpDIB, xOffsetLong, yOffsetLong, 0, 0
             
             'Calculate new offsets, using the x/y returned by that function (which may be slightly modified in order to preserve subpixel positioning)
             xOffset = xOffsetLong - finalRect.Left
@@ -269,10 +269,10 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         End If
         
         'With all non-destructive options accounted for, we can finally calculate composited layer data!
-        If (topLayer.getLayerBlendMode = BL_NORMAL) And (topLayer.getLayerAlphaMode = LA_NORMAL) Then
-            tmpDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, topLayer.getLayerOpacity * 2.55, xOffset, yOffset
+        If (topLayer.GetLayerBlendMode = BL_NORMAL) And (topLayer.GetLayerAlphaMode = LA_NORMAL) Then
+            tmpDIB.AlphaBlendToDC bottomLayer.layerDIB.GetDIBDC, topLayer.GetLayerOpacity * 2.55, xOffset, yOffset
         Else
-            compositeAndBlendDIBs tmpDIB, bottomLayer.layerDIB, topLayer.getLayerBlendMode, xOffset, yOffset, topLayer.getLayerOpacity / 100, topLayer.getLayerAlphaMode
+            CompositeAndBlendDIBs tmpDIB, bottomLayer.layerDIB, topLayer.GetLayerBlendMode, xOffset, yOffset, topLayer.GetLayerOpacity / 100, topLayer.GetLayerAlphaMode
         End If
                 
     End If
@@ -288,8 +288,8 @@ End Sub
 'IMPORTANT NOTE!  Both the top and bottom DIBs will be modified by this function, per standard merge rules.  The top DIB must be modified because it
 '                  contains the intermediate results of the merge.  The bottom DIB must be modified because it contains the final result.  As such,
 '                  use temp copies of DIBs you can't afford to lose.
-Friend Sub quickMergeTwoDibsOfEqualSize(ByRef bottomDIB As pdDIB, ByRef topDIB As pdDIB, Optional ByVal blendMode As LAYER_BLENDMODE = BL_NORMAL, Optional ByVal topLayerOpacity As Double = 100#, Optional ByVal alphaMode As LAYER_ALPHAMODE = LA_NORMAL)
-    Me.compositeAndBlendDIBs topDIB, bottomDIB, blendMode, 0, 0, topLayerOpacity / 100, alphaMode
+Friend Sub QuickMergeTwoDibsOfEqualSize(ByRef bottomDIB As pdDIB, ByRef topDIB As pdDIB, Optional ByVal blendMode As LAYER_BLENDMODE = BL_NORMAL, Optional ByVal topLayerOpacity As Double = 100#, Optional ByVal alphaMode As LAYER_ALPHAMODE = LA_NORMAL)
+    Me.CompositeAndBlendDIBs topDIB, bottomDIB, blendMode, 0, 0, topLayerOpacity / 100, alphaMode
 End Sub
 
 'Returns all layers of the image as a single, composited image (in pdDIB format, of course).  Because of the way VB handles
@@ -305,11 +305,11 @@ Friend Sub GetCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     
     'Next, size the destination DIB to the match the composited image
-    If (dstDIB.getDIBWidth <> srcImage.Width) Or (dstDIB.getDIBHeight <> srcImage.Height) Then
-        dstDIB.createBlank srcImage.Width, srcImage.Height, 32
-        dstDIB.setInitialAlphaPremultiplicationState True
+    If (dstDIB.GetDIBWidth <> srcImage.Width) Or (dstDIB.GetDIBHeight <> srcImage.Height) Then
+        dstDIB.CreateBlank srcImage.Width, srcImage.Height, 32
+        dstDIB.SetInitialAlphaPremultiplicationState True
     Else
-        dstDIB.resetDIB
+        dstDIB.ResetDIB
     End If
     
     'Subsequent steps are going to use a helper function.  This helper function makes it simple to "insert" paint operations
@@ -321,7 +321,7 @@ Friend Sub GetCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     For i = 0 To srcImage.GetNumOfLayers - 1
         
         'Make sure the layer is visible
-        If srcImage.GetLayerByIndex(i).getLayerVisibility Then
+        If srcImage.GetLayerByIndex(i).GetLayerVisibility Then
             
             'Pass this layer to the helper function.  It will take care of the compositing step for us.
             getCompositedImage_LayerHelper dstDIB, srcImage.GetLayerByIndex(i), i
@@ -334,9 +334,9 @@ Friend Sub GetCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     'If the user requested non-premultiplied alpha, calculate it now.
     ' (By default, this function always returns a premultiplied image, because that's what the compositor functions return.)
     If premultiplicationStatus Then
-        dstDIB.setInitialAlphaPremultiplicationState True
+        dstDIB.SetInitialAlphaPremultiplicationState True
     Else
-        If dstDIB.getDIBColorDepth = 32 Then dstDIB.SetAlphaPremultiplication False
+        If dstDIB.GetDIBColorDepth = 32 Then dstDIB.SetAlphaPremultiplication False
     End If
     
 End Sub
@@ -359,7 +359,7 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
     Dim layerBoundariesOkay As Boolean
     
     'If this layer is a vector layer, make sure its DIB is properly synchronized.  (If it's *not* a vector layer, this action does nothing.)
-    srcLayer.syncInternalDIB
+    srcLayer.SyncInternalDIB
     
     'Custom blend-modes and alpha-modes are available to all layers but the base one.  If the normal blend mode is active, we can shortcut
     ' a lot of the compositing pipeline.
@@ -368,12 +368,12 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
     If srcLayerIndex = 0 Then
         standardBlendingActive = True
     Else
-        standardBlendingActive = CBool(srcLayer.getLayerBlendMode = BL_NORMAL) And CBool(srcLayer.getLayerAlphaMode = LA_NORMAL)
+        standardBlendingActive = CBool(srcLayer.GetLayerBlendMode = BL_NORMAL) And CBool(srcLayer.GetLayerAlphaMode = LA_NORMAL)
     End If
     
     'Start by separating our handling into "simple" and "complex" branches.  Basic layers with no non-destructive effects or much easier
     ' to deal with.
-    If Not srcLayer.getLayerNonDestructiveFXState Then
+    If Not srcLayer.GetLayerNonDestructiveFXState Then
         
         'Non-destructive effects are not active.  Yay!
         
@@ -385,10 +385,10 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
             
             'Check for affine transformations.  If none are present (e.g. the layer is at its original size and orientation),
             ' we can use GDI's AlphaBlend for a performance boost.
-            If (Not srcLayer.affineTransformsActive(True)) Then
+            If (Not srcLayer.AffineTransformsActive(True)) Then
             
                 With srcLayer
-                    .layerDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+                    .layerDIB.AlphaBlendToDC dstDIB.GetDIBDC, .GetLayerOpacity * 2.55, .GetLayerOffsetX, .GetLayerOffsetY
                 End With
             
             Else
@@ -397,17 +397,17 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
                 With srcLayer
                 
                     'If scaling is the only active affine transformation, we can use a special, optimized render function
-                    If (Not srcLayer.affineTransformsActive(False)) Then
-                        GDI_Plus.GDIPlus_StretchBlt dstDIB, .getLayerOffsetX, .getLayerOffsetY, .getLayerWidth(True), .getLayerHeight(True), .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerOpacity / 100, .getLayerResizeQuality_GDIPlus
+                    If (Not srcLayer.AffineTransformsActive(False)) Then
+                        GDI_Plus.GDIPlus_StretchBlt dstDIB, .GetLayerOffsetX, .GetLayerOffsetY, .GetLayerWidth(True), .GetLayerHeight(True), .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
                     
                     'If non-scaling affine transforms are active, we must perform a full affine transformation.
                     Else
                         
                         'Retrieve the layer's destination position into our POINTFLOAT array
-                        .getLayerCornerCoordinates m_PlgPoints, True
+                        .GetLayerCornerCoordinates m_PlgPoints, True
                         
                         'Apply a full parallelogram transformation
-                        GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerOpacity / 100, .getLayerResizeQuality_GDIPlus
+                        GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
                         
                     End If
                     
@@ -422,20 +422,20 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
             With srcLayer
             
                 'If non-destructive transforms are NOT active, pass the source layer to the all-in-one composite + blend function
-                If (Not .affineTransformsActive(True)) Then
+                If (Not .AffineTransformsActive(True)) Then
                 
                     'Perform an all-in-one composite and blend using PD's awesome all-in-one function
-                    compositeAndBlendDIBs .layerDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY, .getLayerOpacity / 100, .getLayerAlphaMode
+                    CompositeAndBlendDIBs .layerDIB, dstDIB, .GetLayerBlendMode, .GetLayerOffsetX, .GetLayerOffsetY, .GetLayerOpacity / 100, .GetLayerAlphaMode
                 
                 'One or more affine transforms are present.  We have no choice but to create a temporary intermediate DIB,
                 ' prior to full compositing.
                 Else
                 
                     'The layer itself provides a highly optimized method for extracting the affine-transformed portion of its DIB
-                    layerBoundariesOkay = .getAffineTransformedDIB(m_tmpDIB, intLayerOffsetX, intLayerOffsetY, dstDIB.getDIBWidth, dstDIB.getDIBHeight)
+                    layerBoundariesOkay = .GetAffineTransformedDIB(m_tmpDIB, intLayerOffsetX, intLayerOffsetY, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight)
                 
                     'Next, perform an all-in-one composite + blend using our awesome new compositeAndBlendDIBs function
-                    If layerBoundariesOkay Then compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .getLayerOpacity / 100, .getLayerAlphaMode
+                    If layerBoundariesOkay Then CompositeAndBlendDIBs m_tmpDIB, dstDIB, .GetLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .GetLayerOpacity / 100, .GetLayerAlphaMode
                     
                 End If
                 
@@ -450,12 +450,12 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
         ' passed to the non-destructive FX function.
         
         '(Potential future TODO: if non-destructive resizing makes the image larger, apply the NDFX first, then the resize)
-        If (Not srcLayer.affineTransformsActive(True)) Then
-            layerBoundariesOkay = m_tmpDIB.createFromExistingDIB(srcLayer.layerDIB)
+        If (Not srcLayer.AffineTransformsActive(True)) Then
+            layerBoundariesOkay = m_tmpDIB.CreateFromExistingDIB(srcLayer.layerDIB)
         Else
             
             'The layer itself provides a highly optimized method for extracting the affine-transformed portion of its DIB
-            layerBoundariesOkay = srcLayer.getAffineTransformedDIB(m_tmpDIB, intLayerOffsetX, intLayerOffsetY, dstDIB.getDIBWidth, dstDIB.getDIBHeight)
+            layerBoundariesOkay = srcLayer.GetAffineTransformedDIB(m_tmpDIB, intLayerOffsetX, intLayerOffsetY, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight)
                 
         End If
         
@@ -470,20 +470,20 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
                 ' for a nice performance boost.
                 If standardBlendingActive Then
                 
-                    If .affineTransformsActive(False) Then
-                        m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, intLayerOffsetX, intLayerOffsetY
+                    If .AffineTransformsActive(False) Then
+                        m_tmpDIB.AlphaBlendToDC dstDIB.GetDIBDC, .GetLayerOpacity * 2.55, intLayerOffsetX, intLayerOffsetY
                     Else
-                        m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+                        m_tmpDIB.AlphaBlendToDC dstDIB.GetDIBDC, .GetLayerOpacity * 2.55, .GetLayerOffsetX, .GetLayerOffsetY
                     End If
                 
                 'Custom blend and/or alpha modes are active.  Perform a single pass composite + blend operation using our awesome
                 ' all-in-one function.
                 Else
                 
-                    If .affineTransformsActive(False) Then
-                        compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .getLayerOpacity / 100, .getLayerAlphaMode
+                    If .AffineTransformsActive(False) Then
+                        CompositeAndBlendDIBs m_tmpDIB, dstDIB, .GetLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .GetLayerOpacity / 100, .GetLayerAlphaMode
                     Else
-                        compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY, .getLayerOpacity / 100, .getLayerAlphaMode
+                        CompositeAndBlendDIBs m_tmpDIB, dstDIB, .GetLayerBlendMode, .GetLayerOffsetX, .GetLayerOffsetY, .GetLayerOpacity / 100, .GetLayerAlphaMode
                     End If
             
                 End If
@@ -548,11 +548,11 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     dibHeightCalc = Int(dstHeight + (dstY - Int(dstY)) + 0.99)
     
     'Note that we try to avoid recreating this DIB unless absolutely necessary
-    If (m_dstDIB.getDIBWidth < dibWidthCalc) Or (m_dstDIB.getDIBHeight < dibHeightCalc) Then
-        m_dstDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
-        m_dstDIB.setInitialAlphaPremultiplicationState True
+    If (m_dstDIB.GetDIBWidth < dibWidthCalc) Or (m_dstDIB.GetDIBHeight < dibHeightCalc) Then
+        m_dstDIB.CreateBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
+        m_dstDIB.SetInitialAlphaPremultiplicationState True
     Else
-        m_dstDIB.resetDIB 0
+        m_dstDIB.ResetDIB 0
     End If
     
     'Now our work is pretty simple: iterate layers, and pass visible ones off to the helper function (which handles the messy
@@ -561,7 +561,7 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     For i = 0 To srcImage.GetNumOfLayers - 1
         
         'Only process a layer if it is currently visible.
-        If srcImage.GetLayerByIndex(i).getLayerVisibility Then
+        If srcImage.GetLayerByIndex(i).GetLayerVisibility Then
             
             'The helper function handles the actual compositing
             getCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.GetLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless, CBool(i = 0), ignoreInternalCaches, levelOfDetail
@@ -577,7 +577,7 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     '
     'For this release, I have left the original GDI+ paint method, in case I find it necessary to revert back in the future.
     If isRectZoomless Then
-        m_dstDIB.alphaBlendToDCEx dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, 0, 0, dstWidth, dstHeight
+        m_dstDIB.AlphaBlendToDCEx dstDIB.GetDIBDC, dstX, dstY, dstWidth, dstHeight, 0, 0, dstWidth, dstHeight
     Else
         
         Dim bltWidth As Single, bltHeight As Single
@@ -592,7 +592,7 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     End If
     
     'The target DIB will always be premultiplied, by design
-    dstDIB.setInitialAlphaPremultiplicationState True
+    dstDIB.SetInitialAlphaPremultiplicationState True
     
 End Sub
 
@@ -668,7 +668,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
     
     'TODO: some kind of fancy function that finds the intersection between a rotated/skewed image's boundary polygon instead of its full rect.
     '      The full rect may indicate overlap, but if the overlap is only a transparent corner region, we can still skip this layer.
-    If srcLayer.affineTransformsActive(False) Then
+    If srcLayer.AffineTransformsActive(False) Then
         Layer_Handler.FillRectForLayerF srcLayer, layerRectAffine, True, True
         layerAndViewportIntersect = GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRectAffine)
     
@@ -686,12 +686,12 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
         'If this layer is a vector layer, make sure its DIB is properly synchronized.  (If it's *not* a vector layer, this action does nothing.)
         ' This check is important because changes to vector data, e.g. modifying text, will not change any rendering-specific settings, which means
         ' the layer hash won't change.  However, the layer *still needs to be redrawn*, obviously.
-        cachedDIBValid = Not srcLayer.syncInternalDIB(levelOfDetail)
+        cachedDIBValid = Not srcLayer.SyncInternalDIB(levelOfDetail)
         
         'As part of 7.0's comprehensive performance overhaul, we're going to use a dedicated level-of-detail (LOD) DIB stored inside the
         ' source pdLayer object.  Rather than accessing this DIB over and over again, cache a single reference to it now.
         Dim lodDIB As pdDIB
-        Set lodDIB = srcLayer.tmpLODDIB(levelOfDetail)
+        Set lodDIB = srcLayer.TmpLODDIB(levelOfDetail)
         
         'Several conditions require us to create a temporary DIB prior to actually compositing this layer:
         ' 1) Non-destructive effects
@@ -708,7 +708,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
         If isBaseLayer Then
             nonStandardBlendingActive = False
         Else
-            nonStandardBlendingActive = CBool(srcLayer.getLayerBlendMode <> BL_NORMAL) Or CBool(srcLayer.getLayerAlphaMode <> LA_NORMAL)
+            nonStandardBlendingActive = CBool(srcLayer.GetLayerBlendMode <> BL_NORMAL) Or CBool(srcLayer.GetLayerAlphaMode <> LA_NORMAL)
         End If
         
         'To improve performance, this function also calculates and checks a dedicated "viewport hash" of the layer.  If the layer AND viewport
@@ -729,7 +729,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
         'We are now going to branch down two processing paths.  Layers with no complicated affine transforms active are much easier to handle,
         ' as we can mathematically determine a rectangular region of the layer to process.  Layers *with* active affine transforms require
         ' much uglier handling, and a fairly significant hit to processing speed.
-        If Not srcLayer.affineTransformsActive(False) Then
+        If Not srcLayer.AffineTransformsActive(False) Then
             
             'For normal, rectangular layers, the composite operation works similar to StretchBlt, where we calculate a destination rectangle
             ' and a source rectangle.  We know that these two rectangles define the same rectangle of the image, which allows us to infer
@@ -750,10 +750,10 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             ' rect that represents the source area, relative to the current layer's DIB.  This step is important if the layer has
             ' non-destructive resizing active, because this is when we apply that calculation.
             With srcRect
-                .Left = (intRectSrc.Left - CDbl(srcLayer.getLayerOffsetX)) * (1 / srcLayer.getLayerCanvasXModifier)
-                .Width = intRectSrc.Width * (1 / srcLayer.getLayerCanvasXModifier)
-                .Top = (intRectSrc.Top - CDbl(srcLayer.getLayerOffsetY)) * (1 / srcLayer.getLayerCanvasYModifier)
-                .Height = intRectSrc.Height * (1 / srcLayer.getLayerCanvasYModifier)
+                .Left = (intRectSrc.Left - CDbl(srcLayer.GetLayerOffsetX)) * (1 / srcLayer.GetLayerCanvasXModifier)
+                .Width = intRectSrc.Width * (1 / srcLayer.GetLayerCanvasXModifier)
+                .Top = (intRectSrc.Top - CDbl(srcLayer.GetLayerOffsetY)) * (1 / srcLayer.GetLayerCanvasYModifier)
+                .Height = intRectSrc.Height * (1 / srcLayer.GetLayerCanvasYModifier)
             End With
             
             'Precalculate dimensions of any temporary DIBs we need to create.  These can have fractional offsets on either side, so we need
@@ -765,37 +765,37 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             
             'While the layer provides its own hash (representing whether internal layer settings have changed), we also append some viewport-specific
             ' bits to the hash.  This way, if the layer OR the viewport changes, we regenerate the viewport-specific cache for this layer.
-            testHash = srcLayer.getViewportHash_Theoretical(srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, dibWidthCalc, dibHeightCalc)
+            testHash = srcLayer.GetViewportHash_Theoretical(srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, dibWidthCalc, dibHeightCalc)
             
             'We know affine transforms (aside from scaling) are not active.  Proceed with our highly optimized rendering chain.
             
             'Non-destructive effects, custom blend-modes, and custom alpha-modes require creation of a temporary DIB, because we must perform
             ' our own compositing (as GDI/GDI+ can't do it for us).  Check for those states now.
-            If srcLayer.getLayerNonDestructiveFXState Or nonStandardBlendingActive Then
+            If srcLayer.GetLayerNonDestructiveFXState Or nonStandardBlendingActive Then
             
                 'One way or another, we will be using integer-based offsets to render the final image.  Calculate them now.
                 xOffsetInt = Int(dstRect.Left - dstViewportRect.Left)
                 yOffsetInt = Int(dstRect.Top - dstViewportRect.Top)
                 
-                If (srcLayer.getViewportHash(levelOfDetail) = 0) Or (srcLayer.getViewportHash(levelOfDetail) <> testHash) Or (Not cachedDIBValid) Or ignoreInternalCaches Then
+                If (srcLayer.GetViewportHash(levelOfDetail) = 0) Or (srcLayer.GetViewportHash(levelOfDetail) <> testHash) Or (Not cachedDIBValid) Or ignoreInternalCaches Then
                 
                     'The layer and/or viewport has changed since our last composite.  Create a new DIB in the cheapest way possible
                     ' (e.g., if the current temporary DIB size is acceptable, just reset it instead of fully redrawing it)
-                    If (lodDIB.getDIBWidth < dibWidthCalc) Or (lodDIB.getDIBHeight < dibHeightCalc) Then
-                        lodDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
-                        lodDIB.setInitialAlphaPremultiplicationState True
+                    If (lodDIB.GetDIBWidth < dibWidthCalc) Or (lodDIB.GetDIBHeight < dibHeightCalc) Then
+                        lodDIB.CreateBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
+                        lodDIB.SetInitialAlphaPremultiplicationState True
                     Else
-                        lodDIB.resetDIB
+                        lodDIB.ResetDIB
                     End If
                     
                     'Check for the special case of 100% zoom; when this happens, and the image has no non-destructive resizing applied,
                     ' we can completely skip the resize step and simply use BitBlt (way faster)
-                    If isRectZoomless And (Not srcLayer.affineTransformsActive(True)) Then
+                    If isRectZoomless And (Not srcLayer.AffineTransformsActive(True)) Then
                         
-                        BitBlt lodDIB.getDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcLayer.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
+                        BitBlt lodDIB.GetDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcLayer.layerDIB.GetDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
                         
                         'Apply non-destructive FX now
-                        If srcLayer.getLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, lodDIB
+                        If srcLayer.GetLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, lodDIB
                     
                     'Zoom or non-destructive resize/rotate are active.  Extra work is required.
                     Else
@@ -808,7 +808,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                             
                             'Non-destructive FX are active.  To reduce processing time, chop out the source rectangle, apply the non-destructive FX,
                             ' and *then* resize the data.
-                            If srcLayer.getLayerNonDestructiveFXState Then
+                            If srcLayer.GetLayerNonDestructiveFXState Then
                             
                                 'Extract the smaller source rectangle into its own DIB.  Note that no extra coordinate math is involved here; this is
                                 ' a direct transfer.  We need a temp copy of the data because the effect is (per its name!) non-destructive, so it is
@@ -821,14 +821,14 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                                 dibWidthCalc = Int(srcRect.Width + (srcRect.Left - Int(srcRect.Left)) + 0.99)
                                 dibHeightCalc = Int(srcRect.Height + (srcRect.Top - Int(srcRect.Top)) + 0.99)
                                 
-                                If (m_NDFXDIB.getDIBWidth < dibWidthCalc) Or (m_NDFXDIB.getDIBHeight < dibHeightCalc) Then
-                                    m_NDFXDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
-                                    m_NDFXDIB.setInitialAlphaPremultiplicationState True
+                                If (m_NDFXDIB.GetDIBWidth < dibWidthCalc) Or (m_NDFXDIB.GetDIBHeight < dibHeightCalc) Then
+                                    m_NDFXDIB.CreateBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
+                                    m_NDFXDIB.SetInitialAlphaPremultiplicationState True
                                 Else
-                                    m_NDFXDIB.resetDIB
+                                    m_NDFXDIB.ResetDIB
                                 End If
                                 
-                                BitBlt m_NDFXDIB.getDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcLayer.layerDIB.getDIBDC, Int(srcRect.Left), Int(srcRect.Top), vbSrcCopy
+                                BitBlt m_NDFXDIB.GetDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcLayer.layerDIB.GetDIBDC, Int(srcRect.Left), Int(srcRect.Top), vbSrcCopy
                                 
                                 'Apply the non-destructive FX to the smaller source DIB; this is faster than applying it after the resize action,
                                 ' as we only have to process a small fraction of the pixels
@@ -843,7 +843,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                                 'Paint the resized DIB to the layer, at offset (0, 0), with subpixel offsets already accounted for.
                                 ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
                                 '  the function-wide resample mode.)
-                                If (srcLayer.getLayerCanvasXModifier <> 1) Or (srcLayer.getLayerCanvasYModifier <> 1) Then tmpResampleMode = srcLayer.getLayerResizeQuality_GDIPlus Else tmpResampleMode = InterpolationModeNearestNeighbor
+                                If (srcLayer.GetLayerCanvasXModifier <> 1) Or (srcLayer.GetLayerCanvasYModifier <> 1) Then tmpResampleMode = srcLayer.GetLayerResizeQuality_GDIPlus Else tmpResampleMode = InterpolationModeNearestNeighbor
                                 GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , Not isBaseLayer
                                 
                             End If
@@ -855,18 +855,18 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                             'Paint the resized DIB to the layer, at offset (0, 0), with subpixel offsets already accounted for.
                             ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
                             '  the function-wide resample mode.)
-                            If (srcLayer.getLayerCanvasXModifier <> 1) Or (srcLayer.getLayerCanvasYModifier <> 1) Then tmpResampleMode = srcLayer.getLayerResizeQuality_GDIPlus Else tmpResampleMode = interpolationType
+                            If (srcLayer.GetLayerCanvasXModifier <> 1) Or (srcLayer.GetLayerCanvasYModifier <> 1) Then tmpResampleMode = srcLayer.GetLayerResizeQuality_GDIPlus Else tmpResampleMode = interpolationType
                             GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , Not isBaseLayer
                                 
                             'Apply non-destructive FX now
-                            If srcLayer.getLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, lodDIB
+                            If srcLayer.GetLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, lodDIB
                             
                         End If
                         
                     End If
                     
                     'Update the layer hash, so we can possibly skip this work in the future
-                    srcLayer.setViewportHash_FromLong levelOfDetail, testHash
+                    srcLayer.SetViewportHash_FromLong levelOfDetail, testHash
                     
                 'End If for regenerating temporary layer compositing level-of-detail DIB (lodDIB)
                 End If
@@ -878,12 +878,12 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                 If nonStandardBlendingActive Then
                     
                     'Composite and blend in one fell swoop
-                    compositeAndBlendDIBs lodDIB, m_dstDIB, srcLayer.getLayerBlendMode, xOffsetInt, yOffsetInt, srcLayer.getLayerOpacity / 100, srcLayer.getLayerAlphaMode
+                    CompositeAndBlendDIBs lodDIB, m_dstDIB, srcLayer.GetLayerBlendMode, xOffsetInt, yOffsetInt, srcLayer.GetLayerOpacity / 100, srcLayer.GetLayerAlphaMode
                     
                 'If no wacky blend modes are in use, we can use GDI's AlphaBlend for a performance boost.
                 ' (Note that this is only possible because subpixel offsets have already been accounted for, when creating the temporary DIB.)
                 Else
-                    lodDIB.alphaBlendToDC m_dstDIB.getDIBDC, srcLayer.getLayerOpacity * 2.55, xOffsetInt, yOffsetInt
+                    lodDIB.AlphaBlendToDC m_dstDIB.GetDIBDC, srcLayer.GetLayerOpacity * 2.55, xOffsetInt, yOffsetInt
                 End If
                 
             'This is a simple layer, with no non-destructive effects or weird blend modes.  Composite it instantly, without using
@@ -892,7 +892,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                 
                 'If the rect is zoomless, it means we don't have to perform subpixel positioning.  GDI's AlphaBlend is thus perfectly
                 ' acceptable, and it will be much faster (5-10x) than GDI+.
-                If isRectZoomless And (srcLayer.getLayerCanvasXModifier = 1) And (srcLayer.getLayerCanvasYModifier = 1) Then
+                If isRectZoomless And (srcLayer.GetLayerCanvasXModifier = 1) And (srcLayer.GetLayerCanvasYModifier = 1) Then
                     
                     'AlphaBlend is very picky about invalid width/height values.  Make sure the source rect is valid.
                     ' (It may be ever-so-slightly off due to rounding issues during all the floating-point math we perform.)
@@ -902,16 +902,16 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                     
                     'I have temporarily disabled the use of GDI's AlphaBlend function here, as it's causing inexplicable rendering failures
                     ' on certain image/viewport size combinations.
-                    GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, InterpolationModeNearestNeighbor
+                    GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.GetLayerOpacity / 100, InterpolationModeNearestNeighbor
                     
                 Else
                     
-                    If srcRect.Width > srcLayer.getLayerWidth(False) Then srcRect.Width = srcLayer.getLayerWidth(False)
-                    If srcRect.Height > srcLayer.getLayerHeight(False) Then srcRect.Height = srcLayer.getLayerHeight(False)
+                    If srcRect.Width > srcLayer.GetLayerWidth(False) Then srcRect.Width = srcLayer.GetLayerWidth(False)
+                    If srcRect.Height > srcLayer.GetLayerHeight(False) Then srcRect.Height = srcLayer.GetLayerHeight(False)
                     
                     'When zoomed in, nearest neighbor is preferred.  This is fast enough that we don't need to use a temporary DIB cache.
                     If srcImageRect.Width < dstViewportRect.Width Then
-                        GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, InterpolationModeNearestNeighbor, , , True
+                        GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.GetLayerOpacity / 100, InterpolationModeNearestNeighbor, , , True
                     
                     'When zoomed out, use the supplied interpolation mode.  The caller typically toggles this according to PD's global
                     ' performance settings.
@@ -922,30 +922,30 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                         yOffsetInt = Int(dstRect.Top - dstViewportRect.Top)
                         
                         'See if our existing temporary DIB hash is valid; if it is, we can proceed straight to rendering!
-                        If (srcLayer.getViewportHash(levelOfDetail) = 0) Or (srcLayer.getViewportHash(levelOfDetail) <> testHash) Or (Not cachedDIBValid) Or ignoreInternalCaches Then
+                        If (srcLayer.GetViewportHash(levelOfDetail) = 0) Or (srcLayer.GetViewportHash(levelOfDetail) <> testHash) Or (Not cachedDIBValid) Or ignoreInternalCaches Then
                         
                             'The layer and/or viewport has changed since our last composite.  Create a new DIB in the cheapest way possible
                             ' (e.g., if the current temporary DIB size is acceptable, just reset it instead of fully redrawing it)
-                            If (lodDIB.getDIBWidth < dibWidthCalc) Or (lodDIB.getDIBHeight < dibHeightCalc) Then
-                                lodDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
-                                lodDIB.setInitialAlphaPremultiplicationState True
+                            If (lodDIB.GetDIBWidth < dibWidthCalc) Or (lodDIB.GetDIBHeight < dibHeightCalc) Then
+                                lodDIB.CreateBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
+                                lodDIB.SetInitialAlphaPremultiplicationState True
                             Else
-                                lodDIB.resetDIB 0
+                                lodDIB.ResetDIB 0
                             End If
                             
                             'Paint the resized DIB to the layer, at offset (0, 0), with subpixel offsets already accounted for.
                             ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
                             '  the function-wide resample mode.)
-                            If (srcLayer.getLayerCanvasXModifier <> 1) Or (srcLayer.getLayerCanvasYModifier <> 1) Then tmpResampleMode = srcLayer.getLayerResizeQuality_GDIPlus Else tmpResampleMode = interpolationType
+                            If (srcLayer.GetLayerCanvasXModifier <> 1) Or (srcLayer.GetLayerCanvasYModifier <> 1) Then tmpResampleMode = srcLayer.GetLayerResizeQuality_GDIPlus Else tmpResampleMode = interpolationType
                             GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , Not isBaseLayer
                             
                             'Update the layer hash, so we can possibly skip this work in the future
-                            srcLayer.setViewportHash_FromLong levelOfDetail, testHash
+                            srcLayer.SetViewportHash_FromLong levelOfDetail, testHash
                             
                         End If
                         
                         'Because subpixel offsets have already been accounted for, we can use hardware-accelerated alpha blend here.
-                        lodDIB.alphaBlendToDC m_dstDIB.getDIBDC, srcLayer.getLayerOpacity * 2.55, xOffsetInt, yOffsetInt
+                        lodDIB.AlphaBlendToDC m_dstDIB.GetDIBDC, srcLayer.GetLayerOpacity * 2.55, xOffsetInt, yOffsetInt
                         
                     'End zoom in vs zoom out check
                     End If
@@ -964,7 +964,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             ' We will optimize this heavily in the future, but for now, I just want to get it working.
             
             'Start by retrieving the corner coordinates of the transformed layer.  We need these values to perform a parallelogram-style blt.
-            srcLayer.getLayerCornerCoordinates m_PlgPoints, True
+            srcLayer.GetLayerCornerCoordinates m_PlgPoints, True
             
             'Next, we want to create a copy of those layer corner points, as transformed into the destination coordinate space.
             
@@ -1009,22 +1009,22 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             ' bits to the hash.  This way, if the layer OR the viewport changes, we regenerate the viewport-specific cache for this layer.  However,
             ' if both stay the same, we can simply re-use our previous rendering, which saves tons of time if layers other than the current one
             ' have active affine transforms (as we don't need to re-process them!).
-            testHash = srcLayer.getViewportHash_Theoretical(m_PlgPointsDst(0).x, m_PlgPointsDst(0).y, m_PlgPointsDst(1).x, m_PlgPointsDst(1).y, m_PlgPointsDst(2).x, m_PlgPointsDst(2).y, interpolationType)
+            testHash = srcLayer.GetViewportHash_Theoretical(m_PlgPointsDst(0).x, m_PlgPointsDst(0).y, m_PlgPointsDst(1).x, m_PlgPointsDst(1).y, m_PlgPointsDst(2).x, m_PlgPointsDst(2).y, interpolationType)
             
             'This function differs from the standard pipeline because we *always* create a temporary compositing DIB.  The speed hit from
             ' a complex affine transform is significant, especially on large images, so caching the transform (even for normal blendmode and
             ' no NDFX) is always preferable.
             
             'Check the viewport hash now.  Certain conditions can force us to ignore internal caches (e.g. generating thumbnails).
-            If (srcLayer.getViewportHash(levelOfDetail) = 0) Or (srcLayer.getViewportHash(levelOfDetail) <> testHash) Or (Not cachedDIBValid) Or ignoreInternalCaches Then
+            If (srcLayer.GetViewportHash(levelOfDetail) = 0) Or (srcLayer.GetViewportHash(levelOfDetail) <> testHash) Or (Not cachedDIBValid) Or ignoreInternalCaches Then
                 
                 'The layer and/or viewport has changed since our last composite.  Create a new DIB in the cheapest way possible
                 ' (e.g., if the current temporary DIB size is acceptable, just reset it instead of fully redrawing it)
-                If (lodDIB.getDIBWidth < dibWidthCalc) Or (lodDIB.getDIBHeight < dibHeightCalc) Then
-                    lodDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
-                    lodDIB.setInitialAlphaPremultiplicationState True
+                If (lodDIB.GetDIBWidth < dibWidthCalc) Or (lodDIB.GetDIBHeight < dibHeightCalc) Then
+                    lodDIB.CreateBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
+                    lodDIB.SetInitialAlphaPremultiplicationState True
                 Else
-                    lodDIB.resetDIB
+                    lodDIB.ResetDIB
                 End If
                 
                 'Render the affine-transformed DIB to the temporary compositing DIB, at 100% opacity and normal blend mode.
@@ -1035,16 +1035,16 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                 ' the user needs a way to override the layer's default stretching behavior.  (Note that, as usual, saving to file, copying to
                 ' clipboard, etc, *always* use the layer's settings, not the viewport ones.)
                 If interpolationType = InterpolationModeNearestNeighbor Then
-                    GDIPlus_PlgBlt lodDIB, m_PlgPointsDst, srcLayer.layerDIB, 0, 0, srcLayer.getLayerWidth(False), srcLayer.getLayerHeight(False), 1, InterpolationModeNearestNeighbor
+                    GDIPlus_PlgBlt lodDIB, m_PlgPointsDst, srcLayer.layerDIB, 0, 0, srcLayer.GetLayerWidth(False), srcLayer.GetLayerHeight(False), 1, InterpolationModeNearestNeighbor
                 Else
-                    GDIPlus_PlgBlt lodDIB, m_PlgPointsDst, srcLayer.layerDIB, 0, 0, srcLayer.getLayerWidth(False), srcLayer.getLayerHeight(False), 1, srcLayer.getLayerResizeQuality_GDIPlus
+                    GDIPlus_PlgBlt lodDIB, m_PlgPointsDst, srcLayer.layerDIB, 0, 0, srcLayer.GetLayerWidth(False), srcLayer.GetLayerHeight(False), 1, srcLayer.GetLayerResizeQuality_GDIPlus
                 End If
                     
                 'If non-destructive FX are active, apply them now
-                If srcLayer.getLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, lodDIB
+                If srcLayer.GetLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, lodDIB
                 
                 'Update the layer hash, so we can possibly skip this work in the future
-                srcLayer.setViewportHash_FromLong levelOfDetail, testHash
+                srcLayer.SetViewportHash_FromLong levelOfDetail, testHash
                 
             End If
             
@@ -1053,11 +1053,11 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                 
             'Non-standard blend modes must be handled by our internal compositor
             If nonStandardBlendingActive Then
-                compositeAndBlendDIBs lodDIB, m_dstDIB, srcLayer.getLayerBlendMode, 0, 0, srcLayer.getLayerOpacity / 100, srcLayer.getLayerAlphaMode
+                CompositeAndBlendDIBs lodDIB, m_dstDIB, srcLayer.GetLayerBlendMode, 0, 0, srcLayer.GetLayerOpacity / 100, srcLayer.GetLayerAlphaMode
                 
             'If no wacky blend modes are in use, we can use GDI's AlphaBlend for a performance boost
             Else
-                lodDIB.alphaBlendToDC m_dstDIB.getDIBDC, srcLayer.getLayerOpacity * 2.55, 0, 0
+                lodDIB.AlphaBlendToDC m_dstDIB.GetDIBDC, srcLayer.GetLayerOpacity * 2.55, 0, 0
             End If
                 
         End If
@@ -1073,22 +1073,22 @@ End Sub
 Public Sub applyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDIB)
 
     'Start by unpremultiplying the layer alpha
-    If (targetDIB.getDIBColorDepth = 32) And targetDIB.getAlphaPremultiplication Then targetDIB.SetAlphaPremultiplication False
+    If (targetDIB.GetDIBColorDepth = 32) And targetDIB.GetAlphaPremultiplication Then targetDIB.SetAlphaPremultiplication False
 
     'Calculate each non-destructive FX in turn
     
     'Brightness, contrast, and clarity are handled simultaneously, to reduce processing time
-    If (parentLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE) <> 0) Or (parentLayer.getLayerNonDestructiveFXValue(NDFX_CONTRAST) <> 0) Or (parentLayer.getLayerNonDestructiveFXValue(NDFX_CLARITY) <> 0) Then
+    If (parentLayer.GetLayerNonDestructiveFXValue(NDFX_EXPOSURE) <> 0) Or (parentLayer.GetLayerNonDestructiveFXValue(NDFX_CONTRAST) <> 0) Or (parentLayer.GetLayerNonDestructiveFXValue(NDFX_CLARITY) <> 0) Then
         fastLayerExposureContrastClarity parentLayer, targetDIB
     End If
     
     'Vibrance, temperature, tint
-    If (parentLayer.getLayerNonDestructiveFXValue(NDFX_VIBRANCE) <> 0) Or (parentLayer.getLayerNonDestructiveFXValue(NDFX_TEMPERATURE) <> 0) Or (parentLayer.getLayerNonDestructiveFXValue(NDFX_TINT) <> 0) Then
+    If (parentLayer.GetLayerNonDestructiveFXValue(NDFX_VIBRANCE) <> 0) Or (parentLayer.GetLayerNonDestructiveFXValue(NDFX_TEMPERATURE) <> 0) Or (parentLayer.GetLayerNonDestructiveFXValue(NDFX_TINT) <> 0) Then
         fastLayerVibranceTemperatureTint parentLayer, targetDIB
     End If
     
     'Re-premultiply alpha
-    If targetDIB.getDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication True
+    If targetDIB.GetDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication True
 
 End Sub
 
@@ -1100,24 +1100,24 @@ Private Sub fastLayerExposureContrastClarity(ByRef targetLayer As pdLayer, ByRef
     'Create a local array and point it at the target layer's DIB
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, targetDIB
+    PrepSafeArray tmpSA, targetDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
     
     'Local loop variables
     Dim x As Long, y As Long, finalX As Long, finalY As Long
-    finalX = targetDIB.getDIBWidth - 1
-    finalY = targetDIB.getDIBHeight - 1
+    finalX = targetDIB.GetDIBWidth - 1
+    finalY = targetDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = targetDIB.getDIBColorDepth \ 8
+    qvDepth = targetDIB.GetDIBColorDepth \ 8
     
     'Adjustment values
     Dim exposureAdjustment As Double, contrastAdjustment As Long, clarityAdjustment As Long
-    exposureAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE) / 2
-    contrastAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_CONTRAST)
-    clarityAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_CLARITY)
+    exposureAdjustment = targetLayer.GetLayerNonDestructiveFXValue(NDFX_EXPOSURE) / 2
+    contrastAdjustment = targetLayer.GetLayerNonDestructiveFXValue(NDFX_CONTRAST)
+    clarityAdjustment = targetLayer.GetLayerNonDestructiveFXValue(NDFX_CLARITY)
     
     'Look-up tables are used to accelerate this function.
     Dim eccLUT() As Byte
@@ -1208,24 +1208,24 @@ Private Sub fastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef
     'Create a local array and point it at the target layer's DIB
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, targetDIB
+    PrepSafeArray tmpSA, targetDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
     
     'Local loop variables
     Dim x As Long, y As Long, finalX As Long, finalY As Long
-    finalX = targetDIB.getDIBWidth - 1
-    finalY = targetDIB.getDIBHeight - 1
+    finalX = targetDIB.GetDIBWidth - 1
+    finalY = targetDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = targetDIB.getDIBColorDepth \ 8
+    qvDepth = targetDIB.GetDIBColorDepth \ 8
     
     'Adjustment values
     Dim vibranceAdjustment As Double, tempAdjustment As Double, tintAdjustment As Double
-    vibranceAdjustment = -0.02 * targetLayer.getLayerNonDestructiveFXValue(NDFX_VIBRANCE)
-    tempAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_TEMPERATURE) / 5
-    tintAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_TINT) / 5
+    vibranceAdjustment = -0.02 * targetLayer.GetLayerNonDestructiveFXValue(NDFX_VIBRANCE)
+    tempAdjustment = targetLayer.GetLayerNonDestructiveFXValue(NDFX_TEMPERATURE) / 5
+    tintAdjustment = targetLayer.GetLayerNonDestructiveFXValue(NDFX_TINT) / 5
     
     'Color and related variables
     Dim r As Long, g As Long, b As Long, maxVal As Long
@@ -1399,15 +1399,15 @@ End Function
 'In order to render complex images quickly, this class must generate a lot of temporary objects.  If PD is under memory pressure, call this function
 ' to forcibly release as many temporary objects as possible.  (It should be obvious, but subsequent render calls will result in temporary objects
 ' being recreated, as necessary.)
-Public Sub attemptToFreeMemory()
+Public Sub AttemptToFreeMemory()
     
     'Start by clearing our own internal caches
-    m_dstDIB.eraseDIB
-    m_tmpDIB.eraseDIB
-    m_NDFXDIB.eraseDIB
+    m_dstDIB.EraseDIB
+    m_tmpDIB.EraseDIB
+    m_NDFXDIB.EraseDIB
     
     'Ask the pixel blender to release memory too, if it can
-    m_Blender.attemptToFreeMemory
+    m_Blender.AttemptToFreeMemory
     
 End Sub
 
