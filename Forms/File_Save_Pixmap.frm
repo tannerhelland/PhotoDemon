@@ -280,8 +280,8 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'Populate the color model button strip
     btsColorModel.AddItem "auto", 0
     btsColorModel.AddItem "RGB", 1
-    btsColorModel.AddItem "Grayscale", 2
-    btsColorModel.AddItem "Monochrome", 3
+    btsColorModel.AddItem "grayscale", 2
+    btsColorModel.AddItem "monochrome", 3
     btsColorModel.ListIndex = 0
     
     'Populate available color depths
