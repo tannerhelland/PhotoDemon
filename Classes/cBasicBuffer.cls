@@ -387,7 +387,7 @@ Public Sub WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLength As 
     Dim UBoundOfBuffer As Long
     
     'If not open, first call here auto-opens.
-    If Not mOpen Then OpenBuf
+    If (Not mOpen) Then OpenBuf
         
     'Length is supplied by the user; pray they calculated it correctly!
     NeedAtLeastUBound = mPosition + dataLength
@@ -395,13 +395,11 @@ Public Sub WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLength As 
     
     'If the buffer is not large enough to hold the data, resize it by the larger of mChunkSize or the size of the data.
     If NeedAtLeastUBound > UBoundOfBuffer Then
-        
-        If dataLength > mChunkSize Then
+        If (dataLength > mChunkSize) Then
             ReDim Preserve Buffer(0 To NeedAtLeastUBound) As Byte
         Else
             ReDim Preserve Buffer(0 To UBoundOfBuffer + mChunkSize) As Byte
         End If
-        
     End If
     
     'Copy the data into place
@@ -412,6 +410,35 @@ Public Sub WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLength As 
     
     'Note the actual size of the current data set
     If mPosition > mSize Then mSize = mPosition
+    
+End Sub
+
+'Added by Tanner: ensure that (n) bytes are available.  In PD, we do a lot of writing-by-raw-pointer, and this function
+' lets us ensure that we have enough space available for bare writes.
+Public Sub EnsureBufferSizeAvailable(ByVal newDataLength As Long)
+    
+    Dim NeedAtLeastUBound As Long
+    Dim UBoundOfBuffer As Long
+    
+    'If not open, first call here auto-opens.
+    If (Not mOpen) Then OpenBuf
+        
+    'Calculate the size required for the new data
+    NeedAtLeastUBound = mPosition + newDataLength
+    UBoundOfBuffer = UBound(Buffer)
+    
+    'If the buffer is not large enough to hold the data, resize it by the larger of mChunkSize or the size of the
+    ' incoming data.
+    If (NeedAtLeastUBound > UBoundOfBuffer) Then
+        If (newDataLength > mChunkSize) Then
+            ReDim Preserve Buffer(0 To NeedAtLeastUBound) As Byte
+        Else
+            ReDim Preserve Buffer(0 To UBoundOfBuffer + mChunkSize) As Byte
+        End If
+    End If
+    
+    'Note the actual size of the current data set
+    If (mPosition + newDataLength) > mSize Then mSize = (mPosition + newDataLength)
     
 End Sub
 

@@ -1576,7 +1576,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
     If UBound(ExtraText) >= LBound(ExtraText) Then
         
         For i = LBound(ExtraText) To UBound(ExtraText)
-            If StrComp(UCase(ExtraText(i)), "DONOTLOG", vbBinaryCompare) <> 0 Then
+            If StrComp(UCase$(ExtraText(i)), "DONOTLOG", vbBinaryCompare) <> 0 Then
                 tmpDupeCheckString = Replace$(tmpDupeCheckString, "%" & CStr(i + 1), CStr(ExtraText(i)))
             End If
         Next i

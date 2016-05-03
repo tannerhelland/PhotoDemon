@@ -488,19 +488,19 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     
         'Transparent (blank)
         Case 0
-            tmpDIB.createBlank imgWidth, imgHeight, 32, 0, 0
+            tmpDIB.CreateBlank imgWidth, imgHeight, 32, 0, 0
         
         'Black
         Case 1
-            tmpDIB.createBlank imgWidth, imgHeight, 32, vbBlack, 255
+            tmpDIB.CreateBlank imgWidth, imgHeight, 32, vbBlack, 255
         
         'White
         Case 2
-            tmpDIB.createBlank imgWidth, imgHeight, 32, vbWhite, 255
+            tmpDIB.CreateBlank imgWidth, imgHeight, 32, vbWhite, 255
         
         'Custom color
         Case 3
-            tmpDIB.createBlank imgWidth, imgHeight, 32, BackgroundColor, 255
+            tmpDIB.CreateBlank imgWidth, imgHeight, 32, BackgroundColor, 255
     
     End Select
     
@@ -514,7 +514,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     newImage.UpdateSize
     
     'Assign the requested DPI to the new image
-    newImage.setDPI imgDPI, imgDPI, False
+    newImage.SetDPI imgDPI, imgDPI, False
     
     'Disable viewport rendering, then reset the main viewport
     g_AllowViewportRendering = False

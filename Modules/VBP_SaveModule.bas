@@ -176,7 +176,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
         ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant metadata file
         ' to be used as its source.  It cannot operate purely in-memory - but hey, that's why it's asynchronous!)
-        If g_ExifToolEnabled And (Not (srcImage.imgMetadata Is Nothing)) Then
+        If g_ExifToolEnabled And (Not (srcImage.imgMetadata Is Nothing)) And (Not (saveFormat = PDIF_PDI)) Then
             srcImage.imgMetadata.WriteAllMetadata dstPath, srcImage
         End If
         
