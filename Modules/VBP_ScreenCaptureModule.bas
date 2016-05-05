@@ -23,7 +23,7 @@ Public Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
+Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function PrintWindow Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long, ByVal nFlags As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
@@ -56,9 +56,9 @@ Private Declare Function GetWindowPlacement Lib "user32" (ByVal hWnd As Long, By
 'Constant used to determine window owner.
 Private Const GWL_HWNDPARENT As Long = (-8)
 
-'Listbox messages
-Private Const LB_ADDSTRING As Long = &H180&
-Private Const LB_SETITEMDATA As Long = &H19A&
+'Local string stacks used to store open window names, and open window hWnds
+Private m_WindowNames As pdStringStack
+Private m_WindowHWnds As pdStringStack
 
 'ShowWindow is used to minimize and restore the PhotoDemon window, if requested.  Using VB's internal .WindowState
 ' command doesn't notify the window manager (I have no idea why) so this necessary to prevent parts of the toolbar
@@ -106,7 +106,7 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     tmpDIB.WriteToFile tmpFilename
         
     'We are now done with the temporary DIB, so free it up
-    tmpDIB.eraseDIB
+    tmpDIB.EraseDIB
     Set tmpDIB = Nothing
         
     'Once the capture is saved, load it up like any other bitmap
@@ -142,7 +142,7 @@ Public Sub GetDesktopAsDIB(ByRef dstDIB As pdDIB)
     screenHeight = g_Displays.GetDesktopHeight
     
     'Prepare the target DIB
-    dstDIB.createBlank screenWidth, screenHeight, 32
+    dstDIB.CreateBlank screenWidth, screenHeight, 32
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Preparing to capture screen using rect (" & screenLeft & ", " & screenTop & ")x(" & screenWidth & ", " & screenHeight & ")"
@@ -152,7 +152,7 @@ Public Sub GetDesktopAsDIB(ByRef dstDIB As pdDIB)
     Dim screenHwnd As Long, desktopDC As Long
     screenHwnd = GetDesktopWindow()
     desktopDC = GetDC(screenHwnd)
-    BitBlt dstDIB.getDIBDC, 0, 0, screenWidth, screenHeight, desktopDC, screenLeft, screenTop, vbSrcCopy
+    BitBlt dstDIB.GetDIBDC, 0, 0, screenWidth, screenHeight, desktopDC, screenLeft, screenTop, vbSrcCopy
     ReleaseDC screenHwnd, desktopDC
     
     'Enforce correct alpha on the result
@@ -165,13 +165,13 @@ End Sub
 Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RECTL)
     
     'Make sure the target DIB is the correct size
-    dstDIB.createBlank srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, 32
+    dstDIB.CreateBlank srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, 32
     
     'BitBlt the relevant portion of the screen directly from the screen DC to the specified DIB
     Dim screenHwnd As Long, desktopDC As Long
     screenHwnd = GetDesktopWindow()
     desktopDC = GetDC(screenHwnd)
-    BitBlt dstDIB.getDIBDC, 0, 0, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, desktopDC, srcRect.Left, srcRect.Top, vbSrcCopy
+    BitBlt dstDIB.GetDIBDC, 0, 0, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, desktopDC, srcRect.Left, srcRect.Top, vbSrcCopy
     ReleaseDC screenHwnd, desktopDC
     
     'Enforce normal alpha on the result
@@ -230,9 +230,9 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As 
     
     'Prepare the DIB at the proper size
     If g_IsVistaOrLater Then
-        dstDIB.createBlank targetRect.x2 - targetRect.x1, targetRect.y2 - targetRect.y1, 32
+        dstDIB.CreateBlank targetRect.x2 - targetRect.x1, targetRect.y2 - targetRect.y1, 32
     Else
-        dstDIB.createBlank targetRect.x2 - targetRect.x1, targetRect.y2 - targetRect.y1, 24
+        dstDIB.CreateBlank targetRect.x2 - targetRect.x1, targetRect.y2 - targetRect.y1, 24
     End If
     
     'Ask the window in question to paint itself into our DIB
@@ -241,13 +241,27 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As 
     If (Not includeChrome) Then printFlags = printFlags Or PW_CLIENTONLY
     If g_IsWin81OrLater Then printFlags = printFlags Or PW_RENDERFULLCONTENT
     
-    GetHwndContentsAsDIB = CBool(PrintWindow(targetHwnd, dstDIB.getDIBDC, printFlags) <> 0)
+    GetHwndContentsAsDIB = CBool(PrintWindow(targetHwnd, dstDIB.GetDIBDC, printFlags) <> 0)
     
     'DWM-rendered windows have the (bizarre) side-effect of alpha values being set to 0 in some regions of the image.
     ' To circumvent this, we forcibly set all alpha values to opaque, which makes the resulting image okay.
-    If CBool(dstDIB.getDIBColorDepth = 32) And GetHwndContentsAsDIB Then dstDIB.ForceNewAlpha 255
+    If CBool(dstDIB.GetDIBColorDepth = 32) And GetHwndContentsAsDIB Then dstDIB.ForceNewAlpha 255
     
 End Function
+
+'After calling EnumWindowsProc, you can call this function to get a copy of the window title and hWnd string stacks.
+' IMPORTANT NOTE: by design, this function will clear the local copies of window and hWnd names.
+Public Sub GetAllWindowNamesAndHWnds(ByRef dstNameStack As pdStringStack, ByRef dstHWndStack As pdStringStack)
+    
+    If (dstNameStack Is Nothing) Then Set dstNameStack = New pdStringStack
+    dstNameStack.CloneStack m_WindowNames
+    Set m_WindowNames = Nothing
+    
+    If (dstHWndStack Is Nothing) Then Set dstHWndStack = New pdStringStack
+    dstHWndStack.CloneStack m_WindowHWnds
+    Set m_WindowHWnds = Nothing
+    
+End Sub
 
 'The EnumWindows API call will call this function repeatedly until it exhausts the full list of open windows.
 ' We apply additional checks to the windows it returns to make sure there are no unwanted additions (hidden windows, etc).
@@ -281,9 +295,12 @@ Public Function EnumWindowsProc(ByVal hWnd As Long, ByVal lParam As Long) As Lon
                     If (nRet <> 0) Then
                     
                         WindowText = Left$(WindowText, nRet)
-                        nRet = SendMessageA(lParam, LB_ADDSTRING, ByVal 0&, ByVal WindowText)
-                        Call SendMessageA(lParam, LB_SETITEMDATA, nRet, ByVal hWnd)
-                    
+                        
+                        If (m_WindowNames Is Nothing) Then Set m_WindowNames = New pdStringStack
+                        If (m_WindowHWnds Is Nothing) Then Set m_WindowHWnds = New pdStringStack
+                        m_WindowNames.AddString WindowText
+                        m_WindowHWnds.AddString CStr(hWnd)
+                        
                     End If
                     
                 End If
