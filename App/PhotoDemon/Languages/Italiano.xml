@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.162</langversion>
+<langversion>6.7.163</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -733,7 +733,7 @@ Per attivare il supporto per questa immagine, per favore copia il file FreeImage
 <translation>Il salvataggio non può essere completato senza la libreria FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 31 phrases. 26 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -2055,7 +2055,7 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <translation>Salvataggio della miniatura fallito (errore non specificato di GDI+).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 44 phrases. 34 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 37 phrases. 27 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -14004,6 +14004,136 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
+<original>use high-resolution input tracking</original>
+<translation>utilizzare il monitoraggio di ingresso ad alta risoluzione</translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation>mouse e di input penna</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent file entries</original>
+<translation>numero massimo di voci dei file recenti</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>lista dei file recenti</translation>
+</phrase>
+
+<phrase>
+<original>recently used file shortcuts should be</original>
+<translation>scorciatoie per i file usati di recente</translation>
+</phrase>
+
+<phrase>
+<original>captions</original>
+<translation>didascalie</translation>
+</phrase>
+
+<phrase>
+<original>image window titles should be</original>
+<translation>il titolo nella finestra dell'immagine potrebbe essere</translation>
+</phrase>
+
+<phrase>
+<original>use the system color profile</original>
+<translation>utilizza il profilo del colore di sistema</translation>
+</phrase>
+
+<phrase>
+<original>use one or more custom color profiles</original>
+<translation>utilizza uno o più profili di colore personalizzati</translation>
+</phrase>
+
+<phrase>
+<original>color profile for selected monitor</original>
+<translation>profilo del colore per il monitor selezionato</translation>
+</phrase>
+
+<phrase>
+<original>available monitors</original>
+<translation>monitor disponibili</translation>
+</phrase>
+
+<phrase>
+<original>when rendering images to the screen</original>
+<translation>durante la resa delle immagini sullo schermo</translation>
+</phrase>
+
+<phrase>
+<original>color management</original>
+<translation>gestione del colore</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard size</original>
+<translation>dimensione della scacchiera per la trasparenza</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard colors</original>
+<translation>dimensione della scacchiera per i colori</translation>
+</phrase>
+
+<phrase>
+<original>transparency management</original>
+<translation>gestione della trasparenza</translation>
+</phrase>
+
+<phrase>
+<original>copy any relevant metadata to the new file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn me me about unsaved changes</original>
+<translation>quando chiudi un file dell'immagine, avvisami se ci sono cambiamenti non salvati</translation>
+</phrase>
+
+<phrase>
+<original>default metadata behavior on first save</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>save behavior: overwrite vs make a copy</original>
+<translation>comportamento nel salvataggio: sovrascrivi contro crea una copia</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>quando "Salva" è usato</translation>
+</phrase>
+
+<phrase>
+<original>closing unsaved images</original>
+<translation>chiusura delle immagini non salvate</translation>
+</phrase>
+
+<phrase>
+<original>when using the "Save As" command, set the default file format according to</original>
+<translation>quando usi il comando "Salva con nome", imposta il file predefinito in accordo con</translation>
+</phrase>
+
+<phrase>
+<original>default file format when saving</original>
+<translation>formato di file predefinito quando salvi</translation>
+</phrase>
+
+<phrase>
+<original>erase tags that might be personal (GPS, camera details, etc)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>display tone mapping options when importing HDR and RAW images</original>
 <translation>visualizza le opzioni di mappatura del tono quando si importano immagini HDR e RAW</translation>
 </phrase>
@@ -14041,11 +14171,6 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <phrase>
 <original>automatically hide duplicate tags</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>gestione del colore</translation>
 </phrase>
 
 <phrase>
@@ -14166,166 +14291,6 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <phrase>
 <original>notify me when an update is ready</original>
 <translation>mi avvisa quando un aggiornamento è pronto</translation>
-</phrase>
-
-<phrase>
-<original>use high-resolution input tracking</original>
-<translation>utilizzare il monitoraggio di ingresso ad alta risoluzione</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>mouse e di input penna</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>numero massimo di voci dei file recenti</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>lista dei file recenti</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts should be</original>
-<translation>scorciatoie per i file usati di recente</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>didascalie</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>il titolo nella finestra dell'immagine potrebbe essere</translation>
-</phrase>
-
-<phrase>
-<original>use the system color profile</original>
-<translation>utilizza il profilo del colore di sistema</translation>
-</phrase>
-
-<phrase>
-<original>use one or more custom color profiles</original>
-<translation>utilizza uno o più profili di colore personalizzati</translation>
-</phrase>
-
-<phrase>
-<original>color profile for selected monitor</original>
-<translation>profilo del colore per il monitor selezionato</translation>
-</phrase>
-
-<phrase>
-<original>available monitors</original>
-<translation>monitor disponibili</translation>
-</phrase>
-
-<phrase>
-<original>when rendering images to the screen</original>
-<translation>durante la resa delle immagini sullo schermo</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard size</original>
-<translation>dimensione della scacchiera per la trasparenza</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard colors</original>
-<translation>dimensione della scacchiera per i colori</translation>
-</phrase>
-
-<phrase>
-<original>transparency management</original>
-<translation>gestione della trasparenza</translation>
-</phrase>
-
-<phrase>
-<original>please select a file type</original>
-<translation>per favore seleziona un tipo di file</translation>
-</phrase>
-
-<phrase>
-<original>file format options</original>
-<translation>Opzioni del formato file</translation>
-</phrase>
-
-<phrase>
-<original>TIFF (Tagged Image File Format) options</original>
-<translation>opzioni TIFF (Tagged Image File Format)</translation>
-</phrase>
-
-<phrase>
-<original>PPM (Portable Pixmap) options</original>
-<translation>opzioni PPM (Portable pixmap)</translation>
-</phrase>
-
-<phrase>
-<original>PNG (Portable Network Graphic) options</original>
-<translation>opzioni PNG (Portable Network Graphic)</translation>
-</phrase>
-
-<phrase>
-<original>TGA (Truevision) options</original>
-<translation>opzioni TGA (Truevision)</translation>
-</phrase>
-
-<phrase>
-<original>BMP (Bitmap) options</original>
-<translation>opzioni BMP (Bitmap)</translation>
-</phrase>
-
-<phrase>
-<original>copy any relevant metadata to the new file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>quando chiudi un file dell'immagine, avvisami se ci sono cambiamenti non salvati</translation>
-</phrase>
-
-<phrase>
-<original>default metadata behavior on first save</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>comportamento nel salvataggio: sovrascrivi contro crea una copia</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>quando "Salva" è usato</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>chiusura delle immagini non salvate</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>quando usi il comando "Salva con nome", imposta il file predefinito in accordo con</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>formato di file predefinito quando salvi</translation>
-</phrase>
-
-<phrase>
-<original>erase tags that might be personal (GPS, camera details, etc)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -14460,36 +14425,6 @@ Sei sicuro di voler continuare?</translation>
 <phrase>
 <original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
 <translation>In parecchi Editor fotografici, il comando "Salva" salva l'immagine sulla stessa versione originale, cancellando quella copia per sempre.  PhotoDemon offre una opzione "più sicura", dove ogni salvataggio risulta in una nuova copia del file.</translation>
-</phrase>
-
-<phrase>
-<original>BMP - Bitmap</original>
-<translation>BMP - Bitmap</translation>
-</phrase>
-
-<phrase>
-<original>PNG - Portable Network Graphics</original>
-<translation>PNG - Portable Network Graphics</translation>
-</phrase>
-
-<phrase>
-<original>PPM - Portable Pixmap</original>
-<translation>PPM - Portable pixmap</translation>
-</phrase>
-
-<phrase>
-<original>TGA - Truevision (TARGA)</original>
-<translation>TGA - Truevision (TARGA)</translation>
-</phrase>
-
-<phrase>
-<original>TIFF - Tagged Image File Format</original>
-<translation>TIFF - Tagged Image File Format</translation>
-</phrase>
-
-<phrase>
-<original>Some image file types support additional parameters when importing and exporting.  By default, PhotoDemon will manage these for you, but you can specify different parameters if necessary.</original>
-<translation>Alcuni tipi di file immagine supportano dei parametri addizionali durante l'importazione o l'esportazione.  Come predefinito, PhotoDemon gestirà questo per te, ma puoi specificare dei parametri differenti se necessario.</translation>
 </phrase>
 
 <phrase>
@@ -14707,16 +14642,6 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 </phrase>
 
 <phrase>
-<original>NOTE: options on this page have been disabled because the FreeImage plugin could not be located.</original>
-<translation>NOTA: le opzioni presenti in questa pagina sono state disattivate perché il plugin FreeImage non è stato trovato.</translation>
-</phrase>
-
-<phrase>
-<original>NOTE: Many of these file format options require the FreeImage plugin.  Because you do not have the FreeImage plugin installed, these options may not perform as expected.</original>
-<translation>NOTA: Molte opzioni per questo formato d'immagine richedono il plugin FreeImage.  Siccome non hai il plugin FreeImage installato, queste opzioni non producono il risultato atteso.</translation>
-</phrase>
-
-<phrase>
 <original>Interface</original>
 <translation>Interfaccia</translation>
 </phrase>
@@ -14729,11 +14654,6 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <phrase>
 <original>Saving</original>
 <translation>Salvataggio</translation>
-</phrase>
-
-<phrase>
-<original>File formats</original>
-<translation>Formati file</translation>
 </phrase>
 
 <phrase>
@@ -14787,16 +14707,6 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 </phrase>
 
 <phrase>
-<original>File format options control how PhotoDemon handles certain types of images.</original>
-<translation>Le opzioni di formato del file controllano come PhotoDemon tratterà certi tipi d'immagine.</translation>
-</phrase>
-
-<phrase>
-<original>File Format Options</original>
-<translation>Opzioni del formato file</translation>
-</phrase>
-
-<phrase>
 <original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
 <translation>Opzioni prestazioni consentono di controllare se PhotoDemon enfatizza la velocità o la qualità quando si eseguono determinati compiti.</translation>
 </phrase>
@@ -14841,7 +14751,7 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <translation>ATTENZIONE: questa cartella non è valida (accesso proibito).  Per favore assegna una cartella valida. Se nessuna nuova cartella è assegnata, PhotoDemon utilizzerà la cartella predefinita per i file temporanei.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 229 phrases. 62 were duplicates of existing phrases, so only 167 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 181 phrases. 32 were duplicates of existing phrases, so only 149 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15234,10 +15144,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2612</phrasecount>
+<phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4551 phrases. -->
-<!-- 1939 are duplicates, so only 2612 unique phrases have been written to file. -->
-<!-- These 2612 phrases contain approximately 13488 total words. -->
+<!-- As of this build, PhotoDemon contains 4501 phrases. -->
+<!-- 1907 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- These 2594 phrases contain approximately 13354 total words. -->
 
 </pdData>
