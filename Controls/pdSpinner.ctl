@@ -616,8 +616,8 @@ Public Sub FitUCHeightToEditBoxHeight()
     m_InternalResizeState = True
     
     Dim idealUCHeight As Long
-    idealUCHeight = m_EditBox.SuggestedHeight() + EDITBOX_BORDER_PADDING * 2 + 1
-    If ucSupport.GetControlHeight <> idealUCHeight Then
+    idealUCHeight = m_EditBox.SuggestedHeight() + FixDPI(EDITBOX_BORDER_PADDING) * 2 + 1
+    If (ucSupport.GetControlHeight <> idealUCHeight) Then
         ucSupport.RequestNewSize ucSupport.GetControlWidth, idealUCHeight, True
         RaiseEvent Resize
     End If

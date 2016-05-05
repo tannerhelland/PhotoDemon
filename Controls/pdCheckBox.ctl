@@ -428,12 +428,12 @@ Private Sub RedrawBackBuffer()
         'If the check box button is checked, draw a checkmark inside the border
         If CBool(m_Value) Then
             Dim pt1 As POINTFLOAT, pt2 As POINTFLOAT, pt3 As POINTFLOAT
-            pt1.x = m_CheckboxRect.Left + 3
+            pt1.x = m_CheckboxRect.Left + FixDPIFloat(3)
             pt1.y = m_CheckboxRect.Top + (m_CheckboxRect.Height / 2)
-            pt2.x = m_CheckboxRect.Left + (m_CheckboxRect.Width / 2) - 1.5
-            pt2.y = m_CheckboxRect.Top + m_CheckboxRect.Height - 3
-            pt3.x = (m_CheckboxRect.Left + m_CheckboxRect.Width) - 2
-            pt3.y = m_CheckboxRect.Top + 3
+            pt2.x = m_CheckboxRect.Left + (m_CheckboxRect.Width / 2) - FixDPIFloat(1.5)
+            pt2.y = m_CheckboxRect.Top + m_CheckboxRect.Height - FixDPIFloat(3)
+            pt3.x = (m_CheckboxRect.Left + m_CheckboxRect.Width) - FixDPIFloat(2)
+            pt3.y = m_CheckboxRect.Top + FixDPIFloat(3)
             GDI_Plus.GDIPlusDrawLineToDC bufferDC, pt1.x, pt1.y, pt2.x, pt2.y, chkColor, 255, FixDPI(2), True, LineCapRound, True
             GDI_Plus.GDIPlusDrawLineToDC bufferDC, pt2.x, pt2.y, pt3.x, pt3.y, chkColor, 255, FixDPI(2), True, LineCapRound, True
         End If

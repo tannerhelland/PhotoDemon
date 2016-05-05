@@ -936,9 +936,9 @@ End Sub
 ' current control width/height.
 Public Sub RequestNewSize(Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0, Optional ByVal alsoNotifyMeViaEvent As Boolean = False)
     
-    'Fill in missing parameters
-    If newWidth = 0 Then newWidth = m_MoveSize.GetWidth
-    If newHeight = 0 Then newHeight = m_MoveSize.GetHeight
+    'Fill in missing parameters, if any
+    If (newWidth = 0) Then newWidth = m_MoveSize.GetWidth
+    If (newHeight = 0) Then newHeight = m_MoveSize.GetHeight
     
     m_ResizeEventsSuspended = Not alsoNotifyMeViaEvent
     If (newWidth <> m_MoveSize.GetWidth) Or (newHeight <> m_MoveSize.GetHeight) Then

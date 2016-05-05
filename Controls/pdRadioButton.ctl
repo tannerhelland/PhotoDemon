@@ -467,7 +467,7 @@ Private Sub RedrawBackBuffer()
         'If the button state is TRUE, draw a smaller circle inside the border
         If m_Value Then
             With m_RadioButtonRect
-                GDI_Plus.GDIPlusFillEllipseToDC bufferDC, .Left + 3#, .Top + 3#, .Width - 6#, .Height - 6#, radioColorFill
+                GDI_Plus.GDIPlusFillEllipseToDC bufferDC, .Left + FixDPIFloat(3), .Top + FixDPIFloat(3), .Width - FixDPIFloat(6), .Height - FixDPIFloat(6), radioColorFill
             End With
         End If
         

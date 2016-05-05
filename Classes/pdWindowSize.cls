@@ -107,12 +107,12 @@ End Sub
 
 'FYI: all retrieval functions operate purely in the pixel domain
 Public Function GetWidth() As Long
-    If Not m_SubclassActive Then UpdateWinRect
+    If (Not m_SubclassActive) Then UpdateWinRect
     GetWidth = m_WindowRect.x2 - m_WindowRect.x1
 End Function
 
 Public Function GetHeight() As Long
-    If Not m_SubclassActive Then UpdateWinRect
+    If (Not m_SubclassActive) Then UpdateWinRect
     GetHeight = m_WindowRect.y2 - m_WindowRect.y1
 End Function
 
@@ -135,9 +135,10 @@ Public Sub SetPosition(ByVal newLeft As Long, ByVal newTop As Long, Optional ByV
     
     Dim swpFlags As SWP_FLAGS
     swpFlags = SWP_NOSIZE Or SWP_NOZORDER Or SWP_NOACTIVATE
-    If Not notifyWindow Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
+    If (Not notifyWindow) Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
     
     SetWindowPos m_hWnd, 0&, newLeft, newTop, 0, 0, swpFlags
+    If (Not notifyWindow) Then UpdateWinRect
     
 End Sub
 
@@ -145,9 +146,10 @@ Public Sub SetSize(ByVal newWidth As Long, ByVal newHeight As Long, Optional ByV
     
     Dim swpFlags As SWP_FLAGS
     swpFlags = SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
-    If Not notifyWindow Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
+    If (Not notifyWindow) Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
     
     SetWindowPos m_hWnd, 0&, 0&, 0&, newWidth, newHeight, swpFlags
+    If (Not notifyWindow) Then UpdateWinRect
     
 End Sub
 
@@ -155,9 +157,10 @@ Public Sub SetSizeAndPosition(ByVal newLeft As Long, ByVal newTop As Long, ByVal
 
     Dim swpFlags As SWP_FLAGS
     swpFlags = SWP_NOZORDER Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
-    If Not notifyWindow Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
+    If (Not notifyWindow) Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
     
     SetWindowPos m_hWnd, 0&, newLeft, newTop, newWidth, newHeight, swpFlags
+    If (Not notifyWindow) Then UpdateWinRect
     
 End Sub
 
