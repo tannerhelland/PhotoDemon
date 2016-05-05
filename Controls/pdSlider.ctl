@@ -367,11 +367,11 @@ Private Sub tudPrimary_LostFocusAPI()
 End Sub
 
 Private Sub tudPrimary_Resize()
-    If Not g_IsProgramCompiled Then UpdateControlLayout
+    UpdateControlLayout
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    If Not m_InternalResizeActive Then UpdateControlLayout
+    If (Not m_InternalResizeActive) Then UpdateControlLayout
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -507,27 +507,27 @@ Private Sub UpdateControlLayout()
     End If
     
     'Apply the new height to this UC instance
-    If ucSupport.GetControlHeight <> newControlHeight Then ucSupport.RequestNewSize , newControlHeight
+    If (ucSupport.GetControlHeight <> newControlHeight) Then ucSupport.RequestNewSize , newControlHeight
     
     'With height correctly set, we next want to left-align the spinner against the slider region
     newLeft_TUD = ucSupport.GetControlWidth - (tudPrimary.GetWidth + FixDPI(2))
     
     'Because the slider width is contingent on the spinner position, calculate it next, then move it into place
     newWidth_Slider = newLeft_TUD - FixDPI(10)
-    If newTop_Slider <> pdssPrimary.GetTop Then pdssPrimary.SetTop newTop_Slider
+    If (newTop_Slider <> pdssPrimary.GetTop) Then pdssPrimary.SetTop newTop_Slider
     If (newWidth_Slider > 0) And (newWidth_Slider <> pdssPrimary.GetWidth) Then pdssPrimary.SetWidth newWidth_Slider
     
     'Vertically center the spinner relative to the slider
     Dim sliderVerticalCenter As Single
     sliderVerticalCenter = pdssPrimary.GetTop + (CSng(pdssPrimary.GetHeight) / 2)
-    newTop_TUD = sliderVerticalCenter - Int(CSng(tudPrimary.GetHeight) / 2)
+    newTop_TUD = sliderVerticalCenter - Int(CSng(tudPrimary.GetHeight) / 2) + 1
     
     'Now that we've calculated new text up/down positioning, we can apply it as necessary
-    If tudPrimary.GetTop <> newTop_TUD Then tudPrimary.SetTop newTop_TUD
-    If tudPrimary.GetLeft <> newLeft_TUD Then tudPrimary.SetLeft newLeft_TUD
+    If (tudPrimary.GetTop <> newTop_TUD) Then tudPrimary.SetTop newTop_TUD
+    If (tudPrimary.GetLeft <> newLeft_TUD) Then tudPrimary.SetLeft newLeft_TUD
     
     'Inside the IDE, use a line of dummy code to force a redraw of the control outline
-    If Not g_IsProgramRunning Then
+    If (Not g_IsProgramRunning) Then
         Dim bufferDC As Long
         bufferDC = ucSupport.GetBackBufferDC(True)
     End If

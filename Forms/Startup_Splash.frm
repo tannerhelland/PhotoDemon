@@ -82,11 +82,11 @@ Public Sub prepareSplashLogo(ByVal maxProgressValue As Long)
     Set shadowDIB = New pdDIB
     
     'Load the logo DIB, and calculate an aspect ratio (important if high-DPI settings are in use)
-    dibsLoadedSuccessfully = loadResourceToDIB("PDLOGOWHITE", logoDIB)
-    logoAspectRatio = CDbl(logoDIB.getDIBWidth) / CDbl(logoDIB.getDIBHeight)
+    dibsLoadedSuccessfully = LoadResourceToDIB("PDLOGOWHITE", logoDIB)
+    logoAspectRatio = CDbl(logoDIB.GetDIBWidth) / CDbl(logoDIB.GetDIBHeight)
     
     'Load the inverted logo DIB; this will be blurred and used as a shadow backdrop
-    dibsLoadedSuccessfully = dibsLoadedSuccessfully And loadResourceToDIB("PDLOGOBLACK", shadowDIB)
+    dibsLoadedSuccessfully = dibsLoadedSuccessfully And LoadResourceToDIB("PDLOGOBLACK", shadowDIB)
     
     If FixDPIFloat(1) = 1 Then
         quickBlurDIB shadowDIB, 7, False
@@ -119,9 +119,9 @@ Public Sub prepareRestOfSplash()
         
         'Copy the screen background, shadow, and logo onto a single composite DIB
         Set splashDIB = New pdDIB
-        splashDIB.createFromExistingDIB screenDIB
-        shadowDIB.alphaBlendToDC splashDIB.getDIBDC, , FixDPI(1), FixDPI(1), formWidth, formWidth / logoAspectRatio
-        logoDIB.alphaBlendToDC splashDIB.getDIBDC, , 0, 0, formWidth, formWidth / logoAspectRatio
+        splashDIB.CreateFromExistingDIB screenDIB
+        shadowDIB.AlphaBlendToDC splashDIB.GetDIBDC, , FixDPI(1), FixDPI(1), formWidth, formWidth / logoAspectRatio
+        logoDIB.AlphaBlendToDC splashDIB.GetDIBDC, , 0, 0, formWidth, formWidth / logoAspectRatio
         
         'Free all intermediate DIBs
         Set screenDIB = Nothing
@@ -160,14 +160,14 @@ Public Sub prepareRestOfSplash()
         versionString = g_Language.TranslateMessage("version %1", GetPhotoDemonVersion)
         
         'Render the version string just below the logo text
-        curFontVersion.AttachToDC splashDIB.getDIBDC
+        curFontVersion.AttachToDC splashDIB.GetDIBDC
         versionWidth = curFontVersion.GetWidthOfString(versionString)
         versionHeight = curFontVersion.GetHeightOfString(versionString)
         curFontVersion.FastRenderText pdLogoRight - versionWidth, pdLogoBottom + FixDPI(8), versionString
         curFontVersion.ReleaseFromDC
         
         'Copy the composite image onto the underlying form
-        BitBlt Me.hDC, 0, 0, formWidth, formHeight, splashDIB.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt Me.hDC, 0, 0, formWidth, formHeight, splashDIB.GetDIBDC, 0, 0, vbSrcCopy
         Me.Picture = Me.Image
         
     Else
@@ -177,7 +177,7 @@ Public Sub prepareRestOfSplash()
 End Sub
 
 'When the load function updates the current progress count, we refresh the splash screen to reflect the new progress.
-Public Sub updateLoadProgress(ByVal newProgressMarker As Long)
+Public Sub UpdateLoadProgress(ByVal newProgressMarker As Long)
     
     'If progress notifications arrived before the form was made visible, ignore them; this makes the loading bar appear
     ' more fluid, rather than magically jumping to the middle of the form when it's first loaded.
@@ -186,21 +186,21 @@ Public Sub updateLoadProgress(ByVal newProgressMarker As Long)
     'Calculate the length of the progress line.  This is effectively arbitrary; I've made it the length of the
     ' logo image minus 10% for now.
     Dim lineLength As Long, lineOffset As Long
-    lineLength = splashDIB.getDIBWidth * 0.9
-    lineOffset = (splashDIB.getDIBWidth - lineLength) \ 2
+    lineLength = splashDIB.GetDIBWidth * 0.9
+    lineOffset = (splashDIB.GetDIBWidth - lineLength) \ 2
     
     'Draw the current progress, if relevant
     If (m_MaxProgress > 0) And Me.Visible Then
     
         'Copy the splash DIB to overwrite any old drawing
-        BitBlt Me.hDC, 0, 0, splashDIB.getDIBWidth, splashDIB.getDIBHeight, splashDIB.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt Me.hDC, 0, 0, splashDIB.GetDIBWidth, splashDIB.GetDIBHeight, splashDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Draw the progress line using GDI+
         Dim lineRadius As Long, lineY As Long
         lineRadius = FixDPI(6)
-        lineY = splashDIB.getDIBHeight - FixDPI(2) - lineRadius
+        lineY = splashDIB.GetDIBHeight - FixDPI(2) - lineRadius
         
-        GDI_Plus.GDIPlusDrawLineToDC Me.hDC, lineOffset, lineY, (splashDIB.getDIBWidth - lineOffset) * ((newProgressMarker - m_ProgressAtFirstNotify) / (m_MaxProgress - m_ProgressAtFirstNotify)), lineY, RGB(50, 127, 255), 255, lineRadius, True, LineCapRound
+        GDI_Plus.GDIPlusDrawLineToDC Me.hDC, lineOffset, lineY, (splashDIB.GetDIBWidth - lineOffset) * ((newProgressMarker - m_ProgressAtFirstNotify) / (m_MaxProgress - m_ProgressAtFirstNotify)), lineY, RGB(50, 127, 255), 255, lineRadius, True, LineCapRound
         
         'Manually refresh the form
         Me.Picture = Me.Image
