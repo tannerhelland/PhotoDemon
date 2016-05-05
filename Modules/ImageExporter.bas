@@ -1478,6 +1478,84 @@ ExportPSDError:
     
 End Function
 
+'Save to TGA format using the FreeImage library
+Public Function ExportTGA(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportTGAError
+    
+    ExportTGA = False
+    Dim sFileType As String: sFileType = "TGA"
+    
+    If g_ImageFormats.FreeImageEnabled Then
+    
+        'TODO: parse incoming TGA parameters.  (This requires a TGA export dialog, which I haven't constructed yet...)
+        Dim cParams As pdParamXML
+        Set cParams = New pdParamXML
+        cParams.SetParamString formatParams
+        
+        'The only output parameter TGA supports is whether to enable basic RLE compression
+        Dim compressRLE As Boolean
+        compressRLE = True
+        
+        'Generate a composited image copy, with alpha automatically un-premultiplied
+        Dim tmpImageCopy As pdDIB
+        Set tmpImageCopy = New pdDIB
+        srcPDImage.GetCompositedImage tmpImageCopy, False
+        
+        'Retrieve the recommended output color depth of the image.
+        ' (TODO: parse incoming params and honor requests for forced color-depths!)
+        Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_TARGA, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+        ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
+        
+        'Our TGA exporter is a simplified one, so ignore special alpha modes
+        If (currentAlphaStatus = PDAS_NoAlpha) Then
+            desiredAlphaStatus = PDAS_NoAlpha
+        Else
+            If (currentAlphaStatus = PDAS_BinaryAlpha) And (outputColorDepth = 8) Then
+                desiredAlphaStatus = PDAS_BinaryAlpha
+            Else
+                desiredAlphaStatus = PDAS_ComplicatedAlpha
+                outputColorDepth = 32
+            End If
+        End If
+        
+        'To save us some time, auto-convert any non-transparent images to 24-bpp now
+        If (desiredAlphaStatus = PDAS_NoAlpha) Then tmpImageCopy.ConvertTo24bpp
+        
+        Dim fi_DIB As Long
+        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus)
+        
+        If (fi_DIB <> 0) Then
+            
+            Dim fi_Flags As Long: fi_Flags = 0&
+            If compressRLE Then fi_Flags = fi_Flags Or TARGA_SAVE_RLE
+            
+            ExportTGA = FreeImage_Save(FIF_TARGA, fi_DIB, dstFile, fi_Flags)
+            If ExportTGA Then
+                ExportDebugMsg "Export to " & sFileType & " appears successful."
+            Else
+                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+            End If
+            
+        Else
+            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            ExportTGA = False
+        End If
+    Else
+        If (MacroStatus <> MacroBATCH) Then PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
+        Message "Save cannot be completed without FreeImage library."
+        ExportTGA = False
+    End If
+    
+    Exit Function
+    
+ExportTGAError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportTGA = False
+    
+End Function
+
 Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportTIFFError

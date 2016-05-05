@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.162</langversion>
+<langversion>6.7.163</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -11476,6 +11476,11 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 </phrase>
 
 <phrase>
+<original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Unfortunately, that program has exited.</original>
 <translation>Leider wurde das Programm beendet.</translation>
 </phrase>
@@ -11485,7 +11490,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <translation>Wählen Sie bitte einen anderen aus.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 17 phrases. 6 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 19 phrases. 7 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -15231,10 +15236,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2611</phrasecount>
+<phrasecount>2612</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4549 phrases. -->
-<!-- 1938 are duplicates, so only 2611 unique phrases have been written to file. -->
-<!-- These 2611 phrases contain approximately 13450 total words. -->
+<!-- As of this build, PhotoDemon contains 4551 phrases. -->
+<!-- 1939 are duplicates, so only 2612 unique phrases have been written to file. -->
+<!-- These 2612 phrases contain approximately 13488 total words. -->
 
 </pdData>

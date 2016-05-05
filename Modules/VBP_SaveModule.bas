@@ -324,12 +324,13 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         Case PDIF_PNM
             ExportToSpecificFormat = ImageExporter.ExportPNM(srcImage, dstPath, saveParameters, metadataParameters)
         
+        Case PDIF_TARGA
+            ExportToSpecificFormat = ImageExporter.ExportTGA(srcImage, dstPath, saveParameters, metadataParameters)
+            
         Case PDIF_TIFF
             ExportToSpecificFormat = ImageExporter.ExportTIFF(srcImage, dstPath, saveParameters, metadataParameters)
             
         'Formats past this line are still using the old export engine; their migration is in progress!
-        Case PDIF_TARGA
-            ExportToSpecificFormat = SaveTGAImage(srcImage, dstPath, , saveParameters)
             
         Case PDIF_JP2
             ExportToSpecificFormat = SaveJP2Image(srcImage, dstPath, , saveParameters)
@@ -553,149 +554,6 @@ SavePDLayerError:
 
     SavePhotoDemonLayer = False
     
-End Function
-
-'Save to Targa (TGA) format.
-Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As String, Optional ByVal outputColorDepth As Long = 32, Optional ByVal tgaParams As String = "") As Boolean
-    
-    On Error GoTo SaveTGAError
-    
-    'Parse all possible TGA parameters (at present there is only one possible parameter, which specifies RLE compression)
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    If Len(tgaParams) <> 0 Then cParams.SetParamString tgaParams
-    Dim TGACompression As Boolean
-    TGACompression = cParams.GetBool(1, False)
-    
-    Dim sFileType  As String
-    sFileType = "TGA"
-    
-    'Make sure we found the plug-in when we loaded the program
-    If Not g_ImageFormats.FreeImageEnabled Then
-        PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save cannot be completed without FreeImage library."
-        SaveTGAImage = False
-        Exit Function
-    End If
-    
-    Message "Preparing %1 image...", sFileType
-    
-    'Retrieve a composited copy of the image, at full size
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    srcPDImage.GetCompositedImage tmpDIB, False
-    
-    'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
-    Dim handleAlpha As Boolean
-    If (tmpDIB.GetDIBColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
-    
-    'If this image is 32bpp but the output color depth is less than that, make necessary preparations
-    If handleAlpha Then
-        
-        'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
-        If DIB_Handler.IsDIBAlphaBinary(tmpDIB) Then
-            tmpDIB.ApplyAlphaCutoff
-        Else
-        
-            'If we are in the midst of a batch conversion, we don't want to bother the user with alpha dialogs.
-            ' Thus, use a default cut-off of 127 and continue on.
-            If MacroStatus = MacroBATCH Then
-                tmpDIB.ApplyAlphaCutoff
-            
-            'We're not in a batch conversion, so ask the user which cut-off they would like to use.
-            Else
-            
-                Dim alphaCheck As VbMsgBoxResult
-                alphaCheck = PromptAlphaCutoff(tmpDIB)
-                
-                'If the alpha dialog is canceled, abandon the entire save
-                If alphaCheck = vbCancel Then
-                
-                    tmpDIB.EraseDIB
-                    Set tmpDIB = Nothing
-                    SaveTGAImage = False
-                    Exit Function
-                
-                'If it wasn't canceled, use the value it provided to apply our alpha cut-off
-                Else
-                    tmpDIB.ApplyAlphaCutoff g_AlphaCutoff, , g_AlphaCompositeColor
-                End If
-            End If
-            
-        End If
-    
-    Else
-    
-        'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
-        ' If we are, composite the image against a white background.
-        If (tmpDIB.GetDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.CompositeBackgroundColor 255, 255, 255
-    
-    End If
-    
-    'Convert our current DIB to a FreeImage-type DIB
-    Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.GetDIBDC)
-    
-    'If the image contains alpha, we need to convert the FreeImage copy of the image to 8bpp
-    If handleAlpha Then
-    
-        fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_NNQUANT, True)
-        
-        'We now need to find the palette index of a known transparent pixel
-        Dim transpX As Long, transpY As Long
-        tmpDIB.GetTransparentLocation transpX, transpY
-        
-        Dim palIndex As Byte
-        FreeImage_GetPixelIndex fi_DIB, transpX, transpY, palIndex
-        
-        'Request that FreeImage set that palette entry as the transparent index
-        FreeImage_SetTransparentIndex fi_DIB, palIndex
-        
-        'Finally, because some software may not display the transparency correctly, we need to set that
-        ' palette index to some normal color instead of bright magenta.  To do that, we must make a
-        ' copy of the palette and update the transparency index accordingly.
-        Dim fi_Palette() As Long
-        fi_Palette = FreeImage_GetPaletteExLong(fi_DIB)
-        
-        fi_Palette(palIndex) = tmpDIB.GetOriginalTransparentColor()
-        
-    End If
-    
-    'Finally, prepare a TGA save flag.  If the user has requested RLE encoding, pass that along to FreeImage.
-    Dim TGAflags As Long
-    TGAflags = TARGA_DEFAULT
-            
-    If TGACompression Then TGAflags = TARGA_SAVE_RLE
-    
-    'Use that handle to save the image to TGA format
-    If fi_DIB <> 0 Then
-        
-        Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, TGAPath, PDIF_TARGA, TGAflags, outputColorDepth, , , , , True)
-        
-        If fi_Check Then
-            Message "%1 save complete.", sFileType
-        Else
-            Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-            SaveTGAImage = False
-            Exit Function
-        End If
-        
-    Else
-    
-        Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-        SaveTGAImage = False
-        Exit Function
-        
-    End If
-    
-    SaveTGAImage = True
-    Exit Function
-    
-SaveTGAError:
-
-    SaveTGAImage = False
-
 End Function
 
 'Save to JPEG-2000 format using the FreeImage library.

@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.161</langversion>
+<langversion>6.7.162</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -11474,6 +11474,11 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
+<original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Unfortunately, that program has exited.</original>
 <translation>Purtroppo, quel programma è stato terminato.</translation>
 </phrase>
@@ -11483,7 +11488,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>Si prega di selezionarne un altro.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 17 phrases. 6 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 19 phrases. 7 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -15229,10 +15234,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2611</phrasecount>
+<phrasecount>2612</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4549 phrases. -->
-<!-- 1938 are duplicates, so only 2611 unique phrases have been written to file. -->
-<!-- These 2611 phrases contain approximately 13450 total words. -->
+<!-- As of this build, PhotoDemon contains 4551 phrases. -->
+<!-- 1939 are duplicates, so only 2612 unique phrases have been written to file. -->
+<!-- These 2612 phrases contain approximately 13488 total words. -->
 
 </pdData>
