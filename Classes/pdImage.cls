@@ -175,7 +175,7 @@ Public Function createBlankLayer(Optional ByVal layerPosition As Long = -1) As L
     Set imgLayers(m_curLayer) = New pdLayer
     
     'Assign the layer a canonical ID value.
-    imgLayers(m_curLayer).assignLayerID m_numOfLayersEverCreated
+    imgLayers(m_curLayer).AssignLayerID m_numOfLayersEverCreated
     
     'Increment our internal layer counts
     m_numOfLayersEverCreated = m_numOfLayersEverCreated + 1
@@ -220,7 +220,7 @@ Public Function NotifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional 
     
     Select Case typeOfChange
     
-        Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
+        Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE, UNDO_EVERYTHING
             m_CompositeCacheClean = False
         
         Case UNDO_IMAGEHEADER
@@ -248,7 +248,7 @@ End Function
 'Merge two layers together.  Note this can be used to merge any two arbitrary layers, with the bottom layer holding the result
 ' of the merge.  It is up to the caller to deal with any subsequent layer deletions, etc - this sub just performs the merge.
 Public Sub MergeTwoLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True)
-    imgCompositor.mergeLayers topLayer, bottomLayer, bottomLayerIsFullSize
+    imgCompositor.MergeLayers topLayer, bottomLayer, bottomLayerIsFullSize
 End Sub
 
 'Returns all layers of the image as a single, composited image (in pdDIB format, of course).  Because of the way VB handles
@@ -283,9 +283,9 @@ End Function
 'Get the currently active layer canonical ID
 Public Function GetActiveLayerID() As Long
     If m_curLayer > UBound(imgLayers) Then
-        GetActiveLayerID = imgLayers(0).getLayerID
+        GetActiveLayerID = imgLayers(0).GetLayerID
     Else
-        GetActiveLayerID = imgLayers(m_curLayer).getLayerID
+        GetActiveLayerID = imgLayers(m_curLayer).GetLayerID
     End If
 End Function
 
@@ -319,7 +319,7 @@ Public Sub SetActiveLayerByID(ByVal newActiveLayerID As Long)
     
     Dim i As Long
     For i = 0 To UBound(imgLayers)
-        If imgLayers(i).getLayerID = newActiveLayerID Then
+        If imgLayers(i).GetLayerID = newActiveLayerID Then
             m_curLayer = i
             Exit For
         End If
@@ -344,7 +344,7 @@ Public Function GetLayerIndexFromID(ByVal requestedID As Long) As Long
     
     Dim i As Long
     For i = 0 To UBound(imgLayers)
-        If imgLayers(i).getLayerID = requestedID Then
+        If imgLayers(i).GetLayerID = requestedID Then
             GetLayerIndexFromID = i
             Exit Function
         End If
@@ -382,7 +382,7 @@ Public Function GetLayerByID(ByVal requestedID As Long) As pdLayer
     
     Dim i As Long
     For i = 0 To m_numOfLayers - 1
-        If imgLayers(i).getLayerID = requestedID Then
+        If imgLayers(i).GetLayerID = requestedID Then
             Set GetLayerByID = imgLayers(i)
             Exit Function
         End If
@@ -869,8 +869,8 @@ End Sub
 Public Function UpdateSize(Optional ByVal useBaseLayer As Boolean = True, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
     
     If useBaseLayer Then
-        Me.Width = imgLayers(0).getLayerWidth(False)
-        Me.Height = imgLayers(0).getLayerHeight(False)
+        Me.Width = imgLayers(0).GetLayerWidth(False)
+        Me.Height = imgLayers(0).GetLayerHeight(False)
     Else
         Me.Width = newWidth
         Me.Height = newHeight
@@ -949,7 +949,7 @@ Public Sub RetrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srcLayerIndex As
     dstDIB.CreateBlank Width, Height, 32, 0
     
     'Copy the source layer into the blank DIB
-    BitBlt dstDIB.GetDIBDC, imgLayers(srcLayerIndex).getLayerOffsetX, imgLayers(srcLayerIndex).getLayerOffsetY, imgLayers(srcLayerIndex).getLayerWidth(False), imgLayers(srcLayerIndex).getLayerHeight(False), imgLayers(srcLayerIndex).layerDIB.GetDIBDC, 0, 0, vbSrcCopy
+    BitBlt dstDIB.GetDIBDC, imgLayers(srcLayerIndex).GetLayerOffsetX, imgLayers(srcLayerIndex).GetLayerOffsetY, imgLayers(srcLayerIndex).GetLayerWidth(False), imgLayers(srcLayerIndex).GetLayerHeight(False), imgLayers(srcLayerIndex).layerDIB.GetDIBDC, 0, 0, vbSrcCopy
     
 End Sub
 
@@ -1215,7 +1215,7 @@ Public Function GetNumOfVisibleLayers() As Long
     visLayerCount = 0
     
     For i = 0 To m_numOfLayers - 1
-        If imgLayers(i).getLayerVisibility Then visLayerCount = visLayerCount + 1
+        If imgLayers(i).GetLayerVisibility Then visLayerCount = visLayerCount + 1
     Next i
     
     GetNumOfVisibleLayers = visLayerCount
@@ -1228,7 +1228,7 @@ Public Function GetNumOfHiddenLayers() As Long
     hidLayerCount = 0
     
     For i = 0 To m_numOfLayers - 1
-        If Not imgLayers(i).getLayerVisibility Then hidLayerCount = hidLayerCount + 1
+        If Not imgLayers(i).GetLayerVisibility Then hidLayerCount = hidLayerCount + 1
     Next i
     
     GetNumOfHiddenLayers = hidLayerCount
@@ -1261,7 +1261,7 @@ Public Function GetNumOfVectorLayers() As Long
     vectorLayerCount = 0
     
     For i = 0 To m_numOfLayers - 1
-        If imgLayers(i).isLayerVector Then vectorLayerCount = vectorLayerCount + 1
+        If imgLayers(i).IsLayerVector Then vectorLayerCount = vectorLayerCount + 1
     Next i
     
     GetNumOfVectorLayers = vectorLayerCount
@@ -1275,7 +1275,7 @@ Public Function GetNumOfRasterLayers() As Long
     rasterLayerCount = 0
     
     For i = 0 To m_numOfLayers - 1
-        If imgLayers(i).isLayerRaster Then rasterLayerCount = rasterLayerCount + 1
+        If imgLayers(i).IsLayerRaster Then rasterLayerCount = rasterLayerCount + 1
     Next i
     
     GetNumOfRasterLayers = rasterLayerCount

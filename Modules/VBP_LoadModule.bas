@@ -155,7 +155,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     Dim srcFileExtension As String
     srcFileExtension = UCase(GetExtension(srcFile))
     
-    Dim internalFormatID As Long
+    Dim internalFormatID As PHOTODEMON_IMAGE_FORMAT
     internalFormatID = CheckForInternalFiles(srcFileExtension)
     
     'Files with a PD-specific format have now been specially marked, while generic files (JPEG, PNG, etc) have not.
@@ -223,7 +223,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         ' If the loaded image was in PDI format (PhotoDemon's internal format), skip a number of additional processing steps.
         '*************************************************************************************************************************************
         
-        If (decoderUsed <> PDIDE_INTERNAL) Then
+        If (internalFormatID <> PDIF_PDI) Then
             
             'While inside this section of the load process, you'll notice a consistent trend regarding DOEVENTS.  If you haven't already,
             ' now is a good time to scroll up to the top of this function to read the IMPORTANT NOTE!
@@ -628,7 +628,7 @@ End Function
 
 'Given a source filename's extension, return the estimated filetype (as an FIF_ constant) if the image format is specific to PD.
 ' This lets us quickly redirect PD-specific files to our own internal functions.
-Private Function CheckForInternalFiles(ByRef srcFileExtension As String) As Long
+Private Function CheckForInternalFiles(ByRef srcFileExtension As String) As PHOTODEMON_IMAGE_FORMAT
     
     CheckForInternalFiles = FIF_UNKNOWN
     
@@ -797,7 +797,7 @@ Public Sub LoadMessage(ByVal sMsg As String)
     'Previously, the current load text would be displayed to the user at this point.  As of version 6.6, this step is skipped in favor
     ' of a more minimalist splash screen.
     ' TODO BY 6.8's RELEASE: revisit this function entirely, and consider removing it if applicable
-    If FormSplash.Visible Then FormSplash.updateLoadProgress loadProgress
+    If FormSplash.Visible Then FormSplash.UpdateLoadProgress loadProgress
     
     loadProgress = loadProgress + 1
     
