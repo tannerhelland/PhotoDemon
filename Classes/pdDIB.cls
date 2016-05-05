@@ -1280,8 +1280,8 @@ Public Function CreateBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     If (BackColor <> vbWhite) Then BackColor = TranslateColor(BackColor)
     
     'Force the DIB to have a size of at least 1x1
-    If iWidth <= 0 Then iWidth = 1
-    If iHeight <= 0 Then iHeight = 1
+    If (iWidth <= 0) Then iWidth = 1
+    If (iHeight <= 0) Then iHeight = 1
     
     'Remember the requested color depth, width, and height
     m_DibColorDepth = colorDepth
@@ -1574,7 +1574,7 @@ Public Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
     Set cFile = New pdFSO
     
     'If this is not an embedded file, create and open it now
-    If Not useEmbeddedLocation Then
+    If (Not useEmbeddedLocation) Then
         
         If Not cFile.CreateFileHandle(srcFilename, hFile, True, False, OptimizeSequentialAccess) Then
             
@@ -1628,6 +1628,17 @@ Public Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
     cFile.ReadDataFromFile hFile, VarPtr(fHeight), 4&
     cFile.ReadDataFromFile hFile, VarPtr(fArrayWidth), 4&
     
+    'Make sure the dimensions are valid
+    If (fWidth = 0) Or (fHeight = 0) Or (fArrayWidth = 0) Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdDIB.CreateFromFile encountered invalid width/height measurements (" & fWidth & "x" & fHeight & ", scanline width: " & fArrayWidth & ")"
+        #End If
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "pdDIB.CreateFromFile() detected an incoming buffer with measurements (" & fWidth & "x" & fHeight & ", scanline width: " & fArrayWidth & ")"
+        #End If
+    End If
+    
     'Is the DIB data compressed?
     Dim toDecompress As Boolean
     cFile.ReadDataFromFile hFile, VarPtr(toDecompress), 2&
@@ -1639,7 +1650,7 @@ Public Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
     Dim origDataSize As Long, compressedDataSize As Long
     
     'Also, as a failsafe, make sure the DIB has dimensions prior to loading pixel data.
-    If (fWidth > 0) And (fHeight > 0) Then
+    If (fWidth <> 0) And (fHeight <> 0) Then
     
         If toDecompress Then
         
@@ -1669,7 +1680,7 @@ Public Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
     
     'Initialize a blank DIB at the requested size.  Besides giving us a memory target, this will also initialize all module-level
     ' parameters to match the file's settings.
-    If CreateBlank(fWidth, fHeight, fColorDepth) Then
+    If Me.CreateBlank(fWidth, fHeight, fColorDepth) Then
         
         'Now it's time to overwrite the DIB memory region with the pixel data in the file.
         Dim tmpDIBPointer As Long, tmpDIBLength As Long
@@ -1715,7 +1726,7 @@ Public Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
     m_IsAlphaPremultiplied = localAlphaPremultiplied
     
     'If this is an embedded file, leave the file open for further processing.  Otherwise, close it.
-    If Not useEmbeddedLocation Then cFile.CloseFileHandle hFile
+    If (Not useEmbeddedLocation) Then cFile.CloseFileHandle hFile
     
 End Function
 
@@ -1741,7 +1752,7 @@ Public Function WriteToFile(ByRef dstFilename As String, Optional ByVal toCompre
     Set cFile = New pdFSO
     
     'If we are not embedding the data inside an existing file, create a new file now.
-    If Not embedInFile Then
+    If (Not embedInFile) Then
         
         'Delete any existing file (overwrite)
         If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename

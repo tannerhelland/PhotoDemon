@@ -71,42 +71,48 @@ Public Function GetZoomValue(ByVal zoomIndex As Long) As Double
             
             'Calculate a width and height ratio in advance
             Dim horizontalRatio As Double, verticalRatio As Double
-            horizontalRatio = viewportWidth / imgWidth
-            verticalRatio = viewportHeight / imgHeight
+            If (imgHeight <> 0) And (imgWidth <> 0) Then
             
-            Select Case zoomIndex
-            
-                'Fit width
-                Case zoomCountFixed + 1
+                horizontalRatio = viewportWidth / imgWidth
+                verticalRatio = viewportHeight / imgHeight
                 
-                    'Check to see if the calculated zoom value will require a vertical scroll bar (since we are only fitting width).
-                    ' If it will, we must subtract the scroll bar's width from our calculation.
-                    If imgHeight * horizontalRatio > viewportHeight Then
-                        GetZoomValue = viewportWidth / imgWidth
-                    Else
-                        GetZoomValue = horizontalRatio
-                    End If
-                    
-                'Fit height
-                Case zoomCountFixed + 2
+                Select Case zoomIndex
                 
-                    'Check to see if the calculated zoom value will require a horizontal scroll bar (since we are only fitting height).
-                    ' If it will, we must subtract the scroll bar's height from our calculation.
-                    If imgWidth * verticalRatio > viewportWidth Then
-                        GetZoomValue = viewportHeight / imgHeight
-                    Else
-                        GetZoomValue = verticalRatio
-                    End If
+                    'Fit width
+                    Case zoomCountFixed + 1
                     
-                'Fit everything
-                Case zoomCountFixed + 3
-                    If horizontalRatio < verticalRatio Then
-                        GetZoomValue = horizontalRatio
-                    Else
-                        GetZoomValue = verticalRatio
-                    End If
-            
-            End Select
+                        'Check to see if the calculated zoom value will require a vertical scroll bar (since we are only fitting width).
+                        ' If it will, we must subtract the scroll bar's width from our calculation.
+                        If imgHeight * horizontalRatio > viewportHeight Then
+                            GetZoomValue = viewportWidth / imgWidth
+                        Else
+                            GetZoomValue = horizontalRatio
+                        End If
+                        
+                    'Fit height
+                    Case zoomCountFixed + 2
+                    
+                        'Check to see if the calculated zoom value will require a horizontal scroll bar (since we are only fitting height).
+                        ' If it will, we must subtract the scroll bar's height from our calculation.
+                        If imgWidth * verticalRatio > viewportWidth Then
+                            GetZoomValue = viewportHeight / imgHeight
+                        Else
+                            GetZoomValue = verticalRatio
+                        End If
+                        
+                    'Fit everything
+                    Case zoomCountFixed + 3
+                        If horizontalRatio < verticalRatio Then
+                            GetZoomValue = horizontalRatio
+                        Else
+                            GetZoomValue = verticalRatio
+                        End If
+                
+                End Select
+                
+            Else
+                GetZoomValue = 1
+            End If
             
         Else
             GetZoomValue = 1

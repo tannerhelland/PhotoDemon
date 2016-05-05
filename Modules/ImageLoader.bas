@@ -839,11 +839,16 @@ Public Function LoadRawImageBuffer(ByVal imagePath As String, ByRef dstDIB As pd
     
     'Ask the destination DIB to create itself using the raw image buffer data
     LoadRawImageBuffer = dstDIB.CreateFromFile(imagePath)
+    If Not (dstImage Is Nothing) Then
+        dstImage.Width = dstDIB.GetDIBWidth
+        dstImage.Height = dstDIB.GetDIBHeight
+    End If
     
     Exit Function
     
 LoadRawImageBufferFail:
-
+    
+    Debug.Print "ERROR ENCOUNTERED IN ImageImporter.LoadRawImageBuffer: " & Err.Number & ", " & Err.Description
     LoadRawImageBuffer = False
     Exit Function
 
