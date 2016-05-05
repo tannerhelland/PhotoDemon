@@ -308,6 +308,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         Case PDIF_GIF
             ExportToSpecificFormat = ImageExporter.ExportGIF(srcImage, dstPath, saveParameters, metadataParameters)
             
+        Case PDIF_HDR
+            ExportToSpecificFormat = ImageExporter.ExportHDR(srcImage, dstPath, saveParameters)
+            
         Case PDIF_JPEG
             ExportToSpecificFormat = ImageExporter.ExportJPEG(srcImage, dstPath, saveParameters, metadataParameters)
             
@@ -324,6 +327,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         Case PDIF_PNM
             ExportToSpecificFormat = ImageExporter.ExportPNM(srcImage, dstPath, saveParameters, metadataParameters)
         
+        Case PDIF_PSD
+            ExportToSpecificFormat = ImageExporter.ExportPSD(srcImage, dstPath, saveParameters)
+            
         Case PDIF_TARGA
             ExportToSpecificFormat = ImageExporter.ExportTGA(srcImage, dstPath, saveParameters, metadataParameters)
             
@@ -341,12 +347,6 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         Case PDIF_JXR
             ExportToSpecificFormat = SaveJXRImage(srcImage, dstPath, , saveParameters)
             
-        Case PDIF_HDR
-            ExportToSpecificFormat = ImageExporter.ExportHDR(srcImage, dstPath, saveParameters)
-        
-        Case PDIF_PSD
-            ExportToSpecificFormat = ImageExporter.ExportPSD(srcImage, dstPath, saveParameters)
-        
         Case Else
             Message "Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident."
             ExportToSpecificFormat = False

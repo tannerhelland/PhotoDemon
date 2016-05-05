@@ -927,7 +927,7 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         srcPDImage.GetCompositedImage tmpImageCopy
         
         'HDR does not support alpha-channels, so convert to 24-bpp in advance
-        If tmpImageCopy.GetDIBColorDepth = 32 Then tmpImageCopy.ConvertTo24bpp
+        If (tmpImageCopy.GetDIBColorDepth = 32) Then tmpImageCopy.ConvertTo24bpp
         
         'HDR only supports one output color depth, so auto-detection is unnecessary
         ExportDebugMsg "HDR format only supports one output depth, so color depth auto-detection was ignored."

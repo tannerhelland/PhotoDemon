@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.162</langversion>
+<langversion>6.7.163</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -733,7 +733,7 @@ To membolehkan sokongan untuk format imej ini, sila menyalin fail FreeImage.dll 
 <translation>Jimat tidak dapat diselesaikan tanpa perpustakaan FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 31 phrases. 26 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -2066,7 +2066,7 @@ In pada itu, sila cuba menyelamatkan imej kepada format sesuai. Anda juga boleh 
 <translation>Thumbnail menyelamatkan gagal (ralat GDI tidak ditentukan).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 44 phrases. 34 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 37 phrases. 27 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -14015,6 +14015,136 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>use high-resolution input tracking</original>
+<translation>menggunakan Penjejakan input resolusi tinggi</translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation>tetikus dan input pen</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent file entries</original>
+<translation>Bilangan maksimum penyertaan fail baru-baru ini</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>senarai fail baru-baru ini</translation>
+</phrase>
+
+<phrase>
+<original>recently used file shortcuts should be</original>
+<translation>Pintasan fail baru-baru ini yang digunakan hendaklah</translation>
+</phrase>
+
+<phrase>
+<original>captions</original>
+<translation>kapsyen</translation>
+</phrase>
+
+<phrase>
+<original>image window titles should be</original>
+<translation>tajuk tetingkap imej harus</translation>
+</phrase>
+
+<phrase>
+<original>use the system color profile</original>
+<translation>menggunakan profil warna sistem</translation>
+</phrase>
+
+<phrase>
+<original>use one or more custom color profiles</original>
+<translation>menggunakan satu atau lebih profil warna adat</translation>
+</phrase>
+
+<phrase>
+<original>color profile for selected monitor</original>
+<translation>profil warna untuk monitor dipilih</translation>
+</phrase>
+
+<phrase>
+<original>available monitors</original>
+<translation>monitor boleh didapati</translation>
+</phrase>
+
+<phrase>
+<original>when rendering images to the screen</original>
+<translation>apabila imej yang ke skrin</translation>
+</phrase>
+
+<phrase>
+<original>color management</original>
+<translation>pengurusan warna</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard size</original>
+<translation>saiz ketelusan papan main dam</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard colors</original>
+<translation>warna ketelusan papan main dam</translation>
+</phrase>
+
+<phrase>
+<original>transparency management</original>
+<translation>pengurusan ketelusan</translation>
+</phrase>
+
+<phrase>
+<original>copy any relevant metadata to the new file</original>
+<translation>menyalin mana-mana metadata yang berkaitan dengan fail baru</translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn me me about unsaved changes</original>
+<translation>apabila menutup imej, memberi amaran kepada saya saya tentang perubahan yang tidak disimpan</translation>
+</phrase>
+
+<phrase>
+<original>default metadata behavior on first save</original>
+<translation>tingkah laku metadata lalai pada menyelamatkan pertama</translation>
+</phrase>
+
+<phrase>
+<original>save behavior: overwrite vs make a copy</original>
+<translation>menyelamatkan tingkah laku: menulis ganti vs membuat salinan</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>apabila "Simpan" digunakan</translation>
+</phrase>
+
+<phrase>
+<original>closing unsaved images</original>
+<translation>menutup imej yang tidak disimpan</translation>
+</phrase>
+
+<phrase>
+<original>when using the "Save As" command, set the default file format according to</original>
+<translation>apabila menggunakan "Save As" perintah, menetapkan format fail lalai mengikut</translation>
+</phrase>
+
+<phrase>
+<original>default file format when saving</original>
+<translation>lalai format fail apabila menyimpan</translation>
+</phrase>
+
+<phrase>
+<original>erase tags that might be personal (GPS, camera details, etc)</original>
+<translation>memadam tag yang mungkin bersifat peribadi (GPS, butiran kamera, dan lain-lain)</translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>menyenaraikan PhotoDemon sebagai perisian penyuntingan terakhir digunakan</translation>
+</phrase>
+
+<phrase>
 <original>display tone mapping options when importing HDR and RAW images</original>
 <translation>pilihan pemetaan paparan nada apabila mengimport HDR dan imej RAW</translation>
 </phrase>
@@ -14052,11 +14182,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>automatically hide duplicate tags</original>
 <translation>secara automatik menyembunyikan tag salinan</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>pengurusan warna</translation>
 </phrase>
 
 <phrase>
@@ -14177,166 +14302,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>notify me when an update is ready</original>
 <translation>memberitahu saya apabila kemas kini bersedia</translation>
-</phrase>
-
-<phrase>
-<original>use high-resolution input tracking</original>
-<translation>menggunakan Penjejakan input resolusi tinggi</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>tetikus dan input pen</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>Bilangan maksimum penyertaan fail baru-baru ini</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>senarai fail baru-baru ini</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts should be</original>
-<translation>Pintasan fail baru-baru ini yang digunakan hendaklah</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>kapsyen</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>tajuk tetingkap imej harus</translation>
-</phrase>
-
-<phrase>
-<original>use the system color profile</original>
-<translation>menggunakan profil warna sistem</translation>
-</phrase>
-
-<phrase>
-<original>use one or more custom color profiles</original>
-<translation>menggunakan satu atau lebih profil warna adat</translation>
-</phrase>
-
-<phrase>
-<original>color profile for selected monitor</original>
-<translation>profil warna untuk monitor dipilih</translation>
-</phrase>
-
-<phrase>
-<original>available monitors</original>
-<translation>monitor boleh didapati</translation>
-</phrase>
-
-<phrase>
-<original>when rendering images to the screen</original>
-<translation>apabila imej yang ke skrin</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard size</original>
-<translation>saiz ketelusan papan main dam</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard colors</original>
-<translation>warna ketelusan papan main dam</translation>
-</phrase>
-
-<phrase>
-<original>transparency management</original>
-<translation>pengurusan ketelusan</translation>
-</phrase>
-
-<phrase>
-<original>please select a file type</original>
-<translation>sila pilih jenis fail</translation>
-</phrase>
-
-<phrase>
-<original>file format options</original>
-<translation>pilihan format fail</translation>
-</phrase>
-
-<phrase>
-<original>TIFF (Tagged Image File Format) options</original>
-<translation>TIFF (Tagged Image File Format) pilihan</translation>
-</phrase>
-
-<phrase>
-<original>PPM (Portable Pixmap) options</original>
-<translation>PPM (Pixmap Portable) pilihan</translation>
-</phrase>
-
-<phrase>
-<original>PNG (Portable Network Graphic) options</original>
-<translation>PNG (Portable Network Grafik) pilihan</translation>
-</phrase>
-
-<phrase>
-<original>TGA (Truevision) options</original>
-<translation>TGA (Truevision) pilihan</translation>
-</phrase>
-
-<phrase>
-<original>BMP (Bitmap) options</original>
-<translation>BMP (Bitmap) pilihan</translation>
-</phrase>
-
-<phrase>
-<original>copy any relevant metadata to the new file</original>
-<translation>menyalin mana-mana metadata yang berkaitan dengan fail baru</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>apabila menutup imej, memberi amaran kepada saya saya tentang perubahan yang tidak disimpan</translation>
-</phrase>
-
-<phrase>
-<original>default metadata behavior on first save</original>
-<translation>tingkah laku metadata lalai pada menyelamatkan pertama</translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>menyelamatkan tingkah laku: menulis ganti vs membuat salinan</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>apabila "Simpan" digunakan</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>menutup imej yang tidak disimpan</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>apabila menggunakan "Save As" perintah, menetapkan format fail lalai mengikut</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>lalai format fail apabila menyimpan</translation>
-</phrase>
-
-<phrase>
-<original>erase tags that might be personal (GPS, camera details, etc)</original>
-<translation>memadam tag yang mungkin bersifat peribadi (GPS, butiran kamera, dan lain-lain)</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>menyenaraikan PhotoDemon sebagai perisian penyuntingan terakhir digunakan</translation>
 </phrase>
 
 <phrase>
@@ -14471,36 +14436,6 @@ Are anda pasti anda mahu teruskan?</translation>
 <phrase>
 <original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
 <translation>Dalam editor gambar menarik, "Simpan" arahan menyimpan imej ke atas versi yang asal, memadam yang menyalin selama-lamanya. PhotoDemon menyediakan pilihan "lebih selamat", di mana setiap menyimpan hasil dalam salinan baru fail.</translation>
-</phrase>
-
-<phrase>
-<original>BMP - Bitmap</original>
-<translation>BMP - Bitmap</translation>
-</phrase>
-
-<phrase>
-<original>PNG - Portable Network Graphics</original>
-<translation>PNG - Rangkaian Mudah Alih Grafik</translation>
-</phrase>
-
-<phrase>
-<original>PPM - Portable Pixmap</original>
-<translation>PPM - Pixmap Portable</translation>
-</phrase>
-
-<phrase>
-<original>TGA - Truevision (TARGA)</original>
-<translation>TGA - Truevision (Targa)</translation>
-</phrase>
-
-<phrase>
-<original>TIFF - Tagged Image File Format</original>
-<translation>TIFF - Tagged Image File Format</translation>
-</phrase>
-
-<phrase>
-<original>Some image file types support additional parameters when importing and exporting.  By default, PhotoDemon will manage these for you, but you can specify different parameters if necessary.</original>
-<translation>Sesetengah jenis fail imej menyokong parameter tambahan apabila mengimport dan mengeksport. Secara lalai, PhotoDemon akan menguruskan untuk anda, tetapi anda boleh menentukan parameter yang berbeza jika perlu.</translation>
 </phrase>
 
 <phrase>
@@ -14718,16 +14653,6 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 </phrase>
 
 <phrase>
-<original>NOTE: options on this page have been disabled because the FreeImage plugin could not be located.</original>
-<translation>NOTA: pilihan di halaman ini telah dilumpuhkan kerana plugin FreeImage tidak boleh ditempat.</translation>
-</phrase>
-
-<phrase>
-<original>NOTE: Many of these file format options require the FreeImage plugin.  Because you do not have the FreeImage plugin installed, these options may not perform as expected.</original>
-<translation>NOTA: Kebanyakan pilihan format fail memerlukan plugin FreeImage itu. Kerana anda tidak mempunyai plugin FreeImage yang dipasang, pilihan ini tidak boleh melaksanakan seperti yang diharapkan.</translation>
-</phrase>
-
-<phrase>
 <original>Interface</original>
 <translation>antara muka</translation>
 </phrase>
@@ -14740,11 +14665,6 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <phrase>
 <original>Saving</original>
 <translation>menyimpan</translation>
-</phrase>
-
-<phrase>
-<original>File formats</original>
-<translation>format fail</translation>
 </phrase>
 
 <phrase>
@@ -14798,16 +14718,6 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 </phrase>
 
 <phrase>
-<original>File format options control how PhotoDemon handles certain types of images.</original>
-<translation>Pilihan Format fail mengawal bagaimana PhotoDemon mengendalikan sesetengah jenis imej.</translation>
-</phrase>
-
-<phrase>
-<original>File Format Options</original>
-<translation>Pilihan Format fail</translation>
-</phrase>
-
-<phrase>
 <original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
 <translation>Prestasi pilihan membolehkan anda untuk mengawal sama ada PhotoDemon menekankan kelajuan atau kualiti apabila melakukan tugas-tugas tertentu.</translation>
 </phrase>
@@ -14852,7 +14762,7 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <translation>AMARAN: folder ini adalah tidak sah (akses dilarang). Sila berikan folder yang sah. Jika tiada folder baru disediakan, PhotoDemon akan menggunakan lokasi temp lalai sistem.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 229 phrases. 62 were duplicates of existing phrases, so only 167 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 181 phrases. 32 were duplicates of existing phrases, so only 149 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15245,10 +15155,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2612</phrasecount>
+<phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4551 phrases. -->
-<!-- 1939 are duplicates, so only 2612 unique phrases have been written to file. -->
-<!-- These 2612 phrases contain approximately 13488 total words. -->
+<!-- As of this build, PhotoDemon contains 4501 phrases. -->
+<!-- 1907 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- These 2594 phrases contain approximately 13354 total words. -->
 
 </pdData>

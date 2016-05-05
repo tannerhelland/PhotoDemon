@@ -434,7 +434,6 @@ Private Sub CreateNewPreferencesFile()
         xmlEngine.writeTag "DisplayIDEWarning", "True"
         xmlEngine.writeTag "HasGitHubAccount", ""
         xmlEngine.writeTag "LastOpenFilter", "1"        'Default to "All Compatible Graphics" filter for loading
-        xmlEngine.writeTag "LastFilePreferencesPage", "1"
         xmlEngine.writeTag "LastPreferencesPage", "0"
         xmlEngine.writeTag "LastSaveFilter", "-1"       'Mark the last-used save filter as "unknown"
         xmlEngine.writeTag "LastWindowState", "0"
@@ -451,20 +450,7 @@ Private Sub CreateNewPreferencesFile()
     xmlEngine.closeTag "Dialogs"
     xmlEngine.writeBlankLine
     
-    xmlEngine.writeTag "FileFormats", "", True
-        xmlEngine.writeTag "BitmapRLE", "False"
-        xmlEngine.writeTag "PNGBackgroundColor", "True"
-        xmlEngine.writeTag "PNGCompression", "9"
-        xmlEngine.writeTag "PNGInterlacing", "False"
-        xmlEngine.writeTag "PPMExportFormat", "0"
-        xmlEngine.writeTag "TGARLE", "True"
-        xmlEngine.writeTag "TIFFCMYK", "False"
-        xmlEngine.writeTag "TIFFCompression", "0"
-    xmlEngine.closeTag "FileFormats"
-    xmlEngine.writeBlankLine
-    
     xmlEngine.writeTag "Interface", "", True
-        xmlEngine.writeTag "CanvasDropShadow", "True"
         xmlEngine.writeTag "HighResolutionInput", "False"
         xmlEngine.writeTag "MRUCaptionLength", "0"
         xmlEngine.writeTag "RecentFilesLimit", "10"
@@ -510,12 +496,11 @@ Private Sub CreateNewPreferencesFile()
         xmlEngine.writeTag "ForceExifToolDisable", "False"
         xmlEngine.writeTag "ForceEZTwainDisable", "False"
         xmlEngine.writeTag "ForceFreeImageDisable", "False"
+        xmlEngine.writeTag "ForceLittleCMSDisable", "False"
+        xmlEngine.writeTag "ForceOptiPNGDisable", "False"
         xmlEngine.writeTag "ForcePngQuantDisable", "False"
         xmlEngine.writeTag "ForceZLibDisable", "False"
         xmlEngine.writeTag "LastPluginPreferencesPage", "0"
-        xmlEngine.writeTag "PNGQuantDithering", "True"
-        xmlEngine.writeTag "PNGQuantIE6Compatibility", "False"
-        xmlEngine.writeTag "PNGQuantPerformance", "3"
     xmlEngine.closeTag "Plugins"
     xmlEngine.writeBlankLine
     
@@ -561,7 +546,6 @@ Private Sub CreateNewPreferencesFile()
             ' changing this to default to beta builds only.
             Case PD_PRE_ALPHA, PD_ALPHA
                 xmlEngine.writeTag "UpdateTrack", PDUT_BETA
-                'xmlEngine.writeTag "UpdateTrack", PDUT_NIGHTLY
                 
             Case PD_BETA
                 xmlEngine.writeTag "UpdateTrack", PDUT_BETA
