@@ -252,7 +252,7 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
         'For "cut merged", ignore transparent layers
         If cutMerged Then
         
-            If pdImages(g_CurrentImage).GetLayerByIndex(i).getLayerVisibility Then
+            If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
                 
                 'If a selection is active, erase the selected area.  Otherwise, wipe the whole layer.
                 If pdImages(g_CurrentImage).selectionActive Then
@@ -325,7 +325,10 @@ Public Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As
 End Sub
 
 Public Sub ClipboardEmpty()
-    m_Clipboard.ClearClipboard
+    If m_Clipboard.ClipboardOpen(FormMain.hWnd) Then
+        m_Clipboard.ClearClipboard
+        m_Clipboard.ClipboardClose
+    End If
 End Sub
 
 'Paste an image (e.g. create new image data based on whatever is in the clipboard).
@@ -908,9 +911,9 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                     
                     'See if a 24 or 32-bit destination image is required
                     If (bmpHeader.biBitCount = 32) Or ((bmpHeader.biSize = LenB(bmpV5Header)) And (bmpV5Header.biAlphaMask <> 0)) Then
-                        tmpDIB.createBlank bmpHeader.biWidth, Abs(bmpHeader.biHeight), 32, 0, 0
+                        tmpDIB.CreateBlank bmpHeader.biWidth, Abs(bmpHeader.biHeight), 32, 0, 0
                     Else
-                        tmpDIB.createBlank bmpHeader.biWidth, Abs(bmpHeader.biHeight), 24, 0, 0
+                        tmpDIB.CreateBlank bmpHeader.biWidth, Abs(bmpHeader.biHeight), 24, 0, 0
                     End If
                     
                     'Calculate the offset required to access the pixel data.  (This value is required by the BMP file format, which PD
@@ -1575,7 +1578,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
         #End If
         
         'Fill the temporary DIB with the selected area onlny, with any/all selection processing applied
-        pdImages(g_CurrentImage).retrieveProcessedSelection m_ClipboardDIB, True, copyMerged
+        pdImages(g_CurrentImage).RetrieveProcessedSelection m_ClipboardDIB, True, copyMerged
         
     Else
         
@@ -1588,7 +1591,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
             pdImages(g_CurrentImage).GetCompositedImage m_ClipboardDIB, True
         Else
             If (m_ClipboardDIB Is Nothing) Then Set m_ClipboardDIB = New pdDIB
-            m_ClipboardDIB.createFromExistingDIB pdImages(g_CurrentImage).GetActiveLayer.layerDIB
+            m_ClipboardDIB.CreateFromExistingDIB pdImages(g_CurrentImage).GetActiveLayer.layerDIB
         End If
         
     End If
@@ -1611,7 +1614,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     m_ClipboardDIB.WriteToFile m_StashFile, True
     
     'Erase the temporary DIB
-    m_ClipboardDIB.eraseDIB
+    m_ClipboardDIB.EraseDIB
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Clipboard stashed successfully."
@@ -1672,7 +1675,7 @@ Public Sub RenderAllClipboardFormatsManually()
     
         'Validate the DIB, just to be safe
         If Not (m_ClipboardDIB Is Nothing) Then
-            If (m_ClipboardDIB.getDIBHandle <> 0) And (m_ClipboardDIB.getDIBWidth <> 0) And (m_ClipboardDIB.getDIBHeight <> 0) Then
+            If (m_ClipboardDIB.GetDIBHandle <> 0) And (m_ClipboardDIB.GetDIBWidth <> 0) And (m_ClipboardDIB.GetDIBHeight <> 0) Then
                 okayToProceed = True
             End If
         End If
@@ -1751,7 +1754,7 @@ Private Sub m_Clipboard_ClipboardRenderFormat(ByVal clipFormatID As Long)
     
         'Validate the DIB, just to be safe
         If Not (m_ClipboardDIB Is Nothing) Then
-            If (m_ClipboardDIB.getDIBHandle <> 0) And (m_ClipboardDIB.getDIBWidth <> 0) And (m_ClipboardDIB.getDIBHeight <> 0) Then
+            If (m_ClipboardDIB.GetDIBHandle <> 0) And (m_ClipboardDIB.GetDIBWidth <> 0) And (m_ClipboardDIB.GetDIBHeight <> 0) Then
                 okayToProceed = True
             End If
         End If
@@ -1794,7 +1797,7 @@ Private Sub RenderClipboard_PNG()
     On Error GoTo RenderClipboardPNG_Failure
                 
     'The stashed DIB will likely have premultiplied alpha.  Un-premultiply it now.
-    If m_ClipboardDIB.getAlphaPremultiplication Then m_ClipboardDIB.SetAlphaPremultiplication False
+    If m_ClipboardDIB.GetAlphaPremultiplication Then m_ClipboardDIB.SetAlphaPremultiplication False
     
     'FreeImage is used to perform the PNG transformation.  (We could use GDI+, but FreeImage is easier.)
     If g_ImageFormats.FreeImageEnabled Then
@@ -1885,7 +1888,7 @@ Private Sub RenderClipboard_BITMAP(Optional ByVal programShuttingDown As Boolean
         
         If (clipboardDC <> 0) Then
         
-            clipboardBMP = CreateCompatibleBitmap(tmpDC, m_ClipboardDIB.getDIBWidth, Abs(m_ClipboardDIB.getDIBHeight))
+            clipboardBMP = CreateCompatibleBitmap(tmpDC, m_ClipboardDIB.GetDIBWidth, Abs(m_ClipboardDIB.GetDIBHeight))
             If (clipboardBMP <> 0) Then
                 
                 #If DEBUGMODE = 1 Then
@@ -1897,7 +1900,7 @@ Private Sub RenderClipboard_BITMAP(Optional ByVal programShuttingDown As Boolean
                 clipboardOldBMP = SelectObject(clipboardDC, clipboardBMP)
                 
                 '24-bit images can be copied as-is
-                If m_ClipboardDIB.getDIBColorDepth = 24 Then
+                If m_ClipboardDIB.GetDIBColorDepth = 24 Then
                 
                     'So, a weird discovery: PD's delayed rendering system means that clipboard formats are not uploaded to the clipboard
                     ' until they are actually requested by a program.  The exception to this is when PD shuts down and is still the owner
@@ -1909,9 +1912,9 @@ Private Sub RenderClipboard_BITMAP(Optional ByVal programShuttingDown As Boolean
                     ' even be part of the equation... but here we are.  As a result, if PD is shutting down, I manually reverse the
                     ' scanline order to ensure compatibility with programs that don't support PNG clipboard data.
                     If programShuttingDown Then
-                        StretchBlt clipboardDC, 0, m_ClipboardDIB.getDIBHeight, m_ClipboardDIB.getDIBWidth, -m_ClipboardDIB.getDIBHeight, m_ClipboardDIB.getDIBDC, 0, 0, m_ClipboardDIB.getDIBWidth, m_ClipboardDIB.getDIBHeight, vbSrcCopy
+                        StretchBlt clipboardDC, 0, m_ClipboardDIB.GetDIBHeight, m_ClipboardDIB.GetDIBWidth, -m_ClipboardDIB.GetDIBHeight, m_ClipboardDIB.GetDIBDC, 0, 0, m_ClipboardDIB.GetDIBWidth, m_ClipboardDIB.GetDIBHeight, vbSrcCopy
                     Else
-                        BitBlt clipboardDC, 0, 0, m_ClipboardDIB.getDIBWidth, m_ClipboardDIB.getDIBHeight, m_ClipboardDIB.getDIBDC, 0, 0, vbSrcCopy
+                        BitBlt clipboardDC, 0, 0, m_ClipboardDIB.GetDIBWidth, m_ClipboardDIB.GetDIBHeight, m_ClipboardDIB.GetDIBDC, 0, 0, vbSrcCopy
                     End If
                 
                 '32-bit images must be composited against a white background first
@@ -1921,13 +1924,13 @@ Private Sub RenderClipboard_BITMAP(Optional ByVal programShuttingDown As Boolean
                     Dim tmpDIB As pdDIB
                     Set tmpDIB = New pdDIB
                     
-                    tmpDIB.createFromExistingDIB m_ClipboardDIB
-                    tmpDIB.convertTo24bpp
+                    tmpDIB.CreateFromExistingDIB m_ClipboardDIB
+                    tmpDIB.ConvertTo24bpp
                     
                     If programShuttingDown Then
-                        StretchBlt clipboardDC, 0, tmpDIB.getDIBHeight, tmpDIB.getDIBWidth, -tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, vbSrcCopy
+                        StretchBlt clipboardDC, 0, tmpDIB.GetDIBHeight, tmpDIB.GetDIBWidth, -tmpDIB.GetDIBHeight, tmpDIB.GetDIBDC, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, vbSrcCopy
                     Else
-                        BitBlt clipboardDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+                        BitBlt clipboardDC, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
                     End If
                     Set tmpDIB = Nothing
                     
@@ -1991,7 +1994,7 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False, O
     
     'DIBs should be unpremultiplied prior to copying; note that some esoteric software (*cough* XNView *cough*) wants
     ' premultiplied alpha, but the general consensus seems to be "use unpremultiplied", so that's what we do too.
-    If m_ClipboardDIB.getAlphaPremultiplication Then m_ClipboardDIB.SetAlphaPremultiplication False
+    If m_ClipboardDIB.GetAlphaPremultiplication Then m_ClipboardDIB.SetAlphaPremultiplication False
     
     'Figure out how much size is required for the global allocation.  This is just (size_of_header + size_of_pixels).
     Dim headerSize As Long
@@ -2003,7 +2006,7 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False, O
     End If
     
     Dim dibPointer As Long, dibSize As Long
-    m_ClipboardDIB.retrieveDIBPointerAndSize dibPointer, dibSize
+    m_ClipboardDIB.RetrieveDIBPointerAndSize dibPointer, dibSize
     
     Dim memSize As Long
     memSize = headerSize + dibSize
@@ -2024,11 +2027,11 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False, O
             If useV5Header Then
                 With bmpV5Header
                     .biSize = LenB(bmpV5Header)
-                    .biWidth = m_ClipboardDIB.getDIBWidth
-                    .biHeight = m_ClipboardDIB.getDIBHeight
+                    .biWidth = m_ClipboardDIB.GetDIBWidth
+                    .biHeight = m_ClipboardDIB.GetDIBHeight
                     .biPlanes = 1
-                    .biBitCount = m_ClipboardDIB.getDIBColorDepth
-                    .biXPelsPerMeter = Math_Functions.ConvertDPIToPels(m_ClipboardDIB.getDPI)
+                    .biBitCount = m_ClipboardDIB.GetDIBColorDepth
+                    .biXPelsPerMeter = Math_Functions.ConvertDPIToPels(m_ClipboardDIB.GetDPI)
                     .biYPelsPerMeter = .biXPelsPerMeter
                     
                     'Even though we don't specify BI_BITFIELDS as the compression scheme, some software will disregard DIBv5 alpha
@@ -2042,11 +2045,11 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False, O
             Else
                 With bmpHeader
                     .biSize = LenB(bmpHeader)
-                    .biWidth = m_ClipboardDIB.getDIBWidth
-                    .biHeight = m_ClipboardDIB.getDIBHeight
+                    .biWidth = m_ClipboardDIB.GetDIBWidth
+                    .biHeight = m_ClipboardDIB.GetDIBHeight
                     .biPlanes = 1
-                    .biBitCount = m_ClipboardDIB.getDIBColorDepth
-                    .biXPelsPerMeter = Math_Functions.ConvertDPIToPels(m_ClipboardDIB.getDPI)
+                    .biBitCount = m_ClipboardDIB.GetDIBColorDepth
+                    .biXPelsPerMeter = Math_Functions.ConvertDPIToPels(m_ClipboardDIB.GetDPI)
                     .biYPelsPerMeter = .biXPelsPerMeter
                 End With
             End If
@@ -2063,8 +2066,8 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False, O
             ' order if PD is shutting down.  I do not have an explanation for this, except that the resulting DIB appears upside-down
             ' if I don't do this.  Explanations welcome!)
             Dim y As Long, yFinal As Long, dibStride As Long
-            yFinal = m_ClipboardDIB.getDIBHeight - 1
-            dibStride = m_ClipboardDIB.getDIBArrayWidth
+            yFinal = m_ClipboardDIB.GetDIBHeight - 1
+            dibStride = m_ClipboardDIB.GetDIBArrayWidth
             
             If (Not programShuttingDown) Then
                 For y = 0 To yFinal
