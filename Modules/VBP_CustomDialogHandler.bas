@@ -95,6 +95,20 @@ Public Function PromptGIFSettings(ByRef srcImage As pdImage, ByRef dstFormatPara
     
 End Function
 
+Public Function PromptJP2Settings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+
+    Load dialog_ExportJP2
+    dialog_ExportJP2.ShowDialog srcImage
+    
+    PromptJP2Settings = dialog_ExportJP2.GetDialogResult
+    dstFormatParams = dialog_ExportJP2.GetFormatParams
+    dstMetadataParams = dialog_ExportJP2.GetMetadataParams
+    
+    Unload dialog_ExportJP2
+    Set dialog_ExportJP2 = Nothing
+    
+End Function
+
 Public Function PromptJPEGSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportJPEG
@@ -106,6 +120,21 @@ Public Function PromptJPEGSettings(ByRef srcImage As pdImage, ByRef dstFormatPar
     
     Unload dialog_ExportJPEG
     Set dialog_ExportJPEG = Nothing
+    
+End Function
+
+'Present a dialog box to ask the user for various JPEG XR export settings
+Public Function PromptJXRSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+
+    Load dialog_ExportJXR
+    dialog_ExportJXR.ShowDialog srcImage
+    
+    PromptJXRSettings = dialog_ExportJXR.GetDialogResult
+    dstFormatParams = dialog_ExportJXR.GetFormatParams
+    dstMetadataParams = dialog_ExportJXR.GetMetadataParams
+    
+    Unload dialog_ExportJXR
+    Set dialog_ExportJXR = Nothing
     
 End Function
 
@@ -123,20 +152,6 @@ Public Function PromptPNGSettings(ByRef srcImage As pdImage, ByRef dstFormatPara
     
 End Function
 
-Public Function PromptTIFFSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
-    
-    Load dialog_ExportTIFF
-    dialog_ExportTIFF.ShowDialog srcImage
-    
-    PromptTIFFSettings = dialog_ExportTIFF.GetDialogResult
-    dstFormatParams = dialog_ExportTIFF.GetFormatParams
-    dstMetadataParams = dialog_ExportTIFF.GetMetadataParams
-    
-    Unload dialog_ExportTIFF
-    Set dialog_ExportTIFF = Nothing
-    
-End Function
-
 Public Function PromptPNMSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportPixmap
@@ -151,21 +166,18 @@ Public Function PromptPNMSettings(ByRef srcImage As pdImage, ByRef dstFormatPara
     
 End Function
 
-'Present a dialog box to ask the user for various JPEG-2000 (JP2) export settings
-Public Function PromptJP2Settings(ByRef srcImage As pdImage, ByRef dstFormatParams As String) As VbMsgBoxResult
-
-    Load dialog_ExportJP2
-    Set dialog_ExportJP2.imageBeingExported = srcImage
-    dialog_ExportJP2.ShowDialog
-
-    PromptJP2Settings = dialog_ExportJP2.DialogResult
-    dstFormatParams = dialog_ExportJP2.xmlParamString
+Public Function PromptTIFFSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
-    Set dialog_ExportJP2.imageBeingExported = Nothing
+    Load dialog_ExportTIFF
+    dialog_ExportTIFF.ShowDialog srcImage
     
-    Unload dialog_ExportJP2
-    Set dialog_ExportJP2 = Nothing
-
+    PromptTIFFSettings = dialog_ExportTIFF.GetDialogResult
+    dstFormatParams = dialog_ExportTIFF.GetFormatParams
+    dstMetadataParams = dialog_ExportTIFF.GetMetadataParams
+    
+    Unload dialog_ExportTIFF
+    Set dialog_ExportTIFF = Nothing
+    
 End Function
 
 'Present a dialog box to ask the user for various WebP export settings
@@ -182,23 +194,6 @@ Public Function PromptWebPSettings(ByRef srcImage As pdImage, ByRef dstFormatPar
     
     Unload dialog_ExportWebP
     Set dialog_ExportWebP = Nothing
-
-End Function
-
-'Present a dialog box to ask the user for various JPEG XR export settings
-Public Function PromptJXRSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String) As VbMsgBoxResult
-
-    Load dialog_ExportJXR
-    Set dialog_ExportJXR.imageBeingExported = srcImage
-    dialog_ExportJXR.ShowDialog
-
-    PromptJXRSettings = dialog_ExportJXR.DialogResult
-    dstFormatParams = dialog_ExportJXR.xmlParamString
-    
-    Set dialog_ExportJXR.imageBeingExported = Nothing
-    
-    Unload dialog_ExportJXR
-    Set dialog_ExportJXR = Nothing
 
 End Function
 

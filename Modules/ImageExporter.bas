@@ -771,6 +771,80 @@ ExportGIFError:
     
 End Function
 
+'Save to JP2 format using the FreeImage library
+Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportJP2Error
+    
+    ExportJP2 = False
+    Dim sFileType As String: sFileType = "JP2"
+    
+    If g_ImageFormats.FreeImageEnabled Then
+    
+        'Parse incoming JP2 parameters
+        Dim cParams As pdParamXML
+        Set cParams = New pdParamXML
+        cParams.SetParamString formatParams
+        
+        'The only output parameter JP2 supports is compression level
+        Dim jp2Quality As Long
+        jp2Quality = cParams.GetLong("JP2Quality", 1)
+        
+        'Generate a composited image copy, with alpha automatically un-premultiplied
+        Dim tmpImageCopy As pdDIB
+        Set tmpImageCopy = New pdDIB
+        srcPDImage.GetCompositedImage tmpImageCopy, False
+        
+        'Retrieve the recommended output color depth of the image.
+        ' (TODO: parse incoming params and honor requests for forced color-depths!)
+        Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_JP2, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+        ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
+        
+        'Our JP2 exporter is a simplified one, so ignore special alpha modes
+        If (currentAlphaStatus = PDAS_NoAlpha) Then
+            desiredAlphaStatus = PDAS_NoAlpha
+        Else
+            desiredAlphaStatus = PDAS_ComplicatedAlpha
+            outputColorDepth = 32
+        End If
+        
+        'To save us some time, auto-convert any non-transparent images to 24-bpp now
+        If (desiredAlphaStatus = PDAS_NoAlpha) Then tmpImageCopy.ConvertTo24bpp
+        
+        Dim fi_DIB As Long
+        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus)
+        
+        If (fi_DIB <> 0) Then
+            
+            Dim fi_Flags As Long: fi_Flags = 0&
+            fi_Flags = fi_Flags Or jp2Quality
+            
+            ExportJP2 = FreeImage_Save(FIF_JP2, fi_DIB, dstFile, fi_Flags)
+            If ExportJP2 Then
+                ExportDebugMsg "Export to " & sFileType & " appears successful."
+            Else
+                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+            End If
+            
+        Else
+            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            ExportJP2 = False
+        End If
+    Else
+        If (MacroStatus <> MacroBATCH) Then PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
+        Message "Save cannot be completed without FreeImage library."
+        ExportJP2 = False
+    End If
+    
+    Exit Function
+    
+ExportJP2Error:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportJP2 = False
+    
+End Function
+
 Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportJPEGError
@@ -902,6 +976,82 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
 ExportJPEGError:
     ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
     ExportJPEG = False
+    
+End Function
+
+'Save to JXR format using the FreeImage library
+Public Function ExportJXR(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportJXRError
+    
+    ExportJXR = False
+    Dim sFileType As String: sFileType = "JXR"
+    
+    If g_ImageFormats.FreeImageEnabled Then
+    
+        'Parse incoming JXR parameters
+        Dim cParams As pdParamXML
+        Set cParams = New pdParamXML
+        cParams.SetParamString formatParams
+        
+        'The only output parameter JXR supports is compression level
+        Dim jxrQuality As Long, jxrProgressive As Boolean
+        jxrQuality = cParams.GetLong("JXRQuality", 1)
+        jxrProgressive = cParams.GetBool("JXRProgressive", False)
+        
+        'Generate a composited image copy, with alpha automatically un-premultiplied
+        Dim tmpImageCopy As pdDIB
+        Set tmpImageCopy = New pdDIB
+        srcPDImage.GetCompositedImage tmpImageCopy, False
+        
+        'Retrieve the recommended output color depth of the image.
+        ' (TODO: parse incoming params and honor requests for forced color-depths!)
+        Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_JXR, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+        ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
+        
+        'Our JXR exporter is a simplified one, so ignore special alpha modes
+        If (currentAlphaStatus = PDAS_NoAlpha) Then
+            desiredAlphaStatus = PDAS_NoAlpha
+        Else
+            desiredAlphaStatus = PDAS_ComplicatedAlpha
+            outputColorDepth = 32
+        End If
+        
+        'To save us some time, auto-convert any non-transparent images to 24-bpp now
+        If (desiredAlphaStatus = PDAS_NoAlpha) Then tmpImageCopy.ConvertTo24bpp
+        
+        Dim fi_DIB As Long
+        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus)
+        
+        If (fi_DIB <> 0) Then
+            
+            Dim fi_Flags As Long: fi_Flags = 0&
+            fi_Flags = fi_Flags Or jxrQuality
+            If jxrProgressive Then fi_Flags = fi_Flags Or JXR_PROGRESSIVE
+            
+            ExportJXR = FreeImage_Save(FIF_JXR, fi_DIB, dstFile, fi_Flags)
+            If ExportJXR Then
+                ExportDebugMsg "Export to " & sFileType & " appears successful."
+            Else
+                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+            End If
+            
+        Else
+            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            ExportJXR = False
+        End If
+    Else
+        If (MacroStatus <> MacroBATCH) Then PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
+        Message "Save cannot be completed without FreeImage library."
+        ExportJXR = False
+    End If
+    
+    Exit Function
+    
+ExportJXRError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportJXR = False
     
 End Function
 

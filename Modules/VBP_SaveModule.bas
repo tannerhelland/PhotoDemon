@@ -259,12 +259,15 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
             Case PDIF_GIF
                 GetExportParamsFromDialog = CBool(DialogManager.PromptGIFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
+            Case PDIF_JP2
+                GetExportParamsFromDialog = CBool(DialogManager.PromptJP2Settings(srcImage, dstParamString, dstMetadataString) = vbOK)
+                
             Case PDIF_JPEG
                 GetExportParamsFromDialog = CBool(DialogManager.PromptJPEGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 
-            Case PDIF_JP2
-                GetExportParamsFromDialog = CBool(DialogManager.PromptJP2Settings(srcImage, dstParamString) = vbOK)
-                
+            Case PDIF_JXR
+                GetExportParamsFromDialog = CBool(DialogManager.PromptJXRSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+        
             Case PDIF_PNG
                 GetExportParamsFromDialog = CBool(DialogManager.PromptPNGSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 
@@ -277,9 +280,6 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
             Case PDIF_WEBP
                 GetExportParamsFromDialog = CBool(DialogManager.PromptWebPSettings(srcImage, dstParamString) = vbOK)
                 
-            Case PDIF_JXR
-                GetExportParamsFromDialog = CBool(DialogManager.PromptJXRSettings(srcImage, dstParamString) = vbOK)
-        
         End Select
         
     Else
@@ -309,10 +309,16 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
             ExportToSpecificFormat = ImageExporter.ExportGIF(srcImage, dstPath, saveParameters, metadataParameters)
             
         Case PDIF_HDR
-            ExportToSpecificFormat = ImageExporter.ExportHDR(srcImage, dstPath, saveParameters)
+            ExportToSpecificFormat = ImageExporter.ExportHDR(srcImage, dstPath, saveParameters, metadataParameters)
+        
+        Case PDIF_JP2
+            ExportToSpecificFormat = ImageExporter.ExportJP2(srcImage, dstPath, saveParameters, metadataParameters)
             
         Case PDIF_JPEG
             ExportToSpecificFormat = ImageExporter.ExportJPEG(srcImage, dstPath, saveParameters, metadataParameters)
+        
+        Case PDIF_JXR
+            ExportToSpecificFormat = ImageExporter.ExportJXR(srcImage, dstPath, saveParameters, metadataParameters)
             
         Case PDIF_PDI
             If g_ZLibEnabled Then
@@ -328,7 +334,7 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
             ExportToSpecificFormat = ImageExporter.ExportPNM(srcImage, dstPath, saveParameters, metadataParameters)
         
         Case PDIF_PSD
-            ExportToSpecificFormat = ImageExporter.ExportPSD(srcImage, dstPath, saveParameters)
+            ExportToSpecificFormat = ImageExporter.ExportPSD(srcImage, dstPath, saveParameters, metadataParameters)
             
         Case PDIF_TARGA
             ExportToSpecificFormat = ImageExporter.ExportTGA(srcImage, dstPath, saveParameters, metadataParameters)
@@ -338,15 +344,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
             
         'Formats past this line are still using the old export engine; their migration is in progress!
             
-        Case PDIF_JP2
-            ExportToSpecificFormat = SaveJP2Image(srcImage, dstPath, , saveParameters)
-        
         Case PDIF_WEBP
             ExportToSpecificFormat = SaveWebPImage(srcImage, dstPath, , saveParameters)
         
-        Case PDIF_JXR
-            ExportToSpecificFormat = SaveJXRImage(srcImage, dstPath, , saveParameters)
-            
         Case Else
             Message "Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident."
             ExportToSpecificFormat = False
@@ -491,7 +491,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     Dim sFileType As String
     sFileType = "PDI"
     
-    If Not suppressMessages Then Message "Saving %1 layer...", sFileType
+    If (Not suppressMessages) Then Message "Saving %1 layer...", sFileType
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of assembling the layer file.
     Dim pdiWriter As pdPackager
@@ -519,7 +519,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     
     'If this is not a header-only request, retrieve the layer DIB (as a byte array), then copy the array
     ' into the pdPackage instance
-    If Not writeHeaderOnlyFile Then
+    If (Not writeHeaderOnlyFile) Then
         
         'Specific handling varies by layer type
         
@@ -546,146 +546,13 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     'That's all there is to it!  Write the completed pdPackage out to file.
     SavePhotoDemonLayer = pdiWriter.WritePackageToFile(PDIPath, , , srcIsUndo)
     
-    If Not suppressMessages Then Message "%1 save complete.", sFileType
+    If (Not suppressMessages) Then Message "%1 save complete.", sFileType
     
     Exit Function
     
 SavePDLayerError:
 
     SavePhotoDemonLayer = False
-    
-End Function
-
-'Save to JPEG-2000 format using the FreeImage library.
-Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As String, Optional ByVal outputColorDepth As Long = 32, Optional ByVal jp2Params As String = "") As Boolean
-    
-    On Error GoTo SaveJP2Error
-    
-    'Parse all possible JPEG-2000 params
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
-    cParams.SetParamString jp2Params
-    
-    Dim JP2Quality As Long
-    JP2Quality = cParams.GetLong("JP2Quality", 1)
-    
-    Dim sFileType As String
-    sFileType = "JPEG-2000"
-    
-    'Make sure we found the plug-in when we loaded the program
-    If (Not g_ImageFormats.FreeImageEnabled) Then
-        PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save cannot be completed without FreeImage library."
-        SaveJP2Image = False
-        Exit Function
-    End If
-    
-    Message "Preparing %1 image...", sFileType
-    
-    'Retrieve a composited copy of the image, at full size
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    srcPDImage.GetCompositedImage tmpDIB, False
-    
-    'If the output color depth is 24 but the current image is 32, composite the image against a white background
-    If (outputColorDepth < 32) And (tmpDIB.GetDIBColorDepth = 32) Then tmpDIB.ConvertTo24bpp
-    
-    'Convert our current DIB to a FreeImage-type DIB
-    Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.GetDIBDC)
-    
-    'Use that handle to save the image to JPEG format
-    If fi_DIB <> 0 Then
-                
-        Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, jp2Path, PDIF_JP2, JP2Quality, outputColorDepth, , , , , True)
-        
-        If fi_Check Then
-            Message "%1 save complete.", sFileType
-        Else
-            Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-            SaveJP2Image = False
-            Exit Function
-        End If
-        
-    Else
-        Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-        SaveJP2Image = False
-        Exit Function
-    End If
-    
-    SaveJP2Image = True
-    Exit Function
-    
-SaveJP2Error:
-
-    SaveJP2Image = False
-    
-End Function
-
-'Save to JPEG XR format using the FreeImage library.
-Public Function SaveJXRImage(ByRef srcPDImage As pdImage, ByVal jxrPath As String, Optional ByVal outputColorDepth As Long = 32, Optional ByVal jxrParams As String = "") As Boolean
-    
-    On Error GoTo SaveJXRError
-    
-    'Parse all possible JXR params
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
-    cParams.SetParamString jxrParams
-    
-    Dim jxrFlags As Long
-    jxrFlags = cParams.GetLong("JXRQuality", 0)
-    If cParams.GetBool("JXRProgressive", False) Then jxrFlags = jxrFlags Or JXR_PROGRESSIVE
-    
-    Dim sFileType As String
-    sFileType = "JPEG XR"
-    
-    'Make sure we found the plug-in when we loaded the program
-    If Not g_ImageFormats.FreeImageEnabled Then
-        PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save cannot be completed without FreeImage library."
-        SaveJXRImage = False
-        Exit Function
-    End If
-    
-    Message "Preparing %1 image...", sFileType
-    
-    'Retrieve a composited copy of the image, at full size
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    srcPDImage.GetCompositedImage tmpDIB, False
-    
-    'If the output color depth is 24 but the current image is 32, composite the image against a white background
-    If (outputColorDepth < 32) And (tmpDIB.GetDIBColorDepth = 32) Then tmpDIB.ConvertTo24bpp
-    
-    'Convert our current DIB to a FreeImage-type DIB
-    Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.GetDIBDC)
-    
-    'Use that handle to save the image to JPEG XR format
-    If fi_DIB <> 0 Then
-                
-        Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, jxrPath, PDIF_JXR, jxrFlags, outputColorDepth, , , , , True)
-        
-        If fi_Check Then
-            Message "%1 save complete.", sFileType
-        Else
-            Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-            SaveJXRImage = False
-            Exit Function
-        End If
-    Else
-        Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-        SaveJXRImage = False
-        Exit Function
-    End If
-    
-    SaveJXRImage = True
-    Exit Function
-    
-SaveJXRError:
-    SaveJXRImage = False
     
 End Function
 
@@ -849,30 +716,6 @@ Public Function FindMeanRMSDForTwoArrays(ByRef srcArray1() As Single, ByRef srcA
 
 End Function
 
-'Given a source and destination DIB reference, fill the destination with a post-JPEG-2000-compression of the original.  This
-' is used to generate the live preview used in PhotoDemon's "export JPEG-2000" dialog.
-Public Sub FillDIBWithJP2Version(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal JP2Quality As Long)
-    
-    'Pass the DIB to FreeImage, which will make a copy for itself.
-    Dim fi_DIB As Long
-    fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB)
-        
-    'Now comes the actual JPEG-2000 conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save
-    ' the image in JPEG-2000 format to a byte array; we then hand that byte array back to it and request a decompression.
-    Dim jp2Array() As Byte
-    Dim fi_Check As Long
-    fi_Check = FreeImage_SaveToMemoryEx(PDIF_JP2, fi_DIB, jp2Array, JP2Quality, True)
-    
-    fi_DIB = FreeImage_LoadFromMemoryEx(jp2Array, 0, , PDIF_JP2)
-    
-    'Copy the newly decompressed JPEG-2000 into the destination pdDIB object.
-    Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
-    
-    'Release the FreeImage copy of the DIB.
-    FreeImage_Unload fi_DIB
-    
-End Sub
-
 'Given a source and destination DIB reference, fill the destination with a post-WebP-compression of the original.  This
 ' is used to generate the live preview used in PhotoDemon's "export WebP" dialog.
 Public Sub FillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal WebPQuality As Long)
@@ -899,41 +742,6 @@ Public Sub FillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     
     'Release the FreeImage copy of the DIB.
     FreeImage_Unload fi_DIB
-    
-End Sub
-
-'Given a source and destination DIB reference, fill the destination with a post-JXR-compression of the original.  This
-' is used to generate the live preview used in PhotoDemon's "export JXR" dialog.
-Public Sub FillDIBWithJXRVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal jxrQuality As Long)
-    
-    'Pass the DIB to FreeImage, which will make a copy for itself.
-    Dim fi_DIB As Long
-    fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB)
-        
-    'Now comes the actual JPEG XR conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save
-    ' the image in JPEG XR format to a byte array; we then hand that byte array back to it and request a decompression.
-    Dim jxrArray() As Byte
-    Dim fi_Check As Boolean
-    fi_Check = FreeImage_SaveToMemoryEx(PDIF_JXR, fi_DIB, jxrArray, jxrQuality, True)
-    Debug.Print "JXR live previews have been problematic; size of returned array is: " & UBound(jxrArray)
-    
-    If fi_Check Then
-    
-        fi_DIB = FreeImage_LoadFromMemoryEx(jxrArray, 0, UBound(jxrArray) + 1, PDIF_JXR, VarPtr(jxrArray(0)))
-        
-        'Copy the newly decompressed image into the destination pdDIB object.
-        If fi_DIB <> 0 Then
-            Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
-        Else
-            Debug.Print "Failed to load JXR from memory; FreeImage didn't return a DIB from FreeImage_LoadFromMemoryEx()"
-        End If
-    
-    Else
-        Debug.Print "Failed to save JXR to memory; FreeImage returned FALSE for FreeImage_SaveToMemoryEx()"
-    End If
-    
-    'Release the FreeImage copy of the DIB.
-    If fi_DIB <> 0 Then FreeImage_Unload fi_DIB
     
 End Sub
 
