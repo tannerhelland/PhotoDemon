@@ -25,13 +25,13 @@ Begin VB.UserControl pdAccelerator
    ToolboxBitmap   =   "pdAccelerator.ctx":0000
    Begin VB.Timer tmrRelease 
       Enabled         =   0   'False
-      Interval        =   50
+      Interval        =   16
       Left            =   0
       Top             =   480
    End
    Begin VB.Timer tmrAccelerator 
       Enabled         =   0   'False
-      Interval        =   32
+      Interval        =   16
       Left            =   0
       Top             =   0
    End
@@ -74,9 +74,6 @@ Option Explicit
 
 'This control only raises a single "Accelerator" event, and it only does it when one (or more) keys in the combination are released
 Public Event Accelerator(ByVal acceleratorIndex As Long)
-
-'TODO: use alternate, PD-specific mechanism for determining if FormMain has focus.
-'Private Declare Function GetActiveWindow Lib "user32" () As Long
 
 'Key state can be retrieved directly from the hook messages, but it's actually easier to dynamically query the API
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
@@ -138,11 +135,11 @@ End Property
 
 Private Sub tmrAccelerator_Timer()
     
-    'If we're still inside the hookproc, wait another 32 ms before testing the keypress
+    'If we're still inside the hookproc, wait another 16 ms before testing the keypress
     If (Not m_InHookNow) Then
         
         'To prevent multiple events from firing too closely together, enforce a slight action delay before processing
-        If (Timer - m_TimerAtAcceleratorPress) > 0.016 Then
+        If Abs(Timer - m_TimerAtAcceleratorPress) > 0.016 Then
         
             'Because the accelerator has now been processed, we can disable the timer; this will prevent it from firing again, but the
             ' current sub will still complete its actions.
@@ -240,7 +237,7 @@ Public Function ActivateHook() As Boolean
         
         'If we're already hooked, don't attempt to hook again
         If (Not m_HookingActive) Then
-        
+            
             m_HookingActive = True
             m_Subclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, , 1, Me
             
@@ -531,60 +528,60 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
         '
         'While here, we also skip event processing if an accelerator key is already in the queue
         If (nCode >= 0) And (m_AcceleratorIndex = -1) Then
-        
-            'Bit 31 of lParam is 0 if a key is being pressed, and 1 if it is being released.  In the future, we could
-            ' use this to raise separate KeyDown and KeyUp events, if desired.
-            If (lParam < 0) Then
-                
-                'Key up events are raised twice; once in a transitionary stage, and once again in a final stage.
-                ' To prevent double-raising of KeyUp events, we check the transitionary state before proceeding
-                If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
+            
+            'Before proceeding with further checks, see if PD is even allowed to process accelerators in its
+            ' current state (e.g. it's not locked, in the middle of other processing, etc.)
+            If CanIRaiseAnAcceleratorEvent Then
+            
+                'Bit 31 of lParam is 0 if a key is being pressed, and 1 if it is being released.  In the future, we could
+                ' use this to raise separate KeyDown and KeyUp events, if desired.
+                If (lParam > 0) Then
                     
-                    'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
-                    Dim retShiftConstants As ShiftConstants
-                    If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
-                    If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
-                    If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
-                    
-                    'Search our accelerator database for a match to the current keycode
-                    If (m_NumOfHotkeys > 0) Then
-                    
-                        Dim i As Long
-                        For i = 0 To m_NumOfHotkeys - 1
-                            
-                            'First, see if the keycode matches.
-                            If (m_Hotkeys(i).vKeyCode = wParam) Then
-                            
-                                'Next, see if the Ctrl+Alt+Shift state matches
-                                If m_Hotkeys(i).shiftState = retShiftConstants Then
+                    'Key up events are raised twice; once in a transitionary stage, and once again in a final stage.
+                    ' To prevent double-raising of KeyUp events, we check the transitionary state before proceeding
+                    If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
+                        
+                        'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
+                        Dim retShiftConstants As ShiftConstants
+                        If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
+                        If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
+                        If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
+                        
+                        'Search our accelerator database for a match to the current keycode
+                        If (m_NumOfHotkeys > 0) Then
+                        
+                            Dim i As Long
+                            For i = 0 To m_NumOfHotkeys - 1
+                                
+                                'First, see if the keycode matches.
+                                If (m_Hotkeys(i).vKeyCode = wParam) Then
+                                
+                                    'Next, see if the Ctrl+Alt+Shift state matches
+                                    If (m_Hotkeys(i).shiftState = retShiftConstants) Then
                                     
-                                    'Boom!  This is a hit.  See if there is any reason to *not* raise an accelerator.
-                                    ' (In PD, a lot of things can cause disabled accelerators - text boxes having focus,
-                                    '  certain modal dialogs, no loaded images, etc.)
-                                    If CanIRaiseAnAcceleratorEvent Then
-                                        
-                                        'No global PD state is preventing us from handling this accelerator.  Cache the index of the accelerator,
-                                        ' note the current time, then initiate the accelerator evaluation timer.  It handles all further evaluation.
+                                        'We have a match!  Cache the index of the accelerator, note the current time,
+                                        ' then initiate the accelerator evaluation timer.  It handles all further evaluation.
                                         m_AcceleratorIndex = i
                                         m_TimerAtAcceleratorPress = Timer
                                         tmrAccelerator.Enabled = True
                                         
                                         'Also, make sure to eat this keystroke
                                         bHandled = True
+                                        
+                                        Exit For
                                     
                                     End If
                                     
                                 End If
-                            End If
                             
-                        Next i
-                    
-                    End If      'Hotkey collection exists
-                End If      'Key is not in a transitionary state
-            End If      'Key is being released, not pressed
-        End If      'nCode >= 0
-    End If      'Events are not frozen
-    
+                            Next i
+                        
+                        End If  'Hotkey collection exists
+                    End If  'Key is not in a transitionary state
+                End If  'Key is being released, not pressed
+            End If  'PD allows accelerators in its current state
+        End If  'nCode >= 0
+    End If  'Events are not frozen
     
     'If we didn't handle this keypress, allow subsequent hooks to have their way with it
     If (Not bHandled) Then
