@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.164</langversion>
+<langversion>6.7.165</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -733,7 +733,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 <translation>Speichern kann ohne FreeImage-Programmbibliothek nicht abgeschlossen werden.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 31 phrases. 26 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 41 phrases. 36 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -2057,7 +2057,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 <translation>Speichern von Thumbnail fehlgeschlagen (nicht spezifizierter Fehler seitens GDI+).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 37 phrases. 27 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 23 phrases. 13 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -11689,12 +11689,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <translation>JPEG-2000-Exportoptionen</translation>
 </phrase>
 
-<phrase>
-<original>Waiting for user to specify JPEG-2000 export options</original>
-<translation>Warten auf Benutzereingabe, um JPEG-2000-Exportoptionen zu spezifizieren</translation>
-</phrase>
-
-<!-- File_Save_JP2Settings.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- File_Save_JP2Settings.frm contains 13 phrases. 12 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for File_Save_JP2Settings.frm-->
 
@@ -11816,12 +11811,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <translation>Super-Kompression, sehr schlechte Bildqualität (20)</translation>
 </phrase>
 
-<phrase>
-<original>Waiting for user to specify JPEG XR export options</original>
-<translation>Warten auf Benutzerangabe, um JPEG-XR-Exportoptionen zu spezifizieren</translation>
-</phrase>
-
-<!-- File_Save_JXRSettings.frm contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- File_Save_JXRSettings.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_JXRSettings.frm-->
 
@@ -15146,10 +15136,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2594</phrasecount>
+<phrasecount>2592</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4501 phrases. -->
-<!-- 1907 are duplicates, so only 2594 unique phrases have been written to file. -->
-<!-- These 2594 phrases contain approximately 13354 total words. -->
+<!-- 1909 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 13338 total words. -->
 
 </pdData>

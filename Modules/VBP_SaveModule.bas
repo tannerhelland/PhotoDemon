@@ -129,7 +129,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         ' ExifTool will handle those settings separately, independent of the format-specific export engine.
         If Saving.GetExportParamsFromDialog(srcImage, saveFormat, saveParameters, metadataParameters) Then
             srcImage.imgStorage.AddEntry "MetadataSettings", metadataParameters
-        
+            
         'If the user cancels the dialog, exit immediately
         Else
             Message "Save canceled."
@@ -154,13 +154,19 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     MarkMultipageExportStatus srcImage, saveFormat, saveParameters, metadataParameters
     
     'With all save parameters collected, we can offload the rest of the save process to per-format save functions.
-    saveSuccessful = ExportToSpecificFormat(srcImage, dstPath, saveFormat, saveParameters, metadataParameters)
+    saveSuccessful = Saving.ExportToSpecificFormat(srcImage, dstPath, saveFormat, saveParameters, metadataParameters)
     If saveSuccessful Then
         
         'The file was saved successfully!  Copy the save parameters into the parent pdImage object; subsequent "save" actions
         ' can use these instead of querying the user again.
         dictEntry = "ExportParams" & saveExtension
         srcImage.imgStorage.AddEntry dictEntry, saveParameters
+        
+        'If a dialog was displayed, note that as well
+        If (needToDisplayDialog) Then
+            dictEntry = "HasSeenExportDialog" & saveExtension
+            srcImage.imgStorage.AddEntry dictEntry, True
+        End If
         
         'Similarly, remember the file's location and selected name for future saves
         Dim cFile As pdFSO
