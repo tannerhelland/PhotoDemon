@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.166</langversion>
+<langversion>6.7.167</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -733,7 +733,7 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 <translation>Guardar no se puede completar sin la biblioteca FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 31 phrases. 26 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 41 phrases. 36 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -2057,7 +2057,7 @@ In Mientras tanto, intenta guardar la imagen en un formato alternativo. También
 <translation>Miniatura guardar falló (error GDI sin especificar).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 37 phrases. 27 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 23 phrases. 13 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -11689,12 +11689,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>Opciones de exportación de JPEG 2000</translation>
 </phrase>
 
-<phrase>
-<original>Waiting for user to specify JPEG-2000 export options</original>
-<translation>Esperando que el usuario especifique opciones de exportación JPEG-2000</translation>
-</phrase>
-
-<!-- File_Save_JP2Settings.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- File_Save_JP2Settings.frm contains 13 phrases. 12 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for File_Save_JP2Settings.frm-->
 
@@ -11816,12 +11811,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>Compresión Super, muy mala calidad de imagen (20)</translation>
 </phrase>
 
-<phrase>
-<original>Waiting for user to specify JPEG XR export options</original>
-<translation>Esperando que el usuario especifique opciones de exportación JPEG XR</translation>
-</phrase>
-
-<!-- File_Save_JXRSettings.frm contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- File_Save_JXRSettings.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_JXRSettings.frm-->
 
@@ -15146,10 +15136,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2594</phrasecount>
+<phrasecount>2592</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4501 phrases. -->
-<!-- 1907 are duplicates, so only 2594 unique phrases have been written to file. -->
-<!-- These 2594 phrases contain approximately 13354 total words. -->
+<!-- 1909 are duplicates, so only 2592 unique phrases have been written to file. -->
+<!-- These 2592 phrases contain approximately 13338 total words. -->
 
 </pdData>
