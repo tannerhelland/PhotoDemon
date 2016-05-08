@@ -858,7 +858,9 @@ Public Sub LoadAccelerators()
         'View menu
         .AddAccelerator vbKey0, 0, "FitOnScreen", FormMain.MnuFitOnScreen, False, True, False, UNDO_NOTHING
         .AddAccelerator vbKeyAdd, 0, "Zoom_In", FormMain.MnuZoomIn, False, True, False, UNDO_NOTHING
+        .AddAccelerator VK_OEM_PLUS, 0, "Zoom_In", FormMain.MnuZoomIn, False, True, False, UNDO_NOTHING
         .AddAccelerator vbKeySubtract, 0, "Zoom_Out", FormMain.MnuZoomOut, False, True, False, UNDO_NOTHING
+        .AddAccelerator VK_OEM_MINUS, 0, "Zoom_Out", FormMain.MnuZoomOut, False, True, False, UNDO_NOTHING
         .AddAccelerator vbKey5, 0, "Zoom_161", FormMain.MnuSpecificZoom(0), False, True, False, UNDO_NOTHING
         .AddAccelerator vbKey4, 0, "Zoom_81", FormMain.MnuSpecificZoom(1), False, True, False, UNDO_NOTHING
         .AddAccelerator vbKey3, 0, "Zoom_41", FormMain.MnuSpecificZoom(2), False, True, False, UNDO_NOTHING
@@ -891,9 +893,9 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKeyA, vbCtrlMask, "Select all", FormMain.MnuSelect(0), True, True, False, UNDO_SELECTION
         .AddAccelerator vbKeyD, vbCtrlMask, "Remove selection", FormMain.MnuSelect(1), False, True, False, UNDO_SELECTION
         .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask, "Invert selection", FormMain.MnuSelect(2), True, True, False, UNDO_SELECTION
-        'KeyCode 219 = {[  (next to the letter P), 221 = }]
-        .AddAccelerator 221, vbCtrlMask Or vbAltMask, "Grow selection", FormMain.MnuSelect(4), True, True, True, UNDO_NOTHING
-        .AddAccelerator 219, vbCtrlMask Or vbAltMask, "Shrink selection", FormMain.MnuSelect(5), True, True, True, UNDO_NOTHING
+        'KeyCode VK_OEM_4 = {[  (next to the letter P), VK_OEM_6 = }]
+        .AddAccelerator VK_OEM_6, vbCtrlMask Or vbAltMask, "Grow selection", FormMain.MnuSelect(4), True, True, True, UNDO_NOTHING
+        .AddAccelerator VK_OEM_4, vbCtrlMask Or vbAltMask, "Shrink selection", FormMain.MnuSelect(5), True, True, True, UNDO_NOTHING
         .AddAccelerator vbKeyD, vbCtrlMask Or vbAltMask, "Feather selection", FormMain.MnuSelect(7), True, True, True, UNDO_NOTHING
         
         'Adjustments Menu
@@ -906,6 +908,7 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKeyL, vbCtrlMask, "Levels", FormMain.MnuAdjustments(7), True, True, True, UNDO_NOTHING
         .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadow and highlight", FormMain.MnuAdjustments(8), True, True, True, UNDO_NOTHING
         .AddAccelerator vbKeyAdd, vbCtrlMask Or vbAltMask, "Vibrance", FormMain.MnuAdjustments(9), True, True, True, UNDO_NOTHING
+        .AddAccelerator VK_OEM_PLUS, vbCtrlMask Or vbAltMask, "Vibrance", FormMain.MnuAdjustments(9), True, True, True, UNDO_NOTHING
         .AddAccelerator vbKeyW, vbCtrlMask, "White balance", FormMain.MnuAdjustments(10), True, True, True, UNDO_NOTHING
         
             'Color adjustments
