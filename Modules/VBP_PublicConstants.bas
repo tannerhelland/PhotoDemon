@@ -121,6 +121,11 @@ Public Const VK_7 As Long = &H37
 Public Const VK_8 As Long = &H38
 Public Const VK_9 As Long = &H39
 
+Public Const VK_OEM_PLUS As Long = 187   'Locale-inspecific + key
+Public Const VK_OEM_MINUS As Long = 189  'Locale-inspecific - key
+Public Const VK_OEM_4 As Long = 219      'For the US standard keyboard, the '[{' key.  (Varies internationally.)
+Public Const VK_OEM_6 As Long = 221      'For the US standard keyboard, the ']}' key.  (Varies internationally.)
+
 'Old PDI files were not Unicode friendly.  When loading PDI files, we use this constant to determine whether
 ' ANSI or Unicode string behavior should be used.
 Public Const PDPACKAGE_UNICODE_FRIENDLY_VERSION As Long = 66
