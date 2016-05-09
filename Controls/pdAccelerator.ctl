@@ -23,18 +23,6 @@ Begin VB.UserControl pdAccelerator
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
    ToolboxBitmap   =   "pdAccelerator.ctx":0000
-   Begin VB.Timer tmrRelease 
-      Enabled         =   0   'False
-      Interval        =   16
-      Left            =   0
-      Top             =   480
-   End
-   Begin VB.Timer tmrAccelerator 
-      Enabled         =   0   'False
-      Interval        =   16
-      Left            =   0
-      Top             =   0
-   End
 End
 Attribute VB_Name = "pdAccelerator"
 Attribute VB_GlobalNameSpace = False
@@ -122,6 +110,12 @@ Private m_Subclass As cSelfSubHookCallback
 ' As part of the debug process, we generate extra text on first activation - text that can be ignored on subsequent runs.
 Private m_SubsequentInitialization As Boolean
 
+'In-memory timers are used for firing accelerators and releasing hooks
+Private WithEvents m_ReleaseTimer As pdTimer
+Attribute m_ReleaseTimer.VB_VarHelpID = -1
+Private WithEvents m_FireTimer As pdTimer
+Attribute m_FireTimer.VB_VarHelpID = -1
+
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_UserMemId = -514
@@ -133,7 +127,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     PropertyChanged "Enabled"
 End Property
 
-Private Sub tmrAccelerator_Timer()
+Private Sub m_FireTimer_Timer()
     
     'If we're still inside the hookproc, wait another 16 ms before testing the keypress
     If (Not m_InHookNow) Then
@@ -143,7 +137,7 @@ Private Sub tmrAccelerator_Timer()
         
             'Because the accelerator has now been processed, we can disable the timer; this will prevent it from firing again, but the
             ' current sub will still complete its actions.
-            tmrAccelerator.Enabled = False
+            m_FireTimer.StopTimer
             
             'If the accelerator index is valid, raise a corresponding event, then reset the accelerator index
             If (m_AcceleratorIndex <> -1) Then
@@ -158,11 +152,11 @@ Private Sub tmrAccelerator_Timer()
     
 End Sub
 
-Private Sub tmrRelease_Timer()
+Private Sub m_ReleaseTimer_Timer()
     If m_HookingActive Then
         SafelyReleaseHook
     Else
-        tmrRelease.Enabled = False
+        m_ReleaseTimer.StopTimer
     End If
 End Sub
 
@@ -171,7 +165,9 @@ Private Sub SafelyReleaseHook()
     
     'If we're still inside the hook, activate the failsafe timer release mechanism
     If m_InHookNow Then
-        If (Not tmrRelease.Enabled) Then tmrRelease.Enabled = True
+        If (Not (m_ReleaseTimer Is Nothing)) Then
+            If (Not m_ReleaseTimer.IsActive) Then m_ReleaseTimer.StartTimer
+        End If
         
     'If we're not inside the hook, this is a perfect time to release.
     Else
@@ -182,7 +178,7 @@ Private Sub SafelyReleaseHook()
         End If
         
         'Also deactivate the failsafe timer
-        tmrRelease.Enabled = False
+        If (Not (m_ReleaseTimer Is Nothing)) Then m_ReleaseTimer.StopTimer
         
     End If
     
@@ -196,6 +192,9 @@ Public Sub ReleaseResources()
     For i = 0 To m_NumOfHotkeys - 1
         Set m_Hotkeys(i).relevantMenu = Nothing
     Next i
+    
+    If Not (m_ReleaseTimer Is Nothing) Then Set m_ReleaseTimer = Nothing
+    If Not (m_FireTimer Is Nothing) Then Set m_FireTimer = Nothing
     
 End Sub
 
@@ -211,6 +210,12 @@ Private Sub UserControl_Initialize()
     If g_IsProgramRunning Then
         
         Set m_Subclass = New cSelfSubHookCallback
+        
+        Set m_ReleaseTimer = New pdTimer
+        m_ReleaseTimer.Interval = 17
+        
+        Set m_FireTimer = New pdTimer
+        m_FireTimer.Interval = 17
         
         'Hooks are not installed at initialization.  The program must explicitly request initialization.
         
@@ -297,7 +302,7 @@ Public Function AddAccelerator(ByVal vKeyCode As KeyCodeConstants, ByVal Shift A
     'We now know that this key combination is unique.
     
     'Make sure the list is large enough to hold this new entry.
-    If m_NumOfHotkeys > UBound(m_Hotkeys) Then ReDim Preserve m_Hotkeys(0 To UBound(m_Hotkeys) * 2 + 1) As pdHotkey
+    If (m_NumOfHotkeys > UBound(m_Hotkeys)) Then ReDim Preserve m_Hotkeys(0 To UBound(m_Hotkeys) * 2 + 1) As pdHotkey
     
     'Add the new entry
     With m_Hotkeys(m_NumOfHotkeys)
@@ -322,7 +327,7 @@ Private Function GetAcceleratorIndex(ByVal vKeyCode As KeyCodeConstants, ByVal S
     
     GetAcceleratorIndex = -1
     
-    If m_NumOfHotkeys > 0 Then
+    If (m_NumOfHotkeys > 0) Then
         
         Dim i As Long
         For i = 0 To m_NumOfHotkeys - 1
@@ -467,7 +472,7 @@ End Function
 'Note that the vKey constant taken by this function is a *virtual key mapping*.  This may or may not map to a
 ' standard VB key constant, so use care when calling it.
 Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
-    IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
+    IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000&
 End Function
 
 'Want to globally disable accelerators under certain circumstances?  Add code here to do it.
@@ -476,25 +481,31 @@ Private Function CanIRaiseAnAcceleratorEvent() As Boolean
     'By default, assume we can raise accelerator events
     CanIRaiseAnAcceleratorEvent = True
     
-    'Don't process accelerators when the main form is disabled (e.g. if a modal form is present, or if a previous
-    ' action is in the middle of execution)
-    If (Not FormMain.Enabled) Then CanIRaiseAnAcceleratorEvent = False
-    
-    'Don't process accelerators if the Language Editor is active
-    If Not (FormLanguageEditor Is Nothing) Then
-        If FormLanguageEditor.Visible Then CanIRaiseAnAcceleratorEvent = False
+    'Perform some very basic checks
+    If (Me.Enabled And (m_NumOfHotkeys > 0)) Then
+        
+        'Don't process accelerators when the main form is disabled (e.g. if a modal form is present, or if a previous
+        ' action is in the middle of execution)
+        If (Not FormMain.Enabled) Then CanIRaiseAnAcceleratorEvent = False
+        
+        'Accelerators can be fired multiple times by accident.  Don't allow the user to press accelerators
+        ' faster than the system keyboard delay (250ms at minimum, 1s at maximum).
+        If Abs(Timer - m_TimerAtAcceleratorPress < Interface.GetKeyboardDelay()) Then CanIRaiseAnAcceleratorEvent = False
+        
+        'If the accelerator timer is already waiting to process an existing accelerator, exit
+        If (m_FireTimer Is Nothing) Then
+            CanIRaiseAnAcceleratorEvent = False
+        Else
+            If m_FireTimer.IsActive Then CanIRaiseAnAcceleratorEvent = False
+        End If
+        
+        'If PD is shutting down, ignore accelerators
+        If g_ProgramShuttingDown Then CanIRaiseAnAcceleratorEvent = False
+        
+    Else
+        CanIRaiseAnAcceleratorEvent = False
     End If
-
-    'Accelerators can be fired multiple times by accident.  Don't allow the user to press accelerators
-    ' faster than the system keyboard delay (250ms at minimum, 1s at maximum).
-    If Abs(Timer - m_TimerAtAcceleratorPress < Interface.GetKeyboardDelay()) Then CanIRaiseAnAcceleratorEvent = False
-    
-    'If the accelerator timer is already waiting to process an existing accelerator, exit
-    If tmrAccelerator.Enabled Then CanIRaiseAnAcceleratorEvent = False
-    
-    'If PD is shutting down, ignore accelerators
-    If g_ProgramShuttingDown Then CanIRaiseAnAcceleratorEvent = False
-    
+        
     'By this point, the function is set to the proper pass/fail state
     
 End Function
@@ -532,53 +543,51 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
             'Before proceeding with further checks, see if PD is even allowed to process accelerators in its
             ' current state (e.g. it's not locked, in the middle of other processing, etc.)
             If CanIRaiseAnAcceleratorEvent Then
-            
-                'Bit 31 of lParam is 0 if a key is being pressed, and 1 if it is being released.  In the future, we could
-                ' use this to raise separate KeyDown and KeyUp events, if desired.
-                If (lParam > 0) Then
+                
+                'Key up events are raised twice; once in a transitionary stage, and once again in a final stage.
+                ' To prevent double-raising of KeyUp events, we check the transitionary state before proceeding
+                If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
                     
-                    'Key up events are raised twice; once in a transitionary stage, and once again in a final stage.
-                    ' To prevent double-raising of KeyUp events, we check the transitionary state before proceeding
-                    If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
+                    'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
+                    Dim retShiftConstants As ShiftConstants
+                    If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
+                    If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
+                    If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
+                    
+                    'Search our accelerator database for a match to the current keycode
+                    If (m_NumOfHotkeys > 0) Then
                         
-                        'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
-                        Dim retShiftConstants As ShiftConstants
-                        If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
-                        If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
-                        If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
-                        
-                        'Search our accelerator database for a match to the current keycode
-                        If (m_NumOfHotkeys > 0) Then
-                        
-                            Dim i As Long
-                            For i = 0 To m_NumOfHotkeys - 1
+                        Dim i As Long
+                        For i = 0 To m_NumOfHotkeys - 1
+                            
+                            'First, see if the keycode matches.
+                            If (m_Hotkeys(i).vKeyCode = wParam) Then
                                 
-                                'First, see if the keycode matches.
-                                If (m_Hotkeys(i).vKeyCode = wParam) Then
-                                
-                                    'Next, see if the Ctrl+Alt+Shift state matches
-                                    If (m_Hotkeys(i).shiftState = retShiftConstants) Then
+                                'Next, see if the Ctrl+Alt+Shift state matches
+                                If (m_Hotkeys(i).shiftState = retShiftConstants) Then
                                     
-                                        'We have a match!  Cache the index of the accelerator, note the current time,
-                                        ' then initiate the accelerator evaluation timer.  It handles all further evaluation.
-                                        m_AcceleratorIndex = i
-                                        m_TimerAtAcceleratorPress = Timer
-                                        tmrAccelerator.Enabled = True
-                                        
-                                        'Also, make sure to eat this keystroke
-                                        bHandled = True
-                                        
-                                        Exit For
+                                    'We have a match!  Cache the index of the accelerator, note the current time,
+                                    ' then initiate the accelerator evaluation timer.  It handles all further evaluation.
+                                    m_AcceleratorIndex = i
+                                    m_TimerAtAcceleratorPress = Timer
                                     
+                                    If Not (m_FireTimer Is Nothing) Then
+                                        m_FireTimer.StartTimer
                                     End If
                                     
+                                    'Also, make sure to eat this keystroke
+                                    bHandled = True
+                                    
+                                    Exit For
+                                
                                 End If
-                            
-                            Next i
+                                
+                            End If
                         
-                        End If  'Hotkey collection exists
-                    End If  'Key is not in a transitionary state
-                End If  'Key is being released, not pressed
+                        Next i
+                    
+                    End If  'Hotkey collection exists
+                End If  'Key is not in a transitionary state
             End If  'PD allows accelerators in its current state
         End If  'nCode >= 0
     End If  'Events are not frozen
