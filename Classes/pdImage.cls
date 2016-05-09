@@ -265,7 +265,7 @@ Public Sub GetCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplic
     dstDIB.CreateFromExistingDIB compositeBuffer
     
     'Change premultiplication, if requested by the caller.  (By default, the composite image is stored in premultiplied format.)
-    If dstDIB.GetAlphaPremultiplication <> premultiplicationStatus Then dstDIB.SetAlphaPremultiplication premultiplicationStatus
+    If (dstDIB.GetAlphaPremultiplication <> premultiplicationStatus) Then dstDIB.SetAlphaPremultiplication premultiplicationStatus
     
 End Sub
 
