@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.164</langversion>
+<langversion>6.7.165</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -733,7 +733,7 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 <translation>Speichern unmöglich ohne die FreeImage-Programmbibliothek.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 41 phrases. 36 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 46 phrases. 41 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -2036,11 +2036,6 @@ Versuchen Sie bitte vorläufig, das Bild in einem anderen Format zu speichern. S
 </phrase>
 
 <phrase>
-<original>Preparing %1 image</original>
-<translation>Bild %1 aufbereiten</translation>
-</phrase>
-
-<phrase>
 <original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
 <translation>Speichern des Vorschaubildes fehlgeschlagen (FreeImage_SaveEx silent fail). Bitte melden Sie diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht senden".</translation>
 </phrase>
@@ -2055,7 +2050,7 @@ Versuchen Sie bitte vorläufig, das Bild in einem anderen Format zu speichern. S
 <translation>Speichern des Vorschaubildes fehlgeschlagen (unklare Fehlermeldung von GDI+).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 23 phrases. 13 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -11820,12 +11815,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation>WebP-Exporteinstellungen</translation>
 </phrase>
 
-<phrase>
-<original>Waiting for user to specify WebP export options</original>
-<translation>Warten auf die Benutzereingabe der WebP-Exporteinstellungen</translation>
-</phrase>
-
-<!-- File_Save_WebPSettings.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- File_Save_WebPSettings.frm contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for File_Save_WebPSettings.frm-->
 
@@ -15134,10 +15124,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2592</phrasecount>
+<phrasecount>2590</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4501 phrases. -->
-<!-- 1909 are duplicates, so only 2592 unique phrases have been written to file. -->
-<!-- These 2592 phrases contain approximately 13338 total words. -->
+<!-- As of this build, PhotoDemon contains 4499 phrases. -->
+<!-- 1909 are duplicates, so only 2590 unique phrases have been written to file. -->
+<!-- These 2590 phrases contain approximately 13328 total words. -->
 
 </pdData>

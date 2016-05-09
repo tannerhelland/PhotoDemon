@@ -181,20 +181,18 @@ Public Function PromptTIFFSettings(ByRef srcImage As pdImage, ByRef dstFormatPar
 End Function
 
 'Present a dialog box to ask the user for various WebP export settings
-Public Function PromptWebPSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String) As VbMsgBoxResult
+Public Function PromptWebPSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
 
     Load dialog_ExportWebP
-    Set dialog_ExportWebP.imageBeingExported = srcImage
-    dialog_ExportWebP.ShowDialog
-
-    PromptWebPSettings = dialog_ExportWebP.DialogResult
-    dstFormatParams = dialog_ExportWebP.xmlParamString
+    dialog_ExportWebP.ShowDialog srcImage
     
-    Set dialog_ExportWebP.imageBeingExported = Nothing
+    PromptWebPSettings = dialog_ExportWebP.GetDialogResult
+    dstFormatParams = dialog_ExportWebP.GetFormatParams
+    dstMetadataParams = dialog_ExportWebP.GetMetadataParams
     
     Unload dialog_ExportWebP
     Set dialog_ExportWebP = Nothing
-
+    
 End Function
 
 'Present a dialog box to ask the user for an alpha-cutoff value.  This is used when reducing a complex (32bpp)
