@@ -2063,6 +2063,81 @@ Private Function GetFreeImageTIFFConstant(ByVal compressionName As String) As Lo
     End If
 End Function
 
+'Save to WebP format using the FreeImage library
+Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportWebPError
+    
+    ExportWebP = False
+    Dim sFileType As String: sFileType = "WebP"
+    
+    If g_ImageFormats.FreeImageEnabled Then
+    
+        'Parse incoming WebP parameters
+        Dim cParams As pdParamXML
+        Set cParams = New pdParamXML
+        cParams.SetParamString formatParams
+        
+        'The only output parameter WebP supports is compression level
+        Dim webPQuality As Long
+        webPQuality = cParams.GetLong("WebPQuality", 100)
+        
+        'Generate a composited image copy, with alpha automatically un-premultiplied
+        Dim tmpImageCopy As pdDIB
+        Set tmpImageCopy = New pdDIB
+        srcPDImage.GetCompositedImage tmpImageCopy, False
+        
+        'Retrieve the recommended output color depth of the image.
+        ' (TODO: parse incoming params and honor requests for forced color-depths!)
+        Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_WEBP, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+        ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
+        
+        'WebP only supports 24-bpp and 32-bpp outputs, so check for transparency now
+        If (currentAlphaStatus = PDAS_NoAlpha) Then
+            desiredAlphaStatus = PDAS_NoAlpha
+            outputColorDepth = 24
+        Else
+            desiredAlphaStatus = PDAS_ComplicatedAlpha
+            outputColorDepth = 32
+        End If
+        
+        'To save us some time, auto-convert any non-transparent images to 24-bpp now
+        If (desiredAlphaStatus = PDAS_NoAlpha) Then tmpImageCopy.ConvertTo24bpp
+        
+        Dim fi_DIB As Long
+        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus)
+        
+        If (fi_DIB <> 0) Then
+            
+            Dim fi_Flags As Long: fi_Flags = 0&
+            fi_Flags = fi_Flags Or webPQuality
+            
+            ExportWebP = FreeImage_Save(FIF_WEBP, fi_DIB, dstFile, fi_Flags)
+            If ExportWebP Then
+                ExportDebugMsg "Export to " & sFileType & " appears successful."
+            Else
+                Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+            End If
+            
+        Else
+            Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+            ExportWebP = False
+        End If
+    Else
+        If (MacroStatus <> MacroBATCH) Then PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
+        Message "Save cannot be completed without FreeImage library."
+        ExportWebP = False
+    End If
+    
+    Exit Function
+    
+ExportWebPError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportWebP = False
+    
+End Function
+
 Private Function ParamsEqual(ByVal param1 As String, ByVal param2 As String) As Boolean
     ParamsEqual = CBool(StrComp(LCase$(param1), LCase$(param2), vbBinaryCompare) = 0)
 End Function

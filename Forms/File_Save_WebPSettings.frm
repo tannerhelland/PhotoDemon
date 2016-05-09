@@ -61,9 +61,10 @@ Begin VB.Form dialog_ExportWebP
       _ExtentX        =   15055
       _ExtentY        =   873
       Min             =   1
-      Max             =   256
-      Value           =   16
-      NotchPosition   =   1
+      Max             =   100
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
    Begin PhotoDemon.pdLabel lblBefore 
       Height          =   435
@@ -72,7 +73,7 @@ Begin VB.Form dialog_ExportWebP
       Width           =   2265
       _ExtentX        =   3995
       _ExtentY        =   767
-      Caption         =   "high quality, large file"
+      Caption         =   "low quality, small file"
       FontItalic      =   -1  'True
       FontSize        =   8
       ForeColor       =   4210752
@@ -86,7 +87,7 @@ Begin VB.Form dialog_ExportWebP
       _ExtentX        =   3863
       _ExtentY        =   767
       Alignment       =   1
-      Caption         =   "low quality, small file"
+      Caption         =   "high quality, large file"
       FontItalic      =   -1  'True
       FontSize        =   8
       ForeColor       =   4210752
@@ -114,8 +115,8 @@ Attribute VB_Exposed = False
 'Google WebP Export Dialog
 'Copyright 2014-2016 by Tanner Helland
 'Created: 14/February/14
-'Last updated: 14/February/14
-'Last update: initial build
+'Last updated: 09/May/16
+'Last update: convert dialog to new export engine
 '
 'Dialog for presenting the user a number of options related to WebP exporting.  Obviously this feature
 ' relies on FreeImage, and WebP support will be disabled if FreeImage cannot be found.
@@ -127,23 +128,38 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'The user input from the dialog
-Private userAnswer As VbMsgBoxResult
+'This form can (and should!) be notified of the image being exported.  The only exception to this rule is invoking
+' the dialog from the batch process dialog, as no image is associated with that preview.
+Private m_SrcImage As pdImage
 
-'This form can be notified of the image being exported.  This may be used in the future to provide a preview.
-Public imageBeingExported As pdImage
+'A composite of the current image, 32-bpp, fully composited.  This is only regenerated if the source image changes.
+Private m_CompositedImage As pdDIB
 
-'When rendering the preview, we don't want to always re-request a copy of the main image.  Instead, we
-' store one in this DIB (at the size of the preview) and simply re-use it when we need to render a preview.
-Private origImageCopy As pdDIB
+'FreeImage-specific copy of the preview window corresponding to m_CompositedImage, above.  We cache this to save time,
+' but note that it must be regenerated whenever the preview source is regenerated.
+Private m_FIHandle As Long
 
-'Final XML packet, with all WebP settings defined as tag+value pairs
-Public xmlParamString As String
+'OK or CANCEL result
+Private m_UserDialogAnswer As VbMsgBoxResult
+
+'Final format-specific XML packet, with all format-specific settings defined as tag+value pairs
+Private m_FormatParamString As String
+
+'Final metadata XML packet, with all metadata settings defined as tag+value pairs
+Private m_MetadataParamString As String
 
 'The user's answer is returned via this property
-Public Property Get DialogResult() As VbMsgBoxResult
-    DialogResult = userAnswer
-End Property
+Public Function GetDialogResult() As VbMsgBoxResult
+    GetDialogResult = m_UserDialogAnswer
+End Function
+
+Public Function GetFormatParams() As String
+    GetFormatParams = m_FormatParamString
+End Function
+
+Public Function GetMetadataParams() As String
+    GetMetadataParams = m_MetadataParamString
+End Function
 
 'QUALITY combo box - when adjusted, change the scroll bar to match
 Private Sub cboSaveQuality_Click()
@@ -170,25 +186,32 @@ Private Sub cboSaveQuality_Click()
 End Sub
 
 Private Sub cmdBar_CancelClick()
-    userAnswer = vbCancel
+    m_UserDialogAnswer = vbCancel
     Me.Hide
 End Sub
 
 Private Sub cmdBar_OKClick()
 
     'Determine the compression ratio for the WebP transform
-    If Not sltQuality.IsValid Then Exit Sub
+    If (Not sltQuality.IsValid) Then Exit Sub
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    cParams.AddParam "WebPQuality", Abs(sltQuality)
+    cParams.AddParam "WebPQuality", sltQuality.Value
     
-    'Cache the final parameter list; the calling function will retrieve this before unloading the form
-    xmlParamString = cParams.GetParamString
+    m_FormatParamString = cParams.GetParamString
     
-    userAnswer = vbOK
+    'If ExifTool someday supports WebP metadata embedding, you can add a metadata manager here
+    m_MetadataParamString = vbNullString
+    
+    'Free resources that are no longer required
+    Set m_CompositedImage = Nothing
+    Set m_SrcImage = Nothing
+    
+    'Hide but *DO NOT UNLOAD* the form.  The dialog manager needs to retrieve the setting strings before unloading us
+    m_UserDialogAnswer = vbOK
     Me.Hide
-
+    
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -201,9 +224,11 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+    Plugin_FreeImage.ReleasePreviewCache m_FIHandle
 End Sub
 
 Private Sub pdFxPreview_ViewportChanged()
+    UpdatePreviewSource
     UpdatePreview
 End Sub
 
@@ -240,13 +265,14 @@ Private Sub UpdateComboBox()
 End Sub
 
 'The ShowDialog routine presents the user with this form.
-Public Sub ShowDialog()
+Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
-    userAnswer = vbCancel
+    m_UserDialogAnswer = vbCancel
     
     'Make sure that the proper cursor is set
     Screen.MousePointer = 0
+    Message "Waiting for user to specify export options... "
     
     'Populate the quality drop-down box with presets corresponding to the WebP file format
     cboSaveQuality.Clear
@@ -258,43 +284,67 @@ Public Sub ShowDialog()
     cboSaveQuality.AddItem " Custom ratio (X:1)", 5
     cboSaveQuality.ListIndex = 0
     
-    Message "Waiting for user to specify WebP export options... "
+    'Make a copy of the composited image; it takes time to composite layers, so we don't want to redo this except
+    ' when absolutely necessary.
+    Set m_SrcImage = srcImage
+    If Not (m_SrcImage Is Nothing) Then
+        m_SrcImage.GetCompositedImage m_CompositedImage, True
+        pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
+    End If
+    
+    'Update the preview
+    UpdatePreviewSource
+    UpdatePreview True
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     
-    'Retrieve a composited version of the target image
-    Set origImageCopy = New pdDIB
-    imageBeingExported.GetCompositedImage origImageCopy, True
-    
-    'Update the preview
-    UpdatePreview
-    
     'Display the dialog
     ShowPDDialog vbModal, Me, True
-
+    
 End Sub
 
-'Render a new WebP preview
-Private Sub UpdatePreview()
-
-    If cmdBar.PreviewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
+'When a parameter changes that requires a new source DIB for the preview (e.g. changing the background composite color),
+' call this function to generate a new preview DIB.  Note that you *do not* need to call this function for format-specific
+' changes (like quality, subsampling, etc).
+Private Sub UpdatePreviewSource()
+    If Not (m_CompositedImage Is Nothing) Then
         
-        'Start by retrieving the relevant portion of the image, according to the preview window
+        'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
+        ' since the last preview.  Prep a new preview now.
         Dim tmpSafeArray As SAFEARRAY2D
-        PreviewNonStandardImage tmpSafeArray, origImageCopy, pdFxPreview
+        FastDrawing.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, False
         
-        'The public workingDIB object now contains the relevant portion of the preview window.  Use that to
-        ' obtain a JPEG-ified version of the image data.
-        FillDIBWithWebPVersion workingDIB, workingDIB, Abs(sltQuality.Value)
-                
-        'Paint the final image to screen and release all temporary objects
-        FinalizeNonstandardPreview pdFxPreview
+        'Finally, convert that preview copy to a FreeImage-compatible handle.
+        If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
+        
+        'During previews, we can always use 32-bpp mode
+        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 32, PDAS_ComplicatedAlpha)
+        
+    End If
+End Sub
+
+Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
+
+    If (cmdBar.PreviewsAllowed Or forceUpdate) And g_ImageFormats.FreeImageEnabled Then
+        
+        'Make sure the preview source is up-to-date
+        If (m_FIHandle = 0) Then UpdatePreviewSource
+        
+        'Prep all relevant FreeImage flags
+        Dim fi_Flags As FREE_IMAGE_SAVE_OPTIONS
+        If sltQuality.IsValid Then fi_Flags = sltQuality.Value Else fi_Flags = 100&
+        
+        'Retrieve a WebP-saved version of the current preview image
+        If Not (workingDIB Is Nothing) Then workingDIB.ResetDIB
+        If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_WEBP, fi_Flags) Then
+            workingDIB.SetAlphaPremultiplication True, True
+            FinalizeNonstandardPreview pdFxPreview, True
+        Else
+            Debug.Print "WARNING: WEBP EXPORT PREVIEW IS HORRIBLY BROKEN!"
+        End If
         
     End If
 
 End Sub
-
-
-
 

@@ -284,7 +284,7 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
                 GetExportParamsFromDialog = CBool(DialogManager.PromptTIFFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
             Case PDIF_WEBP
-                GetExportParamsFromDialog = CBool(DialogManager.PromptWebPSettings(srcImage, dstParamString) = vbOK)
+                GetExportParamsFromDialog = CBool(DialogManager.PromptWebPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
                 
         End Select
         
@@ -347,12 +347,10 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
             
         Case PDIF_TIFF
             ExportToSpecificFormat = ImageExporter.ExportTIFF(srcImage, dstPath, saveParameters, metadataParameters)
-            
-        'Formats past this line are still using the old export engine; their migration is in progress!
-            
-        Case PDIF_WEBP
-            ExportToSpecificFormat = SaveWebPImage(srcImage, dstPath, , saveParameters)
         
+        Case PDIF_WEBP
+            ExportToSpecificFormat = ImageExporter.ExportWebP(srcImage, dstPath, saveParameters, metadataParameters)
+            
         Case Else
             Message "Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident."
             ExportToSpecificFormat = False
@@ -562,72 +560,6 @@ SavePDLayerError:
     
 End Function
 
-'Save to WebP format using the FreeImage library.
-Public Function SaveWebPImage(ByRef srcPDImage As pdImage, ByVal WebPPath As String, Optional ByVal outputColorDepth As Long = 32, Optional ByVal WebPParams As String = "") As Boolean
-    
-    On Error GoTo SaveWebPError
-    
-    'Parse all possible WebP params
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
-    cParams.SetParamString WebPParams
-    
-    Dim WebPQuality As Long
-    WebPQuality = cParams.GetLong("WebPQuality", 0)
-    
-    Dim sFileType As String
-    sFileType = "WebP"
-    
-    'Make sure we found the plug-in when we loaded the program
-    If Not g_ImageFormats.FreeImageEnabled Then
-        PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
-        Message "Save cannot be completed without FreeImage library."
-        SaveWebPImage = False
-        Exit Function
-    End If
-    
-    Message "Preparing %1 image...", sFileType
-    
-    'Retrieve a composited copy of the image, at full size
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    srcPDImage.GetCompositedImage tmpDIB, False
-    
-    'If the output color depth is 24 but the current image is 32, composite the image against a white background
-    If (outputColorDepth < 32) And (tmpDIB.GetDIBColorDepth = 32) Then tmpDIB.ConvertTo24bpp
-    
-    'Convert our current DIB to a FreeImage-type DIB
-    Dim fi_DIB As Long
-    fi_DIB = FreeImage_CreateFromDC(tmpDIB.GetDIBDC)
-    
-    'Use that handle to save the image to WebP format
-    If fi_DIB <> 0 Then
-                
-        Dim fi_Check As Long
-        fi_Check = FreeImage_SaveEx(fi_DIB, WebPPath, PDIF_WEBP, WebPQuality, outputColorDepth, , , , , True)
-        
-        If fi_Check Then
-            Message "%1 save complete.", sFileType
-        Else
-            Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
-            SaveWebPImage = False
-            Exit Function
-        End If
-        
-    Else
-        Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
-        SaveWebPImage = False
-        Exit Function
-    End If
-    
-    SaveWebPImage = True
-    Exit Function
-    
-SaveWebPError:
-    SaveWebPImage = False
-    
-End Function
-
 'This function takes two 24bpp DIBs and compares them, returning a single mean RMSD.
 Public Function FindMeanRMSDForTwoDIBs(ByRef srcDib1 As pdDIB, ByRef srcDib2 As pdDIB) As Double
 
@@ -724,7 +656,7 @@ End Function
 
 'Given a source and destination DIB reference, fill the destination with a post-WebP-compression of the original.  This
 ' is used to generate the live preview used in PhotoDemon's "export WebP" dialog.
-Public Sub FillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal WebPQuality As Long)
+Public Sub FillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal webPQuality As Long)
     
     'Pass the DIB to FreeImage, which will make a copy for itself.
     Dim fi_DIB As Long
@@ -734,7 +666,7 @@ Public Sub FillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     ' the image in WebP format to a byte array; we then hand that byte array back to it and request a decompression.
     Dim webPArray() As Byte
     Dim fi_Check As Long
-    fi_Check = FreeImage_SaveToMemoryEx(PDIF_WEBP, fi_DIB, webPArray, WebPQuality, True)
+    fi_Check = FreeImage_SaveToMemoryEx(PDIF_WEBP, fi_DIB, webPArray, webPQuality, True)
     
     fi_DIB = FreeImage_LoadFromMemoryEx(webPArray, , , PDIF_WEBP)
     

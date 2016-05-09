@@ -165,8 +165,8 @@ Attribute VB_Exposed = False
 'JPEG-2000 (JP2) Export Dialog
 'Copyright 2012-2016 by Tanner Helland
 'Created: 04/December/12
-'Last updated: 14/February/14
-'Last update: reworked layout to incorporate preview UC and more closely mimic the JPEG dialog
+'Last updated: 07/May/16
+'Last update: convert dialog to new export engine
 '
 'Dialog for presenting the user a number of options related to JPEG-2000 exporting.  Obviously this feature
 ' relies on FreeImage, and JPEG-2000 support will be disabled if FreeImage cannot be found.
@@ -320,7 +320,7 @@ End Sub
 
 'The ShowDialog routine presents the user with this form.
 Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
-
+    
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     m_UserDialogAnswer = vbCancel
     
@@ -404,7 +404,7 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
             workingDIB.SetAlphaPremultiplication True, True
             FinalizeNonstandardPreview pdFxPreview, True
         Else
-            Debug.Print "WARNING: JXR EXPORT PREVIEW IS HORRIBLY BROKEN!"
+            Debug.Print "WARNING: JP2 EXPORT PREVIEW IS HORRIBLY BROKEN!"
         End If
         
     End If

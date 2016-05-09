@@ -176,8 +176,8 @@ Attribute VB_Exposed = False
 'JPEG XR Export Dialog
 'Copyright 2014-2016 by Tanner Helland
 'Created: 14/February/14
-'Last updated: 14/February/14
-'Last update: initial build
+'Last updated: 07/May/16
+'Last update: convert dialog to new export engine
 '
 'Dialog for presenting the user a number of options related to JPEG XR exporting.  Obviously this feature
 ' relies on FreeImage, and JPEG XR support will be disabled if FreeImage cannot be found.
@@ -409,7 +409,7 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
         
         'Prep all relevant FreeImage flags
         Dim fi_Flags As FREE_IMAGE_SAVE_OPTIONS
-        If sltQuality.IsValid Then fi_Flags = Abs(sltQuality.Value) Else fi_Flags = FISO_JXR_LOSSLESS
+        If sltQuality.IsValid Then fi_Flags = sltQuality.Value Else fi_Flags = FISO_JXR_LOSSLESS
         
         'Retrieve a JPEG-saved version of the current preview image
         workingDIB.ResetDIB

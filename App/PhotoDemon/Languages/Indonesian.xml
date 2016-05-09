@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.106</langversion>
+<langversion>6.6.107</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -733,7 +733,7 @@ Dukungan Untuk Format Gambar Ini, Tolong Salin Berkas FreeImage.dll yang (boleh 
 <translation>Menyimpan Tidak Dapat Di Selesaikan Tanpa perpustakaan FreeImage.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 41 phrases. 36 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 46 phrases. 41 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for ImageExporter.bas-->
 
@@ -2038,11 +2038,6 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 </phrase>
 
 <phrase>
-<original>Preparing %1 image</original>
-<translation>Menyiapkan %1 Gambar</translation>
-</phrase>
-
-<phrase>
 <original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
 <translation>Thumbnail Gagal Menyimpan (FreeImage_SaveEx senyap gagal).Tolong Laporkan Kesalahan Ini Menggunakan Bantuan -> Kirim Laporan Bug.</translation>
 </phrase>
@@ -2057,7 +2052,7 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <translation>Thumbnail Gagal Menyimpan (Kesalahan GDI tidak ditentukan).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 23 phrases. 13 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -11827,12 +11822,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>WebP Eksport Pilihan</translation>
 </phrase>
 
-<phrase>
-<original>Waiting for user to specify WebP export options</original>
-<translation>Menunggu pengguna untuk menentukan pilihan eksport WebP</translation>
-</phrase>
-
-<!-- File_Save_WebPSettings.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- File_Save_WebPSettings.frm contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for File_Save_WebPSettings.frm-->
 
@@ -15141,10 +15131,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2592</phrasecount>
+<phrasecount>2590</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4501 phrases. -->
-<!-- 1909 are duplicates, so only 2592 unique phrases have been written to file. -->
-<!-- These 2592 phrases contain approximately 13338 total words. -->
+<!-- As of this build, PhotoDemon contains 4499 phrases. -->
+<!-- 1909 are duplicates, so only 2590 unique phrases have been written to file. -->
+<!-- These 2590 phrases contain approximately 13328 total words. -->
 
 </pdData>
