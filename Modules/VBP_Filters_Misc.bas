@@ -899,32 +899,38 @@ Public Sub MenuCountColors()
     
     Message "Counting the number of unique colors in this image..."
     
+    'Grab a composited copy of the image
+    Dim tmpImageComposite As pdDIB
+    pdImages(g_CurrentImage).GetCompositedImage tmpImageComposite, True
+    If (tmpImageComposite Is Nothing) Then Exit Sub
+    
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    PrepImageData tmpSA
+    FastDrawing.PrepSafeArray tmpSA, tmpImageComposite
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    Dim qvDepth As Long
+    qvDepth = tmpImageComposite.GetDIBColorDepth \ 8
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = tmpImageComposite.GetDIBArrayWidth - 1
+    finalY = tmpImageComposite.GetDIBHeight - 1
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    SetProgBarMax finalY
     progBarCheck = FindBestProgBarValue()
     
     'This array will track whether or not a given color has been detected in the image
-    Dim UniqueColors() As Boolean
-    ReDim UniqueColors(0 To 16777216) As Boolean
+    Dim UniqueColors() As Byte
+    ReDim UniqueColors(0 To 16777216) As Byte
     
     'Total number of unique colors counted so far
     Dim totalCount As Long
@@ -935,37 +941,32 @@ Public Sub MenuCountColors()
     Dim chkValue As Long
         
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
     For y = initY To finalY
-        
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+    For x = initX To finalX Step qvDepth
+        b = ImageData(x, y)
+        g = ImageData(x + 1, y)
+        r = ImageData(x + 2, y)
         
         chkValue = RGB(r, g, b)
-        If UniqueColors(chkValue) = False Then
+        If UniqueColors(chkValue) = 0 Then
             totalCount = totalCount + 1
-            UniqueColors(chkValue) = True
+            UniqueColors(chkValue) = 1
         End If
-        
-    Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
-        
+        If (y And progBarCheck) = 0 Then SetProgBarVal y
+    Next y
+    
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
-    
-    'Also, erase the counting array
     Erase UniqueColors
+    Set tmpImageComposite = Nothing
     
     'Reset the progress bar
     SetProgBarVal 0
     ReleaseProgressBar
     
     'Show the user our final tally
-    Message "Total number of unique colors: %1", totalCount
+    Message "Total unique colors: %1", totalCount
     PDMsgBox "This image contains %1 unique colors.", vbOKOnly + vbApplicationModal + vbInformation, "Count Image Colors", totalCount
     
 End Sub
