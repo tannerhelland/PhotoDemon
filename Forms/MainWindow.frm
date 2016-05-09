@@ -4279,7 +4279,11 @@ Private Sub mnuTool_Click(Index As Integer)
         
         'Language editor
         Case 1
-            If (Not FormLanguageEditor.Visible) Then ShowPDDialog vbModal, FormLanguageEditor
+            If (Not FormLanguageEditor.Visible) Then
+                pdHotkeys.Enabled = False
+                ShowPDDialog vbModal, FormLanguageEditor
+                pdHotkeys.Enabled = True
+            End If
             
         '(separator)
         Case 2
