@@ -20,16 +20,42 @@ Attribute VB_Name = "Drawing2D"
 Option Explicit
 
 Public Enum PD_2D_RENDERING_BACKEND
-    PD2D_DefaultBackend = -1
-    PD2D_GDIPlusBackend = 0
+    PD2D_DefaultBackend = 0
+    PD2D_GDIPlusBackend = 1
 End Enum
 
 #If False Then
-    Private Const PD2D_DefaultBackend = -1, PD2D_GDIPlusBackend = 0
+    Private Const PD2D_DefaultBackend = 0, PD2D_GDIPlusBackend = 1
 #End If
 
 'If GDI+ is initialized successfully, this will be set to TRUE
 Private m_GDIPlusAvailable As Boolean
+
+'When debug mode is active, this module will track surface creation+destruction counts.  This is helpful for detecting leaks.
+Private m_DebugMode As Boolean
+
+'When debug mode is active, live surface counts are tracked for each backend
+Private m_SurfaceCount_GDIPlus As Long
+
+'Create a new surface using the default rendering backend
+Public Function CreateSurfaceFromDC(ByRef dstSurface As pdSurface2D, ByVal srcDC As Long, Optional ByVal enableAA As Boolean = True) As Boolean
+    If (dstSurface Is Nothing) Then Set dstSurface = New pdSurface2D
+    dstSurface.SetDebugMode m_DebugMode
+    CreateSurfaceFromDC = dstSurface.CreateSurfaceFromDC(srcDC, enableAA)
+End Function
+
+Public Function IsRenderingEngineActive(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = PD2D_DefaultBackend) As Boolean
+    Select Case targetBackend
+        Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
+            IsRenderingEngineActive = m_GDIPlusAvailable
+        Case Else
+            IsRenderingEngineActive = False
+    End Select
+End Function
+
+Public Sub SetDrawing2DDebugMode(ByVal newMode As Boolean)
+    m_DebugMode = newMode
+End Sub
 
 'Start a new rendering backend
 Public Function StartRenderingBackend(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = PD2D_DefaultBackend) As Boolean
@@ -68,19 +94,25 @@ Public Function StopRenderingEngine(Optional ByVal targetBackend As PD_2D_RENDER
     
 End Function
 
-Public Function IsRenderingEngineActive(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = PD2D_DefaultBackend) As Boolean
-    Select Case targetBackend
-        Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
-            IsRenderingEngineActive = m_GDIPlusAvailable
-        Case Else
-            IsRenderingEngineActive = False
-    End Select
-End Function
-
 Private Sub InternalRenderingError(Optional ByRef ErrName As String = vbNullString, Optional ByRef ErrDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
 
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "WARNING!  Drawing2D encountered an error: """ & ErrName & """ - " & ErrDescription
     #End If
 
+End Sub
+
+'DEBUG FUNCTIONS FOLLOW
+Public Sub DEBUG_NotifySurfaceChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal surfaceCreated As Boolean)
+    
+    Select Case targetBackend
+            
+        Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
+            If surfaceCreated Then m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus + 1 Else m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus - 1
+            
+        Case Else
+            InternalRenderingError "Bad Parameter", "Surface creation/destruction was not counted: backend ID unknown"
+    
+    End Select
+    
 End Sub

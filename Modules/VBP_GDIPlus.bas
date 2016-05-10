@@ -65,13 +65,48 @@ Private Type GdiplusStartupInput
 End Type
 
 Private Enum GP_DebugEventLevel
-    DebugEventLevelFatal = 0
-    DebugEventLevelWarning = 1
+    GP_DebugEventLevelFatal = 0
+    GP_DebugEventLevelWarning = 1
 End Enum
+
+#If False Then
+    Private Const DebugEventLevelFatal = 0, DebugEventLevelWarning = 1
+#End If
+
+Public Enum GP_QualityMode
+    GP_QM_Invalid = -1
+    GP_QM_Default = 0
+    GP_QM_Low = 1
+    GP_QM_High = 2
+End Enum
+
+#If False Then
+    Private Const GP_QM_Invalid = -1, GP_QM_Default = 0, GP_QM_Low = 1, GP_QM_High = 2
+#End If
+
+'Instead of specifying certain smoothing modes, quality modes (see above) can be used instead.
+Public Enum GP_SmoothingMode
+    GP_SM_Invalid = GP_QM_Invalid
+    GP_SM_Default = GP_QM_Default
+    GP_SM_HighSpeed = GP_QM_Low
+    GP_SM_HighQuality = GP_QM_High
+    GP_SM_None = 3
+    GP_SM_AntiAlias = 4
+End Enum
+
+#If False Then
+    Private Const GP_SM_Invalid = GP_QM_Invalid, GP_SM_Default = GP_QM_Default, GP_SM_HighSpeed = GP_QM_Low, GP_SM_HighQuality = GP_QM_High, GP_SM_None = 3
+   GP_SM_AntiAlias = 4
+#End If
 
 'Core GDI+ functions:
 Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef gdipToken As Long, ByRef startupStruct As GdiplusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GP_Result
 Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal gdipToken As Long) As GP_Result
+
+'Drawing GDI+ functions
+Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal hGraphics As Long) As GP_Result
+Private Declare Function GdipGetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstMode As GP_SmoothingMode) As GP_Result
+Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_SmoothingMode) As GP_Result
 
 'Non-GDI+ helper functions:
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
@@ -472,8 +507,6 @@ Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest A
 'GDI+ calls related to drawing lines and various shapes
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef mGraphics As Long) As Long
 'Private Declare Function GdipCreateBitmapFromGraphics Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal srcGraphics As Long, ByRef dstBitmap As Long) As Long
-Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal mGraphics As Long) As Long
-Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mSmoothingMode As SmoothingMode) As Long
 Private Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal mBrush As Long) As Long
 Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal mColor As Long, ByRef mBrush As Long) As Long
 Private Declare Function GdipDrawLine Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
@@ -1047,23 +1080,6 @@ Public Function GDIPlusDrawArcCircular(ByVal dstDC As Long, ByVal centerX As Sin
     GdipDeleteGraphics dstGraphics
     
 End Function
-
-'Retrieve a persistent handle to a GDI+-format graphics container.  Optionally, a smoothing mode can be specified so that it does
-' not have to be repeatedly specified by a caller function.  (GDI+ sets smoothing mode by graphics container, not by function call.)
-Public Function getGDIPlusGraphicsFromDC(ByVal srcDC As Long, Optional ByVal useAA As Boolean = True) As Long
-    
-    'Create a GDI+ copy of the image and request matching AA behavior
-    Dim iGraphics As Long
-    GdipCreateFromHDC srcDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
-
-    getGDIPlusGraphicsFromDC = iGraphics
-
-End Function
-
-Public Sub releaseGDIPlusGraphics(ByVal srcHandle As Long)
-    GdipDeleteGraphics srcHandle
-End Sub
 
 'Return a persistent handle to a GDI+ pen.  This can be useful if many drawing operations are going to be applied with the same pen.
 Public Function GetGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal customLineCap As LineCap = LineCapFlat, Optional ByVal customLinejoin As LineJoin = LineJoinMiter, Optional ByVal customDashMode As DashStyle = DashStyleSolid, Optional ByVal penMiterLimit As Single = 3#, Optional ByVal penPositioning As PenAlignment = PenAlignmentCenter) As Long
@@ -3101,13 +3117,54 @@ Private Function GDIP_Debug_Proc(ByVal deLevel As GP_DebugEventLevel, ByVal ptrC
     debugString = cUnicode.ConvertCharPointerToVBString(ptrChar, False)
     
     #If DEBUGMODE = 1 Then
-        If (deLevel = DebugEventLevelWarning) Then
+        If (deLevel = GP_DebugEventLevelWarning) Then
             pdDebug.LogAction "GDI+ WARNING: " & debugString
-        ElseIf (deLevel = DebugEventLevelFatal) Then
+        ElseIf (deLevel = GP_DebugEventLevelFatal) Then
             pdDebug.LogAction "GDI+ ERROR: " & debugString
         Else
             pdDebug.LogAction "GDI+ UNKNOWN: " & debugString
         End If
     #End If
     
+End Function
+
+'Retrieve a persistent handle to a GDI+-format graphics container.  Optionally, a smoothing mode can be specified so that it does
+' not have to be repeatedly specified by a caller function.  (GDI+ sets smoothing mode by graphics container, not by function call.)
+Public Function GetGDIPlusGraphicsFromDC(ByVal srcDC As Long, Optional ByVal enableAA As Boolean = True) As Long
+    
+    'Create a GDI+ wrapper around the target DC, with the supplied settings enforced
+    Dim hGraphics As Long
+    GdipCreateFromHDC srcDC, hGraphics
+    GDI_Plus.SetGraphicsAntialiasing hGraphics, enableAA
+    
+    'Instead of a pass/fail result, this function returns the actual graphics handle.  A null handle indicates failure.
+    GetGDIPlusGraphicsFromDC = hGraphics
+
+End Function
+
+Public Function ReleaseGDIPlusGraphics(ByVal srcHandle As Long) As Boolean
+    ReleaseGDIPlusGraphics = CBool(GdipDeleteGraphics(srcHandle) = GP_OK)
+End Function
+
+Public Function GetGraphicsAntialiasing(ByVal hGraphics As Long) As Boolean
+    If (hGraphics <> 0) Then
+        Dim sMode As GP_SmoothingMode
+        If (GdipGetSmoothingMode(hGraphics, sMode) = GP_OK) Then
+            GetGraphicsAntialiasing = CBool(sMode = GP_SM_AntiAlias)
+        End If
+    End If
+End Function
+
+Public Function SetGraphicsAntialiasing(ByVal hGraphics As Long, ByVal enableAA As Boolean) As Boolean
+    If enableAA Then
+        SetGraphicsAntialiasing = SetGraphicsSmoothingMode(hGraphics, GP_SM_AntiAlias)
+    Else
+        SetGraphicsAntialiasing = SetGraphicsSmoothingMode(hGraphics, GP_SM_None)
+    End If
+End Function
+
+Private Function SetGraphicsSmoothingMode(ByVal hGraphics As Long, ByVal newSmoothingMode As GP_SmoothingMode) As Boolean
+    If (hGraphics <> 0) Then
+        SetGraphicsSmoothingMode = CBool(GdipSetSmoothingMode(hGraphics, newSmoothingMode) = GP_OK)
+    End If
 End Function

@@ -128,7 +128,11 @@ Public Sub ContinueLoadingProgram()
     'Before doing any 2D rendering, we need to start at least one valid 2D rendering backend.
     ' (At present, only GDI+ is used)
     If Drawing2D.StartRenderingBackend(PD2D_DefaultBackend) Then
-    
+        
+        #If DEBUGMODE = 1 Then
+            Drawing2D.SetDrawing2DDebugMode True
+        #End If
+        
         'Load FormSplash into memory, but don't make it visible.
         FormSplash.Visible = False
         
