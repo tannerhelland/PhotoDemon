@@ -52,6 +52,8 @@ Public Function GetEZTwainVersion() As String
         'The TWAIN version is the version number * 100.  Modify the return string accordingly
         GetEZTwainVersion = (ezVer \ 100) & "." & (ezVer Mod 100) & ".0.0"
         
+    Else
+        RaiseInternalDebugMessage "LoadLibraryFailed", "GetEZTwainVersion() failed to load base library"
     End If
 
 End Function
@@ -66,7 +68,9 @@ Public Function EnableScanner() As Boolean
     If (hLib_Scanner <> 0) Then
         EnableScanner = CBool(TWAIN_IsAvailable() <> 0)
         FreeLibrary hLib_Scanner
+        If (Not EnableScanner) Then RaiseInternalDebugMessage "TWAIN_IsAvailable() Failed", "TWAIN_IsAvailable() returned 0"
     Else
+        RaiseInternalDebugMessage "LoadLibraryFailed", "EnableScanner() failed to load base library"
         EnableScanner = False
     End If
     
@@ -204,4 +208,10 @@ ScanError:
     PDMsgBox scanErrMessage, vbExclamation + vbOKOnly + vbApplicationModal, "Scan Canceled"
     Message "Scan canceled. "
     
+End Sub
+
+Private Sub RaiseInternalDebugMessage(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString)
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  EZTwain interface reported error """ & errName & """ - " & errDescription
+    #End If
 End Sub
