@@ -195,7 +195,7 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     
     '--> Import Sub-Menu
     'NOTE: the specific menu values will be different if the scanner plugin (eztw32.dll) isn't found.
-    If g_ScanEnabled Then
+    If Plugin_EZTwain.IsScannerAvailable Then
         AddMenuIcon "PASTE_IMAGE", 0, 3, 0 'From Clipboard (Paste as New Image)
         AddMenuIcon "SCANNER", 0, 3, 2     'Scan Image
         AddMenuIcon "SCANNERSEL", 0, 3, 3  'Select Scanner
@@ -1075,7 +1075,7 @@ End Function
 Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDIB) As Boolean
         
     'Some functions may call this before GDI+ has loaded; exit if that happens
-    If Not g_GDIPlusAvailable Then
+    If Not Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend) Then
         LoadResourceToDIB = False
         Exit Function
     End If

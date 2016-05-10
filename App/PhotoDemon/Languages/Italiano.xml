@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.165</langversion>
+<langversion>6.7.166</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -462,8 +462,8 @@ Se il problema persiste, si prega di segnalarlo agli sviluppatori di PhotoDemon 
 </phrase>
 
 <phrase>
-<original>Total number of unique colors: %1</original>
-<translation>Numero toale di colori unici: %1</translation>
+<original>Total unique colors: %1</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15128,6 +15128,6 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- As of this build, PhotoDemon contains 4499 phrases. -->
 <!-- 1909 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13328 total words. -->
+<!-- These 2590 phrases contain approximately 13326 total words. -->
 
 </pdData>

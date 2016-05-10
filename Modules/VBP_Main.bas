@@ -125,9 +125,9 @@ Public Sub ContinueLoadingProgram()
     
     m_StartTime = Timer
     
-    'We need GDI+ to extract a JPEG from the resource file and convert it in-memory.  (Yes, there are other ways to do this.  No, I don't
-    ' care about using them.)  Check its availability.
-    If IsGDIPlusAvailable() Then
+    'Before doing any 2D rendering, we need to start at least one valid 2D rendering backend.
+    ' (At present, only GDI+ is used)
+    If Drawing2D.StartRenderingBackend(PD2D_DefaultBackend) Then
     
         'Load FormSplash into memory, but don't make it visible.
         FormSplash.Visible = False
@@ -137,7 +137,7 @@ Public Sub ContinueLoadingProgram()
     'Check the environment.  If inside the the IDE, the splash needs to be modified slightly.
     CheckLoadingEnvironment
     
-    If g_GDIPlusAvailable Then
+    If Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend) Then
         If g_IsProgramCompiled Then m_LoadTime = 1# Else m_LoadTime = 0.5
     Else
         m_LoadTime = 0#
@@ -360,7 +360,7 @@ Public Sub ContinueLoadingProgram()
     'The FreeImage.dll plugin provides most of PD's advanced image format support, but we can also fall back on GDI+.
     ' Prior to generating a list of supported formats, notify the image format class of GDI+ availability
     ' (which was determined earlier in this function, prior to loading the splash screen).
-    g_ImageFormats.GDIPlusEnabled = g_GDIPlusAvailable
+    g_ImageFormats.GDIPlusEnabled = Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend)
     
     'Generate a list of currently supported input/output formats, which may vary based on plugin version and availability
     g_ImageFormats.GenerateInputFormats
@@ -701,15 +701,11 @@ Public Sub FinalShutdown()
     
     End If
     
-    'Release GDIPlus (if applicable)
-    If g_ImageFormats.GDIPlusEnabled Then
-        
-        ReleaseGDIPlus
-        
+    'Release any active drawing backends
+    If Drawing2D.StopRenderingEngine(PD2D_DefaultBackend) Then
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "GDI+ released"
         #End If
-    
     End If
     
     #If DEBUGMODE = 1 Then

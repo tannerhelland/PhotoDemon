@@ -217,7 +217,7 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
             
         'EZTwain provides a dedicated version-checking function
         Case CCP_EZTwain
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_Scanner_Interface.GetEZTwainVersion()
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_EZTwain.GetEZTwainVersion()
         
         'LittleCMS provides a dedicated version-checking function
         Case CCP_LittleCMS
@@ -297,7 +297,7 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As 
         Case CCP_ExifTool
             IsPluginCurrentlyEnabled = g_ExifToolEnabled
         Case CCP_EZTwain
-            IsPluginCurrentlyEnabled = g_ScanEnabled
+            IsPluginCurrentlyEnabled = Plugin_EZTwain.IsScannerAvailable
         Case CCP_FreeImage
             IsPluginCurrentlyEnabled = g_ImageFormats.FreeImageEnabled
         Case CCP_LittleCMS
@@ -319,7 +319,7 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnab
         Case CCP_ExifTool
             g_ExifToolEnabled = newEnabledState
         Case CCP_EZTwain
-            g_ScanEnabled = newEnabledState
+            Plugin_EZTwain.ForciblySetScannerAvailability newEnabledState
         Case CCP_FreeImage
             g_ImageFormats.FreeImageEnabled = newEnabledState
         Case CCP_LittleCMS
@@ -493,7 +493,7 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
             g_ExifToolEnabled = pluginState
                     
         Case CCP_EZTwain
-            g_ScanEnabled = pluginState
+            Plugin_EZTwain.ForciblySetScannerAvailability pluginState
         
         Case CCP_FreeImage
             g_ImageFormats.FreeImageEnabled = pluginState

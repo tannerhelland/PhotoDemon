@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.165</langversion>
+<langversion>6.7.166</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -462,8 +462,8 @@ Wenn das Problem bestehen bleibt, können sie den Entwicklern von PhotoDemon ger
 </phrase>
 
 <phrase>
-<original>Total number of unique colors: %1</original>
-<translation>Gesamtzahl der einzelnen Farben: %1</translation>
+<original>Total unique colors: %1</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15128,6 +15128,6 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- As of this build, PhotoDemon contains 4499 phrases. -->
 <!-- 1909 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13328 total words. -->
+<!-- These 2590 phrases contain approximately 13326 total words. -->
 
 </pdData>

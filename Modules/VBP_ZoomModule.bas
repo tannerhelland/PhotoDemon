@@ -91,7 +91,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
     End If
     
     'Flip the front buffer to the screen
-    BitBlt m_TargetDC, 0, 0, frontBuffer.getDIBWidth, frontBuffer.getDIBHeight, frontBuffer.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt m_TargetDC, 0, 0, frontBuffer.GetDIBWidth, frontBuffer.GetDIBHeight, frontBuffer.GetDIBDC, 0, 0, vbSrcCopy
     
     'Lastly, do any tool-specific rendering directly onto the form.
     Select Case g_CurrentTool
@@ -100,15 +100,15 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
         Case NAV_MOVE
         
             'If the user has requested visible layer borders, draw them now
-            If CBool(toolpanel_MoveSize.chkLayerBorder) Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.getActiveLayer
+            If CBool(toolpanel_MoveSize.chkLayerBorder) Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
             
             'If the user has requested visible transformation nodes, draw them now.
             ' (TODO: cache these values in either public variables, or inside this module via some kind of setViewportProperties
             '        function - either way, that will let us access drawing settings much more quickly!)
-            If CBool(toolpanel_MoveSize.chkLayerNodes) Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
+            If CBool(toolpanel_MoveSize.chkLayerNodes) Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
             
             'Same as above, but for the current rotation node
-            If CBool(toolpanel_MoveSize.chkRotateNode) Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
+            If CBool(toolpanel_MoveSize.chkRotateNode) Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
             
         'Selections are always rendered onto the canvas.  If a selection is active AND a selection tool is active, we can also
         ' draw transform nodes around the selection area.
@@ -127,10 +127,10 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
         'Text tools currently draw layer boundaries at all times; I'm working on this (TODO!)
         Case VECTOR_TEXT, VECTOR_FANCYTEXT
             
-            If pdImages(g_CurrentImage).getActiveLayer.isLayerText Then
-                Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.getActiveLayer
-                Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
-                Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
+            If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then
+                Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
+                Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
+                Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
             End If
             
     End Select
@@ -170,10 +170,10 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     'Create the front buffer as necessary
     If frontBuffer Is Nothing Then Set frontBuffer = New pdDIB
         
-    If (frontBuffer.getDIBWidth <> srcImage.canvasBuffer.getDIBWidth) Or (frontBuffer.getDIBHeight <> srcImage.canvasBuffer.getDIBHeight) Then
-        frontBuffer.createFromExistingDIB srcImage.canvasBuffer
+    If (frontBuffer.GetDIBWidth <> srcImage.canvasBuffer.GetDIBWidth) Or (frontBuffer.GetDIBHeight <> srcImage.canvasBuffer.GetDIBHeight) Then
+        frontBuffer.CreateFromExistingDIB srcImage.canvasBuffer
     Else
-        BitBlt frontBuffer.getDIBDC, 0, 0, srcImage.canvasBuffer.getDIBWidth, srcImage.canvasBuffer.getDIBHeight, srcImage.canvasBuffer.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt frontBuffer.GetDIBDC, 0, 0, srcImage.canvasBuffer.GetDIBWidth, srcImage.canvasBuffer.GetDIBHeight, srcImage.canvasBuffer.GetDIBDC, 0, 0, vbSrcCopy
     End If
     
     'Retrieve a copy of the intersected viewport rect, which we forward to the selection engine (if a selection is active)
@@ -214,7 +214,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
     End With
     
     'We also need to wipe the back buffer
-    GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, srcImage.canvasBuffer.getDIBWidth, srcImage.canvasBuffer.getDIBHeight, g_Themer.GetGenericUIColor(UI_UniversalCanvasElement), 255, CompositingModeSourceCopy
+    GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, srcImage.canvasBuffer.GetDIBWidth, srcImage.canvasBuffer.GetDIBHeight, g_Themer.GetGenericUIColor(UI_UniversalCanvasElement), 255, CompositingModeSourceCopy
     
     'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.BackBuffer for us.  If the user's preferences are "BEST QUALITY",
     ' Stage 2 composited a full-sized version of the image.  The goal of this stage (3) is two-fold:
@@ -292,7 +292,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
         
         'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
         ' in the future... but for now, we leave it, just in case.
-        If g_GDIPlusAvailable Then
+        If Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend) Then
             
             'PD provides two options for rendering the viewport.  One composites the full image in the background, and just snips
             ' out the relevant bit of the finished image.  The other does not maintain a composited image copy, but instead returns
@@ -309,13 +309,13 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
                 
                 'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
                 If g_ViewportPerformance = PD_PERF_FASTEST Then
-                    srcImage.getCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, InterpolationModeNearestNeighbor, pipelineOriginatedAtStageOne, CLC_Viewport
+                    srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, InterpolationModeNearestNeighbor, pipelineOriginatedAtStageOne, CLC_Viewport
                     
                 'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
                 ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
                 ' automatically (regardless of what method we request).
                 Else
-                    srcImage.getCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor), pipelineOriginatedAtStageOne, CLC_Viewport
+                    srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor), pipelineOriginatedAtStageOne, CLC_Viewport
                 End If
                 
             End If
@@ -390,7 +390,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         
         'Notify the parent object that a prepared composite buffer is required.  If the buffer is dirty, the parent will regenerate
         ' the composite for us.
-        srcImage.rebuildCompositeBuffer
+        srcImage.RebuildCompositeBuffer
         
     'Other viewport performance settings can automatically proceed to stage 3
     Else
@@ -619,8 +619,8 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     ' (TODO: roll the canvas color over to the central themer.)
     ' (TODO: creating the back buffer as 32-bit screws up selection rendering, because the current selection engine always assumes
     '         a 24-bit target.  Look at fixing this!)
-    If (srcImage.canvasBuffer.getDIBWidth <> CanvasRect_ActualPixels.Width) Or (srcImage.canvasBuffer.getDIBHeight <> CanvasRect_ActualPixels.Height) Then
-        srcImage.canvasBuffer.createBlank CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, 24, g_Themer.GetGenericUIColor(UI_UniversalCanvasElement), 255
+    If (srcImage.canvasBuffer.GetDIBWidth <> CanvasRect_ActualPixels.Width) Or (srcImage.canvasBuffer.GetDIBHeight <> CanvasRect_ActualPixels.Height) Then
+        srcImage.canvasBuffer.CreateBlank CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, 24, g_Themer.GetGenericUIColor(UI_UniversalCanvasElement), 255
     Else
         GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, g_Themer.GetGenericUIColor(UI_UniversalCanvasElement), 255, CompositingModeSourceCopy
     End If
@@ -731,7 +731,7 @@ End Sub
 ' While not actually part of the viewport pipeline, I find it intuitive to store this function here.
 Public Sub eraseViewportBuffers()
     If Not frontBuffer Is Nothing Then
-        frontBuffer.eraseDIB
+        frontBuffer.EraseDIB
         Set frontBuffer = Nothing
     End If
 End Sub

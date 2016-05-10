@@ -33,14 +33,14 @@ Public Function padDIB(ByRef srcDIB As pdDIB, ByVal paddingSize As Long) As Bool
     'Make a copy of the current DIB
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB srcDIB
+    tmpDIB.CreateFromExistingDIB srcDIB
     
     'Resize the source DIB to accommodate the new padding
-    srcDIB.createBlank srcDIB.getDIBWidth + paddingSize * 2, srcDIB.getDIBHeight + paddingSize * 2, srcDIB.getDIBColorDepth, 0, 0
-    srcDIB.setInitialAlphaPremultiplicationState tmpDIB.getAlphaPremultiplication
+    srcDIB.CreateBlank srcDIB.GetDIBWidth + paddingSize * 2, srcDIB.GetDIBHeight + paddingSize * 2, srcDIB.GetDIBColorDepth, 0, 0
+    srcDIB.SetInitialAlphaPremultiplicationState tmpDIB.GetAlphaPremultiplication
     
     'Copy the old DIB into the center of the new DIB
-    BitBlt srcDIB.getDIBDC, paddingSize, paddingSize, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt srcDIB.GetDIBDC, paddingSize, paddingSize, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
     
     'Erase the temporary DIB
     Set tmpDIB = Nothing
@@ -58,13 +58,13 @@ Public Function padDIBRect(ByRef srcDIB As pdDIB, ByRef paddingRect As RECT) As 
     'Make a copy of the current DIB
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB srcDIB
+    tmpDIB.CreateFromExistingDIB srcDIB
     
     'Resize the source DIB to accommodate the new padding
-    srcDIB.createBlank srcDIB.getDIBWidth + paddingRect.Left + paddingRect.Right, srcDIB.getDIBHeight + paddingRect.Top + paddingRect.Bottom, srcDIB.getDIBColorDepth, 0, 0
+    srcDIB.CreateBlank srcDIB.GetDIBWidth + paddingRect.Left + paddingRect.Right, srcDIB.GetDIBHeight + paddingRect.Top + paddingRect.Bottom, srcDIB.GetDIBColorDepth, 0, 0
     
     'Copy the old DIB into the center of the new DIB
-    BitBlt srcDIB.getDIBDC, paddingRect.Left, paddingRect.Top, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt srcDIB.GetDIBDC, paddingRect.Left, paddingRect.Top, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
     
     'Erase the temporary DIB
     Set tmpDIB = Nothing
@@ -75,9 +75,9 @@ End Function
 
 'If the application needs to quickly blur a DIB and it doesn't care how, use this function.  It will lean on GDI+ if
 ' available (unless otherwise requested), or fall back to a high-speed internal box blur.
-Public Function quickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Optional ByVal useGDIPlusIfAvailable As Boolean = True) As Boolean
+Public Function QuickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Optional ByVal useGDIPlusIfAvailable As Boolean = True) As Boolean
 
-    If blurRadius > 0 Then
+    If (blurRadius > 0) Then
     
         'If GDI+ 1.1 exists, use it for a faster blur operation.  If only v1.0 is found, fall back to one of our internal blur functions.
         '
@@ -87,7 +87,7 @@ Public Function quickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Op
         Dim gdiPlusIsAcceptable As Boolean
         
         'Attempt to see if GDI+ v1.1 (or later) is available.
-        If g_GDIPlusFXAvailable And useGDIPlusIfAvailable Then
+        If GDI_Plus.IsGDIPlusV11Available And useGDIPlusIfAvailable Then
         
             'Next, make sure one of two things are true:
             ' 1) We are on Windows 7, OR
@@ -109,10 +109,10 @@ Public Function quickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Op
         If gdiPlusIsAcceptable Then
         
             'GDI+ blurs are prone to failure, so as a failsafe, provide a fallback to internal PD mechanisms.
-            If Not GDIPlusBlurDIB(srcDIB, blurRadius * 2, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight) Then
+            If Not GDIPlusBlurDIB(srcDIB, blurRadius * 2, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight) Then
                 
                 Set tmpDIB = New pdDIB
-                tmpDIB.createFromExistingDIB srcDIB
+                tmpDIB.CreateFromExistingDIB srcDIB
                 CreateApproximateGaussianBlurDIB blurRadius, tmpDIB, srcDIB, 1, True
                 
             End If
@@ -120,14 +120,14 @@ Public Function quickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Op
         Else
             
             Set tmpDIB = New pdDIB
-            tmpDIB.createFromExistingDIB srcDIB
+            tmpDIB.CreateFromExistingDIB srcDIB
             CreateApproximateGaussianBlurDIB blurRadius, tmpDIB, srcDIB, 1, True
             
         End If
     
     End If
     
-    quickBlurDIB = True
+    QuickBlurDIB = True
     
 End Function
 
@@ -135,13 +135,13 @@ End Function
 Public Function CreateShadowDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Boolean
 
     'If the source DIB is not 32bpp, exit.
-    If srcDIB.getDIBColorDepth <> 32 Then
+    If srcDIB.GetDIBColorDepth <> 32 Then
         CreateShadowDIB = False
         Exit Function
     End If
 
     'Start by copying the source DIB into the destination
-    dstDIB.createFromExistingDIB srcDIB
+    dstDIB.CreateFromExistingDIB srcDIB
     
     'Create a local array and point it at the pixel data of the destination image
     Dim dstImageData() As Byte
@@ -151,8 +151,8 @@ Public Function CreateShadowDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, finalX As Long, finalY As Long, quickX As Long
-    finalX = dstDIB.getDIBWidth - 1
-    finalY = dstDIB.getDIBHeight - 1
+    finalX = dstDIB.GetDIBWidth - 1
+    finalY = dstDIB.GetDIBHeight - 1
     
     'Loop through all pixels in the destination image and set them to black.  Easy as pie!
     For x = 0 To finalX
@@ -188,8 +188,8 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
     
     'Just to be safe, make sure the radius isn't larger than the image itself
     If (finalY - initY) < (finalX - initX) Then
@@ -206,7 +206,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'The x-dimension of the image has a stride of (width * 4) for 32-bit images; precalculate this, to spare us some
     ' processing time in the inner loop.
@@ -355,13 +355,13 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -567,13 +567,13 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -730,13 +730,13 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     Dim x As Long, y As Long, z As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 1
     initY = 1
-    finalX = srcDIB.getDIBWidth - 2
-    finalY = srcDIB.getDIBHeight - 2
+    finalX = srcDIB.GetDIBWidth - 2
+    finalY = srcDIB.GetDIBHeight - 2
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValRight As Long, QuickValLeft As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -921,17 +921,17 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     
     If shadowRadius <> highlightRadius Then
         Set backupDIB = New pdDIB
-        backupDIB.createFromExistingDIB srcDIB
+        backupDIB.CreateFromExistingDIB srcDIB
     End If
     
     'Next, we need to make a duplicate copy of the source image.  To improve output, this copy will be blurred, and we will use it to
     ' identify shadow/highlight regions.  (The blur naturally creates smoother transitions between light and dark parts of the image.)
     Dim blurDIB As pdDIB
     Set blurDIB = New pdDIB
-    blurDIB.createFromExistingDIB srcDIB
+    blurDIB.CreateFromExistingDIB srcDIB
     
     'Shadows are handled first.  If the user requested a radius > 0, blur the reference image now.
-    If (shadowAmount <> 0) And (shadowRadius > 0) Then quickBlurDIB blurDIB, shadowRadius, False
+    If (shadowAmount <> 0) And (shadowRadius > 0) Then QuickBlurDIB blurDIB, shadowRadius, False
         
     'Unfortunately, the next step of the operation requires manual pixel-by-pixel blending.  Prep all required loop objects now.
     
@@ -951,12 +951,12 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'Prep stride ofsets.  (This is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim quickX As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'Prep color retrieval variables (Long-type, because intermediate calculates may exceed byte range)
     Dim rSrc As Double, gSrc As Double, bSrc As Double
@@ -1052,8 +1052,8 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         ' from the shadow radius, calculate a new blur DIB now.
         If (highlightRadius <> shadowRadius) Then
             
-            blurDIB.createFromExistingDIB backupDIB
-            If (highlightRadius <> 0) Then quickBlurDIB blurDIB, highlightRadius, False
+            blurDIB.CreateFromExistingDIB backupDIB
+            If (highlightRadius <> 0) Then QuickBlurDIB blurDIB, highlightRadius, False
             
             'Note that we can now free our backup DIB, as it's no longer needed
             Set backupDIB = Nothing
@@ -1245,13 +1245,13 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     'Create an extra temp DIB.  This will contain the intermediate copy of our horizontal/vertical blurs.
     Dim gaussDIB As pdDIB
     Set gaussDIB = New pdDIB
-    gaussDIB.createFromExistingDIB srcDIB
-    dstDIB.createFromExistingDIB gaussDIB
+    gaussDIB.CreateFromExistingDIB srcDIB
+    dstDIB.CreateFromExistingDIB gaussDIB
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then modifyProgBarMax = gaussDIB.getDIBWidth * numIterations + gaussDIB.getDIBHeight * numIterations
+    If modifyProgBarMax = -1 Then modifyProgBarMax = gaussDIB.GetDIBWidth * numIterations + gaussDIB.GetDIBHeight * numIterations
     If Not suppressMessages Then SetProgBarMax modifyProgBarMax
     
     progBarCheck = FindBestProgBarValue()
@@ -1282,8 +1282,8 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     Dim i As Long
     For i = 1 To numIterations
     
-        If CreateHorizontalBlurDIB(comparableRadius, comparableRadius, dstDIB, gaussDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.getDIBWidth * (i - 1)) + (gaussDIB.getDIBHeight * (i - 1))) > 0 Then
-            If CreateVerticalBlurDIB(comparableRadius, comparableRadius, gaussDIB, dstDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.getDIBWidth * i) + (gaussDIB.getDIBHeight * (i - 1))) = 0 Then
+        If CreateHorizontalBlurDIB(comparableRadius, comparableRadius, dstDIB, gaussDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBWidth * (i - 1)) + (gaussDIB.GetDIBHeight * (i - 1))) > 0 Then
+            If CreateVerticalBlurDIB(comparableRadius, comparableRadius, gaussDIB, dstDIB, suppressMessages, modifyProgBarMax, modifyProgBarOffset + (gaussDIB.GetDIBWidth * i) + (gaussDIB.GetDIBHeight * (i - 1))) = 0 Then
                 Exit For
             End If
         Else
@@ -1293,7 +1293,7 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     Next i
     
     'Erase the temporary DIB and exit
-    gaussDIB.eraseDIB
+    gaussDIB.EraseDIB
     Set gaussDIB = Nothing
     
     If cancelCurrentAction Then CreateApproximateGaussianBlurDIB = 0 Else CreateApproximateGaussianBlurDIB = 1
@@ -1323,7 +1323,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
     'Create one more local array.  This will contain the intermediate copy of the gaussian blur, as it must be done in two passes.
     Dim gaussDIB As pdDIB
     Set gaussDIB = New pdDIB
-    gaussDIB.createFromExistingDIB srcDIB
+    gaussDIB.CreateFromExistingDIB srcDIB
     
     Dim GaussImageData() As Byte
     Dim gaussSA As SAFEARRAY2D
@@ -1334,8 +1334,8 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
     
     'Make sure we were passed a valid radius
     If userRadius < 0.1 Then userRadius = 0.1
@@ -1360,7 +1360,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValInner As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     Dim chkAlpha As Boolean
     If qvDepth = 4 Then chkAlpha = True Else chkAlpha = False
@@ -1479,11 +1479,11 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
     'Next, prepare 1D arrays that will be used to point at source and destination pixel data.  VB accesses 1D arrays more quickly
     ' than 2D arrays, and this technique shaves precious time off the final calculation.
     Dim scanlineSize As Long
-    scanlineSize = srcDIB.getDIBArrayWidth
+    scanlineSize = srcDIB.GetDIBArrayWidth
     Dim origDIBPointer As Long
-    origDIBPointer = srcDIB.getActualDIBBits
+    origDIBPointer = srcDIB.GetActualDIBBits
     Dim dstDIBPointer As Long
-    dstDIBPointer = gaussDIB.getActualDIBBits
+    dstDIBPointer = gaussDIB.GetActualDIBBits
     
     Dim tmpImageData() As Byte
     Dim tmpSA As SAFEARRAY1D
@@ -1609,7 +1609,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
         Exit Function
     End If
     
-    dstDIBPointer = dstDIB.getActualDIBBits
+    dstDIBPointer = dstDIB.GetActualDIBBits
     tmpDstSA.pvData = dstDIBPointer
     
     'The source array now contains a horizontally convolved image.  We now need to convolve it vertically.
@@ -1696,7 +1696,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
     Erase dstImageData
     
     'We can also erase our intermediate gaussian DIB
-    gaussDIB.eraseDIB
+    gaussDIB.EraseDIB
     Set gaussDIB = Nothing
     
     If cancelCurrentAction Then CreateGaussianBlurDIB = 0 Else CreateGaussianBlurDIB = 1
@@ -1724,13 +1724,13 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -1957,13 +1957,13 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -2189,13 +2189,13 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValInner As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -2351,13 +2351,13 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickY As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -2512,13 +2512,13 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -2615,34 +2615,34 @@ End Function
 Public Function padDIBClampedPixels(ByVal hExtend As Long, ByVal vExtend As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Long
 
     'Start by resizing the destination DIB
-    dstDIB.createBlank srcDIB.getDIBWidth + hExtend * 2, srcDIB.getDIBHeight + vExtend * 2, srcDIB.getDIBColorDepth
+    dstDIB.CreateBlank srcDIB.GetDIBWidth + hExtend * 2, srcDIB.GetDIBHeight + vExtend * 2, srcDIB.GetDIBColorDepth
     
     'Copy the valid part of the source image into the center of the destination image
-    BitBlt dstDIB.getDIBDC, hExtend, vExtend, srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt dstDIB.GetDIBDC, hExtend, vExtend, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
     
     'We now need to fill the blank areas (borders) of the destination canvas with clamped values from the source image.  We do this
     ' by extending the nearest valid pixels across the empty area.
     
     'Start with the four edges, and use COLORONCOLOR as we don't want to waste time with interpolation
-    SetStretchBltMode dstDIB.getDIBDC, STRETCHBLT_COLORONCOLOR
+    SetStretchBltMode dstDIB.GetDIBDC, STRETCHBLT_COLORONCOLOR
     
     'Top, bottom
-    StretchBlt dstDIB.getDIBDC, hExtend, 0, srcDIB.getDIBWidth, vExtend, srcDIB.getDIBDC, 0, 0, srcDIB.getDIBWidth, 1, vbSrcCopy
-    StretchBlt dstDIB.getDIBDC, hExtend, vExtend + srcDIB.getDIBHeight, srcDIB.getDIBWidth, vExtend, srcDIB.getDIBDC, 0, srcDIB.getDIBHeight - 1, srcDIB.getDIBWidth, 1, vbSrcCopy
+    StretchBlt dstDIB.GetDIBDC, hExtend, 0, srcDIB.GetDIBWidth, vExtend, srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, 1, vbSrcCopy
+    StretchBlt dstDIB.GetDIBDC, hExtend, vExtend + srcDIB.GetDIBHeight, srcDIB.GetDIBWidth, vExtend, srcDIB.GetDIBDC, 0, srcDIB.GetDIBHeight - 1, srcDIB.GetDIBWidth, 1, vbSrcCopy
     
     'Left, right
-    StretchBlt dstDIB.getDIBDC, 0, vExtend, hExtend, srcDIB.getDIBHeight, srcDIB.getDIBDC, 0, 0, 1, srcDIB.getDIBHeight, vbSrcCopy
-    StretchBlt dstDIB.getDIBDC, srcDIB.getDIBWidth + hExtend, vExtend, hExtend, srcDIB.getDIBHeight, srcDIB.getDIBDC, srcDIB.getDIBWidth - 1, 0, 1, srcDIB.getDIBHeight, vbSrcCopy
+    StretchBlt dstDIB.GetDIBDC, 0, vExtend, hExtend, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, 0, 0, 1, srcDIB.GetDIBHeight, vbSrcCopy
+    StretchBlt dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, vExtend, hExtend, srcDIB.GetDIBHeight, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, 0, 1, srcDIB.GetDIBHeight, vbSrcCopy
     
     'Next, the four corners
     
     'Top-left, top-right
-    StretchBlt dstDIB.getDIBDC, 0, 0, hExtend, vExtend, srcDIB.getDIBDC, 0, 0, 1, 1, vbSrcCopy
-    StretchBlt dstDIB.getDIBDC, srcDIB.getDIBWidth + hExtend, 0, hExtend, vExtend, srcDIB.getDIBDC, srcDIB.getDIBWidth - 1, 0, 1, 1, vbSrcCopy
+    StretchBlt dstDIB.GetDIBDC, 0, 0, hExtend, vExtend, srcDIB.GetDIBDC, 0, 0, 1, 1, vbSrcCopy
+    StretchBlt dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, 0, hExtend, vExtend, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, 0, 1, 1, vbSrcCopy
     
     'Bottom-left, bottom-right
-    StretchBlt dstDIB.getDIBDC, 0, srcDIB.getDIBHeight + vExtend, hExtend, vExtend, srcDIB.getDIBDC, 0, srcDIB.getDIBHeight - 1, 1, 1, vbSrcCopy
-    StretchBlt dstDIB.getDIBDC, srcDIB.getDIBWidth + hExtend, srcDIB.getDIBHeight + vExtend, hExtend, vExtend, srcDIB.getDIBDC, srcDIB.getDIBWidth - 1, srcDIB.getDIBHeight - 1, 1, 1, vbSrcCopy
+    StretchBlt dstDIB.GetDIBDC, 0, srcDIB.GetDIBHeight + vExtend, hExtend, vExtend, srcDIB.GetDIBDC, 0, srcDIB.GetDIBHeight - 1, 1, 1, vbSrcCopy
+    StretchBlt dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, srcDIB.GetDIBHeight + vExtend, hExtend, vExtend, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, srcDIB.GetDIBHeight - 1, 1, 1, vbSrcCopy
     
     'The destination DIB now contains a fully clamped, extended copy of the original image
     padDIBClampedPixels = 1
@@ -2663,13 +2663,13 @@ Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessa
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -2727,7 +2727,7 @@ End Function
 Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmount As Long = 0, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Unpremultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication False
+    If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication False
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -2739,13 +2739,13 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -2802,7 +2802,7 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     Erase ImageData
     
     'Premultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication True
+    If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication True
     
     If cancelCurrentAction Then ScaleDIBRGBValues = 0 Else ScaleDIBRGBValues = 1
     
@@ -2821,13 +2821,13 @@ Public Sub getDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long,
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'Color values
     Dim r As Long, g As Long, b As Long, grayVal As Long
@@ -2887,7 +2887,7 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
     End If
     
     'Unpremultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication False
+    If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication False
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -2899,13 +2899,13 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -2970,7 +2970,7 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
     Erase ImageData
     
     'Premultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication True
+    If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication True
     
     If cancelCurrentAction Then GammaCorrectDIB = 0 Else GammaCorrectDIB = 1
     
@@ -3013,13 +3013,13 @@ Public Function createBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickValDst As Long, QuickValSrc As Long, QuickYSrc As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'If messages are not being suppressed, and the user did not specify a custom progress bar maximum, calculate a
     ' maximum value relevant to this function.
@@ -3047,7 +3047,7 @@ Public Function createBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     'As part of our separable implementation, we'll also be producing an intermediate copy of the filter in either direction
     Dim midDIB As pdDIB
     Set midDIB = New pdDIB
-    midDIB.createFromExistingDIB srcDIBPadded
+    midDIB.CreateFromExistingDIB srcDIBPadded
     
     Dim midImageData() As Byte
     Dim midSA As SAFEARRAY2D
@@ -3182,7 +3182,7 @@ Public Function createBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
         Erase midImageData
         
         'Copy the contents of midDIB to the working DIB
-        BitBlt srcDIB.getDIBDC, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, midDIB.getDIBDC, kernelRadius, kernelRadius, vbSrcCopy
+        BitBlt srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, midDIB.GetDIBDC, kernelRadius, kernelRadius, vbSrcCopy
         
         'Re-pad working DIB
         padDIBClampedPixels kernelRadius, kernelRadius, srcDIB, midDIB

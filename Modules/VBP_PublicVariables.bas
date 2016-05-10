@@ -55,9 +55,6 @@ Public g_PluginPath As String
 'Command line (used here for processing purposes)
 Public g_CommandLine As String
 
-'Is scanner/digital camera support enabled?
-Public g_ScanEnabled As Boolean
-
 'Is compression via zLib enabled?
 Public g_ZLibEnabled As Boolean
 
@@ -167,10 +164,6 @@ Public g_AllowDragAndDrop As Boolean
 
 'While Undo/Redo operations are active, certain tasks can be ignored.  This public value can be used to check Undo/Redo activity.
 Public g_UndoRedoActive As Boolean
-
-'GDI+ availability is determined at the very start of the program; we rely on it heavily, so expect problems if
-' it can't be initialized!
-Public g_GDIPlusAvailable As Boolean
 
 'PhotoDemon's primary window manager.  This handles positioning, layering, and sizing of all windows in the project.
 Public g_WindowManager As pdWindowManager

@@ -118,15 +118,15 @@ Public Function ConvertCharPointerToVBString(ByVal srcPointer As Long, Optional 
     If stringIsUnicode Then strLength = lstrlenW(srcPointer) Else strLength = lstrlenA(srcPointer)
     
     'Make sure the length/pointer isn't null
-    If strLength <= 0 Then
+    If (strLength <= 0) Then
         ConvertCharPointerToVBString = ""
         Exit Function
     End If
     
     'Make sure the string's length is valid.
     Dim maxAllowedLength As Long
-    If maxLength = -1 Then maxAllowedLength = 65535 Else maxAllowedLength = maxLength
-    If strLength > maxAllowedLength Then strLength = maxAllowedLength
+    If (maxLength = -1) Then maxAllowedLength = 65535 Else maxAllowedLength = maxLength
+    If (strLength > maxAllowedLength) Then strLength = maxAllowedLength
     
     'Create the target string and copy the bytes over
     If stringIsUnicode Then
