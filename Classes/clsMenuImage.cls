@@ -71,8 +71,6 @@ Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal hGraphics A
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef graphics As Long) As Long
 Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal graphics As Long) As Long
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef Image As Long) As Long
-Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef lpInput As GdiplusStartupInput, Optional ByRef lpOutput As Any) As Long
-Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As Long
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal Image As Long) As Long
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal Image As Long, ByRef Width As Single, ByRef Height As Single) As Long
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal PixelFormat As Long, Scan0 As Any, Bitmap As Long) As Long
@@ -200,13 +198,6 @@ Private Type BITMAPINFO
     bmiColors As ARGB
 End Type
 
-Private Type GdiplusStartupInput
-    GdiplusVersion As Long
-    DebugEventCallback As Long
-    SuppressBackgroundThread As Long
-    SuppressExternalCodecs As Long
-End Type
-
 Private Type COLORMATRIX
     m(0 To 4, 0 To 4) As Single
 End Type
@@ -219,7 +210,6 @@ Private Type OSVERSIONINFO
     dwPlatformId As Long
     szCSDVersion As String * 128
 End Type
-
 
 Private Type MemoDIB
     hDIB As Long
@@ -251,7 +241,6 @@ End Enum
 Private Const PixelFormat32bppARGB As Long = &H26200A
 Private Const PixelFormat32bppRGB As Long = &H22009
 
-Private Const GdiplusVersion As Long = 1&
 Private Const IconVersion As Long = &H30000
     
 Private Const DIB_RGB_COLORS As Long = 0&
@@ -865,7 +854,7 @@ End Function
 
 Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Long, Optional ByVal bRaiseEvent As Boolean = False) As Boolean
 
-    If g_GDIPlusAvailable Then
+    If Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend) Then
     
         m_lWidth = imgWidth
         m_lHeight = imgHeight

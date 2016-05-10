@@ -1052,8 +1052,8 @@ Public Function ForceTo32bppMode(ByRef targetDIB As pdDIB) As Boolean
     
     ForceTo32bppMode = False
     
-    If targetDIB.GetDIBColorDepth <> 32 Then
-        If g_GDIPlusAvailable Then GDI_Plus.GDIPlusConvertDIB24to32 targetDIB Else targetDIB.ConvertTo32bpp
+    If (targetDIB.GetDIBColorDepth <> 32) Then
+        If Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend) Then GDI_Plus.GDIPlusConvertDIB24to32 targetDIB Else targetDIB.ConvertTo32bpp
         ForceTo32bppMode = True
     End If
 

@@ -207,9 +207,9 @@ End Function
 
 'PhotoDemon's software processor requires that all parameters be passed as a string, with individual parameters separated by
 ' the pipe "|" character.  This function can be used to automatically assemble any number of parameters into such a string.
-Public Function buildParams(ParamArray allParams() As Variant) As String
+Public Function BuildParams(ParamArray allParams() As Variant) As String
 
-    buildParams = ""
+    BuildParams = ""
 
     If UBound(allParams) >= LBound(allParams) Then
     
@@ -227,13 +227,13 @@ Public Function buildParams(ParamArray allParams() As Variant) As String
             If Len(tmpString) <> 0 Then
                 
                 'Add the string (properly escaped) to the param string
-                buildParams = buildParams & escapeParamCharacters(tmpString)
+                BuildParams = BuildParams & EscapeParamCharacters(tmpString)
                 
             Else
-                buildParams = buildParams & " "
+                BuildParams = BuildParams & " "
             End If
             
-            If i < UBound(allParams) Then buildParams = buildParams & "|"
+            If i < UBound(allParams) Then BuildParams = BuildParams & "|"
             
         Next i
     
@@ -242,15 +242,15 @@ Public Function buildParams(ParamArray allParams() As Variant) As String
 End Function
 
 'Given a parameter to be added to a param string, apply any necessary escaping
-Public Function escapeParamCharacters(ByVal srcString As String) As String
+Public Function EscapeParamCharacters(ByVal srcString As String) As String
 
-    escapeParamCharacters = srcString
+    EscapeParamCharacters = srcString
                 
     'The most crucial character to escape is the pipe "|", as PD uses it to separate individual params
-    If InStr(1, escapeParamCharacters, "|", vbBinaryCompare) > 0 Then
+    If InStr(1, EscapeParamCharacters, "|", vbBinaryCompare) > 0 Then
         
         'In lieu of a better escape system, use the HTML system
-        escapeParamCharacters = Replace$(escapeParamCharacters, "|", "&#124;")
+        EscapeParamCharacters = Replace$(EscapeParamCharacters, "|", "&#124;")
         
     End If
     
@@ -258,15 +258,15 @@ End Function
 
 'Given a parameter that is ready to be removed from a passed string and reported to a calling function, replace
 ' any escaped characters with their correct equivalents.
-Public Function unEscapeParamCharacters(ByVal srcString As String) As String
+Public Function UnEscapeParamCharacters(ByVal srcString As String) As String
 
-    unEscapeParamCharacters = srcString
+    UnEscapeParamCharacters = srcString
     
     'At present, the only character PD forcibly escapes is the pipe "|"
-    If InStr(1, unEscapeParamCharacters, "&#124;", vbBinaryCompare) > 0 Then
+    If InStr(1, UnEscapeParamCharacters, "&#124;", vbBinaryCompare) > 0 Then
         
         'In lieu of a better escape system, use the HTML system
-        unEscapeParamCharacters = Replace$(unEscapeParamCharacters, "&#124;", "|")
+        UnEscapeParamCharacters = Replace$(UnEscapeParamCharacters, "&#124;", "|")
         
     End If
     

@@ -438,14 +438,14 @@ Public Function getSelectionParamString() As String
     Dim i As Long
     
     'All selection types store a preset list of standardized values
-    getSelectionParamString = buildParams(sShape, getSelectionProperty(SP_AREA), getSelectionProperty(SP_SMOOTHING), getSelectionProperty(SP_FEATHERING_RADIUS), getSelectionProperty(SP_BORDER_WIDTH), getSelectionProperty(SP_ROUNDED_CORNER_RADIUS), getSelectionProperty(SP_LINE_WIDTH), selLeft, selTop, selWidth, selHeight)
+    getSelectionParamString = BuildParams(sShape, getSelectionProperty(SP_AREA), getSelectionProperty(SP_SMOOTHING), getSelectionProperty(SP_FEATHERING_RADIUS), getSelectionProperty(SP_BORDER_WIDTH), getSelectionProperty(SP_ROUNDED_CORNER_RADIUS), getSelectionProperty(SP_LINE_WIDTH), selLeft, selTop, selWidth, selHeight)
     
     'After the preset values, each selection type can write its own coords, relevant to its particular shape
     Select Case sShape
     
         'Rectangles, ellipses, and lines require only (x1, y1) and (x2, y2) coordinates
         Case sRectangle, sCircle, sLine
-            getSelectionParamString = getSelectionParamString & "|" & buildParams(x1, y1, x2, y2)
+            getSelectionParamString = getSelectionParamString & "|" & BuildParams(x1, y1, x2, y2)
         
         'Polygon selections are trickier; they have a dynamic length based on the number of points in the shape.
         ' (TODO: use a string builder class for this, to improve performance)
@@ -1578,10 +1578,10 @@ Private Sub createSelectionMask()
     ' As such, use caution when calling this function, as the existing mask will be completely erased.
     
     'Start by creating a blank mask (this will also erase any existing mask)
-    If (selMask.getDIBWidth <> containingPDImage.Width) Or (selMask.getDIBHeight <> containingPDImage.Height) Then
-        selMask.createBlank containingPDImage.Width, containingPDImage.Height, 24, maskBackColor
+    If (selMask.GetDIBWidth <> containingPDImage.Width) Or (selMask.GetDIBHeight <> containingPDImage.Height) Then
+        selMask.CreateBlank containingPDImage.Width, containingPDImage.Height, 24, maskBackColor
     Else
-        selMask.resetDIB maskBackByte
+        selMask.ResetDIB maskBackByte
     End If
         
     'Border selections are automatically disabled if the border size exceeds the smallest dimension (width or height)
@@ -1661,16 +1661,16 @@ Private Sub createSelectionMask()
             'Interior/exterior selections use identical rendering code.
             If (getSelectionProperty_Long(SP_AREA) = sInterior) Or (getSelectionProperty_Long(SP_AREA) = sExterior) Or ignoreBorderValue Then
             
-                GDIPlusFillEllipseToDC selMask.getDIBDC, selLeft, selTop, selWidth - 1, selHeight - 1, maskForeColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
+                GDIPlusFillEllipseToDC selMask.GetDIBDC, selLeft, selTop, selWidth - 1, selHeight - 1, maskForeColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
                 
             'Border selections are a bit different; we must draw two ellipses - an exterior and an interior one.
             Else
             
                 'Draw the exterior oval
-                GDIPlusFillEllipseToDC selMask.getDIBDC, selLeft, selTop, selWidth, selHeight, maskForeColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
+                GDIPlusFillEllipseToDC selMask.GetDIBDC, selLeft, selTop, selWidth, selHeight, maskForeColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
                 
                 'Next, draw the interior one
-                GDIPlusFillEllipseToDC selMask.getDIBDC, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
+                GDIPlusFillEllipseToDC selMask.GetDIBDC, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
                         
             End If
             
@@ -1682,7 +1682,7 @@ Private Sub createSelectionMask()
             'Interior/exterior line selections use identical rendering code.
             If (getSelectionProperty_Long(SP_AREA) = sInterior) Or (getSelectionProperty_Long(SP_AREA) = sExterior) Or ignoreBorderValue Then
             
-                GDIPlusDrawLineToDC selMask.getDIBDC, x1, y1, x2, y2, maskForeColor, 255, getSelectionProperty_Long(SP_LINE_WIDTH), (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
+                GDIPlusDrawLineToDC selMask.GetDIBDC, x1, y1, x2, y2, maskForeColor, 255, getSelectionProperty_Long(SP_LINE_WIDTH), (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
                 
             'Border selections are a bit different; we must draw two lines - an interior and an exterior one.
             ' TODO: GDI+ supplies a function that generates a new path, using the outline of an existing path as drawn with a specified pen.
@@ -1690,7 +1690,7 @@ Private Sub createSelectionMask()
             Else
                 
                 'Draw the exterior line
-                GDIPlusDrawLineToDC selMask.getDIBDC, x1, y1, x2, y2, maskForeColor, 255, getSelectionProperty_Long(SP_LINE_WIDTH), (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
+                GDIPlusDrawLineToDC selMask.GetDIBDC, x1, y1, x2, y2, maskForeColor, 255, getSelectionProperty_Long(SP_LINE_WIDTH), (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
                 
                 'Next, draw the interior one.  Note that some additional calculations are required to
                 Dim xDiff As Double, yDiff As Double
@@ -1713,15 +1713,15 @@ Private Sub createSelectionMask()
                 If newLineWidth > 0 Then
                     If x1 = minX Then
                         If y1 = MinY Then
-                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 + xModifier, y1 + yModifier, x2 - xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
+                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 + xModifier, y1 + yModifier, x2 - xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
                         Else
-                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 + xModifier, y1 - yModifier, x2 - xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
+                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 + xModifier, y1 - yModifier, x2 - xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
                         End If
                     Else
                         If y1 = MinY Then
-                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 - xModifier, y1 + yModifier, x2 + xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
+                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 - xModifier, y1 + yModifier, x2 + xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
                         Else
-                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 - xModifier, y1 - yModifier, x2 + xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
+                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 - xModifier, y1 - yModifier, x2 + xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
                         End If
                     End If
                 End If
@@ -1733,11 +1733,11 @@ Private Sub createSelectionMask()
         
             'Interior/exterior lasso selections use identical rendering code.
             If (getSelectionProperty_Long(SP_AREA) = sInterior) Or (getSelectionProperty_Long(SP_AREA) = sExterior) Then
-                GDIPlusDrawFilledShapeToDC selMask.getDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), True, getSelectionProperty_Double(SP_POLYGON_CURVATURE), FillModeWinding
+                GDIPlusDrawFilledShapeToDC selMask.GetDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), True, getSelectionProperty_Double(SP_POLYGON_CURVATURE), FillModeWinding
                 
             'Border selections stroke the path instead of filling it
             Else
-                GDI_Plus.GDIPlusStrokePathToDC selMask.getDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), getSelectionProperty_Long(SP_BORDER_WIDTH), LineCapFlat, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE)
+                GDI_Plus.GDIPlusStrokePathToDC selMask.GetDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), getSelectionProperty_Long(SP_BORDER_WIDTH), LineCapFlat, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE)
             End If
         
         'Strangely enough, lasso selections are arguably the simplest selection type to render, as we simply close the lasso shape,
@@ -1746,11 +1746,11 @@ Private Sub createSelectionMask()
         
             'Interior/exterior lasso selections use identical rendering code.
             If (getSelectionProperty_Long(SP_AREA) = sInterior) Or (getSelectionProperty_Long(SP_AREA) = sExterior) Then
-                GDIPlusDrawFilledShapeToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), True, getSelectionProperty_Double(SP_SMOOTH_STROKE), FillModeWinding
+                GDIPlusDrawFilledShapeToDC selMask.GetDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), True, getSelectionProperty_Double(SP_SMOOTH_STROKE), FillModeWinding
                 
             'Border selections stroke the path instead of filling it
             Else
-                GDI_Plus.GDIPlusStrokePathToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), True, maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), getSelectionProperty_Long(SP_BORDER_WIDTH), LineCapFlat, True, getSelectionProperty_Double(SP_SMOOTH_STROKE)
+                GDI_Plus.GDIPlusStrokePathToDC selMask.GetDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), True, maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), getSelectionProperty_Long(SP_BORDER_WIDTH), LineCapFlat, True, getSelectionProperty_Double(SP_SMOOTH_STROKE)
             End If
         
         'Wand selections use a custom class to perform a flood fill
@@ -1971,7 +1971,7 @@ End Sub
 Private Sub applyFeatheringToMask()
     
     'If GDI+ 1.1 exists, use it for a faster blur operation.
-    If g_GDIPlusFXAvailable Then
+    If GDI_Plus.IsGDIPlusV11Available Then
         
         'GDIPlusBlurDIB selMask, getSelectionProperty_Long(SP_FEATHERING_RADIUS), boundLeft, boundTop, boundWidth, boundHeight
         quickBlurDIB selMask, getSelectionProperty_Long(SP_FEATHERING_RADIUS)
@@ -1985,7 +1985,7 @@ Private Sub applyFeatheringToMask()
             
             Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
-            tmpDIB.createFromExistingDIB selMask
+            tmpDIB.CreateFromExistingDIB selMask
         
             Message "Feathering selection..."
             CreateApproximateGaussianBlurDIB getSelectionProperty_Long(SP_FEATHERING_RADIUS), tmpDIB, selMask, 1, True
@@ -1999,19 +1999,19 @@ Private Sub applyFeatheringToMask()
             Message "Feathering selection..."
             Dim srcDIB As pdDIB
             Set srcDIB = New pdDIB
-            srcDIB.createBlank boundWidth, boundHeight, 24
-            BitBlt srcDIB.getDIBDC, 0, 0, boundWidth, boundHeight, selMask.getDIBDC, boundLeft, boundTop, vbSrcCopy
+            srcDIB.CreateBlank boundWidth, boundHeight, 24
+            BitBlt srcDIB.GetDIBDC, 0, 0, boundWidth, boundHeight, selMask.GetDIBDC, boundLeft, boundTop, vbSrcCopy
             
             'Create a second DIB (which will receive the blurred data)
             Dim dstDIB As pdDIB
             Set dstDIB = New pdDIB
-            dstDIB.createBlank boundWidth, boundHeight, 24
+            dstDIB.CreateBlank boundWidth, boundHeight, 24
             
             'Blur the selection
             CreateApproximateGaussianBlurDIB getSelectionProperty_Long(SP_FEATHERING_RADIUS), srcDIB, dstDIB, 1, True
             
             'Copy the blurred area back onto the selection mask
-            BitBlt selMask.getDIBDC, boundLeft, boundTop, boundWidth, boundHeight, dstDIB.getDIBDC, 0, 0, vbSrcCopy
+            BitBlt selMask.GetDIBDC, boundLeft, boundTop, boundWidth, boundHeight, dstDIB.GetDIBDC, 0, 0, vbSrcCopy
             
             'Erase both temporary DIBs
             Set srcDIB = Nothing
@@ -2169,8 +2169,8 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     rightBound = imgLeft + imgWidth - 1
     bottomBound = imgTop + imgHeight - 1
             
-    If rightBound > srcImage.canvasBuffer.getDIBWidth - 1 Then rightBound = srcImage.canvasBuffer.getDIBWidth - 1
-    If bottomBound > srcImage.canvasBuffer.getDIBHeight - 1 Then bottomBound = srcImage.canvasBuffer.getDIBHeight - 1
+    If rightBound > srcImage.canvasBuffer.GetDIBWidth - 1 Then rightBound = srcImage.canvasBuffer.GetDIBWidth - 1
+    If bottomBound > srcImage.canvasBuffer.GetDIBHeight - 1 Then bottomBound = srcImage.canvasBuffer.GetDIBHeight - 1
     
     'Build look-up tables for both the x and y direction.  This is faster than constantly calculating new values for
     ' every pixel inside the loop.  Note also that this code is identical among various selection render methods.
@@ -2381,7 +2381,7 @@ Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
     End Select
     
     'Draw the assembled path onto the canvas
-    pdPath.StrokePath_UIStyle dstDIB.getDIBDC
+    pdPath.StrokePath_UIStyle dstDIB.GetDIBDC
     
 End Sub
 
@@ -2420,10 +2420,10 @@ Private Sub prepDIBSafeArray(ByRef srcDIB As pdDIB, ByRef tmpSA As SAFEARRAY2D)
         .cbElements = 1
         .cDims = 2
         .Bounds(0).lBound = 0
-        .Bounds(0).cElements = srcDIB.getDIBHeight
+        .Bounds(0).cElements = srcDIB.GetDIBHeight
         .Bounds(1).lBound = 0
-        .Bounds(1).cElements = srcDIB.getDIBArrayWidth
-        .pvData = srcDIB.getActualDIBBits
+        .Bounds(1).cElements = srcDIB.GetDIBArrayWidth
+        .pvData = srcDIB.GetActualDIBBits
     End With
 End Sub
 
@@ -2431,7 +2431,7 @@ Private Sub Class_Terminate()
 
     'Erase the selection mask
     If Not (selMask Is Nothing) Then
-        selMask.eraseDIB
+        selMask.EraseDIB
         Set selMask = Nothing
     End If
 
@@ -2524,7 +2524,7 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
                 
                 'Create a mask for this selection that is the size of the current image.  (Remember: the selection mask is always the full size
                 ' of the image.)  Then, copy the contents of the embedded selection mask into this selection mask, with resizing as necessary.
-                If dibLoadedSuccessfully Then selMask.createFromExistingDIB tmpDIB, containingPDImage.Width, containingPDImage.Height, True
+                If dibLoadedSuccessfully Then selMask.CreateFromExistingDIB tmpDIB, containingPDImage.Width, containingPDImage.Height, True
             
             End If
             
@@ -2644,10 +2644,10 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
     
         'All selection types have their left/top/width/height values normalized to [0, 1]. These values are stored in
         ' positions [8, 11] inclusive.
-        tmpParser.setNewValueAtLocation 8, Trim$(Str(CDbl(tmpParser.GetLong(8)) / CDbl(containingPDImage.Width)))
-        tmpParser.setNewValueAtLocation 9, Trim$(Str(CDbl(tmpParser.GetLong(9)) / CDbl(containingPDImage.Height)))
-        tmpParser.setNewValueAtLocation 10, Trim$(Str(CDbl(tmpParser.GetLong(10)) / CDbl(containingPDImage.Width)))
-        tmpParser.setNewValueAtLocation 11, Trim$(Str(CDbl(tmpParser.GetLong(11)) / CDbl(containingPDImage.Height)))
+        tmpParser.SetNewValueAtLocation 8, Trim$(Str(CDbl(tmpParser.GetLong(8)) / CDbl(containingPDImage.Width)))
+        tmpParser.SetNewValueAtLocation 9, Trim$(Str(CDbl(tmpParser.GetLong(9)) / CDbl(containingPDImage.Height)))
+        tmpParser.SetNewValueAtLocation 10, Trim$(Str(CDbl(tmpParser.GetLong(10)) / CDbl(containingPDImage.Width)))
+        tmpParser.SetNewValueAtLocation 11, Trim$(Str(CDbl(tmpParser.GetLong(11)) / CDbl(containingPDImage.Height)))
         
         'Other transformable parameters vary by selection type, which is stored as the first parameter
         Select Case tmpParser.GetLong(1)
@@ -2656,10 +2656,10 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
             ' stored in positions [12, 15] inclusive.
             Case sRectangle, sCircle, sLine
                 
-                tmpParser.setNewValueAtLocation 12, Trim$(Str(CDbl(tmpParser.GetLong(12)) / CDbl(containingPDImage.Width)))
-                tmpParser.setNewValueAtLocation 13, Trim$(Str(CDbl(tmpParser.GetLong(13)) / CDbl(containingPDImage.Height)))
-                tmpParser.setNewValueAtLocation 14, Trim$(Str(CDbl(tmpParser.GetLong(14)) / CDbl(containingPDImage.Width)))
-                tmpParser.setNewValueAtLocation 15, Trim$(Str(CDbl(tmpParser.GetLong(15)) / CDbl(containingPDImage.Height)))
+                tmpParser.SetNewValueAtLocation 12, Trim$(Str(CDbl(tmpParser.GetLong(12)) / CDbl(containingPDImage.Width)))
+                tmpParser.SetNewValueAtLocation 13, Trim$(Str(CDbl(tmpParser.GetLong(13)) / CDbl(containingPDImage.Height)))
+                tmpParser.SetNewValueAtLocation 14, Trim$(Str(CDbl(tmpParser.GetLong(14)) / CDbl(containingPDImage.Width)))
+                tmpParser.SetNewValueAtLocation 15, Trim$(Str(CDbl(tmpParser.GetLong(15)) / CDbl(containingPDImage.Height)))
             
             'Lasso and polygon selections are more complicated.  Position [14] contains the number of points in both shapes.
             ' Every parameter past that point needs to be transformed in an x/y pattern.
@@ -2667,15 +2667,15 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
             
                 If tmpParser.GetLong(13) > 0 Then
                     For i = 0 To tmpParser.GetLong(13) - 1
-                        tmpParser.setNewValueAtLocation 14 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(14 + i * 2)) / CDbl(containingPDImage.Width)))
-                        tmpParser.setNewValueAtLocation 15 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(15 + i * 2)) / CDbl(containingPDImage.Height)))
+                        tmpParser.SetNewValueAtLocation 14 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(14 + i * 2)) / CDbl(containingPDImage.Width)))
+                        tmpParser.SetNewValueAtLocation 15 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(15 + i * 2)) / CDbl(containingPDImage.Height)))
                     Next i
                 End If
             
             'Magic wands only have a single x/y coordinate pair
             Case sWand
-                tmpParser.setNewValueAtLocation 12, Trim$(Str(CDbl(tmpParser.GetLong(12)) / CDbl(containingPDImage.Width)))
-                tmpParser.setNewValueAtLocation 13, Trim$(Str(CDbl(tmpParser.GetLong(13)) / CDbl(containingPDImage.Height)))
+                tmpParser.SetNewValueAtLocation 12, Trim$(Str(CDbl(tmpParser.GetLong(12)) / CDbl(containingPDImage.Width)))
+                tmpParser.SetNewValueAtLocation 13, Trim$(Str(CDbl(tmpParser.GetLong(13)) / CDbl(containingPDImage.Height)))
                 
             Case Else
             
@@ -2686,10 +2686,10 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
         
         'All selection types have their left/top/width/height values normalized from [0, 1]. These values are stored in
         ' positions [8, 11] inclusive.
-        tmpParser.setNewValueAtLocation 8, Trim$(Str(CLng(tmpParser.GetDouble(8) * CDbl(containingPDImage.Width))))
-        tmpParser.setNewValueAtLocation 9, Trim$(Str(CLng(tmpParser.GetDouble(9) * CDbl(containingPDImage.Height))))
-        tmpParser.setNewValueAtLocation 10, Trim$(Str(CLng(tmpParser.GetDouble(10) * CDbl(containingPDImage.Width))))
-        tmpParser.setNewValueAtLocation 11, Trim$(Str(CLng(tmpParser.GetDouble(11) * CDbl(containingPDImage.Height))))
+        tmpParser.SetNewValueAtLocation 8, Trim$(Str(CLng(tmpParser.GetDouble(8) * CDbl(containingPDImage.Width))))
+        tmpParser.SetNewValueAtLocation 9, Trim$(Str(CLng(tmpParser.GetDouble(9) * CDbl(containingPDImage.Height))))
+        tmpParser.SetNewValueAtLocation 10, Trim$(Str(CLng(tmpParser.GetDouble(10) * CDbl(containingPDImage.Width))))
+        tmpParser.SetNewValueAtLocation 11, Trim$(Str(CLng(tmpParser.GetDouble(11) * CDbl(containingPDImage.Height))))
         
         'Other transformable parameters vary by selection type, which is stored as the first parameter
         Select Case tmpParser.GetLong(1)
@@ -2698,10 +2698,10 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
             ' stored in positions [12, 15] inclusive.
             Case sRectangle, sCircle, sLine
             
-                tmpParser.setNewValueAtLocation 12, Trim$(Str(CLng(tmpParser.GetDouble(12) * CDbl(containingPDImage.Width))))
-                tmpParser.setNewValueAtLocation 13, Trim$(Str(CLng(tmpParser.GetDouble(13) * CDbl(containingPDImage.Height))))
-                tmpParser.setNewValueAtLocation 14, Trim$(Str(CLng(tmpParser.GetDouble(14) * CDbl(containingPDImage.Width))))
-                tmpParser.setNewValueAtLocation 15, Trim$(Str(CLng(tmpParser.GetDouble(15) * CDbl(containingPDImage.Height))))
+                tmpParser.SetNewValueAtLocation 12, Trim$(Str(CLng(tmpParser.GetDouble(12) * CDbl(containingPDImage.Width))))
+                tmpParser.SetNewValueAtLocation 13, Trim$(Str(CLng(tmpParser.GetDouble(13) * CDbl(containingPDImage.Height))))
+                tmpParser.SetNewValueAtLocation 14, Trim$(Str(CLng(tmpParser.GetDouble(14) * CDbl(containingPDImage.Width))))
+                tmpParser.SetNewValueAtLocation 15, Trim$(Str(CLng(tmpParser.GetDouble(15) * CDbl(containingPDImage.Height))))
                 
             'Lasso and polygon selections are more complicated.  Position [14] contains the number of points in each shape.
             ' Every parameter past that point needs to be transformed in an x/y pattern.
@@ -2709,16 +2709,16 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
             
                 If tmpParser.GetLong(13) > 0 Then
                     For i = 0 To tmpParser.GetLong(13) - 1
-                        tmpParser.setNewValueAtLocation 14 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(14 + i * 2)) * CDbl(containingPDImage.Width)))
-                        tmpParser.setNewValueAtLocation 15 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(15 + i * 2)) * CDbl(containingPDImage.Height)))
+                        tmpParser.SetNewValueAtLocation 14 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(14 + i * 2)) * CDbl(containingPDImage.Width)))
+                        tmpParser.SetNewValueAtLocation 15 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(15 + i * 2)) * CDbl(containingPDImage.Height)))
                     Next i
                 End If
                 
             'Magic wands only have a single x/y coordinate pair
             Case sWand
             
-                tmpParser.setNewValueAtLocation 12, Trim$(Str(CLng(tmpParser.GetDouble(12) * CDbl(containingPDImage.Width))))
-                tmpParser.setNewValueAtLocation 13, Trim$(Str(CLng(tmpParser.GetDouble(13) * CDbl(containingPDImage.Height))))
+                tmpParser.SetNewValueAtLocation 12, Trim$(Str(CLng(tmpParser.GetDouble(12) * CDbl(containingPDImage.Width))))
+                tmpParser.SetNewValueAtLocation 13, Trim$(Str(CLng(tmpParser.GetDouble(13) * CDbl(containingPDImage.Height))))
             
             Case Else
             
@@ -2727,7 +2727,7 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
     End If
     
     'Rebuild the parameter string
-    tmpParser.reassembleModifiedParamString
+    tmpParser.ReassembleModifiedParamString
     
     'Return the modified string
     translateParamStringToRelativeFormat = tmpParser.GetParamString
@@ -2784,8 +2784,8 @@ Public Function findNewBoundsManually(Optional ByVal overrideRasterState As Bool
     CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
     
     Dim maskWidth As Long, maskHeight As Long
-    maskWidth = selMask.getDIBWidth - 1
-    maskHeight = selMask.getDIBHeight - 1
+    maskWidth = selMask.GetDIBWidth - 1
+    maskHeight = selMask.GetDIBHeight - 1
     
     Dim boundFound As Boolean
     
@@ -2963,7 +2963,7 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     Dim tIcoWidth As Long, tIcoHeight As Long, tX As Double, tY As Double
     
     'Start by determining proper dimensions for the resized thumbnail image.
-    ConvertAspectRatio selMask.getDIBWidth, selMask.getDIBHeight, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
+    ConvertAspectRatio selMask.GetDIBWidth, selMask.GetDIBHeight, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
     
     'If the form is wider than it is tall, center the thumbnail vertically
     If tIcoWidth > tIcoHeight Then
@@ -2977,17 +2977,17 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     End If
     
     'Prepare the destination DIB
-    dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
+    dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0
     
     'Note that the user's thumbnail performance setting affects the quality used here.
     If g_ThumbnailPerformance = PD_PERF_FASTEST Then
         If g_ImageFormats.FreeImageEnabled Then
             RequestThumbnail = FreeImageResizeDIBFast(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, FILTER_BILINEAR, True)
         Else
-            RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.getDIBWidth, selMask.getDIBHeight, InterpolationModeNearestNeighbor)
+            RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.GetDIBWidth, selMask.GetDIBHeight, InterpolationModeNearestNeighbor)
         End If
     Else
-        RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.getDIBWidth, selMask.getDIBHeight, InterpolationModeHighQualityBicubic)
+        RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.GetDIBWidth, selMask.GetDIBHeight, InterpolationModeHighQualityBicubic)
     End If
     
 End Function

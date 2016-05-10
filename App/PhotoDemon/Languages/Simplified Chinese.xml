@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1455</langversion>
+<langversion>6.8.1482</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -461,8 +461,8 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 </phrase>
 
 <phrase>
-<original>Total number of unique colors: %1</original>
-<translation>独特的颜色总数：%1</translation>
+<original>Total unique colors: %1</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1111,22 +1111,22 @@ To enable support for compressed PDI files, click Help > Check for Updates, and 
 
 <phrase>
 <original>Frame %1</original>
-<translation></translation>
+<translation>%1 帧</translation>
 </phrase>
 
 <phrase>
 <original>Icon (%1x%2)</original>
-<translation></translation>
+<translation>图标 (%1x%2)</translation>
 </phrase>
 
 <phrase>
 <original>Icon (%1x%2, %3 bpp)</original>
-<translation></translation>
+<translation>图标 (%1x%2, %3 bpp)</translation>
 </phrase>
 
 <phrase>
 <original>Page %1</original>
-<translation></translation>
+<translation>%1 页</translation>
 </phrase>
 
 <!-- VBP_LayerHandler.bas contains 42 phrases. 22 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
@@ -15036,47 +15036,47 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>TIFF export options</original>
-<translation></translation>
+<translation>TIFF导出选项</translation>
 </phrase>
 
 <phrase>
 <original>color compression</original>
-<translation></translation>
+<translation>色彩压缩</translation>
 </phrase>
 
 <phrase>
 <original>monochrome compression</original>
-<translation></translation>
+<translation>单色压缩</translation>
 </phrase>
 
 <phrase>
 <original>page format</original>
-<translation></translation>
+<translation>页面格式</translation>
 </phrase>
 
 <phrase>
 <original>single page (composited image)</original>
-<translation></translation>
+<translation>单页（合成图像）</translation>
 </phrase>
 
 <phrase>
 <original>multipage (one page per layer)</original>
-<translation></translation>
+<translation>多页面（每层一个页面）</translation>
 </phrase>
 
 <phrase>
 <original>ZIP</original>
-<translation></translation>
+<translation>ZIP</translation>
 </phrase>
 
 <phrase>
 <original>CCITT Fax 4</original>
-<translation></translation>
+<translation>CCITT Fax 4</translation>
 </phrase>
 
 <phrase>
 <original>CCITT Fax 3</original>
-<translation></translation>
+<translation>CCITT Fax 3</translation>
 </phrase>
 
 <!-- File_Save_TIFF.frm contains 41 phrases. 32 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -15087,32 +15087,32 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Pixmap Export Options</original>
-<translation></translation>
+<translation>位图导出选项</translation>
 </phrase>
 
 <phrase>
 <original>change file extension to match color model</original>
-<translation></translation>
+<translation>改变文件扩展名来匹配颜色模型</translation>
 </phrase>
 
 <phrase>
 <original>format</original>
-<translation></translation>
+<translation>格式</translation>
 </phrase>
 
 <phrase>
 <original>floating-point</original>
-<translation></translation>
+<translation>浮点</translation>
 </phrase>
 
 <phrase>
 <original>binary</original>
-<translation></translation>
+<translation>二进制</translation>
 </phrase>
 
 <phrase>
 <original>ASCII</original>
-<translation></translation>
+<translation>ASCII</translation>
 </phrase>
 
 <!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -15125,6 +15125,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- As of this build, PhotoDemon contains 4499 phrases. -->
 <!-- 1909 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13328 total words. -->
+<!-- These 2590 phrases contain approximately 13326 total words. -->
 
 </pdData>

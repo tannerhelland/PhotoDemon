@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.165</langversion>
+<langversion>6.7.166</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -462,8 +462,8 @@ If o problema persistir, por favor denuncie para os desenvolvedores PhotoDemon v
 </phrase>
 
 <phrase>
-<original>Total number of unique colors: %1</original>
-<translation>Número total de cores exclusivas: %1</translation>
+<original>Total unique colors: %1</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15139,6 +15139,6 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- As of this build, PhotoDemon contains 4499 phrases. -->
 <!-- 1909 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13328 total words. -->
+<!-- These 2590 phrases contain approximately 13326 total words. -->
 
 </pdData>

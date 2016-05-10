@@ -25,7 +25,75 @@ Attribute VB_Name = "GDI_Plus"
 
 Option Explicit
 
-'GDI+ Enums
+'
+'As of 2016, this module is undergoing some reorganization.  Enums, constants, and functions that have been migrated
+' to the new clean format are placed in this top section.
+Public Enum GP_Result
+    GP_OK = 0
+    GP_GenericError = 1
+    GP_InvalidParameter = 2
+    GP_OutOfMemory = 3
+    GP_ObjectBusy = 4
+    GP_InsufficientBuffer = 5
+    GP_NotImplemented = 6
+    GP_Win32Error = 7
+    GP_WrongState = 8
+    GP_Aborted = 9
+    GP_FileNotFound = 10
+    GP_ValueOverflow = 11
+    GP_AccessDenied = 12
+    GP_UnknownImageFormat = 13
+    GP_FontFamilyNotFound = 14
+    GP_FontStyleNotFound = 15
+    GP_NotTrueTypeFont = 16
+    GP_UnsupportedGdiplusVersion = 17
+    GP_GdiplusNotInitialized = 18
+    GP_PropertyNotFound = 19
+    GP_PropertyNotSupported = 20
+End Enum
+
+#If False Then
+    Private Const GP_OK = 0, GP_GenericError = 1, GP_InvalidParameter = 2, GP_OutOfMemory = 3, GP_ObjectBusy = 4, GP_InsufficientBuffer = 5, GP_NotImplemented = 6, GP_Win32Error = 7, GP_WrongState = 8, GP_Aborted = 9, GP_FileNotFound = 10, GP_ValueOverflow = 11, GP_AccessDenied = 12, GP_UnknownImageFormat = 13
+    Private Const GP_FontFamilyNotFound = 14, GP_FontStyleNotFound = 15, GP_NotTrueTypeFont = 16, GP_UnsupportedGdiplusVersion = 17, GP_GdiplusNotInitialized = 18, GP_PropertyNotFound = 19, GP_PropertyNotSupported = 20
+#End If
+
+Private Type GdiplusStartupInput
+    GDIPlusVersion           As Long
+    DebugEventCallback       As Long
+    SuppressBackgroundThread As Long
+    SuppressExternalCodecs   As Long
+End Type
+
+Private Enum GP_DebugEventLevel
+    DebugEventLevelFatal = 0
+    DebugEventLevelWarning = 1
+End Enum
+
+'Core GDI+ functions:
+Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef gdipToken As Long, ByRef startupStruct As GdiplusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GP_Result
+Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal gdipToken As Long) As GP_Result
+
+'Non-GDI+ helper functions:
+Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+
+'Internally cached values:
+
+'Startup values
+Private m_GDIPlusToken As Long, m_GDIPlus11Available As Boolean
+
+'Some GDI+ functions require world transformation data.  This dummy graphics container is used to host any such transformations.
+' It is created when GDI+ is initialized, and destroyed when GDI+ is released.  To be a good citizen, please undo any world transforms
+' before a function releases.  This ensures that subsequent functions are not messed up.
+Private m_TransformDIB As pdDIB, m_TransformGraphics As Long
+
+'To modify opacity in GDI+, an image attributes matrix is used.  Rather than recreating one every time an alpha operation is required,
+' we simply create a default identity matrix at initialization, then re-use it as necessary.
+Private m_AttributesMatrix() As Single
+
+'***************************************************************************
+
+'Old declarations and descriptions follow:
+
 Public Enum GDIPlusImageFormat
     [ImageBMP] = 0
     [ImageGIF] = 1
@@ -305,14 +373,6 @@ End Enum
     Const ColorMatrixFlagsDefault = 0, ColorMatrixFlagsSkipGrays = 1, ColorMatrixFlagsAltGray = 2
 #End If
 
-'GDI+ required types
-Private Type GdiplusStartupInput
-    GdiplusVersion           As Long
-    DebugEventCallback       As Long
-    SuppressBackgroundThread As Long
-    SuppressExternalCodecs   As Long
-End Type
-
 'GDI+ image properties
 Private Type PropertyItem
    propID As Long              ' ID of this property
@@ -358,13 +418,6 @@ Private Type BITMAPINFO
     Header As BITMAPINFOHEADER
     Colors(0 To 255) As RGBQUAD
 End Type
-
-'Necessary to check for v1.1 of the GDI+ dll
-Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
-
-'Start-up and shutdown
-Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRef inputbuf As GdiplusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GDIPlusStatus
-Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As GDIPlusStatus
 
 'Load image from file, process said file, etc.
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef gpImage As Long) As Long
@@ -649,20 +702,6 @@ Private Type BitmapData
    Reserved As Long
 End Type
 
-'When GDI+ is initialized, it will assign us a token.  We use this to release GDI+ when the program terminates.
-Public g_GDIPlusToken As Long
-
-'GDI+ v1.1 allows for advanced fx work.  When we initialize GDI+, check the availability of version 1.1.
-Public g_GDIPlusFXAvailable As Boolean
-
-'Some GDI+ functions require world transformation data.  This dummy graphics container is used to host any such transformations.
-' It is created when GDI+ is initialized, and destroyed when GDI+ is released.  To be a good citizen, please undo any world transforms
-' before a function releases.  This ensures that subsequent functions are not messed up.
-Private m_TransformDIB As pdDIB, m_TransformGraphics As Long
-
-'To modify opacity in GDI+, an image attributes matrix is used.  Rather than recreating one every time an alpha operation is required,
-' we simply create a default identity matrix at initialization, then re-use it as necessary.
-Private m_AttributesMatrix() As Single
 
 'Use GDI+ to resize a DIB.  (Technically, to copy a resized portion of a source image into a destination image.)
 ' The call is formatted similar to StretchBlt, as it used to replace StretchBlt when working with 32bpp data.
@@ -1069,7 +1108,7 @@ End Sub
 'Return a persistent handle to various types of GDI+ brushes.  This can be useful if many drawing operations are going to be applied
 ' with the same brush.
 Public Function GetGDIPlusSolidBrushHandle(ByVal eColor As Long, Optional ByVal cOpacity As Byte = 255) As Long
-    If g_GDIPlusAvailable Then
+    If Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend) Then
         GdipCreateSolidFill fillQuadWithVBRGB(eColor, cOpacity), GetGDIPlusSolidBrushHandle
     Else
         GetGDIPlusSolidBrushHandle = 0
@@ -1082,7 +1121,7 @@ End Function
 
 Public Sub ReleaseGDIPlusBrush(ByVal srcBrush As Long)
     
-    If srcBrush <> 0 Then
+    If (srcBrush <> 0) Then
         
         #If DEBUGMODE = 1 Then
             Dim gdipCheck As Long
@@ -1880,7 +1919,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         
         'If GDI+ v1.1 is available, we can translate EMFs and WMFs into the new GDI+ EMF+ format, which supports antialiasing
         ' and alpha channels (among other things).
-        If g_GDIPlusFXAvailable Then
+        If GDI_Plus.IsGDIPlusV11Available Then
             
             'Create a temporary GDI+ graphics object, whose properties will be used to control the render state of the EMF
             Dim tmpSettingsDIB As pdDIB
@@ -2863,65 +2902,6 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
 
 End Sub
 
-'At start-up, this function is called to determine whether or not we have GDI+ available on this machine.
-Public Function IsGDIPlusAvailable() As Boolean
-
-    Dim gdiCheck As GdiplusStartupInput
-    gdiCheck.GdiplusVersion = 1
-    
-    If (GdiplusStartup(g_GDIPlusToken, gdiCheck) <> [OK]) Then
-        IsGDIPlusAvailable = False
-        g_GDIPlusAvailable = False
-        g_GDIPlusFXAvailable = False
-    Else
-    
-        IsGDIPlusAvailable = True
-        g_GDIPlusAvailable = True
-        
-        'Next, we're going to create a dummy graphics container.  This is useful for GDI+ functions that require world transformation data.
-        Set m_TransformDIB = New pdDIB
-        m_TransformDIB.CreateBlank 8, 8, 32, 0, 0
-        GdipCreateFromHDC m_TransformDIB.GetDIBDC, m_TransformGraphics
-        
-        'Note that these dummy objects are released when GDI+ terminates.
-        
-        'Next, create a default identity matrix for image attributes.
-        ReDim m_AttributesMatrix(0 To 4, 0 To 4) As Single
-        m_AttributesMatrix(0, 0) = 1
-        m_AttributesMatrix(1, 1) = 1
-        m_AttributesMatrix(2, 2) = 1
-        m_AttributesMatrix(3, 3) = 1
-        m_AttributesMatrix(4, 4) = 1
-        
-        'Next, check to see if v1.1 is available.  This allows for advanced fx work.
-        Dim hMod As Long
-        Dim strGDIPName As String
-        strGDIPName = "gdiplus.dll"
-        hMod = LoadLibrary(StrPtr(strGDIPName))
-        
-        If hMod Then
-            Dim testAddress As Long
-            testAddress = GetProcAddress(hMod, "GdipDrawImageFX")
-            If testAddress Then g_GDIPlusFXAvailable = True Else g_GDIPlusFXAvailable = False
-            FreeLibrary hMod
-        End If
-        
-    End If
-
-End Function
-
-'At shutdown, this function must be called to release our GDI+ instance
-Public Function ReleaseGDIPlus()
-
-    'Release any dummy containers we have created
-    GdipDeleteGraphics m_TransformGraphics
-    Set m_TransformDIB = Nothing
-
-    GdiplusShutdown g_GDIPlusToken
-    g_ImageFormats.GDIPlusEnabled = False
-    
-End Function
-
 'Thanks to Carles P.V. for providing the following four functions, which are used as part of GDI+ image saving.
 ' You can download Carles's full project from http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
 Private Function pvGetEncoderClsID(strMimeType As String, ClassID As clsid) As Long
@@ -3025,4 +3005,109 @@ Private Function TranslateColor(ByVal colorRef As Long) As Long
     If OleTranslateColor(colorRef, 0, TranslateColor) Then
         TranslateColor = RGB(255, 255, 255)
     End If
+End Function
+
+
+
+'New, modernized interfaces follow:
+
+
+'At start-up, this function is called to determine whether or not we have GDI+ available on this machine.
+Public Function GDIP_StartEngine(Optional ByVal hookDebugProc As Boolean = False) As Boolean
+    
+    'Prep a generic GDI+ startup interface
+    Dim gdiCheck As GdiplusStartupInput
+    With gdiCheck
+        .GDIPlusVersion = 1&
+        If hookDebugProc Then
+            .DebugEventCallback = FakeProcPtr(AddressOf GDIP_Debug_Proc)
+        Else
+            .DebugEventCallback = 0&
+        End If
+        .SuppressBackgroundThread = 0&
+        .SuppressExternalCodecs = 0&
+    End With
+    
+    'Retrieve a GDI+ token for this session
+    GDIP_StartEngine = CBool(GdiplusStartup(m_GDIPlusToken, gdiCheck) = GP_OK)
+    If GDIP_StartEngine Then
+        
+        'As a convenience, create a dummy graphics container.  This is useful for various GDI+ functions that require world
+        ' transformation data.
+        Set m_TransformDIB = New pdDIB
+        m_TransformDIB.CreateBlank 8, 8, 32, 0, 0
+        GdipCreateFromHDC m_TransformDIB.GetDIBDC, m_TransformGraphics
+        
+        'Note that these dummy objects are released when GDI+ terminates.
+        
+        'Next, create a default identity matrix for image attributes.
+        ReDim m_AttributesMatrix(0 To 4, 0 To 4) As Single
+        m_AttributesMatrix(0, 0) = 1
+        m_AttributesMatrix(1, 1) = 1
+        m_AttributesMatrix(2, 2) = 1
+        m_AttributesMatrix(3, 3) = 1
+        m_AttributesMatrix(4, 4) = 1
+        
+        'Next, check to see if v1.1 is available.  This allows for advanced fx work.
+        Dim hMod As Long, strGDIPName As String
+        strGDIPName = "gdiplus.dll"
+        hMod = LoadLibrary(StrPtr(strGDIPName))
+        If (hMod <> 0) Then
+            Dim testAddress As Long
+            testAddress = GetProcAddress(hMod, "GdipDrawImageFX")
+            m_GDIPlus11Available = CBool(testAddress <> 0)
+            FreeLibrary hMod
+        Else
+            m_GDIPlus11Available = False
+        End If
+        
+    Else
+        m_GDIPlus11Available = False
+    End If
+
+End Function
+
+'At shutdown, this function must be called to release our GDI+ instance
+Public Function GDIP_StopEngine() As Boolean
+
+    'Release any dummy containers we have created
+    GdipDeleteGraphics m_TransformGraphics
+    Set m_TransformDIB = Nothing
+    
+    'Release GDI+ using the same token we received at startup time
+    GDIP_StopEngine = CBool(GdiplusShutdown(m_GDIPlusToken) = GP_OK)
+    g_ImageFormats.GDIPlusEnabled = False
+    
+End Function
+
+'Want to know if GDI+ v1.1 is available?  Use this wrapper.
+Public Function IsGDIPlusV11Available() As Boolean
+    IsGDIPlusV11Available = m_GDIPlus11Available
+End Function
+
+Private Function FakeProcPtr(ByVal AddressOfResult As Long) As Long
+    FakeProcPtr = AddressOfResult
+End Function
+
+'At GDI+ startup, the caller can request that we provide a debug proc for GDI+ to call on warnings and errors.
+' This is that proc.
+Private Function GDIP_Debug_Proc(ByVal deLevel As GP_DebugEventLevel, ByVal ptrChar As Long) As Long
+    
+    'Pull the GDI+ message into a local string
+    Dim cUnicode As pdUnicode
+    Set cUnicode = New pdUnicode
+    
+    Dim debugString As String
+    debugString = cUnicode.ConvertCharPointerToVBString(ptrChar, False)
+    
+    #If DEBUGMODE = 1 Then
+        If (deLevel = DebugEventLevelWarning) Then
+            pdDebug.LogAction "GDI+ WARNING: " & debugString
+        ElseIf (deLevel = DebugEventLevelFatal) Then
+            pdDebug.LogAction "GDI+ ERROR: " & debugString
+        Else
+            pdDebug.LogAction "GDI+ UNKNOWN: " & debugString
+        End If
+    #End If
+    
 End Function

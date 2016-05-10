@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.166</langversion>
+<langversion>6.7.167</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -462,8 +462,8 @@ Wenn das Problem bestehen bleibt, können sie die Entwickler von PhotoDemon via 
 </phrase>
 
 <phrase>
-<original>Total number of unique colors: %1</original>
-<translation>Gesamtzahl der eindeutigen Farben: %1</translation>
+<original>Total unique colors: %1</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15130,6 +15130,6 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- As of this build, PhotoDemon contains 4499 phrases. -->
 <!-- 1909 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13328 total words. -->
+<!-- These 2590 phrases contain approximately 13326 total words. -->
 
 </pdData>
