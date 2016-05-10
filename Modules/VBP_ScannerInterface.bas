@@ -1,4 +1,4 @@
-Attribute VB_Name = "Plugin_Scanner_Interface"
+Attribute VB_Name = "Plugin_EZTwain"
 '***************************************************************************
 'Scanner Interface
 'Copyright 2001-2016 by Tanner Helland
@@ -31,7 +31,10 @@ Private Declare Function TWAIN_IsAvailable Lib "eztw32.dll" () As Long
 Private Declare Function TWAIN_EasyVersion Lib "eztw32.dll" () As Long
 
 'Used to load and unload the EZTW32 dll from an arbitrary location (in our case, the \Data\Plugins subdirectory)
-Dim hLib_Scanner As Long
+Private hLib_Scanner As Long
+
+'Once the EnableScanner function has been called, its result will be cached here
+Private m_ScanningAvailable As Boolean
 
 'Return the EZTwain version number, as a string
 Public Function GetEZTwainVersion() As String
@@ -40,10 +43,10 @@ Public Function GetEZTwainVersion() As String
     strEZTPath = g_PluginPath & "eztw32.dll"
     hLib_Scanner = LoadLibrary(StrPtr(strEZTPath))
     
-    If hLib_Scanner <> 0 Then
+    If (hLib_Scanner <> 0) Then
     
         Dim ezVer As Long
-        ezVer = TWAIN_EasyVersion
+        ezVer = TWAIN_EasyVersion()
         FreeLibrary hLib_Scanner
         
         'The TWAIN version is the version number * 100.  Modify the return string accordingly
@@ -60,8 +63,8 @@ Public Function EnableScanner() As Boolean
     strEZTPath = g_PluginPath & "eztw32.dll"
     hLib_Scanner = LoadLibrary(StrPtr(strEZTPath))
     
-    If hLib_Scanner <> 0 Then
-        If TWAIN_IsAvailable() = 0 Then EnableScanner = False Else EnableScanner = True
+    If (hLib_Scanner <> 0) Then
+        EnableScanner = CBool(TWAIN_IsAvailable() <> 0)
         FreeLibrary hLib_Scanner
     Else
         EnableScanner = False
@@ -69,40 +72,41 @@ Public Function EnableScanner() As Boolean
     
 End Function
 
+Public Sub ForciblySetScannerAvailability(ByVal newState As Boolean)
+    m_ScanningAvailable = newState
+End Sub
+
+Public Function IsScannerAvailable() As Boolean
+    IsScannerAvailable = m_ScanningAvailable
+End Function
+
 'Allow the user to select which hardware PhotoDemon will use for scanning
 Public Sub Twain32SelectScanner()
     
-    'g_ScanEnabled will only be set to true if the eztw32.dll file was found at program load
-    If g_ScanEnabled = True Then
+    If IsScannerAvailable Then
         
-        'EnableScanner queries the system for TWAIN-compatible devices
+        'Make sure the scanner is plugged in and powered up
         If EnableScanner Then
             
-            Dim hLib As Long
-            Dim strEZTPath As String
+            Dim hLib As Long, strEZTPath As String
             strEZTPath = g_PluginPath & "eztw32.dll"
             hLib = LoadLibrary(StrPtr(strEZTPath))
                 
-            TWAIN_SelectImageSource GetModalOwner().hWnd
-            
-            If hLib Then FreeLibrary hLib
+            If (hLib <> 0) Then
+                TWAIN_SelectImageSource GetModalOwner().hWnd
+                FreeLibrary hLib
+            End If
             
             Message "Scanner successfully enabled "
             
         Else
-        
-            'If the scanner isn't responding...
             PDMsgBox "The selected scanner or digital camera isn't responding." & vbCrLf & vbCrLf & "Please make sure the device is turned on and ready for use.", vbExclamation + vbOKOnly + vbApplicationModal, " Scanner Interface Error"
             Message "Unresponsive scanner - scanning suspended "
-            
         End If
     
     Else
-    
-        'If the EZTW32.dll file doesn't exist...
         PDMsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, " Scanner Interface Error"
         Message "Scanning disabled "
-        
     End If
     
 End Sub
@@ -113,68 +117,70 @@ Public Sub Twain32Scan()
     Message "Acquiring image..."
     
     'Make sure the EZTW32.dll file exists
-    If Not g_ScanEnabled Then
+    If IsScannerAvailable Then
+        
+        'Make sure the scanner is on and responsive
+        If EnableScanner Then
+            
+            Dim hLib As Long, strEZTPath As String
+            strEZTPath = g_PluginPath & "eztw32.dll"
+            hLib = LoadLibrary(StrPtr(strEZTPath))
+        
+            'Note that this function has a fairly extensive error handling routine
+            On Error GoTo ScanError
+            
+            Dim scannerCaptureFile As String, scanCheck As Long
+            
+            'ScanCheck is used to store the return values of the EZTW32.dll scanner functions.  We start by setting it
+            ' to an arbitrary value that only we know; if an error occurs and this value is still present, it means an
+            ' error occurred outside of the EZTW32 library.
+            scanCheck = -5
+            
+            'A temporary file is required by the scanner; we will place it in the project folder, then delete it when finished
+            scannerCaptureFile = g_UserPreferences.GetTempPath & "PDScanInterface.tmp"
+                
+            'This line uses the EZTW32.dll file to scan the image and send it to a temporary file
+            scanCheck = TWAIN_AcquireToFilename(GetModalOwner().hWnd, scannerCaptureFile)
+                
+            'If the image was successfully scanned, load it
+            If (scanCheck = 0) Then
+                
+                Dim sTitle As String
+                sTitle = g_Language.TranslateMessage("Scanned Image")
+                sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+                LoadFileAsNewImage scannerCaptureFile, sTitle, False
+                
+                'Be polite and remove the temporary file acquired from the scanner
+                Dim cFile As pdFSO
+                Set cFile = New pdFSO
+                If cFile.FileExist(scannerCaptureFile) Then cFile.KillFile scannerCaptureFile
+                
+                Message "Image acquired successfully "
+                
+                If FormMain.Enabled Then g_WindowManager.SetFocusAPI FormMain.hWnd
+            Else
+                'If the scan was unsuccessful, let the user know what happened
+                GoTo ScanError
+            End If
+            
+            If (hLib <> 0) Then FreeLibrary hLib
+            
+        Else
+            PDMsgBox "The selected scanner or digital camera isn't responding." & vbCrLf & vbCrLf & "Please make sure the device is turned on and ready for use.", vbExclamation + vbOKOnly + vbApplicationModal, " Scanner Interface Error"
+            Message "Unresponsive scanner - scanning suspended "
+        End If
+        
+    Else
         PDMsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, " Scanner Interface Error"
         Message "Scanner/digital camera import disabled "
-        Exit Sub
     End If
-        
-    'Make sure the scanner is on and responsive
-    If Not EnableScanner Then
-        PDMsgBox "The selected scanner or digital camera isn't responding." & vbCrLf & vbCrLf & "Please make sure the device is turned on and ready for use.", vbExclamation + vbOKOnly + vbApplicationModal, " Scanner Interface Error"
-        Message "Unresponsive scanner - scanning suspended "
-        Exit Sub
-    End If
-    
-    Dim hLib As Long
-    Dim strEZTPath As String
-    strEZTPath = g_PluginPath & "eztw32.dll"
-    hLib = LoadLibrary(StrPtr(strEZTPath))
-
-    'Note that this function has a fairly extensive error handling routine
-    On Error GoTo ScanError
-    
-    Dim scannerCaptureFile As String, scanCheck As Long
-    'ScanCheck is used to store the return values of the EZTW32.dll scanner functions.  We start by setting it
-    ' to an arbitrary value that only we know; if an error occurs and this value is still present, it means an
-    ' error occurred outside of the EZTW32 library.
-    scanCheck = -5
-    
-    'A temporary file is required by the scanner; we will place it in the project folder, then delete it when finished
-    scannerCaptureFile = g_UserPreferences.GetTempPath & "PDScanInterface.tmp"
-        
-    'This line uses the EZTW32.dll file to scan the image and send it to a temporary file
-    scanCheck = TWAIN_AcquireToFilename(GetModalOwner().hWnd, scannerCaptureFile)
-        
-    'If the image was successfully scanned, load it
-    If scanCheck = 0 Then
-        
-        Dim sTitle As String
-        sTitle = g_Language.TranslateMessage("Scanned Image")
-        sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
-        LoadFileAsNewImage scannerCaptureFile, sTitle, False
-        
-        'Be polite and remove the temporary file acquired from the scanner
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
-        If cFile.FileExist(scannerCaptureFile) Then cFile.KillFile scannerCaptureFile
-        
-        Message "Image acquired successfully "
-        
-        If FormMain.Enabled Then g_WindowManager.SetFocusAPI FormMain.hWnd
-    Else
-        'If the scan was unsuccessful, let the user know what happened
-        GoTo ScanError
-    End If
-    
-    If hLib Then FreeLibrary hLib
     
     Exit Sub
 
 'Something went wrong
 ScanError:
     
-    If hLib Then FreeLibrary hLib
+    If (hLib <> 0) Then FreeLibrary hLib
     
     Dim scanErrMessage As String
     
