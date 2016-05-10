@@ -98,12 +98,14 @@ Private cFile As pdFSO
 Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean = False) As Boolean
     
     If writeLogDataToFile Then
-    
+        
+        Dim i As Long
+        
         'First things first: we need to make sure a Debug path exists.  Otherwise, we can't write any of our debug data to file.
-        m_logPath = g_UserPreferences.getDebugPath
+        m_logPath = g_UserPreferences.GetDebugPath
         
         'Make sure the path exists, and make sure we have write access.  If either of these fail, terminate the debugger.
-        If Not cFile.FolderExist(m_logPath) Then
+        If (Not cFile.FolderExist(m_logPath)) Then
             
             Debug.Print "Log path invalid.  Debug logs not available for this session."
             
@@ -131,7 +133,7 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         
         'Assemble a basic collection of relevant debug data.
         Dim debugHeader As String
-            debugHeader = "**********************************************" & vbCrLf
+            debugHeader = "**********************************************" & vbCrLf & vbCrLf
             debugHeader = debugHeader & "-- PHOTODEMON DEBUG LOG #" & CStr(m_debuggerID + 1) & " --" & vbCrLf & vbCrLf
             
             debugHeader = debugHeader & "Date: " & Date & vbCrLf
@@ -151,16 +153,31 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
             debugHeader = debugHeader & "-- PROGRAM INFORMATION -- " & vbCrLf & vbCrLf
             
             debugHeader = debugHeader & "Version: " & GetPhotoDemonNameAndVersion & vbCrLf
-            debugHeader = debugHeader & "Translations active: " & CStr(g_Language.translationActive()) & vbCrLf
-            debugHeader = debugHeader & "Language in use: " & CStr(g_Language.getCurrentLanguage()) & vbCrLf
-            debugHeader = debugHeader & "GDI+ available: " & CStr(g_GDIPlusAvailable) & vbCrLf
-            debugHeader = debugHeader & "zLib enabled: " & CStr(g_ZLibEnabled) & vbCrLf
-            debugHeader = debugHeader & "FreeImage enabled: " & CStr(g_ImageFormats.FreeImageEnabled) & vbCrLf
-            debugHeader = debugHeader & "ExifTool enabled: " & CStr(g_ExifToolEnabled) & vbCrLf
-            debugHeader = debugHeader & "EZTwain enabled: " & CStr(g_ScanEnabled) & vbCrLf
-            debugHeader = debugHeader & "PngQuant enabled: " & CStr(g_ImageFormats.pngQuantEnabled) & vbCrLf & vbCrLf
+            debugHeader = debugHeader & "Translation active: " & CStr(g_Language.TranslationActive()) & vbCrLf
+            debugHeader = debugHeader & "Language in use: " & CStr(g_Language.GetCurrentLanguage()) & vbCrLf
+            debugHeader = debugHeader & "GDI+ available: " & CStr(Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend)) & vbCrLf & vbCrLf
             
-            debugHeader = debugHeader & "**********************************************" & vbCrLf & vbCrLf
+            debugHeader = debugHeader & "-- PLUGIN INFORMATION -- " & vbCrLf & vbCrLf
+            
+            For i = 0 To PluginManager.GetNumOfPlugins - 1
+                debugHeader = debugHeader & PluginManager.GetPluginName(i) & ": "
+                If PluginManager.IsPluginCurrentlyInstalled(i) Then
+                    If PluginManager.IsPluginCurrentlyEnabled(i) Then
+                        debugHeader = debugHeader & "installed and enabled"
+                    Else
+                        debugHeader = debugHeader & "installed + DISABLED"
+                    End If
+                Else
+                    If PluginManager.IsPluginCurrentlyEnabled(i) Then
+                        debugHeader = debugHeader & "NOT INSTALLED + enabled"
+                    Else
+                        debugHeader = debugHeader & "NOT INSTALLED + DISABLED"
+                    End If
+                End If
+                debugHeader = debugHeader & vbCrLf
+            Next i
+            
+            debugHeader = debugHeader & vbCrLf & "**********************************************" & vbCrLf & vbCrLf
             debugHeader = debugHeader & "-- SESSION REPORT --" & vbCrLf
         
         'Build a new log file, and dump the debug string into it
@@ -186,7 +203,6 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         Me.LogAction "(The following " & numBackupMessages & " actions were logged prior to initialization.)"
         Me.LogAction "(They are presented here with their original timestamps.)"
         
-        Dim i As Long
         For i = 0 To numBackupMessages - 1
             Me.LogAction backupMessages(i), PDM_STARTUP_MESSAGE, True
         Next i
