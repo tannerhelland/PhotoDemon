@@ -176,15 +176,15 @@ Private m_StyleUnderline As Boolean, m_StyleStrikeout As Boolean
 
 'Prior to glyph generation, this class needs a copy of GDI font handle.  I have deliberately made this function separate
 ' AS A REMINDER TO REMOVE THE FONT FROM ANY ACTIVE DCs PRIOR TO GIVING THIS CLASS ACCESS.
-Public Sub notifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long, Optional ByVal underlineActive As Boolean = False, Optional ByVal strikeoutActive As Boolean = False)
+Public Sub NotifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long, Optional ByVal underlineActive As Boolean = False, Optional ByVal strikeoutActive As Boolean = False)
 
     'If this font matches previous font requests, we can retain existing glyph information.
     
     'If it doesn't match, we need to start over from scratch.  Alas.
-    If m_GDIFont <> srcGDIFontHandle Then
+    If (m_GDIFont <> srcGDIFontHandle) Then
         
         'Wipe the current glyph collection
-        resetGlyphCollection
+        ResetGlyphCollection
         
         'Copy the font handle
         m_GDIFont = srcGDIFontHandle
@@ -195,16 +195,16 @@ Public Sub notifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long, Optional ByVal 
     End If
     
     'Select the font into our temporary DC.  (Many GDI functions operate on DCs instead of hFonts, so this is important.)
-    m_oldFontHandle = SelectObject(m_tmpDIB.getDIBDC, m_GDIFont)
+    m_oldFontHandle = SelectObject(m_tmpDIB.GetDIBDC, m_GDIFont)
     
     'Retrieve basic text metrics for this font, and cache any metrics required on the inner glyph parsing loop
-    Font_Management.FillTextMetrics m_tmpDIB.getDIBDC, m_TextMetrics
+    Font_Management.FillTextMetrics m_tmpDIB.GetDIBDC, m_TextMetrics
     m_FontAscent = m_TextMetrics.tmAscent
     m_FontDescent = m_TextMetrics.tmDescent
     m_FontHeight = m_TextMetrics.tmHeight
     
     'Also retrieve outline text metrics, which include basic text metrics plus a whole bunch more.
-    Font_Management.FillOutlineTextMetrics m_tmpDIB.getDIBDC, m_OutlineTextMetrics
+    Font_Management.FillOutlineTextMetrics m_tmpDIB.GetDIBDC, m_OutlineTextMetrics
     
     'Cache the underline and strikeout values as well
     m_StyleUnderline = underlineActive
@@ -213,12 +213,12 @@ Public Sub notifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long, Optional ByVal 
 End Sub
 
 'After this class has done its work, the caller MUST CALL THIS FUNCTION to release their font from our internal DC
-Public Sub requestGDIFontRelease()
-    SelectObject m_tmpDIB.getDIBDC, m_oldFontHandle
+Public Sub RequestGDIFontRelease()
+    SelectObject m_tmpDIB.GetDIBDC, m_oldFontHandle
 End Sub
 
 'Given a source string, add all glyphs from that string to our current collection
-Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal useHinting As Boolean = False, Optional ByVal stringRemap As PD_STRING_REMAP = PDRS_NONE) As Boolean
+Public Function BuildGlyphCollection(ByRef srcString As String, Optional ByVal useHinting As Boolean = False, Optional ByVal stringRemap As PD_STRING_REMAP = PDRS_NONE) As Boolean
         
     Dim curGlyphIndex As Long
     Dim charAlreadyExists As Boolean
@@ -226,19 +226,16 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
     Dim glyphAdded As Boolean
     
     'If an optional string remap is specified, apply it now.
-    If stringRemap <> PDRS_NONE Then
-    
+    If (stringRemap <> PDRS_NONE) Then
         Dim cUnicode As pdUnicode
         Set cUnicode = New pdUnicode
-        
         srcString = cUnicode.RemapString(srcString, stringRemap)
-    
     End If
     
     Dim stringChanged As Boolean, fontOrDCChanged As Boolean
     
     stringChanged = CBool(StrComp(srcString, m_LastString, vbBinaryCompare) <> 0)
-    fontOrDCChanged = CBool(m_LastFont <> m_GDIFont) Or CBool(m_tmpDIB.getDIBDC <> m_LastDC)
+    fontOrDCChanged = CBool(m_LastFont <> m_GDIFont) Or CBool(m_tmpDIB.GetDIBDC <> m_LastDC)
     
     'If the string has changed since the last call, we must re-itemize it.
     If stringChanged Then
@@ -254,16 +251,16 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
     If stringChanged Or fontOrDCChanged Then
     
         'Make a note of the string contents; if they don't change on the next glyph collection call, we can skip these steps
-        m_Uniscribe.Step3_ScriptShape m_tmpDIB.getDIBDC
-        m_Uniscribe.Step4_ScriptPlace m_tmpDIB.getDIBDC
+        m_Uniscribe.Step3_ScriptShape m_tmpDIB.GetDIBDC
+        m_Uniscribe.Step4_ScriptPlace m_tmpDIB.GetDIBDC
         m_Uniscribe.Step5_ScriptBreak
         
         'Make a note of the font and DC used
         m_LastFont = m_GDIFont
-        m_LastDC = m_tmpDIB.getDIBDC
+        m_LastDC = m_tmpDIB.GetDIBDC
         
         'Retrieve a copy of Uniscribe's data in a PD-friendly format.
-        m_NumOfGlyphs = m_Uniscribe.getCopyOfGlyphCache(m_Glyphs, m_tmpDIB.getDIBDC)
+        m_NumOfGlyphs = m_Uniscribe.getCopyOfGlyphCache(m_Glyphs, m_tmpDIB.GetDIBDC)
         
         'Curious about what pdUniscribe returns?  Uncomment this line for a nice intro.
         'm_Uniscribe.printUniscribeDebugInfo
@@ -308,7 +305,7 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
                 ' occur at a lot of different places; the function itself may fail, or it may succeed but return a zero-length buffer, or it may
                 ' succeed but return a blank outline (an empty square or square with an x through it).  We don't care about *why* it fails,
                 ' just that it gives us a useful outline or not!
-                If getRawGlyphBuffer(curGlyphIndex, rawGlyphBytes, useHinting) Then
+                If GetRawGlyphBuffer(curGlyphIndex, rawGlyphBytes, useHinting) Then
                     
                     'With the raw buffer retrieved, we can now walk the byte array and retrieve individual line and curve metrics.
                     
@@ -319,7 +316,7 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
                         'Debug.Print ChrW$(curChar) & ":" & UBound(rawGlyphBytes)
                         
                         'Proceed with parsing this glyph
-                        If parseRawGlyphBuffer(rawGlyphBytes, m_GlyphOutlines(m_NumOfGlyphOutlines).glyphPath) Then
+                        If ParseRawGlyphBuffer(rawGlyphBytes, m_GlyphOutlines(m_NumOfGlyphOutlines).glyphPath) Then
                             
                             'This glyph exists in the font and has some kind of drawable shape.  Yay!
                             m_GlyphOutlines(m_NumOfGlyphOutlines).hasOutline = True
@@ -377,7 +374,7 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
 End Function
 
 'Given a Unicode entry point, fill a buffer with the raw output of GetGlyphOutline
-Private Function getRawGlyphBuffer(ByVal curGlyphIndex As Long, ByRef dstBuffer() As Long, Optional ByVal useHinting As Boolean = False) As Boolean
+Private Function GetRawGlyphBuffer(ByVal curGlyphIndex As Long, ByRef dstBuffer() As Long, Optional ByVal useHinting As Boolean = False) As Boolean
     
     'We could start by retrieving glyph metrics, which are plugged directly into the current glyph entry in the master collection.
     ' (These metrics are separate from the glyph shape; we use them to control inter-character spacing, among other things.)
@@ -398,7 +395,7 @@ Private Function getRawGlyphBuffer(ByVal curGlyphIndex As Long, ByRef dstBuffer(
     ' Note also that we explicitly request bezier curve format.  This makes our subsequent parsing much easier, and improves the
     ' output fidelity of OpenType fonts.
     Dim ggoReturn As Long, byteSizeOfBuffer As Long
-    ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curGlyphIndex, formatFlags, m_GlyphOutlines(m_NumOfGlyphOutlines).gMetrics, 0, 0, m_IdentityMatrix)
+    ggoReturn = GetGlyphOutline(m_tmpDIB.GetDIBDC, curGlyphIndex, formatFlags, m_GlyphOutlines(m_NumOfGlyphOutlines).gMetrics, 0, 0, m_IdentityMatrix)
     
     'ggoReturn should be > 0, which tells us the required size of the destination buffer.
     If ggoReturn <= 0 Then
@@ -406,7 +403,7 @@ Private Function getRawGlyphBuffer(ByVal curGlyphIndex As Long, ByRef dstBuffer(
         'If zero is returned, that's okay; this might just be a whitespace character with no corresponding glyph.
         ' Return TRUE; the caller function has logic to deal with this combination of outputs.
         ReDim dstBuffer(0) As Long
-        getRawGlyphBuffer = True
+        GetRawGlyphBuffer = True
         Exit Function
     
     Else
@@ -421,15 +418,15 @@ Private Function getRawGlyphBuffer(ByVal curGlyphIndex As Long, ByRef dstBuffer(
     ReDim dstBuffer(0 To (byteSizeOfBuffer \ 4) - 1) As Long
     
     'Now we can retrieve the actual data buffer!
-    ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curGlyphIndex, formatFlags, m_GlyphOutlines(m_NumOfGlyphOutlines).gMetrics, byteSizeOfBuffer, VarPtr(dstBuffer(0)), m_IdentityMatrix)
+    ggoReturn = GetGlyphOutline(m_tmpDIB.GetDIBDC, curGlyphIndex, formatFlags, m_GlyphOutlines(m_NumOfGlyphOutlines).gMetrics, byteSizeOfBuffer, VarPtr(dstBuffer(0)), m_IdentityMatrix)
     
     'Per MSDN, successful queries return a value > 0
-    getRawGlyphBuffer = CBool(ggoReturn > 0)
+    GetRawGlyphBuffer = CBool(ggoReturn > 0)
     
 End Function
 
 'Given the raw byte stream returned by GetGlyphOutline, walk the buffer and assemble a matching GDI+ Graphics Path from the output.
-Private Function parseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPath As pdGraphicsPath) As Boolean
+Private Function ParseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPath As pdGraphicsPath) As Boolean
     
     'Parsing the output of GetGlyphOutline isn't quite as nasty as you'd thing.  The structs themselves are actually
     ' pretty straightforward; it's the asinine data types used that make things unpleasant.
@@ -522,8 +519,8 @@ Private Function parseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
         
         'Next, retrieve the first point in the glyph.  Note that this point is relative to the origin of the glyph, and the origin
         ' of a glyph is *always* the lower left corner of the character at the character's baseline.
-        firstPoint.x = getSingleFromFIXED(srcBuffer(curPosition + 2))
-        firstPoint.y = getSingleFromFIXED(srcBuffer(curPosition + 3))
+        firstPoint.x = GetSingleFromFIXED(srcBuffer(curPosition + 2))
+        firstPoint.y = GetSingleFromFIXED(srcBuffer(curPosition + 3))
         
         'Also note the first point as the "previous point"; this simplifies our calculations on the inner loop
         prevPoint.x = firstPoint.x
@@ -559,9 +556,9 @@ Private Function parseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
                     For i = 1 To pointCount
                         
                         'Add this line segment
-                        nextPoint.x = getSingleFromFIXED(srcBuffer(curPosition))
-                        nextPoint.y = getSingleFromFIXED(srcBuffer(curPosition + 1))
-                        dstGlyphPath.addLine prevPoint.x, prevPoint.y, nextPoint.x, nextPoint.y
+                        nextPoint.x = GetSingleFromFIXED(srcBuffer(curPosition))
+                        nextPoint.y = GetSingleFromFIXED(srcBuffer(curPosition + 1))
+                        dstGlyphPath.AddLine prevPoint.x, prevPoint.y, nextPoint.x, nextPoint.y
                         
                         'Copy the next point into the previous point marker
                         prevPoint = nextPoint
@@ -583,16 +580,16 @@ Private Function parseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
                     For i = 1 To pointCount Step 3
                     
                         'Previous point is already known; retrieve the next three points explicitly
-                        bezPoint2.x = getSingleFromFIXED(srcBuffer(curPosition))
-                        bezPoint2.y = getSingleFromFIXED(srcBuffer(curPosition + 1))
+                        bezPoint2.x = GetSingleFromFIXED(srcBuffer(curPosition))
+                        bezPoint2.y = GetSingleFromFIXED(srcBuffer(curPosition + 1))
                         
-                        bezPoint3.x = getSingleFromFIXED(srcBuffer(curPosition + 2))
-                        bezPoint3.y = getSingleFromFIXED(srcBuffer(curPosition + 3))
+                        bezPoint3.x = GetSingleFromFIXED(srcBuffer(curPosition + 2))
+                        bezPoint3.y = GetSingleFromFIXED(srcBuffer(curPosition + 3))
                         
-                        nextPoint.x = getSingleFromFIXED(srcBuffer(curPosition + 4))
-                        nextPoint.y = getSingleFromFIXED(srcBuffer(curPosition + 5))
+                        nextPoint.x = GetSingleFromFIXED(srcBuffer(curPosition + 4))
+                        nextPoint.y = GetSingleFromFIXED(srcBuffer(curPosition + 5))
                         
-                        dstGlyphPath.addBezierCurve prevPoint.x, prevPoint.y, bezPoint2.x, bezPoint2.y, bezPoint3.x, bezPoint3.y, nextPoint.x, nextPoint.y
+                        dstGlyphPath.AddBezierCurve prevPoint.x, prevPoint.y, bezPoint2.x, bezPoint2.y, bezPoint3.x, bezPoint3.y, nextPoint.x, nextPoint.y
                         
                         'Copy the next point into the previous point marker
                         prevPoint = nextPoint
@@ -608,7 +605,7 @@ Private Function parseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
         Loop Until curPosition >= endOfCurrentCurve
     
         'This shape is now complete.  Close the path.
-        dstGlyphPath.closeCurrentFigure
+        dstGlyphPath.CloseCurrentFigure
     
     'If more shapes exist, draw them next
     Loop Until curPosition >= UBound(srcBuffer)
@@ -618,15 +615,15 @@ Private Function parseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
     ' screen, we obviously want things oriented against their top-left corner.
     
     'We can do this by translating the path downward by the current font's ascender value, which is constant for all glyphs.
-    dstGlyphPath.translatePath 0, m_FontAscent
+    dstGlyphPath.TranslatePath 0, m_FontAscent
     
     'Parsing complete!
-    parseRawGlyphBuffer = True
+    ParseRawGlyphBuffer = True
 
 End Function
 
 'Prior to calling assembleCompositePath, below, the caller can notify us of custom layout settings via this function
-Friend Function notifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single = 0#, Optional ByVal customCharSpacing As Single = 0#, Optional ByVal customCharOrientation As Single = 0#, Optional ByVal customCharJitterX As Single = 0, Optional ByVal customCharJitterY As Single = 0, Optional ByVal customCharInflation As Single = 0, Optional ByVal customCharMirror As Long = 0)
+Friend Function NotifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single = 0#, Optional ByVal customCharSpacing As Single = 0#, Optional ByVal customCharOrientation As Single = 0#, Optional ByVal customCharJitterX As Single = 0, Optional ByVal customCharJitterY As Single = 0, Optional ByVal customCharInflation As Single = 0, Optional ByVal customCharMirror As Long = 0)
     
     m_LineSpacing = customLineSpacing
     m_CharSpacing = customCharSpacing
@@ -644,13 +641,13 @@ End Function
 
 'After assembling a full glyph collection, this function can be called to generate a totally complete graphics path, with all
 ' characters laid out according to the passed rect.
-Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef boundingRect As RECTF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords) As Boolean
+Friend Function AssembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef boundingRect As RECTF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords) As Boolean
     
     'Initialize the destination path as necessary
-    If dstPath Is Nothing Then Set dstPath = New pdGraphicsPath Else dstPath.resetPath
+    If (dstPath Is Nothing) Then Set dstPath = New pdGraphicsPath Else dstPath.ResetPath
     
     'Only proceed if the source string is non-empty
-    If m_NumOfGlyphs > 0 Then
+    If (m_NumOfGlyphs > 0) Then
         
         'Path assembly happens in two steps.
         ' 1) First, we precalculate all glyph (x, y) positions, including line-breaking.  Calculating positions in advance
@@ -666,7 +663,7 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
         ' underline/strikeout).  As such, we simply pass blank path objects to calculateGlyphPositions(), and merge the results with our
         ' final path if underline or strikeout are active.
         Dim additionalStylesRect As pdGraphicsPath
-        calculateGlyphPositions boundingRect, horizontalAlignment, verticalAlignment, lineWrapMode, additionalStylesRect
+        CalculateGlyphPositions boundingRect, horizontalAlignment, verticalAlignment, lineWrapMode, additionalStylesRect
         
         Dim i As Long, curGlyph As Long, curGlyphOutline As Long, srcPathHandle As Long
         Dim tmpGlyphOutlineCopy As pdGraphicsPath, tmpMatrix As pdGraphicsMatrix, cRandom As pdRandomize
@@ -697,7 +694,7 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
             
             'Start by retrieving this glyph index
             curGlyph = i
-            curGlyphOutline = getGlyphOutlineIndex(curGlyph)
+            curGlyphOutline = GetGlyphOutlineIndex(curGlyph)
             
             'A glyph is renderable only if it...
             ' 1) was successfully processed by GetGlyphOutline, and...
@@ -718,12 +715,12 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
                 If m_CharEffectsEnabled Then
                 
                     'Start by making a copy of the original glyph outline
-                    tmpGlyphOutlineCopy.cloneExistingPath m_GlyphOutlines(curGlyphOutline).glyphPath
+                    tmpGlyphOutlineCopy.CloneExistingPath m_GlyphOutlines(curGlyphOutline).glyphPath
                     
                     'Let's break down the possible character changes one at a time.
                     
                     'm_CharOrientation controls character orientation, which is used to rotate characters around their own center point.
-                    If m_CharOrientation <> 0 Then tmpGlyphOutlineCopy.rotatePathAroundItsCenter m_CharOrientation
+                    If m_CharOrientation <> 0 Then tmpGlyphOutlineCopy.RotatePathAroundItsCenter m_CharOrientation
                     
                     'm_CharMirror reflects characters across their own central axis
                     If m_CharMirror <> 0 Then
@@ -731,28 +728,28 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
                         Select Case m_CharMirror
                         
                             Case 1
-                                tmpGlyphOutlineCopy.mirrorPathAroundItsCenter True, False
+                                tmpGlyphOutlineCopy.MirrorPathAroundItsCenter True, False
                             
                             Case 2
-                                tmpGlyphOutlineCopy.mirrorPathAroundItsCenter False, True
+                                tmpGlyphOutlineCopy.MirrorPathAroundItsCenter False, True
                             
                             Case 3
-                                tmpGlyphOutlineCopy.mirrorPathAroundItsCenter True, True
+                                tmpGlyphOutlineCopy.MirrorPathAroundItsCenter True, True
                         
                         End Select
                         
                     End If
                     
                     'm_CharInflation widens the character paths using the generic GDI+ path widening algorithm
-                    If m_CharInflation <> 0 Then tmpGlyphOutlineCopy.inflatePath m_CharInflation, LineCapRound, LineJoinRound
+                    If (m_CharInflation <> 0) Then tmpGlyphOutlineCopy.InflatePath m_CharInflation, GP_LC_Round, GP_LJ_Round
                     
                     'Finally, jitter applies some randomness to the character's position in the x and/or y directions.
                     With m_Glyphs(curGlyph)
                                             
                         If m_CharJitterX <> 0 Or m_CharJitterY <> 0 Then
-                            dstPath.addPath tmpGlyphOutlineCopy, .finalX + .GlyphOffset.du + ((cRandom.getRandomFloat_VB * maxJitterX) - halfJitterX), .finalY - .GlyphOffset.dv + ((cRandom.getRandomFloat_VB * maxJitterY) - halfJitterY)
+                            dstPath.AddPath tmpGlyphOutlineCopy, .finalX + .GlyphOffset.du + ((cRandom.getRandomFloat_VB * maxJitterX) - halfJitterX), .finalY - .GlyphOffset.dv + ((cRandom.getRandomFloat_VB * maxJitterY) - halfJitterY)
                         Else
-                            dstPath.addPath tmpGlyphOutlineCopy, .finalX + .GlyphOffset.du, .finalY - .GlyphOffset.dv
+                            dstPath.AddPath tmpGlyphOutlineCopy, .finalX + .GlyphOffset.du, .finalY - .GlyphOffset.dv
                         End If
                         
                     End With
@@ -761,7 +758,7 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
                 Else
                 
                     With m_Glyphs(curGlyph)
-                        dstPath.addPath m_GlyphOutlines(curGlyphOutline).glyphPath, .finalX + .GlyphOffset.du, .finalY - .GlyphOffset.dv
+                        dstPath.AddPath m_GlyphOutlines(curGlyphOutline).glyphPath, .finalX + .GlyphOffset.du, .finalY - .GlyphOffset.dv
                     End With
                     
                 End If
@@ -805,17 +802,17 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
         Next i
         
         'With all glyphs assembled, apply underline/strikeout if any
-        If m_StyleUnderline Or m_StyleStrikeout Then dstPath.addPath additionalStylesRect
+        If m_StyleUnderline Or m_StyleStrikeout Then dstPath.AddPath additionalStylesRect
         
     End If
         
-    assembleCompositePath = True
+    AssembleCompositePath = True
 
 End Function
 
 'Fill the official xOffset and yOffset parameters of every glyph.  Note that all the initial positioning data comes from Uniscribe;
 ' this function is primarily responsible for line breaks, and any PD-specific positioning changes (e.g. modified character spacing).
-Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords, Optional ByRef dstStylePath As pdGraphicsPath) As Boolean
+Private Function CalculateGlyphPositions(ByRef boundingRect As RECTF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords, Optional ByRef dstStylePath As pdGraphicsPath) As Boolean
     
     Dim i As Long, j As Long
     Dim curGlyph As Long, curGlyphOutline As Long
@@ -1321,7 +1318,7 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                 underlineRect.Height = m_OutlineTextMetrics.otmsUnderscoreSize
                 
                 'Add the completed rect to the composite "style" path
-                dstStylePath.addRectangle_RectF underlineRect
+                dstStylePath.AddRectangle_RectF underlineRect
                 
             End If
             
@@ -1355,7 +1352,7 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                 strikeoutRect.Height = m_OutlineTextMetrics.otmsStrikeoutSize
                 
                 'Add the completed rect to the composite "style" path
-                dstStylePath.addRectangle_RectF strikeoutRect
+                dstStylePath.AddRectangle_RectF strikeoutRect
                 
             End If
             
@@ -1366,12 +1363,12 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     End If
     
     'This function doesn't currently have a fail state
-    calculateGlyphPositions = True
+    CalculateGlyphPositions = True
 
 End Function
 
 'Given a Long-type value - which is really a FIXED struct in disguise - parse out the two chunks, and return them as a normal floating-point value
-Private Function getSingleFromFIXED(ByRef srcFixed As Long) As Single
+Private Function GetSingleFromFIXED(ByRef srcFixed As Long) As Single
     
     'First, retrieve the fraction portion of the Long (which is UNSIGNED)
     Dim fracPortion As Long, integerPortion As Integer
@@ -1381,36 +1378,36 @@ Private Function getSingleFromFIXED(ByRef srcFixed As Long) As Single
     fracPortion = (srcFixed And &HFFFF&)
     
     'Finally, return these using the standard FIXED conversion
-    getSingleFromFIXED = CDbl(integerPortion) + CDbl(fracPortion) / 65536#
+    GetSingleFromFIXED = CDbl(integerPortion) + CDbl(fracPortion) / 65536#
     
 End Function
 
 'GetCharWidthFloat is an interesting function; I've included it here in case I ever decide to test it further.
-Private Function getWidthOfCharCode(ByVal srcCharCode As Long) As Single
-    GetCharWidthFloat m_tmpDIB.getDIBDC, srcCharCode, srcCharCode, getWidthOfCharCode
+Private Function GetWidthOfCharCode(ByVal srcCharCode As Long) As Single
+    GetCharWidthFloat m_tmpDIB.GetDIBDC, srcCharCode, srcCharCode, GetWidthOfCharCode
 End Function
 
 'Given an index in m_Glyphs(), returning a matching glyph outline index from m_GlyphOutlines.  (Because outline assembly is expensive,
 ' we only maintain one outline copy for each unique glyphs.)
-Private Function getGlyphOutlineIndex(ByVal origGlyphPosition As Long) As Long
+Private Function GetGlyphOutlineIndex(ByVal origGlyphPosition As Long) As Long
 
     Dim i As Long
     For i = 0 To m_NumOfGlyphOutlines - 1
         
         If m_Glyphs(origGlyphPosition).glyphIndex = m_GlyphOutlines(i).glyphIndex Then
-            getGlyphOutlineIndex = i
+            GetGlyphOutlineIndex = i
             Exit Function
         End If
         
     Next i
     
     'If we made it here, the outline doesn't exist.  This shouldn't happen, but if it does, return -1.
-    getGlyphOutlineIndex = -1
+    GetGlyphOutlineIndex = -1
 
 End Function
 
 'Reset the current glyph collection.  This forces all glyphs to be recreated from scratch, so use only if absolutely necessary.
-Public Sub resetGlyphCollection()
+Public Sub ResetGlyphCollection()
     
     'If the glyph outline collection exists, manually wipe it
     If m_NumOfGlyphOutlines > 0 Then
@@ -1434,12 +1431,12 @@ End Sub
 ' as whitespace characters do not have glyphs (for most fonts, anyway).
 '
 'TODO: fix this function to correctly map between glyph outlines and glyphs themselves!
-Public Function getGlyphPathHandle(ByVal glyphIndex As Long) As Long
+Public Function GetGlyphPathHandle(ByVal glyphIndex As Long) As Long
     
     If Not m_GlyphOutlines(glyphIndex).glyphPath Is Nothing Then
-        getGlyphPathHandle = m_GlyphOutlines(glyphIndex).glyphPath.getCopyOfPathHandle
+        GetGlyphPathHandle = m_GlyphOutlines(glyphIndex).glyphPath.GetCopyOfPathHandle
     Else
-        getGlyphPathHandle = 0
+        GetGlyphPathHandle = 0
     End If
     
 End Function
@@ -1459,7 +1456,7 @@ Private Sub Class_Initialize()
     
     'Create a temporary DIB for selecting the font into
     Set m_tmpDIB = New pdDIB
-    m_tmpDIB.createBlank 4, 4
+    m_tmpDIB.CreateBlank 4, 4
     
     'Create a Uniscribe interface
     Set m_Uniscribe = New pdUniscribe
@@ -1482,7 +1479,7 @@ End Sub
 Private Sub Class_Terminate()
 
     'Manually release our glyph collection
-    resetGlyphCollection
+    ResetGlyphCollection
     
     'Manually release our Uniscribe interface
     Set m_Uniscribe = Nothing

@@ -1,16 +1,16 @@
 Attribute VB_Name = "Drawing2D"
 '***************************************************************************
-'High-Performance 2D Rendering Interface
+'High-Performance Backend-Agnostic 2D Rendering Interface
 'Copyright 2012-2016 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 09/May/16
-'Last update: start migrating various rendering bits out of GDI+ and into this generic renderer.
+'Last updated: 11/May/16
+'Last update: continue migrating various rendering bits out of GDI+ and into this generic renderer.
 '
 'In 2015-2016, I slowly migrated PhotoDemon to its own UI toolkit.  The new toolkit performs a ton of 2D rendering tasks,
 ' so it was finally time to migrate PD's hoary old GDI+ interface to a more modern solution.
 '
 'This module provides a renderer-agnostic solution for various 2D drawing tasks.  At present, it leans only on GDI+,
-' but I have tried to design it so that other backends could be used without much trouble.
+' but I have tried to design it so that other backends can be supported without much trouble.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -28,20 +28,54 @@ End Enum
     Private Const PD2D_DefaultBackend = 0, PD2D_GDIPlusBackend = 1
 #End If
 
+'To simplify property setting across backends, we use generic enums instead of backend-specific descriptors.
+' There are trade-offs with this approach, but I like it because it lets me use single Get/Set functions for
+' all of a drawing object's properties (at the cost of not having friendly enums right there in the function
+' parameters).  In the future, it would be nice to have both options available, but since dedicated Get/Set
+' functions for each property is tedious work, I'm postponing it for now.
+Public Enum PD_2D_PEN_SETTINGS
+    PD2D_PenStyle = 0
+    PD2D_PenColor = 1
+    PD2D_PenOpacity = 2
+    PD2D_PenWidth = 3
+    PD2D_PenLineJoin = 4
+    PD2D_PenLineCap = 5     'LineCap is a convenience property that sets StartCap, EndCap, and DashCap all at once
+    PD2D_PenDashCap = 6
+    PD2D_PenMiterLimit = 7
+    PD2D_PenAlignment = 8
+    PD2D_PenStartCap = 9
+    PD2D_PenEndCap = 10
+End Enum
+
+#If False Then
+    Private Const PD2D_PenStyle = 0, PD2D_PenColor = 1, PD2D_PenOpacity = 2, PD2D_PenWidth = 3, PD2D_PenLineJoin = 4, PD2D_PenLineCap = 5, PD2D_PenDashCap = 6, PD2D_PenMiterLimit = 7, PD2D_PenAlignment = 8, PD2D_PenStartCap = 9, PD2D_PenEndCap = 10
+#End If
+
+Public Enum PD_2D_SURFACE_SETTINGS
+    PD2D_SurfaceAntialiasing = 0
+    PD2D_SurfacePixelOffset = 1
+End Enum
+
+#If False Then
+    Private Const PD2D_SurfaceAntialiasing = 0, PD2D_SurfacePixelOffset = 1
+#End If
+
 'If GDI+ is initialized successfully, this will be set to TRUE
 Private m_GDIPlusAvailable As Boolean
 
 'When debug mode is active, this module will track surface creation+destruction counts.  This is helpful for detecting leaks.
 Private m_DebugMode As Boolean
 
-'When debug mode is active, live surface counts are tracked for each backend
-Private m_SurfaceCount_GDIPlus As Long
+'When debug mode is active, live counts of various drawing objects are tracked on a per-backend basis
+Private m_SurfaceCount_GDIPlus As Long, m_PenCount_GDIPlus As Long
 
-'Create a new surface using the default rendering backend
-Public Function CreateSurfaceFromDC(ByRef dstSurface As pdSurface2D, ByVal srcDC As Long, Optional ByVal enableAA As Boolean = True) As Boolean
-    If (dstSurface Is Nothing) Then Set dstSurface = New pdSurface2D
-    dstSurface.SetDebugMode m_DebugMode
-    CreateSurfaceFromDC = dstSurface.CreateSurfaceFromDC(srcDC, enableAA)
+'Shortcut function for creating a new surface with the default rendering backend and default rendering settings
+Public Function QuickCreateSurfaceFromDC(ByRef dstSurface As pd2DSurface, ByVal srcDC As Long) As Boolean
+    If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface
+    With dstSurface
+        .SetDebugMode m_DebugMode
+        QuickCreateSurfaceFromDC = .WrapSurfaceAroundDC(srcDC)
+    End With
 End Function
 
 Public Function IsRenderingEngineActive(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = PD2D_DefaultBackend) As Boolean
@@ -94,25 +128,27 @@ Public Function StopRenderingEngine(Optional ByVal targetBackend As PD_2D_RENDER
     
 End Function
 
-Private Sub InternalRenderingError(Optional ByRef ErrName As String = vbNullString, Optional ByRef ErrDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
-
+Private Sub InternalRenderingError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  Drawing2D encountered an error: """ & ErrName & """ - " & ErrDescription
+        pdDebug.LogAction "WARNING!  Drawing2D encountered an error: """ & errName & """ - " & errDescription
     #End If
-
 End Sub
 
-'DEBUG FUNCTIONS FOLLOW
-Public Sub DEBUG_NotifySurfaceChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal surfaceCreated As Boolean)
-    
+'DEBUG FUNCTIONS FOLLOW.  These functions should not be called directly.  They are invoked by other pd2D class when m_DebugMode = TRUE.
+Public Sub DEBUG_NotifySurfaceCountChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal objectCreated As Boolean)
     Select Case targetBackend
-            
         Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
-            If surfaceCreated Then m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus + 1 Else m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus - 1
-            
+            If objectCreated Then m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus + 1 Else m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus - 1
         Case Else
             InternalRenderingError "Bad Parameter", "Surface creation/destruction was not counted: backend ID unknown"
-    
     End Select
-    
+End Sub
+
+Public Sub DEBUG_NotifyPenCountChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal objectCreated As Boolean)
+    Select Case targetBackend
+        Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
+            If objectCreated Then m_PenCount_GDIPlus = m_PenCount_GDIPlus + 1 Else m_PenCount_GDIPlus = m_PenCount_GDIPlus - 1
+        Case Else
+            InternalRenderingError "Bad Parameter", "Pen creation/destruction was not counted: backend ID unknown"
+    End Select
 End Sub

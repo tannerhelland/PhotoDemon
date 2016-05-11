@@ -202,7 +202,7 @@ Private userAnswer As VbMsgBoxResult
 Private m_OldPen As String
 
 'Pen strings are generated with the help of an outline (GDI+ pen) class.  This class also renders a preview of the current pen.
-Private m_PenPreview As pdGraphicsPen
+Private m_PenPreview As pd2DPen
 
 'If a user control spawned this dialog, it will pass itself as a reference.  We can then send pen updates back
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
@@ -230,8 +230,8 @@ Public Property Get DialogResult() As VbMsgBoxResult
 End Property
 
 'The newly selected pen (if any) is returned via this property
-Public Property Get newPen() As String
-    newPen = m_PenPreview.getPenAsString
+Public Property Get NewPen() As String
+    NewPen = m_PenPreview.GetPenPropertiesAsXML
 End Property
 
 'The ShowDialog routine presents the user with this form.
@@ -245,13 +245,14 @@ Public Sub ShowDialog(ByVal initialPen As String, Optional ByRef callingControl 
     
     'Cache the initial pen parameters so we can access it elsewhere
     m_OldPen = initialPen
-    Set m_PenPreview = New pdGraphicsPen
-    m_PenPreview.CreatePenFromString initialPen
+    Set m_PenPreview = New pd2DPen
+    m_PenPreview.SetPenPropertiesFromXML initialPen
+    m_PenPreview.CreatePen
     
-    If Len(initialPen) = 0 Then initialPen = m_PenPreview.getPenAsString
+    If Len(initialPen) = 0 Then initialPen = m_PenPreview.GetPenPropertiesAsXML
     
     'Sync all controls to the initial pen parameters
-    syncControlsToOutlineObject
+    SyncControlsToOutlineObject
     UpdatePreview
     
     'Make sure that the proper cursor is set
@@ -266,7 +267,7 @@ Public Sub ShowDialog(ByVal initialPen As String, Optional ByRef callingControl 
     Set m_XMLEngine = New pdXML
     
     'The XML file will be stored in the Preset path (/Data/Presets)
-    m_XMLFilename = g_UserPreferences.getPresetPath & "Pen_Selector.xml"
+    m_XMLFilename = g_UserPreferences.GetPresetPath & "Pen_Selector.xml"
     
     'TODO: if an XML file exists, load its contents now
     'loadRecentPenList
@@ -302,7 +303,7 @@ End Sub
 Private Sub cmdBar_OKClick()
 
     'Store the newPen value (which the dialog handler will use to return the selected brush to the caller)
-    updateOutlineObject
+    UpdateOutlineObject
     
     'TODO: save the current list of recently used pens
     'saveRecentPenList
@@ -319,11 +320,12 @@ End Sub
 Private Sub cmdBar_ResetClick()
     
     'Reset our generic outline object
-    Set m_PenPreview = New pdGraphicsPen
-    m_PenPreview.CreatePenFromString ""
+    Set m_PenPreview = New pd2DPen
+    m_PenPreview.ResetAllProperties
+    m_PenPreview.CreatePen
     
     'Synchronize all controls to the updated settings
-    syncControlsToOutlineObject
+    SyncControlsToOutlineObject
     UpdatePreview
     
 End Sub
@@ -361,7 +363,7 @@ Private Sub Form_Load()
     
     If g_IsProgramRunning Then
     
-        If m_PenPreview Is Nothing Then Set m_PenPreview = New pdGraphicsPen
+        If m_PenPreview Is Nothing Then Set m_PenPreview = New pd2DPen
         If m_PreviewPath Is Nothing Then Set m_PreviewPath = New pdGraphicsPath
         Set m_PreviewDIB = New pdDIB
                 
@@ -376,90 +378,84 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Update our internal pen class against any/all changed settings.
-Private Sub updateOutlineObject()
+Private Sub UpdateOutlineObject()
 
     With m_PenPreview
-        .setPenProperty pgps_PenMode, btsStyle.ListIndex
-        .setPenProperty pgps_PenColor, csOutline.Color
-        .setPenProperty pgps_PenOpacity, sltOutlineOpacity.Value
-        .setPenProperty pgps_PenWidth, sltOutlineWidth.Value
-        .setPenProperty pgps_PenLineCap, cboLineCap.ListIndex
-        .setPenProperty pgps_PenDashCap, cboLineCap.ListIndex       'For now, dash cap mirrors line cap
-        .setPenProperty pgps_PenLineJoin, cboCorner.ListIndex
-        .setPenProperty pgps_PenMiterLimit, sltMiterLimit.Value
+        .SetPenProperty PD2D_PenStyle, btsStyle.ListIndex
+        .SetPenProperty PD2D_PenColor, csOutline.Color
+        .SetPenProperty PD2D_PenOpacity, sltOutlineOpacity.Value
+        .SetPenProperty PD2D_PenWidth, sltOutlineWidth.Value
+        .SetPenProperty PD2D_PenLineCap, cboLineCap.ListIndex
+        .SetPenProperty PD2D_PenDashCap, cboLineCap.ListIndex       'For now, dash cap mirrors line cap
+        .SetPenProperty PD2D_PenLineJoin, cboCorner.ListIndex
+        .SetPenProperty PD2D_PenMiterLimit, sltMiterLimit.Value
+        .CreatePen
     End With
-
+    
 End Sub
 
 Private Sub UpdatePreview()
     
-    If Not m_SuspendRedraws Then
+    If (Not m_SuspendRedraws) Then
     
         'Make sure our outline object is up-to-date
-        updateOutlineObject
-        
-        'Retrieve a matching pen handle
-        Dim gdipPen As Long
-        gdipPen = m_PenPreview.GetPenHandle()
+        UpdateOutlineObject
         
         'Prep the preview DIB
         If m_PreviewDIB Is Nothing Then Set m_PreviewDIB = New pdDIB
         
-        If (m_PreviewDIB.getDIBWidth <> Me.picPenPreview.ScaleWidth) Or (m_PreviewDIB.getDIBHeight <> Me.picPenPreview.ScaleHeight) Then
-            m_PreviewDIB.createBlank Me.picPenPreview.ScaleWidth, Me.picPenPreview.ScaleHeight, 24, 0
+        If (m_PreviewDIB.GetDIBWidth <> Me.picPenPreview.ScaleWidth) Or (m_PreviewDIB.GetDIBHeight <> Me.picPenPreview.ScaleHeight) Then
+            m_PreviewDIB.CreateBlank Me.picPenPreview.ScaleWidth, Me.picPenPreview.ScaleHeight, 24, 0
         Else
-            m_PreviewDIB.resetDIB
+            m_PreviewDIB.ResetDIB
         End If
         
         'Prep the preview path.  Note that we manually pad it to make the preview look a little prettier.
         Dim tmpRect As RECTF, hPadding As Single, vPadding As Single
         
-        hPadding = m_PenPreview.getPenProperty(pgps_PenWidth) * 2
+        hPadding = m_PenPreview.GetPenProperty(PD2D_PenWidth) * 2
         If hPadding > FixDPIFloat(12) Then hPadding = FixDPIFloat(12)
         vPadding = hPadding
         
         With tmpRect
             .Left = 0
             .Top = 0
-            .Width = m_PreviewDIB.getDIBWidth
-            .Height = m_PreviewDIB.getDIBHeight
+            .Width = m_PreviewDIB.GetDIBWidth
+            .Height = m_PreviewDIB.GetDIBHeight
         End With
         
-        m_PreviewPath.resetPath
-        m_PreviewPath.createSamplePathForRect tmpRect, hPadding, vPadding
+        m_PreviewPath.ResetPath
+        m_PreviewPath.CreateSamplePathForRect tmpRect, hPadding, vPadding
         
         'Create the preview image
-        GDI_Plus.GDIPlusFillDIBRect_Pattern m_PreviewDIB, 0, 0, m_PreviewDIB.getDIBWidth, m_PreviewDIB.getDIBHeight, g_CheckerboardPattern
-        m_PreviewPath.StrokePath_BarePen gdipPen, m_PreviewDIB.getDIBDC, True
+        GDI_Plus.GDIPlusFillDIBRect_Pattern m_PreviewDIB, 0, 0, m_PreviewDIB.GetDIBWidth, m_PreviewDIB.GetDIBHeight, g_CheckerboardPattern
+        m_PreviewPath.StrokePath_BarePen m_PenPreview.GetHandle, m_PreviewDIB.GetDIBDC, True
         
         'Copy the preview image to the screen
         m_PreviewDIB.RenderToPictureBox Me.picPenPreview
         
-        'Release our GDI+ handle
-        m_PenPreview.releasePenHandle gdipPen
-        
         'Notify our parent of the update
-        If Not (parentPenControl Is Nothing) Then parentPenControl.NotifyOfLivePenChange m_PenPreview.getPenAsString
+        If Not (parentPenControl Is Nothing) Then parentPenControl.NotifyOfLivePenChange m_PenPreview.GetPenPropertiesAsXML
         
     End If
     
 End Sub
 
-Private Sub syncControlsToOutlineObject()
+Private Sub SyncControlsToOutlineObject()
         
     m_SuspendRedraws = True
         
     With m_PenPreview
         
-        btsStyle.ListIndex = .getPenProperty(pgps_PenMode)
+        btsStyle.ListIndex = .GetPenProperty(PD2D_PenStyle)
         
-        csOutline.Color = .getPenProperty(pgps_PenColor)
-        sltOutlineOpacity.Value = .getPenProperty(pgps_PenOpacity)
-        sltOutlineWidth.Value = .getPenProperty(pgps_PenWidth)
+        csOutline.Color = .GetPenProperty(PD2D_PenColor)
+        sltOutlineOpacity.Value = .GetPenProperty(PD2D_PenOpacity)
+        sltOutlineWidth.Value = .GetPenProperty(PD2D_PenWidth)
         
-        cboLineCap.ListIndex = .getPenProperty(pgps_PenLineCap)
-        cboCorner.ListIndex = .getPenProperty(pgps_PenLineJoin)
-        sltMiterLimit.Value = .getPenProperty(pgps_PenMiterLimit)
+        cboLineCap.ListIndex = .GetPenProperty(PD2D_PenLineCap)
+        cboCorner.ListIndex = .GetPenProperty(PD2D_PenLineJoin)
+        sltMiterLimit.Value = .GetPenProperty(PD2D_PenMiterLimit)
     
     End With
         
@@ -478,9 +474,4 @@ End Sub
 Private Sub sltOutlineWidth_Change()
     UpdatePreview
 End Sub
-
-
-
-
-
 

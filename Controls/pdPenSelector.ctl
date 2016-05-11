@@ -63,7 +63,7 @@ Public Event LostFocusAPI()
 Private m_curPen As String
 
 'A temporary pen object, used to render the pen preview
-Private m_PenPreview As pdGraphicsPen
+Private m_PenPreview As pd2DPen
 
 'The path used for the preview window
 Private m_PreviewPath As pdGraphicsPath
@@ -135,13 +135,13 @@ Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 
-'You can retrieve the pen param string (not a pdGraphicsPen object!) via this property
+'You can retrieve the pen param string (not a pd2DPen object!) via this property
 Public Property Get Pen() As String
     Pen = m_curPen
 End Property
 
-Public Property Let Pen(ByVal newPen As String)
-    m_curPen = newPen
+Public Property Let Pen(ByVal NewPen As String)
+    m_curPen = NewPen
     RedrawBackBuffer
     RaiseEvent PenChanged
     PropertyChanged "Pen"
@@ -212,12 +212,12 @@ Private Sub RaisePenDialog()
     isDialogLive = True
     
     'Backup the current pen; if the dialog is canceled, we want to restore it
-    Dim newPen As String, oldPen As String
+    Dim NewPen As String, oldPen As String
     oldPen = Pen
     
     'Use the brush dialog to select a new color
-    If showPenDialog(newPen, oldPen, Me) Then
-        Pen = newPen
+    If ShowPenDialog(NewPen, oldPen, Me) Then
+        Pen = NewPen
     Else
         Pen = oldPen
     End If
@@ -228,7 +228,7 @@ End Sub
 
 Private Sub UserControl_Initialize()
     
-    Set m_PenPreview = New pdGraphicsPen
+    Set m_PenPreview = New pd2DPen
     Set m_PreviewPath = New pdGraphicsPath
     
     'Initialize a master user control support class
@@ -330,28 +330,29 @@ Private Sub RedrawBackBuffer()
         End With
         
         'Next, create a matching GDI+ pen
-        m_PenPreview.CreatePenFromString Me.Pen
+        m_PenPreview.SetPenPropertiesFromXML Me.Pen
         
-        Dim tmpPen As Long
-        tmpPen = m_PenPreview.GetPenHandle
+        If m_PenPreview.CreatePen Then
         
-        'Prep the preview path.  Note that we manually pad it to make the preview look a little prettier.
-        Dim hPadding As Single, vPadding As Single
-        hPadding = m_PenPreview.getPenProperty(pgps_PenWidth) * 2
-        If hPadding > FixDPIFloat(12) Then hPadding = FixDPIFloat(12)
-        vPadding = hPadding
-        
-        m_PreviewPath.resetPath
-        m_PreviewPath.createSamplePathForRect m_PenRect, hPadding, vPadding
-        
-        m_PreviewPath.StrokePath_BarePen tmpPen, bufferDC, True, VarPtr(m_PenRect)
-        m_PenPreview.releasePenHandle tmpPen
+            'Prep the preview path.  Note that we manually pad it to make the preview look a little prettier.
+            Dim hPadding As Single, vPadding As Single
+            hPadding = m_PenPreview.GetPenProperty(PD2D_PenWidth) * 2
+            If hPadding > FixDPIFloat(12) Then hPadding = FixDPIFloat(12)
+            vPadding = hPadding
+            
+            m_PreviewPath.ResetPath
+            m_PreviewPath.CreateSamplePathForRect m_PenRect, hPadding, vPadding
+            
+            m_PreviewPath.StrokePath_BarePen m_PenPreview.GetHandle, bufferDC, True, VarPtr(m_PenRect)
+            m_PenPreview.ReleasePen
+                
+        End If
         
         'Draw borders around the brush results.
         Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long
         outlineColor = m_Colors.RetrieveColor(PDPS_Border, Me.Enabled, m_MouseDownPenRect, m_MouseInsidePenRect)
         If m_MouseInsidePenRect Then outlineWidth = 3 Else outlineWidth = 1
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_PenRect, outlineColor, , outlineWidth, False, LineJoinMiter
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_PenRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
         
     End If
     
@@ -362,8 +363,8 @@ End Sub
 
 'If a pen selection dialog is active, it will pass pen updates backward to this function, so that we can let
 ' our parent form display live updates *while the user is playing with pens* - very cool!
-Public Sub NotifyOfLivePenChange(ByVal newPen As String)
-    Pen = newPen
+Public Sub NotifyOfLivePenChange(ByVal NewPen As String)
+    Pen = NewPen
 End Sub
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
@@ -383,5 +384,4 @@ End Sub
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
-
 

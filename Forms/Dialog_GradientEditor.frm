@@ -330,7 +330,7 @@ Private Const GRADIENT_NODE_HEIGHT As Single = 14#
 
 'Other gradient node UI renderers
 Private inactiveArrowFill As pdGraphicsBrush, activeArrowFill As pdGraphicsBrush
-Private inactiveOutlinePen As pdGraphicsPen, activeOutlinePen As pdGraphicsPen
+Private inactiveOutlinePen As pd2DPen, activeOutlinePen As pd2DPen
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -338,8 +338,8 @@ Public Property Get DialogResult() As VbMsgBoxResult
 End Property
 
 'The newly selected gradient (if any) is returned via this property
-Public Property Get newGradient() As String
-    newGradient = m_GradientPreview.getGradientAsString
+Public Property Get NewGradient() As String
+    NewGradient = m_GradientPreview.getGradientAsString
 End Property
 
 'The ShowDialog routine presents the user with this form.
@@ -367,7 +367,7 @@ Public Sub ShowDialog(ByVal initialGradient As String, Optional ByRef callingCon
     If Len(initialGradient) = 0 Then initialGradient = m_GradientPreview.getGradientAsString
     
     'Sync all controls to the initial pen parameters
-    syncControlsToGradientObject
+    SyncControlsToGradientObject
     UpdatePreview
     
     'Make sure that the proper cursor is set
@@ -382,7 +382,7 @@ Public Sub ShowDialog(ByVal initialGradient As String, Optional ByRef callingCon
     Set m_XMLEngine = New pdXML
     
     'The XML file will be stored in the Preset path (/Data/Presets)
-    m_XMLFilename = g_UserPreferences.getPresetPath & "Gradient_Selector.xml"
+    m_XMLFilename = g_UserPreferences.GetPresetPath & "Gradient_Selector.xml"
     
     'TODO: if an XML file exists, load its contents now
     'loadRecentGradientList
@@ -411,12 +411,12 @@ Private Sub btsShape_Click(ByVal buttonIndex As Long)
     End If
     
     'Redraw the UI accordingly
-    If (Not m_SuspendUI) Then redrawEverything
+    If (Not m_SuspendUI) Then RedrawEverything
     
 End Sub
 
 Private Sub chkDistributeEvenly_Click()
-    If (Not m_SuspendUI) Then redrawEverything
+    If (Not m_SuspendUI) Then RedrawEverything
 End Sub
 
 Private Sub cmdBar_AddCustomPresetData()
@@ -439,7 +439,7 @@ End Sub
 Private Sub cmdBar_OKClick()
 
     'Store the newGradient value (which the dialog handler will use to return the selected gradient to the caller)
-    updateGradientObjects
+    UpdateGradientObjects
     
     'TODO: save the current list of recently used gradients
     'saveRecentGradientList
@@ -458,7 +458,7 @@ Private Sub cmdBar_ReadCustomPresetData()
     m_GradientPreview.createGradientFromString cmdBar.RetrievePresetData("FullGradientDefinition")
     
     'Synchronize all controls to the updated settings
-    syncControlsToGradientObject
+    SyncControlsToGradientObject
         
 End Sub
 
@@ -473,8 +473,8 @@ Private Sub cmdBar_ResetClick()
     m_GradientPreview.createGradientFromString ""
     
     'Synchronize all controls to the updated settings
-    updateGradientObjects
-    syncControlsToGradientObject
+    UpdateGradientObjects
+    SyncControlsToGradientObject
     UpdatePreview
     
 End Sub
@@ -483,7 +483,7 @@ Private Sub csNode_ColorChanged()
     
     If (Not m_SuspendUI) And (m_CurPoint >= 0) Then
         m_GradientPoints(m_CurPoint).pdgp_RGB = csNode.Color
-        redrawEverything
+        RedrawEverything
     End If
     
 End Sub
@@ -520,7 +520,7 @@ Private Sub Form_Load()
         m_MouseEvents.SetSystemCursor IDC_HAND
                 
         'Prep a default set of gradient points
-        resetGradientPoints
+        ResetGradientPoints
         
         'Prep all gradient point tracking variables
         m_CurPoint = -1
@@ -537,24 +537,26 @@ Private Sub Form_Load()
         activeArrowFill.setBrushProperty pgbs_PrimaryOpacity, 100
         activeArrowFill.setBrushProperty pgbs_PrimaryColor, g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
         
-        Set inactiveOutlinePen = New pdGraphicsPen
-        Set activeOutlinePen = New pdGraphicsPen
+        Set inactiveOutlinePen = New pd2DPen
+        Set activeOutlinePen = New pd2DPen
         
-        inactiveOutlinePen.setPenProperty pgps_PenMode, 0
-        inactiveOutlinePen.setPenProperty pgps_PenOpacity, 100
-        inactiveOutlinePen.setPenProperty pgps_PenWidth, 1#
-        inactiveOutlinePen.setPenProperty pgps_PenLineJoin, LineJoinRound
-        inactiveOutlinePen.setPenProperty pgps_PenColor, g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
+        inactiveOutlinePen.SetPenProperty PD2D_PenStyle, GP_DS_Solid
+        inactiveOutlinePen.SetPenProperty PD2D_PenOpacity, 100
+        inactiveOutlinePen.SetPenProperty PD2D_PenWidth, 1#
+        inactiveOutlinePen.SetPenProperty PD2D_PenLineJoin, GP_LJ_Round
+        inactiveOutlinePen.SetPenProperty PD2D_PenColor, g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
+        inactiveOutlinePen.CreatePen
         
-        activeOutlinePen.setPenProperty pgps_PenMode, 0
-        activeOutlinePen.setPenProperty pgps_PenOpacity, 100
-        activeOutlinePen.setPenProperty pgps_PenWidth, 1#
-        activeOutlinePen.setPenProperty pgps_PenLineJoin, LineJoinRound
-        activeOutlinePen.setPenProperty pgps_PenColor, g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+        activeOutlinePen.SetPenProperty PD2D_PenStyle, GP_DS_Solid
+        activeOutlinePen.SetPenProperty PD2D_PenOpacity, 100
+        activeOutlinePen.SetPenProperty PD2D_PenWidth, 1#
+        activeOutlinePen.SetPenProperty PD2D_PenLineJoin, GP_LJ_Round
+        activeOutlinePen.SetPenProperty PD2D_PenColor, g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+        activeOutlinePen.CreatePen
                 
         'Draw the initial set of interactive gradient nodes
-        syncUIToActiveNode
-        drawGradientNodes
+        SyncUIToActiveNode
+        DrawGradientNodes
                 
     End If
     
@@ -562,7 +564,7 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub resetGradientPoints()
+Private Sub ResetGradientPoints()
     
     m_NumOfGradientPoints = 2
     ReDim m_GradientPoints(0 To m_NumOfGradientPoints - 1) As pdGradientPoint
@@ -584,7 +586,7 @@ Private Sub resetGradientPoints()
 End Sub
 
 Private Sub Form_Resize()
-    drawGradientNodes
+    DrawGradientNodes
     UpdatePreview
 End Sub
 
@@ -595,7 +597,7 @@ End Sub
 'Update our two internal gradient classes against any/all changed settings.
 ' (Note that the node-editor class only reflects the current collection of colors and positions, not things like angle or gradient type,
 '  so we only sync it against the node collection.)
-Private Sub updateGradientObjects()
+Private Sub UpdateGradientObjects()
     
     'If the "evenly distribute nodes" option is checked, assign positions automatically.
     If CBool(chkDistributeEvenly.Value) Then
@@ -622,7 +624,7 @@ Private Sub updateGradientObjects()
             m_CurPoint = -1
             m_CurHoverPoint = -1
             
-            syncUIToActiveNode
+            SyncUIToActiveNode
             
             m_GradientPreview.createGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
             m_GradientPreview.getCopyOfPointCollection m_NumOfGradientPoints, m_GradientPoints
@@ -655,7 +657,7 @@ Private Sub UpdatePreview()
     If Not m_SuspendUI Then
     
         'Make sure our gradient objects are up-to-date
-        updateGradientObjects
+        UpdateGradientObjects
         
         'Retrieve a matching brush handle for the primary preview
         Dim gdipBrushMain As Long, boundsRect As RECTF
@@ -672,16 +674,16 @@ Private Sub UpdatePreview()
         'Prep the preview DIB
         If m_MainPreviewDIB Is Nothing Then Set m_MainPreviewDIB = New pdDIB
         
-        If (m_MainPreviewDIB.getDIBWidth <> Me.picPreview.ScaleWidth) Or (m_MainPreviewDIB.getDIBHeight <> Me.picPreview.ScaleHeight) Then
-            m_MainPreviewDIB.createBlank Me.picPreview.ScaleWidth, Me.picPreview.ScaleHeight, 24, 0
+        If (m_MainPreviewDIB.GetDIBWidth <> Me.picPreview.ScaleWidth) Or (m_MainPreviewDIB.GetDIBHeight <> Me.picPreview.ScaleHeight) Then
+            m_MainPreviewDIB.CreateBlank Me.picPreview.ScaleWidth, Me.picPreview.ScaleHeight, 24, 0
         Else
-            m_MainPreviewDIB.resetDIB
+            m_MainPreviewDIB.ResetDIB
         End If
         
         'Create the preview image
         With m_MainPreviewDIB
-            GDI_Plus.GDIPlusFillDIBRect_Pattern m_MainPreviewDIB, 0, 0, .getDIBWidth, .getDIBHeight, g_CheckerboardPattern
-            GDI_Plus.GDIPlusFillDC_Brush .getDIBDC, gdipBrushMain, 0, 0, .getDIBWidth, .getDIBHeight
+            GDI_Plus.GDIPlusFillDIBRect_Pattern m_MainPreviewDIB, 0, 0, .GetDIBWidth, .GetDIBHeight, g_CheckerboardPattern
+            GDI_Plus.GDIPlusFillDC_Brush .GetDIBDC, gdipBrushMain, 0, 0, .GetDIBWidth, .GetDIBHeight
         End With
         
         'Copy the preview image to the screen
@@ -701,15 +703,15 @@ Private Sub UpdatePreview()
         
         If m_NodePreviewDIB Is Nothing Then Set m_NodePreviewDIB = New pdDIB
         
-        If (m_NodePreviewDIB.getDIBWidth <> Me.picNodePreview.ScaleWidth) Or (m_NodePreviewDIB.getDIBHeight <> Me.picNodePreview.ScaleHeight) Then
-            m_NodePreviewDIB.createBlank Me.picNodePreview.ScaleWidth, Me.picNodePreview.ScaleHeight, 24, 0
+        If (m_NodePreviewDIB.GetDIBWidth <> Me.picNodePreview.ScaleWidth) Or (m_NodePreviewDIB.GetDIBHeight <> Me.picNodePreview.ScaleHeight) Then
+            m_NodePreviewDIB.CreateBlank Me.picNodePreview.ScaleWidth, Me.picNodePreview.ScaleHeight, 24, 0
         Else
-            m_NodePreviewDIB.resetDIB
+            m_NodePreviewDIB.ResetDIB
         End If
         
         With m_NodePreviewDIB
-            GDI_Plus.GDIPlusFillDIBRect_Pattern m_NodePreviewDIB, 0, 0, .getDIBWidth, .getDIBHeight, g_CheckerboardPattern
-            GDI_Plus.GDIPlusFillDC_Brush .getDIBDC, gdipBrushNodes, 0, 0, .getDIBWidth, .getDIBHeight
+            GDI_Plus.GDIPlusFillDIBRect_Pattern m_NodePreviewDIB, 0, 0, .GetDIBWidth, .GetDIBHeight, g_CheckerboardPattern
+            GDI_Plus.GDIPlusFillDC_Brush .GetDIBDC, gdipBrushNodes, 0, 0, .GetDIBWidth, .GetDIBHeight
         End With
         
         m_NodePreviewDIB.RenderToPictureBox Me.picNodePreview
@@ -727,7 +729,7 @@ End Sub
 
 'Make all UI elements reflect the current gradient object.  This is typically done after the dialog loads, or after loading a
 ' previously created gradient.
-Private Sub syncControlsToGradientObject()
+Private Sub SyncControlsToGradientObject()
         
     m_SuspendUI = True
     
@@ -738,12 +740,12 @@ Private Sub syncControlsToGradientObject()
         .getCopyOfPointCollection m_NumOfGradientPoints, m_GradientPoints
     End With
     
-    drawGradientNodes
+    DrawGradientNodes
     
     m_SuspendUI = False
     
     'Also, synchronize the node-specific UI to the active node (if any)
-    syncUIToActiveNode
+    SyncUIToActiveNode
     
 End Sub
 
@@ -756,7 +758,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
     
     'See if an existing has been selected.
     Dim tmpPoint As Long
-    tmpPoint = getPointAtPosition(x, y)
+    tmpPoint = GetPointAtPosition(x, y)
     
     'If this is an existing point, we will either (LMB) mark it as the active point, or (RMB) remove it
     If tmpPoint >= 0 Then
@@ -775,7 +777,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
             'Make sure the current point index is not invalid
             If m_CurPoint >= m_NumOfGradientPoints Then
                 m_CurPoint = -1
-                syncUIToActiveNode
+                SyncUIToActiveNode
             End If
             
         End If
@@ -788,7 +790,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
         
         With m_GradientPoints(m_NumOfGradientPoints)
             .pdgp_Opacity = 1
-            .pdgp_Position = convertPixelCoordsToNodeCoords(x)
+            .pdgp_Position = ConvertPixelCoordsToNodeCoords(x)
             
             'Preset the RGB value to match whatever the gradient already is at this point
             Dim newRGBA As RGBQUAD
@@ -803,9 +805,9 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
     End If
     
     'Regardless of outcome, we need to resync the UI to the active node, and redraw the interaction area and preview
-    syncUIToActiveNode
+    SyncUIToActiveNode
     UpdatePreview
-    drawGradientNodes
+    DrawGradientNodes
 
 End Sub
 
@@ -816,7 +818,7 @@ End Sub
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_CurHoverPoint = -1
     m_MouseEvents.SetSystemCursor IDC_DEFAULT
-    drawGradientNodes
+    DrawGradientNodes
 End Sub
 
 Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -825,11 +827,11 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     If (Button And pdLeftButton) <> 0 Then
     
         'The left mouse button is down.  Assign the new position to the active node.
-        If m_CurPoint >= 0 Then m_GradientPoints(m_CurPoint).pdgp_Position = convertPixelCoordsToNodeCoords(x)
+        If m_CurPoint >= 0 Then m_GradientPoints(m_CurPoint).pdgp_Position = ConvertPixelCoordsToNodeCoords(x)
         
         'Redraw the gradient interaction nodes and the gradient itself
-        syncUIToActiveNode
-        drawGradientNodes
+        SyncUIToActiveNode
+        DrawGradientNodes
         UpdatePreview
         
     'The left mouse button is not down
@@ -837,12 +839,12 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     
         'See if a new point is currently being hovered.
         Dim tmpPoint As Long
-        tmpPoint = getPointAtPosition(x, y)
+        tmpPoint = GetPointAtPosition(x, y)
         
         'If a new point is being hovered, highlight it and redraw the interactive area
         If tmpPoint <> m_CurHoverPoint Then
             m_CurHoverPoint = tmpPoint
-            drawGradientNodes
+            DrawGradientNodes
         End If
     
     End If
@@ -850,11 +852,11 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
 End Sub
 
 'Given an x-position in the interaction box, return the currently hovered point.  If multiple points are hovered, the nearest one will be returned.
-Private Function getPointAtPosition(ByVal x As Long, y As Long) As Long
+Private Function GetPointAtPosition(ByVal x As Long, y As Long) As Long
     
     'Start by converting the current x-position into the range [0, 1]
     Dim convPoint As Single
-    convPoint = convertPixelCoordsToNodeCoords(x)
+    convPoint = ConvertPixelCoordsToNodeCoords(x)
     
     'convPoint now contains the position of the mouse on the range [0, 1].  Find the nearest point.
     Dim minDistance As Single, curDistance As Single, minIndex As Long
@@ -872,15 +874,15 @@ Private Function getPointAtPosition(ByVal x As Long, y As Long) As Long
     
     'The nearest point (if any) will now be in minIndex.  If it falls below the valid threshold for clicks, accept it.
     If minDistance < (GRADIENT_NODE_WIDTH / 2) / CDbl(picPreview.ScaleWidth) Then
-        getPointAtPosition = minIndex
+        GetPointAtPosition = minIndex
     Else
-        getPointAtPosition = -1
+        GetPointAtPosition = -1
     End If
     
 End Function
 
 'Given an (x, y) position on the gradient interaction window, convert it to the [0, 1] range used by the gradient control.
-Private Function convertPixelCoordsToNodeCoords(ByVal x As Long) As Single
+Private Function ConvertPixelCoordsToNodeCoords(ByVal x As Long) As Single
     
     'Start by converting the current x-position into the range [0, 1]
     Dim uiMin As Single, uiMax As Single, uiRange As Single
@@ -888,18 +890,18 @@ Private Function convertPixelCoordsToNodeCoords(ByVal x As Long) As Single
     uiMax = picPreview.Left + picPreview.ScaleWidth
     uiRange = uiMax - uiMin
     
-    convertPixelCoordsToNodeCoords = (CSng(x) - uiMin) / uiRange
+    ConvertPixelCoordsToNodeCoords = (CSng(x) - uiMin) / uiRange
     
-    If convertPixelCoordsToNodeCoords < 0 Then
-        convertPixelCoordsToNodeCoords = 0
-    ElseIf convertPixelCoordsToNodeCoords > 1 Then
-        convertPixelCoordsToNodeCoords = 1
+    If ConvertPixelCoordsToNodeCoords < 0 Then
+        ConvertPixelCoordsToNodeCoords = 0
+    ElseIf ConvertPixelCoordsToNodeCoords > 1 Then
+        ConvertPixelCoordsToNodeCoords = 1
     End If
     
 End Function
 
 'When a new active node is selected (or its parameters somehow changed), call this sub to synchronize all UI elements to that node's properties.
-Private Sub syncUIToActiveNode()
+Private Sub SyncUIToActiveNode()
     
     If g_IsProgramRunning Then
     
@@ -940,7 +942,7 @@ Private Sub syncUIToActiveNode()
 End Sub
 
 'Draw all interactive nodes
-Private Sub drawGradientNodes()
+Private Sub DrawGradientNodes()
 
     If g_IsProgramRunning Then
         
@@ -958,10 +960,10 @@ Private Sub drawGradientNodes()
         Dim triangleHalfWidth As Single, triangleHeight As Single
         triangleHalfWidth = (GRADIENT_NODE_WIDTH / 2)
         triangleHeight = (picInteract.ScaleHeight - GRADIENT_NODE_HEIGHT) - 1
-        baseArrow.addTriangle -1 * triangleHalfWidth, triangleHeight, 0, 0, triangleHalfWidth, triangleHeight
+        baseArrow.AddTriangle -1 * triangleHalfWidth, triangleHeight, 0, 0, triangleHalfWidth, triangleHeight
         
         'Next up is the colored block, also centered horizontally around position 0
-        baseBlock.addRectangle_Relative -1 * GRADIENT_NODE_WIDTH \ 2, triangleHeight, GRADIENT_NODE_WIDTH, GRADIENT_NODE_HEIGHT
+        baseBlock.AddRectangle_Relative -1 * GRADIENT_NODE_WIDTH \ 2, triangleHeight, GRADIENT_NODE_WIDTH, GRADIENT_NODE_HEIGHT
         
         'We also want some duplicate nodes, to remove the need to reset our base node shapes between draws
         Dim tmpArrow As pdGraphicsPath, tmpBlock As pdGraphicsPath
@@ -982,44 +984,44 @@ Private Sub drawGradientNodes()
         'Prep the target interaction DIB
         If m_InteractiveDIB Is Nothing Then Set m_InteractiveDIB = New pdDIB
         
-        If (m_InteractiveDIB.getDIBWidth <> Me.picInteract.ScaleWidth) Or (m_InteractiveDIB.getDIBHeight <> Me.picInteract.ScaleHeight) Then
-            m_InteractiveDIB.createBlank Me.picInteract.ScaleWidth, Me.picInteract.ScaleHeight, 24, 0
+        If (m_InteractiveDIB.GetDIBWidth <> Me.picInteract.ScaleWidth) Or (m_InteractiveDIB.GetDIBHeight <> Me.picInteract.ScaleHeight) Then
+            m_InteractiveDIB.CreateBlank Me.picInteract.ScaleWidth, Me.picInteract.ScaleHeight, 24, 0
         Else
-            m_InteractiveDIB.resetDIB
+            m_InteractiveDIB.ResetDIB
         End If
         
         'Fill the interaction DIB with white
-        GDI_Plus.GDIPlusFillDIBRect m_InteractiveDIB, 0, 0, m_InteractiveDIB.getDIBWidth, m_InteractiveDIB.getDIBHeight, vbWhite, 255
+        GDI_Plus.GDIPlusFillDIBRect m_InteractiveDIB, 0, 0, m_InteractiveDIB.GetDIBWidth, m_InteractiveDIB.GetDIBHeight, vbWhite, 255
         
         'Now all we do is use those to draw all the nodes in turn
         Dim i As Long
         For i = 0 To m_NumOfGradientPoints - 1
             
             'Copy the base shapes
-            tmpArrow.cloneExistingPath baseArrow
-            tmpBlock.cloneExistingPath baseBlock
+            tmpArrow.CloneExistingPath baseArrow
+            tmpBlock.CloneExistingPath baseBlock
             
             'Translate them to this node's position
-            tmpArrow.translatePath hOffset + m_GradientPoints(i).pdgp_Position * hScaleFactor, 0
-            tmpBlock.translatePath hOffset + m_GradientPoints(i).pdgp_Position * hScaleFactor, 0
+            tmpArrow.TranslatePath hOffset + m_GradientPoints(i).pdgp_Position * hScaleFactor, 0
+            tmpBlock.TranslatePath hOffset + m_GradientPoints(i).pdgp_Position * hScaleFactor, 0
             
             'The node's colored block is rendered the same regardless of hover
             blockFill.setBrushProperty pgbs_PrimaryColor, m_GradientPoints(i).pdgp_RGB
-            tmpBlock.fillPathToDIB_BareBrush blockFill.getBrushHandle, m_InteractiveDIB
+            tmpBlock.FillPathToDIB_BareBrush blockFill.getBrushHandle, m_InteractiveDIB
             
             'All other renders vary by hover state
             If i = m_CurPoint Then
-                tmpBlock.StrokePath_BarePen activeOutlinePen.GetPenHandle, m_InteractiveDIB.getDIBDC
-                tmpArrow.fillPathToDIB_BareBrush activeArrowFill.getBrushHandle, m_InteractiveDIB
-                tmpArrow.StrokePath_BarePen activeOutlinePen.GetPenHandle, m_InteractiveDIB.getDIBDC
+                tmpBlock.StrokePath_BarePen activeOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
+                tmpArrow.FillPathToDIB_BareBrush activeArrowFill.getBrushHandle, m_InteractiveDIB
+                tmpArrow.StrokePath_BarePen activeOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
             ElseIf i = m_CurHoverPoint Then
-                tmpBlock.StrokePath_BarePen activeOutlinePen.GetPenHandle, m_InteractiveDIB.getDIBDC
-                tmpArrow.fillPathToDIB_BareBrush activeArrowFill.getBrushHandle, m_InteractiveDIB
-                tmpArrow.StrokePath_BarePen activeOutlinePen.GetPenHandle, m_InteractiveDIB.getDIBDC
+                tmpBlock.StrokePath_BarePen activeOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
+                tmpArrow.FillPathToDIB_BareBrush activeArrowFill.getBrushHandle, m_InteractiveDIB
+                tmpArrow.StrokePath_BarePen activeOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
             Else
-                tmpBlock.StrokePath_BarePen inactiveOutlinePen.GetPenHandle, m_InteractiveDIB.getDIBDC
-                tmpArrow.fillPathToDIB_BareBrush inactiveArrowFill.getBrushHandle, m_InteractiveDIB
-                tmpArrow.StrokePath_BarePen inactiveOutlinePen.GetPenHandle, m_InteractiveDIB.getDIBDC
+                tmpBlock.StrokePath_BarePen inactiveOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
+                tmpArrow.FillPathToDIB_BareBrush inactiveArrowFill.getBrushHandle, m_InteractiveDIB
+                tmpArrow.StrokePath_BarePen inactiveOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
             End If
             
         Next i
@@ -1032,21 +1034,21 @@ Private Sub drawGradientNodes()
 End Sub
 
 'Some user interactions require us to redraw just about everything on the dialog.  Use this shortcut function to do so.
-Private Sub redrawEverything()
-    updateGradientObjects
-    drawGradientNodes
+Private Sub RedrawEverything()
+    UpdateGradientObjects
+    DrawGradientNodes
     UpdatePreview
 End Sub
 
 Private Sub sltAngle_Change()
-    If (Not m_SuspendUI) Then redrawEverything
+    If (Not m_SuspendUI) Then RedrawEverything
 End Sub
 
 Private Sub sltNodeOpacity_Change()
     
     If (Not m_SuspendUI) And (m_CurPoint >= 0) Then
         m_GradientPoints(m_CurPoint).pdgp_Opacity = sltNodeOpacity.Value / 100
-        redrawEverything
+        RedrawEverything
     End If
     
 End Sub
@@ -1055,13 +1057,8 @@ Private Sub sltNodePosition_Change()
     
     If (Not m_SuspendUI) And (m_CurPoint >= 0) Then
         m_GradientPoints(m_CurPoint).pdgp_Position = sltNodePosition.Value / 100
-        redrawEverything
+        RedrawEverything
     End If
     
 End Sub
-
-
-
-
-
 

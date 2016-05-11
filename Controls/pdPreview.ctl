@@ -237,9 +237,9 @@ Public Sub SetOriginalImage(ByRef srcDIB As pdDIB)
     
     'Make a copy of the DIB passed in
     If (m_OriginalImage Is Nothing) Then Set m_OriginalImage = New pdDIB
-    m_OriginalImage.createFromExistingDIB srcDIB
+    m_OriginalImage.CreateFromExistingDIB srcDIB
     
-    If (m_OriginalImage.getDIBColorDepth = 32) And (Not m_OriginalImage.getAlphaPremultiplication) Then m_OriginalImage.SetAlphaPremultiplication True
+    If (m_OriginalImage.GetDIBColorDepth = 32) And (Not m_OriginalImage.GetAlphaPremultiplication) Then m_OriginalImage.SetAlphaPremultiplication True
     
 End Sub
 
@@ -252,7 +252,7 @@ Public Sub SetFXImage(ByRef srcDIB As pdDIB)
     
     'Make a copy of the DIB passed in
     If (m_fxImage Is Nothing) Then Set m_fxImage = New pdDIB
-    m_fxImage.createFromExistingDIB srcDIB
+    m_fxImage.CreateFromExistingDIB srcDIB
     
     'Redraw the on-screen image (as necessary)
     RedrawBackBuffer
@@ -408,11 +408,11 @@ Private Sub EvaluateMouseEvent(ByVal Button As PDMouseButtonConstants, ByVal x A
         
             'Return the mouse coordinates as a ratio between 0 and 1, with 1 representing max width/height
             Dim retX As Double, retY As Double
-            retX = (x - BORDER_PADDING) - ((m_PreviewAreaWidth - m_OriginalImage.getDIBWidth) \ 2)
-            retY = (y - BORDER_PADDING) - ((m_PreviewAreaHeight - m_OriginalImage.getDIBHeight) \ 2)
+            retX = (x - BORDER_PADDING) - ((m_PreviewAreaWidth - m_OriginalImage.GetDIBWidth) \ 2)
+            retY = (y - BORDER_PADDING) - ((m_PreviewAreaHeight - m_OriginalImage.GetDIBHeight) \ 2)
             
-            retX = retX / m_OriginalImage.getDIBWidth
-            retY = retY / m_OriginalImage.getDIBHeight
+            retX = retX / m_OriginalImage.GetDIBWidth
+            retY = retY / m_OriginalImage.GetDIBHeight
             
             RaiseEvent PointSelected(retX, retY)
         
@@ -435,8 +435,8 @@ Private Sub GetDIBXYFromMouseXY(ByVal mouseX As Single, ByVal mouseY As Single, 
     dstHeight = m_PreviewAreaHeight
     
     Dim srcWidth As Double, srcHeight As Double
-    srcWidth = srcDIB.getDIBWidth
-    srcHeight = srcDIB.getDIBHeight
+    srcWidth = srcDIB.GetDIBWidth
+    srcHeight = srcDIB.GetDIBHeight
     
     'Calculate the aspect ratio of this DIB and the target picture box
     Dim srcAspect As Double, dstAspect As Double
@@ -568,8 +568,8 @@ Private Sub UserControl_Show()
                 m_SrcImageWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
                 m_SrcImageHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
             Else
-                m_SrcImageWidth = pdImages(g_CurrentImage).GetActiveDIB.getDIBWidth
-                m_SrcImageHeight = pdImages(g_CurrentImage).GetActiveDIB.getDIBHeight
+                m_SrcImageWidth = pdImages(g_CurrentImage).GetActiveDIB.GetDIBWidth
+                m_SrcImageHeight = pdImages(g_CurrentImage).GetActiveDIB.GetDIBHeight
             End If
         End If
         
@@ -588,8 +588,8 @@ Private Sub UserControl_Show()
 End Sub
 
 Private Sub UserControl_Terminate()
-    If Not (m_OriginalImage Is Nothing) Then m_OriginalImage.eraseDIB
-    If Not (m_fxImage Is Nothing) Then m_fxImage.eraseDIB
+    If Not (m_OriginalImage Is Nothing) Then m_OriginalImage.EraseDIB
+    If Not (m_fxImage Is Nothing) Then m_fxImage.EraseDIB
     FastDrawing.ResetPreviewIDs
 End Sub
 
@@ -683,8 +683,8 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         dstHeight = m_PreviewAreaHeight
         
         Dim srcWidth As Double, srcHeight As Double
-        srcWidth = srcDIB.getDIBWidth
-        srcHeight = srcDIB.getDIBHeight
+        srcWidth = srcDIB.GetDIBWidth
+        srcHeight = srcDIB.GetDIBHeight
         
         'Calculate the aspect ratio of this DIB and the target picture box
         Dim srcAspect As Double, dstAspect As Double
@@ -744,7 +744,7 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         'We also draw a border around the final result
         Dim halfBorder As Long
         halfBorder = BORDER_PADDING \ 2
-        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, halfBorder, halfBorder, (ucSupport.GetControlWidth - 1) - halfBorder, (ucSupport.GetControlHeight - 1) - halfBorder, ctlBorderColor, , borderWidth, False, LineJoinMiter
+        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, halfBorder, halfBorder, (ucSupport.GetControlWidth - 1) - halfBorder, (ucSupport.GetControlHeight - 1) - halfBorder, ctlBorderColor, , borderWidth, False, GP_LJ_Miter
         
         'Paint the results to the screen!  (Note that we request an immediate redraw, rather than waiting for WM_PAINT to fire.)
         If g_IsProgramRunning Then ucSupport.RequestRepaint True

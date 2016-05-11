@@ -516,7 +516,7 @@ Private Sub RedrawBackBuffer()
                 Else
                     If itemIsHovered Then curColor = itemColorUnselectedBorderHover Else curColor = itemColorUnselectedBorder
                 End If
-                GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRect, curColor, , , , LineJoinMiter
+                GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRect, curColor, , , , GP_LJ_Miter
                 
                 '...and finally, its caption
                 If itemIsSelected Then
@@ -550,10 +550,10 @@ Private Sub RedrawBackBuffer()
         If listHasFocus Then borderWidth = 3# Else borderWidth = 1#
         borderColor = m_Colors.RetrieveColor(PDLB_Border, enabledState, listHasFocus)
         
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ListRect, borderColor, , borderWidth, , LineJoinMiter
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ListRect, borderColor, , borderWidth, , GP_LJ_Miter
         
         If Not listHasFocus Then
-            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, BackgroundColor, , , , LineJoinMiter
+            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, BackgroundColor, , , , GP_LJ_Miter
         End If
         
     End If

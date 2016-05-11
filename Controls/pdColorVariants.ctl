@@ -255,7 +255,7 @@ Private Function GetRegionFromPoint(ByVal x As Single, ByVal y As Single) As Lon
     Dim i As Long
     For i = 0 To NUM_OF_VARIANTS - 1
         
-        If m_ColorRegions(i).isPointInsidePath(x, y) Then
+        If m_ColorRegions(i).IsPointInsidePath(x, y) Then
             GetRegionFromPoint = i
             Exit Function
         End If
@@ -339,7 +339,7 @@ Public Sub DisplayColorSelection()
     m_MouseInsideRegion = -1
     
     'Use the default color dialog to select a new color
-    If showColorDialog(newColor, oldColor, Nothing) Then
+    If ShowColorDialog(newColor, oldColor, Nothing) Then
         m_ColorList(0) = newColor
     Else
         m_ColorList(0) = oldColor
@@ -362,7 +362,7 @@ Private Sub UpdateControlLayout()
         ' color variants for the user to choose from.
         Dim i As Long
         For i = 0 To NUM_OF_VARIANTS - 1
-            m_ColorRegions(i).resetPath
+            m_ColorRegions(i).ResetPath
         Next i
         
         'Leave a little room around the control, so we can draw chunky borders around hovered sub-regions.
@@ -485,7 +485,7 @@ Private Sub CreateSubregions_Rectangular(ByVal ucLeft As Long, ByVal ucTop As Lo
     
     'With the color rects successfully constructed, we can now add them to our master path collection
     For i = CV_Primary To NUM_OF_VARIANTS - 1
-        m_ColorRegions(i).addRectangle_RectF colorRects(i)
+        m_ColorRegions(i).AddRectangle_RectF colorRects(i)
     Next i
 
 End Sub
@@ -516,7 +516,7 @@ Private Sub CreateSubregions_Circular(ByVal ucLeft As Long, ByVal ucTop As Long,
     innerRadius = (minDimension / 2) - dpiAwareBorderSize
     
     'The primary circle is the only subregion that receives a special construction method.
-    m_ColorRegions(CV_Primary).addCircle centerX, centerY, innerRadius
+    m_ColorRegions(CV_Primary).AddCircle centerX, centerY, innerRadius
     
     'All subregions are added uniformly, in a loop
     Dim startAngle As Single, sweepAngle As Single
@@ -536,11 +536,11 @@ Private Sub CreateSubregions_Circular(ByVal ucLeft As Long, ByVal ucTop As Long,
         Math_Functions.convertPolarToCartesian Math_Functions.DegreesToRadians(startAngle + sweepAngle), outerRadius, x4, y4, centerX, centerY
         
         'Add the two divider lines to the current path object, and place connecting arcs between them
-        m_ColorRegions(i).addLine x1, y1, x2, y2
-        m_ColorRegions(i).addArcCircular centerX, centerY, outerRadius, startAngle, sweepAngle
-        m_ColorRegions(i).addLine x4, y4, x3, y3
-        m_ColorRegions(i).addArcCircular centerX, centerY, innerRadius, startAngle + sweepAngle, -sweepAngle
-        m_ColorRegions(i).closeCurrentFigure
+        m_ColorRegions(i).AddLine x1, y1, x2, y2
+        m_ColorRegions(i).AddArcCircular centerX, centerY, outerRadius, startAngle, sweepAngle
+        m_ColorRegions(i).AddLine x4, y4, x3, y3
+        m_ColorRegions(i).AddArcCircular centerX, centerY, innerRadius, startAngle + sweepAngle, -sweepAngle
+        m_ColorRegions(i).CloseCurrentFigure
         
         'Offset the startAngle for the next slice
         startAngle = startAngle + sweepAngle
@@ -670,14 +670,14 @@ Private Sub RedrawBackBuffer()
         borderColor = m_Colors.RetrieveColor(PDCV_Border, Me.Enabled, False, False)
         
         'We can reuse a single border pen for all sub-paths
-        borderPen = GDI_Plus.GetGDIPlusPenHandle(borderColor, , , , LineJoinMiter)
+        borderPen = GDI_Plus.GetGDIPlusPenHandle(borderColor, , , , GP_LJ_Miter)
         
         'Draw each subregion in turn, filling it first, then tracing its borders.
         Dim i As Long, regionBrush As Long
         For i = CV_Primary To CV_RedDown
             
             regionBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(m_ColorList(i), 255)
-            m_ColorRegions(i).fillPathToDIB_BareBrush regionBrush, , bufferDC
+            m_ColorRegions(i).FillPathToDIB_BareBrush regionBrush, , bufferDC
             GDI_Plus.ReleaseGDIPlusBrush regionBrush
             
             m_ColorRegions(i).StrokePath_BarePen borderPen, bufferDC
@@ -686,7 +686,7 @@ Private Sub RedrawBackBuffer()
         
         'Draw a special outline around the central primary color, to help it stand out more.  (But only do this if
         ' the central primary color is UNSELECTED; if it's selected, we'll paint it in the accent color momentarily.)
-        If m_MouseInsideRegion <> CV_Primary Then m_ColorRegions(CV_Primary).StrokePath_UIStyle bufferDC, False, False, LineJoinMiter
+        If m_MouseInsideRegion <> CV_Primary Then m_ColorRegions(CV_Primary).StrokePath_UIStyle bufferDC, False, False, GP_LJ_Miter
         
         'Release any remaining GDI+ objects
         GDI_Plus.ReleaseGDIPlusPen borderPen
@@ -694,7 +694,7 @@ Private Sub RedrawBackBuffer()
         'If a subregion is currently hovered, trace it with a highlight outline.
         If m_MouseInsideRegion >= 0 Then
             borderColor = m_Colors.RetrieveColor(PDCV_Border, Me.Enabled, True, True)
-            borderPen = GDI_Plus.GetGDIPlusPenHandle(borderColor, , 3#, , LineJoinMiter)
+            borderPen = GDI_Plus.GetGDIPlusPenHandle(borderColor, , 3#, , GP_LJ_Miter)
             m_ColorRegions(m_MouseInsideRegion).StrokePath_BarePen borderPen, bufferDC
             GDI_Plus.ReleaseGDIPlusPen borderPen
         End If

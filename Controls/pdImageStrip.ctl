@@ -693,7 +693,7 @@ Private Function GetThumbWithCloseIconAtPosition(ByVal x As Long, ByVal y As Lon
         
         'From this, determine where the "close icon" would appear on the thumbnail
         Dim closeButtonStartOffsetX As Long, closeButtonStartOffsetY As Long
-        closeButtonStartOffsetX = thumbnailStartOffsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) + m_CloseIconGray.getDIBWidth + FixDPI(2)))
+        closeButtonStartOffsetX = thumbnailStartOffsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) + m_CloseIconGray.GetDIBWidth + FixDPI(2)))
         closeButtonStartOffsetY = thumbnailStartOffsetY + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2)
         
         Dim clickBoundaryX As Long, clickBoundaryY As Long
@@ -701,7 +701,7 @@ Private Function GetThumbWithCloseIconAtPosition(ByVal x As Long, ByVal y As Lon
         clickBoundaryY = y - closeButtonStartOffsetY
         
         If (clickBoundaryX >= 0) And (clickBoundaryY >= 0) Then
-            If (clickBoundaryX <= m_CloseIconGray.getDIBWidth) And (clickBoundaryY <= m_CloseIconGray.getDIBHeight) Then
+            If (clickBoundaryX <= m_CloseIconGray.GetDIBWidth) And (clickBoundaryY <= m_CloseIconGray.GetDIBHeight) Then
                 GetThumbWithCloseIconAtPosition = thumbIndex
             End If
         End If
@@ -820,16 +820,16 @@ Private Sub UpdateShadowDIB(ByVal thumbIndex As Long)
     
     'Create a shadow DIB
     If m_Thumbs(thumbIndex).thumbShadow Is Nothing Then Set m_Thumbs(thumbIndex).thumbShadow = New pdDIB
-    createShadowDIB m_Thumbs(thumbIndex).thumbDIB, m_Thumbs(thumbIndex).thumbShadow
+    CreateShadowDIB m_Thumbs(thumbIndex).thumbDIB, m_Thumbs(thumbIndex).thumbShadow
     
     'Pad and blur the DIB
     padDIB m_Thumbs(thumbIndex).thumbShadow, FixDPI(THUMB_BORDER_PADDING)
-    quickBlurDIB m_Thumbs(thumbIndex).thumbShadow, m_ShadowRadius, False
+    QuickBlurDIB m_Thumbs(thumbIndex).thumbShadow, m_ShadowRadius, False
     
     'Apply premultiplied alpha (so we can more quickly AlphaBlend the resulting image to the tabstrip)
     'TODO: make sure alpha premultiplication is okay, based on the previous steps
     'm_Thumbs(thumbIndex).thumbShadow.SetAlphaPremultiplication True
-    m_Thumbs(thumbIndex).thumbShadow.setInitialAlphaPremultiplicationState True
+    m_Thumbs(thumbIndex).thumbShadow.SetInitialAlphaPremultiplicationState True
     
 End Sub
 
@@ -943,7 +943,7 @@ Private Sub LoadImageStripIcons()
     
     'Generate a drop-shadow for the X.  (We can use the same one for both red and gray, obviously.)
     If (m_CloseIconShadow Is Nothing) Then Set m_CloseIconShadow = New pdDIB
-    Filters_Layers.createShadowDIB m_CloseIconGray, m_CloseIconShadow
+    Filters_Layers.CreateShadowDIB m_CloseIconGray, m_CloseIconShadow
     m_CloseIconShadow.SetAlphaPremultiplication False
     
     'Pad and blur the drop-shadow
@@ -952,7 +952,7 @@ Private Sub LoadImageStripIcons()
     Set cFilter = New pdFilterLUT
     cFilter.fillLUT_Invert tmpLUT
     padDIB m_CloseIconShadow, FixDPI(THUMB_BORDER_PADDING)
-    quickBlurDIB m_CloseIconShadow, FixDPI(2), False
+    QuickBlurDIB m_CloseIconShadow, FixDPI(2), False
     cFilter.applyLUTToAllColorChannels m_CloseIconShadow, tmpLUT, True
     m_CloseIconShadow.SetAlphaPremultiplication True
     
@@ -1145,7 +1145,7 @@ Private Sub RenderThumbTab(ByVal targetDC As Long, ByVal thumbIndex As Long, ByR
     End If
     
     With thumbRectF
-        GDI_Plus.GDIPlusDrawRectOutlineToDC targetDC, .Left + 1, .Top + 1, .Left + .Width - 2, .Top + .Height - 2, targetColor, , 3, True, LineJoinMiter
+        GDI_Plus.GDIPlusDrawRectOutlineToDC targetDC, .Left + 1, .Top + 1, .Left + .Width - 2, .Top + .Height - 2, targetColor, , 3, True, GP_LJ_Miter
     End With
     
     '...folowed by the thumbnail shadow and thumbnail image itself...
@@ -1153,25 +1153,25 @@ Private Sub RenderThumbTab(ByVal targetDC As Long, ByVal thumbIndex As Long, ByR
     offsetX = thumbRectF.Left
     offsetY = thumbRectF.Top
     
-    If (g_InterfacePerformance <> PD_PERF_FASTEST) Then m_Thumbs(thumbIndex).thumbShadow.alphaBlendToDC targetDC, 192, offsetX, offsetY + FixDPI(1)
-    m_Thumbs(thumbIndex).thumbDIB.alphaBlendToDC targetDC, 255, offsetX + FixDPI(THUMB_BORDER_PADDING), offsetY + FixDPI(THUMB_BORDER_PADDING)
+    If (g_InterfacePerformance <> PD_PERF_FASTEST) Then m_Thumbs(thumbIndex).thumbShadow.AlphaBlendToDC targetDC, 192, offsetX, offsetY + FixDPI(1)
+    m_Thumbs(thumbIndex).thumbDIB.AlphaBlendToDC targetDC, 255, offsetX + FixDPI(THUMB_BORDER_PADDING), offsetY + FixDPI(THUMB_BORDER_PADDING)
     
     '...then an asterisk in the bottom-left if the parent image has unsaved changes...
     If Not (pdImages(m_Thumbs(thumbIndex).indexInPDImages) Is Nothing) Then
-        If Not pdImages(m_Thumbs(thumbIndex).indexInPDImages).getSaveState(pdSE_AnySave) Then
-            m_ModifiedIcon.alphaBlendToDC targetDC, 230, offsetX + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2), offsetY + m_ThumbHeight - FixDPI(THUMB_BORDER_PADDING) - m_ModifiedIcon.getDIBHeight - FixDPI(2)
+        If Not pdImages(m_Thumbs(thumbIndex).indexInPDImages).GetSaveState(pdSE_AnySave) Then
+            m_ModifiedIcon.AlphaBlendToDC targetDC, 230, offsetX + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2), offsetY + m_ThumbHeight - FixDPI(THUMB_BORDER_PADDING) - m_ModifiedIcon.GetDIBHeight - FixDPI(2)
         End If
     End If
     
     '...and finally, if this thumb is being hovered, we paint a "close" icon in the top-right corner.
     If isHovered Then
         
-        m_CloseIconShadow.alphaBlendToDC targetDC, 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2 + m_CloseIconRed.getDIBWidth + FixDPI(2))), offsetY + FixDPI(2)
+        m_CloseIconShadow.AlphaBlendToDC targetDC, 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2 + m_CloseIconRed.GetDIBWidth + FixDPI(2))), offsetY + FixDPI(2)
         
         If (thumbIndex = m_CloseIconHovered) Then
-            m_CloseIconRed.alphaBlendToDC targetDC, 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) + m_CloseIconRed.getDIBWidth + FixDPI(2))), offsetY + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2)
+            m_CloseIconRed.AlphaBlendToDC targetDC, 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) + m_CloseIconRed.GetDIBWidth + FixDPI(2))), offsetY + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2)
         Else
-            m_CloseIconGray.alphaBlendToDC targetDC, 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) + m_CloseIconRed.getDIBWidth + FixDPI(2))), offsetY + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2)
+            m_CloseIconGray.AlphaBlendToDC targetDC, 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) + m_CloseIconRed.GetDIBWidth + FixDPI(2))), offsetY + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2)
         End If
         
     End If

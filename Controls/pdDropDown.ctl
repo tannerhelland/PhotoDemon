@@ -864,7 +864,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         'A border is always drawn around the control; its size and color vary by hover state, however.
         Dim borderWidth As Single
         If m_MouseInComboRect Or m_FocusRectActive Then borderWidth = 3 Else borderWidth = 1
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ComboRect, ddColorBorder, 255, borderWidth, False, LineJoinMiter
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ComboRect, ddColorBorder, 255, borderWidth, False, GP_LJ_Miter
         
         'Next, the right-aligned arrow.  (We need its measurements to know where to restrict the caption's length.)
         Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
@@ -877,8 +877,8 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
         buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
         
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, ddColorArrow, 255, 2, True, LineCapRound
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, ddColorArrow, 255, 2, True, LineCapRound
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, ddColorArrow, 255, 2, True, GP_LC_Round
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, ddColorArrow, 255, 2, True, GP_LC_Round
         
         Dim arrowLeftLimit As Single
         arrowLeftLimit = buttonPt1.x - FixDPI(2)
@@ -890,8 +890,8 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         'buttonPt2.y = fullWinRect.Bottom - buttonPt2.y
         'buttonPt3.y = fullWinRect.Bottom - buttonPt3.y
         '
-        'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, LineCapRound
-        'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, LineCapRound
+        'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, GP_LC_Round
+        'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, GP_LC_Round
         
         'Finally, paint the caption, and restrict its length to the available dropdown space
         If Me.ListIndex <> -1 Then

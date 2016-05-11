@@ -454,8 +454,8 @@ Private Sub CreateColorWheel()
     If ucSupport.GetBackBufferWidth < ucSupport.GetBackBufferHeight Then wheelDiameter = ucSupport.GetBackBufferWidth Else wheelDiameter = ucSupport.GetBackBufferHeight
     
     If (m_WheelBuffer Is Nothing) Then Set m_WheelBuffer = New pdDIB
-    If (m_WheelBuffer.getDIBWidth <> wheelDiameter) Or (m_WheelBuffer.getDIBHeight <> wheelDiameter) Then
-        m_WheelBuffer.createBlank wheelDiameter, wheelDiameter, 32, 0&, 255
+    If (m_WheelBuffer.GetDIBWidth <> wheelDiameter) Or (m_WheelBuffer.GetDIBHeight <> wheelDiameter) Then
+        m_WheelBuffer.CreateBlank wheelDiameter, wheelDiameter, 32, 0&, 255
     Else
         If g_IsProgramRunning Then GDI_Plus.GDIPlusFillDIBRect m_WheelBuffer, 0, 0, wheelDiameter, wheelDiameter, 0&, 255
     End If
@@ -473,8 +473,8 @@ Private Sub CreateColorWheel()
     m_HueWheelCenterX = wheelDiameter / 2: m_HueWheelCenterY = m_HueWheelCenterX
     
     If g_IsProgramRunning Then
-        GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.getDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter, RGB(255, 255, 255), 255
-        GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.getDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner, RGB(0, 0, 0), 255
+        GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.GetDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter, RGB(255, 255, 255), 255
+        GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.GetDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner, RGB(0, 0, 0), 255
     End If
     
     'With our "alpha guidance" pixels drawn, we can now loop through the image, rendering actual hue colors as we go.
@@ -490,8 +490,8 @@ Private Sub CreateColorWheel()
     Dim nX As Double, nY As Double, pxAngle As Double
     
     Dim loopWidth As Long, loopHeight As Long
-    loopWidth = (m_WheelBuffer.getDIBWidth - 1) * 4
-    loopHeight = (m_WheelBuffer.getDIBHeight - 1)
+    loopWidth = (m_WheelBuffer.GetDIBWidth - 1) * 4
+    loopHeight = (m_WheelBuffer.GetDIBHeight - 1)
     
     For y = 0 To loopHeight
     For x = 0 To loopWidth Step 4
@@ -549,7 +549,7 @@ Private Sub CreateColorWheel()
     CopyMemory ByVal VarPtrArray(hPixels), 0&, 4
     
     'Mark the wheel DIB's premultiplied alpha state
-    m_WheelBuffer.setInitialAlphaPremultiplicationState True
+    m_WheelBuffer.SetInitialAlphaPremultiplicationState True
         
 End Sub
 
@@ -562,10 +562,10 @@ Private Sub CreateSVSquare()
     m_SVRectF.Width = (m_HueRadiusInner * 2) * Sin(PI / 4): m_SVRectF.Height = m_SVRectF.Width
     
     If (m_SquareBuffer Is Nothing) Then Set m_SquareBuffer = New pdDIB
-    If (m_SquareBuffer.getDIBWidth <> CLng(m_SVRectF.Width)) Or (m_SquareBuffer.getDIBHeight <> CLng(m_SVRectF.Height)) Then
-        m_SquareBuffer.createBlank CLng(m_SVRectF.Width), CLng(m_SVRectF.Height), 24
+    If (m_SquareBuffer.GetDIBWidth <> CLng(m_SVRectF.Width)) Or (m_SquareBuffer.GetDIBHeight <> CLng(m_SVRectF.Height)) Then
+        m_SquareBuffer.CreateBlank CLng(m_SVRectF.Width), CLng(m_SVRectF.Height), 24
     Else
-        m_SquareBuffer.resetDIB 0
+        m_SquareBuffer.ResetDIB 0
     End If
     
     'To prevent IDE crashes, bail now during compilation
@@ -583,8 +583,8 @@ Private Sub CreateSVSquare()
     Dim r As Long, g As Long, b As Long
     
     Dim loopWidth As Long, loopHeight As Long
-    loopWidth = (m_SquareBuffer.getDIBWidth - 1) * 3
-    loopHeight = (m_SquareBuffer.getDIBHeight - 1)
+    loopWidth = (m_SquareBuffer.GetDIBWidth - 1) * 3
+    loopHeight = (m_SquareBuffer.GetDIBHeight - 1)
     
     Dim lineValue As Double
     
@@ -644,7 +644,7 @@ Private Sub RedrawBackBuffer()
     If g_IsProgramRunning Then
         
         'Paint the hue wheel (currently left-aligned)
-        If Not (m_WheelBuffer Is Nothing) Then m_WheelBuffer.alphaBlendToDC bufferDC
+        If Not (m_WheelBuffer Is Nothing) Then m_WheelBuffer.AlphaBlendToDC bufferDC
         
         'Trace the edges of the hue wheel, to help separate the bright portions from the background.
         Dim borderWidth As Single, borderTransparency As Long
@@ -663,7 +663,7 @@ Private Sub RedrawBackBuffer()
             
             'Copy the square into place.  Note that we must use GDI+ to support subpixel positioning.
             With m_SVRectF
-                GDI_Plus.GDIPlus_StretchBlt Nothing, .Left, .Top, .Width, .Height, m_SquareBuffer, 0, 0, m_SquareBuffer.getDIBWidth, m_SquareBuffer.getDIBHeight, , InterpolationModeBilinear, bufferDC
+                GDI_Plus.GDIPlus_StretchBlt Nothing, .Left, .Top, .Width, .Height, m_SquareBuffer, 0, 0, m_SquareBuffer.GetDIBWidth, m_SquareBuffer.GetDIBHeight, , InterpolationModeBilinear, bufferDC
             End With
             
             'Trace the edges of the square, to help separate the bright portions from the background
@@ -674,7 +674,7 @@ Private Sub RedrawBackBuffer()
                 borderWidth = 1#
                 borderTransparency = 128
             End If
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_SVRectF, boxBorderColor, borderTransparency, borderWidth, True, LineJoinMiter, True
+            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_SVRectF, boxBorderColor, borderTransparency, borderWidth, True, GP_LJ_Miter, True
             
         End If
         
@@ -703,11 +703,11 @@ Private Sub RedrawBackBuffer()
         Math_Functions.convertPolarToCartesian hueAngle + (sliceSweep / 2), m_HueRadiusOuter + sliceExtend, x4, y4, m_HueWheelCenterX, m_HueWheelCenterY
         
         'Add those two lines to the path object, and place connecting arcs between them
-        slicePath.addLine x1, y1, x2, y2
-        slicePath.addArcCircular m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter + sliceExtend, RadiansToDegrees(hueAngle - (sliceSweep / 2)), RadiansToDegrees(sliceSweep)
-        slicePath.addLine x4, y4, x3, y3
-        slicePath.addArcCircular m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner - sliceExtend, RadiansToDegrees(hueAngle + (sliceSweep / 2)), RadiansToDegrees(-sliceSweep)
-        slicePath.closeCurrentFigure
+        slicePath.AddLine x1, y1, x2, y2
+        slicePath.AddArcCircular m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter + sliceExtend, RadiansToDegrees(hueAngle - (sliceSweep / 2)), RadiansToDegrees(sliceSweep)
+        slicePath.AddLine x4, y4, x3, y3
+        slicePath.AddArcCircular m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner - sliceExtend, RadiansToDegrees(hueAngle + (sliceSweep / 2)), RadiansToDegrees(-sliceSweep)
+        slicePath.CloseCurrentFigure
         
         'Render the completed slice onto the overlay
         slicePath.StrokePath_UIStyle bufferDC, , m_MouseDownWheel
@@ -765,15 +765,15 @@ Private Sub RedrawBackBuffer()
             Set pcPath = New pdGraphicsPath
             
             Dim pcLength As Double, wWidth As Double, wHeight As Double
-            wWidth = m_WheelBuffer.getDIBWidth - 1: wHeight = m_WheelBuffer.getDIBHeight - 1
+            wWidth = m_WheelBuffer.GetDIBWidth - 1: wHeight = m_WheelBuffer.GetDIBHeight - 1
             pcLength = Sqr(wWidth * wWidth + wHeight * wHeight) / 2
             pcLength = (pcLength - (wWidth / 2)) * (PI_HALF * 0.8)
-            pcPath.addTriangle wWidth, wHeight, wWidth - pcLength, wHeight, wWidth, wHeight - pcLength
+            pcPath.AddTriangle wWidth, wHeight, wWidth - pcLength, wHeight, wWidth, wHeight - pcLength
             
             Dim pcBrush As Long, pcPen As Long
             pcBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(proposedColor)
-            pcPen = GDI_Plus.GetGDIPlusPenHandle(colorPreviewBorder, 192, , LineCapRound, LineJoinRound)
-            pcPath.fillPathToDIB_BareBrush pcBrush, , bufferDC
+            pcPen = GDI_Plus.GetGDIPlusPenHandle(colorPreviewBorder, 192, , GP_LC_Round, GP_LJ_Round)
+            pcPath.FillPathToDIB_BareBrush pcBrush, , bufferDC
             pcPath.StrokePath_BarePen pcPen, bufferDC
             GDI_Plus.ReleaseGDIPlusPen pcPen
             GDI_Plus.ReleaseGDIPlusBrush pcBrush

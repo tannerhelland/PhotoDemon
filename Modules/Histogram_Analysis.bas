@@ -38,7 +38,7 @@ Public Sub fillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, , , , True
+    PrepImageData tmpSA, , , , True
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -166,7 +166,7 @@ Public Sub generateHistogramImages(ByRef histogramData() As Double, ByRef channe
         
         'Initialize this channel's DIB
         Set dstDIBs(i) = New pdDIB
-        dstDIBs(i).createBlank imgWidth, imgHeight, 32, vbBlack
+        dstDIBs(i).CreateBlank imgWidth, imgHeight, 32, vbBlack
         
         yMax = 0.9 * imgHeight
         
@@ -217,19 +217,19 @@ Public Sub generateHistogramImages(ByRef histogramData() As Double, ByRef channe
         tmpPath.addPolygon 260, VarPtr(histogramShape(0)), True, True
         
         'Prep pens and brushes in the current color
-        tmpPen = GDI_Plus.GetGDIPlusPenHandle(hColor, 255, 1, LineCapRound, LineJoinRound)
-        tmpBrush = GDI_Plus.getGDIPlusSolidBrushHandle(hColor, 64)
+        tmpPen = GDI_Plus.GetGDIPlusPenHandle(hColor, 255, 1, GP_LC_Round, GP_LJ_Round)
+        tmpBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(hColor, 64)
         
         'Render the paths to their target DIBs
         tmpPath.fillPathToDIB_BareBrush tmpBrush, dstDIBs(i)
-        tmpPath.StrokePath_BarePen tmpPen, dstDIBs(i).getDIBDC
+        tmpPath.StrokePath_BarePen tmpPen, dstDIBs(i).GetDIBDC
         
         'Free our pen and brush resources
         GDI_Plus.ReleaseGDIPlusPen tmpPen
-        GDI_Plus.releaseGDIPlusBrush tmpBrush
+        GDI_Plus.ReleaseGDIPlusBrush tmpBrush
         
         'Mark alpha premultiplication status
-        dstDIBs(i).setInitialAlphaPremultiplicationState True
+        dstDIBs(i).SetInitialAlphaPremultiplicationState True
         
     Next i
     

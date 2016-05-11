@@ -1412,8 +1412,8 @@ Private Sub DrawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
                 buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
                 
-                GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, LineCapRound
-                GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, LineCapRound
+                GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, GP_LC_Round
+                GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, GP_LC_Round
                 
                 'For an OSX-type look, we can mirror the arrow across the control's center line, then draw it again; I personally prefer
                 ' this behavior (as the list box may extend up or down), but I'm not sold on implementing it just yet, because it's out of place
@@ -1422,8 +1422,8 @@ Private Sub DrawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 'buttonPt2.y = fullWinRect.Bottom - buttonPt2.y
                 'buttonPt3.y = fullWinRect.Bottom - buttonPt3.y
                 '
-                'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, LineCapRound
-                'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, LineCapRound
+                'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, GP_LC_Round
+                'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, GP_LC_Round
                                 
                 'Release the DC
                 If Not srcIsWMPAINT Then
