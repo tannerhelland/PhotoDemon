@@ -214,7 +214,7 @@ Private Sub RaiseBrushDialog()
     oldBrush = Brush
     
     'Use the brush dialog to select a new color
-    If showBrushDialog(newBrush, oldBrush, Me) Then
+    If ShowBrushDialog(newBrush, oldBrush, Me) Then
         Brush = newBrush
     Else
         Brush = oldBrush
@@ -344,7 +344,7 @@ Private Sub RedrawBackBuffer()
         Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long
         outlineColor = m_Colors.RetrieveColor(PDBS_Border, Me.Enabled, m_MouseDownBrushRect, m_MouseInsideBrushRect)
         If m_MouseInsideBrushRect Then outlineWidth = 3 Else outlineWidth = 1
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_BrushRect, outlineColor, , outlineWidth, False, LineJoinMiter
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_BrushRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
         
     End If
     

@@ -1305,17 +1305,17 @@ Private Sub DrawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 
                 Dim hatchPath As pdGraphicsPath
                 Set hatchPath = New pdGraphicsPath
-                hatchPath.addRectangle_RectF hatchRect
+                hatchPath.AddRectangle_RectF hatchRect
                 
                 'Create the hatch brush and outline pen
                 Dim gdipBrush As Long
                 gdipBrush = GDI_Plus.GetGDIPlusPatternBrushHandle(m_CurrentListIndex, vbBlack, 255, vbWhite, 255)
                 
                 Dim gdipPen As Long
-                gdipPen = GDI_Plus.GetGDIPlusPenHandle(vbBlack, 192, 1, LineCapRound, LineJoinRound)
+                gdipPen = GDI_Plus.GetGDIPlusPenHandle(vbBlack, 192, 1, GP_LC_Round, GP_LJ_Round)
                 
                 'Fill the hatch region, then trace the border
-                hatchPath.fillPathToDIB_BareBrush gdipBrush, , targetDC, True, hatchRect.Left, hatchRect.Top
+                hatchPath.FillPathToDIB_BareBrush gdipBrush, , targetDC, True, hatchRect.Left, hatchRect.Top
                 hatchPath.StrokePath_BarePen gdipPen, targetDC, True
                 
                 'Release all drawing objects
@@ -1335,8 +1335,8 @@ Private Sub DrawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
                 buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
                 
-                GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, LineCapRound
-                GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, LineCapRound
+                GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, GP_LC_Round
+                GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, GP_LC_Round
                 
                 'For an OSX-type look, we can mirror the arrow across the control's center line, then draw it again; I personally prefer
                 ' this behavior (as the list box may extend up or down), but I'm not sold on implementing it just yet, because it's out of place
@@ -1345,8 +1345,8 @@ Private Sub DrawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 'buttonPt2.y = fullWinRect.Bottom - buttonPt2.y
                 'buttonPt3.y = fullWinRect.Bottom - buttonPt3.y
                 '
-                'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, LineCapRound
-                'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, LineCapRound
+                'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, GP_LC_Round
+                'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, GP_LC_Round
                                 
                 'Release the DC
                 If Not srcIsWMPAINT Then
@@ -1430,17 +1430,17 @@ Private Function DrawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             
             Dim hatchPath As pdGraphicsPath
             Set hatchPath = New pdGraphicsPath
-            hatchPath.addRectangle_RectF hatchRect
+            hatchPath.AddRectangle_RectF hatchRect
             
             'Create the hatch brush and outline pen
             Dim gdipBrush As Long
             gdipBrush = GDI_Plus.GetGDIPlusPatternBrushHandle(srcDIS.itemID, vbBlack, 255, vbWhite, 255)
             
             Dim gdipPen As Long
-            gdipPen = GDI_Plus.GetGDIPlusPenHandle(vbBlack, 192, 1, LineCapRound, LineJoinRound)
+            gdipPen = GDI_Plus.GetGDIPlusPenHandle(vbBlack, 192, 1, GP_LC_Round, GP_LJ_Round)
             
             'Fill the hatch region, then trace the border
-            hatchPath.fillPathToDIB_BareBrush gdipBrush, , srcDIS.hDC, True, hatchRect.Left, hatchRect.Top
+            hatchPath.FillPathToDIB_BareBrush gdipBrush, , srcDIS.hDC, True, hatchRect.Left, hatchRect.Top
             hatchPath.StrokePath_BarePen gdipPen, srcDIS.hDC, True
             
             'Release all drawing objects

@@ -654,8 +654,8 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     'Initialize or repaint the background DIB, as necessary
     m_SliderAreaWidth = ucSupport.GetBackBufferWidth
     m_SliderAreaHeight = ucSupport.GetBackBufferHeight
-    If (m_SliderBackgroundDIB.getDIBWidth <> m_SliderAreaWidth) Or (m_SliderBackgroundDIB.getDIBHeight <> m_SliderAreaHeight) Then
-        m_SliderBackgroundDIB.createBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, BackgroundColor, 255
+    If (m_SliderBackgroundDIB.GetDIBWidth <> m_SliderAreaWidth) Or (m_SliderBackgroundDIB.GetDIBHeight <> m_SliderAreaHeight) Then
+        m_SliderBackgroundDIB.CreateBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, BackgroundColor, 255
     Else
         If g_IsProgramRunning Then GDI_Plus.GDIPlusFillDIBRect m_SliderBackgroundDIB, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight, BackgroundColor, 255
     End If
@@ -669,7 +669,7 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     'We are going to assemble part (1) in this step.
     
     'We always start with the default style: a gray track with rounded edges
-    GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.getDIBDC, GetTrackLeft, m_SliderAreaHeight \ 2, GetTrackRight, m_SliderAreaHeight \ 2, trackColor, 255, m_TrackDiameter + 1, True, LineCapRound
+    GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.GetDIBDC, GetTrackLeft, m_SliderAreaHeight \ 2, GetTrackRight, m_SliderAreaHeight \ 2, trackColor, 255, m_TrackDiameter + 1, True, GP_LC_Round
     
     If Me.Enabled Then
     
@@ -683,7 +683,7 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
             ' sharp 1px border.)
             Case GradientTwoPoint, GradientThreePoint, HueSpectrum360
                 If m_GradientDIB Is Nothing Then CreateGradientTrack
-                m_GradientDIB.alphaBlendToDC m_SliderBackgroundDIB.getDIBDC, 255, GetTrackLeft - (m_TrackDiameter \ 2), 0
+                m_GradientDIB.AlphaBlendToDC m_SliderBackgroundDIB.GetDIBDC, 255, GetTrackLeft - (m_TrackDiameter \ 2), 0
             
             'In the future, we may support fully owner-drawn sliders, but this is not currently implemented.
             Case CustomOwnerDrawn
@@ -771,8 +771,8 @@ Private Sub DrawNotchToDIB(ByRef dstDIB As pdDIB)
         notchSize = (m_SliderAreaHeight - m_TrackDiameter) \ 2 - 4
         
         'Currently, we draw a detached notch above and below the slider's track
-        GDI_Plus.GDIPlusDrawLineToDC dstDIB.getDIBDC, customX, 1, customX, 1 + notchSize, notchColor, 255, 1, True, LineCapFlat
-        GDI_Plus.GDIPlusDrawLineToDC dstDIB.getDIBDC, customX, m_SliderAreaHeight - 1, customX, m_SliderAreaHeight - 1 - notchSize, notchColor, 255, 1, True, LineCapFlat
+        GDI_Plus.GDIPlusDrawLineToDC dstDIB.GetDIBDC, customX, 1, customX, 1 + notchSize, notchColor, 255, 1, True, GP_LC_Flat
+        GDI_Plus.GDIPlusDrawLineToDC dstDIB.GetDIBDC, customX, m_SliderAreaHeight - 1, customX, m_SliderAreaHeight - 1 - notchSize, notchColor, 255, 1, True, GP_LC_Flat
         
     End If
     
@@ -782,7 +782,7 @@ End Sub
 ' (This is used for custom-drawn sliders, and it should be the first step in assembling the track DIB.)
 Public Sub SizeDIBToTrackArea(ByRef targetDIB As pdDIB)
     If targetDIB Is Nothing Then Set targetDIB = New pdDIB
-    targetDIB.createBlank (GetTrackRight - GetTrackLeft) + m_TrackDiameter, m_SliderAreaHeight, 32, ConvertSystemColor(vbWindowBackground), 255
+    targetDIB.CreateBlank (GetTrackRight - GetTrackLeft) + m_TrackDiameter, m_SliderAreaHeight, 32, ConvertSystemColor(vbWindowBackground), 255
 End Sub
 
 'When using a two-color or three-color gradient track style, this function can be called to recreate the background track DIB.
@@ -804,7 +804,7 @@ Private Sub CreateGradientTrack()
     
         'Two-point gradients are the easiest; simply draw a gradient from left color to right color, the full width of the image
         Case GradientTwoPoint
-           Drawing.DrawHorizontalGradientToDIB m_GradientDIB, trackRadius, m_GradientDIB.getDIBWidth - trackRadius, m_GradientColorLeft, m_GradientColorRight
+           Drawing.DrawHorizontalGradientToDIB m_GradientDIB, trackRadius, m_GradientDIB.GetDIBWidth - trackRadius, m_GradientColorLeft, m_GradientColorRight
         
         'Three-point gradients are more involved; draw a custom blend from left to middle to right, while accounting for the
         ' center point's position (which is variable, and which may change at run-time).
@@ -819,28 +819,28 @@ Private Sub CreateGradientTrack()
             
             'Draw two gradients; one each for the left and right of the gradient middle position
             Drawing.DrawHorizontalGradientToDIB m_GradientDIB, trackRadius, relativeMiddlePosition, m_GradientColorLeft, m_GradientColorMiddle
-            Drawing.DrawHorizontalGradientToDIB m_GradientDIB, relativeMiddlePosition, m_GradientDIB.getDIBWidth - trackRadius, m_GradientColorMiddle, m_GradientColorRight
+            Drawing.DrawHorizontalGradientToDIB m_GradientDIB, relativeMiddlePosition, m_GradientDIB.GetDIBWidth - trackRadius, m_GradientColorMiddle, m_GradientColorRight
             
         'Hue gradients simply draw a full hue spectrum from 0 to 360.
         Case HueSpectrum360
         
             'From left-to-right, draw a full hue range onto the DIB
             Dim hueSpread As Long
-            hueSpread = (m_GradientDIB.getDIBWidth - m_TrackDiameter)
+            hueSpread = (m_GradientDIB.GetDIBWidth - m_TrackDiameter)
             
             Dim tmpR As Double, tmpG As Double, tmpB As Double
             
-            For x = 0 To m_GradientDIB.getDIBWidth - 1
+            For x = 0 To m_GradientDIB.GetDIBWidth - 1
                 
                 If x < trackRadius Then
                     fHSVtoRGB 0, 1, 1, tmpR, tmpG, tmpB
-                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
-                ElseIf x > (m_GradientDIB.getDIBWidth - trackRadius) Then
+                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.GetDIBDC, x, 0, x, m_GradientDIB.GetDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, GP_LC_Flat
+                ElseIf x > (m_GradientDIB.GetDIBWidth - trackRadius) Then
                     fHSVtoRGB 1, 1, 1, tmpR, tmpG, tmpB
-                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
+                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.GetDIBDC, x, 0, x, m_GradientDIB.GetDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, GP_LC_Flat
                 Else
                     fHSVtoRGB (x - trackRadius) / hueSpread, 1, 1, tmpR, tmpG, tmpB
-                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
+                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.GetDIBDC, x, 0, x, m_GradientDIB.GetDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, GP_LC_Flat
                 End If
                 
             Next x
@@ -854,11 +854,11 @@ Private Sub CreateGradientTrack()
     If (m_SliderStyle = GradientTwoPoint) Or (m_SliderStyle = GradientThreePoint) Then
     
         For x = 0 To trackRadius
-            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, m_GradientColorLeft, 255, 1, False, LineCapFlat
+            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.GetDIBDC, x, 0, x, m_GradientDIB.GetDIBHeight, m_GradientColorLeft, 255, 1, False, GP_LC_Flat
         Next x
         
-        For x = m_GradientDIB.getDIBWidth - trackRadius To m_GradientDIB.getDIBWidth
-            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, m_GradientColorRight, 255, 1, False, LineCapFlat
+        For x = m_GradientDIB.GetDIBWidth - trackRadius To m_GradientDIB.GetDIBWidth
+            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.GetDIBDC, x, 0, x, m_GradientDIB.GetDIBHeight, m_GradientColorRight, 255, 1, False, GP_LC_Flat
         Next x
         
     End If
@@ -870,15 +870,15 @@ Private Sub CreateGradientTrack()
     'Start by creating the image we're going to use as our alpha mask.
     Dim alphaMask As pdDIB
     Set alphaMask = New pdDIB
-    alphaMask.createBlank m_GradientDIB.getDIBWidth, m_GradientDIB.getDIBHeight, 32, 0, 0
+    alphaMask.CreateBlank m_GradientDIB.GetDIBWidth, m_GradientDIB.GetDIBHeight, 32, 0, 0
     
     'Next, use GDI+ to render a slightly smaller line than the typical track onto the alpha mask.  GDI+'s antialiasing code will automatically
     ' set the relevant alpha bytes for the region of interest.
-    GDI_Plus.GDIPlusDrawLineToDC alphaMask.getDIBDC, trackRadius, m_GradientDIB.getDIBHeight \ 2, m_GradientDIB.getDIBWidth - trackRadius, m_GradientDIB.getDIBHeight \ 2, 0, 255, m_TrackDiameter - 1, True, LineCapRound
+    GDI_Plus.GDIPlusDrawLineToDC alphaMask.GetDIBDC, trackRadius, m_GradientDIB.GetDIBHeight \ 2, m_GradientDIB.GetDIBWidth - trackRadius, m_GradientDIB.GetDIBHeight \ 2, 0, 255, m_TrackDiameter - 1, True, GP_LC_Round
     
     'Transfer the alpha from the alpha mask to the gradient DIB itself
     'alphaMask.setAlphaPremultiplication False
-    m_GradientDIB.copyAlphaFromExistingDIB alphaMask
+    m_GradientDIB.CopyAlphaFromExistingDIB alphaMask
     
     'Premultiply the gradient DIB, so we can successfully alpha-blend it later
     m_GradientDIB.SetAlphaPremultiplication True
@@ -957,7 +957,7 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
     
     'Copy the previously assembled track onto the back buffer.  (This is faster than AlphaBlending the result, especially because
     ' we don't need any blending.)
-    BitBlt bufferDC, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight, m_SliderBackgroundDIB.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt bufferDC, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight, m_SliderBackgroundDIB.GetDIBDC, 0, 0, vbSrcCopy
     
     If Me.Enabled And g_IsProgramRunning Then
         
@@ -986,7 +986,7 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
             
             'Convert that value into an actual pixel position on the track, then render a line between it and the current thumb position
             GetCustomValueCoordinates relevantMin, customX, customY
-            GDI_Plus.GDIPlusDrawLineToDC bufferDC, customX, customY, relevantSliderPosX, customY, trackHighlightColor, 255, m_TrackDiameter + 1, True, LineCapRound
+            GDI_Plus.GDIPlusDrawLineToDC bufferDC, customX, customY, relevantSliderPosX, customY, trackHighlightColor, 255, m_TrackDiameter + 1, True, GP_LC_Round
             
         End If
         

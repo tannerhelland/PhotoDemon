@@ -131,8 +131,8 @@ Public Property Get Gradient() As String
     Gradient = m_curGradient
 End Property
 
-Public Property Let Gradient(ByVal newGradient As String)
-    m_curGradient = newGradient
+Public Property Let Gradient(ByVal NewGradient As String)
+    m_curGradient = NewGradient
     RedrawBackBuffer
     RaiseEvent GradientChanged
     PropertyChanged "Gradient"
@@ -208,12 +208,12 @@ Private Sub RaiseGradientDialog()
     isDialogLive = True
     
     'Backup the current gradient; if the dialog is canceled, we want to restore it
-    Dim newGradient As String, oldGradient As String
+    Dim NewGradient As String, oldGradient As String
     oldGradient = Gradient
     
     'Display the gradient dialog, then wait for it to return
-    If showGradientDialog(newGradient, oldGradient, Me) Then
-        Gradient = newGradient
+    If ShowGradientDialog(NewGradient, oldGradient, Me) Then
+        Gradient = NewGradient
     Else
         Gradient = oldGradient
     End If
@@ -339,7 +339,7 @@ Private Sub RedrawBackBuffer()
         Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long
         outlineColor = m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, m_MouseDownGradientRect, m_MouseInsideGradientRect)
         If m_MouseInsideGradientRect Then outlineWidth = 3 Else outlineWidth = 1
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_GradientRect, outlineColor, , outlineWidth, False, LineJoinMiter
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_GradientRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
        
     End If
     
@@ -350,8 +350,8 @@ End Sub
 
 'If a gradient selection dialog is active, it will pass gradient updates backward to this function, so that we can let
 ' our parent form display live updates *while the user is playing with gradients*.
-Public Sub NotifyOfLiveGradientChange(ByVal newGradient As String)
-    Gradient = newGradient
+Public Sub NotifyOfLiveGradientChange(ByVal NewGradient As String)
+    Gradient = NewGradient
 End Sub
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this

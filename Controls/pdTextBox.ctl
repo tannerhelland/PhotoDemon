@@ -557,7 +557,7 @@ Private Sub RedrawBackBuffer()
         Else
             borderWidth = 1
         End If
-        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, halfPadding, halfPadding, (bWidth - 1) - halfPadding, (bHeight - 1) - halfPadding, m_Colors.RetrieveColor(PDEB_Border, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox), , borderWidth, False, LineJoinMiter
+        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, halfPadding, halfPadding, (bWidth - 1) - halfPadding, (bHeight - 1) - halfPadding, m_Colors.RetrieveColor(PDEB_Border, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox), , borderWidth, False, GP_LJ_Miter
     
     End If
     

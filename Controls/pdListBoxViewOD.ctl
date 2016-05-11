@@ -512,7 +512,7 @@ Private Sub RedrawBackBuffer()
                 
                 ' (As of the 7.0 release, the border is only drawn if the current item is selected.  This is a deliberate decision
                 '  to improve aesthetics on the Metadata dialog, among others.  This may be revisited in the future.)
-                If itemIsHovered Or itemIsSelected Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRect, curColor, , , False, LineJoinMiter
+                If itemIsHovered Or itemIsSelected Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRect, curColor, , , False, GP_LJ_Miter
                 
                 '...and finally, render a separator line, if any
                 If itemHasSeparator Then
@@ -531,10 +531,10 @@ Private Sub RedrawBackBuffer()
         If listHasFocus Then borderWidth = 3# Else borderWidth = 1#
         borderColor = m_Colors.RetrieveColor(PDLB_Border, enabledState, listHasFocus)
         
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ListRect, borderColor, , borderWidth, , LineJoinMiter
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ListRect, borderColor, , borderWidth, , GP_LJ_Miter
         
         If Not listHasFocus Then
-            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, BackgroundColor, , , , LineJoinMiter
+            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, BackgroundColor, , , , GP_LJ_Miter
         End If
         
     End If

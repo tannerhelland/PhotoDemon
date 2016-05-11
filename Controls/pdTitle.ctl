@@ -463,12 +463,12 @@ Private Sub RedrawBackBuffer()
         
         Dim arrowWidth As Single
         If ucSupport.IsMouseInside Then arrowWidth = 2 Else arrowWidth = 1
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, arrowPt1.x, arrowPt1.y, arrowPt2.x, arrowPt2.y, arrowColor, 255, 2, True, LineCapRound
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, arrowPt2.x, arrowPt2.y, arrowPt3.x, arrowPt3.y, arrowColor, 255, 2, True, LineCapRound
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, arrowPt1.x, arrowPt1.y, arrowPt2.x, arrowPt2.y, arrowColor, 255, 2, True, GP_LC_Round
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, arrowPt2.x, arrowPt2.y, arrowPt3.x, arrowPt3.y, arrowColor, 255, 2, True, GP_LC_Round
         
         'Finally, frame the control.  At present, this consists of two gradient lines - one across the top, the other down the right side.
-        GDI_Plus.GDIPlusDrawGradientLineToDC bufferDC, 0#, 0#, bWidth - 1, 0#, ctlFillColor, ctlTopLineColor, 255, 255, 1, True, LineCapRound
-        GDI_Plus.GDIPlusDrawGradientLineToDC bufferDC, bWidth - 1, 0#, bWidth - 1, bHeight, ctlTopLineColor, ctlFillColor, 255, 255, 1, True, LineCapRound
+        GDI_Plus.GDIPlusDrawGradientLineToDC bufferDC, 0#, 0#, bWidth - 1, 0#, ctlFillColor, ctlTopLineColor, 255, 255, 1, True, GP_LC_Round
+        GDI_Plus.GDIPlusDrawGradientLineToDC bufferDC, bWidth - 1, 0#, bWidth - 1, bHeight, ctlTopLineColor, ctlFillColor, 255, 255, 1, True, GP_LC_Round
         
     End If
     

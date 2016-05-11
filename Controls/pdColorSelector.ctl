@@ -440,21 +440,21 @@ Private Sub RedrawBackBuffer()
         'Render the primary and secondary color button default appearances
         With m_PrimaryColorRect
             GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Right - .Left, .Bottom - .Top, Me.Color, 255
-            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left, .Top, .Right, .Bottom, defaultBorderColor, 255, 1#, False, LineJoinMiter
+            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left, .Top, .Right, .Bottom, defaultBorderColor, 255, 1#, False, GP_LJ_Miter
         End With
         
         If m_ShowMainWindowColor Then
             With m_SecondaryColorRect
                 GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Right - .Left, .Bottom - .Top, layerpanel_Colors.clrVariants.Color, 255
-                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left, .Top, .Right, .Bottom, defaultBorderColor, 255, 1#, False, LineJoinMiter
+                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left, .Top, .Right, .Bottom, defaultBorderColor, 255, 1#, False, GP_LJ_Miter
             End With
         End If
         
         'If either button is hovered, trace it with a bold, colored outline
         If m_MouseInPrimaryButton Then
-            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, m_PrimaryColorRect.Left, m_PrimaryColorRect.Top, m_PrimaryColorRect.Right, m_PrimaryColorRect.Bottom, activeBorderColor, 255, 3#, False, LineJoinMiter
+            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, m_PrimaryColorRect.Left, m_PrimaryColorRect.Top, m_PrimaryColorRect.Right, m_PrimaryColorRect.Bottom, activeBorderColor, 255, 3#, False, GP_LJ_Miter
         ElseIf m_MouseInSecondaryButton And m_ShowMainWindowColor Then
-            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, m_SecondaryColorRect.Left, m_SecondaryColorRect.Top, m_SecondaryColorRect.Right, m_SecondaryColorRect.Bottom, activeBorderColor, 255, 3#, False, LineJoinMiter
+            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, m_SecondaryColorRect.Left, m_SecondaryColorRect.Top, m_SecondaryColorRect.Right, m_SecondaryColorRect.Bottom, activeBorderColor, 255, 3#, False, GP_LJ_Miter
         End If
         
     End If

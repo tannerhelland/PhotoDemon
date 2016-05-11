@@ -46,12 +46,12 @@ Private Declare Function GdipIsVisiblePathPoint Lib "gdiplus" (ByVal hPath As Lo
 'Path property changes (both destructive and non-destructive)
 Private Declare Function GdipSetPathFillMode Lib "gdiplus" (ByVal hPath As Long, ByVal newBrushMode As GDIFillMode) As Long
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newSmoothingMode As SmoothingMode) As Long
-Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal pixOffsetMode As PixelOffsetMode) As Long
+Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newOffsetMode As GP_PixelOffsetMode) As GP_Result
 Private Declare Function GdipWidenPath Lib "gdiplus" (ByVal hPath As Long, ByVal hPen As Long, ByVal hTransformMatrix As Long, ByVal widenFlatness As Single) As Long
 Private Declare Function GdipWindingModeOutline Lib "gdiplus" (ByVal hPath As Long, ByVal hTransformationMatrix As Long, ByVal outlineFlatness As Single) As Long
 
-Private Declare Function GdipSetPenLineCap Lib "gdiplus" Alias "GdipSetPenLineCap197819" (ByVal hPen As Long, ByVal penStartCap As LineCap, ByVal penEndCap As LineCap, ByVal penDashCap As DashCap) As Long
-Private Declare Function GdipSetPenLineJoin Lib "gdiplus" (ByVal hPen As Long, ByVal penLineJoin As LineJoin) As Long
+Private Declare Function GdipSetPenLineCap Lib "gdiplus" Alias "GdipSetPenLineCap197819" (ByVal hPen As Long, ByVal penStartCap As GP_LineCap, ByVal penEndCap As GP_LineCap, ByVal penDashCap As GP_DashCap) As Long
+Private Declare Function GdipSetPenLineJoin Lib "gdiplus" (ByVal hPen As Long, ByVal penLineJoin As GP_LineJoin) As Long
 
 'Figure-specific path additions
 Private Declare Function GdipAddPathRectangle Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Long
@@ -71,14 +71,14 @@ Private Declare Function GdipStartPathFigure Lib "gdiplus" (ByVal hPath As Long)
 Private Declare Function GdipTransformPath Lib "gdiplus" (ByVal hPath As Long, ByVal srcMatrix As Long) As Long
 
 'Pen functions (for stroking a path)
-Private Declare Function GdipCreatePen1 Lib "gdiplus" (ByVal penColor As Long, ByVal penWidth As Single, ByVal penUnit As GpUnit, ByRef hPen As Long) As Long
+Private Declare Function GdipCreatePen1 Lib "gdiplus" (ByVal penColor As Long, ByVal penWidth As Single, ByVal penUnit As GP_Unit, ByRef hPen As Long) As Long
 Private Declare Function GdipDeletePen Lib "gdiplus" (ByVal hPen As Long) As Long
 
 'Drawing functions
 Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal hPath As Long) As Long
 Private Declare Function GdipFillPath Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal hPath As Long) As Long
 Private Declare Function GdipSetRenderingOrigin Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Long, ByVal y As Long) As Long
-Private Declare Function GdipSetClipRect Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single, ByVal combineMode As Long) As Long
+Private Declare Function GdipSetClipRect Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single, ByVal CombineMode As Long) As Long
 Private Const GDIP_COMBINE_MODE_REPLACE As Long = 0
 
 'Misc GDI+ support types and functions
@@ -100,39 +100,39 @@ Private m_PathHandle As Long
 ' NOTE: all paths are contiguous by default, so the first point of any added shape will be automatically connected to
 '       the last point of the previous shape.
 
-Public Sub addCircle(ByVal centerX As Single, ByVal centerY As Single, ByVal circleRadius As Single)
-    Me.addEllipse_Absolute centerX - circleRadius, centerY - circleRadius, centerX + circleRadius, centerY + circleRadius
+Public Sub AddCircle(ByVal centerX As Single, ByVal centerY As Single, ByVal circleRadius As Single)
+    Me.AddEllipse_Absolute centerX - circleRadius, centerY - circleRadius, centerX + circleRadius, centerY + circleRadius
 End Sub
 
-Public Sub addEllipse_Absolute(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
+Public Sub AddEllipse_Absolute(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
     GdipAddPathEllipse m_PathHandle, x1, y1, x2 - x1, y2 - y1
 End Sub
 
-Public Sub addEllipse_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal ellipseWidth As Single, ByVal ellipseHeight As Single)
+Public Sub AddEllipse_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal ellipseWidth As Single, ByVal ellipseHeight As Single)
     GdipAddPathEllipse m_PathHandle, x1, y1, ellipseWidth, ellipseHeight
 End Sub
 
-Friend Sub addEllipse_RectF(ByRef srcRect As RECTF)
+Friend Sub AddEllipse_RectF(ByRef srcRect As RECTF)
     With srcRect
         GdipAddPathEllipse m_PathHandle, .Left, .Top, .Width, .Height
     End With
 End Sub
 
-Public Sub addLine(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
+Public Sub AddLine(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
     GdipAddPathLine m_PathHandle, x1, y1, x2, y2
 End Sub
 
-Friend Sub addArc(ByRef ellipseBoundRect As RECTF, ByVal startAngle As Single, ByVal sweepAngle As Single)
+Friend Sub AddArc(ByRef ellipseBoundRect As RECTF, ByVal startAngle As Single, ByVal sweepAngle As Single)
     With ellipseBoundRect
         GdipAddPathArc m_PathHandle, .Left, .Top, .Width, .Height, startAngle, sweepAngle
     End With
 End Sub
 
-Public Sub addArcCircular(ByVal centerX As Single, ByVal centerY As Single, ByVal arcRadius As Single, ByVal startAngle As Single, ByVal sweepAngle As Single)
+Public Sub AddArcCircular(ByVal centerX As Single, ByVal centerY As Single, ByVal arcRadius As Single, ByVal startAngle As Single, ByVal sweepAngle As Single)
     GdipAddPathArc m_PathHandle, centerX - arcRadius, centerY - arcRadius, arcRadius * 2, arcRadius * 2, startAngle, sweepAngle
 End Sub
 
-Public Sub addPolygon(ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, ByVal autoCloseShape As Boolean, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5)
+Public Sub AddPolygon(ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, ByVal autoCloseShape As Boolean, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5)
 
     'We have a few different options for adding this shape, based on the passed parameters.
     If autoCloseShape Then
@@ -155,21 +155,21 @@ Public Sub addPolygon(ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, 
     
 End Sub
 
-Public Sub addRectangle_Absolute(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
+Public Sub AddRectangle_Absolute(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
     GdipAddPathRectangle m_PathHandle, x1, y1, x2 - x1, y2 - y1
 End Sub
 
-Public Sub addRectangle_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single)
+Public Sub AddRectangle_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single)
     GdipAddPathRectangle m_PathHandle, x1, y1, rectWidth, rectHeight
 End Sub
 
-Friend Sub addRectangle_RectF(ByRef srcRect As RECTF)
+Friend Sub AddRectangle_RectF(ByRef srcRect As RECTF)
     With srcRect
         GdipAddPathRectangle m_PathHandle, .Left, .Top, .Width, .Height
     End With
 End Sub
 
-Public Sub addRoundedRectangle_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single, ByVal cornerRadius As Single)
+Public Sub AddRoundedRectangle_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single, ByVal cornerRadius As Single)
     
     'Validate the radius twice before applying it.  The width and height curvature cannot be less than
     ' 1/2 the width (or height) of the rect.
@@ -189,12 +189,12 @@ Public Sub addRoundedRectangle_Relative(ByVal x1 As Single, ByVal y1 As Single, 
     
 End Sub
 
-Public Sub addBezierCurve(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single, ByVal x4 As Single, ByVal y4 As Single)
+Public Sub AddBezierCurve(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single, ByVal x4 As Single, ByVal y4 As Single)
     GdipAddPathBezier m_PathHandle, x1, y1, x2, y2, x3, y3, x4, y4
 End Sub
 
 'Convenience wrapper for triangles
-Public Sub addTriangle(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single)
+Public Sub AddTriangle(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single)
 
     'Convert the incoming points to a float array and use the generic polygon wrapper to add 'em
     Dim tmpPoints() As POINTFLOAT
@@ -207,11 +207,11 @@ Public Sub addTriangle(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Singl
     tmpPoints(2).x = x3
     tmpPoints(2).y = y3
     
-    Me.addPolygon 3, VarPtr(tmpPoints(0)), True, False
+    Me.AddPolygon 3, VarPtr(tmpPoints(0)), True, False
     
 End Sub
 
-Public Sub addPath(ByRef srcGraphicsPath As pdGraphicsPath, Optional ByVal offsetX As Single = 0, Optional ByVal offsetY As Single = 0, Optional ByVal connectToLastPointOfThisPath As Boolean = False)
+Public Sub AddPath(ByRef srcGraphicsPath As pdGraphicsPath, Optional ByVal offsetX As Single = 0, Optional ByVal offsetY As Single = 0, Optional ByVal connectToLastPointOfThisPath As Boolean = False)
     
     'Make sure the glyph exists
     If srcGraphicsPath Is Nothing Then
@@ -222,7 +222,7 @@ Public Sub addPath(ByRef srcGraphicsPath As pdGraphicsPath, Optional ByVal offse
     'If no offsets are specified, copy the path as-is
     If (offsetX = 0) And (offsetY = 0) Then
     
-        GdipAddPathPath m_PathHandle, srcGraphicsPath.getCopyOfPathHandle, IIf(connectToLastPointOfThisPath, 1&, 0&)
+        GdipAddPathPath m_PathHandle, srcGraphicsPath.GetCopyOfPathHandle, IIf(connectToLastPointOfThisPath, 1&, 0&)
         
     'If offsets were specified, we need to clone the path, translate it, then add it
     Else
@@ -230,13 +230,13 @@ Public Sub addPath(ByRef srcGraphicsPath As pdGraphicsPath, Optional ByVal offse
         'Clone the path
         Dim tmpPath As pdGraphicsPath
         Set tmpPath = New pdGraphicsPath
-        tmpPath.cloneExistingPath srcGraphicsPath
+        tmpPath.CloneExistingPath srcGraphicsPath
         
         'Translate the path
-        tmpPath.translatePath offsetX, offsetY
+        tmpPath.TranslatePath offsetX, offsetY
         
         'Add it
-        GdipAddPathPath m_PathHandle, tmpPath.getCopyOfPathHandle, IIf(connectToLastPointOfThisPath, 1&, 0&)
+        GdipAddPathPath m_PathHandle, tmpPath.GetCopyOfPathHandle, IIf(connectToLastPointOfThisPath, 1&, 0&)
         
         'Free our temporary path object
         Set tmpPath = Nothing
@@ -245,17 +245,17 @@ Public Sub addPath(ByRef srcGraphicsPath As pdGraphicsPath, Optional ByVal offse
     
 End Sub
 
-Public Sub startNewFigure()
+Public Sub StartNewFigure()
     GdipStartPathFigure m_PathHandle
 End Sub
 
-Public Sub closeCurrentFigure()
+Public Sub CloseCurrentFigure()
     GdipClosePathFigure m_PathHandle
 End Sub
 
 'For pen previews, it's helpful to have the path class create its own little preview shape.  In the future, we could give the user a selection of
 ' sample paths, which would simply be constants passed to this function.
-Friend Sub createSamplePathForRect(ByRef srcRect As RECTF, Optional ByVal hPadding As Single = 0, Optional ByVal vPadding As Single = 0)
+Friend Sub CreateSamplePathForRect(ByRef srcRect As RECTF, Optional ByVal hPadding As Single = 0, Optional ByVal vPadding As Single = 0)
 
     'A sample path is just a nice little curve that demonstrates a few obvious path elements for the user
     Dim samplePoints() As POINTFLOAT
@@ -296,7 +296,7 @@ Friend Sub createSamplePathForRect(ByRef srcRect As RECTF, Optional ByVal hPaddi
     End With
     
     'Add the final positions to the path!
-    Me.addPolygon 9, VarPtr(samplePoints(0)), False, True, 0.5
+    Me.AddPolygon 9, VarPtr(samplePoints(0)), False, True, 0.5
 
 End Sub
 
@@ -312,12 +312,12 @@ End Sub
 ' BEGIN: NON-DESTRUCTIVE PATH EDITS
 
 'Change the path's fill mode.  (This behavior is non-destructive.)
-Public Sub setPathFillMode(ByVal newMode As GDIFillMode)
+Public Sub SetPathFillMode(ByVal newMode As GDIFillMode)
     GdipSetPathFillMode m_PathHandle, newMode
 End Sub
 
 'Translate the entire path by some amount in the x and/or y positions
-Public Sub translatePath(ByVal xAmount As Single, ByVal yAmount As Single)
+Public Sub TranslatePath(ByVal xAmount As Single, ByVal yAmount As Single)
 
     'Retrieve a translation matrix
     Dim tmpMatrix As pdGraphicsMatrix
@@ -333,7 +333,7 @@ Public Sub translatePath(ByVal xAmount As Single, ByVal yAmount As Single)
 End Sub
 
 'Transform the path by some arbitrary pdGraphicsMatrix object
-Public Sub transformPathByMatrix(ByRef srcMatrix As pdGraphicsMatrix)
+Public Sub TransformPathByMatrix(ByRef srcMatrix As pdGraphicsMatrix)
     
     'Apply the transformation immediately
     GdipTransformPath m_PathHandle, srcMatrix.getMatrixHandle
@@ -341,7 +341,7 @@ Public Sub transformPathByMatrix(ByRef srcMatrix As pdGraphicsMatrix)
 End Sub
 
 'Rotate the path around its center point.  The center point is calculated automatically.
-Public Sub rotatePathAroundItsCenter(ByRef rotateAngle As Single)
+Public Sub RotatePathAroundItsCenter(ByRef rotateAngle As Single)
     
     'Create a transformation matrix
     Dim tmpMatrix As pdGraphicsMatrix
@@ -360,7 +360,7 @@ Public Sub rotatePathAroundItsCenter(ByRef rotateAngle As Single)
 End Sub
 
 'Mirror the path around its center point.  The center point is calculated automatically.
-Public Sub mirrorPathAroundItsCenter(ByVal mirrorHorizontal As Boolean, ByVal mirrorVertical As Boolean)
+Public Sub MirrorPathAroundItsCenter(ByVal mirrorHorizontal As Boolean, ByVal mirrorVertical As Boolean)
     
     'Create a transformation matrix
     Dim tmpMatrix As pdGraphicsMatrix
@@ -395,15 +395,15 @@ End Sub
 ' BEGIN: DESTRUCTIVE PATH EDITS
 
 'Convert a path to border type, using a single border width parameters as the guide.
-Public Sub convertPathToBorderType_Simple(ByVal borderWidth As Single, Optional ByVal useLineCap As LineCap = LineCapFlat, Optional ByVal useLineJoin As LineJoin = LineJoinMiter, Optional ByVal allowableError As Single = FlatnessDefault)
+Public Sub ConvertPathToBorderType_Simple(ByVal borderWidth As Single, Optional ByVal useLineCap As GP_LineCap = GP_LC_Flat, Optional ByVal useLineJoin As GP_LineJoin = GP_LJ_Miter, Optional ByVal allowableError As Single = FlatnessDefault)
 
     'Widening a path requires a GDI+ pen.  All of the pen's properties (width, dashing, transforms, miters, etc)
     ' are considered when applying the widening transform.
     Dim hPen As Long
-    GdipCreatePen1 0, borderWidth, gdipUnitPixel, hPen
+    GdipCreatePen1 0, borderWidth, GP_U_Pixel, hPen
     
     'Apply the requested line cap and miter
-    GdipSetPenLineCap hPen, useLineCap, useLineCap, DashCapFlat
+    GdipSetPenLineCap hPen, useLineCap, useLineCap, GP_DC_Flat
     GdipSetPenLineJoin hPen, useLineJoin
     
     'Apply the widen command
@@ -419,19 +419,19 @@ End Sub
 '
 'Unlike other subs, this actually returns a success/failure result.  GDI+ is prone to unpredictable failures, so the caller may need to take
 ' precautions if the request fails.  (On failure, this sub will automatically try to restore the original path if it can.)
-Public Function inflatePath(ByVal inflateWidth As Single, Optional ByVal useLineCap As LineCap = LineCapFlat, Optional ByVal useLineJoin As LineJoin = LineJoinMiter, Optional ByVal allowableError As Single = FlatnessDefault) As Boolean
+Public Function InflatePath(ByVal inflateWidth As Single, Optional ByVal useLineCap As GP_LineCap = GP_LC_Flat, Optional ByVal useLineJoin As GP_LineJoin = GP_LJ_Miter, Optional ByVal allowableError As Single = FlatnessDefault) As Boolean
 
     'Widening a path requires a GDI+ pen.  All of the pen's properties (width, dashing, transforms, miters, etc)
     ' are considered when applying the widening transform.
     Dim hPen As Long
-    GdipCreatePen1 0, inflateWidth, gdipUnitPixel, hPen
+    GdipCreatePen1 0, inflateWidth, GP_U_Pixel, hPen
     
     'Because GDI+ widening transforms are prone to failure, make a backup of the current path (as we may need to restore it).
     Dim pathBackup As Long
     GdipClonePath m_PathHandle, pathBackup
     
     'Apply the requested line cap and miter
-    GdipSetPenLineCap hPen, useLineCap, useLineCap, DashCapFlat
+    GdipSetPenLineCap hPen, useLineCap, useLineCap, GP_DC_Flat
     GdipSetPenLineJoin hPen, useLineJoin
         
     'Apply the widen command
@@ -444,17 +444,17 @@ Public Function inflatePath(ByVal inflateWidth As Single, Optional ByVal useLine
         'Convert the path to an outline-only representation
         If GdipWindingModeOutline(m_PathHandle, 0, allowableError) = 0 Then
             GdipDeletePath pathBackup
-            inflatePath = True
+            InflatePath = True
         Else
             GdipClonePath pathBackup, m_PathHandle
             GdipDeletePath pathBackup
-            inflatePath = False
+            InflatePath = False
         End If
         
     Else
         GdipClonePath pathBackup, m_PathHandle
         GdipDeletePath pathBackup
-        inflatePath = False
+        InflatePath = False
     End If
     
     'Regardless of outcome, we can now safely release our temporary pen
@@ -472,11 +472,11 @@ End Function
 '
 ' BEGIN: EXTERNAL PATH ACCESS
 
-Public Function getCopyOfPathHandle() As Long
-    getCopyOfPathHandle = m_PathHandle
+Public Function GetCopyOfPathHandle() As Long
+    GetCopyOfPathHandle = m_PathHandle
 End Function
 
-Public Sub cloneExistingPath(ByRef srcPath As pdGraphicsPath)
+Public Sub CloneExistingPath(ByRef srcPath As pdGraphicsPath)
     
     'Make sure the source path exists!
     If srcPath Is Nothing Then
@@ -488,11 +488,11 @@ Public Sub cloneExistingPath(ByRef srcPath As pdGraphicsPath)
     If m_PathHandle <> 0 Then GdipDeletePath m_PathHandle
     
     'Clone the new path
-    GdipClonePath srcPath.getCopyOfPathHandle, m_PathHandle
+    GdipClonePath srcPath.GetCopyOfPathHandle, m_PathHandle
     
 End Sub
 
-Friend Sub getPathBounds(ByRef dstRect As RECTF)
+Friend Sub GetPathBounds(ByRef dstRect As RECTF)
     GdipGetPathWorldBounds m_PathHandle, dstRect, 0, 0
 End Sub
 
@@ -523,9 +523,9 @@ End Sub
 
 'Reset the path to a blank state.  Note that this also resets the fill mode to ALTERNATE; we override this with PD's
 ' preferred default behavior (winding).
-Public Sub resetPath()
+Public Sub ResetPath()
     GdipResetPath m_PathHandle
-    setPathFillMode FillModeWinding
+    SetPathFillMode FillModeWinding
 End Sub
 
 ' END: BASIC MAINTENANCE FUNCTIONS
@@ -538,13 +538,13 @@ End Sub
 '
 ' BEGIN: HIT-DETECTION FUNCTIONS
 
-Public Function isPointInsidePath(ByVal x As Single, ByVal y As Single) As Boolean
+Public Function IsPointInsidePath(ByVal x As Single, ByVal y As Single) As Boolean
     
     Dim gdipReturn As Long, ptInside As Long
     gdipReturn = GdipIsVisiblePathPoint(m_PathHandle, x, y, 0&, ptInside)
     
     If gdipReturn = 0 Then
-        isPointInsidePath = CBool(ptInside <> 0)
+        IsPointInsidePath = CBool(ptInside <> 0)
     Else
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  pdGraphicsPath.isPointInsidePath() failed to call GdipIsVisiblePathPoint(). Failure code " & gdipReturn & "."
@@ -563,7 +563,7 @@ End Function
 ' BEGIN: DRAWING FUNCTIONS
 
 'Stroke the current path, using the default arrangement for PD's current theme
-Public Sub StrokePath_UIStyle(ByVal dstDC As Long, Optional ByVal useHighlightColor As Boolean = False, Optional ByVal useHQOffsets As Boolean = True, Optional ByVal customLinejoin As LineJoin = LineJoinRound, Optional ByVal useCustomStartCap As LineCap = LineCapRound, Optional ByVal useCustomEndCap As LineCap = LineCapRound)
+Public Sub StrokePath_UIStyle(ByVal dstDC As Long, Optional ByVal useHighlightColor As Boolean = False, Optional ByVal useHQOffsets As Boolean = True, Optional ByVal customLinejoin As GP_LineJoin = GP_LJ_Round, Optional ByVal useCustomStartCap As GP_LineCap = GP_LC_Round, Optional ByVal useCustomEndCap As GP_LineCap = GP_LC_Round)
 
     'PD's default behavior for UI-related paths is to stroke a path twice; once with a thickness of 2px
     ' (which actually ends up being more like 1px along the path, and 0.5 px along either side)
@@ -582,19 +582,19 @@ Public Sub StrokePath_UIStyle(ByVal dstDC As Long, Optional ByVal useHighlightCo
     
     'Activate half-pixel offsets
     If useHQOffsets Then
-        GdipSetPixelOffsetMode hGraphics, PixelOffsetModeHighQuality
+        GdipSetPixelOffsetMode hGraphics, GP_POM_HighQuality
     Else
-        GdipSetPixelOffsetMode hGraphics, PixelOffsetModeHighSpeed
+        GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
     End If
     
     'Create two pens, each of which will be used to stroke the line.  Note that specific color definitions are pulled from PD's central themer.
     Dim hBlackPen As Long, hWhitePen As Long
-    GdipCreatePen1 fillQuadWithVBRGB(g_Themer.GetGenericUIColor(UI_UniversalLineEdge, , , useHighlightColor), 192), 3#, gdipUnitPixel, hBlackPen
-    GdipCreatePen1 fillQuadWithVBRGB(g_Themer.GetGenericUIColor(UI_UniversalLineCenter, , , useHighlightColor), 220), 1.6, gdipUnitPixel, hWhitePen
+    GdipCreatePen1 GDI_Plus.FillQuadWithVBRGB(g_Themer.GetGenericUIColor(UI_UniversalLineEdge, , , useHighlightColor), 192), 3#, GP_U_Pixel, hBlackPen
+    GdipCreatePen1 GDI_Plus.FillQuadWithVBRGB(g_Themer.GetGenericUIColor(UI_UniversalLineCenter, , , useHighlightColor), 220), 1.6, GP_U_Pixel, hWhitePen
     
     'Populate line end and join parameters
-    GdipSetPenLineCap hBlackPen, useCustomStartCap, useCustomEndCap, DashCapRound
-    GdipSetPenLineCap hWhitePen, useCustomStartCap, useCustomEndCap, DashCapRound
+    GdipSetPenLineCap hBlackPen, useCustomStartCap, useCustomEndCap, GP_DC_Round
+    GdipSetPenLineCap hWhitePen, useCustomStartCap, useCustomEndCap, GP_DC_Round
     
     GdipSetPenLineJoin hBlackPen, customLinejoin
     GdipSetPenLineJoin hWhitePen, customLinejoin
@@ -640,7 +640,7 @@ Public Sub StrokePath_BarePen(ByRef srcPen As Long, ByVal dstDC As Long, Optiona
 End Sub
 
 'Fill the current path, using a bare brush handle for the rendering.
-Public Sub fillPathToDIB_BareBrush(ByVal srcBrush As Long, Optional ByRef dstDIB As pdDIB = Nothing, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useAA As Boolean = True, Optional ByVal customRenderingOriginX As Long = 0, Optional ByVal customRenderingOriginY As Long = 0)
+Public Sub FillPathToDIB_BareBrush(ByVal srcBrush As Long, Optional ByRef dstDIB As pdDIB = Nothing, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useAA As Boolean = True, Optional ByVal customRenderingOriginX As Long = 0, Optional ByVal customRenderingOriginY As Long = 0)
     
     'Obtain a GDI+ handle to the image
     Dim hGraphics As Long
@@ -648,7 +648,7 @@ Public Sub fillPathToDIB_BareBrush(ByVal srcBrush As Long, Optional ByRef dstDIB
     If useThisDCInstead <> 0 Then
         GdipCreateFromHDC useThisDCInstead, hGraphics
     Else
-        GdipCreateFromHDC dstDIB.getDIBDC, hGraphics
+        GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
     End If
     
     'Activate AA
@@ -673,32 +673,3 @@ End Sub
 '
 '***************************************************************************
 
-
-
-
-'***************************************************************************
-'
-' BEGIN: MISC SUPPORT FUNCTIONS
-
-'GDI+ requires RGBQUAD colors with alpha in the 4th byte.  This function returns an RGBQUAD (long-type) from a standard RGB()
-' long and supplied alpha.  It's not a very efficient conversion, but I need it so infrequently that I don't really care.
-Private Function fillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte) As Long
-    
-    Dim dstQuad As RGBQUAD
-    With dstQuad
-        .Red = ExtractR(vbRGB)
-        .Green = ExtractG(vbRGB)
-        .Blue = ExtractB(vbRGB)
-        .Alpha = alphaValue
-    End With
-    
-    Dim placeHolder As tmpLong
-    LSet placeHolder = dstQuad
-    
-    fillQuadWithVBRGB = placeHolder.lngResult
-    
-End Function
-
-' END: MISC SUPPORT FUNCTIONS
-'
-'***************************************************************************

@@ -367,21 +367,21 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
         
         'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
         ' (We also check for these != 0 to verify that an image was successfully loaded.)
-        m_ImageWidth = srcDIB.getDIBWidth
-        m_ImageHeight = srcDIB.getDIBHeight
+        m_ImageWidth = srcDIB.GetDIBWidth
+        m_ImageHeight = srcDIB.GetDIBHeight
         
         'Create a vertical sprite-sheet DIB, and mark it as having premultiplied alpha
         If m_Images Is Nothing Then Set m_Images = New pdDIB
-        m_Images.createBlank m_ImageWidth, m_ImageHeight * 3, srcDIB.getDIBColorDepth, 0, 0
-        m_Images.setInitialAlphaPremultiplicationState True
+        m_Images.CreateBlank m_ImageWidth, m_ImageHeight * 3, srcDIB.GetDIBColorDepth, 0, 0
+        m_Images.SetInitialAlphaPremultiplicationState True
         
         'Copy this normal-state DIB into place at the top of the sheet
-        BitBlt m_Images.getDIBDC, 0, 0, m_ImageWidth, m_ImageHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt m_Images.GetDIBDC, 0, 0, m_ImageWidth, m_ImageHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Next, make a copy of the source DIB.
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
-        tmpDIB.createFromExistingDIB srcDIB
+        tmpDIB.CreateFromExistingDIB srcDIB
         
         'Convert this to a brighter, "glowing" version; we'll use this when rendering a hovered state.
         If customGlowWhenHovered = 0 Then
@@ -391,15 +391,15 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
         End If
         
         'Copy this DIB into position #2, beneath the base DIB
-        BitBlt m_Images.getDIBDC, 0, m_ImageHeight, m_ImageWidth, m_ImageHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt m_Images.GetDIBDC, 0, m_ImageHeight, m_ImageWidth, m_ImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Finally, create a grayscale copy of the original image.  This will serve as the "disabled state" copy.
-        tmpDIB.createFromExistingDIB srcDIB
+        tmpDIB.CreateFromExistingDIB srcDIB
         GrayscaleDIB tmpDIB, True
         If scalePixelsWhenDisabled <> 0 Then ScaleDIBRGBValues tmpDIB, scalePixelsWhenDisabled, True
         
         'Place it into position #3, beneath the previous two DIBs
-        BitBlt m_Images.getDIBDC, 0, m_ImageHeight * 2, m_ImageWidth, m_ImageHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt m_Images.GetDIBDC, 0, m_ImageHeight * 2, m_ImageWidth, m_ImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Free whatever DIBs we can.  (If the caller passed us the source DIB, we trust them to release it.)
         Set tmpDIB = Nothing
@@ -608,7 +608,7 @@ Private Sub RedrawBackBuffer()
         'A border is always drawn around the control; its size varies by hover state.  (This is standard Win 10 behavior.)
         Dim borderWidth As Single
         If m_MouseInsideUC Or m_FocusRectActive Then borderWidth = 3 Else borderWidth = 1
-        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 1, 1, bWidth - 2, bHeight - 2, btnColorBorder, 255, borderWidth, False, LineJoinMiter
+        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 1, 1, bWidth - 2, bHeight - 2, btnColorBorder, 255, borderWidth, False, GP_LJ_Miter
     
     End If
     
@@ -623,7 +623,7 @@ Private Sub RedrawBackBuffer()
             pxOffset = m_ImageHeight * 2
         End If
         
-        m_Images.alphaBlendToDCEx bufferDC, btImageCoords.x, btImageCoords.y, m_ImageWidth, m_ImageHeight, 0, pxOffset, m_ImageWidth, m_ImageHeight
+        m_Images.AlphaBlendToDCEx bufferDC, btImageCoords.x, btImageCoords.y, m_ImageWidth, m_ImageHeight, 0, pxOffset, m_ImageWidth, m_ImageHeight
         
     End If
     

@@ -806,7 +806,7 @@ Private Sub RedrawBackBuffer()
         'If the spin buttons are active, we can paint the rectangle immediately.  (If they are NOT active, and we attempt
         ' to draw a chunky border, their border will accidentally overlap ours, so we must paint later.)
         If m_MouseOverUpButton Or m_MouseOverDownButton Then
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, editBoxRenderRect, editBoxBorderColor, , borderWidth, False, LineJoinMiter
+            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, editBoxRenderRect, editBoxBorderColor, , borderWidth, False, GP_LJ_Miter
         End If
         
         'Paint button backgrounds and borders.  Note that the active button (if any) is drawn LAST, so that its chunky
@@ -816,16 +816,16 @@ Private Sub RedrawBackBuffer()
         If m_MouseOverDownButton Then downButtonBorderWidth = 2 Else downButtonBorderWidth = 1
         
         If m_MouseOverUpButton Then
-            If downButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_DownRect, downButtonBorderColor, , downButtonBorderWidth, False, LineJoinMiter
-            If upButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_UpRect, upButtonBorderColor, , upButtonBorderWidth, False, LineJoinMiter
+            If downButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_DownRect, downButtonBorderColor, , downButtonBorderWidth, False, GP_LJ_Miter
+            If upButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_UpRect, upButtonBorderColor, , upButtonBorderWidth, False, GP_LJ_Miter
         Else
-            If upButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_UpRect, upButtonBorderColor, , upButtonBorderWidth, False, LineJoinMiter
-            If downButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_DownRect, downButtonBorderColor, , downButtonBorderWidth, False, LineJoinMiter
+            If upButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_UpRect, upButtonBorderColor, , upButtonBorderWidth, False, GP_LJ_Miter
+            If downButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_DownRect, downButtonBorderColor, , downButtonBorderWidth, False, GP_LJ_Miter
         End If
         
         'If neither spin button is active, paint the edit box border last
         If Not (m_MouseOverUpButton Or m_MouseOverDownButton) Then
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, editBoxRenderRect, editBoxBorderColor, , borderWidth, False, LineJoinMiter
+            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, editBoxRenderRect, editBoxBorderColor, , borderWidth, False, GP_LJ_Miter
         End If
         
         'Calculate coordinate positions for the spin button arrows.  These calculations include a lot of magic numbers, alas,
@@ -842,8 +842,8 @@ Private Sub RedrawBackBuffer()
         buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
         buttonPt2.y = buttonPt1.y - FixDPIFloat(3)
         
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, upButtonArrowColor, 255, 2, True, LineCapRound
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, upButtonArrowColor, 255, 2, True, LineCapRound
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, upButtonArrowColor, 255, 2, True, GP_LC_Round
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, upButtonArrowColor, 255, 2, True, GP_LC_Round
                     
         'Next, the down-pointing arrow
         buttonPt1.x = m_DownRect.Left + FixDPIFloat(4) + 0.5
@@ -855,8 +855,8 @@ Private Sub RedrawBackBuffer()
         buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
         buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
         
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, downButtonArrowColor, 255, 2, True, LineCapRound
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, downButtonArrowColor, 255, 2, True, LineCapRound
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, downButtonArrowColor, 255, 2, True, GP_LC_Round
+        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, downButtonArrowColor, 255, 2, True, GP_LC_Round
         
     End If
     

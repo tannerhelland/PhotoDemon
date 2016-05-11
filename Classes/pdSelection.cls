@@ -1682,7 +1682,7 @@ Private Sub createSelectionMask()
             'Interior/exterior line selections use identical rendering code.
             If (getSelectionProperty_Long(SP_AREA) = sInterior) Or (getSelectionProperty_Long(SP_AREA) = sExterior) Or ignoreBorderValue Then
             
-                GDIPlusDrawLineToDC selMask.GetDIBDC, x1, y1, x2, y2, maskForeColor, 255, getSelectionProperty_Long(SP_LINE_WIDTH), (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
+                GDIPlusDrawLineToDC selMask.GetDIBDC, x1, y1, x2, y2, maskForeColor, 255, getSelectionProperty_Long(SP_LINE_WIDTH), (getSelectionProperty_Long(SP_SMOOTHING) > sNone), GP_LC_Round
                 
             'Border selections are a bit different; we must draw two lines - an interior and an exterior one.
             ' TODO: GDI+ supplies a function that generates a new path, using the outline of an existing path as drawn with a specified pen.
@@ -1690,7 +1690,7 @@ Private Sub createSelectionMask()
             Else
                 
                 'Draw the exterior line
-                GDIPlusDrawLineToDC selMask.GetDIBDC, x1, y1, x2, y2, maskForeColor, 255, getSelectionProperty_Long(SP_LINE_WIDTH), (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
+                GDIPlusDrawLineToDC selMask.GetDIBDC, x1, y1, x2, y2, maskForeColor, 255, getSelectionProperty_Long(SP_LINE_WIDTH), (getSelectionProperty_Long(SP_SMOOTHING) > sNone), GP_LC_Round
                 
                 'Next, draw the interior one.  Note that some additional calculations are required to
                 Dim xDiff As Double, yDiff As Double
@@ -1713,15 +1713,15 @@ Private Sub createSelectionMask()
                 If newLineWidth > 0 Then
                     If x1 = minX Then
                         If y1 = MinY Then
-                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 + xModifier, y1 + yModifier, x2 - xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
+                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 + xModifier, y1 + yModifier, x2 - xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), GP_LC_Round
                         Else
-                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 + xModifier, y1 - yModifier, x2 - xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
+                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 + xModifier, y1 - yModifier, x2 - xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), GP_LC_Round
                         End If
                     Else
                         If y1 = MinY Then
-                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 - xModifier, y1 + yModifier, x2 + xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
+                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 - xModifier, y1 + yModifier, x2 + xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), GP_LC_Round
                         Else
-                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 - xModifier, y1 - yModifier, x2 + xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
+                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 - xModifier, y1 - yModifier, x2 + xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), GP_LC_Round
                         End If
                     End If
                 End If
@@ -1737,7 +1737,7 @@ Private Sub createSelectionMask()
                 
             'Border selections stroke the path instead of filling it
             Else
-                GDI_Plus.GDIPlusStrokePathToDC selMask.GetDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), getSelectionProperty_Long(SP_BORDER_WIDTH), LineCapFlat, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE)
+                GDI_Plus.GDIPlusStrokePathToDC selMask.GetDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), getSelectionProperty_Long(SP_BORDER_WIDTH), GP_LC_Flat, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE)
             End If
         
         'Strangely enough, lasso selections are arguably the simplest selection type to render, as we simply close the lasso shape,
@@ -1750,7 +1750,7 @@ Private Sub createSelectionMask()
                 
             'Border selections stroke the path instead of filling it
             Else
-                GDI_Plus.GDIPlusStrokePathToDC selMask.GetDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), True, maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), getSelectionProperty_Long(SP_BORDER_WIDTH), LineCapFlat, True, getSelectionProperty_Double(SP_SMOOTH_STROKE)
+                GDI_Plus.GDIPlusStrokePathToDC selMask.GetDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), True, maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), getSelectionProperty_Long(SP_BORDER_WIDTH), GP_LC_Flat, True, getSelectionProperty_Double(SP_SMOOTH_STROKE)
             End If
         
         'Wand selections use a custom class to perform a flood fill
@@ -1974,7 +1974,7 @@ Private Sub applyFeatheringToMask()
     If GDI_Plus.IsGDIPlusV11Available Then
         
         'GDIPlusBlurDIB selMask, getSelectionProperty_Long(SP_FEATHERING_RADIUS), boundLeft, boundTop, boundWidth, boundHeight
-        quickBlurDIB selMask, getSelectionProperty_Long(SP_FEATHERING_RADIUS)
+        QuickBlurDIB selMask, getSelectionProperty_Long(SP_FEATHERING_RADIUS)
     
     'If GDI+ v1.0 is found, blurring is not supported, so fall back to PD's internal Gaussian blur function.
     Else
@@ -2321,9 +2321,9 @@ Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
             
             'Add the selection rectangle to the path
             If getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) > 0 Then
-                pdPath.addRoundedRectangle_Relative dstLeft, dstTop, dstRight - dstLeft, dstBottom - dstTop, getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) * g_Zoom.GetZoomValue(containingPDImage.currentZoomValue)
+                pdPath.AddRoundedRectangle_Relative dstLeft, dstTop, dstRight - dstLeft, dstBottom - dstTop, getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) * g_Zoom.GetZoomValue(containingPDImage.currentZoomValue)
             Else
-                pdPath.addRectangle_Absolute dstLeft, dstTop, dstRight, dstBottom
+                pdPath.AddRectangle_Absolute dstLeft, dstTop, dstRight, dstBottom
             End If
             
             'If the selection is bordered, widen it now
@@ -2334,15 +2334,15 @@ Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
         Case sCircle
         
             'Add the ellipse to the path
-            pdPath.addEllipse_Absolute dstLeft, dstTop, dstRight, dstBottom
+            pdPath.AddEllipse_Absolute dstLeft, dstTop, dstRight, dstBottom
                     
         Case sLine
         
             'Add the line to the path
-            pdPath.addLine dstLeft, dstTop, dstRight, dstBottom
+            pdPath.AddLine dstLeft, dstTop, dstRight, dstBottom
             
             'Widen the path to encompass only the border of the line
-            pdPath.convertPathToBorderType_Simple getSelectionProperty_Long(SP_LINE_WIDTH) * g_Zoom.GetZoomValue(containingPDImage.currentZoomValue), LineCapRound
+            pdPath.ConvertPathToBorderType_Simple getSelectionProperty_Long(SP_LINE_WIDTH) * g_Zoom.GetZoomValue(containingPDImage.currentZoomValue), GP_LC_Round
             
         'Polygon and lasso selections use roughly identical outline code; the only difference is the reference array used and the number of points
         Case sPolygon, sLasso
@@ -2371,9 +2371,9 @@ Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
                 
                 'Add the converted shape to the path object
                 If sShape = sPolygon Then
-                    pdPath.addPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE)
+                    pdPath.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE)
                 Else
-                    pdPath.addPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, True, getSelectionProperty_Double(SP_SMOOTH_STROKE)
+                    pdPath.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, True, getSelectionProperty_Double(SP_SMOOTH_STROKE)
                 End If
                 
             End If

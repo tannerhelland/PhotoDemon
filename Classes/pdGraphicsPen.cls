@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "pdGraphicsPen"
+Attribute VB_Name = "pd2DPen"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -29,27 +29,9 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
-
-'Pens support a *lot* of internal settings.
-Public Enum PD_GRAPHICS_PEN_SETTINGS
-    pgps_PenMode = 0
-    pgps_PenColor = 1
-    pgps_PenOpacity = 2
-    pgps_PenWidth = 3
-    pgps_PenLineJoin = 4
-    pgps_PenLineCap = 5
-    pgps_PenDashCap = 6
-    pgps_PenMiterLimit = 7
-    pgps_PenAlignment = 8
-End Enum
-
-#If False Then
-    Const pgps_PenMode = 0, pgps_PenColor = 1, pgps_PenOpacity = 2, pgps_PenWidth = 3, pgps_PenLineJoin = 4
-    Const pgps_PenLineCap = 5, pgps_PenDashCap = 6, pgps_PenMiterLimit = 7, pgps_PenAlignment = 8
-#End If
-
-'Current pen mode (solid vs dashes, dots, etc)
-Private m_PenMode As Long
+    
+'Current pen style (solid, dashed, dotted, etc)
+Private m_PenStyle As GP_DashStyle
 
 'Basic pen settings
 Private m_PenColor As Long
@@ -57,166 +39,303 @@ Private m_PenOpacity As Single
 Private m_PenWidth As Single
 
 'Advanced pen settings
-Private m_PenLineJoin As Long
-Private m_PenLineCap As Long
-Private m_PenDashCap As Long
+Private m_PenLineJoin As GP_LineJoin
+Private m_PenLineCap As GP_LineCap
+Private m_PenDashCap As GP_DashCap
 Private m_PenMiterLimit As Single
-Private m_PenAlignment As Long
+Private m_PenAlignment As GP_PenAlignment
+Private m_PenStartCap As GP_LineCap
+Private m_PenEndCap As GP_LineCap
 
-'Some GDI+-specific functions are declared here, as they're of limited use elsewhere
-Private Declare Function GdipSetPenDashCap197819 Lib "gdiplus" (ByVal srcPen As Long, ByVal newDashCap As Long) As Long
+'Pen transform properties (TBD)
 
 'This class is capable of serializing itself to/from XML strings
 Private cSerialize As pdParamXML
 
+'The backend used to render this pen.  At present, this is immutable; once set, it cannot be migrated
+Private m_PenBackend As PD_2D_RENDERING_BACKEND
 
-'Pen transforms (TBD)
+'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
+Private m_DebugMode As Boolean
+
+'Once a pen has been created, this handle value will be non-zero
+Private m_PenHandle As Long
 
 'Get/set individual settings by enum type
-Public Function getPenProperty(ByVal propID As PD_GRAPHICS_PEN_SETTINGS) As Variant
+Public Function GetPenProperty(ByVal propID As PD_2D_PEN_SETTINGS) As Variant
     
     Select Case propID
         
-        Case pgps_PenMode
-            getPenProperty = m_PenMode
+        Case PD2D_PenStyle
+            GetPenProperty = m_PenStyle
         
-        Case pgps_PenColor
-            getPenProperty = m_PenColor
+        Case PD2D_PenColor
+            GetPenProperty = m_PenColor
             
-        Case pgps_PenOpacity
-            getPenProperty = m_PenOpacity
+        Case PD2D_PenOpacity
+            GetPenProperty = m_PenOpacity
             
-        Case pgps_PenWidth
-            getPenProperty = m_PenWidth
+        Case PD2D_PenWidth
+            GetPenProperty = m_PenWidth
             
-        Case pgps_PenLineJoin
-            getPenProperty = m_PenLineJoin
+        Case PD2D_PenLineJoin
+            GetPenProperty = m_PenLineJoin
             
-        Case pgps_PenLineCap
-            getPenProperty = m_PenLineCap
+        Case PD2D_PenLineCap
+            GetPenProperty = m_PenLineCap
             
-        Case pgps_PenDashCap
-            getPenProperty = m_PenDashCap
+        Case PD2D_PenDashCap
+            GetPenProperty = m_PenDashCap
             
-        Case pgps_PenMiterLimit
-            getPenProperty = m_PenMiterLimit
+        Case PD2D_PenMiterLimit
+            GetPenProperty = m_PenMiterLimit
             
-        Case pgps_PenAlignment
-            getPenProperty = m_PenAlignment
+        Case PD2D_PenAlignment
+            GetPenProperty = m_PenAlignment
+            
+        Case PD2D_PenStartCap
+            GetPenProperty = m_PenStartCap
+        
+        Case PD2D_PenEndCap
+            GetPenProperty = m_PenEndCap
             
     End Select
     
 End Function
 
-Public Sub setPenProperty(ByVal propID As PD_GRAPHICS_PEN_SETTINGS, ByVal newSetting As Variant)
+Public Sub SetPenProperty(ByVal propID As PD_2D_PEN_SETTINGS, ByVal newSetting As Variant)
     
     Select Case propID
         
-        Case pgps_PenMode
-            m_PenMode = CLng(newSetting)
+        Case PD2D_PenStyle
+            m_PenStyle = CLng(newSetting)
         
-        Case pgps_PenColor
+        Case PD2D_PenColor
             m_PenColor = CLng(newSetting)
             
-        Case pgps_PenOpacity
+        Case PD2D_PenOpacity
             m_PenOpacity = CSng(newSetting)
             
-        Case pgps_PenWidth
+        Case PD2D_PenWidth
             m_PenWidth = CSng(newSetting)
             
-        Case pgps_PenLineJoin
+        Case PD2D_PenLineJoin
             m_PenLineJoin = CLng(newSetting)
             
-        Case pgps_PenLineCap
+        Case PD2D_PenLineCap
             m_PenLineCap = CLng(newSetting)
+            m_PenStartCap = CLng(newSetting)
+            m_PenEndCap = CLng(newSetting)
             
-        Case pgps_PenDashCap
+        Case PD2D_PenDashCap
             m_PenDashCap = CLng(newSetting)
             
-        Case pgps_PenMiterLimit
+        Case PD2D_PenMiterLimit
             m_PenMiterLimit = CSng(newSetting)
             
-        Case pgps_PenAlignment
+        Case PD2D_PenAlignment
             m_PenAlignment = CLng(newSetting)
             
     End Select
     
+    RelayPropertyChangeToBackend propID
+    
+End Sub
+
+Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_PEN_SETTINGS)
+    
+    'Property changes only need to be relayed if we've already created a handle
+    If (m_PenHandle <> 0) Then
+    
+        'Relays obviously vary by the active backend!
+        Select Case m_PenBackend
+            
+            Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
+                
+                Select Case propID
+                    Case PD2D_PenStyle
+                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenStyle
+                        
+                    Case PD2D_PenColor
+                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenColor
+                        
+                    Case PD2D_PenOpacity
+                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenOpacity
+                        
+                    Case PD2D_PenWidth
+                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenWidth
+                        
+                    Case PD2D_PenLineJoin
+                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenLineJoin
+                        
+                    Case PD2D_PenLineCap
+                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenLineCap
+                        
+                    Case PD2D_PenDashCap
+                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenDashCap
+                        
+                    Case PD2D_PenMiterLimit
+                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenMiterLimit
+                        
+                    Case PD2D_PenAlignment
+                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenAlignment
+                        
+                End Select
+                
+            'In the future, other backends can be handled here...
+            Case Else
+                
+        End Select
+    
+    End If
+        
 End Sub
 
 'For interop purposes, pens are passed around PD as XML strings.
-Public Function getPenAsString() As String
+Public Function GetPenPropertiesAsXML() As String
     
+    If (cSerialize Is Nothing) Then Set cSerialize = New pdParamXML
     With cSerialize
         .Reset 1#
-        .addParam "PenMode", m_PenMode
-        .addParam "PenColor", m_PenColor
-        .addParam "PenOpacity", m_PenOpacity
-        .addParam "PenWidth", m_PenWidth
-        .addParam "PenLineJoin", m_PenLineJoin
-        .addParam "PenLineCap", m_PenLineCap
-        .addParam "PenDashCap", m_PenDashCap
-        .addParam "PenMiterLimit", m_PenMiterLimit
-        .addParam "PenAlignment", m_PenAlignment
+        .AddParam "PenMode", m_PenStyle
+        .AddParam "PenColor", m_PenColor
+        .AddParam "PenOpacity", m_PenOpacity
+        .AddParam "PenWidth", m_PenWidth
+        .AddParam "PenLineJoin", m_PenLineJoin
+        .AddParam "PenLineCap", m_PenLineCap
+        .AddParam "PenDashCap", m_PenDashCap
+        .AddParam "PenMiterLimit", m_PenMiterLimit
+        .AddParam "PenAlignment", m_PenAlignment
+        .AddParam "PenStartCap", m_PenStartCap
+        .AddParam "PenEndCap", m_PenEndCap
     End With
     
-    getPenAsString = cSerialize.getParamString
+    GetPenPropertiesAsXML = cSerialize.GetParamString
     
 End Function
 
-Public Sub CreatePenFromString(ByRef srcString As String)
+Public Sub SetPenPropertiesFromXML(ByRef srcString As String)
     
     'If the string is empty, prep a default object
     If Len(srcString) = 0 Then
-        
-        m_PenMode = 0
-        m_PenColor = vbBlack
-        m_PenOpacity = 100
-        m_PenWidth = 1
-        m_PenLineJoin = 0
-        m_PenLineCap = 0
-        m_PenDashCap = 0
-        m_PenMiterLimit = 10#
-        m_PenAlignment = PenAlignmentCenter
-        
+        Me.ResetAllProperties
     Else
     
-        'For now, we use a pdParamString class to make this possible.  Eventually, we will be moving to a new format.
+        If (cSerialize Is Nothing) Then Set cSerialize = New pdParamXML
         With cSerialize
-            .setParamString srcString
-            m_PenMode = .GetLong("PenMode", 0)
-            m_PenColor = .GetLong("PenColor", vbBlack)
-            m_PenOpacity = .GetDouble("PenOpacity", 100)
-            m_PenWidth = .GetDouble("PenWidth", 1)
-            m_PenLineJoin = .GetLong("PenLineJoin", 0)
-            m_PenLineCap = .GetLong("PenLineCap", 0)
-            m_PenDashCap = .GetLong("PenDashCap", 0)
-            m_PenMiterLimit = .GetDouble("PenMiterLimit", 10#)
-            m_PenAlignment = .GetLong("PenAlignment", PenAlignmentCenter)
+            .SetParamString srcString
+            Me.SetPenProperty PD2D_PenStyle, .GetLong("PenMode", GP_DS_Solid)
+            Me.SetPenProperty PD2D_PenColor, .GetLong("PenColor", vbBlack)
+            Me.SetPenProperty PD2D_PenOpacity, .GetDouble("PenOpacity", 100)
+            Me.SetPenProperty PD2D_PenWidth, .GetDouble("PenWidth", 1#)
+            Me.SetPenProperty PD2D_PenLineJoin, .GetLong("PenLineJoin", GP_LJ_Miter)
+            Me.SetPenProperty PD2D_PenLineCap, .GetLong("PenLineCap", GP_LC_Flat)
+            Me.SetPenProperty PD2D_PenDashCap, .GetLong("PenDashCap", GP_DC_Flat)
+            Me.SetPenProperty PD2D_PenMiterLimit, .GetDouble("PenMiterLimit", 3#)
+            Me.SetPenProperty PD2D_PenAlignment, .GetLong("PenAlignment", GP_PA_Center)
+            Me.SetPenProperty PD2D_PenStartCap, .GetLong("PenStartCap", m_PenLineCap)
+            Me.SetPenProperty PD2D_PenEndCap, .GetLong("PenEndCap", m_PenLineCap)
         End With
         
     End If
     
 End Sub
 
-'Return an actual GDI+ pen handle matching the current settings.
-' Note that the caller is responsible for freeing that handle once done.
-Public Function GetPenHandle() As Long
+Public Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As Long
+    If (createAsNecessary And (m_PenHandle = 0)) Then
+        If CreatePen() Then GetHandle = m_PenHandle Else GetHandle = 0
+    Else
+        GetHandle = m_PenHandle
+    End If
+End Function
+
+Friend Function GetPenBackend() As PD_2D_RENDERING_BACKEND
+    GetPenBackend = m_PenBackend
+End Function
+
+Public Function HasPen() As Boolean
+    HasPen = CBool(m_PenHandle <> 0)
+End Function
+
+'You only need to manually initialize a pen backend if you plan on using a non-default backend.  (Pens with the
+' default backend are initialized automatically.)
+Friend Function InitializePenBackend(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = PD2D_DefaultBackend) As Boolean
+    m_PenBackend = targetBackend
+    InitializePenBackend = True
+End Function
+
+'Create an actual pen handle using the current backend and the current pen settings.
+' NOTE: the caller doesn't actually *need* to call this directly.  If GetPenHandle is called and the pen doesn't yet exist,
+'       it will be auto-created.
+Public Function CreatePen() As Boolean
     
-    GetPenHandle = GDI_Plus.GetGDIPlusPenHandle(m_PenColor, m_PenOpacity * 2.55, m_PenWidth, m_PenLineCap, m_PenLineJoin, m_PenMode, m_PenMiterLimit, m_PenAlignment)
+    If (m_PenHandle <> 0) Then ReleasePen
     
-    'Set some additional settings manually
-    GdipSetPenDashCap197819 GetPenHandle, m_PenDashCap
+    'Call the backend-specific surface creation function
+    Select Case m_PenBackend
+        
+        Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
+            m_PenHandle = GDI_Plus.GetGDIPlusPenHandle(m_PenColor, m_PenOpacity * 2.55, m_PenWidth, m_PenLineCap, m_PenLineJoin, m_PenStyle, m_PenMiterLimit, m_PenAlignment)
+            If (m_PenHandle <> 0) Then
+                GDI_Plus.SetGDIPlusPenProperty m_PenHandle, PD2D_PenDashCap, m_PenDashCap
+                If (m_PenStartCap <> m_PenLineCap) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, PD2D_PenStartCap, m_PenStartCap
+                If (m_PenEndCap <> m_PenLineCap) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, PD2D_PenEndCap, m_PenEndCap
+            End If
+            CreatePen = (m_PenHandle <> 0)
+            
+    End Select
+    
+    'When debug mode is active, all object creations are reported back to the master Drawing2D module
+    If (CreatePen And m_DebugMode) Then Drawing2D.DEBUG_NotifyPenCountChange m_PenBackend, True
     
 End Function
 
-'Helper function to simplify pen destruction
-Public Sub releasePenHandle(ByVal srcPen As Long)
-    GDI_Plus.ReleaseGDIPlusPen srcPen
+Public Function ReleasePen() As Boolean
+    
+    If (m_PenHandle <> 0) Then
+        
+        'Call the backend-specific release function
+        Select Case m_PenBackend
+            Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
+                ReleasePen = GDI_Plus.ReleaseGDIPlusPen(m_PenHandle)
+        End Select
+        
+        'After a successful release, we must always reset the class-level handle to match, and during debug mode,
+        ' the central Drawing2D module also needs to be notified.
+        If ReleasePen Then
+            m_PenHandle = 0
+            If (m_DebugMode) Then Drawing2D.DEBUG_NotifyPenCountChange m_PenBackend, False
+        End If
+    
+    Else
+        ReleasePen = True
+    End If
+    
+End Function
+
+Public Sub ResetAllProperties()
+    Me.SetPenProperty PD2D_PenStyle, GP_DS_Solid
+    Me.SetPenProperty PD2D_PenColor, vbBlack
+    Me.SetPenProperty PD2D_PenOpacity, 100
+    Me.SetPenProperty PD2D_PenWidth, 1#
+    Me.SetPenProperty PD2D_PenLineJoin, GP_LJ_Miter
+    Me.SetPenProperty PD2D_PenLineCap, GP_LC_Flat
+    Me.SetPenProperty PD2D_PenDashCap, GP_DC_Flat
+    Me.SetPenProperty PD2D_PenMiterLimit, 3#
+    Me.SetPenProperty PD2D_PenAlignment, GP_PA_Center
+    Me.SetPenProperty PD2D_PenStartCap, GP_LC_Flat
+    Me.SetPenProperty PD2D_PenEndCap, GP_LC_Flat
+End Sub
+
+'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
+Public Sub SetDebugMode(ByVal newMode As Boolean)
+    m_DebugMode = newMode
 End Sub
 
 Private Sub Class_Initialize()
-    
-    'Prep a string serializer
-    Set cSerialize = New pdParamXML
-    
+    Me.ResetAllProperties
+End Sub
+
+Private Sub Class_Terminate()
+    Me.ReleasePen
 End Sub

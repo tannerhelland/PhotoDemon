@@ -495,7 +495,7 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
     'We must also determine a translated caption, if any
     If (Not (g_Language Is Nothing)) And (Len(srcString) <> 0) Then
     
-        If g_Language.translationActive Then
+        If g_Language.TranslationActive Then
             m_Buttons(itemIndex).btCaptionTranslated = g_Language.TranslateMessage(m_Buttons(itemIndex).btCaptionEn)
         Else
             m_Buttons(itemIndex).btCaptionTranslated = m_Buttons(itemIndex).btCaptionEn
@@ -532,7 +532,7 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As 
     If m_Buttons(itemIndex).btImages Is Nothing Then Set m_Buttons(itemIndex).btImages = New pdDIB
     
     With m_Buttons(itemIndex)
-        .btImages.createBlank .btImageWidth, .btImageHeight * 3, srcDIB.GetDIBColorDepth, 0, 0
+        .btImages.CreateBlank .btImageWidth, .btImageHeight * 3, srcDIB.GetDIBColorDepth, 0, 0
         .btImages.SetInitialAlphaPremultiplicationState True
         
         'Copy this normal-state DIB into place at the top of the sheet
@@ -936,7 +936,7 @@ Private Sub RedrawBackBuffer()
                     'If the user is hovering an inactive button, and we're in "light" color mode, paint the button immediately
                     Else
                         If isButtonHovered And (m_ColoringMode = CM_LIGHT) Then
-                            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorUnselectedBorderHover, 255, 1, False, LineJoinMiter
+                            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorUnselectedBorderHover, 255, 1, False, GP_LJ_Miter
                         End If
                     End If
                     
@@ -1004,7 +1004,7 @@ Private Sub RedrawBackBuffer()
             'Color changes when the active button is hovered, to indicate no change will be made.
             If m_ButtonHoverIndex = m_ButtonIndex Then curColor = btnColorSelectedBorderHover Else curColor = btnColorUnselectedBorderHover
             With m_Buttons(m_ButtonHoverIndex).btBounds
-                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left - 1, .Top - 1, .Right + 1, .Bottom, curColor, 255, 3, False, LineJoinMiter
+                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left - 1, .Top - 1, .Right + 1, .Bottom, curColor, 255, 3, False, GP_LJ_Miter
             End With
             
         End If
@@ -1027,7 +1027,7 @@ Public Sub UpdateAgainstCurrentTheme()
         Dim isTranslationActive As Boolean
             
         If Not (g_Language Is Nothing) Then
-            If g_Language.translationActive Then
+            If g_Language.TranslationActive Then
                 isTranslationActive = True
             Else
                 isTranslationActive = False
