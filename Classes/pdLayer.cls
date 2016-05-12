@@ -882,7 +882,7 @@ End Sub
 Friend Function GetTextLayerProperty(ByVal desiredProperty As PD_TEXT_PROPERTY) As Variant
 
     'All text properties are managed by the pdTextRenderer class.  This function is simply a passthrough.
-    GetTextLayerProperty = myTextRenderer.getGenericTextProperty(desiredProperty)
+    GetTextLayerProperty = myTextRenderer.GetGenericTextProperty(desiredProperty)
     
 End Function
 
@@ -892,7 +892,7 @@ Friend Sub SetTextLayerProperty(ByVal desiredProperty As PD_TEXT_PROPERTY, ByVal
     
     'Note that the setGenericTextProperty function will return TRUE if the requested change matters (e.g. if the text needs to be re-rendered
     ' due to this property change).  We modify our internal VectorDIBSynched tracker accordingly.
-    m_VectorDIBSynched = m_VectorDIBSynched And (Not myTextRenderer.setGenericTextProperty(desiredProperty, newValue))
+    m_VectorDIBSynched = m_VectorDIBSynched And (Not myTextRenderer.SetGenericTextProperty(desiredProperty, newValue))
     
 End Sub
 
@@ -1463,12 +1463,12 @@ Public Function GetLayerHeaderAsParamString() As String
 
     'Start by compiling a layer header
     With myLayerData
-        GetLayerHeaderAsParamString = buildParams(.l_Name, .l_GroupID, .l_Opacity, .l_BlendMode, .l_OffsetX, .l_OffsetY, .l_CanvasXModifier, .l_CanvasYModifier, .l_Angle, .l_Visibility, .l_NonDestructiveFXActive, .l_ResizeQuality, .l_ShearX, .l_ShearY, .l_AlphaMode)
+        GetLayerHeaderAsParamString = BuildParams(.l_Name, .l_GroupID, .l_Opacity, .l_BlendMode, .l_OffsetX, .l_OffsetY, .l_CanvasXModifier, .l_CanvasYModifier, .l_Angle, .l_Visibility, .l_NonDestructiveFXActive, .l_ResizeQuality, .l_ShearX, .l_ShearY, .l_AlphaMode)
     End With
     
     'Next, add any non-destructive FX parameters
     With myNonDestructiveFX
-        GetLayerHeaderAsParamString = GetLayerHeaderAsParamString & "|" & buildParams(.fx_Exposure, .fx_Contrast, .fx_Clarity, .fx_Vibrance, .fx_Temperature, .fx_Tint)
+        GetLayerHeaderAsParamString = GetLayerHeaderAsParamString & "|" & BuildParams(.fx_Exposure, .fx_Contrast, .fx_Clarity, .fx_Vibrance, .fx_Temperature, .fx_Tint)
     End With
     
 End Function
@@ -1648,7 +1648,7 @@ Public Function GetVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
         Case PDL_TEXT, PDL_TYPOGRAPHY
             
             'pdTextRenderer serializes all its data to XML for us, making this step very simple
-            xmlEngine.writeGenericText myTextRenderer.getAllFontSettingsAsXML()
+            xmlEngine.writeGenericText myTextRenderer.GetAllFontSettingsAsXML()
         
     End Select
         
@@ -1681,7 +1681,7 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
             Case PDL_TEXT, PDL_TYPOGRAPHY
                 
                 'pdTextRenderer serializes all its data from XML for us, making this step very simple
-                myTextRenderer.setAllFontSettingsFromXML xmlEngine.returnCurrentXMLString(True)
+                myTextRenderer.SetAllFontSettingsFromXML xmlEngine.returnCurrentXMLString(True)
                 
         End Select
                 
@@ -1896,7 +1896,7 @@ Public Function CropNullPaddedLayer() As Boolean
         '2) The loop progressed part-way through the layer, and terminated once it found a non-transparent pixel
     
         'Check for case (1) and exit if it occurred
-        If Not pixelFails Then
+        If (Not pixelFails) Then
             CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
             Debug.Print "Request for layer null padding trim denied - entire layer is transparent, so crop is impossible!"
             CropNullPaddedLayer = False
@@ -2037,7 +2037,7 @@ Public Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
     End With
     
     'If the layer still requires specialized padding, carry on
-    If Not nullPaddingUnnecessary Then
+    If (Not nullPaddingUnnecessary) Then
         
         'Create a blank destination DIB at the size of the parent image
         Dim tmpPaddingDIB As pdDIB
@@ -2321,9 +2321,9 @@ Public Function SyncInternalDIB(Optional ByVal levelOfDetail As COMPOSITOR_LOD_C
             
             'Set the text rendering engine according to the layer type (text vs typography)
             If myLayerType = PDL_TEXT Then
-                myTextRenderer.setGenericTextProperty ptp_RenderingEngine, tre_WAPI
+                myTextRenderer.SetGenericTextProperty ptp_RenderingEngine, tre_WAPI
             Else
-                myTextRenderer.setGenericTextProperty ptp_RenderingEngine, tre_PHOTODEMON
+                myTextRenderer.SetGenericTextProperty ptp_RenderingEngine, tre_PHOTODEMON
             End If
             
             'Initialize the backer DIB as necessary
@@ -2338,7 +2338,7 @@ Public Function SyncInternalDIB(Optional ByVal levelOfDetail As COMPOSITOR_LOD_C
             layerDIB.SetInitialAlphaPremultiplicationState True
             
             'Use pdTextRenderer to paint the string onto the backer DIB
-            myTextRenderer.renderTextToDIB layerDIB, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height
+            myTextRenderer.RenderTextToDIB layerDIB, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height
             
     End Select
     

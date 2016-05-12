@@ -1012,27 +1012,30 @@ Public Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     
     Dim dstDIBCD As Long, dstQuickX As Long
     dstDIBCD = dstDIB.GetDIBColorDepth \ 8
+    
+    Dim selDIBCD As Long
+    selDIBCD = mainSelection.selMask.GetDIBColorDepth \ 8
             
     For x = 0 To dstDIB.GetDIBWidth - 1
         dstQuickX = x * dstDIBCD
         srcQuickX = (leftOffset + x) * srcDIBCD
-        selQuickX = (leftOffset + x) * 3
+        selQuickX = (leftOffset + x) * selDIBCD
     For y = 0 To dstDIB.GetDIBHeight - 1
     
         srcQuickY = topOffset + y
         thisAlpha = selData(selQuickX, srcQuickY)
         
         'If the selection does not exist at this pixel, we have no reason to process this pixel further!
-        If thisAlpha > 0 Then
+        If (thisAlpha > 0) Then
             
             'Check for the presence of alpha data in the original image.  If found, use that AND the selection mask to set the
             ' alpha value of the destination pixel.  If the source data is 24bpp, use only the selection mask data.
-            If srcDIBCD = 4 Then
+            If (srcDIBCD = 4) Then
             
                 'Check the image's alpha value.  If it's zero, we have no reason to process it further
                 origAlpha = srcImageData(srcQuickX + 3, srcQuickY)
                 
-                If origAlpha > 0 Then
+                If (origAlpha > 0) Then
                     
                     'Source pixel data will be premultiplied, which saves us a bunch of processing time.  (That is why
                     ' we premultiply alpha, after all!)
@@ -1071,10 +1074,6 @@ Public Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     CopyMemory ByVal VarPtrArray(selData), 0&, 4
     
-    Erase srcImageData
-    Erase dstImageData
-    Erase selData
-    
     'If the calling function requested un-premultiplied alpha, apply it now
     If (Not preMultipliedAlphaState) Then dstDIB.SetAlphaPremultiplication False
         
@@ -1083,11 +1082,11 @@ Public Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
 End Function
 
 'Erase the currently selected area of a layer, with new alpha applied according to the selection mask
-Public Function eraseProcessedSelection(ByVal targetLayerIndex As Long) As Boolean
+Public Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boolean
 
     'If this image does not contain an active selection, exit now.
     If (Not IsActive) Or (Not selectionActive) Or (targetLayerIndex < 0) Or (targetLayerIndex >= m_numOfLayers) Then
-        eraseProcessedSelection = False
+        EraseProcessedSelection = False
         Exit Function
     End If
     
@@ -1117,29 +1116,30 @@ Public Function eraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     Dim thisAlpha As Long, origAlpha As Long
     Dim blendAlpha As Double
     
-    Dim dstDIBCD As Long, dstQuickX As Long, selQuickX As Long
+    Dim dstDIBCD As Long, selDIBCD As Long, dstQuickX As Long, selQuickX As Long
     dstDIBCD = imgLayers(targetLayerIndex).layerDIB.GetDIBColorDepth \ 8
+    selDIBCD = mainSelection.selMask.GetDIBColorDepth \ 8
             
     For x = mainSelection.boundLeft To mainSelection.boundLeft + mainSelection.boundWidth - 1
         dstQuickX = x * dstDIBCD
-        selQuickX = x * 3
+        selQuickX = x * selDIBCD
     For y = mainSelection.boundTop To mainSelection.boundTop + mainSelection.boundHeight - 1
         
         thisAlpha = selData(selQuickX, y)
         
         'If the selection does not exist at this pixel, we have no reason to process this pixel further!
-        If thisAlpha > 0 Then
+        If (thisAlpha > 0) Then
         
             thisAlpha = 255 - thisAlpha
             
             'Check for the presence of alpha data in the original image.  If found, use that AND the selection mask to set the
             ' alpha value of the destination pixel.  If the source data is 24bpp, use only the selection mask data.
-            If dstDIBCD = 4 Then
+            If (dstDIBCD = 4) Then
             
                 'Check the image's alpha value.  If it's zero, we have no reason to process it further
                 origAlpha = dstImageData(dstQuickX + 3, y)
                 
-                If origAlpha > 0 Then
+                If (origAlpha > 0) Then
                     
                     'Source pixel data will be premultiplied, which saves us a bunch of processing time.  (That is why
                     ' we premultiply alpha, after all!)
@@ -1182,16 +1182,13 @@ Public Function eraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     CopyMemory ByVal VarPtrArray(selData), 0&, 4
     
-    Erase dstImageData
-    Erase selData
-    
     'Shrink the layer to its maximum relevant size
     imgLayers(targetLayerIndex).CropNullPaddedLayer
     
     'Notify ourselves of the change
     pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, targetLayerIndex
     
-    eraseProcessedSelection = True
+    EraseProcessedSelection = True
 
 End Function
 
