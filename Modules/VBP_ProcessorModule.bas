@@ -556,10 +556,10 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             End If
         
         Case "Select scanner or camera"
-            Twain32SelectScanner
+            Plugin_EZTwain.Twain32SelectScanner
             
         Case "Scan image"
-            Twain32Scan
+            Plugin_EZTwain.Twain32Scan
             
         Case "Screen capture"
             If ShowDialog Then
@@ -1973,7 +1973,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             ' before calling the Undo engine.
             If processID = "Fade" Then
                 Dim tmpDIB As pdDIB
-                pdImages(g_CurrentImage).undoManager.fillDIBWithLastUndoCopy tmpDIB, affectedLayerID, , True
+                pdImages(g_CurrentImage).undoManager.FillDIBWithLastUndoCopy tmpDIB, affectedLayerID, , True
             End If
         
             'Create the Undo data
@@ -2166,7 +2166,7 @@ Public Sub flagFinalNDFXState_Generic(ByVal layerSettingID As PDLAYER_GENERIC_PR
     If StrComp(CStr(layerSettingValue), CStr(prevGenericSetting(layerSettingID)), vbBinaryCompare) <> 0 Then
         
         'Raise a generic "layer setting change" processor request
-        MiniProcess_NDFXOnly "Modify layer", , buildParams(layerSettingID, layerSettingValue), UNDO_LAYERHEADER, , , prevGenericLayerID
+        MiniProcess_NDFXOnly "Modify layer", , BuildParams(layerSettingID, layerSettingValue), UNDO_LAYERHEADER, , , prevGenericLayerID
         
     End If
     
@@ -2197,7 +2197,7 @@ Public Sub flagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVa
     If StrComp(CStr(textSettingValue), CStr(prevTextSetting(textSettingID)), vbBinaryCompare) <> 0 Then
         
         'Raise a generic "text setting change" processor request
-        MiniProcess_NDFXOnly "Modify text layer", , buildParams(textSettingID, textSettingValue), UNDO_LAYER_VECTORSAFE, , , prevTextLayerID
+        MiniProcess_NDFXOnly "Modify text layer", , BuildParams(textSettingID, textSettingValue), UNDO_LAYER_VECTORSAFE, , , prevTextLayerID
         
     End If
     
@@ -2224,7 +2224,7 @@ Public Sub flagFinalNDFXState_NDFX(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE_F
     If StrComp(CStr(ndfxSettingValue), CStr(prevNDFXSetting(ndfxSettingID)), vbBinaryCompare) <> 0 Then
         
         'Raise a generic "layer setting change" processor request
-        MiniProcess_NDFXOnly "Non-destructive effect", , buildParams(ndfxSettingID, ndfxSettingValue), UNDO_LAYERHEADER, , , prevGenericLayerID
+        MiniProcess_NDFXOnly "Non-destructive effect", , BuildParams(ndfxSettingID, ndfxSettingValue), UNDO_LAYERHEADER, , , prevGenericLayerID
         
     End If
     

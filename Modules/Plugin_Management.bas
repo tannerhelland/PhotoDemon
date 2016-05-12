@@ -455,7 +455,7 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
             initializationSuccessful = ExifTool.StartExifTool()
                     
         Case CCP_EZTwain
-            initializationSuccessful = True
+            initializationSuccessful = Plugin_EZTwain.InitializeEZTwain()
         
         'FreeImage maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_FreeImage

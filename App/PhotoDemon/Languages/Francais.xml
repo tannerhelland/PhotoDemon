@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.166</langversion>
+<langversion>6.7.168</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1567,11 +1567,6 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 </phrase>
 
 <phrase>
-<original>Scanner/digital camera import disabled</original>
-<translation>Importer à partir scanner/appareil photo numérique hors</translation>
-</phrase>
-
-<phrase>
 <original>Scanned Image</original>
 <translation>Image numérisée</translation>
 </phrase>
@@ -1579,6 +1574,11 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 <phrase>
 <original>Image acquired successfully</original>
 <translation>L'image obtenue avec succès</translation>
+</phrase>
+
+<phrase>
+<original>Scanner/digital camera import disabled</original>
+<translation>Importer à partir scanner/appareil photo numérique hors</translation>
 </phrase>
 
 <phrase>
@@ -15123,6 +15123,18 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
+
+<!-- BEGIN text for Drawing2D.bas -->
+
+<!-- Drawing2D.bas contains 0 phrases. -->
+
+<!-- END text for Drawing2D.bas-->
+
+<!-- BEGIN text for pdSurface2D.cls -->
+
+<!-- pdSurface2D.cls contains 0 phrases. -->
+
+<!-- END text for pdSurface2D.cls-->
 
 <!-- Automatic text extraction complete. -->
 

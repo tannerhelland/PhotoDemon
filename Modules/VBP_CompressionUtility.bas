@@ -50,10 +50,10 @@ Public Sub ReleaseZLib()
 End Sub
 
 'Return the current zLib version
-Public Function getZLibVersion() As String
+Public Function GetZLibVersion() As String
 
     If Not g_ZLibEnabled Then
-        getZLibVersion = -1
+        GetZLibVersion = -1
         Exit Function
     End If
     
@@ -64,12 +64,12 @@ Public Function getZLibVersion() As String
     'Convert the char * to a VB string
     Dim cUnicode As pdUnicode
     Set cUnicode = New pdUnicode
-    getZLibVersion = cUnicode.ConvertCharPointerToVBString(ptrZLibVer, False, 255)
+    GetZLibVersion = cUnicode.ConvertCharPointerToVBString(ptrZLibVer, False, 255)
     
 End Function
 
 'Fill a destination array with the compressed version of a source array.
-Public Function compressArray(ByRef srcArray() As Byte, ByRef dstArray() As Byte, Optional ByRef origSize As Long = 0, Optional ByRef compressSize As Long = 0) As Boolean
+Public Function CompressArray(ByRef srcArray() As Byte, ByRef dstArray() As Byte, Optional ByRef origSize As Long = 0, Optional ByRef compressSize As Long = 0) As Boolean
     
     'Mark the original size
     origSize = UBound(srcArray) - LBound(srcArray) + 1
@@ -90,10 +90,10 @@ Public Function compressArray(ByRef srcArray() As Byte, ByRef dstArray() As Byte
     'Return success or failure (zLib returns 0 upon a successful compression)
     If zResult = 0 Then
         compressSize = bufferSize
-        compressArray = True
+        CompressArray = True
     Else
         compressSize = 0
-        compressArray = False
+        CompressArray = False
     End If
 
 End Function
@@ -107,7 +107,7 @@ End Function
 '
 'INSTEAD, the caller needs to pass a Long as the finalCompressedSize param.  This function will fill that with the final
 ' compression size, which the caller can use to call their own ReDim preserve as necessary.
-Public Function compressNakedPointerToArray(ByVal srcPointer As Long, ByVal srcLength As Long, ByRef dstArray() As Byte, ByRef finalCompressedSize As Long) As Boolean
+Public Function CompressNakedPointerToArray(ByVal srcPointer As Long, ByVal srcLength As Long, ByRef dstArray() As Byte, ByRef finalCompressedSize As Long) As Boolean
     
     'Allocate memory for a temporary compression array.  Per the zLib spec, the buffer should be slightly larger than
     ' the original array to allow space for generating the compression data.
@@ -119,10 +119,10 @@ Public Function compressNakedPointerToArray(ByVal srcPointer As Long, ByVal srcL
     Dim zResult As Long
     If compress(dstArray(0), bufferSize, ByVal srcPointer, srcLength) = 0 Then
         finalCompressedSize = bufferSize
-        compressNakedPointerToArray = True
+        CompressNakedPointerToArray = True
     Else
         finalCompressedSize = 0
-        compressNakedPointerToArray = False
+        CompressNakedPointerToArray = False
     End If
     
 End Function
@@ -130,16 +130,16 @@ End Function
 'Given arbitrary pointers to both source and destination buffers, decompress a zLib stream.  Obviously, it's assumed the caller
 ' has knowledge of the size required by the destination buffer (e.g. the decompressed data size was previously stored in a
 ' file or something), because this function will not modify any buffer sizes.
-Public Function decompressNakedPointers(ByVal srcPointer As Long, ByVal srcLength As Long, ByVal dstPointer As Long, ByVal dstLength As Long) As Boolean
+Public Function DecompressNakedPointers(ByVal srcPointer As Long, ByVal srcLength As Long, ByVal dstPointer As Long, ByVal dstLength As Long) As Boolean
     
     'Decompress the data using zLib
-    decompressNakedPointers = CBool(uncompress(ByVal dstPointer, dstLength, ByVal srcPointer, srcLength) = 0)
+    DecompressNakedPointers = CBool(uncompress(ByVal dstPointer, dstLength, ByVal srcPointer, srcLength) = 0)
     
 End Function
 
 'Fill a destination array with the compressed version of a source array.  Also, ask for the original size,
 ' which allows us to avoid wasting time creating poorly sized buffers.
-Public Function decompressArray(ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByRef origSize As Long) As Boolean
+Public Function DecompressArray(ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByRef origSize As Long) As Boolean
     
     'Calculate the size of the compressed array
     Dim compressedSize As Long
@@ -159,10 +159,6 @@ Public Function decompressArray(ByRef srcArray() As Byte, ByRef dstArray() As By
     ReDim Preserve dstArray(0 To bufferSize - 1) As Byte
     
     'Return success or failure (zLib returns 0 upon a successful compression)
-    If zResult = 0 Then
-        decompressArray = True
-    Else
-        decompressArray = False
-    End If
-
+    DecompressArray = CBool(zResult = 0)
+    
 End Function

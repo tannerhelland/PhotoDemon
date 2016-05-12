@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.166</langversion>
+<langversion>6.7.168</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1567,11 +1567,6 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 </phrase>
 
 <phrase>
-<original>Scanner/digital camera import disabled</original>
-<translation>Import van scanner/digitale camera uitgeschakeld</translation>
-</phrase>
-
-<phrase>
 <original>Scanned Image</original>
 <translation>Gescande afbeelding</translation>
 </phrase>
@@ -1579,6 +1574,11 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 <phrase>
 <original>Image acquired successfully</original>
 <translation>Afbeelding succesvol verkregen</translation>
+</phrase>
+
+<phrase>
+<original>Scanner/digital camera import disabled</original>
+<translation>Import van scanner/digitale camera uitgeschakeld</translation>
 </phrase>
 
 <phrase>
@@ -15122,6 +15122,18 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
+
+<!-- BEGIN text for Drawing2D.bas -->
+
+<!-- Drawing2D.bas contains 0 phrases. -->
+
+<!-- END text for Drawing2D.bas-->
+
+<!-- BEGIN text for pdSurface2D.cls -->
+
+<!-- pdSurface2D.cls contains 0 phrases. -->
+
+<!-- END text for pdSurface2D.cls-->
 
 <!-- Automatic text extraction complete. -->
 

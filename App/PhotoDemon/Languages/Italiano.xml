@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.166</langversion>
+<langversion>6.7.168</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -1566,11 +1566,6 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 </phrase>
 
 <phrase>
-<original>Scanner/digital camera import disabled</original>
-<translation>Importazione dallo scanner/fotocamera digitale disabilitata</translation>
-</phrase>
-
-<phrase>
 <original>Scanned Image</original>
 <translation>Immagine scansionata</translation>
 </phrase>
@@ -1578,6 +1573,11 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 <phrase>
 <original>Image acquired successfully</original>
 <translation>Immagine acquisita con successo</translation>
+</phrase>
+
+<phrase>
+<original>Scanner/digital camera import disabled</original>
+<translation>Importazione dallo scanner/fotocamera digitale disabilitata</translation>
 </phrase>
 
 <phrase>
@@ -15121,6 +15121,18 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
+
+<!-- BEGIN text for Drawing2D.bas -->
+
+<!-- Drawing2D.bas contains 0 phrases. -->
+
+<!-- END text for Drawing2D.bas-->
+
+<!-- BEGIN text for pdSurface2D.cls -->
+
+<!-- pdSurface2D.cls contains 0 phrases. -->
+
+<!-- END text for pdSurface2D.cls-->
 
 <!-- Automatic text extraction complete. -->
 
