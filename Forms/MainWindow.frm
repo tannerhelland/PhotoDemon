@@ -1922,11 +1922,11 @@ Private Sub MnuLayer_Click(Index As Integer)
         
         'Merge up
         Case 3
-            Process "Merge layer up", False, buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE
+            Process "Merge layer up", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE
         
         'Merge down
         Case 4
-            Process "Merge layer down", False, buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE
+            Process "Merge layer down", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE
         
         'Order (top-level)
         Case 5
@@ -1978,7 +1978,7 @@ Private Sub MnuLayerDelete_Click(Index As Integer)
     
         'Delete current layer
         Case 0
-            Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
+            Process "Delete layer", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
         
         'Delete all hidden layers
         Case 1
@@ -2108,7 +2108,7 @@ Private Sub MnuLayerSize_Click(Index As Integer)
     
         'Reset to actual size
         Case 0
-            Process "Reset layer size", False, buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
+            Process "Reset layer size", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
         
         '<separator>
         Case 1
@@ -3331,7 +3331,7 @@ Private Sub MnuColorComponents_Click(Index As Integer)
 End Sub
 
 Private Sub MnuCompoundInvert_Click()
-    Process "Compound invert", False, buildParams("128"), UNDO_LAYER
+    Process "Compound invert", False, BuildParams("128"), UNDO_LAYER
 End Sub
 
 Private Sub MnuCustomFilter_Click()
@@ -3701,7 +3701,7 @@ Private Sub MnuImage_Click(Index As Integer)
             
         'Fit canvas to active layer
         Case 6
-            Process "Fit canvas to layer", False, buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Fit canvas to layer", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
         
         'Fit canvas around all layers
         Case 7
@@ -4104,7 +4104,7 @@ Private Sub MnuSelect_Click(Index As Integer)
         
         'Erase selected area
         Case 10
-            Process "Erase selected area", False, buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
+            Process "Erase selected area", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
         
         '<separator>
         Case 11
@@ -4408,9 +4408,11 @@ Private Sub MoveToNextChildWindow(ByVal moveForward As Boolean)
             
         'Loop back to the start of the window collection
         If moveForward Then
-            If i > g_NumOfImagesLoaded Then i = 0
+            If (i > g_NumOfImagesLoaded) Then i = 0
+            If (i > UBound(pdImages)) Then i = 0
         Else
-            If i < 0 Then i = g_NumOfImagesLoaded
+            If (i < 0) Then i = g_NumOfImagesLoaded
+            If (i > UBound(pdImages)) Then i = UBound(pdImages)
         End If
                 
         If Not (pdImages(i) Is Nothing) Then
