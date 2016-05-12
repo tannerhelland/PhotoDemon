@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_EZTwain"
 'Scanner Interface
 'Copyright 2001-2016 by Tanner Helland
 'Created: 1/10/01
-'Last updated: 10/May/13
-'Last update: add trailing parentheses to suggested scanner filename (e.g. "Scanned Image (dd MM YY)")
+'Last updated: 12/May/16
+'Last update: clean up the interface a bit
 '
 'Module for handling all TWAIN32 acquisition features.  This module relies heavily
 ' upon the EZTW32.dll file, which is required because VB does not have native scanner support.
@@ -31,46 +31,68 @@ Private Declare Function TWAIN_IsAvailable Lib "eztw32.dll" () As Long
 Private Declare Function TWAIN_EasyVersion Lib "eztw32.dll" () As Long
 
 'Used to load and unload the EZTW32 dll from an arbitrary location (in our case, the \Data\Plugins subdirectory)
-Private hLib_Scanner As Long
+Private m_hLibScanner As Long
 
 'Once the EnableScanner function has been called, its result will be cached here
 Private m_ScanningAvailable As Boolean
 
+'Initialize EZTwain.  Do not call this until you have verified EZTwain's existence (typically via the PluginManager module)
+Public Function InitializeEZTwain() As Boolean
+    
+    If (m_hLibScanner = 0) Then
+    
+        'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
+        Dim eztPath As String
+        eztPath = g_PluginPath & "eztw32.dll"
+        m_hLibScanner = LoadLibrary(StrPtr(eztPath))
+        InitializeEZTwain = CBool(m_hLibScanner <> 0)
+        m_ScanningAvailable = InitializeEZTwain
+        
+        #If DEBUGMODE = 1 Then
+            If (Not InitializeEZTwain) Then
+                pdDebug.LogAction "WARNING!  LoadLibrary failed to load EZTwain.  Last DLL error: " & Err.LastDllError
+                pdDebug.LogAction "(FYI, the attempted path was: " & eztPath & ")"
+            End If
+        #End If
+    
+    Else
+        InitializeEZTwain = True
+    End If
+    
+End Function
+
+'When PD closes, make sure to release our open handle!
+Public Sub ReleaseEZTwain()
+    If (m_hLibScanner <> 0) Then FreeLibrary m_hLibScanner
+End Sub
+
 'Return the EZTwain version number, as a string
 Public Function GetEZTwainVersion() As String
     
-    Dim strEZTPath As String
-    strEZTPath = g_PluginPath & "eztw32.dll"
-    hLib_Scanner = LoadLibrary(StrPtr(strEZTPath))
+    InitializeEZTwain
+    If (m_hLibScanner <> 0) Then
     
-    If (hLib_Scanner <> 0) Then
-    
+        'The TWAIN version is the version number * 100.  Modify the return string accordingly
         Dim ezVer As Long
         ezVer = TWAIN_EasyVersion()
-        FreeLibrary hLib_Scanner
-        
-        'The TWAIN version is the version number * 100.  Modify the return string accordingly
         GetEZTwainVersion = (ezVer \ 100) & "." & (ezVer Mod 100) & ".0.0"
         
     Else
-        RaiseInternalDebugMessage "LoadLibraryFailed", "GetEZTwainVersion() failed to load base library"
+        RaiseInternalDebugEvent "LoadLibrary Failed", "GetEZTwainVersion() failed to load base library"
     End If
-
+    
 End Function
 
 'This should be run before the scanner is accessed
 Public Function EnableScanner() As Boolean
     
-    Dim strEZTPath As String
-    strEZTPath = g_PluginPath & "eztw32.dll"
-    hLib_Scanner = LoadLibrary(StrPtr(strEZTPath))
+    InitializeEZTwain
     
-    If (hLib_Scanner <> 0) Then
+    If (m_hLibScanner <> 0) Then
         EnableScanner = CBool(TWAIN_IsAvailable() <> 0)
-        FreeLibrary hLib_Scanner
-        If (Not EnableScanner) Then RaiseInternalDebugMessage "TWAIN_IsAvailable() Failed", "TWAIN_IsAvailable() returned 0"
+        If (Not EnableScanner) Then RaiseInternalDebugEvent "TWAIN_IsAvailable() Failed", "TWAIN_IsAvailable() returned 0"
     Else
-        RaiseInternalDebugMessage "LoadLibraryFailed", "EnableScanner() failed to load base library"
+        RaiseInternalDebugEvent "LoadLibrary Failed", "EnableScanner() failed to load base library"
         EnableScanner = False
     End If
     
@@ -87,22 +109,12 @@ End Function
 'Allow the user to select which hardware PhotoDemon will use for scanning
 Public Sub Twain32SelectScanner()
     
-    If IsScannerAvailable Then
+    If m_ScanningAvailable Then
         
         'Make sure the scanner is plugged in and powered up
         If EnableScanner Then
-            
-            Dim hLib As Long, strEZTPath As String
-            strEZTPath = g_PluginPath & "eztw32.dll"
-            hLib = LoadLibrary(StrPtr(strEZTPath))
-                
-            If (hLib <> 0) Then
-                TWAIN_SelectImageSource GetModalOwner().hWnd
-                FreeLibrary hLib
-            End If
-            
+            TWAIN_SelectImageSource GetModalOwner().hWnd
             Message "Scanner successfully enabled "
-            
         Else
             PDMsgBox "The selected scanner or digital camera isn't responding." & vbCrLf & vbCrLf & "Please make sure the device is turned on and ready for use.", vbExclamation + vbOKOnly + vbApplicationModal, " Scanner Interface Error"
             Message "Unresponsive scanner - scanning suspended "
@@ -126,11 +138,7 @@ Public Sub Twain32Scan()
         'Make sure the scanner is on and responsive
         If EnableScanner Then
             
-            Dim hLib As Long, strEZTPath As String
-            strEZTPath = g_PluginPath & "eztw32.dll"
-            hLib = LoadLibrary(StrPtr(strEZTPath))
-        
-            'Note that this function has a fairly extensive error handling routine
+            'This function has a fairly extensive error handling routine, since a lot can go wrong when scanning
             On Error GoTo ScanError
             
             Dim scannerCaptureFile As String, scanCheck As Long
@@ -167,8 +175,6 @@ Public Sub Twain32Scan()
                 GoTo ScanError
             End If
             
-            If (hLib <> 0) Then FreeLibrary hLib
-            
         Else
             PDMsgBox "The selected scanner or digital camera isn't responding." & vbCrLf & vbCrLf & "Please make sure the device is turned on and ready for use.", vbExclamation + vbOKOnly + vbApplicationModal, " Scanner Interface Error"
             Message "Unresponsive scanner - scanning suspended "
@@ -183,8 +189,6 @@ Public Sub Twain32Scan()
 
 'Something went wrong
 ScanError:
-    
-    If (hLib <> 0) Then FreeLibrary hLib
     
     Dim scanErrMessage As String
     
@@ -210,7 +214,7 @@ ScanError:
     
 End Sub
 
-Private Sub RaiseInternalDebugMessage(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString)
+Private Sub RaiseInternalDebugEvent(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString)
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "WARNING!  EZTwain interface reported error """ & errName & """ - " & errDescription
     #End If

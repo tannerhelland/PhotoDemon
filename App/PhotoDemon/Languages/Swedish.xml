@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.166</langversion>
+<langversion>6.7.168</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -1567,11 +1567,6 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 </phrase>
 
 <phrase>
-<original>Scanner/digital camera import disabled</original>
-<translation>Scanner/digitalkamera import inaktiv</translation>
-</phrase>
-
-<phrase>
 <original>Scanned Image</original>
 <translation>skannad bild</translation>
 </phrase>
@@ -1579,6 +1574,11 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 <phrase>
 <original>Image acquired successfully</original>
 <translation>Bild förvärvat framgångsrikt</translation>
+</phrase>
+
+<phrase>
+<original>Scanner/digital camera import disabled</original>
+<translation>Scanner/digitalkamera import inaktiv</translation>
 </phrase>
 
 <phrase>
@@ -15123,6 +15123,18 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
+
+<!-- BEGIN text for Drawing2D.bas -->
+
+<!-- Drawing2D.bas contains 0 phrases. -->
+
+<!-- END text for Drawing2D.bas-->
+
+<!-- BEGIN text for pdSurface2D.cls -->
+
+<!-- pdSurface2D.cls contains 0 phrases. -->
+
+<!-- END text for pdSurface2D.cls-->
 
 <!-- Automatic text extraction complete. -->
 

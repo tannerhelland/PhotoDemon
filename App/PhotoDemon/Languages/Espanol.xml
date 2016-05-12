@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.169</langversion>
+<langversion>6.7.171</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -1567,11 +1567,6 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 </phrase>
 
 <phrase>
-<original>Scanner/digital camera import disabled</original>
-<translation>Escáner/importación cámara digital deshabilitado</translation>
-</phrase>
-
-<phrase>
 <original>Scanned Image</original>
 <translation>Imagen escaneada</translation>
 </phrase>
@@ -1579,6 +1574,11 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 <phrase>
 <original>Image acquired successfully</original>
 <translation>Imagen adquirida con éxito</translation>
+</phrase>
+
+<phrase>
+<original>Scanner/digital camera import disabled</original>
+<translation>Escáner/importación cámara digital deshabilitado</translation>
 </phrase>
 
 <phrase>
@@ -15123,6 +15123,18 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
+
+<!-- BEGIN text for Drawing2D.bas -->
+
+<!-- Drawing2D.bas contains 0 phrases. -->
+
+<!-- END text for Drawing2D.bas-->
+
+<!-- BEGIN text for pdSurface2D.cls -->
+
+<!-- pdSurface2D.cls contains 0 phrases. -->
+
+<!-- END text for pdSurface2D.cls-->
 
 <!-- Automatic text extraction complete. -->
 

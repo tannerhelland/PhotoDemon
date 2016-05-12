@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.108</langversion>
+<langversion>6.6.110</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -1567,11 +1567,6 @@ Untuk mengaktifkan dukungan scanner, silahkan salin file EZTW32.dll (tersedia un
 </phrase>
 
 <phrase>
-<original>Scanner/digital camera import disabled</original>
-<translation>Scanner / kamera digital impor dinonaktifkan</translation>
-</phrase>
-
-<phrase>
 <original>Scanned Image</original>
 <translation>Gambar dipindai</translation>
 </phrase>
@@ -1579,6 +1574,11 @@ Untuk mengaktifkan dukungan scanner, silahkan salin file EZTW32.dll (tersedia un
 <phrase>
 <original>Image acquired successfully</original>
 <translation>Gambar yang diperolehi Berhasil</translation>
+</phrase>
+
+<phrase>
+<original>Scanner/digital camera import disabled</original>
+<translation>Scanner / kamera digital impor dinonaktifkan</translation>
 </phrase>
 
 <phrase>
@@ -15128,6 +15128,18 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
+
+<!-- BEGIN text for Drawing2D.bas -->
+
+<!-- Drawing2D.bas contains 0 phrases. -->
+
+<!-- END text for Drawing2D.bas-->
+
+<!-- BEGIN text for pdSurface2D.cls -->
+
+<!-- pdSurface2D.cls contains 0 phrases. -->
+
+<!-- END text for pdSurface2D.cls-->
 
 <!-- Automatic text extraction complete. -->
 

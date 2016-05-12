@@ -194,18 +194,11 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     AddMenuIcon "EXIT", 0, 17         'Exit
     
     '--> Import Sub-Menu
-    'NOTE: the specific menu values will be different if the scanner plugin (eztw32.dll) isn't found.
-    If Plugin_EZTwain.IsScannerAvailable Then
-        AddMenuIcon "PASTE_IMAGE", 0, 3, 0 'From Clipboard (Paste as New Image)
-        AddMenuIcon "SCANNER", 0, 3, 2     'Scan Image
-        AddMenuIcon "SCANNERSEL", 0, 3, 3  'Select Scanner
-        AddMenuIcon "DOWNLOAD", 0, 3, 5    'Online Image
-        AddMenuIcon "SCREENCAP", 0, 3, 7   'Screen Capture
-    Else
-        AddMenuIcon "PASTE_IMAGE", 0, 3, 0 'From Clipboard (Paste as New Image)
-        AddMenuIcon "DOWNLOAD", 0, 3, 2    'Online Image
-        AddMenuIcon "SCREENCAP", 0, 3, 4   'Screen Capture
-    End If
+    AddMenuIcon "PASTE_IMAGE", 0, 3, 0 'From Clipboard (Paste as New Image)
+    AddMenuIcon "SCANNER", 0, 3, 2     'Scan Image
+    AddMenuIcon "SCANNERSEL", 0, 3, 3  'Select Scanner
+    AddMenuIcon "DOWNLOAD", 0, 3, 5    'Online Image
+    AddMenuIcon "SCREENCAP", 0, 3, 7   'Screen Capture
         
     'Edit Menu
     AddMenuIcon "UNDO", 1, 0           'Undo
