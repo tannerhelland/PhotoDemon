@@ -544,9 +544,9 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
             ' current state (e.g. it's not locked, in the middle of other processing, etc.)
             If CanIRaiseAnAcceleratorEvent Then
                 
-                'Key up events are raised twice; once in a transitionary stage, and once again in a final stage.
-                ' To prevent double-raising of KeyUp events, we check the transitionary state before proceeding
-                If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
+                'The first bit (e.g. "bit 31" per MSDN) controls key state: 0 means the key is being pressed, 1 means the key is
+                ' being released.  Shortcuts do not allow for "press-and-hold-to-repeat" behavior, so we only fire on key release.
+                If (lParam < 0) Then
                     
                     'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
                     Dim retShiftConstants As ShiftConstants

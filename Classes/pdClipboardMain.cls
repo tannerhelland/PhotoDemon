@@ -256,7 +256,7 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
                 
                 'If a selection is active, erase the selected area.  Otherwise, wipe the whole layer.
                 If pdImages(g_CurrentImage).selectionActive Then
-                    pdImages(g_CurrentImage).eraseProcessedSelection i
+                    pdImages(g_CurrentImage).EraseProcessedSelection i
                 Else
                     Layer_Handler.EraseLayerByIndex i
                 End If
@@ -268,7 +268,7 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
         
             'If a selection is active, erase the selected area.  Otherwise, delete the given layer.
             If pdImages(g_CurrentImage).selectionActive Then
-                pdImages(g_CurrentImage).eraseProcessedSelection i
+                pdImages(g_CurrentImage).EraseProcessedSelection i
             Else
                 Layer_Handler.DeleteLayer i
             End If

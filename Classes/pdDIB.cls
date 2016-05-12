@@ -1790,7 +1790,7 @@ Public Function WriteToFile(ByRef dstFilename As String, Optional ByVal toCompre
     cFile.WriteDataToFile hFile, VarPtr(Me.GetDIBWidth), 4&
     cFile.WriteDataToFile hFile, VarPtr(Me.GetDIBHeight), 4&
     cFile.WriteDataToFile hFile, VarPtr(Me.GetDIBArrayWidth), 4&
-        
+    
     'And finally, the pixel data.  Start by retrieving two key items of business: a pointer to this DIB's raw pixel data,
     ' and the total length of that pixel data.
     Dim tmpDIBPointer As Long, tmpDIBLength As Long
@@ -1809,6 +1809,10 @@ Public Function WriteToFile(ByRef dstFilename As String, Optional ByVal toCompre
             
                 'Mark the data as compressed
                 cFile.WriteDataToFile hFile, VarPtr(toCompress), 2&
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "pdDIB.WriteToFile: (" & Me.GetDIBWidth & "x" & Me.GetDIBHeight & "x" & Me.GetDIBColorDepth & "): " & compressedSize & " bytes of pixel data (compressed)"
+                #End If
                 
                 'Write the original size of the array, followed by the compressed size, followed by the image data itself.  (The array sizes will
                 ' help us automatically create intelligently-sized buffers at decompression time.)
@@ -1850,7 +1854,7 @@ Public Function WriteToFile(ByRef dstFilename As String, Optional ByVal toCompre
     End If
         
     'If this is not an embedding, close the file now
-    If Not embedInFile Then cFile.CloseFileHandle hFile
+    If (Not embedInFile) Then cFile.CloseFileHandle hFile
 
 End Function
 
