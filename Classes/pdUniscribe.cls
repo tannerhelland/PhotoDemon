@@ -64,6 +64,8 @@ Private Declare Function ScriptXtoCP Lib "usp10" (ByVal iX As Long, ByVal cChars
 Private Declare Function ScriptItemizeOpenType Lib "usp10" (ByVal pwcInChars As Long, ByVal cInChars As Long, ByVal cMaxItems As Long, ByVal ptrToScriptControl As Long, ByVal ptrToScriptState As Long, ByVal ptrToPItems As Long, ByVal ptrToPScriptTags As Long, ByRef pcItems As Long) As Long
 Private Declare Function ScriptShapeOpenType Lib "usp10" (ByVal srcDC As Long, ByVal ptrToSCpsc As Long, ByVal ptrToSApas As Long, ByVal otTagScript As Long, ByVal otTagLang As Long, ByVal ptrToRcRangeChars As Long, ByVal ptrToRpRangeProperties As Long, ByVal numOfOTRanges As Long, ByVal pwcChars As Long, ByVal cChars As Long, ByVal cMaxGlyphs As Long, ByVal ptrToIntpwLogClust As Long, ByVal ptrToOutputCharProps As Long, ByVal ptrToPWOutGlyphs As Long, ByVal ptrToSVpsva As Long, ByRef pcGlyphs As Long) As Long
 
+'Sometime we have to get clever about cramming data into integers
+Private Declare Sub GetMem2 Lib "MSVBVM60" (ByVal srcPointer As Long, ByRef dstInteger As Integer)
 
 'For relevant type declarations, look in the Uniscribe_API_Decs module.
 
@@ -833,7 +835,7 @@ End Function
 'If a source DC is passed, the function will automatically fill the ABC width of each glyph prior to returning it.
 '
 ' Returns a value >= 0 indicating the number of glyphs in the returned struct.  0 indicates failure or an empty string.
-Friend Function getCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, Optional ByVal srcDC As Long = 0) As Long
+Friend Function GetCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, Optional ByVal srcDC As Long = 0) As Long
     
     'Before doing anything else, we need to calculate a total number of glyphs in our current collection.
     Dim totalGlyphCount As Long
@@ -853,6 +855,8 @@ Friend Function getCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
     'Next, iterate all items and copy the relevant glyph information from each item into the destination array
     Dim netGlyphOffset As Long, numOfGlyphsAtStartOfLine As Long
     netGlyphOffset = 0
+    
+    Dim tmpInteger As Integer
     
     'DEBUG ONLY!
     'For i = 0 To m_NumOfItems - 1
@@ -919,8 +923,16 @@ Friend Function getCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
                     .isLastGlyphOnLine = False
                     m_Items(i).copyGlyphOffsetToPointer VarPtr(.GlyphOffset), j
                     
-                    'While here, we also collect the ABC width of each glyph
-                    If srcDC <> 0 Then ScriptGetGlyphABCWidth srcDC, VarPtr(m_ScriptCache), .glyphIndex, VarPtr(.ABCWidth)
+                    'While here, we also collect the ABC width of each glyph.  Note that this is a tad cumbersome, because the
+                    ' glyph index must be passed as an unsigned integer, and values > 32767 are absolutely possible.  As such,
+                    ' we need to manually copy the glyph index into an integer.
+                    If .glyphIndex > 32767 Then
+                        GetMem2 VarPtr(.glyphIndex), tmpInteger
+                    Else
+                        tmpInteger = .glyphIndex
+                    End If
+                    
+                    If (srcDC <> 0) Then ScriptGetGlyphABCWidth srcDC, VarPtr(m_ScriptCache), tmpInteger, VarPtr(.ABCWidth)
                     
                 End With
                 
@@ -936,7 +948,7 @@ Friend Function getCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
     
     Next i
     
-    getCopyOfGlyphCache = netGlyphOffset
+    GetCopyOfGlyphCache = netGlyphOffset
     
 End Function
 
@@ -945,7 +957,7 @@ Public Sub printUniscribeDebugInfo()
     
     Dim tmpGlyphCache() As pdGlyphUniscribe
     Dim numOfGlyphs As Long
-    numOfGlyphs = getCopyOfGlyphCache(tmpGlyphCache)
+    numOfGlyphs = GetCopyOfGlyphCache(tmpGlyphCache)
     
     Debug.Print "-- Glyph data returned by Uniscribe --"
     
