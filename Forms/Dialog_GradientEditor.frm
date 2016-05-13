@@ -329,7 +329,7 @@ Private Const GRADIENT_NODE_WIDTH As Single = 12#
 Private Const GRADIENT_NODE_HEIGHT As Single = 14#
 
 'Other gradient node UI renderers
-Private inactiveArrowFill As pdGraphicsBrush, activeArrowFill As pdGraphicsBrush
+Private inactiveArrowFill As pd2DBrush, activeArrowFill As pd2DBrush
 Private inactiveOutlinePen As pd2DPen, activeOutlinePen As pd2DPen
 
 'The user's answer is returned via this property
@@ -339,7 +339,7 @@ End Property
 
 'The newly selected gradient (if any) is returned via this property
 Public Property Get NewGradient() As String
-    NewGradient = m_GradientPreview.getGradientAsString
+    NewGradient = m_GradientPreview.GetGradientAsString
 End Property
 
 'The ShowDialog routine presents the user with this form.
@@ -354,17 +354,17 @@ Public Sub ShowDialog(ByVal initialGradient As String, Optional ByRef callingCon
     'Cache the initial gradient parameters so we can access it elsewhere
     m_OldGradient = initialGradient
     Set m_GradientPreview = New pdGradient
-    m_GradientPreview.createGradientFromString initialGradient
+    m_GradientPreview.CreateGradientFromString initialGradient
     
     'Mirror the gradient settings across the node-editor gradient object as well
     Set m_NodePreview = New pdGradient
-    m_NodePreview.createGradientFromString m_GradientPreview.getGradientAsString
+    m_NodePreview.CreateGradientFromString m_GradientPreview.GetGradientAsString
     
     'TODO: force the node preview to be linear-type, angle 0
     
     'If the dialog is being initialized for the first time, there will be no "initial gradient".  In this case, the gradient class
     ' will initialize a placeholder gradient.  We make a copy of it, and use that as the basis of the editor's initial settings.
-    If Len(initialGradient) = 0 Then initialGradient = m_GradientPreview.getGradientAsString
+    If Len(initialGradient) = 0 Then initialGradient = m_GradientPreview.GetGradientAsString
     
     'Sync all controls to the initial pen parameters
     SyncControlsToGradientObject
@@ -425,7 +425,7 @@ Private Sub cmdBar_AddCustomPresetData()
     '
     'However, there's no reason to require horrible duplication code, when the gradient class is already capable of serializing
     ' all relevant data for this control!
-    cmdBar.AddPresetData "FullGradientDefinition", m_GradientPreview.getGradientAsString
+    cmdBar.AddPresetData "FullGradientDefinition", m_GradientPreview.GetGradientAsString
 
 End Sub
 
@@ -455,7 +455,7 @@ Private Sub cmdBar_ReadCustomPresetData()
     '
     'However, there's no reason to require horrible duplication code, when the gradient class is already capable of serializing
     ' all relevant data for this control!
-    m_GradientPreview.createGradientFromString cmdBar.RetrievePresetData("FullGradientDefinition")
+    m_GradientPreview.CreateGradientFromString cmdBar.RetrievePresetData("FullGradientDefinition")
     
     'Synchronize all controls to the updated settings
     SyncControlsToGradientObject
@@ -470,7 +470,7 @@ Private Sub cmdBar_ResetClick()
     
     'Reset our generic outline object
     Set m_GradientPreview = New pdGradient
-    m_GradientPreview.createGradientFromString ""
+    m_GradientPreview.CreateGradientFromString ""
     
     'Synchronize all controls to the updated settings
     UpdateGradientObjects
@@ -526,16 +526,18 @@ Private Sub Form_Load()
         m_CurPoint = -1
         
         'While we're here, we'll also prep all generic drawing objects for the interactive gradient node UI bits
-        Set inactiveArrowFill = New pdGraphicsBrush
-        Set activeArrowFill = New pdGraphicsBrush
+        Set inactiveArrowFill = New pd2DBrush
+        Set activeArrowFill = New pd2DBrush
         
-        inactiveArrowFill.setBrushProperty pgbs_BrushMode, 0
-        inactiveArrowFill.setBrushProperty pgbs_PrimaryOpacity, 100
-        inactiveArrowFill.setBrushProperty pgbs_PrimaryColor, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
+        inactiveArrowFill.SetBrushProperty PD2D_BrushMode, 0
+        inactiveArrowFill.SetBrushProperty PD2D_BrushOpacity, 100
+        inactiveArrowFill.SetBrushProperty PD2D_BrushColor, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
+        inactiveArrowFill.CreateBrush
         
-        activeArrowFill.setBrushProperty pgbs_BrushMode, 0
-        activeArrowFill.setBrushProperty pgbs_PrimaryOpacity, 100
-        activeArrowFill.setBrushProperty pgbs_PrimaryColor, g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
+        activeArrowFill.SetBrushProperty PD2D_BrushMode, 0
+        activeArrowFill.SetBrushProperty PD2D_BrushOpacity, 100
+        activeArrowFill.SetBrushProperty PD2D_BrushColor, g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
+        activeArrowFill.CreateBrush
         
         Set inactiveOutlinePen = New pd2DPen
         Set activeOutlinePen = New pd2DPen
@@ -581,7 +583,7 @@ Private Sub ResetGradientPoints()
         .pdgp_Position = 1
     End With
     
-    m_GradientPreview.createGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
+    m_GradientPreview.CreateGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
     
 End Sub
 
@@ -626,8 +628,8 @@ Private Sub UpdateGradientObjects()
             
             SyncUIToActiveNode
             
-            m_GradientPreview.createGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
-            m_GradientPreview.getCopyOfPointCollection m_NumOfGradientPoints, m_GradientPoints
+            m_GradientPreview.CreateGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
+            m_GradientPreview.GetCopyOfPointCollection m_NumOfGradientPoints, m_GradientPoints
             
         End If
         
@@ -639,15 +641,15 @@ Private Sub UpdateGradientObjects()
     End If
     
     With m_GradientPreview
-        .setGradientProperty pdgs_GradientShape, btsShape.ListIndex
-        .setGradientProperty pdgs_GradientAngle, sltAngle.Value
-        .createGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
+        .SetGradientProperty pdgs_GradientShape, btsShape.ListIndex
+        .SetGradientProperty pdgs_GradientAngle, sltAngle.Value
+        .CreateGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
     End With
 
     With m_NodePreview
-        .setGradientProperty pdgs_GradientShape, pdgs_ShapeLinear
-        .setGradientProperty pdgs_GradientAngle, 0#
-        .createGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
+        .SetGradientProperty pdgs_GradientShape, pdgs_ShapeLinear
+        .SetGradientProperty pdgs_GradientAngle, 0#
+        .CreateGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
     End With
 
 End Sub
@@ -669,11 +671,10 @@ Private Sub UpdatePreview()
             .Height = picPreview.ScaleHeight
         End With
         
-        gdipBrushMain = m_GradientPreview.getBrushHandle(boundsRect)
+        gdipBrushMain = m_GradientPreview.GetBrushHandle(boundsRect)
         
         'Prep the preview DIB
         If m_MainPreviewDIB Is Nothing Then Set m_MainPreviewDIB = New pdDIB
-        
         If (m_MainPreviewDIB.GetDIBWidth <> Me.picPreview.ScaleWidth) Or (m_MainPreviewDIB.GetDIBHeight <> Me.picPreview.ScaleHeight) Then
             m_MainPreviewDIB.CreateBlank Me.picPreview.ScaleWidth, Me.picPreview.ScaleHeight, 24, 0
         Else
@@ -699,10 +700,9 @@ Private Sub UpdatePreview()
             .Height = picNodePreview.ScaleHeight
         End With
         
-        gdipBrushNodes = m_GradientPreview.getBrushHandle(boundsRect, True)
+        gdipBrushNodes = m_GradientPreview.GetBrushHandle(boundsRect, True)
         
-        If m_NodePreviewDIB Is Nothing Then Set m_NodePreviewDIB = New pdDIB
-        
+        If (m_NodePreviewDIB Is Nothing) Then Set m_NodePreviewDIB = New pdDIB
         If (m_NodePreviewDIB.GetDIBWidth <> Me.picNodePreview.ScaleWidth) Or (m_NodePreviewDIB.GetDIBHeight <> Me.picNodePreview.ScaleHeight) Then
             m_NodePreviewDIB.CreateBlank Me.picNodePreview.ScaleWidth, Me.picNodePreview.ScaleHeight, 24, 0
         Else
@@ -721,7 +721,7 @@ Private Sub UpdatePreview()
         GDI_Plus.ReleaseGDIPlusBrush gdipBrushNodes
                 
         'Notify our parent of the update
-        If Not (parentGradientControl Is Nothing) Then parentGradientControl.NotifyOfLiveGradientChange m_GradientPreview.getGradientAsString
+        If Not (parentGradientControl Is Nothing) Then parentGradientControl.NotifyOfLiveGradientChange m_GradientPreview.GetGradientAsString
         
     End If
     
@@ -734,10 +734,9 @@ Private Sub SyncControlsToGradientObject()
     m_SuspendUI = True
     
     With m_GradientPreview
-        btsShape.ListIndex = .getGradientProperty(pdgs_GradientShape)
-        sltAngle.Value = .getGradientProperty(pdgs_GradientAngle)
-        
-        .getCopyOfPointCollection m_NumOfGradientPoints, m_GradientPoints
+        btsShape.ListIndex = .GetGradientProperty(pdgs_GradientShape)
+        sltAngle.Value = .GetGradientProperty(pdgs_GradientAngle)
+        .GetCopyOfPointCollection m_NumOfGradientPoints, m_GradientPoints
     End With
     
     DrawGradientNodes
@@ -794,7 +793,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
             
             'Preset the RGB value to match whatever the gradient already is at this point
             Dim newRGBA As RGBQUAD
-            m_GradientPreview.getColorAtPosition_RGBA .pdgp_Position, newRGBA
+            m_GradientPreview.GetColorAtPosition_RGBA .pdgp_Position, newRGBA
             .pdgp_RGB = RGB(newRGBA.Red, newRGBA.Green, newRGBA.Blue)
             
         End With
@@ -976,14 +975,13 @@ Private Sub DrawGradientNodes()
         hScaleFactor = picPreview.ScaleWidth
         
         '...and pen/fill objects for the actual rendering
-        Dim blockFill As pdGraphicsBrush
-        Set blockFill = New pdGraphicsBrush
-        blockFill.setBrushProperty pgbs_BrushMode, 0
-        blockFill.setBrushProperty pgbs_PrimaryOpacity, 100
+        Dim blockFill As pd2DBrush
+        Set blockFill = New pd2DBrush
+        blockFill.SetBrushProperty PD2D_BrushMode, 0
+        blockFill.SetBrushProperty PD2D_BrushOpacity, 100
         
         'Prep the target interaction DIB
-        If m_InteractiveDIB Is Nothing Then Set m_InteractiveDIB = New pdDIB
-        
+        If (m_InteractiveDIB Is Nothing) Then Set m_InteractiveDIB = New pdDIB
         If (m_InteractiveDIB.GetDIBWidth <> Me.picInteract.ScaleWidth) Or (m_InteractiveDIB.GetDIBHeight <> Me.picInteract.ScaleHeight) Then
             m_InteractiveDIB.CreateBlank Me.picInteract.ScaleWidth, Me.picInteract.ScaleHeight, 24, 0
         Else
@@ -1006,21 +1004,21 @@ Private Sub DrawGradientNodes()
             tmpBlock.TranslatePath hOffset + m_GradientPoints(i).pdgp_Position * hScaleFactor, 0
             
             'The node's colored block is rendered the same regardless of hover
-            blockFill.setBrushProperty pgbs_PrimaryColor, m_GradientPoints(i).pdgp_RGB
-            tmpBlock.FillPathToDIB_BareBrush blockFill.getBrushHandle, m_InteractiveDIB
+            blockFill.SetBrushProperty PD2D_BrushColor, m_GradientPoints(i).pdgp_RGB
+            tmpBlock.FillPathToDIB_BareBrush blockFill.GetHandle, m_InteractiveDIB
             
             'All other renders vary by hover state
-            If i = m_CurPoint Then
+            If (i = m_CurPoint) Then
                 tmpBlock.StrokePath_BarePen activeOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
-                tmpArrow.FillPathToDIB_BareBrush activeArrowFill.getBrushHandle, m_InteractiveDIB
+                tmpArrow.FillPathToDIB_BareBrush activeArrowFill.GetHandle, m_InteractiveDIB
                 tmpArrow.StrokePath_BarePen activeOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
-            ElseIf i = m_CurHoverPoint Then
+            ElseIf (i = m_CurHoverPoint) Then
                 tmpBlock.StrokePath_BarePen activeOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
-                tmpArrow.FillPathToDIB_BareBrush activeArrowFill.getBrushHandle, m_InteractiveDIB
+                tmpArrow.FillPathToDIB_BareBrush activeArrowFill.GetHandle, m_InteractiveDIB
                 tmpArrow.StrokePath_BarePen activeOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
             Else
                 tmpBlock.StrokePath_BarePen inactiveOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
-                tmpArrow.FillPathToDIB_BareBrush inactiveArrowFill.getBrushHandle, m_InteractiveDIB
+                tmpArrow.FillPathToDIB_BareBrush inactiveArrowFill.GetHandle, m_InteractiveDIB
                 tmpArrow.StrokePath_BarePen inactiveOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
             End If
             

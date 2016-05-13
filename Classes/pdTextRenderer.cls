@@ -1601,12 +1601,12 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     ' at maximum speed.  Once those are finished, we'll set target smoothing and offset modes.
         
     'If fill mode is active, create a relevant brush.  Note that not all brushes are currently implemented!
-    Dim gdipFillBrush As Long, tmpFiller As pdGraphicsBrush
-    Set tmpFiller = New pdGraphicsBrush
+    Dim gdipFillBrush As Long, textFillBrush As pd2DBrush, backgroundFillBrush As pd2DBrush
     
     If m_FillActive Then
-        tmpFiller.createBrushFromString m_FillBrush
-        gdipFillBrush = tmpFiller.getBrushHandle
+        Set textFillBrush = New pd2DBrush
+        textFillBrush.SetBrushPropertiesFromXML m_FillBrush
+        gdipFillBrush = textFillBrush.GetHandle
     Else
         gdipFillBrush = 0
     End If
@@ -1627,9 +1627,10 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     Dim gdipBackgroundBrush As Long
     
     If m_BackgroundActive Then
-        tmpFiller.createBrushFromString m_BackgroundBrush
-        tmpFiller.setBoundaryRect boundingRect
-        gdipBackgroundBrush = tmpFiller.getBrushHandle
+        Set backgroundFillBrush = New pd2DBrush
+        backgroundFillBrush.SetBrushPropertiesFromXML m_BackgroundBrush
+        backgroundFillBrush.SetBoundaryRect boundingRect
+        gdipBackgroundBrush = backgroundFillBrush.GetHandle
     Else
         gdipBackgroundBrush = 0
     End If
@@ -1743,12 +1744,10 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         
             'Update the fill brush against the final rect established by the path renderer.
             ' (This additional step is necessary to ensure that gradients span the full width/height of the text.)
-            GDI_Plus.ReleaseGDIPlusBrush gdipFillBrush
-            
-            tmpFiller.createBrushFromString m_FillBrush
+            textFillBrush.SetBrushPropertiesFromXML m_FillBrush
             finalTextPath.GetPathBounds boundingRect
-            tmpFiller.setBoundaryRect boundingRect
-            gdipFillBrush = tmpFiller.getBrushHandle
+            textFillBrush.SetBoundaryRect boundingRect
+            gdipFillBrush = textFillBrush.GetHandle
             
             gdipReturn = GdipFillPath(dstGraphics, gdipFillBrush, finalTextPath.GetCopyOfPathHandle)
             If gdipReturn <> 0 Then Debug.Print "WARNING!  GdipFillPath failed; return code was " & gdipReturn
@@ -1765,8 +1764,6 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     End If
     
     'Release the temporary GDI+ objects we created.  (Note that GDI+ objects silently created via pd2D objects are released automatically.)
-    If gdipBackgroundBrush <> 0 Then GDI_Plus.ReleaseGDIPlusBrush gdipBackgroundBrush
-    If gdipFillBrush <> 0 Then GDI_Plus.ReleaseGDIPlusBrush gdipFillBrush
     GDI_Plus.ReleaseGDIPlusGraphics dstGraphics
     
     'Return success/failure contingent on the return of the GDI+ rendering call

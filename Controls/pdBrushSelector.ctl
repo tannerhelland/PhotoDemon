@@ -64,7 +64,7 @@ Public Event LostFocusAPI()
 Private m_curBrush As String
 
 'A temporary filler object, used to render the brush preview
-Private m_Filler As pdGraphicsBrush
+Private m_Filler As pd2DBrush
 
 'When the "select brush" dialog is live, this will be set to TRUE
 Private isDialogLive As Boolean
@@ -226,7 +226,7 @@ End Sub
 
 Private Sub UserControl_Initialize()
 
-    Set m_Filler = New pdGraphicsBrush
+    Set m_Filler = New pd2DBrush
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
@@ -327,18 +327,18 @@ Private Sub RedrawBackBuffer()
     If g_IsProgramRunning Then
         
         'Render the brush first
-        m_Filler.setBoundaryRect m_BrushRect
-        m_Filler.createBrushFromString Me.Brush
+        m_Filler.SetBoundaryRect m_BrushRect
+        m_Filler.SetBrushPropertiesFromXML Me.Brush
         
         Dim tmpBrush As Long
-        tmpBrush = m_Filler.getBrushHandle
+        tmpBrush = m_Filler.GetHandle
         
         With m_BrushRect
             GDI_Plus.GDIPlusFillPatternToDC bufferDC, .Left, .Top, .Width, .Height, g_CheckerboardPattern
             GDI_Plus.GDIPlusFillDC_Brush bufferDC, tmpBrush, .Left, .Top, .Width, .Height
         End With
         
-        m_Filler.releaseBrushHandle tmpBrush
+        m_Filler.ReleaseBrush
         
         'Draw borders around the brush results.
         Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long

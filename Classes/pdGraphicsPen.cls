@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Graphics Outline ("Pen" in GDI/GDI+ parlance) Class
 'Copyright 2014-2016 by Tanner Helland
 'Created: 04/July/15 (but assembled from many bits written earlier)
-'Last updated: 04/July/15
-'Last update: start migrating code from other places in PD to this singular class
+'Last updated: 13/May/16
+'Last update: total overhaul
 '
 'This class manages a single GDI+ WAPI pen instance.  (Pens are used to trace shapes/paths.)
 '
@@ -60,6 +60,95 @@ Private m_DebugMode As Boolean
 
 'Once a pen has been created, this handle value will be non-zero
 Private m_PenHandle As Long
+
+'Get/set individual settings.  Note that these just wrap the generic Get/SetPenProperty functions, below.
+Public Function GetPenStyle() As GP_DashStyle
+    GetPenStyle = Me.GetPenProperty(PD2D_PenStyle)
+End Function
+
+Public Function GetPenColor() As Long
+    GetPenColor = Me.GetPenProperty(PD2D_PenColor)
+End Function
+
+Public Function GetPenOpacity() As Single
+    GetPenOpacity = Me.GetPenProperty(PD2D_PenOpacity)
+End Function
+
+Public Function GetPenWidth() As Single
+    GetPenWidth = Me.GetPenProperty(PD2D_PenWidth)
+End Function
+
+Public Function GetPenLineJoin() As GP_LineJoin
+    GetPenLineJoin = Me.GetPenProperty(PD2D_PenLineJoin)
+End Function
+
+Public Function GetPenLineCap() As GP_LineCap
+    GetPenLineCap = Me.GetPenProperty(PD2D_PenLineCap)
+End Function
+
+Public Function GetPenDashCap() As GP_DashCap
+    GetPenDashCap = Me.GetPenProperty(PD2D_PenDashCap)
+End Function
+
+Public Function GetPenMiterLimit() As Single
+    GetPenMiterLimit = Me.GetPenProperty(PD2D_PenMiterLimit)
+End Function
+
+Public Function GetPenAlignment() As GP_PenAlignment
+    GetPenAlignment = Me.GetPenProperty(PD2D_PenAlignment)
+End Function
+
+Public Function GetPenStartCap() As GP_LineCap
+    GetPenStartCap = Me.GetPenProperty(PD2D_PenStartCap)
+End Function
+
+Public Function GetPenEndCap() As GP_LineCap
+    GetPenEndCap = Me.GetPenProperty(PD2D_PenEndCap)
+End Function
+
+Public Sub SetPenStyle(ByVal newSetting As GP_DashStyle)
+    Me.SetPenProperty PD2D_PenStyle, newSetting
+End Sub
+
+Public Sub SetPenColor(ByVal newSetting As Long)
+    Me.SetPenProperty PD2D_PenColor, newSetting
+End Sub
+
+Public Sub SetPenOpacity(ByVal newSetting As Single)
+    Me.SetPenProperty PD2D_PenOpacity, newSetting
+End Sub
+
+Public Sub SetPenWidth(ByVal newSetting As Single)
+     Me.SetPenProperty PD2D_PenWidth, newSetting
+End Sub
+
+Public Sub SetPenLineJoin(ByVal newSetting As GP_LineJoin)
+    Me.SetPenProperty PD2D_PenLineJoin, newSetting
+End Sub
+
+Public Sub SetPenLineCap(ByVal newSetting As GP_LineCap)
+    Me.SetPenProperty PD2D_PenLineCap, newSetting
+End Sub
+
+Public Sub SetPenDashCap(ByVal newSetting As GP_DashCap)
+     Me.SetPenProperty PD2D_PenDashCap, newSetting
+End Sub
+
+Public Sub SetPenMiterLimit(ByVal newSetting As Single)
+     Me.SetPenProperty PD2D_PenMiterLimit, newSetting
+End Sub
+
+Public Sub SetPenAlignment(ByVal newSetting As GP_PenAlignment)
+     Me.SetPenProperty PD2D_PenAlignment, newSetting
+End Sub
+
+Public Sub SetPenStartCap(ByVal newSetting As GP_LineCap)
+     Me.SetPenProperty PD2D_PenStartCap, newSetting
+End Sub
+
+Public Sub SetPenEndCap(ByVal newSetting As GP_LineCap)
+     Me.SetPenProperty PD2D_PenEndCap, newSetting
+End Sub
 
 'Get/set individual settings by enum type
 Public Function GetPenProperty(ByVal propID As PD_2D_PEN_SETTINGS) As Variant
@@ -249,7 +338,7 @@ Public Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As
     End If
 End Function
 
-Friend Function GetPenBackend() As PD_2D_RENDERING_BACKEND
+Public Function GetPenBackend() As PD_2D_RENDERING_BACKEND
     GetPenBackend = m_PenBackend
 End Function
 

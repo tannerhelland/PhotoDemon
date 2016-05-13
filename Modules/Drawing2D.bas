@@ -45,19 +45,42 @@ Public Enum PD_2D_PEN_SETTINGS
     PD2D_PenAlignment = 8
     PD2D_PenStartCap = 9
     PD2D_PenEndCap = 10
+    [_PD2D_NumOfPenSettings] = 11
 End Enum
 
 #If False Then
-    Private Const PD2D_PenStyle = 0, PD2D_PenColor = 1, PD2D_PenOpacity = 2, PD2D_PenWidth = 3, PD2D_PenLineJoin = 4, PD2D_PenLineCap = 5, PD2D_PenDashCap = 6, PD2D_PenMiterLimit = 7, PD2D_PenAlignment = 8, PD2D_PenStartCap = 9, PD2D_PenEndCap = 10
+    Private Const PD2D_PenStyle = 0, PD2D_PenColor = 1, PD2D_PenOpacity = 2, PD2D_PenWidth = 3, PD2D_PenLineJoin = 4, PD2D_PenLineCap = 5, PD2D_PenDashCap = 6, PD2D_PenMiterLimit = 7, PD2D_PenAlignment = 8, PD2D_PenStartCap = 9, PD2D_PenEndCap = 10, PD2D_NumOfPenSettings = 11
+#End If
+
+'Brushes support a *lot* of internal settings.
+Public Enum PD_2D_BRUSH_SETTINGS
+    PD2D_BrushMode = 0
+    PD2D_BrushColor = 1
+    PD2D_BrushOpacity = 2
+    PD2D_BrushPatternStyle = 3
+    PD2D_BrushPattern1Color = 4
+    PD2D_BrushPattern1Opacity = 5
+    PD2D_BrushPattern2Color = 6
+    PD2D_BrushPattern2Opacity = 7
+    
+    'Note that individual gradient values cannot be set/read.  Gradients are only supported as a complete gradient
+    ' XML packet, as supplied by the pdGradient class.
+    PD2D_BrushGradientXML = 8
+    [_PD2D_NumOfBrushSettings] = 9
+End Enum
+
+#If False Then
+    Const PD2D_BrushMode = 0, PD2D_BrushColor = 1, PD2D_BrushOpacity = 2, PD2D_BrushPatternStyle = 3, PD2D_BrushPattern1Color = 4, PD2D_BrushPattern1Opacity = 5, PD2D_BrushPattern2Color = 6, PD2D_BrushPattern2Opacity = 7, PD2D_BrushGradientXML = 8, PD2D_NumOfBrushSettings = 9
 #End If
 
 Public Enum PD_2D_SURFACE_SETTINGS
     PD2D_SurfaceAntialiasing = 0
     PD2D_SurfacePixelOffset = 1
+    [_PD2D_NumOfSurfaceSettings] = 2
 End Enum
 
 #If False Then
-    Private Const PD2D_SurfaceAntialiasing = 0, PD2D_SurfacePixelOffset = 1
+    Private Const PD2D_SurfaceAntialiasing = 0, PD2D_SurfacePixelOffset = 1, PD2D_NumOfSurfaceSettings = 2
 #End If
 
 'If GDI+ is initialized successfully, this will be set to TRUE
@@ -67,7 +90,7 @@ Private m_GDIPlusAvailable As Boolean
 Private m_DebugMode As Boolean
 
 'When debug mode is active, live counts of various drawing objects are tracked on a per-backend basis
-Private m_SurfaceCount_GDIPlus As Long, m_PenCount_GDIPlus As Long
+Private m_SurfaceCount_GDIPlus As Long, m_PenCount_GDIPlus As Long, m_BrushCount_GDIPlus As Long
 
 'Shortcut function for creating a new surface with the default rendering backend and default rendering settings
 Public Function QuickCreateSurfaceFromDC(ByRef dstSurface As pd2DSurface, ByVal srcDC As Long) As Boolean
@@ -135,12 +158,12 @@ Private Sub InternalRenderingError(Optional ByRef errName As String = vbNullStri
 End Sub
 
 'DEBUG FUNCTIONS FOLLOW.  These functions should not be called directly.  They are invoked by other pd2D class when m_DebugMode = TRUE.
-Public Sub DEBUG_NotifySurfaceCountChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal objectCreated As Boolean)
+Public Sub DEBUG_NotifyBrushCountChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal objectCreated As Boolean)
     Select Case targetBackend
         Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
-            If objectCreated Then m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus + 1 Else m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus - 1
+            If objectCreated Then m_BrushCount_GDIPlus = m_BrushCount_GDIPlus + 1 Else m_BrushCount_GDIPlus = m_BrushCount_GDIPlus - 1
         Case Else
-            InternalRenderingError "Bad Parameter", "Surface creation/destruction was not counted: backend ID unknown"
+            InternalRenderingError "Bad Parameter", "Brush creation/destruction was not counted: backend ID unknown"
     End Select
 End Sub
 
@@ -150,5 +173,14 @@ Public Sub DEBUG_NotifyPenCountChange(ByVal targetBackend As PD_2D_RENDERING_BAC
             If objectCreated Then m_PenCount_GDIPlus = m_PenCount_GDIPlus + 1 Else m_PenCount_GDIPlus = m_PenCount_GDIPlus - 1
         Case Else
             InternalRenderingError "Bad Parameter", "Pen creation/destruction was not counted: backend ID unknown"
+    End Select
+End Sub
+
+Public Sub DEBUG_NotifySurfaceCountChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal objectCreated As Boolean)
+    Select Case targetBackend
+        Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
+            If objectCreated Then m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus + 1 Else m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus - 1
+        Case Else
+            InternalRenderingError "Bad Parameter", "Surface creation/destruction was not counted: backend ID unknown"
     End Select
 End Sub

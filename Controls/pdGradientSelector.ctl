@@ -62,7 +62,7 @@ Public Event LostFocusAPI()
 Private m_curGradient As String
 
 'Temporary brush object, used to render the gradient preview
-Private m_Brush As pdGraphicsBrush
+Private m_Brush As pd2DBrush
 
 'When the "select gradient" dialog is live, this will be set to TRUE
 Private isDialogLive As Boolean
@@ -224,8 +224,8 @@ End Sub
 
 Private Sub UserControl_Initialize()
     
-    Set m_Brush = New pdGraphicsBrush
-    m_Brush.setBrushProperty pgbs_BrushMode, 2
+    Set m_Brush = New pd2DBrush
+    m_Brush.SetBrushProperty PD2D_BrushMode, 2
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
@@ -321,18 +321,18 @@ Private Sub RedrawBackBuffer()
     If g_IsProgramRunning Then
     
         'Render the brush first
-        m_Brush.setBoundaryRect m_GradientRect
-        m_Brush.setBrushProperty pgbs_GradientString, m_curGradient
+        m_Brush.SetBoundaryRect m_GradientRect
+        m_Brush.SetBrushProperty PD2D_BrushGradientXML, m_curGradient
         
         Dim tmpBrush As Long
-        tmpBrush = m_Brush.getBrushHandle
+        tmpBrush = m_Brush.GetHandle
         
         With m_GradientRect
             GDI_Plus.GDIPlusFillPatternToDC bufferDC, .Left, .Top, .Width, .Height, g_CheckerboardPattern
             GDI_Plus.GDIPlusFillDC_Brush bufferDC, tmpBrush, .Left, .Top, .Width, .Height
         End With
         
-        m_Brush.releaseBrushHandle tmpBrush
+        m_Brush.ReleaseBrush
         
         'Draw borders around the brush results.
         'Draw borders around the brush results.
@@ -371,6 +371,4 @@ End Sub
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
-
-
 

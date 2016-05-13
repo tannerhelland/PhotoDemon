@@ -39,6 +39,54 @@ Private m_DebugMode As Boolean
 Private m_SurfaceAntialiasing As GP_SmoothingMode
 Private m_SurfacePixelOffset As GP_PixelOffsetMode
 
+'Get/set individual settings.  Note that these just wrap the generic Get/SetPenProperty functions, below.
+Public Function GetSurfaceAntialiasing() As GP_SmoothingMode
+    GetSurfaceAntialiasing = Me.GetSurfaceProperty(PD2D_SurfaceAntialiasing)
+End Function
+
+Public Function GetSurfacePixelOffset() As GP_PixelOffsetMode
+    GetSurfacePixelOffset = Me.GetSurfaceProperty(PD2D_SurfacePixelOffset)
+End Function
+
+Public Sub SetSurfaceAntialiasing(ByVal newSetting As GP_SmoothingMode)
+    Me.SetSurfaceProperty PD2D_SurfaceAntialiasing, newSetting
+End Sub
+
+Public Sub SetSurfacePixelOffset(ByVal newSetting As GP_PixelOffsetMode)
+    Me.SetSurfaceProperty PD2D_SurfacePixelOffset, newSetting
+End Sub
+
+'Get/set individual settings by enum type
+Public Function GetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS) As Variant
+
+    Select Case propID
+    
+        Case PD2D_SurfaceAntialiasing
+            GetSurfaceProperty = m_SurfaceAntialiasing
+        
+        Case PD2D_SurfacePixelOffset
+            GetSurfaceProperty = m_SurfacePixelOffset
+    
+    End Select
+
+End Function
+
+Public Sub SetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS, ByVal newSetting As Variant)
+    
+    Select Case propID
+    
+        Case PD2D_SurfaceAntialiasing
+            m_SurfaceAntialiasing = CLng(newSetting)
+        
+        Case PD2D_SurfacePixelOffset
+            m_SurfacePixelOffset = CLng(newSetting)
+            
+    End Select
+    
+    RelayPropertyChangeToBackend propID
+    
+End Sub
+
 Public Function WrapSurfaceAroundDC(ByVal srcDC As Long) As Boolean
     
     If (m_SurfaceHandle <> 0) Then ReleaseSurface
@@ -100,38 +148,6 @@ Public Function ReleaseSurface() As Boolean
     End If
 
 End Function
-
-
-'Get/set individual settings by enum type
-Public Function GetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS) As Variant
-
-    Select Case propID
-    
-        Case PD2D_SurfaceAntialiasing
-            GetSurfaceProperty = m_SurfaceAntialiasing
-        
-        Case PD2D_SurfacePixelOffset
-            GetSurfaceProperty = m_SurfacePixelOffset
-    
-    End Select
-
-End Function
-
-Public Sub SetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS, ByVal newSetting As Variant)
-    
-    Select Case propID
-    
-        Case PD2D_SurfaceAntialiasing
-            m_SurfaceAntialiasing = CLng(newSetting)
-        
-        Case PD2D_SurfacePixelOffset
-            m_SurfacePixelOffset = CLng(newSetting)
-            
-    End Select
-    
-    RelayPropertyChangeToBackend propID
-    
-End Sub
 
 Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_SURFACE_SETTINGS)
     

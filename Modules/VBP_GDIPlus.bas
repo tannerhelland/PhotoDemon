@@ -11,6 +11,10 @@ Attribute VB_Name = "GDI_Plus"
 ' is used for a number of specialized tasks, including viewport rendering of 32bpp images, regional blur of selection masks, antialiased
 ' lines and circles on various dialogs, and more.
 '
+'Note that - by design - some enums in this class differ subtly from the actual GDI+ enums.  This is a deliberate decision
+' to make certain enums play more nicely with other imaging libraries and/or features.  PD handles translation between the
+' correct enums as necessary.
+'
 'These routines are adapted from the work of a number of other talented VB programmers.  Since GDI+ is not well-documented
 ' for VB users, I first pieced this module together from the following pieces of code:
 ' Avery P's initial GDI+ deconstruction: http://planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1
@@ -86,6 +90,17 @@ End Enum
     Private Const GP_QM_Invalid = -1, GP_QM_Default = 0, GP_QM_Low = 1, GP_QM_High = 2
 #End If
 
+Public Enum GP_BrushMode        'IMPORTANT NOTE!  This enum is *not* the same as the underlying GDI+ enum, by design!
+    GP_BM_Solid = 0
+    GP_BM_Pattern = 1
+    GP_BM_Gradient = 2
+    GP_BM_Texture = 3
+End Enum
+
+#If False Then
+    Private Const GP_BM_Solid = 0, GP_BM_Pattern = 1, GP_BM_Gradient = 2, GP_BM_Texture = 3
+#End If
+
 Public Enum GP_DashCap
     GP_DC_Flat = 0
     GP_DC_Square = 0     'This is not a typo; it's supplied as a convenience enum to match supported GP_LineCap values
@@ -139,6 +154,68 @@ End Enum
     Private Const GP_LJ_Miter = 0&, GP_LJ_Bevel = 1&, GP_LJ_Round = 2&, GP_LJ_MiterClipped = 3&
 #End If
 
+Public Enum GP_PatternStyle
+    GP_PS_Horizontal = 0
+    GP_PS_Vertical = 1
+    GP_PS_ForwardDiagonal = 2
+    GP_PS_BackwardDiagonal = 3
+    GP_PS_Cross = 4
+    GP_PS_DiagonalCross = 5
+    GP_PS_05Percent = 6
+    GP_PS_10Percent = 7
+    GP_PS_20Percent = 8
+    GP_PS_25Percent = 9
+    GP_PS_30Percent = 10
+    GP_PS_40Percent = 11
+    GP_PS_50Percent = 12
+    GP_PS_60Percent = 13
+    GP_PS_70Percent = 14
+    GP_PS_75Percent = 15
+    GP_PS_80Percent = 16
+    GP_PS_90Percent = 17
+    GP_PS_LightDownwardDiagonal = 18
+    GP_PS_LightUpwardDiagonal = 19
+    GP_PS_DarkDownwardDiagonal = 20
+    GP_PS_DarkUpwardDiagonal = 21
+    GP_PS_WideDownwardDiagonal = 22
+    GP_PS_WideUpwardDiagonal = 23
+    GP_PS_LightVertical = 24
+    GP_PS_LightHorizontal = 25
+    GP_PS_NarrowVertical = 26
+    GP_PS_NarrowHorizontal = 27
+    GP_PS_DarkVertical = 28
+    GP_PS_DarkHorizontal = 29
+    GP_PS_DashedDownwardDiagonal = 30
+    GP_PS_DashedUpwardDiagonal = 31
+    GP_PS_DashedHorizontal = 32
+    GP_PS_DashedVertical = 33
+    GP_PS_SmallConfetti = 34
+    GP_PS_LargeConfetti = 35
+    GP_PS_ZigZag = 36
+    GP_PS_Wave = 37
+    GP_PS_DiagonalBrick = 38
+    GP_PS_HorizontalBrick = 39
+    GP_PS_Weave = 40
+    GP_PS_Plaid = 41
+    GP_PS_Divot = 42
+    GP_PS_DottedGrid = 43
+    GP_PS_DottedDiamond = 44
+    GP_PS_Shingle = 45
+    GP_PS_Trellis = 46
+    GP_PS_Sphere = 47
+    GP_PS_SmallGrid = 48
+    GP_PS_SmallCheckerBoard = 49
+    GP_PS_LargeCheckerBoard = 50
+    GP_PS_OutlinedDiamond = 51
+    GP_PS_SolidDiamond = 52
+End Enum
+
+#If False Then
+    Private Const GP_PS_Horizontal = 0, GP_PS_Vertical = 1, GP_PS_ForwardDiagonal = 2, GP_PS_BackwardDiagonal = 3, GP_PS_Cross = 4, GP_PS_DiagonalCross = 5, GP_PS_05Percent = 6, GP_PS_10Percent = 7, GP_PS_20Percent = 8, GP_PS_25Percent = 9, GP_PS_30Percent = 10, GP_PS_40Percent = 11, GP_PS_50Percent = 12, GP_PS_60Percent = 13, GP_PS_70Percent = 14, GP_PS_75Percent = 15, GP_PS_80Percent = 16, GP_PS_90Percent = 17, GP_PS_LightDownwardDiagonal = 18, GP_PS_LightUpwardDiagonal = 19, GP_PS_DarkDownwardDiagonal = 20, GP_PS_DarkUpwardDiagonal = 21, GP_PS_WideDownwardDiagonal = 22, GP_PS_WideUpwardDiagonal = 23, GP_PS_LightVertical = 24, GP_PS_LightHorizontal = 25
+    Private Const GP_PS_NarrowVertical = 26, GP_PS_NarrowHorizontal = 27, GP_PS_DarkVertical = 28, GP_PS_DarkHorizontal = 29, GP_PS_DashedDownwardDiagonal = 30, GP_PS_DashedUpwardDiagonal = 31, GP_PS_DashedHorizontal = 32, GP_PS_DashedVertical = 33, GP_PS_SmallConfetti = 34, GP_PS_LargeConfetti = 35, GP_PS_ZigZag = 36, GP_PS_Wave = 37, GP_PS_DiagonalBrick = 38, GP_PS_HorizontalBrick = 39, GP_PS_Weave = 40, GP_PS_Plaid = 41, GP_PS_Divot = 42, GP_PS_DottedGrid = 43, GP_PS_DottedDiamond = 44, GP_PS_Shingle = 45, GP_PS_Trellis = 46, GP_PS_Sphere = 47, GP_PS_SmallGrid = 48, GP_PS_SmallCheckerBoard = 49, GP_PS_LargeCheckerBoard = 50
+    Private Const GP_PS_OutlinedDiamond = 51, GP_PS_SolidDiamond = 52
+#End If
+
 Public Enum GP_PenAlignment
     GP_PA_Center = 0&
     GP_PA_Inset = 1&
@@ -148,8 +225,10 @@ End Enum
     Private Const GP_PA_Center = 0&, GP_PA_Inset = 1&
 #End If
 
-'PixelOffsetMode controls how GDI+ attempts to antialias objects.  For cheap antialiasing, use PixelOffsetModeHalf.
-' This provides a good estimation of AA, without actually applying a full AA operation.
+'PixelOffsetMode controls how GDI+ calculates positioning.  Normally, each a pixel is treated as a unit square that covers
+' the area between [0, 0] and [1, 1].  However, for point-based objects like paths, GDI+ can treat coordinates as if they
+' are centered over [0.5, 0.5] offsets within each pixel.  This typically yields prettier path renders, at some consequence
+' to rendering performance.
 Public Enum GP_PixelOffsetMode
     GP_POM_Invalid = GP_QM_Invalid
     GP_POM_Default = GP_QM_Default
@@ -196,8 +275,11 @@ Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal gdipToken As Long)
 
 'Drawing GDI+ functions
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef dstGraphics As Long) As GP_Result
+Private Declare Function GdipCreateHatchBrush Lib "gdiplus" (ByVal bHatchStyle As GP_PatternStyle, ByVal bForeColor As Long, ByVal bBackColor As Long, ByRef dstBrush As Long) As GP_Result
 Private Declare Function GdipCreatePen1 Lib "gdiplus" (ByVal srcColor As Long, ByVal srcWidth As Single, ByVal srcUnit As GP_Unit, ByRef dstPen As Long) As GP_Result
+Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal srcColor As Long, ByRef dstBrush As Long) As Long
 
+Private Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal hBrush As Long) As GP_Result
 Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal hGraphics As Long) As GP_Result
 Private Declare Function GdipDeletePen Lib "gdiplus" (ByVal hPen As Long) As GP_Result
 
@@ -212,6 +294,7 @@ Private Declare Function GdipGetPenMode Lib "gdiplus" (ByVal hPen As Long, ByRef
 Private Declare Function GdipGetPenWidth Lib "gdiplus" (ByVal hPen As Long, ByRef dstWidth As Single) As GP_Result
 Private Declare Function GdipGetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstMode As GP_PixelOffsetMode) As GP_Result
 Private Declare Function GdipGetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstMode As GP_SmoothingMode) As GP_Result
+Private Declare Function GdipGetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByRef dstColor As Long) As GP_Result
 
 Private Declare Function GdipSetPenColor Lib "gdiplus" (ByVal hPen As Long, ByVal pARGBColor As Long) As GP_Result
 Private Declare Function GdipSetPenDashCap Lib "gdiplus" Alias "GdipSetPenDashCap197819" (ByVal hPen As Long, ByVal newCap As GP_DashCap) As GP_Result
@@ -225,6 +308,7 @@ Private Declare Function GdipSetPenStartCap Lib "gdiplus" (ByVal hPen As Long, B
 Private Declare Function GdipSetPenWidth Lib "gdiplus" (ByVal hPen As Long, ByVal penWidth As Single) As GP_Result
 Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_PixelOffsetMode) As GP_Result
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_SmoothingMode) As GP_Result
+Private Declare Function GdipSetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByVal newColor As Long) As GP_Result
 
 'Non-GDI+ helper functions:
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
@@ -536,8 +620,6 @@ Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest A
 
 'GDI+ calls related to drawing lines and various shapes
 'Private Declare Function GdipCreateBitmapFromGraphics Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal srcGraphics As Long, ByRef dstBitmap As Long) As Long
-Private Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal mBrush As Long) As Long
-Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal mColor As Long, ByRef mBrush As Long) As Long
 Private Declare Function GdipDrawLine Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
 Private Declare Function GdipDrawRectangle Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single) As Long
 Private Declare Function GdipDrawEllipse Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x As Single, ByVal y As Single, ByVal mWidth As Single, ByVal mHeight As Single) As Long
@@ -607,7 +689,6 @@ Private Declare Function GdipDeleteRegion Lib "gdiplus" (ByVal hRegion As Long) 
 Private Declare Function GdipCreateTexture Lib "gdiplus" (ByVal hImage As Long, ByVal iWrapMode As WrapMode, ByRef hTexture As Long) As Long
 Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType, ByVal EnableFlag As Long, ByVal colorMatrixPointer As Long, ByVal grayMatrixPointer As Long, ByVal extraFlags As ColorMatrixFlags) As Long
 Private Declare Function GdipSetImageAttributesToIdentity Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType) As Long
-Private Declare Function GdipCreateHatchBrush Lib "gdiplus" (ByVal bHatchStyle As Long, ByVal bForeColor As Long, ByVal bBackColor As Long, ByRef dstBrush As Long) As Long
 Private Declare Function GdipCreateLineBrush Lib "gdiplus" (ByRef point1 As POINTFLOAT, ByRef point2 As POINTFLOAT, ByVal Color1 As Long, ByVal Color2 As Long, ByVal brushWrapMode As WrapMode, ByRef dstBrush As Long) As Long
 Private Declare Function GdipCreatePenFromBrush Lib "gdiplus" Alias "GdipCreatePen2" (ByVal srcBrush As Long, ByVal penWidth As Single, ByVal srcUnit As GP_Unit, ByRef dstPen As Long) As Long
 
@@ -751,7 +832,7 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
-    getGdipBitmapHandleFromDIB hGdipBitmap, srcDIB
+    GetGdipBitmapHandleFromDIB hGdipBitmap, srcDIB
     
     'hGdipGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
@@ -793,7 +874,7 @@ End Function
 
 'Simpler shorthand function for obtaining a GDI+ bitmap handle from a pdDIB object.  Note that 24/32bpp cases have to be handled separately
 ' because GDI+ is stupid.
-Private Sub getGdipBitmapHandleFromDIB(ByRef tBitmap As Long, ByRef srcDIB As pdDIB)
+Private Sub GetGdipBitmapHandleFromDIB(ByRef tBitmap As Long, ByRef srcDIB As pdDIB)
     
     If srcDIB Is Nothing Then Exit Sub
     
@@ -827,7 +908,7 @@ Public Function GDIPlusRotateFlipDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     'We need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
     Dim tBitmap As Long
-    getGdipBitmapHandleFromDIB tBitmap, srcDIB
+    GetGdipBitmapHandleFromDIB tBitmap, srcDIB
     
     'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
@@ -874,7 +955,7 @@ Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
-    getGdipBitmapHandleFromDIB tBitmap, srcDIB
+    GetGdipBitmapHandleFromDIB tBitmap, srcDIB
     
     'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
@@ -943,7 +1024,7 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
     
     'Next, we need a temporary copy of the image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
-    getGdipBitmapHandleFromDIB tBitmap, dstDIB
+    GetGdipBitmapHandleFromDIB tBitmap, dstDIB
         
     'Create a GDI+ blur effect object
     Dim hEffect As Long
@@ -1072,38 +1153,6 @@ Public Function GDIPlusDrawArcCircular(ByVal dstDC As Long, ByVal centerX As Sin
     GdipDeleteGraphics dstGraphics
     
 End Function
-
-'Return a persistent handle to various types of GDI+ brushes.  This can be useful if many drawing operations are going to be applied
-' with the same brush.
-Public Function GetGDIPlusSolidBrushHandle(ByVal eColor As Long, Optional ByVal cOpacity As Byte = 255) As Long
-    If Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend) Then
-        GdipCreateSolidFill FillQuadWithVBRGB(eColor, cOpacity), GetGDIPlusSolidBrushHandle
-    Else
-        GetGDIPlusSolidBrushHandle = 0
-    End If
-End Function
-
-Public Function GetGDIPlusPatternBrushHandle(ByVal hatchPatternID As Long, ByVal bFirstColor As Long, ByVal bFirstColorOpacity As Byte, ByVal bSecondColor As Long, ByVal bSecondColorOpacity As Byte) As Long
-    GdipCreateHatchBrush hatchPatternID, FillQuadWithVBRGB(bFirstColor, bFirstColorOpacity), FillQuadWithVBRGB(bSecondColor, bSecondColorOpacity), GetGDIPlusPatternBrushHandle
-End Function
-
-Public Sub ReleaseGDIPlusBrush(ByVal srcBrush As Long)
-    
-    If (srcBrush <> 0) Then
-        
-        #If DEBUGMODE = 1 Then
-            Dim gdipCheck As Long
-            gdipCheck = GdipDeleteBrush(srcBrush)
-            If gdipCheck <> 0 Then
-                pdDebug.LogAction "WARNING!  ReleaseGDIPlusBrush failed with code #" & gdipCheck
-            End If
-        #Else
-            GdipDeleteBrush srcBrush
-        #End If
-        
-    End If
-    
-End Sub
 
 'Assuming the client has already obtained a GDI+ graphics handle and a GDI+ pen handle, they can use this function to quickly draw a line using
 ' the associated objects.
@@ -1429,7 +1478,7 @@ Public Function GDIPlusFillPatternToDC(ByVal dstDC As Long, ByVal x1 As Single, 
         
     'Create a texture fill brush from the source image
     Dim srcBitmap As Long, hBrush As Long
-    getGdipBitmapHandleFromDIB srcBitmap, srcDIB
+    GetGdipBitmapHandleFromDIB srcBitmap, srcDIB
     GdipCreateTexture srcBitmap, WrapModeTile, hBrush
     
     'Because pattern fills are prone to boundary overflow when used with transparent overlays, the caller can
@@ -1614,7 +1663,7 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
         
     'Create a texture fill brush from the source image
     Dim srcBitmap As Long, iBrush As Long
-    getGdipBitmapHandleFromDIB srcBitmap, srcDIB
+    GetGdipBitmapHandleFromDIB srcBitmap, srcDIB
     GdipCreateTexture srcBitmap, WrapModeTile, iBrush
     
     'Because pattern fills are prone to boundary overflow when used with transparent overlays, the caller can
@@ -1690,29 +1739,32 @@ End Function
 Public Function GetOpacityFromPARGB(ByVal pARGB As Long) As Single
     Dim srcQuad As RGBQUAD
     CopyMemory srcQuad, pARGB, 4&
-    GetOpacityFromPARGB = CSng(srcQuad.alpha) * (100 / 255)
+    GetOpacityFromPARGB = CSng(srcQuad.alpha) * CSng(100# / 255#)
 End Function
 
 'Given a long-type pARGB value returned from GDI+, retrieve just the RGB component in combined vbRGB format
 Public Function GetColorFromPARGB(ByVal pARGB As Long) As Long
+    
     Dim srcQuad As RGBQUAD
     CopyMemory srcQuad, pARGB, 4&
     
     If (srcQuad.alpha = 255) Then
-        
-        Dim tmpSingle As Single, tmpRed As Long, tmpGreen As Long, tmpBlue As Long
+        GetColorFromPARGB = RGB(srcQuad.Red, srcQuad.Green, srcQuad.Blue)
+    Else
+    
+        Dim tmpSingle As Single
         tmpSingle = CSng(srcQuad.alpha) / 255
+        
         If (tmpSingle <> 0) Then
-            tmpRed = CLng(srcQuad.Red) / tmpSingle
-            tmpGreen = CLng(srcQuad.Green) / tmpSingle
-            tmpBlue = CLng(srcQuad.Blue) / tmpSingle
+            Dim tmpRed As Long, tmpGreen As Long, tmpBlue As Long
+            tmpRed = CSng(srcQuad.Red) / tmpSingle
+            tmpGreen = CSng(srcQuad.Green) / tmpSingle
+            tmpBlue = CSng(srcQuad.Blue) / tmpSingle
             GetColorFromPARGB = RGB(tmpRed, tmpGreen, tmpBlue)
         Else
             GetColorFromPARGB = 0
         End If
         
-    Else
-        GetColorFromPARGB = RGB(srcQuad.Red, srcQuad.Green, srcQuad.Blue)
     End If
     
 End Function
@@ -1793,7 +1845,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'And finally, convert the string into an FIF long
     Dim imgFormatFIF As Long
-    imgFormatFIF = getFIFFromGUID(imgFormatGuidString)
+    imgFormatFIF = GetFIFFromGUID(imgFormatGuidString)
     
     'Metafiles require special consideration; set that flag in advance
     Dim isMetafile As Boolean
@@ -1974,7 +2026,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'Make a note of the image's specific color depth, as relevant to PD
     Dim imgColorDepth As Long
-    imgColorDepth = getColorDepthFromPixelFormat(iPixelFormat)
+    imgColorDepth = GetColorDepthFromPixelFormat(iPixelFormat)
     
     'Check for CMYK images
     Dim isCMYK As Boolean
@@ -2117,26 +2169,26 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
 End Function
 
 'Given a GDI+ pixel format value, return a numeric color depth (e.g. 24, 32, etc)
-Private Function getColorDepthFromPixelFormat(ByVal gdipPixelFormat As Long) As Long
+Private Function GetColorDepthFromPixelFormat(ByVal gdipPixelFormat As Long) As Long
 
     If (gdipPixelFormat = PixelFormat1bppIndexed) Then
-        getColorDepthFromPixelFormat = 1
+        GetColorDepthFromPixelFormat = 1
     ElseIf (gdipPixelFormat = PixelFormat4bppIndexed) Then
-        getColorDepthFromPixelFormat = 4
+        GetColorDepthFromPixelFormat = 4
     ElseIf (gdipPixelFormat = PixelFormat8bppIndexed) Then
-        getColorDepthFromPixelFormat = 8
+        GetColorDepthFromPixelFormat = 8
     ElseIf (gdipPixelFormat = PixelFormat16bppGreyscale) Or (gdipPixelFormat = PixelFormat16bppRGB555) Or (gdipPixelFormat = PixelFormat16bppRGB565) Or (gdipPixelFormat = PixelFormat16bppARGB1555) Then
-        getColorDepthFromPixelFormat = 16
+        GetColorDepthFromPixelFormat = 16
     ElseIf (gdipPixelFormat = PixelFormat24bppRGB) Or (gdipPixelFormat = PixelFormat32bppRGB) Then
-        getColorDepthFromPixelFormat = 24
+        GetColorDepthFromPixelFormat = 24
     ElseIf (gdipPixelFormat = PixelFormat32bppARGB) Or (gdipPixelFormat = PixelFormat32bppPARGB) Then
-        getColorDepthFromPixelFormat = 32
+        GetColorDepthFromPixelFormat = 32
     ElseIf (gdipPixelFormat = PixelFormat48bppRGB) Then
-        getColorDepthFromPixelFormat = 48
+        GetColorDepthFromPixelFormat = 48
     ElseIf (gdipPixelFormat = PixelFormat64bppARGB) Or (gdipPixelFormat = PixelFormat64bppPARGB) Then
-        getColorDepthFromPixelFormat = 64
+        GetColorDepthFromPixelFormat = 64
     Else
-        getColorDepthFromPixelFormat = 24
+        GetColorDepthFromPixelFormat = 24
     End If
 
 End Function
@@ -2387,7 +2439,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
     'Use GDI+ to create a GDI+-compatible bitmap
     Dim GDIPlusReturn As Long
     Dim hGdipBitmap As Long
-    getGdipBitmapHandleFromDIB hGdipBitmap, srcDIB
+    GetGdipBitmapHandleFromDIB hGdipBitmap, srcDIB
         
     'Request a PNG encoder from GDI+
     Dim uEncCLSID As clsid
@@ -2438,8 +2490,8 @@ End Function
 
 'Given an arbitrary array of points, return a handle to a GDI+ region created from the closed shape formed by the points.
 ' Note that this function does not perform automatic management of the returned region.  The caller must release the region manually,
-' using releaseGDIPlusRegion() below.
-Public Function getGDIPlusRegionFromPoints(ByVal numOfPoints As Long, ByVal ptrFloatArray As Long, Optional ByVal useFillMode As GDIFillMode = FillModeAlternate, Optional ByVal useCurveMode As Boolean = False, Optional ByVal curveTension As Single) As Long
+' using ReleaseGDIPlusRegion() below.
+Public Function GetGDIPlusRegionFromPoints(ByVal numOfPoints As Long, ByVal ptrFloatArray As Long, Optional ByVal useFillMode As GDIFillMode = FillModeAlternate, Optional ByVal useCurveMode As Boolean = False, Optional ByVal curveTension As Single) As Long
 
     'Start by creating a blank GDI+ path object.
     Dim gdipRegionHandle As Long, gdipPathHandle As Long
@@ -2459,7 +2511,7 @@ Public Function getGDIPlusRegionFromPoints(ByVal numOfPoints As Long, ByVal ptrF
     GdipDeletePath gdipPathHandle
     
     'Return the newly formed region handle
-    getGDIPlusRegionFromPoints = gdipRegionHandle
+    GetGDIPlusRegionFromPoints = gdipRegionHandle
 
 End Function
 
@@ -2488,7 +2540,7 @@ End Function
 
 'Given an arbitrary array of points, use GDI+ to find a bounding rect for the region created from the closed shape formed by the points.
 ' This function is self-managing, meaning it will delete any GDI+ objects it generates.
-Public Function getGDIPlusBoundingRectFromPoints(ByVal numOfPoints As Long, ByVal ptrFloatArray As Long, Optional ByVal useFillMode As GDIFillMode = FillModeAlternate, Optional ByVal useCurveMode As Boolean = False, Optional ByVal curveTension As Single, Optional ByVal penWidth As Single = 1#, Optional ByVal customLineCap As GP_LineCap = GP_LC_Flat) As RECTF
+Public Function GetGDIPlusBoundingRectFromPoints(ByVal numOfPoints As Long, ByVal ptrFloatArray As Long, Optional ByVal useFillMode As GDIFillMode = FillModeAlternate, Optional ByVal useCurveMode As Boolean = False, Optional ByVal curveTension As Single, Optional ByVal penWidth As Single = 1#, Optional ByVal customLineCap As GP_LineCap = GP_LC_Flat) As RECTF
 
     'Start by creating a blank GDI+ path object.
     Dim gdipRegionHandle As Long, gdipPathHandle As Long
@@ -2510,7 +2562,7 @@ Public Function getGDIPlusBoundingRectFromPoints(ByVal numOfPoints As Long, ByVa
     If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
     
     'Using the generated pen, calculate a bounding rect for the path as drawn with that pen
-    GdipGetPathWorldBounds gdipPathHandle, getGDIPlusBoundingRectFromPoints, 0, 0& 'iPen
+    GdipGetPathWorldBounds gdipPathHandle, GetGDIPlusBoundingRectFromPoints, 0, 0& 'iPen
     
     'Release the path and pen before exiting
     GdipDeletePath gdipPathHandle
@@ -2520,7 +2572,7 @@ End Function
 
 'Given an arbitrary array of points, and a pdImage handle, use GDI+ to find the union a rect of the path and the image.  This is relevant for shapes,
 ' which may be placed off the image, and we are only interested in the part the shape that actually overlaps the image itself.
-Public Function getGDIPlusUnionFromPointsAndImage(ByVal numOfPoints As Long, ByVal ptrFloatArray As Long, ByRef srcImage As pdImage, Optional ByVal useFillMode As GDIFillMode = FillModeAlternate, Optional ByVal useCurveMode As Boolean = False, Optional ByVal curveTension As Single) As RECTF
+Public Function GetGDIPlusUnionFromPointsAndImage(ByVal numOfPoints As Long, ByVal ptrFloatArray As Long, ByRef srcImage As pdImage, Optional ByVal useFillMode As GDIFillMode = FillModeAlternate, Optional ByVal useCurveMode As Boolean = False, Optional ByVal curveTension As Single) As RECTF
 
     'Start by creating a blank GDI+ path object.
     Dim gdipRegionHandle As Long, gdipPathHandle As Long
@@ -2560,7 +2612,7 @@ Public Function getGDIPlusUnionFromPointsAndImage(ByVal numOfPoints As Long, ByV
     If GdipCreateFromHDC(tmpSettingsDIB.GetDIBDC, tmpGraphics) = 0 Then
     
         'Retrieve the new bounding rect of the region, and place it directly into the function return
-        GdipGetRegionBounds gdipRegionHandle, tmpGraphics, getGDIPlusUnionFromPointsAndImage
+        GdipGetRegionBounds gdipRegionHandle, tmpGraphics, GetGDIPlusUnionFromPointsAndImage
         
         'Release our temporary graphics object
         GdipDeleteGraphics tmpGraphics
@@ -2611,7 +2663,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
-    getGdipBitmapHandleFromDIB tBitmap, srcDIB
+    GetGdipBitmapHandleFromDIB tBitmap, srcDIB
     
     'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
@@ -2678,7 +2730,7 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
-    getGdipBitmapHandleFromDIB tBitmap, srcDIB
+    GetGdipBitmapHandleFromDIB tBitmap, srcDIB
     
     'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
@@ -2963,35 +3015,36 @@ Private Function pvPtrToStrW(ByVal lpsz As Long) As String
 End Function
 
 'Given a GUID string, return a Long-type image format identifier
-Private Function getFIFFromGUID(ByRef srcGUID As String) As Long
+Private Function GetFIFFromGUID(ByRef srcGUID As String) As PHOTODEMON_IMAGE_FORMAT
 
     Select Case srcGUID
     
         Case "{B96B3CAB-0728-11D3-9D7B-0000F81EF32E}"
-            getFIFFromGUID = PDIF_BMP
+            GetFIFFromGUID = PDIF_BMP
             
         Case "{B96B3CAC-0728-11D3-9D7B-0000F81EF32E}"
-            getFIFFromGUID = PDIF_EMF
+            GetFIFFromGUID = PDIF_EMF
             
         Case "{B96B3CAD-0728-11D3-9D7B-0000F81EF32E}"
-            getFIFFromGUID = PDIF_WMF
+            GetFIFFromGUID = PDIF_WMF
         
         Case "{B96B3CAE-0728-11D3-9D7B-0000F81EF32E}"
-            getFIFFromGUID = PDIF_JPEG
+            GetFIFFromGUID = PDIF_JPEG
             
         Case "{B96B3CAF-0728-11D3-9D7B-0000F81EF32E}"
-            getFIFFromGUID = PDIF_PNG
+            GetFIFFromGUID = PDIF_PNG
             
         Case "{B96B3CB0-0728-11D3-9D7B-0000F81EF32E}"
-            getFIFFromGUID = PDIF_GIF
+            GetFIFFromGUID = PDIF_GIF
             
         Case "{B96B3CB1-0728-11D3-9D7B-0000F81EF32E}"
-            getFIFFromGUID = PDIF_TIFF
+            GetFIFFromGUID = PDIF_TIFF
             
         Case "{B96B3CB5-0728-11D3-9D7B-0000F81EF32E}"
-            getFIFFromGUID = FIF_ICO
+            GetFIFFromGUID = FIF_ICO
+        
         Case Else
-            getFIFFromGUID = -1
+            GetFIFFromGUID = PDIF_UNKNOWN
             
     End Select
     
@@ -3117,6 +3170,22 @@ Private Function InternalGDIPlusError(ByVal errName As String, ByVal errDescript
     #End If
 End Function
 
+Public Function GetGDIPlusSolidBrushHandle(ByVal brushColor As Long, Optional ByVal brushOpacity As Byte = 255) As Long
+    If Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend) Then
+        GdipCreateSolidFill FillQuadWithVBRGB(brushColor, brushOpacity), GetGDIPlusSolidBrushHandle
+    Else
+        GetGDIPlusSolidBrushHandle = 0
+    End If
+End Function
+
+Public Function GetGDIPlusPatternBrushHandle(ByVal brushPattern As GP_PatternStyle, ByVal bFirstColor As Long, ByVal bFirstColorOpacity As Byte, ByVal bSecondColor As Long, ByVal bSecondColorOpacity As Byte) As Long
+    If Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend) Then
+        GdipCreateHatchBrush brushPattern, FillQuadWithVBRGB(bFirstColor, bFirstColorOpacity), FillQuadWithVBRGB(bSecondColor, bSecondColorOpacity), GetGDIPlusPatternBrushHandle
+    Else
+        GetGDIPlusPatternBrushHandle = 0
+    End If
+End Function
+
 'Retrieve a persistent handle to a GDI+-format graphics container.  Optionally, a smoothing mode can be specified so that it does
 ' not have to be repeatedly specified by a caller function.  (GDI+ sets smoothing mode by graphics container, not by function call.)
 Public Function GetGDIPlusGraphicsFromDC(ByVal srcDC As Long, Optional ByVal graphicsAntialiasing As GP_SmoothingMode = GP_SM_None, Optional ByVal graphicsPixelOffsetMode As GP_PixelOffsetMode = GP_POM_HighSpeed) As Long
@@ -3133,11 +3202,11 @@ End Function
 'Shorthand function for quickly creating a new GDI+ pen.  This can be useful if many drawing operations are going to be applied with the same pen.
 ' (Note that a single parameter is used to set both pen and dash endcaps; if you want these to differ, you must call the separate
 ' SetPenDashCap function, below.)
-Public Function GetGDIPlusPenHandle(ByVal penColor As Long, Optional ByVal penTransparency As Long = 255&, Optional ByVal penWidth As Single = 1#, Optional ByVal penLineCap As GP_LineCap = GP_LC_Flat, Optional ByVal penLineJoin As GP_LineJoin = GP_LJ_Miter, Optional ByVal penDashMode As GP_DashStyle = GP_DS_Solid, Optional ByVal penMiterLimit As Single = 3#, Optional ByVal penAlignment As GP_PenAlignment = GP_PA_Center) As Long
+Public Function GetGDIPlusPenHandle(ByVal penColor As Long, Optional ByVal penOpacity As Long = 255&, Optional ByVal penWidth As Single = 1#, Optional ByVal penLineCap As GP_LineCap = GP_LC_Flat, Optional ByVal penLineJoin As GP_LineJoin = GP_LJ_Miter, Optional ByVal penDashMode As GP_DashStyle = GP_DS_Solid, Optional ByVal penMiterLimit As Single = 3#, Optional ByVal penAlignment As GP_PenAlignment = GP_PA_Center) As Long
 
     'Create the base pen
     Dim hPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(penColor, penTransparency), penWidth, GP_U_Pixel, hPen
+    GdipCreatePen1 FillQuadWithVBRGB(penColor, penOpacity), penWidth, GP_U_Pixel, hPen
     
     If (hPen <> 0) Then
         
@@ -3171,12 +3240,145 @@ Public Function GetGDIPlusPenHandle(ByVal penColor As Long, Optional ByVal penTr
 
 End Function
 
+Public Function ReleaseGDIPlusBrush(ByVal srcHandle As Long) As Boolean
+    If (srcHandle <> 0) Then
+        ReleaseGDIPlusBrush = CBool(GdipDeleteBrush(srcHandle) = GP_OK)
+    Else
+        ReleaseGDIPlusBrush = True
+    End If
+End Function
+
 Public Function ReleaseGDIPlusGraphics(ByVal srcHandle As Long) As Boolean
-    ReleaseGDIPlusGraphics = CBool(GdipDeleteGraphics(srcHandle) = GP_OK)
+    If (srcHandle <> 0) Then
+        ReleaseGDIPlusGraphics = CBool(GdipDeleteGraphics(srcHandle) = GP_OK)
+    Else
+        ReleaseGDIPlusGraphics = True
+    End If
 End Function
 
 Public Function ReleaseGDIPlusPen(ByVal srcHandle As Long) As Boolean
-    ReleaseGDIPlusPen = CBool(GdipDeletePen(srcHandle) = GP_OK)
+    If (srcHandle <> 0) Then
+        ReleaseGDIPlusPen = CBool(GdipDeletePen(srcHandle) = GP_OK)
+    Else
+        ReleaseGDIPlusPen = True
+    End If
+End Function
+
+'NOTE!  ALL OPACITY SETTINGS are treated as singles on the range [0, 100], *not* as bytes on the range [0, 255].
+'NOTE!  When getting or setting brush settings, you need to make sure the current brush type matches.  For example: if your
+'       brush handle points to a solid brush, getting/setting its pattern style is meaningless.  You need to set the
+'       relevant brush mode PRIOR to getting/setting other settings.
+'NOTE!  Some brush settings cannot be set or retrieved.  For example, GDI+ does not allow you to change hatch style, color,
+'       or opacity after brush creation.  You must create a new brush from scratch.  If you use the pd2DBrush class instead
+'       of interfacing with these functions directly, nuances like this are handled automatically.
+Public Function GetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD_2D_BRUSH_SETTINGS) As Variant
+    
+    If (hBrush <> 0) Then
+        
+        Dim gResult As GP_Result
+        Dim tmpLong As Long, tmpSingle As Single
+        
+        Select Case propID
+            
+            'GDI+ does provide a function for this, but their enums differ from ours (by design).
+            ' As such, you cannot set brush mode with this function; use the pd2DBrush class, instead.
+            Case PD2D_BrushMode
+                GetGDIPlusBrushProperty = 0&
+                
+           Case PD2D_BrushColor
+                gResult = GdipGetSolidFillColor(hBrush, tmpLong)
+                GetGDIPlusBrushProperty = GetColorFromPARGB(tmpLong)
+                
+            Case PD2D_BrushOpacity
+                gResult = GdipGetSolidFillColor(hBrush, tmpLong)
+                GetGDIPlusBrushProperty = GetOpacityFromPARGB(tmpLong)
+                
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case PD2D_BrushPatternStyle
+                GetGDIPlusBrushProperty = 0&
+                
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case PD2D_BrushPattern1Color
+                GetGDIPlusBrushProperty = 0&
+                
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case PD2D_BrushPattern1Opacity
+                GetGDIPlusBrushProperty = 0#
+                
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case PD2D_BrushPattern2Color
+                GetGDIPlusBrushProperty = 0&
+                
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case PD2D_BrushPattern2Opacity
+                GetGDIPlusBrushProperty = 0#
+                
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case PD2D_BrushGradientXML
+                GetGDIPlusBrushProperty = vbNullString
+                
+        End Select
+        
+        If (gResult <> GP_OK) Then
+            InternalGDIPlusError "GetGDIPlusBrushProperty Error", "Bad GP_RESULT value", gResult
+        End If
+    
+    Else
+        InternalGDIPlusError "GetGDIPlusBrushProperty Error", "Null brush handle"
+    End If
+    
+End Function
+
+Public Function SetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD_2D_BRUSH_SETTINGS, ByVal newSetting As Variant) As Boolean
+    
+    If (hBrush <> 0) Then
+        
+        Dim tmpColor As Long, tmpOpacity As Single
+        
+        Select Case propID
+            
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case PD2D_BrushMode
+                SetGDIPlusBrushProperty = False
+                
+            Case PD2D_BrushColor
+                tmpOpacity = GetGDIPlusBrushProperty(hBrush, PD2D_BrushOpacity)
+                SetGDIPlusBrushProperty = CBool(GdipSetSolidFillColor(hBrush, FillQuadWithVBRGB(CLng(newSetting), tmpOpacity * 2.55)) = GP_OK)
+                
+            Case PD2D_BrushOpacity
+                tmpColor = GetGDIPlusBrushProperty(hBrush, PD2D_BrushColor)
+                SetGDIPlusBrushProperty = CBool(GdipSetSolidFillColor(hBrush, FillQuadWithVBRGB(tmpColor, CSng(newSetting) * 2.55)) = GP_OK)
+                
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case PD2D_BrushPatternStyle
+                SetGDIPlusBrushProperty = False
+                
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case PD2D_BrushPattern1Color
+                SetGDIPlusBrushProperty = False
+                
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case PD2D_BrushPattern1Opacity
+                SetGDIPlusBrushProperty = False
+                
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case PD2D_BrushPattern2Color
+                SetGDIPlusBrushProperty = False
+                
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case PD2D_BrushPattern2Opacity
+                SetGDIPlusBrushProperty = False
+                
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case PD2D_BrushGradientXML
+                SetGDIPlusBrushProperty = False
+                
+        End Select
+    
+    Else
+        InternalGDIPlusError "SetGDIPlusBrushProperty Error", "Null brush handle"
+    End If
+    
 End Function
 
 Public Function GetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID As PD_2D_SURFACE_SETTINGS) As Variant
@@ -3228,7 +3430,7 @@ Public Function SetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID
     
 End Function
 
-'NOTE!  The PEN OPACITY setting is treated as a single on the range [0, 100], *not* as a byte on the range [0, 255]
+'NOTE!  PEN OPACITY setting is treated as a single on the range [0, 100], *not* as a byte on the range [0, 255]
 Public Function GetGDIPlusPenProperty(ByVal hPen As Long, ByVal propID As PD_2D_PEN_SETTINGS) As Variant
     
     If (hPen <> 0) Then
@@ -3294,7 +3496,7 @@ Public Function GetGDIPlusPenProperty(ByVal hPen As Long, ByVal propID As PD_2D_
     
 End Function
 
-'NOTE!  The PEN OPACITY setting is treated as a single on the range [0, 100], *not* as a byte on the range [0, 255]
+'NOTE!  PEN OPACITY setting is treated as a single on the range [0, 100], *not* as a byte on the range [0, 255]
 Public Function SetGDIPlusPenProperty(ByVal hPen As Long, ByVal propID As PD_2D_PEN_SETTINGS, ByVal newSetting As Variant) As Boolean
     
     If (hPen <> 0) Then

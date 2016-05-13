@@ -340,7 +340,7 @@ Private userAnswer As VbMsgBoxResult
 Private m_OldBrush As String
 
 'Brush strings are generated with the help of a fill (GDI+ brush) class.  This class also renders a preview of the current fill.
-Private m_Filler As pdGraphicsBrush
+Private m_Filler As pd2DBrush
 
 'If a user control spawned this dialog, it will pass itself as a reference.  We can then send brush updates back
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
@@ -366,7 +366,7 @@ End Property
 
 'The newly selected brush (if any) is returned via this property
 Public Property Get newBrush() As String
-    newBrush = m_Filler.getBrushAsString
+    newBrush = m_Filler.GetBrushPropertiesAsXML
 End Property
 
 'The ShowDialog routine presents the user with this form.
@@ -382,16 +382,13 @@ Public Sub ShowDialog(ByVal initialBrush As String, Optional ByRef callingContro
     
     'Cache the initial brush parameter so we can access it elsewhere
     m_OldBrush = initialBrush
-    Set m_Filler = New pdGraphicsBrush
-    m_Filler.createBrushFromString initialBrush
-    
-    If Len(initialBrush) = 0 Then initialBrush = m_Filler.getBrushAsString
+    Set m_Filler = New pd2DBrush
+    m_Filler.SetBrushPropertiesFromXML initialBrush
+    If Len(initialBrush) = 0 Then initialBrush = m_Filler.GetBrushPropertiesAsXML
     
     'Sync all controls to the initial brush parameters
-    syncControlsToFillObject
+    SyncControlsToFillObject
     UpdatePreview
-    
-    Debug.Print "preview time opacity:" & m_Filler.getBrushProperty(pgbs_PrimaryOpacity) & ", " & sltFillOpacity.Value
     
     'Make sure that the proper cursor is set
     Screen.MousePointer = 0
@@ -405,7 +402,7 @@ Public Sub ShowDialog(ByVal initialBrush As String, Optional ByRef callingContro
     Set m_XMLEngine = New pdXML
     
     'The XML file will be stored in the Preset path (/Data/Presets)
-    m_XMLFilename = g_UserPreferences.getPresetPath & "Brush_Selector.xml"
+    m_XMLFilename = g_UserPreferences.GetPresetPath & "Brush_Selector.xml"
     
     'TODO: if an XML file exists, load its contents now
     'loadRecentBrushList
@@ -440,7 +437,7 @@ End Sub
 Private Sub cmdBar_OKClick()
 
     'Store the newBrush value (which the dialog handler will use to return the selected brush to the caller)
-    updateFillObject
+    UpdateFillObject
     
     'TODO: save the current list of recently used brushes
     'saveRecentBrushList
@@ -457,11 +454,11 @@ End Sub
 Private Sub cmdBar_ResetClick()
     
     'Reset our generic fill object
-    Set m_Filler = New pdGraphicsBrush
-    m_Filler.createBrushFromString ""
+    Set m_Filler = New pd2DBrush
+    m_Filler.SetBrushPropertiesFromXML ""
     
     'Synchronize all controls to the updated settings
-    syncControlsToFillObject
+    SyncControlsToFillObject
     UpdatePreview
     
 End Sub
@@ -491,10 +488,8 @@ Private Sub Form_Load()
     cboFillPattern.ListIndex = 0
     
     If g_IsProgramRunning Then
-    
-        If m_Filler Is Nothing Then Set m_Filler = New pdGraphicsBrush
+        If (m_Filler Is Nothing) Then Set m_Filler = New pd2DBrush
         Set m_PreviewDIB = New pdDIB
-                
     End If
     
     m_SuspendRedraws = False
@@ -506,18 +501,18 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Update our internal brush class against any/all changed settings.
-Private Sub updateFillObject()
+Private Sub UpdateFillObject()
 
     With m_Filler
-        .setBrushProperty pgbs_BrushMode, btsStyle.ListIndex
-        .setBrushProperty pgbs_PrimaryColor, csFillColor.Color
-        .setBrushProperty pgbs_PrimaryOpacity, sltFillOpacity.Value
-        .setBrushProperty pgbs_PatternID, cboFillPattern.ListIndex
-        .setBrushProperty pgbs_PatternColor1, csPattern(0).Color
-        .setBrushProperty pgbs_PatternColor1Opacity, sltPatternOpacity(0).Value
-        .setBrushProperty pgbs_PatternColor2, csPattern(1).Color
-        .setBrushProperty pgbs_PatternColor2Opacity, sltPatternOpacity(1).Value
-        .setBrushProperty pgbs_GradientString, gsPrimary.Gradient
+        .SetBrushProperty PD2D_BrushMode, btsStyle.ListIndex
+        .SetBrushProperty PD2D_BrushColor, csFillColor.Color
+        .SetBrushProperty PD2D_BrushOpacity, sltFillOpacity.Value
+        .SetBrushProperty PD2D_BrushPatternStyle, cboFillPattern.ListIndex
+        .SetBrushProperty PD2D_BrushPattern1Color, csPattern(0).Color
+        .SetBrushProperty PD2D_BrushPattern1Opacity, sltPatternOpacity(0).Value
+        .SetBrushProperty PD2D_BrushPattern2Color, csPattern(1).Color
+        .SetBrushProperty PD2D_BrushPattern2Opacity, sltPatternOpacity(1).Value
+        .SetBrushProperty PD2D_BrushGradientXML, gsPrimary.Gradient
     End With
 
 End Sub
@@ -527,7 +522,7 @@ Private Sub UpdatePreview()
     If Not m_SuspendRedraws Then
     
         'Make sure our fill object is up-to-date
-        updateFillObject
+        UpdateFillObject
         
         'Retrieve a matching brush handle
         Dim gdipBrush As Long, cBounds As RECTF
@@ -535,34 +530,33 @@ Private Sub UpdatePreview()
         With cBounds
             .Left = 0
             .Top = 0
-            .Width = m_PreviewDIB.getDIBWidth
-            .Height = m_PreviewDIB.getDIBHeight
+            .Width = m_PreviewDIB.GetDIBWidth
+            .Height = m_PreviewDIB.GetDIBHeight
         End With
         
-        m_Filler.setBoundaryRect cBounds
-        gdipBrush = m_Filler.getBrushHandle()
+        m_Filler.SetBoundaryRect cBounds
+        gdipBrush = m_Filler.GetHandle
         
         'Prep the preview DIB
-        If m_PreviewDIB Is Nothing Then Set m_PreviewDIB = New pdDIB
-        
-        If (m_PreviewDIB.getDIBWidth <> Me.picBrushPreview.ScaleWidth) Or (m_PreviewDIB.getDIBHeight <> Me.picBrushPreview.ScaleHeight) Then
-            m_PreviewDIB.createBlank Me.picBrushPreview.ScaleWidth, Me.picBrushPreview.ScaleHeight, 24, 0
+        If (m_PreviewDIB Is Nothing) Then Set m_PreviewDIB = New pdDIB
+        If (m_PreviewDIB.GetDIBWidth <> Me.picBrushPreview.ScaleWidth) Or (m_PreviewDIB.GetDIBHeight <> Me.picBrushPreview.ScaleHeight) Then
+            m_PreviewDIB.CreateBlank Me.picBrushPreview.ScaleWidth, Me.picBrushPreview.ScaleHeight, 24, 0
         Else
-            m_PreviewDIB.resetDIB
+            m_PreviewDIB.ResetDIB
         End If
         
         'Create the preview image
-        GDI_Plus.GDIPlusFillDIBRect_Pattern m_PreviewDIB, 0, 0, m_PreviewDIB.getDIBWidth, m_PreviewDIB.getDIBHeight, g_CheckerboardPattern
-        GDI_Plus.GDIPlusFillDC_Brush m_PreviewDIB.getDIBDC, gdipBrush, 0, 0, Me.picBrushPreview.ScaleWidth, Me.picBrushPreview.ScaleHeight
+        GDI_Plus.GDIPlusFillDIBRect_Pattern m_PreviewDIB, 0, 0, m_PreviewDIB.GetDIBWidth, m_PreviewDIB.GetDIBHeight, g_CheckerboardPattern
+        GDI_Plus.GDIPlusFillDC_Brush m_PreviewDIB.GetDIBDC, gdipBrush, 0, 0, Me.picBrushPreview.ScaleWidth, Me.picBrushPreview.ScaleHeight
         
         'Copy the preview image to the screen
         m_PreviewDIB.RenderToPictureBox Me.picBrushPreview
         
         'Release our GDI+ handle
-        m_Filler.releaseBrushHandle gdipBrush
+        m_Filler.ReleaseBrush
         
         'Notify our parent of the update
-        If Not (parentBrushControl Is Nothing) Then parentBrushControl.NotifyOfLiveBrushChange m_Filler.getBrushAsString
+        If Not (parentBrushControl Is Nothing) Then parentBrushControl.NotifyOfLiveBrushChange m_Filler.GetBrushPropertiesAsXML
         
     End If
     
@@ -580,33 +574,28 @@ Private Sub sltPatternOpacity_Change(Index As Integer)
     UpdatePreview
 End Sub
 
-Private Sub syncControlsToFillObject()
+Private Sub SyncControlsToFillObject()
         
     m_SuspendRedraws = True
         
     With m_Filler
         
-        btsStyle.ListIndex = .getBrushProperty(pgbs_BrushMode)
+        btsStyle.ListIndex = .GetBrushProperty(PD2D_BrushMode)
         
-        csFillColor.Color = .getBrushProperty(pgbs_PrimaryColor)
-        sltFillOpacity.Value = .getBrushProperty(pgbs_PrimaryOpacity)
+        csFillColor.Color = .GetBrushProperty(PD2D_BrushColor)
+        sltFillOpacity.Value = .GetBrushProperty(PD2D_BrushOpacity)
         
-        cboFillPattern.ListIndex = .getBrushProperty(pgbs_PatternID)
-        csPattern(0).Color = .getBrushProperty(pgbs_PatternColor1)
-        csPattern(1).Color = .getBrushProperty(pgbs_PatternColor2)
-        sltPatternOpacity(0).Value = .getBrushProperty(pgbs_PatternColor1Opacity)
-        sltPatternOpacity(1).Value = .getBrushProperty(pgbs_PatternColor2Opacity)
+        cboFillPattern.ListIndex = .GetBrushProperty(PD2D_BrushPatternStyle)
+        csPattern(0).Color = .GetBrushProperty(PD2D_BrushPattern1Color)
+        csPattern(1).Color = .GetBrushProperty(PD2D_BrushPattern2Color)
+        sltPatternOpacity(0).Value = .GetBrushProperty(PD2D_BrushPattern1Opacity)
+        sltPatternOpacity(1).Value = .GetBrushProperty(PD2D_BrushPattern2Opacity)
         
-        gsPrimary.Gradient = .getBrushProperty(pgbs_GradientString)
+        gsPrimary.Gradient = .GetBrushProperty(PD2D_BrushGradientXML)
     
     End With
     
     m_SuspendRedraws = False
     
 End Sub
-
-
-
-
-
 
