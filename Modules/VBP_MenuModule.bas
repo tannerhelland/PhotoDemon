@@ -465,7 +465,7 @@ End Sub
 Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal imgDPI As Long, ByVal defaultBackground As Long, ByVal BackgroundColor As Long)
 
     'Display a busy cursor
-    If Screen.MousePointer <> vbHourglass Then Screen.MousePointer = vbHourglass
+    If (Screen.MousePointer <> vbHourglass) Then Screen.MousePointer = vbHourglass
     
     'To prevent re-entry problems, forcibly disable the main form
     FormMain.Enabled = False
@@ -477,7 +477,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     
     'We can now address our new image via pdImages(g_CurrentImage).  Create a blank layer.
     Dim newLayerID As Long
-    newLayerID = newImage.createBlankLayer()
+    newLayerID = newImage.CreateBlankLayer()
     
     'The parameters passed to the new DIB vary according to layer type.  Use the specified type to determine how we
     ' initialize the new layer.
@@ -505,10 +505,11 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     End Select
     
     'Assign the newly created DIB to the layer object
+    tmpDIB.SetInitialAlphaPremultiplicationState True
     newImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Background"), tmpDIB
     
     'Make the newly created layer the active layer
-    SetActiveLayerByID newLayerID, False
+    Layer_Handler.SetActiveLayerByID newLayerID, False, False
     
     'Update the pdImage container to be the same size as its (newly created) base layer
     newImage.UpdateSize
@@ -539,7 +540,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     CheckParentMonitor True
     
     'If the user wants us to resize the image to fit on-screen, do that now
-    If g_AutozoomLargeImages = 0 Then FitImageToViewport True
+    If (g_AutozoomLargeImages = 0) Then FitImageToViewport True
     
     'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
     ' update the zoom combo box to match the zoom assigned by the window-fit function.
