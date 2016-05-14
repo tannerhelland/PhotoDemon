@@ -114,10 +114,10 @@ Private Sub cmdBar_OKClick()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            Process "Content-aware image resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, ucResize.unitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
+            Process "Content-aware image resize", , BuildParams(ucResize.ImgWidth, ucResize.ImgHeight, ucResize.UnitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
         
         Case PD_AT_SINGLELAYER
-            Process "Content-aware layer resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, ucResize.unitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_LAYER
+            Process "Content-aware layer resize", , BuildParams(ucResize.ImgWidth, ucResize.ImgHeight, ucResize.UnitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_LAYER
     
     End Select
 
@@ -136,8 +136,8 @@ Private Sub cmdBar_RandomizeClick()
             ucResize.ImgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
         
         Case PD_AT_SINGLELAYER
-            ucResize.ImgWidthInPixels = (pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False) / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False))
-            ucResize.ImgHeightInPixels = (pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False) / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False))
+            ucResize.ImgWidthInPixels = (pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False) / 2) + (Rnd * pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False))
+            ucResize.ImgHeightInPixels = (pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False) / 2) + (Rnd * pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False))
     
     End Select
     
@@ -145,16 +145,16 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
 
-    ucResize.unitOfMeasurement = MU_PIXELS
+    ucResize.UnitOfMeasurement = MU_PIXELS
     
     'Automatically set the width and height text boxes to match the relevant image or layer's current dimensions
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
         
         Case PD_AT_SINGLELAYER
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False), pdImages(g_CurrentImage).GetDPI
     
     End Select
 
@@ -176,15 +176,15 @@ Private Sub Form_Activate()
     End Select
 
     'Automatically set the width and height text boxes to match the image's current dimensions
-    ucResize.unitOfMeasurement = MU_PIXELS
+    ucResize.UnitOfMeasurement = MU_PIXELS
     
     Select Case m_ResizeTarget
         
         Case PD_AT_WHOLEIMAGE
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False), pdImages(g_CurrentImage).GetDPI
         
     End Select
     
@@ -205,15 +205,15 @@ Private Sub Form_Load()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False), pdImages(g_CurrentImage).GetDPI
         
     End Select
     
     'If the current image has more than one layer, warn the user that this action will flatten the image.
-    If pdImages(g_CurrentImage).getNumOfLayers > 1 Then
+    If pdImages(g_CurrentImage).GetNumOfLayers > 1 Then
         lblFlatten.Visible = True
     Else
         lblFlatten.Visible = False
@@ -229,7 +229,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Small wrapper for the seam carve function
-Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal unitOfMeasurement As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long, Optional ByVal thingToResize As PD_ACTION_TARGET = PD_AT_WHOLEIMAGE)
+Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal curUnit As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long, Optional ByVal thingToResize As PD_ACTION_TARGET = PD_AT_WHOLEIMAGE)
 
     'If the entire image is being resized, some extra preparation is required
     If (thingToResize = PD_AT_WHOLEIMAGE) Then
@@ -249,32 +249,32 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     'Create a temporary DIB, which will be passed to the master SeamCarveDIB function
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB
-    If tmpDIB.getAlphaPremultiplication Then tmpDIB.SetAlphaPremultiplication False
+    tmpDIB.CreateFromExistingDIB pdImages(g_CurrentImage).GetActiveDIB
+    If tmpDIB.GetAlphaPremultiplication Then tmpDIB.SetAlphaPremultiplication False
     
     'In past versions of the software, we could assume the passed measurements were always in pixels,
     ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
     ' width and height values to pixel measurements.
-    iWidth = convertOtherUnitToPixels(unitOfMeasurement, iWidth, iDPI, pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False))
-    iHeight = convertOtherUnitToPixels(unitOfMeasurement, iHeight, iDPI, pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False))
+    iWidth = ConvertOtherUnitToPixels(curUnit, iWidth, iDPI, pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False))
+    iHeight = ConvertOtherUnitToPixels(curUnit, iHeight, iDPI, pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False))
     
     'Pass the temporary DIB to the master seam carve function
     If SeamCarveDIB(tmpDIB, iWidth, iHeight) Then
         
         'Premultiply alpha
-        If Not tmpDIB.getAlphaPremultiplication Then tmpDIB.SetAlphaPremultiplication True
+        If Not tmpDIB.GetAlphaPremultiplication Then tmpDIB.SetAlphaPremultiplication True
         
         'Copy the newly resized DIB back into its parent image
-        pdImages(g_CurrentImage).getActiveLayer.layerDIB.createFromExistingDIB tmpDIB
+        pdImages(g_CurrentImage).GetActiveLayer.layerDIB.CreateFromExistingDIB tmpDIB
         Set tmpDIB = Nothing
         
         'Notify the parent of the change
-        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).getActiveLayerIndex
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetActiveLayerIndex
         
         'Update the main image's size and DPI values as necessary
         If thingToResize = PD_AT_WHOLEIMAGE Then
-            pdImages(g_CurrentImage).updateSize False, iWidth, iHeight
-            pdImages(g_CurrentImage).setDPI iDPI, iDPI
+            pdImages(g_CurrentImage).UpdateSize False, iWidth, iHeight
+            pdImages(g_CurrentImage).SetDPI iDPI, iDPI
             DisplaySize pdImages(g_CurrentImage)
         End If
         
@@ -303,7 +303,7 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal 
     ' but since PD has a nice artistic contour algorithm already available, let's use that.
     Dim energyDIB As pdDIB
     Set energyDIB = New pdDIB
-    energyDIB.createFromExistingDIB srcDIB
+    energyDIB.CreateFromExistingDIB srcDIB
     
     GrayscaleDIB energyDIB, True
     CreateContourDIB True, srcDIB, energyDIB, True
@@ -329,7 +329,7 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal 
     
     'Check for user cancellation; if none occurred, copy the seam-carved image into place
     If Not cancelCurrentAction Then
-        srcDIB.createFromExistingDIB seamCarver.getCarvedImage()
+        srcDIB.CreateFromExistingDIB seamCarver.getCarvedImage()
         SeamCarveDIB = True
     Else
         SeamCarveDIB = False

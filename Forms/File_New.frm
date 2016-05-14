@@ -34,7 +34,6 @@ Begin VB.Form FormNewImage
       Width           =   9630
       _ExtentX        =   16986
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdRadioButton optBackground 
       CausesValidation=   0   'False
@@ -103,15 +102,6 @@ Begin VB.Form FormNewImage
       Width           =   8775
       _ExtentX        =   15478
       _ExtentY        =   5027
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       DisablePercentOption=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblTitle 
@@ -163,7 +153,7 @@ Private Sub cmdBar_OKClick()
         End If
     Next i
         
-    Process "New image", False, buildParams(ucResize.imgWidthInPixels, ucResize.imgHeightInPixels, ucResize.imgDPIAsPPI, backgroundType, colorPicker.Color), UNDO_NOTHING
+    Process "New image", False, BuildParams(ucResize.ImgWidthInPixels, ucResize.ImgHeightInPixels, ucResize.ImgDPIAsPPI, backgroundType, colorPicker.Color), UNDO_NOTHING
     
 End Sub
 
@@ -200,13 +190,13 @@ End Sub
 Private Sub calculateDefaultSize()
 
     'Default to pixels
-    ucResize.unitOfMeasurement = MU_PIXELS
+    ucResize.UnitOfMeasurement = MU_PIXELS
     
     'Is another image loaded?
     If g_OpenImageCount > 0 Then
         
         'Default to the dimensions of the currently active image
-        ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+        ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
         
     Else
     
@@ -216,7 +206,7 @@ Private Sub calculateDefaultSize()
                 
         Dim pDisplayRect As RECTL
         If Not pDisplay Is Nothing Then
-            pDisplay.getRect pDisplayRect
+            pDisplay.GetRect pDisplayRect
         Else
             With pDisplayRect
                 .Left = 0
@@ -226,7 +216,7 @@ Private Sub calculateDefaultSize()
             End With
         End If
         
-        ucResize.setInitialDimensions pDisplayRect.Right - pDisplayRect.Left, pDisplayRect.Bottom - pDisplayRect.Top, 96
+        ucResize.SetInitialDimensions pDisplayRect.Right - pDisplayRect.Left, pDisplayRect.Bottom - pDisplayRect.Top, 96
         
     End If
 

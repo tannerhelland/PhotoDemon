@@ -20,7 +20,6 @@ Attribute VB_Name = "FastDrawing"
 
 Option Explicit
 
-Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Long, lpSrc As Long, ByVal byteLength As Long)
 
 'Any time a tool dialog is in use, the image to be operated on will be stored IN THIS LAYER.
