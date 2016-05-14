@@ -1270,6 +1270,8 @@ End Function
 ' If the DIB is 32bpp, an optional alpha parameter can be set for the DIB.
 Public Function CreateBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal BackColor As Long = vbWhite, Optional ByVal dibAlpha As Long = 0) As Boolean
     
+    On Error GoTo CouldNotCreateDIB
+    
     'Erase any existing DIB data
     EraseDIB
     
@@ -1311,14 +1313,14 @@ Public Function CreateBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     'If we already have a DC, empty it
     Else
         
-        If m_dibHandle <> 0 Then
+        If (m_dibHandle <> 0) Then
             SelectObject m_dibDC, m_dibHandleOriginal
             DeleteObject m_dibHandle
         End If
         
     End If
     
-    If m_dibDC <> 0 Then
+    If (m_dibDC <> 0) Then
     
         'Activate color management for this DC.
         ' NOTE!  Due to rejiggering of PD's color management engine, this is no longer necessary.  Color management is only applied
@@ -1371,6 +1373,8 @@ Public Function CreateBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         End If
         
     End If
+    
+CouldNotCreateDIB:
     
     'Return success contingent on whether we have a DIB pointer or not
     CreateBlank = CBool(m_dibHandle <> 0)
@@ -1691,7 +1695,7 @@ Public Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
         If toDecompress Then
             
             'If the data is decompressed succesfully, convert it to a 2D array and copy it into this class's DIB memory chunk
-            If Plugin_zLib_Interface.decompressNakedPointers(VarPtr(fileData(0)), compressedDataSize, tmpDIBPointer, tmpDIBLength) Then
+            If Plugin_zLib_Interface.DecompressNakedPointers(VarPtr(fileData(0)), compressedDataSize, tmpDIBPointer, tmpDIBLength) Then
             
                 'Immediately release our copy of the compressed file data
                 Erase fileData
@@ -1805,7 +1809,7 @@ Public Function WriteToFile(ByRef dstFilename As String, Optional ByVal toCompre
             Dim compressedImageData() As Byte, compressedSize As Long
             
             'If compression was successful, write out the compressed data to file
-            If Plugin_zLib_Interface.compressNakedPointerToArray(tmpDIBPointer, tmpDIBLength, compressedImageData, compressedSize) Then
+            If Plugin_zLib_Interface.CompressNakedPointerToArray(tmpDIBPointer, tmpDIBLength, compressedImageData, compressedSize) Then
             
                 'Mark the data as compressed
                 cFile.WriteDataToFile hFile, VarPtr(toCompress), 2&
