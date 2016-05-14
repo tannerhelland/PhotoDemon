@@ -225,7 +225,7 @@ End Sub
 Private Sub UserControl_Initialize()
     
     Set m_Brush = New pd2DBrush
-    m_Brush.SetBrushProperty PD2D_BrushMode, 2
+    m_Brush.SetBrushProperty P2_BrushMode, 2
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
@@ -322,7 +322,7 @@ Private Sub RedrawBackBuffer()
     
         'Render the brush first
         m_Brush.SetBoundaryRect m_GradientRect
-        m_Brush.SetBrushProperty PD2D_BrushGradientXML, m_curGradient
+        m_Brush.SetBrushProperty P2_BrushGradientXML, m_curGradient
         
         Dim tmpBrush As Long
         tmpBrush = m_Brush.GetHandle

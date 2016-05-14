@@ -90,20 +90,21 @@ End Enum
     Private Const GP_QM_Invalid = -1, GP_QM_Default = 0, GP_QM_Low = 1, GP_QM_High = 2
 #End If
 
-Public Enum GP_BrushMode        'IMPORTANT NOTE!  This enum is *not* the same as the underlying GDI+ enum, by design!
-    GP_BM_Solid = 0
-    GP_BM_Pattern = 1
-    GP_BM_Gradient = 2
-    GP_BM_Texture = 3
+Public Enum GP_BrushType        'IMPORTANT NOTE!  This enum is *not* the same as PD's internal 2D brush modes!
+    GP_BT_SolidColor = 0
+    GP_BT_HatchFill = 1
+    GP_BT_TextureFill = 2
+    GP_BT_PathGradient = 3
+    GP_BT_LinearGradient = 4
 End Enum
 
 #If False Then
-    Private Const GP_BM_Solid = 0, GP_BM_Pattern = 1, GP_BM_Gradient = 2, GP_BM_Texture = 3
+    Private Const GP_BT_SolidColor = 0, GP_BT_HatchFill = 1, GP_BT_TextureFill = 2, GP_BT_PathGradient = 3, GP_BT_LinearGradient = 4
 #End If
 
 Public Enum GP_DashCap
     GP_DC_Flat = 0
-    GP_DC_Square = 0     'This is not a typo; it's supplied as a convenience enum to match supported GP_LineCap values
+    GP_DC_Square = 0     'This is not a typo; it's supplied as a convenience enum to match supported GP_LineCap values (which differentiate between flat and square, as they should)
     GP_DC_Round = 2
     GP_DC_Triangle = 3
 End Enum
@@ -136,22 +137,20 @@ Public Enum GP_LineCap
     GP_LC_DiamondAnchor = &H13
     GP_LC_ArrowAnchor = &H14
     GP_LC_Custom = &HFF
-    GP_LC_AnchorMask = &HF0
 End Enum
 
 #If False Then
-    Private Const GP_LC_Flat = 0, GP_LC_Square = 1, GP_LC_Round = 2, GP_LC_Triangle = 3, GP_LC_NoAnchor = &H10, GP_LC_SquareAnchor = &H11, GP_LC_RoundAnchor = &H12, GP_LC_DiamondAnchor = &H13, GP_LC_ArrowAnchor = &H14, GP_LC_Custom = &HFF, GP_LC_AnchorMask = &HF0
+    Private Const GP_LC_Flat = 0, GP_LC_Square = 1, GP_LC_Round = 2, GP_LC_Triangle = 3, GP_LC_NoAnchor = &H10, GP_LC_SquareAnchor = &H11, GP_LC_RoundAnchor = &H12, GP_LC_DiamondAnchor = &H13, GP_LC_ArrowAnchor = &H14, GP_LC_Custom = &HFF
 #End If
 
 Public Enum GP_LineJoin
     GP_LJ_Miter = 0&
     GP_LJ_Bevel = 1&
     GP_LJ_Round = 2&
-    GP_LJ_MiterClipped = 3&
 End Enum
 
 #If False Then
-    Private Const GP_LJ_Miter = 0&, GP_LJ_Bevel = 1&, GP_LJ_Round = 2&, GP_LJ_MiterClipped = 3&
+    Private Const GP_LJ_Miter = 0&, GP_LJ_Bevel = 1&, GP_LJ_Round = 2&
 #End If
 
 Public Enum GP_PatternStyle
@@ -228,7 +227,7 @@ End Enum
 'PixelOffsetMode controls how GDI+ calculates positioning.  Normally, each a pixel is treated as a unit square that covers
 ' the area between [0, 0] and [1, 1].  However, for point-based objects like paths, GDI+ can treat coordinates as if they
 ' are centered over [0.5, 0.5] offsets within each pixel.  This typically yields prettier path renders, at some consequence
-' to rendering performance.
+' to rendering performance.  (See http://drilian.com/2008/11/25/understanding-half-pixel-and-half-texel-offsets/)
 Public Enum GP_PixelOffsetMode
     GP_POM_Invalid = GP_QM_Invalid
     GP_POM_Default = GP_QM_Default
@@ -3171,19 +3170,11 @@ Private Function InternalGDIPlusError(ByVal errName As String, ByVal errDescript
 End Function
 
 Public Function GetGDIPlusSolidBrushHandle(ByVal brushColor As Long, Optional ByVal brushOpacity As Byte = 255) As Long
-    If Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend) Then
-        GdipCreateSolidFill FillQuadWithVBRGB(brushColor, brushOpacity), GetGDIPlusSolidBrushHandle
-    Else
-        GetGDIPlusSolidBrushHandle = 0
-    End If
+    GdipCreateSolidFill FillQuadWithVBRGB(brushColor, brushOpacity), GetGDIPlusSolidBrushHandle
 End Function
 
 Public Function GetGDIPlusPatternBrushHandle(ByVal brushPattern As GP_PatternStyle, ByVal bFirstColor As Long, ByVal bFirstColorOpacity As Byte, ByVal bSecondColor As Long, ByVal bSecondColorOpacity As Byte) As Long
-    If Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend) Then
-        GdipCreateHatchBrush brushPattern, FillQuadWithVBRGB(bFirstColor, bFirstColorOpacity), FillQuadWithVBRGB(bSecondColor, bSecondColorOpacity), GetGDIPlusPatternBrushHandle
-    Else
-        GetGDIPlusPatternBrushHandle = 0
-    End If
+    GdipCreateHatchBrush brushPattern, FillQuadWithVBRGB(bFirstColor, bFirstColorOpacity), FillQuadWithVBRGB(bSecondColor, bSecondColorOpacity), GetGDIPlusPatternBrushHandle
 End Function
 
 'Retrieve a persistent handle to a GDI+-format graphics container.  Optionally, a smoothing mode can be specified so that it does
@@ -3191,8 +3182,8 @@ End Function
 Public Function GetGDIPlusGraphicsFromDC(ByVal srcDC As Long, Optional ByVal graphicsAntialiasing As GP_SmoothingMode = GP_SM_None, Optional ByVal graphicsPixelOffsetMode As GP_PixelOffsetMode = GP_POM_HighSpeed) As Long
     Dim hGraphics As Long
     If (GdipCreateFromHDC(srcDC, hGraphics) = GP_OK) Then
-        SetGDIPlusGraphicsProperty hGraphics, PD2D_SurfaceAntialiasing, graphicsAntialiasing
-        SetGDIPlusGraphicsProperty hGraphics, PD2D_SurfacePixelOffset, graphicsPixelOffsetMode
+        SetGDIPlusGraphicsProperty hGraphics, P2_SurfaceAntialiasing, graphicsAntialiasing
+        SetGDIPlusGraphicsProperty hGraphics, P2_SurfacePixelOffset, graphicsPixelOffsetMode
         GetGDIPlusGraphicsFromDC = hGraphics
     Else
         GetGDIPlusGraphicsFromDC = 0
@@ -3282,39 +3273,39 @@ Public Function GetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD
             
             'GDI+ does provide a function for this, but their enums differ from ours (by design).
             ' As such, you cannot set brush mode with this function; use the pd2DBrush class, instead.
-            Case PD2D_BrushMode
+            Case P2_BrushMode
                 GetGDIPlusBrushProperty = 0&
                 
-           Case PD2D_BrushColor
+           Case P2_BrushColor
                 gResult = GdipGetSolidFillColor(hBrush, tmpLong)
                 GetGDIPlusBrushProperty = GetColorFromPARGB(tmpLong)
                 
-            Case PD2D_BrushOpacity
+            Case P2_BrushOpacity
                 gResult = GdipGetSolidFillColor(hBrush, tmpLong)
                 GetGDIPlusBrushProperty = GetOpacityFromPARGB(tmpLong)
                 
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case PD2D_BrushPatternStyle
+            Case P2_BrushPatternStyle
                 GetGDIPlusBrushProperty = 0&
                 
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case PD2D_BrushPattern1Color
+            Case P2_BrushPattern1Color
                 GetGDIPlusBrushProperty = 0&
                 
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case PD2D_BrushPattern1Opacity
+            Case P2_BrushPattern1Opacity
                 GetGDIPlusBrushProperty = 0#
                 
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case PD2D_BrushPattern2Color
+            Case P2_BrushPattern2Color
                 GetGDIPlusBrushProperty = 0&
                 
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case PD2D_BrushPattern2Opacity
+            Case P2_BrushPattern2Opacity
                 GetGDIPlusBrushProperty = 0#
                 
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case PD2D_BrushGradientXML
+            Case P2_BrushGradientXML
                 GetGDIPlusBrushProperty = vbNullString
                 
         End Select
@@ -3338,39 +3329,39 @@ Public Function SetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD
         Select Case propID
             
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case PD2D_BrushMode
+            Case P2_BrushMode
                 SetGDIPlusBrushProperty = False
                 
-            Case PD2D_BrushColor
-                tmpOpacity = GetGDIPlusBrushProperty(hBrush, PD2D_BrushOpacity)
+            Case P2_BrushColor
+                tmpOpacity = GetGDIPlusBrushProperty(hBrush, P2_BrushOpacity)
                 SetGDIPlusBrushProperty = CBool(GdipSetSolidFillColor(hBrush, FillQuadWithVBRGB(CLng(newSetting), tmpOpacity * 2.55)) = GP_OK)
                 
-            Case PD2D_BrushOpacity
-                tmpColor = GetGDIPlusBrushProperty(hBrush, PD2D_BrushColor)
+            Case P2_BrushOpacity
+                tmpColor = GetGDIPlusBrushProperty(hBrush, P2_BrushColor)
                 SetGDIPlusBrushProperty = CBool(GdipSetSolidFillColor(hBrush, FillQuadWithVBRGB(tmpColor, CSng(newSetting) * 2.55)) = GP_OK)
                 
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case PD2D_BrushPatternStyle
+            Case P2_BrushPatternStyle
                 SetGDIPlusBrushProperty = False
                 
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case PD2D_BrushPattern1Color
+            Case P2_BrushPattern1Color
                 SetGDIPlusBrushProperty = False
                 
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case PD2D_BrushPattern1Opacity
+            Case P2_BrushPattern1Opacity
                 SetGDIPlusBrushProperty = False
                 
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case PD2D_BrushPattern2Color
+            Case P2_BrushPattern2Color
                 SetGDIPlusBrushProperty = False
                 
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case PD2D_BrushPattern2Opacity
+            Case P2_BrushPattern2Opacity
                 SetGDIPlusBrushProperty = False
                 
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case PD2D_BrushGradientXML
+            Case P2_BrushGradientXML
                 SetGDIPlusBrushProperty = False
                 
         End Select
@@ -3390,11 +3381,11 @@ Public Function GetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID
         
         Select Case propID
             
-            Case PD2D_SurfaceAntialiasing
+            Case P2_SurfaceAntialiasing
                 gResult = GdipGetSmoothingMode(hGraphics, tmpLong)
                 GetGDIPlusGraphicsProperty = tmpLong
                 
-            Case PD2D_SurfacePixelOffset
+            Case P2_SurfacePixelOffset
                 gResult = GdipGetPixelOffsetMode(hGraphics, tmpLong)
                 GetGDIPlusGraphicsProperty = tmpLong
                 
@@ -3416,10 +3407,10 @@ Public Function SetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID
         
         Select Case propID
             
-            Case PD2D_SurfaceAntialiasing
+            Case P2_SurfaceAntialiasing
                 SetGDIPlusGraphicsProperty = CBool(GdipSetSmoothingMode(hGraphics, GP_SM_AntiAlias) = GP_OK)
                 
-            Case PD2D_SurfacePixelOffset
+            Case P2_SurfacePixelOffset
                 SetGDIPlusGraphicsProperty = CBool(GdipSetPixelOffsetMode(hGraphics, GP_SM_AntiAlias) = GP_OK)
             
         End Select
@@ -3440,47 +3431,47 @@ Public Function GetGDIPlusPenProperty(ByVal hPen As Long, ByVal propID As PD_2D_
         
         Select Case propID
             
-            Case PD2D_PenStyle
+            Case P2_PenStyle
                 gResult = GdipGetPenDashStyle(hPen, tmpLong)
                 GetGDIPlusPenProperty = tmpLong
             
-            Case PD2D_PenColor
+            Case P2_PenColor
                 gResult = GdipGetPenColor(hPen, tmpLong)
                 GetGDIPlusPenProperty = GetColorFromPARGB(tmpLong)
                 
-            Case PD2D_PenOpacity
+            Case P2_PenOpacity
                 gResult = GdipGetPenColor(hPen, tmpLong)
                 GetGDIPlusPenProperty = GetOpacityFromPARGB(tmpLong)
                 
-            Case PD2D_PenWidth
+            Case P2_PenWidth
                 gResult = GdipGetPenWidth(hPen, tmpSingle)
                 GetGDIPlusPenProperty = tmpSingle
                 
-            Case PD2D_PenLineJoin
+            Case P2_PenLineJoin
                 gResult = GdipGetPenLineJoin(hPen, tmpLong)
                 GetGDIPlusPenProperty = tmpLong
                 
-            Case PD2D_PenLineCap
+            Case P2_PenLineCap
                 gResult = GdipGetPenStartCap(hPen, tmpLong)
                 GetGDIPlusPenProperty = tmpLong
                 
-            Case PD2D_PenDashCap
+            Case P2_PenDashCap
                 gResult = GdipGetPenDashCap(hPen, tmpLong)
                 GetGDIPlusPenProperty = tmpLong
                 
-            Case PD2D_PenMiterLimit
+            Case P2_PenMiterLimit
                 gResult = GdipGetPenMiterLimit(hPen, tmpSingle)
                 GetGDIPlusPenProperty = tmpSingle
                 
-            Case PD2D_PenAlignment
+            Case P2_PenAlignment
                 gResult = GdipGetPenMode(hPen, tmpLong)
                 GetGDIPlusPenProperty = tmpLong
                 
-            Case PD2D_PenStartCap
+            Case P2_PenStartCap
                 gResult = GdipGetPenStartCap(hPen, tmpLong)
                 GetGDIPlusPenProperty = tmpLong
             
-            Case PD2D_PenEndCap
+            Case P2_PenEndCap
                 gResult = GdipGetPenEndCap(hPen, tmpLong)
                 GetGDIPlusPenProperty = tmpLong
                 
@@ -3505,40 +3496,40 @@ Public Function SetGDIPlusPenProperty(ByVal hPen As Long, ByVal propID As PD_2D_
         
         Select Case propID
             
-            Case PD2D_PenStyle
+            Case P2_PenStyle
                 SetGDIPlusPenProperty = CBool(GdipSetPenDashStyle(hPen, CLng(newSetting)) = GP_OK)
                 
-            Case PD2D_PenColor
-                tmpOpacity = GetGDIPlusPenProperty(hPen, PD2D_PenOpacity)
+            Case P2_PenColor
+                tmpOpacity = GetGDIPlusPenProperty(hPen, P2_PenOpacity)
                 SetGDIPlusPenProperty = CBool(GdipSetPenColor(hPen, FillQuadWithVBRGB(CLng(newSetting), tmpOpacity * 2.55)) = GP_OK)
                 
-            Case PD2D_PenOpacity
-                tmpColor = GetGDIPlusPenProperty(hPen, PD2D_PenColor)
+            Case P2_PenOpacity
+                tmpColor = GetGDIPlusPenProperty(hPen, P2_PenColor)
                 SetGDIPlusPenProperty = CBool(GdipSetPenColor(hPen, FillQuadWithVBRGB(tmpColor, CSng(newSetting) * 2.55)) = GP_OK)
                 
-            Case PD2D_PenWidth
+            Case P2_PenWidth
                 SetGDIPlusPenProperty = CBool(GdipSetPenDashStyle(hPen, CSng(newSetting)) = GP_OK)
                 
-            Case PD2D_PenLineJoin
+            Case P2_PenLineJoin
                 SetGDIPlusPenProperty = CBool(GdipSetPenLineJoin(hPen, CLng(newSetting)) = GP_OK)
                 
-            Case PD2D_PenLineCap
-                tmpLong = GetGDIPlusPenProperty(hPen, PD2D_PenDashCap)
+            Case P2_PenLineCap
+                tmpLong = GetGDIPlusPenProperty(hPen, P2_PenDashCap)
                 SetGDIPlusPenProperty = CBool(GdipSetPenLineCap(hPen, CLng(newSetting), CLng(newSetting), tmpLong) = GP_OK)
                 
-            Case PD2D_PenDashCap
+            Case P2_PenDashCap
                 SetGDIPlusPenProperty = CBool(GdipSetPenDashCap(hPen, CLng(newSetting)) = GP_OK)
                 
-            Case PD2D_PenMiterLimit
+            Case P2_PenMiterLimit
                 SetGDIPlusPenProperty = CBool(GdipSetPenMiterLimit(hPen, CSng(newSetting)) = GP_OK)
                 
-            Case PD2D_PenAlignment
+            Case P2_PenAlignment
                 SetGDIPlusPenProperty = CBool(GdipSetPenMode(hPen, CLng(newSetting)) = GP_OK)
             
-            Case PD2D_PenStartCap
+            Case P2_PenStartCap
                 SetGDIPlusPenProperty = CBool(GdipSetPenStartCap(hPen, CLng(newSetting)) = GP_OK)
             
-            Case PD2D_PenEndCap
+            Case P2_PenEndCap
                 SetGDIPlusPenProperty = CBool(GdipSetPenEndCap(hPen, CLng(newSetting)) = GP_OK)
                 
         End Select

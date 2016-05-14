@@ -336,7 +336,7 @@ Private Sub RedrawBackBuffer()
         
             'Prep the preview path.  Note that we manually pad it to make the preview look a little prettier.
             Dim hPadding As Single, vPadding As Single
-            hPadding = m_PenPreview.GetPenProperty(PD2D_PenWidth) * 2
+            hPadding = m_PenPreview.GetPenProperty(P2_PenWidth) * 2
             If hPadding > FixDPIFloat(12) Then hPadding = FixDPIFloat(12)
             vPadding = hPadding
             

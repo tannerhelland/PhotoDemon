@@ -529,31 +529,31 @@ Private Sub Form_Load()
         Set inactiveArrowFill = New pd2DBrush
         Set activeArrowFill = New pd2DBrush
         
-        inactiveArrowFill.SetBrushProperty PD2D_BrushMode, 0
-        inactiveArrowFill.SetBrushProperty PD2D_BrushOpacity, 100
-        inactiveArrowFill.SetBrushProperty PD2D_BrushColor, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
+        inactiveArrowFill.SetBrushProperty P2_BrushMode, 0
+        inactiveArrowFill.SetBrushProperty P2_BrushOpacity, 100
+        inactiveArrowFill.SetBrushProperty P2_BrushColor, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
         inactiveArrowFill.CreateBrush
         
-        activeArrowFill.SetBrushProperty PD2D_BrushMode, 0
-        activeArrowFill.SetBrushProperty PD2D_BrushOpacity, 100
-        activeArrowFill.SetBrushProperty PD2D_BrushColor, g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
+        activeArrowFill.SetBrushProperty P2_BrushMode, 0
+        activeArrowFill.SetBrushProperty P2_BrushOpacity, 100
+        activeArrowFill.SetBrushProperty P2_BrushColor, g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
         activeArrowFill.CreateBrush
         
         Set inactiveOutlinePen = New pd2DPen
         Set activeOutlinePen = New pd2DPen
         
-        inactiveOutlinePen.SetPenProperty PD2D_PenStyle, GP_DS_Solid
-        inactiveOutlinePen.SetPenProperty PD2D_PenOpacity, 100
-        inactiveOutlinePen.SetPenProperty PD2D_PenWidth, 1#
-        inactiveOutlinePen.SetPenProperty PD2D_PenLineJoin, GP_LJ_Round
-        inactiveOutlinePen.SetPenProperty PD2D_PenColor, g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
+        inactiveOutlinePen.SetPenProperty P2_PenStyle, GP_DS_Solid
+        inactiveOutlinePen.SetPenProperty P2_PenOpacity, 100
+        inactiveOutlinePen.SetPenProperty P2_PenWidth, 1#
+        inactiveOutlinePen.SetPenProperty P2_PenLineJoin, GP_LJ_Round
+        inactiveOutlinePen.SetPenProperty P2_PenColor, g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
         inactiveOutlinePen.CreatePen
         
-        activeOutlinePen.SetPenProperty PD2D_PenStyle, GP_DS_Solid
-        activeOutlinePen.SetPenProperty PD2D_PenOpacity, 100
-        activeOutlinePen.SetPenProperty PD2D_PenWidth, 1#
-        activeOutlinePen.SetPenProperty PD2D_PenLineJoin, GP_LJ_Round
-        activeOutlinePen.SetPenProperty PD2D_PenColor, g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+        activeOutlinePen.SetPenProperty P2_PenStyle, GP_DS_Solid
+        activeOutlinePen.SetPenProperty P2_PenOpacity, 100
+        activeOutlinePen.SetPenProperty P2_PenWidth, 1#
+        activeOutlinePen.SetPenProperty P2_PenLineJoin, GP_LJ_Round
+        activeOutlinePen.SetPenProperty P2_PenColor, g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
         activeOutlinePen.CreatePen
                 
         'Draw the initial set of interactive gradient nodes
@@ -977,8 +977,8 @@ Private Sub DrawGradientNodes()
         '...and pen/fill objects for the actual rendering
         Dim blockFill As pd2DBrush
         Set blockFill = New pd2DBrush
-        blockFill.SetBrushProperty PD2D_BrushMode, 0
-        blockFill.SetBrushProperty PD2D_BrushOpacity, 100
+        blockFill.SetBrushProperty P2_BrushMode, 0
+        blockFill.SetBrushProperty P2_BrushOpacity, 100
         
         'Prep the target interaction DIB
         If (m_InteractiveDIB Is Nothing) Then Set m_InteractiveDIB = New pdDIB
@@ -1004,7 +1004,7 @@ Private Sub DrawGradientNodes()
             tmpBlock.TranslatePath hOffset + m_GradientPoints(i).pdgp_Position * hScaleFactor, 0
             
             'The node's colored block is rendered the same regardless of hover
-            blockFill.SetBrushProperty PD2D_BrushColor, m_GradientPoints(i).pdgp_RGB
+            blockFill.SetBrushProperty P2_BrushColor, m_GradientPoints(i).pdgp_RGB
             tmpBlock.FillPathToDIB_BareBrush blockFill.GetHandle, m_InteractiveDIB
             
             'All other renders vary by hover state

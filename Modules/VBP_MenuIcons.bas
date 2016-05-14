@@ -1068,7 +1068,7 @@ End Function
 Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDIB) As Boolean
         
     'Some functions may call this before GDI+ has loaded; exit if that happens
-    If Not Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend) Then
+    If Not Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) Then
         LoadResourceToDIB = False
         Exit Function
     End If
