@@ -230,19 +230,11 @@ Private Type SAVEARRAY1D
    lLbound As Long
 End Type
 
-
-'MSVBVM60
-Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" ( _
-    ByRef Ptr() As Any) As Long
-
-
 'USER32
-Private Declare Function ReleaseDC Lib "user32.dll" ( _
-    ByVal hWnd As Long, _
-    ByVal hDC As Long) As Long
-
-Private Declare Function GetDC Lib "user32.dll" ( _
-    ByVal hWnd As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
+Private Declare Function CreateIconIndirect Lib "user32" (ByRef piconinfo As ICONINFO) As Long
 
 Private Type RECT
    Left As Long
@@ -250,12 +242,6 @@ Private Type RECT
    Right As Long
    Bottom As Long
 End Type
-
-Private Declare Function DestroyIcon Lib "user32.dll" ( _
-    ByVal hIcon As Long) As Long
-
-Private Declare Function CreateIconIndirect Lib "user32.dll" ( _
-    ByRef piconinfo As ICONINFO) As Long
 
 Private Type PictDesc
    cbSizeofStruct As Long

@@ -293,10 +293,10 @@ Private Sub cmdBar_OKClick()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            Process "Resize image", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
+            Process "Resize image", , BuildParams(ucResize.ImgWidth, ucResize.ImgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.UnitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
         
         Case PD_AT_SINGLELAYER
-            Process "Resize layer", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_LAYER
+            Process "Resize layer", , BuildParams(ucResize.ImgWidth, ucResize.ImgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.UnitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_LAYER
     
     End Select
     
@@ -315,15 +315,15 @@ End Sub
 Private Sub cmdBar_ResetClick()
     
     'Automatically set the width and height text boxes to match the image's current dimensions
-    ucResize.unitOfMeasurement = MU_PIXELS
+    ucResize.UnitOfMeasurement = MU_PIXELS
     
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False), pdImages(g_CurrentImage).GetDPI
         
     End Select
     
@@ -356,15 +356,15 @@ Private Sub Form_Activate()
     End Select
 
     'Automatically set the width and height text boxes to match the image's current dimensions
-    ucResize.unitOfMeasurement = MU_PIXELS
+    ucResize.UnitOfMeasurement = MU_PIXELS
     
     Select Case m_ResizeTarget
         
         Case PD_AT_WHOLEIMAGE
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False), pdImages(g_CurrentImage).GetDPI
         
     End Select
     
@@ -392,10 +392,10 @@ Private Sub Form_Load()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
+            ucResize.SetInitialDimensions pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False), pdImages(g_CurrentImage).GetDPI
         
     End Select
     
@@ -424,7 +424,7 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
     If g_ImageFormats.FreeImageEnabled Then
         
         'If the original image is 32bpp, remove premultiplication now
-        If srcDIB.getDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication False
+        If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication False
         
         'Convert the current image to a FreeImage-type DIB
         Dim fi_DIB As Long
@@ -438,12 +438,12 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
             
             'Resize the destination DIB in preparation for the transfer
             If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-            If (dstDIB.getDIBWidth <> iWidth) Or (dstDIB.getDIBHeight <> iHeight) Then
-                dstDIB.createBlank iWidth, iHeight, srcDIB.getDIBColorDepth
+            If (dstDIB.GetDIBWidth <> iWidth) Or (dstDIB.GetDIBHeight <> iHeight) Then
+                dstDIB.CreateBlank iWidth, iHeight, srcDIB.GetDIBColorDepth
             Else
-                dstDIB.resetDIB 0
+                dstDIB.ResetDIB 0
             End If
-            dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
+            dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
             
             'Copy the bits from the FreeImage DIB to our DIB
             Plugin_FreeImage.PaintFIDibToPDDib dstDIB, returnDIB, 0, 0, iWidth, iHeight
@@ -454,14 +454,14 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
         End If
         
         'If the original image is 32bpp, add back in premultiplication now
-        If (srcDIB.getDIBColorDepth = 32) And (Not dstDIB.getAlphaPremultiplication) Then dstDIB.SetAlphaPremultiplication True
+        If (srcDIB.GetDIBColorDepth = 32) And (Not dstDIB.GetAlphaPremultiplication) Then dstDIB.SetAlphaPremultiplication True
         
     End If
     
 End Sub
 
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
-Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal resampleMethod As Long, ByVal fitMethod As Long, Optional ByVal newBackColor As Long = vbWhite, Optional ByVal unitOfMeasurement As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long, Optional ByVal thingToResize As PD_ACTION_TARGET = PD_AT_WHOLEIMAGE)
+Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal resampleMethod As Long, ByVal fitMethod As Long, Optional ByVal newBackColor As Long = vbWhite, Optional ByVal curUnit As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long, Optional ByVal thingToResize As PD_ACTION_TARGET = PD_AT_WHOLEIMAGE)
     
     'Depending on the requested fitting technique, we may have to resize the image to a slightly different size
     ' than the one requested.  Before doing anything else, calculate that new size.
@@ -475,16 +475,16 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
             srcHeight = pdImages(g_CurrentImage).Height
         
         Case PD_AT_SINGLELAYER
-            srcWidth = pdImages(g_CurrentImage).GetActiveLayer.getLayerWidth(False)
-            srcHeight = pdImages(g_CurrentImage).GetActiveLayer.getLayerHeight(False)
+            srcWidth = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)
+            srcHeight = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
         
     End Select
     
     'In past versions of the software, we could assume the passed measurements were always in pixels,
     ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
     ' width and height values to pixel measurements.
-    iWidth = convertOtherUnitToPixels(unitOfMeasurement, iWidth, iDPI, srcWidth)
-    iHeight = convertOtherUnitToPixels(unitOfMeasurement, iHeight, iDPI, srcHeight)
+    iWidth = ConvertOtherUnitToPixels(curUnit, iWidth, iDPI, srcWidth)
+    iHeight = ConvertOtherUnitToPixels(curUnit, iHeight, iDPI, srcHeight)
     
     Select Case fitMethod
     
@@ -570,7 +570,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
             Case RESIZE_NORMAL
                 
                 'Copy the current DIB into this temporary DIB at the new size
-                tmpDIB.createFromExistingDIB tmpLayerRef.layerDIB, fitWidth, fitHeight, False
+                tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB, fitWidth, fitHeight, False
                 
             'Halftone resampling... I'm not sure what to actually call it, but since it's based off the
             ' StretchBlt mode Microsoft calls "halftone," I'm sticking with that.  Basically we get cheap
@@ -580,7 +580,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
             Case RESIZE_HALFTONE
                 
                 'Copy the current DIB into this temporary DIB at the new size
-                tmpDIB.createFromExistingDIB tmpLayerRef.layerDIB, fitWidth, fitHeight, True
+                tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB, fitWidth, fitHeight, True
             
             'Bilinear sampling
             Case RESIZE_BILINEAR
@@ -593,8 +593,8 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
                 'If FreeImage is not enabled, use GDI+ instead.
                 Else
                 
-                    If tmpDIB.getDIBWidth <> fitWidth Or tmpDIB.getDIBHeight <> fitHeight Then tmpDIB.createBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.resetDIB 0
-                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), InterpolationModeHighQualityBilinear
+                    If tmpDIB.GetDIBWidth <> fitWidth Or tmpDIB.GetDIBHeight <> fitHeight Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
+                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), InterpolationModeHighQualityBilinear
                     
                 End If
             
@@ -608,8 +608,8 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
                 'If FreeImage is not enabled, use GDI+ instead.
                 Else
                 
-                    If tmpDIB.getDIBWidth <> fitWidth Or tmpDIB.getDIBHeight <> fitHeight Then tmpDIB.createBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.resetDIB 0
-                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), InterpolationModeHighQualityBicubic
+                    If tmpDIB.GetDIBWidth <> fitWidth Or tmpDIB.GetDIBHeight <> fitHeight Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
+                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), InterpolationModeHighQualityBicubic
                     
                 End If
                 
@@ -638,7 +638,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
             Case 0
         
                 'Very simple - just copy the resized image back into the main DIB
-                tmpLayerRef.layerDIB.createFromExistingDIB tmpDIB
+                tmpLayerRef.layerDIB.CreateFromExistingDIB tmpDIB
         
             'Fit inclusively.  This fits the image's largest dimension into the destination image, which can leave
             ' blank space - that space is filled by the background color parameter passed in (or transparency,
@@ -646,7 +646,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
             Case 1
             
                 'Resize the main DIB (destructively!) to fit the new dimensions
-                tmpLayerRef.layerDIB.createBlank iWidth, iHeight, 32, 0
+                tmpLayerRef.layerDIB.CreateBlank iWidth, iHeight, 32, 0
             
                 'BitBlt the old image, centered, onto the new DIB
                 If srcAspect > dstAspect Then
@@ -657,15 +657,15 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
                     dstY = 0
                 End If
                 
-                BitBlt tmpLayerRef.layerDIB.getDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
-                tmpLayerRef.layerDIB.setInitialAlphaPremultiplicationState tmpDIB.getAlphaPremultiplication
+                BitBlt tmpLayerRef.layerDIB.GetDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+                tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState tmpDIB.GetAlphaPremultiplication
             
             'Fit exclusively.  This fits the image's smallest dimension into the destination image, which means no
             ' blank space - but parts of the image may get cropped out.
             Case 2
             
                 'Resize the main DIB (destructively!) to fit the new dimensions
-                tmpLayerRef.layerDIB.createBlank iWidth, iHeight, 32, 0
+                tmpLayerRef.layerDIB.CreateBlank iWidth, iHeight, 32, 0
             
                 'BitBlt the old image, centered, onto the new DIB
                 If srcAspect < dstAspect Then
@@ -676,8 +676,8 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
                     dstY = 0
                 End If
                 
-                BitBlt tmpLayerRef.layerDIB.getDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
-                tmpLayerRef.layerDIB.setInitialAlphaPremultiplicationState tmpDIB.getAlphaPremultiplication
+                BitBlt tmpLayerRef.layerDIB.GetDIBDC, dstX, dstY, fitWidth, fitHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+                tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState tmpDIB.GetAlphaPremultiplication
                 
         End Select
         
@@ -696,7 +696,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     'Update the main image's size and DPI values
     If thingToResize = PD_AT_WHOLEIMAGE Then
         pdImages(g_CurrentImage).UpdateSize False, iWidth, iHeight
-        pdImages(g_CurrentImage).setDPI iDPI, iDPI
+        pdImages(g_CurrentImage).SetDPI iDPI, iDPI
         DisplaySize pdImages(g_CurrentImage)
     End If
         

@@ -462,7 +462,7 @@ Public Sub MenuCloseAll()
 End Sub
 
 'Create a new, blank image from scratch
-Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal imgDPI As Long, ByVal defaultBackground As Long, ByVal BackgroundColor As Long)
+Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, ByVal newDPI As Long, ByVal defaultBackground As Long, ByVal BackgroundColor As Long)
 
     'Display a busy cursor
     If (Screen.MousePointer <> vbHourglass) Then Screen.MousePointer = vbHourglass
@@ -473,7 +473,6 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     'Create a new entry in the pdImages() array.  This will update g_CurrentImage as well.
     Dim newImage As pdImage
     Image_Canvas_Handler.GetDefaultPDImageObject newImage
-    Image_Canvas_Handler.AddImageToMasterCollection newImage
     
     'We can now address our new image via pdImages(g_CurrentImage).  Create a blank layer.
     Dim newLayerID As Long
@@ -481,83 +480,99 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     
     'The parameters passed to the new DIB vary according to layer type.  Use the specified type to determine how we
     ' initialize the new layer.
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    
+    Dim newBackColor As Long, newBackAlpha As Long
     Select Case defaultBackground
     
         'Transparent (blank)
         Case 0
-            tmpDIB.CreateBlank imgWidth, imgHeight, 32, 0, 0
-        
+            newBackColor = vbBlack
+            newBackAlpha = 0
+            
         'Black
         Case 1
-            tmpDIB.CreateBlank imgWidth, imgHeight, 32, vbBlack, 255
+            newBackColor = vbBlack
+            newBackAlpha = 255
         
         'White
         Case 2
-            tmpDIB.CreateBlank imgWidth, imgHeight, 32, vbWhite, 255
+            newBackColor = vbWhite
+            newBackAlpha = 255
         
         'Custom color
         Case 3
-            tmpDIB.CreateBlank imgWidth, imgHeight, 32, BackgroundColor, 255
+            newBackColor = BackgroundColor
+            newBackAlpha = 255
     
     End Select
     
-    'Assign the newly created DIB to the layer object
-    tmpDIB.SetInitialAlphaPremultiplicationState True
-    newImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Background"), tmpDIB
+    'Create a matching DIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    If tmpDIB.CreateBlank(newWidth, newHeight, 32, newBackColor, newBackAlpha) Then
     
-    'Make the newly created layer the active layer
-    Layer_Handler.SetActiveLayerByID newLayerID, False, False
+        'Assign the newly created DIB to the layer object
+        tmpDIB.SetInitialAlphaPremultiplicationState True
+        newImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Background"), tmpDIB
+        
+        'Make the newly created layer the active layer
+        Image_Canvas_Handler.AddImageToMasterCollection newImage
+        Layer_Handler.SetActiveLayerByID newLayerID, False, False
+        
+        'Update the pdImage container to be the same size as its (newly created) base layer
+        newImage.UpdateSize
+        
+        'Assign the requested DPI to the new image
+        newImage.SetDPI newDPI, newDPI, False
+        
+        'Disable viewport rendering, then reset the main viewport
+        g_AllowViewportRendering = False
+        FormMain.mainCanvas(0).SetScrollValue PD_BOTH, 0
+        
+        'Reset the file format markers; at save-time engine, PD will run heuristics on the image's contents and suggest a better format accordingly.
+        newImage.originalFileFormat = PDIF_UNKNOWN
+        newImage.currentFileFormat = PDIF_UNKNOWN
+        newImage.originalColorDepth = 32
+        
+        'Because this image does not exist on the user's hard-drive, we will force use of a full Save As dialog in the future.
+        ' (PD detects this state if a pdImage object does not supply a location on disk)
+        newImage.imgStorage.AddEntry "CurrentLocationOnDisk", ""
+        newImage.imgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("New image")
+        newImage.imgStorage.AddEntry "OriginalFileExtension", ""
+        newImage.SetSaveState False, pdSE_AnySave
+        
+        'Make any interface changes related to the presence of a new image
+        Interface.NotifyImageAdded g_CurrentImage
+        
+        'Just to be safe, update the color management profile of the current monitor
+        CheckParentMonitor True
+        
+        'If the user wants us to resize the image to fit on-screen, do that now
+        If (g_AutozoomLargeImages = 0) Then FitImageToViewport True
+        
+        'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
+        ' update the zoom combo box to match the zoom assigned by the window-fit function.
+        g_AllowViewportRendering = False
+        FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = newImage.currentZoomValue
     
-    'Update the pdImage container to be the same size as its (newly created) base layer
-    newImage.UpdateSize
-    
-    'Assign the requested DPI to the new image
-    newImage.SetDPI imgDPI, imgDPI, False
-    
-    'Disable viewport rendering, then reset the main viewport
-    g_AllowViewportRendering = False
-    FormMain.mainCanvas(0).SetScrollValue PD_BOTH, 0
-    
-    'Reset the file format markers; at save-time engine, PD will run heuristics on the image's contents and suggest a better format accordingly.
-    newImage.originalFileFormat = PDIF_UNKNOWN
-    newImage.currentFileFormat = PDIF_UNKNOWN
-    newImage.originalColorDepth = 32
-    
-    'Because this image does not exist on the user's hard-drive, we will force use of a full Save As dialog in the future.
-    ' (PD detects this state if a pdImage object does not supply a location on disk)
-    newImage.imgStorage.AddEntry "CurrentLocationOnDisk", ""
-    newImage.imgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("New image")
-    newImage.imgStorage.AddEntry "OriginalFileExtension", ""
-    newImage.SetSaveState False, pdSE_AnySave
-    
-    'Make any interface changes related to the presence of a new image
-    Interface.NotifyImageAdded g_CurrentImage
-    
-    'Just to be safe, update the color management profile of the current monitor
-    CheckParentMonitor True
-    
-    'If the user wants us to resize the image to fit on-screen, do that now
-    If (g_AutozoomLargeImages = 0) Then FitImageToViewport True
-    
-    'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
-    ' update the zoom combo box to match the zoom assigned by the window-fit function.
-    g_AllowViewportRendering = False
-    FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = newImage.currentZoomValue
-
-    'Now that the image's window has been fully sized and moved around, use Viewport_Engine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
-    g_AllowViewportRendering = True
-    Viewport_Engine.Stage1_InitializeBuffer newImage, FormMain.mainCanvas(0), VSR_ResetToZero
-    
-    'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
-    FormMain.mainCanvas(0).UpdateCanvasLayout
-    
-    'Force an immediate Undo/Redo write to file.  This serves multiple purposes: it is our baseline for calculating future
-    ' Undo/Redo diffs, and it can be used to recover the original file if something goes wrong before the user performs a
-    ' manual save (e.g. AutoSave).
-    newImage.undoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
+        'Now that the image's window has been fully sized and moved around, use Viewport_Engine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
+        g_AllowViewportRendering = True
+        Viewport_Engine.Stage1_InitializeBuffer newImage, FormMain.mainCanvas(0), VSR_ResetToZero
+        
+        'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
+        FormMain.mainCanvas(0).UpdateCanvasLayout
+        
+        'Force an immediate Undo/Redo write to file.  This serves multiple purposes: it is our baseline for calculating future
+        ' Undo/Redo diffs, and it can be used to recover the original file if something goes wrong before the user performs a
+        ' manual save (e.g. AutoSave).
+        newImage.undoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
+        
+        'Report success!
+        CreateNewImage = True
+        
+    Else
+        CreateNewImage = False
+        PDMsgBox "Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.", vbExclamation Or vbApplicationModal Or vbOKOnly, "Image too large", newWidth, newHeight
+    End If
     
     'Re-enable the main form
     FormMain.Enabled = True
@@ -570,8 +585,5 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     
     'Restore the default cursor
     Screen.MousePointer = vbNormal
-    
-    'Report success!
-    CreateNewImage = True
-
+        
 End Function

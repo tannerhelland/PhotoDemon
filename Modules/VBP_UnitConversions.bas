@@ -43,21 +43,21 @@ End Enum
 ' the unit of measurement to use, and a source measurement (in pixels, obviously).  Depending on the conversion, one of two
 ' optional parameters may also be necessary: a pixel resolution, expressed as PPI (needed for absolute measurements like inches
 ' or cm), and for percentage, an ORIGINAL value, in pixels, must be supplied.
-Public Function convertPixelToOtherUnit(ByVal unitOfMeasurement As MeasurementUnit, ByVal srcPixelValue As Double, Optional ByVal srcPixelResolution As Double, Optional ByVal initPixelValue As Double) As Double
+Public Function ConvertPixelToOtherUnit(ByVal curUnit As MeasurementUnit, ByVal srcPixelValue As Double, Optional ByVal srcPixelResolution As Double, Optional ByVal initPixelValue As Double) As Double
 
-    Select Case unitOfMeasurement
+    Select Case curUnit
     
         Case MU_PERCENT
-            If initPixelValue <> 0 Then convertPixelToOtherUnit = (srcPixelValue / initPixelValue) * 100
+            If initPixelValue <> 0 Then ConvertPixelToOtherUnit = (srcPixelValue / initPixelValue) * 100
             
         Case MU_PIXELS
-            convertPixelToOtherUnit = srcPixelValue
+            ConvertPixelToOtherUnit = srcPixelValue
             
         Case MU_INCHES
-            If srcPixelResolution <> 0 Then convertPixelToOtherUnit = srcPixelValue / srcPixelResolution
+            If srcPixelResolution <> 0 Then ConvertPixelToOtherUnit = srcPixelValue / srcPixelResolution
         
         Case MU_CENTIMETERS
-            If srcPixelResolution <> 0 Then convertPixelToOtherUnit = getCMFromInches(srcPixelValue / srcPixelResolution)
+            If srcPixelResolution <> 0 Then ConvertPixelToOtherUnit = GetCMFromInches(srcPixelValue / srcPixelResolution)
     
     End Select
 
@@ -68,36 +68,36 @@ End Function
 ' optional parameters may also be necessary: a resolution, expressed as PPI (needed to convert from absolute measurements like
 ' inches or cm), and for percentage, an ORIGINAL value, in pixels, must be supplied.  Note that in the unique case of percent,
 ' the "srcUnitValue" will be the percent used for conversion (as a percent, e.g. 100.0 for 100%).
-Public Function convertOtherUnitToPixels(ByVal unitOfMeasurement As MeasurementUnit, ByVal srcUnitValue As Double, Optional ByVal srcUnitResolution As Double, Optional ByVal initPixelValue As Double) As Double
+Public Function ConvertOtherUnitToPixels(ByVal curUnit As MeasurementUnit, ByVal srcUnitValue As Double, Optional ByVal srcUnitResolution As Double, Optional ByVal initPixelValue As Double) As Double
 
     'The translation function used depends on the currently selected unit
-    Select Case unitOfMeasurement
+    Select Case curUnit
     
         'Percent
         Case MU_PERCENT
-            convertOtherUnitToPixels = CDbl(srcUnitValue / 100) * initPixelValue
+            ConvertOtherUnitToPixels = CDbl(srcUnitValue / 100) * initPixelValue
             
         'Pixels
         Case MU_PIXELS
-            convertOtherUnitToPixels = srcUnitValue
+            ConvertOtherUnitToPixels = srcUnitValue
         
         'Inches
         Case MU_INCHES
-            convertOtherUnitToPixels = srcUnitValue * srcUnitResolution
+            ConvertOtherUnitToPixels = srcUnitValue * srcUnitResolution
         
         'CM
         Case MU_CENTIMETERS
-            convertOtherUnitToPixels = getInchesFromCM(srcUnitValue) * srcUnitResolution
+            ConvertOtherUnitToPixels = GetInchesFromCM(srcUnitValue) * srcUnitResolution
             
     End Select
     
 End Function
 
 'Basic metric/imperial conversions for length
-Public Function getInchesFromCM(ByVal srcCM As Double) As Double
-    getInchesFromCM = srcCM * 0.393700787
+Public Function GetInchesFromCM(ByVal srcCM As Double) As Double
+    GetInchesFromCM = srcCM * 0.393700787
 End Function
 
-Public Function getCMFromInches(ByVal srcInches As Double) As Double
-    getCMFromInches = srcInches * 2.54
+Public Function GetCMFromInches(ByVal srcInches As Double) As Double
+    GetCMFromInches = srcInches * 2.54
 End Function

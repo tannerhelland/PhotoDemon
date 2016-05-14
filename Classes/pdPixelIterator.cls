@@ -109,8 +109,8 @@ Friend Function InitializeIterator(ByRef targetDIB As pdDIB, ByVal xRadius As Lo
     'Cache loop boundaries
     m_InitX = 0
     m_InitY = 0
-    m_FinalX = targetDIB.getDIBWidth - 1
-    m_FinalY = targetDIB.getDIBHeight - 1
+    m_FinalX = targetDIB.GetDIBWidth - 1
+    m_FinalY = targetDIB.GetDIBHeight - 1
     
     'Cache shape and assumed bounds.  (In the future, these bounds may change according to automated trim functions,
     ' but for now, they are hard-coded per the user's request.)
@@ -136,10 +136,10 @@ Friend Function InitializeIterator(ByRef targetDIB As pdDIB, ByVal xRadius As Lo
     m_YBSize = m_YBTop + m_YBBottom + 1
     
     'Retrieve other relevant DIB properties
-    m_DibPointer = targetDIB.getActualDIBBits
-    m_dibHeight = targetDIB.getDIBHeight
-    m_DibStride = targetDIB.getDIBArrayWidth
-    m_DibColorDepth = targetDIB.getDIBColorDepth
+    m_DibPointer = targetDIB.GetActualDIBBits
+    m_dibHeight = targetDIB.GetDIBHeight
+    m_DibStride = targetDIB.GetDIBArrayWidth
+    m_DibColorDepth = targetDIB.GetDIBColorDepth
     m_PixelWidth = m_DibColorDepth \ 8
     
     'Set alpha to a default value, based on the source image's color depth
@@ -307,7 +307,7 @@ End Function
 Private Sub CreateShape(ByVal srcShape As PD_PIXEL_REGION_SHAPE)
     
     If m_ShapeImage Is Nothing Then Set m_ShapeImage = New pdDIB
-    m_ShapeImage.createBlank m_XBSize, m_YBSize, 24, 0&
+    m_ShapeImage.CreateBlank m_XBSize, m_YBSize, 24, 0&
     
     Select Case srcShape
         
@@ -316,7 +316,7 @@ Private Sub CreateShape(ByVal srcShape As PD_PIXEL_REGION_SHAPE)
         Case PDPRS_Circle
             Dim useAA As Boolean
             If (m_XBSize <= 3) Or (m_YBSize <= 3) Then useAA = True Else useAA = False
-            GDI_Plus.GDIPlusFillEllipseToDC m_ShapeImage.getDIBDC, 0, 0, m_ShapeImage.getDIBWidth, m_ShapeImage.getDIBHeight, RGB(255, 255, 255), useAA, 255, True
+            GDI_Plus.GDIPlusFillEllipseToDC m_ShapeImage.GetDIBDC, 0, 0, m_ShapeImage.GetDIBWidth, m_ShapeImage.GetDIBHeight, RGB(255, 255, 255), useAA, 255, True
             
     End Select
     
@@ -326,7 +326,7 @@ Private Sub CreateShape(ByVal srcShape As PD_PIXEL_REGION_SHAPE)
     
     'Convert the reference image into a 2D byte array, which is much faster to access and process.
     DIB_Handler.GetDIBGrayscaleMap m_ShapeImage, m_ReferenceMap
-    m_ShapeImage.eraseDIB
+    m_ShapeImage.EraseDIB
     
 End Sub
 

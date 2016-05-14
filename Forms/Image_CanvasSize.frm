@@ -42,7 +42,6 @@ Begin VB.Form FormCanvasSize
       Width           =   9705
       _ExtentX        =   17119
       _ExtentY        =   1323
-      BackColor       =   14802140
       AutoloadLastPreset=   -1  'True
    End
    Begin PhotoDemon.pdColorSelector colorPicker 
@@ -62,15 +61,6 @@ Begin VB.Form FormCanvasSize
       Width           =   8775
       _ExtentX        =   15478
       _ExtentY        =   5027
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
@@ -261,31 +251,31 @@ End Sub
 
 'The current anchor must be manually saved as part of preset data
 Private Sub cmdBar_AddCustomPresetData()
-    cmdBar.addPresetData "currentAnchor", Str(m_CurrentAnchor)
+    cmdBar.AddPresetData "currentAnchor", Str(m_CurrentAnchor)
 End Sub
 
 Private Sub cmdBar_ExtraValidations()
-    If Not ucResize.IsValid(True) Then cmdBar.validationFailed
+    If Not ucResize.IsValid(True) Then cmdBar.ValidationFailed
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Canvas size", , buildParams(ucResize.imgWidth, ucResize.imgHeight, m_CurrentAnchor, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI), UNDO_IMAGEHEADER
+    Process "Canvas size", , BuildParams(ucResize.ImgWidth, ucResize.ImgHeight, m_CurrentAnchor, colorPicker.Color, ucResize.UnitOfMeasurement, ucResize.ImgDPIAsPPI), UNDO_IMAGEHEADER
 End Sub
 
 'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
 ' present, simply randomize the width/height to +/- the current image's width/height divided by two.
 Private Sub cmdBar_RandomizeClick()
     
-    ucResize.lockAspectRatio = False
-    ucResize.imgWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
-    ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+    ucResize.LockAspectRatio = False
+    ucResize.ImgWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
+    ucResize.ImgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
     
 End Sub
 
 'The saved anchor must be custom-loaded, as the command bar won't handle it automatically
 Private Sub cmdBar_ReadCustomPresetData()
-    m_CurrentAnchor = CLng(cmdBar.retrievePresetData("currentAnchor"))
+    m_CurrentAnchor = CLng(cmdBar.RetrievePresetData("currentAnchor"))
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -295,9 +285,9 @@ End Sub
 Private Sub cmdBar_ResetClick()
 
     'Automatically set the width and height text boxes to match the image's current dimensions
-    ucResize.unitOfMeasurement = MU_PIXELS
-    ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
-    ucResize.lockAspectRatio = True
+    ucResize.UnitOfMeasurement = MU_PIXELS
+    ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
+    ucResize.LockAspectRatio = True
     
     'Make borders fill with black by default
     colorPicker.Color = RGB(0, 0, 0)
@@ -319,7 +309,7 @@ End Sub
 Private Sub Form_Load()
     
     'Automatically set the width and height text boxes to match the image's current dimensions
-    ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+    ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
     
     'Start with a default top-left position for the anchor
     updateAnchorButtons
@@ -331,7 +321,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
-Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal anchorPosition As Long, Optional ByVal newBackColor As Long = vbWhite, Optional ByVal unitOfMeasurement As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long)
+Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal anchorPosition As Long, Optional ByVal newBackColor As Long = vbWhite, Optional ByVal curUnit As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long)
 
     Dim srcWidth As Long, srcHeight As Long
     srcWidth = pdImages(g_CurrentImage).Width
@@ -340,8 +330,8 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     'In past versions of the software, we could assume the passed measurements were always in pixels,
     ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
     ' width and height values to pixel measurements.
-    iWidth = convertOtherUnitToPixels(unitOfMeasurement, iWidth, iDPI, srcWidth)
-    iHeight = convertOtherUnitToPixels(unitOfMeasurement, iHeight, iDPI, srcHeight)
+    iWidth = ConvertOtherUnitToPixels(curUnit, iWidth, iDPI, srcWidth)
+    iHeight = ConvertOtherUnitToPixels(curUnit, iHeight, iDPI, srcHeight)
     
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
@@ -406,18 +396,18 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     ' imaginary bounding box around the layers collection.  Because of this, we don't actually need to
     ' resize any pixel data - we just need to modify all layer offsets to account for the new top-left corner!
     Dim i As Long
-    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
     
-        With pdImages(g_CurrentImage).getLayerByIndex(i)
-            .setLayerOffsetX .getLayerOffsetX + dstX
-            .setLayerOffsetY .getLayerOffsetY + dstY
+        With pdImages(g_CurrentImage).GetLayerByIndex(i)
+            .SetLayerOffsetX .GetLayerOffsetX + dstX
+            .SetLayerOffsetY .GetLayerOffsetY + dstY
         End With
     
     Next i
     
     'Finally, update the parent image's size and DPI values
-    pdImages(g_CurrentImage).updateSize False, iWidth, iHeight
-    pdImages(g_CurrentImage).setDPI iDPI, iDPI
+    pdImages(g_CurrentImage).UpdateSize False, iWidth, iHeight
+    pdImages(g_CurrentImage).SetDPI iDPI, iDPI
     DisplaySize pdImages(g_CurrentImage)
     
     'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
