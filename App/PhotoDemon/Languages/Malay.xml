@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.168</langversion>
+<langversion>6.7.169</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -291,7 +291,17 @@ If masalah berterusan, sila laporkan kepada pemaju PhotoDemon melalui photodemon
 <translation>Imej asal</translation>
 </phrase>
 
-<!-- VBP_MenuModule.bas contains 25 phrases. 10 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<phrase>
+<original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Image too large</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_MenuModule.bas contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for VBP_MenuModule.bas-->
 
@@ -4036,6 +4046,16 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
+<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Invalid measurement</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
 <translation>Mengekalkan nisbah aspek (kadang-kadang dipanggil mengekang Kadaran). Gunakan opsyen ini untuk mengubah saiz imej sambil lebar dan ketinggian dalam penyegerakan.</translation>
 </phrase>
@@ -4095,7 +4115,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <translation>saiz tepat akan berbeza mengikut imej</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- pdResize.ctl contains 30 phrases. 13 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -15147,10 +15167,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2590</phrasecount>
+<phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1909 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13326 total words. -->
+<!-- As of this build, PhotoDemon contains 4505 phrases. -->
+<!-- 1911 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- These 2594 phrases contain approximately 13363 total words. -->
 
 </pdData>

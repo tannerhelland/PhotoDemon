@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1484</langversion>
+<langversion>6.8.1485</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -290,7 +290,17 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 <translation>原始图像</translation>
 </phrase>
 
-<!-- VBP_MenuModule.bas contains 25 phrases. 10 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<phrase>
+<original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Image too large</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_MenuModule.bas contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for VBP_MenuModule.bas-->
 
@@ -4026,6 +4036,16 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Invalid measurement</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
 <translation>保持纵横比（有时也称为约束比例）。使用此选项来调整图像的大小，同时保持同步的宽度和高度。</translation>
 </phrase>
@@ -4085,7 +4105,7 @@ or the File > Open and File > Import menus.</original>
 <translation>精确大小会因图像而异</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- pdResize.ctl contains 30 phrases. 13 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -15133,10 +15153,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2590</phrasecount>
+<phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1909 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13326 total words. -->
+<!-- As of this build, PhotoDemon contains 4505 phrases. -->
+<!-- 1911 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- These 2594 phrases contain approximately 13363 total words. -->
 
 </pdData>

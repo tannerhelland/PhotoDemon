@@ -524,16 +524,10 @@ Attribute VB_Exposed = False
 'Color Selection Dialog
 'Copyright 2013-2016 by Tanner Helland
 'Created: 11/November/13
-'Last updated: 11/February/14
-'Last update: allow color selection from anywhere on the screen
+'Last updated: 14/May/16
+'Last update: improve real-time handling of hex input
 '
-'Basic color selection dialog.  I've modeled this after the comparable color selector in GIMP; of all the color
-' selectors I've used (and there have been many!), I find GIMP's the most intuitive... strange, I know, considering
-' what a mess the rest of their interface is.
-'
-'Special thanks goes out to VB coder LaVolpe for a great deal of help in implementing the "select color from screen"
-' tool.  My implementation draws heavily from his implementation here:
-' http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=52878&lngWId=1
+'Basic color selection dialog.  At present, the dialog is heavily modeled after GIMP's color selection dialog.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -574,7 +568,7 @@ Private m_tmpDIB As pdDIB
 
 'Changing the various text boxes resyncs the dialog, unless this parameter is set.  (We use it to prevent
 ' infinite resyncs.)
-Private suspendTextResync As Boolean
+Private m_suspendTextResync As Boolean, m_suspendHexInput As Boolean
 
 Private Enum colorCheckType
     ccRed = 0
@@ -647,13 +641,13 @@ Public Property Get DialogResult() As VbMsgBoxResult
 End Property
 
 'The newly selected color (if any) is returned via this property
-Public Property Get newColor() As Long
-    newColor = newUserColor
+Public Property Get NewColor() As Long
+    NewColor = newUserColor
 End Property
 
 'During screen capture, this sub is used to update the current color under the mouse cursor.  Note that such rapid
 ' redraws will be a bit slow in the IDE - compile for better results.
-Private Sub updateHoveredColor()
+Private Sub UpdateHoveredColor()
 
     'Retrieve the current mouse location
     Dim mouseLocation As POINTAPI
@@ -664,25 +658,25 @@ Private Sub updateHoveredColor()
     srcDC = GetWindowDC(GetDesktopWindow())
     
     'Retrieve the color at the given pixel location
-    Dim newColor As Long
-    newColor = GetPixel(srcDC, mouseLocation.x, mouseLocation.y)
+    Dim NewColor As Long
+    NewColor = GetPixel(srcDC, mouseLocation.x, mouseLocation.y)
     
     'Extract RGB components from the Long-type color
-    curRed = ExtractR(newColor)
-    curGreen = ExtractG(newColor)
-    curBlue = ExtractB(newColor)
+    curRed = ExtractR(NewColor)
+    curGreen = ExtractG(NewColor)
+    curBlue = ExtractB(NewColor)
     
     'Calculate new HSV values to match
     RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
     
     'Resync the interface to match the new value!
-    syncInterfaceToCurrentColor
+    SyncInterfaceToCurrentColor
     
 End Sub
 
 'Activate or deactivate "capture a color from the screen" mode.  Optionally, the original color can be restored if the
 ' user decides they don't actually want to capture a color from the screen.
-Private Sub toggleCaptureMode(ByVal toActivate As Boolean)
+Private Sub ToggleCaptureMode(ByVal toActivate As Boolean)
 
     Static prevCursorHandle As Long
     
@@ -691,7 +685,7 @@ Private Sub toggleCaptureMode(ByVal toActivate As Boolean)
         
         'Disable any current capture or cursor handlers
         'cmdCapture.OverrideMouseCapture True
-        prepSpecialMouseHandling False
+        PrepSpecialMouseHandling False
         
         screenCaptureActive = True
         
@@ -730,7 +724,7 @@ Private Sub toggleCaptureMode(ByVal toActivate As Boolean)
         
         'Re-enable any current capture or cursor handlers
         'cmdCapture.OverrideMouseCapture False
-        prepSpecialMouseHandling True
+        PrepSpecialMouseHandling True
         
     End If
 
@@ -749,7 +743,7 @@ Private Sub cmdBarMini_OKClick()
     newUserColor = RGB(curRed, curGreen, curBlue)
     
     'Save the current list of recently used colors
-    saveRecentColorList
+    SaveRecentColorList
     
     userAnswer = vbOK
     Me.Hide
@@ -761,7 +755,7 @@ Private Sub cmdCapture_Click()
     
     'If it isn't already active, start mouse capture mode
     If (Not screenCaptureActive) Then
-        toggleCaptureMode True
+        ToggleCaptureMode True
     End If
     
 End Sub
@@ -793,7 +787,7 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     'Render the old color to the screen.  Note that we must use a temporary DIB for this; otherwise, the color will
     ' not be properly color managed.
     Dim tmpDIB As New pdDIB
-    tmpDIB.createBlank picOriginal.ScaleWidth, picOriginal.ScaleHeight, 24, oldColor
+    tmpDIB.CreateBlank picOriginal.ScaleWidth, picOriginal.ScaleHeight, 24, oldColor
     tmpDIB.RenderToPictureBox picOriginal
     
     'Sync all current color values to the initial color
@@ -805,13 +799,13 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
     
     'Synchronize the interface to this new color
-    syncInterfaceToCurrentColor
+    SyncInterfaceToCurrentColor
     
     'Make sure that the proper cursor is set
     Screen.MousePointer = 0
         
     'Render the vertical hue box
-    drawHueBox
+    DrawHueBox
     
     'Apply extra tooltips to certain controls
     cmdCapture.AssignImage "CS_FROM_SCREEN"
@@ -821,16 +815,16 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     ApplyThemeAndTranslations Me
     
     'Manually assign a hand cursor to the various picture boxes.
-    prepSpecialMouseHandling True
+    PrepSpecialMouseHandling True
     
     'Initialize an XML engine, which we will use to read/write recent color data to file
     Set xmlEngine = New pdXML
     
     'The XML file will be stored in the Preset path (/Data/Presets)
-    XMLFilename = g_UserPreferences.getPresetPath & "Color_Selector.xml"
+    XMLFilename = g_UserPreferences.GetPresetPath & "Color_Selector.xml"
     
     'If an XML file exists, load its contents now
-    loadRecentColorList
+    LoadRecentColorList
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True
@@ -838,7 +832,7 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
 End Sub
 
 'Capture-from-screen mode requires special handling
-Private Sub prepSpecialMouseHandling(ByVal handleMode As Boolean)
+Private Sub PrepSpecialMouseHandling(ByVal handleMode As Boolean)
     
     If g_IsProgramRunning And handleMode Then
     
@@ -875,7 +869,7 @@ End Sub
 
 'If the user has used the color selector before, their last-used colors will be stored to an XML file.  Use this function
 ' to load those colors.
-Private Sub loadRecentColorList()
+Private Sub LoadRecentColorList()
 
     'Start by seeing if an XML file with previously saved color data exists
     Dim cFile As pdFSO
@@ -886,11 +880,11 @@ Private Sub loadRecentColorList()
         'Attempt to load and validate the current file; if we can't, create a new, blank XML object
         If Not xmlEngine.LoadXMLFile(XMLFilename) Then
             Debug.Print "List of recent colors appears to be invalid.  A new recent color list has been created."
-            resetXMLData
+            ResetXMLData
         End If
         
     Else
-        resetXMLData
+        ResetXMLData
     End If
         
     'We are now ready to load the actual color data from file.
@@ -956,7 +950,7 @@ Private Sub loadRecentColorList()
     For i = 0 To picRecColor.Count - 1
     
         If i <= UBound(recentColors) Then
-            tmpDIB.createBlank picRecColor(i).ScaleWidth, picRecColor(i).ScaleHeight, 24, recentColors(i)
+            tmpDIB.CreateBlank picRecColor(i).ScaleWidth, picRecColor(i).ScaleHeight, 24, recentColors(i)
             tmpDIB.RenderToPictureBox picRecColor(i)
         End If
     
@@ -965,10 +959,10 @@ Private Sub loadRecentColorList()
 End Sub
 
 'Save the current list of last-used colors to an XML file, adding the color presently selected as the most-recent entry.
-Private Sub saveRecentColorList()
+Private Sub SaveRecentColorList()
     
     'Reset whatever XML data we may have stored at present - we will be rewriting the full MRU file from scratch.
-    resetXMLData
+    ResetXMLData
     
     'We now need to update the colors array with the new color entry.  Start by seeing if this color is already in the
     ' array.  If it is, simply swap its order.
@@ -1020,13 +1014,11 @@ Private Sub saveRecentColorList()
 End Sub
 
 'When creating a new recent coclors file, or overwriting a corrupt one, use this to initialize the new XML file.
-Private Sub resetXMLData()
-
+Private Sub ResetXMLData()
     xmlEngine.prepareNewXML "Recent colors"
     xmlEngine.writeBlankLine
     xmlEngine.writeComment "Everything past this point is recent color data.  Entries are sorted in reverse chronological order."
     xmlEngine.writeBlankLine
-
 End Sub
 
 'Refresh the various color box cursors when the mouse enters
@@ -1041,33 +1033,33 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     
     'As a failsafe, check for ongoing subclassing and release as necessary
-    If screenCaptureActive Then toggleCaptureMode False
+    If screenCaptureActive Then ToggleCaptureMode False
     ReleaseFormTheming Me
     
 End Sub
 
 'The hue box only needs to be drawn once, when the dialog is first created
-Private Sub drawHueBox()
+Private Sub DrawHueBox()
     
     Dim hVal As Double
     Dim r As Long, g As Long, b As Long
     
     'Because we want the hue box to be color-managed, we must create it as a DIB, then render it to the screen later
     Set hueBox = New pdDIB
-    hueBox.createBlank picHue.ScaleWidth, picHue.ScaleHeight
+    hueBox.CreateBlank picHue.ScaleWidth, picHue.ScaleHeight
     
     'Simple gradient-ish code implementation of drawing hue
     Dim y As Long
-    For y = 0 To hueBox.getDIBHeight
+    For y = 0 To hueBox.GetDIBHeight
     
         'Based on our x-position, gradient a value between -1 and 5
-        hVal = y / hueBox.getDIBHeight
+        hVal = y / hueBox.GetDIBHeight
         
         'Generate a full-saturation hue for this position
         HSVtoRGB hVal, 1, 1, r, g, b
         
         'Draw the color
-        Drawing.DrawLineToDC hueBox.getDIBDC, 0, y, picHue.ScaleWidth, y, RGB(r, g, b)
+        Drawing.DrawLineToDC hueBox.GetDIBDC, 0, y, picHue.ScaleWidth, y, RGB(r, g, b)
         
     Next y
     
@@ -1078,15 +1070,14 @@ End Sub
 
 'When *all* current color values are updated and valid, use this function to synchronize the interface to match
 ' their appearance.
-Private Sub syncInterfaceToCurrentColor()
+Private Sub SyncInterfaceToCurrentColor()
     
     Me.Picture = LoadPicture("")
     
     'Start by drawing the primary box (luminance/saturation) using the current values
     If (primaryBox Is Nothing) Then Set primaryBox = New pdDIB
-    
-    If (primaryBox.getDIBWidth <> picColor.ScaleWidth) Or (primaryBox.getDIBHeight <> picColor.ScaleHeight) Then
-        primaryBox.createBlank picColor.ScaleWidth, picColor.ScaleHeight
+    If (primaryBox.GetDIBWidth <> picColor.ScaleWidth) Or (primaryBox.GetDIBHeight <> picColor.ScaleHeight) Then
+        primaryBox.CreateBlank picColor.ScaleWidth, picColor.ScaleHeight
     End If
     
     Dim pImageData() As Byte
@@ -1099,8 +1090,8 @@ Private Sub syncInterfaceToCurrentColor()
     Dim tmpR As Long, tmpG As Long, tmpB As Long
     
     Dim loopWidth As Long, loopHeight As Long
-    loopWidth = (primaryBox.getDIBWidth - 1) * 3
-    loopHeight = primaryBox.getDIBHeight - 1
+    loopWidth = (primaryBox.GetDIBWidth - 1) * 3
+    loopHeight = primaryBox.GetDIBHeight - 1
     
     Dim lineSaturation As Double
     
@@ -1133,7 +1124,7 @@ Private Sub syncInterfaceToCurrentColor()
     CopyMemory ByVal VarPtrArray(pImageData), 0&, 4
     
     'We now want to draw a circle around the point where the user's current color resides
-    GDIPlusDrawCanvasCircle primaryBox.getDIBDC, curValue * (loopWidth / 3), (1 - curSaturation) * loopHeight, FixDPI(7)
+    GDIPlusDrawCanvasCircle primaryBox.GetDIBDC, curValue * (loopWidth / 3), (1 - curSaturation) * loopHeight, FixDPI(7)
         
     'Render the primary color box
     primaryBox.RenderToPictureBox picColor
@@ -1142,23 +1133,23 @@ Private Sub syncInterfaceToCurrentColor()
     ' not be properly color managed.
     
     If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
-    If (m_tmpDIB.getDIBWidth <> picCurrent.ScaleWidth) Or (m_tmpDIB.getDIBHeight <> picCurrent.ScaleHeight) Then
-        m_tmpDIB.createBlank picCurrent.ScaleWidth, picCurrent.ScaleHeight, 24, RGB(curRed, curGreen, curBlue)
+    If (m_tmpDIB.GetDIBWidth <> picCurrent.ScaleWidth) Or (m_tmpDIB.GetDIBHeight <> picCurrent.ScaleHeight) Then
+        m_tmpDIB.CreateBlank picCurrent.ScaleWidth, picCurrent.ScaleHeight, 24, RGB(curRed, curGreen, curBlue)
     Else
-        GDI_Plus.GDIPlusFillDIBRect m_tmpDIB, 0, 0, m_tmpDIB.getDIBWidth, m_tmpDIB.getDIBHeight, RGB(curRed, curGreen, curBlue)
+        GDI_Plus.GDIPlusFillDIBRect m_tmpDIB, 0, 0, m_tmpDIB.GetDIBWidth, m_tmpDIB.GetDIBHeight, RGB(curRed, curGreen, curBlue)
     End If
     
     m_tmpDIB.RenderToPictureBox picCurrent
     
     'Synchronize all text boxes to their current values
-    redrawAllTextBoxes
+    RedrawAllTextBoxes
     
     'Position the arrows along the hue box properly according to the current hue
     Dim hueY As Long
     hueY = picHue.Top + 1 + (curHue * picHue.ScaleHeight)
     
-    leftSideArrow.alphaBlendToDC Me.hDC, , picHue.Left - leftSideArrow.getDIBWidth, hueY - (leftSideArrow.getDIBHeight \ 2)
-    rightSideArrow.alphaBlendToDC Me.hDC, , picHue.Left + picHue.Width, hueY - (rightSideArrow.getDIBHeight \ 2)
+    leftSideArrow.AlphaBlendToDC Me.hDC, , picHue.Left - leftSideArrow.GetDIBWidth, hueY - (leftSideArrow.GetDIBHeight \ 2)
+    rightSideArrow.AlphaBlendToDC Me.hDC, , picHue.Left + picHue.Width, hueY - (rightSideArrow.GetDIBHeight \ 2)
     Me.Picture = Me.Image
     Me.Refresh
     
@@ -1171,10 +1162,10 @@ Private Sub syncInterfaceToCurrentColor()
 End Sub
 
 'Use this sub to resync all text boxes to the current RGB/HSV values
-Private Sub redrawAllTextBoxes()
+Private Sub RedrawAllTextBoxes()
 
     'We don't want the _Change events for the text boxes firing while we resync them, so we disable any resyncing in advance
-    suspendTextResync = True
+    m_suspendTextResync = True
     
     'Start by matching up the text values themselves
     tudRGB(0) = curRed
@@ -1187,7 +1178,7 @@ Private Sub redrawAllTextBoxes()
     
     'Next, prepare some universal values for the arrow image offsets
     Dim arrowOffset As Long
-    arrowOffset = (upArrow.getDIBWidth \ 2) - 1
+    arrowOffset = (upArrow.GetDIBWidth \ 2) - 1
     
     Dim leftOffset As Long
     leftOffset = picSampleRGB(0).Left
@@ -1196,22 +1187,22 @@ Private Sub redrawAllTextBoxes()
     widthCheck = picSampleRGB(0).ScaleWidth - 1
     
     'Next, redraw all marker arrows
-    upArrow.alphaBlendToDC Me.hDC, , leftOffset + ((curRed / 255) * widthCheck) - arrowOffset, picSampleRGB(0).Top + picSampleRGB(0).Height
-    upArrow.alphaBlendToDC Me.hDC, , leftOffset + ((curGreen / 255) * widthCheck) - arrowOffset, picSampleRGB(1).Top + picSampleRGB(1).Height
-    upArrow.alphaBlendToDC Me.hDC, , leftOffset + ((curBlue / 255) * widthCheck) - arrowOffset, picSampleRGB(2).Top + picSampleRGB(2).Height
+    upArrow.AlphaBlendToDC Me.hDC, , leftOffset + ((curRed / 255) * widthCheck) - arrowOffset, picSampleRGB(0).Top + picSampleRGB(0).Height
+    upArrow.AlphaBlendToDC Me.hDC, , leftOffset + ((curGreen / 255) * widthCheck) - arrowOffset, picSampleRGB(1).Top + picSampleRGB(1).Height
+    upArrow.AlphaBlendToDC Me.hDC, , leftOffset + ((curBlue / 255) * widthCheck) - arrowOffset, picSampleRGB(2).Top + picSampleRGB(2).Height
     
-    upArrow.alphaBlendToDC Me.hDC, , leftOffset + (curHue * widthCheck) - arrowOffset, picSampleHSV(0).Top + picSampleHSV(0).Height
-    upArrow.alphaBlendToDC Me.hDC, , leftOffset + (curSaturation * widthCheck) - arrowOffset, picSampleHSV(1).Top + picSampleHSV(1).Height
-    upArrow.alphaBlendToDC Me.hDC, , leftOffset + (curValue * widthCheck) - arrowOffset, picSampleHSV(2).Top + picSampleHSV(2).Height
+    upArrow.AlphaBlendToDC Me.hDC, , leftOffset + (curHue * widthCheck) - arrowOffset, picSampleHSV(0).Top + picSampleHSV(0).Height
+    upArrow.AlphaBlendToDC Me.hDC, , leftOffset + (curSaturation * widthCheck) - arrowOffset, picSampleHSV(1).Top + picSampleHSV(1).Height
+    upArrow.AlphaBlendToDC Me.hDC, , leftOffset + (curValue * widthCheck) - arrowOffset, picSampleHSV(2).Top + picSampleHSV(2).Height
     
     'Next, we need to prep all our color bar DIBs
-    renderSampleDIB sRed, ccRed
-    renderSampleDIB sGreen, ccGreen
-    renderSampleDIB sBlue, ccBlue
+    RenderSampleDIB sRed, ccRed
+    RenderSampleDIB sGreen, ccGreen
+    RenderSampleDIB sBlue, ccBlue
     
-    renderSampleDIB sHue, ccHue
-    renderSampleDIB sSaturation, ccSaturation
-    renderSampleDIB sValue, ccValue
+    RenderSampleDIB sHue, ccHue
+    RenderSampleDIB sSaturation, ccSaturation
+    RenderSampleDIB sValue, ccValue
     
     'Now we can render the bars to screen
     sRed.RenderToPictureBox picSampleRGB(0)
@@ -1223,82 +1214,82 @@ Private Sub redrawAllTextBoxes()
     sValue.RenderToPictureBox picSampleHSV(2)
     
     'Update the hex representation box
-    txtHex = Colors.GetHexStringFromRGB(RGB(curRed, curGreen, curBlue))
+    If (Not m_suspendHexInput) Then txtHex = Colors.GetHexStringFromRGB(RGB(curRed, curGreen, curBlue))
     
     'Re-enable syncing
-    suspendTextResync = False
+    m_suspendTextResync = False
     
 End Sub
 
 'When the user clicks the hue box (or moves with the mouse button down), this function is called.  It uses the y-value
 ' of the click to determine new image colors, then refreshes the interface.
-Private Sub hueBoxClicked(ByVal clickY As Long)
+Private Sub HueBoxClicked(ByVal clickY As Long)
 
     'Restrict mouse clicks to the picture box area
-    If clickY < 0 Then clickY = 0
-    If clickY > picHue.ScaleHeight Then clickY = picHue.ScaleHeight
+    If (clickY < 0) Then clickY = 0
+    If (clickY > picHue.ScaleHeight) Then clickY = picHue.ScaleHeight
 
     'Calculate a new hue using the mouse's y-position as our guide
     curHue = clickY / picHue.ScaleHeight
-    trimHSV curHue
+    TrimHSV curHue
     
     'Rebuild our RGB variables to match
     HSVtoRGB curHue, curSaturation, curValue, curRed, curGreen, curBlue
     
     'Redraw any necessary interface elements
-    syncInterfaceToCurrentColor
+    SyncInterfaceToCurrentColor
 
 End Sub
 
 'When the user clicks the primary box (or moves with the mouse button down), this function is called.  It uses the coordinates
 ' of the click to determine new image colors, then refreshes the interface.
-Private Sub primaryBoxClicked(ByVal clickX As Long, ByVal clickY As Long)
+Private Sub PrimaryBoxClicked(ByVal clickX As Long, ByVal clickY As Long)
 
     'Calculate a new value using the mouse's x-position as our guide
     curValue = clickX / picColor.ScaleWidth
-    trimHSV curValue
+    TrimHSV curValue
     
     'Calculate a new saturation using the mouse's y-position as our guide
     curSaturation = clickY / picColor.ScaleHeight
-    trimHSV curSaturation
+    TrimHSV curSaturation
     curSaturation = 1 - curSaturation
     
     'Rebuild our RGB variables to match
     HSVtoRGB curHue, curSaturation, curValue, curRed, curGreen, curBlue
     
     'Redraw any necessary interface elements
-    syncInterfaceToCurrentColor
+    SyncInterfaceToCurrentColor
 
 End Sub
 
 Private Sub picColor_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-    primaryBoxClicked x, y
+    PrimaryBoxClicked x, y
 End Sub
 
 Private Sub picColor_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    If Button = vbLeftButton Then primaryBoxClicked x, y
+    If Button = vbLeftButton Then PrimaryBoxClicked x, y
 End Sub
 
 Private Sub picHue_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-    hueBoxClicked y
+    HueBoxClicked y
 End Sub
 
 Private Sub picHue_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    If Button = vbLeftButton Then hueBoxClicked y
+    If Button = vbLeftButton Then HueBoxClicked y
 End Sub
 
-Private Sub trimHSV(ByRef hsvValue As Double)
+Private Sub TrimHSV(ByRef hsvValue As Double)
     If hsvValue > 1 Then hsvValue = 1
     If hsvValue < 0 Then hsvValue = 0
 End Sub
 
 'This sub handles the preparation of the individual color sample boxes (one each for R/G/B/H/S/V)
 ' (Because we want these boxes to be color-managed, we must create them as DIBs.)
-Private Sub renderSampleDIB(ByRef dstDIB As pdDIB, ByVal dibColorType As colorCheckType)
+Private Sub RenderSampleDIB(ByRef dstDIB As pdDIB, ByVal dibColorType As colorCheckType)
 
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    If (dstDIB.getDIBWidth <> picSampleRGB(0).ScaleWidth) Or (dstDIB.getDIBHeight <> picSampleRGB(0).ScaleHeight) Then
-        dstDIB.createBlank picSampleRGB(0).ScaleWidth, picSampleRGB(0).ScaleHeight
+    If (dstDIB.GetDIBWidth <> picSampleRGB(0).ScaleWidth) Or (dstDIB.GetDIBHeight <> picSampleRGB(0).ScaleHeight) Then
+        dstDIB.CreateBlank picSampleRGB(0).ScaleWidth, picSampleRGB(0).ScaleHeight
     End If
     
     Dim r As Long, g As Long, b As Long
@@ -1313,11 +1304,11 @@ Private Sub renderSampleDIB(ByRef dstDIB As pdDIB, ByVal dibColorType As colorCh
     v = curValue
     
     Dim gradientValue As Double, gradientMax As Double
-    gradientMax = dstDIB.getDIBWidth
+    gradientMax = dstDIB.GetDIBWidth
     
     'Simple gradient-ish code implementation of drawing any individual color component
     Dim x As Long
-    For x = 0 To dstDIB.getDIBWidth
+    For x = 0 To dstDIB.GetDIBWidth
     
         gradientValue = x / gradientMax
     
@@ -1357,7 +1348,7 @@ Private Sub renderSampleDIB(ByRef dstDIB As pdDIB, ByVal dibColorType As colorCh
         End If
         
         'Draw the color
-        Drawing.DrawLineToDC dstDIB.getDIBDC, x, 0, x, dstDIB.getDIBHeight, RGB(r, g, b)
+        Drawing.DrawLineToDC dstDIB.GetDIBDC, x, 0, x, dstDIB.GetDIBHeight, RGB(r, g, b)
         
     Next x
     
@@ -1374,7 +1365,7 @@ Private Sub picOriginal_Click()
     RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
     
     'Resync the interface to match the new value!
-    syncInterfaceToCurrentColor
+    SyncInterfaceToCurrentColor
 
 End Sub
 
@@ -1390,20 +1381,20 @@ Private Sub picRecColor_Click(Index As Integer)
     RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
     
     'Resync the interface to match the new value!
-    syncInterfaceToCurrentColor
+    SyncInterfaceToCurrentColor
 
 End Sub
 
 Private Sub picSampleHSV_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
-    hsvBoxClicked Index, x
+    HSVBoxClicked Index, x
 End Sub
 
 Private Sub picSampleHSV_MouseMove(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
-    If Button = vbLeftButton Then hsvBoxClicked Index, x
+    If Button = vbLeftButton Then HSVBoxClicked Index, x
 End Sub
 
 'Whenever one of the HSV sample boxes is clicked, this function is called; it calculates new RGB/HSV values, then redraws the interface
-Private Sub hsvBoxClicked(ByVal boxIndex As Long, ByVal xPos As Long)
+Private Sub HSVBoxClicked(ByVal boxIndex As Long, ByVal xPos As Long)
 
     Dim boxWidth As Long
     boxWidth = picSampleRGB(0).ScaleWidth
@@ -1429,20 +1420,20 @@ Private Sub hsvBoxClicked(ByVal boxIndex As Long, ByVal xPos As Long)
     HSVtoRGB curHue, curSaturation, curValue, curRed, curGreen, curBlue
     
     'Redraw the interface
-    syncInterfaceToCurrentColor
+    SyncInterfaceToCurrentColor
 
 End Sub
 
 Private Sub picSampleRGB_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
-    rgbBoxClicked Index, x
+    RGBBoxClicked Index, x
 End Sub
 
 Private Sub picSampleRGB_MouseMove(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
-    If Button = vbLeftButton Then rgbBoxClicked Index, x
+    If Button = vbLeftButton Then RGBBoxClicked Index, x
 End Sub
 
 'Whenever one of the RGB sample boxes is clicked, this function is called; it calculates new RGB/HSV values, then redraws the interface
-Private Sub rgbBoxClicked(ByVal boxIndex As Long, ByVal xPos As Long)
+Private Sub RGBBoxClicked(ByVal boxIndex As Long, ByVal xPos As Long)
 
     Dim boxWidth As Long
     boxWidth = picSampleRGB(0).ScaleWidth
@@ -1468,14 +1459,14 @@ Private Sub rgbBoxClicked(ByVal boxIndex As Long, ByVal xPos As Long)
     RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
     
     'Redraw the interface
-    syncInterfaceToCurrentColor
+    SyncInterfaceToCurrentColor
 
 End Sub
 
 'Whenever a text box value is changed, sync only the relevant value, then redraw the interface
 Private Sub tudHSV_Change(Index As Integer)
 
-    If Not suspendTextResync Then
+    If Not m_suspendTextResync Then
 
         Select Case (Index + 3)
         
@@ -1494,7 +1485,7 @@ Private Sub tudHSV_Change(Index As Integer)
         HSVtoRGB curHue, curSaturation, curValue, curRed, curGreen, curBlue
         
         'Redraw the interface
-        syncInterfaceToCurrentColor
+        SyncInterfaceToCurrentColor
         
     End If
 
@@ -1503,7 +1494,7 @@ End Sub
 'Whenever a text box value is changed, sync only the relevant value, then redraw the interface
 Private Sub tudRGB_Change(Index As Integer)
 
-    If Not suspendTextResync Then
+    If Not m_suspendTextResync Then
 
         Select Case Index
         
@@ -1522,20 +1513,83 @@ Private Sub tudRGB_Change(Index As Integer)
         RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
         
         'Redraw the interface
-        syncInterfaceToCurrentColor
+        SyncInterfaceToCurrentColor
         
     End If
 
 End Sub
 
+'Full validation of hex input happens in its LostFocus event, but we also do a quick-and-dirty sync during change events
+Private Sub txtHex_Change()
+    
+    If m_suspendHexInput Then Exit Sub
+    
+    m_suspendHexInput = True
+    
+    Dim newText As String
+    newText = txtHex.Text
+    
+    'If the hex input looks valid, update the colors to match; otherwise, ignore the text completely
+    If DoesHexLookValid(newText) Then
+        
+        'Parse the string to calculate actual numeric values; we can use VB's Val() function for this!
+        curRed = Val("&H" & Left$(newText, 2))
+        curGreen = Val("&H" & Mid$(newText, 3, 2))
+        curBlue = Val("&H" & Right$(newText, 2))
+        
+        'Calculate new HSV values to match
+        RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
+        
+        'Resync the interface to match the new value!
+        SyncInterfaceToCurrentColor
+        
+    End If
+    
+    m_suspendHexInput = False
+
+End Sub
+
 Private Sub txtHex_LostFocusAPI()
+    
+    m_suspendHexInput = True
+    
+    Dim newText As String
+    newText = txtHex.Text
+    
+    'If the hex input looks valid, update the colors to match; otherwise, ignore the text completely
+    If DoesHexLookValid(newText) Then
+        
+        'Change the text box to match our properly formatted string
+        txtHex.Text = newText
+        
+        'Parse the string to calculate actual numeric values; we can use VB's Val() function for this!
+        curRed = Val("&H" & Left$(newText, 2))
+        curGreen = Val("&H" & Mid$(newText, 3, 2))
+        curBlue = Val("&H" & Right$(newText, 2))
+        
+        'Calculate new HSV values to match
+        RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
+        
+        'Resync the interface to match the new value!
+        SyncInterfaceToCurrentColor
+        
+    Else
+        txtHex.Text = Colors.GetHexStringFromRGB(RGB(curRed, curGreen, curBlue))
+    End If
+    
+    m_suspendHexInput = False
+    
+End Sub
+
+'This function *may modify the incoming string* so please review the comments thoroughly
+Private Function DoesHexLookValid(ByRef hexStringToCheck As String) As Boolean
 
     'Before doing anything else, remove all invalid characters from the text box
     Dim validChars As String
     validChars = "0123456789abcdef"
     
     Dim curText As String
-    curText = Trim$(txtHex)
+    curText = Trim$(hexStringToCheck)
     
     Dim newText As String, curChar As String
     
@@ -1547,44 +1601,34 @@ Private Sub txtHex_LostFocusAPI()
         
     newText = LCase(newText)
     
-    'newString now contains the contents of the text box, but limited to lowercase hex chars only.
-    
-    'Make sure the length is 1, 3, or 6.  Each case is handled specially.
+    'Make sure the length is 1, 3, or 6.  Each case is handled specially; other lengths are not valid
     Select Case Len(newText)
     
         'One character is treated as a shade of gray; extend it to six characters.  (I don't know if this is actually
         ' valid CSS, but it doesn't hurt to support it... right?)
         Case 1
             newText = String$(6, newText)
+            DoesHexLookValid = True
         
         'Three characters is standard shorthand hex; expand each character as a pair
         Case 3
             newText = Left$(newText, 1) & Left$(newText, 1) & Mid$(newText, 2, 1) & Mid$(newText, 2, 1) & Right$(newText, 1) & Right$(newText, 1)
-        
+            DoesHexLookValid = True
+            
         'Six characters is already valid, so no need to screw with it further.
         Case 6
+            DoesHexLookValid = True
         
         Case Else
             'We can't handle this character string, so reset it
             newText = Colors.GetHexStringFromRGB(RGB(curRed, curGreen, curBlue))
+            DoesHexLookValid = False
     
     End Select
     
-    'Change the text box to match our properly formatted string
-    txtHex.Text = newText
-    
-    'Parse the string to calculate actual numeric values; we can use VB's Val() function for this!
-    curRed = Val("&H" & Left$(newText, 2))
-    curGreen = Val("&H" & Mid$(newText, 3, 2))
-    curBlue = Val("&H" & Right$(newText, 2))
-    
-    'Calculate new HSV values to match
-    RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
-    
-    'Resync the interface to match the new value!
-    syncInterfaceToCurrentColor
-    
-End Sub
+    If DoesHexLookValid Then hexStringToCheck = newText
+
+End Function
 
 'All events subclassed by this window are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _
@@ -1617,22 +1661,22 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         'While the mouse is moving, update the color on-screen so the user can see it.
         Case WM_MOUSEMOVE
             If screenCaptureActive Then
-                updateHoveredColor
+                UpdateHoveredColor
                 bHandled = True
             End If
         
         'If the user clicks with the left button, select that as the new color.
         Case WM_LBUTTONDOWN
             If screenCaptureActive Then
-                updateHoveredColor
-                toggleCaptureMode False
+                UpdateHoveredColor
+                ToggleCaptureMode False
             End If
         
         'As a failsafe, if we somehow detect a mouse_up event, turn off toggle capture mode.
         Case WM_LBUTTONUP
             If screenCaptureActive Then
-                updateHoveredColor
-                toggleCaptureMode False
+                UpdateHoveredColor
+                ToggleCaptureMode False
             End If
             
     End Select
