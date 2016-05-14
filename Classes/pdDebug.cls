@@ -155,7 +155,7 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
             debugHeader = debugHeader & "Version: " & GetPhotoDemonNameAndVersion & vbCrLf
             debugHeader = debugHeader & "Translation active: " & CStr(g_Language.TranslationActive()) & vbCrLf
             debugHeader = debugHeader & "Language in use: " & CStr(g_Language.GetCurrentLanguage()) & vbCrLf
-            debugHeader = debugHeader & "GDI+ available: " & CStr(Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend)) & vbCrLf & vbCrLf
+            debugHeader = debugHeader & "GDI+ available: " & CStr(Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend)) & vbCrLf & vbCrLf
             
             debugHeader = debugHeader & "-- PLUGIN INFORMATION -- " & vbCrLf & vbCrLf
             

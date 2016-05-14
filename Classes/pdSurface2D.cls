@@ -36,24 +36,24 @@ Private m_SurfaceHandle As Long
 Private m_DebugMode As Boolean
 
 'Surface settings that support get/set operations
-Private m_SurfaceAntialiasing As GP_SmoothingMode
-Private m_SurfacePixelOffset As GP_PixelOffsetMode
+Private m_SurfaceAntialiasing As PD_2D_Antialiasing
+Private m_SurfacePixelOffset As PD_2D_PixelOffset
 
 'Get/set individual settings.  Note that these just wrap the generic Get/SetPenProperty functions, below.
-Public Function GetSurfaceAntialiasing() As GP_SmoothingMode
-    GetSurfaceAntialiasing = Me.GetSurfaceProperty(PD2D_SurfaceAntialiasing)
+Public Function GetSurfaceAntialiasing() As PD_2D_Antialiasing
+    GetSurfaceAntialiasing = Me.GetSurfaceProperty(P2_SurfaceAntialiasing)
 End Function
 
-Public Function GetSurfacePixelOffset() As GP_PixelOffsetMode
-    GetSurfacePixelOffset = Me.GetSurfaceProperty(PD2D_SurfacePixelOffset)
+Public Function GetSurfacePixelOffset() As PD_2D_PixelOffset
+    GetSurfacePixelOffset = Me.GetSurfaceProperty(P2_SurfacePixelOffset)
 End Function
 
-Public Sub SetSurfaceAntialiasing(ByVal newSetting As GP_SmoothingMode)
-    Me.SetSurfaceProperty PD2D_SurfaceAntialiasing, newSetting
+Public Sub SetSurfaceAntialiasing(ByVal newSetting As PD_2D_Antialiasing)
+    Me.SetSurfaceProperty P2_SurfaceAntialiasing, newSetting
 End Sub
 
-Public Sub SetSurfacePixelOffset(ByVal newSetting As GP_PixelOffsetMode)
-    Me.SetSurfaceProperty PD2D_SurfacePixelOffset, newSetting
+Public Sub SetSurfacePixelOffset(ByVal newSetting As PD_2D_PixelOffset)
+    Me.SetSurfaceProperty P2_SurfacePixelOffset, newSetting
 End Sub
 
 'Get/set individual settings by enum type
@@ -61,10 +61,10 @@ Public Function GetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS) As Va
 
     Select Case propID
     
-        Case PD2D_SurfaceAntialiasing
+        Case P2_SurfaceAntialiasing
             GetSurfaceProperty = m_SurfaceAntialiasing
         
-        Case PD2D_SurfacePixelOffset
+        Case P2_SurfacePixelOffset
             GetSurfaceProperty = m_SurfacePixelOffset
     
     End Select
@@ -75,10 +75,10 @@ Public Sub SetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS, ByVal newS
     
     Select Case propID
     
-        Case PD2D_SurfaceAntialiasing
+        Case P2_SurfaceAntialiasing
             m_SurfaceAntialiasing = CLng(newSetting)
         
-        Case PD2D_SurfacePixelOffset
+        Case P2_SurfacePixelOffset
             m_SurfacePixelOffset = CLng(newSetting)
             
     End Select
@@ -94,8 +94,8 @@ Public Function WrapSurfaceAroundDC(ByVal srcDC As Long) As Boolean
     'Call the backend-specific surface creation function
     Select Case m_SurfaceBackend
         
-        Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
-            m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(srcDC, m_SurfaceAntialiasing, m_SurfacePixelOffset)
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(srcDC, IIf(m_SurfaceAntialiasing >= P2_AA_Grayscale, GP_SM_AntiAlias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Normal, GP_POM_Half, GP_POM_None))
             WrapSurfaceAroundDC = (m_SurfaceHandle <> 0)
             
     End Select
@@ -119,7 +119,7 @@ End Function
 
 'You only need to manually initialize a surface backend if you plan on using a non-default backend.  (Surfaces with the
 ' default backend are initialized automatically.)
-Friend Function InitializeSurfaceBackend(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = PD2D_DefaultBackend) As Boolean
+Friend Function InitializeSurfaceBackend(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Boolean
     m_SurfaceBackend = targetBackend
     InitializeSurfaceBackend = True
 End Function
@@ -131,7 +131,7 @@ Public Function ReleaseSurface() As Boolean
         'Call the backend-specific release function
         Select Case m_SurfaceBackend
         
-            Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
                 ReleaseSurface = GDI_Plus.ReleaseGDIPlusGraphics(m_SurfaceHandle)
         
         End Select
@@ -157,14 +157,22 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_SURFACE_SETTINGS)
         'Relays obviously vary by the active backend!
         Select Case m_SurfaceBackend
             
-            Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
                 
                 Select Case propID
-                    Case PD2D_SurfaceAntialiasing
-                        GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, propID, m_SurfaceAntialiasing
+                    Case P2_SurfaceAntialiasing
+                        If (m_SurfaceAntialiasing >= P2_AA_Grayscale) Then
+                            GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, propID, GP_SM_AntiAlias
+                        Else
+                            GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, propID, GP_SM_None
+                        End If
                         
-                    Case PD2D_SurfacePixelOffset
-                        GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, propID, m_SurfacePixelOffset
+                    Case P2_SurfacePixelOffset
+                        If (m_SurfacePixelOffset >= P2_PO_Half) Then
+                            GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, propID, GP_POM_Half
+                        Else
+                            GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, propID, GP_POM_None
+                        End If
                         
                 End Select
                 
@@ -178,8 +186,8 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_SURFACE_SETTINGS)
 End Sub
 
 Public Sub ResetAllProperties()
-    Me.SetSurfaceProperty PD2D_SurfaceAntialiasing, GP_SM_None
-    Me.SetSurfaceProperty PD2D_SurfacePixelOffset, GP_POM_HighSpeed
+    Me.SetSurfaceProperty P2_SurfaceAntialiasing, P2_AA_None
+    Me.SetSurfaceProperty P2_SurfacePixelOffset, P2_PO_Normal
 End Sub
 
 'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.

@@ -504,15 +504,15 @@ End Sub
 Private Sub UpdateFillObject()
 
     With m_Filler
-        .SetBrushProperty PD2D_BrushMode, btsStyle.ListIndex
-        .SetBrushProperty PD2D_BrushColor, csFillColor.Color
-        .SetBrushProperty PD2D_BrushOpacity, sltFillOpacity.Value
-        .SetBrushProperty PD2D_BrushPatternStyle, cboFillPattern.ListIndex
-        .SetBrushProperty PD2D_BrushPattern1Color, csPattern(0).Color
-        .SetBrushProperty PD2D_BrushPattern1Opacity, sltPatternOpacity(0).Value
-        .SetBrushProperty PD2D_BrushPattern2Color, csPattern(1).Color
-        .SetBrushProperty PD2D_BrushPattern2Opacity, sltPatternOpacity(1).Value
-        .SetBrushProperty PD2D_BrushGradientXML, gsPrimary.Gradient
+        .SetBrushProperty P2_BrushMode, btsStyle.ListIndex
+        .SetBrushProperty P2_BrushColor, csFillColor.Color
+        .SetBrushProperty P2_BrushOpacity, sltFillOpacity.Value
+        .SetBrushProperty P2_BrushPatternStyle, cboFillPattern.ListIndex
+        .SetBrushProperty P2_BrushPattern1Color, csPattern(0).Color
+        .SetBrushProperty P2_BrushPattern1Opacity, sltPatternOpacity(0).Value
+        .SetBrushProperty P2_BrushPattern2Color, csPattern(1).Color
+        .SetBrushProperty P2_BrushPattern2Opacity, sltPatternOpacity(1).Value
+        .SetBrushProperty P2_BrushGradientXML, gsPrimary.Gradient
     End With
 
 End Sub
@@ -580,18 +580,18 @@ Private Sub SyncControlsToFillObject()
         
     With m_Filler
         
-        btsStyle.ListIndex = .GetBrushProperty(PD2D_BrushMode)
+        btsStyle.ListIndex = .GetBrushProperty(P2_BrushMode)
         
-        csFillColor.Color = .GetBrushProperty(PD2D_BrushColor)
-        sltFillOpacity.Value = .GetBrushProperty(PD2D_BrushOpacity)
+        csFillColor.Color = .GetBrushProperty(P2_BrushColor)
+        sltFillOpacity.Value = .GetBrushProperty(P2_BrushOpacity)
         
-        cboFillPattern.ListIndex = .GetBrushProperty(PD2D_BrushPatternStyle)
-        csPattern(0).Color = .GetBrushProperty(PD2D_BrushPattern1Color)
-        csPattern(1).Color = .GetBrushProperty(PD2D_BrushPattern2Color)
-        sltPatternOpacity(0).Value = .GetBrushProperty(PD2D_BrushPattern1Opacity)
-        sltPatternOpacity(1).Value = .GetBrushProperty(PD2D_BrushPattern2Opacity)
+        cboFillPattern.ListIndex = .GetBrushProperty(P2_BrushPatternStyle)
+        csPattern(0).Color = .GetBrushProperty(P2_BrushPattern1Color)
+        csPattern(1).Color = .GetBrushProperty(P2_BrushPattern2Color)
+        sltPatternOpacity(0).Value = .GetBrushProperty(P2_BrushPattern1Opacity)
+        sltPatternOpacity(1).Value = .GetBrushProperty(P2_BrushPattern2Opacity)
         
-        gsPrimary.Gradient = .GetBrushProperty(PD2D_BrushGradientXML)
+        gsPrimary.Gradient = .GetBrushProperty(P2_BrushGradientXML)
     
     End With
     

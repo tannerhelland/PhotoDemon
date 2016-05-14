@@ -2775,7 +2775,9 @@ Private Sub Form_Load()
 FormMainLoadError:
 
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  FormMain_Load experienced an error: #" & Err.Number & ", " & Err.Description
+        If (Not (pdDebug Is Nothing)) Then
+            pdDebug.LogAction "WARNING!  FormMain_Load experienced an error: #" & Err.Number & ", " & Err.Description
+        End If
     #End If
      
 End Sub

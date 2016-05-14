@@ -1651,10 +1651,10 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     If m_OutlineActive Then
         
         With boundingRect
-            .Left = .Left + penTextOutline.GetPenProperty(PD2D_PenWidth)
-            .Top = .Top + penTextOutline.GetPenProperty(PD2D_PenWidth)
-            .Width = .Width - penTextOutline.GetPenProperty(PD2D_PenWidth) * 2
-            .Height = .Height - penTextOutline.GetPenProperty(PD2D_PenWidth) * 2
+            .Left = .Left + penTextOutline.GetPenProperty(P2_PenWidth)
+            .Top = .Top + penTextOutline.GetPenProperty(P2_PenWidth)
+            .Width = .Width - penTextOutline.GetPenProperty(P2_PenWidth) * 2
+            .Height = .Height - penTextOutline.GetPenProperty(P2_PenWidth) * 2
         End With
     
     End If
@@ -1672,7 +1672,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     
     If m_BackBorderActive Then
         
-        borderWidth = penBackgroundOutline.GetPenProperty(PD2D_PenWidth)
+        borderWidth = penBackgroundOutline.GetPenProperty(P2_PenWidth)
         halfBorderWidth = borderWidth / 2
         
         With boundingRect

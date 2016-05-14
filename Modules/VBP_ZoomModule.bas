@@ -292,7 +292,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
         
         'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
         ' in the future... but for now, we leave it, just in case.
-        If Drawing2D.IsRenderingEngineActive(PD2D_GDIPlusBackend) Then
+        If Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) Then
             
             'PD provides two options for rendering the viewport.  One composites the full image in the background, and just snips
             ' out the relevant bit of the finished image.  The other does not maintain a composited image copy, but instead returns

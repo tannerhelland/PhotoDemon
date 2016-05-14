@@ -31,7 +31,7 @@ Attribute VB_Exposed = False
 Option Explicit
     
 'Current pen style (solid, dashed, dotted, etc)
-Private m_PenStyle As GP_DashStyle
+Private m_PenStyle As PD_2D_DashStyle
 
 'Basic pen settings
 Private m_PenColor As Long
@@ -39,13 +39,13 @@ Private m_PenOpacity As Single
 Private m_PenWidth As Single
 
 'Advanced pen settings
-Private m_PenLineJoin As GP_LineJoin
-Private m_PenLineCap As GP_LineCap
-Private m_PenDashCap As GP_DashCap
+Private m_PenLineJoin As PD_2D_LineJoin
+Private m_PenLineCap As PD_2D_LineCap
+Private m_PenDashCap As PD_2D_DashCap
 Private m_PenMiterLimit As Single
-Private m_PenAlignment As GP_PenAlignment
-Private m_PenStartCap As GP_LineCap
-Private m_PenEndCap As GP_LineCap
+Private m_PenAlignment As PD_2D_PenAlignment
+Private m_PenStartCap As PD_2D_LineCap
+Private m_PenEndCap As PD_2D_LineCap
 
 'Pen transform properties (TBD)
 
@@ -62,92 +62,92 @@ Private m_DebugMode As Boolean
 Private m_PenHandle As Long
 
 'Get/set individual settings.  Note that these just wrap the generic Get/SetPenProperty functions, below.
-Public Function GetPenStyle() As GP_DashStyle
-    GetPenStyle = Me.GetPenProperty(PD2D_PenStyle)
+Public Function GetPenStyle() As PD_2D_DashStyle
+    GetPenStyle = Me.GetPenProperty(P2_PenStyle)
 End Function
 
 Public Function GetPenColor() As Long
-    GetPenColor = Me.GetPenProperty(PD2D_PenColor)
+    GetPenColor = Me.GetPenProperty(P2_PenColor)
 End Function
 
 Public Function GetPenOpacity() As Single
-    GetPenOpacity = Me.GetPenProperty(PD2D_PenOpacity)
+    GetPenOpacity = Me.GetPenProperty(P2_PenOpacity)
 End Function
 
 Public Function GetPenWidth() As Single
-    GetPenWidth = Me.GetPenProperty(PD2D_PenWidth)
+    GetPenWidth = Me.GetPenProperty(P2_PenWidth)
 End Function
 
-Public Function GetPenLineJoin() As GP_LineJoin
-    GetPenLineJoin = Me.GetPenProperty(PD2D_PenLineJoin)
+Public Function GetPenLineJoin() As PD_2D_LineJoin
+    GetPenLineJoin = Me.GetPenProperty(P2_PenLineJoin)
 End Function
 
-Public Function GetPenLineCap() As GP_LineCap
-    GetPenLineCap = Me.GetPenProperty(PD2D_PenLineCap)
+Public Function GetPenLineCap() As PD_2D_LineCap
+    GetPenLineCap = Me.GetPenProperty(P2_PenLineCap)
 End Function
 
-Public Function GetPenDashCap() As GP_DashCap
-    GetPenDashCap = Me.GetPenProperty(PD2D_PenDashCap)
+Public Function GetPenDashCap() As PD_2D_DashCap
+    GetPenDashCap = Me.GetPenProperty(P2_PenDashCap)
 End Function
 
 Public Function GetPenMiterLimit() As Single
-    GetPenMiterLimit = Me.GetPenProperty(PD2D_PenMiterLimit)
+    GetPenMiterLimit = Me.GetPenProperty(P2_PenMiterLimit)
 End Function
 
-Public Function GetPenAlignment() As GP_PenAlignment
-    GetPenAlignment = Me.GetPenProperty(PD2D_PenAlignment)
+Public Function GetPenAlignment() As PD_2D_PenAlignment
+    GetPenAlignment = Me.GetPenProperty(P2_PenAlignment)
 End Function
 
-Public Function GetPenStartCap() As GP_LineCap
-    GetPenStartCap = Me.GetPenProperty(PD2D_PenStartCap)
+Public Function GetPenStartCap() As PD_2D_LineCap
+    GetPenStartCap = Me.GetPenProperty(P2_PenStartCap)
 End Function
 
-Public Function GetPenEndCap() As GP_LineCap
-    GetPenEndCap = Me.GetPenProperty(PD2D_PenEndCap)
+Public Function GetPenEndCap() As PD_2D_LineCap
+    GetPenEndCap = Me.GetPenProperty(P2_PenEndCap)
 End Function
 
-Public Sub SetPenStyle(ByVal newSetting As GP_DashStyle)
-    Me.SetPenProperty PD2D_PenStyle, newSetting
+Public Sub SetPenStyle(ByVal newSetting As PD_2D_DashStyle)
+    Me.SetPenProperty P2_PenStyle, newSetting
 End Sub
 
 Public Sub SetPenColor(ByVal newSetting As Long)
-    Me.SetPenProperty PD2D_PenColor, newSetting
+    Me.SetPenProperty P2_PenColor, newSetting
 End Sub
 
 Public Sub SetPenOpacity(ByVal newSetting As Single)
-    Me.SetPenProperty PD2D_PenOpacity, newSetting
+    Me.SetPenProperty P2_PenOpacity, newSetting
 End Sub
 
 Public Sub SetPenWidth(ByVal newSetting As Single)
-     Me.SetPenProperty PD2D_PenWidth, newSetting
+     Me.SetPenProperty P2_PenWidth, newSetting
 End Sub
 
-Public Sub SetPenLineJoin(ByVal newSetting As GP_LineJoin)
-    Me.SetPenProperty PD2D_PenLineJoin, newSetting
+Public Sub SetPenLineJoin(ByVal newSetting As PD_2D_LineJoin)
+    Me.SetPenProperty P2_PenLineJoin, newSetting
 End Sub
 
-Public Sub SetPenLineCap(ByVal newSetting As GP_LineCap)
-    Me.SetPenProperty PD2D_PenLineCap, newSetting
+Public Sub SetPenLineCap(ByVal newSetting As PD_2D_LineCap)
+    Me.SetPenProperty P2_PenLineCap, newSetting
 End Sub
 
-Public Sub SetPenDashCap(ByVal newSetting As GP_DashCap)
-     Me.SetPenProperty PD2D_PenDashCap, newSetting
+Public Sub SetPenDashCap(ByVal newSetting As PD_2D_DashCap)
+     Me.SetPenProperty P2_PenDashCap, newSetting
 End Sub
 
 Public Sub SetPenMiterLimit(ByVal newSetting As Single)
-     Me.SetPenProperty PD2D_PenMiterLimit, newSetting
+     Me.SetPenProperty P2_PenMiterLimit, newSetting
 End Sub
 
-Public Sub SetPenAlignment(ByVal newSetting As GP_PenAlignment)
-     Me.SetPenProperty PD2D_PenAlignment, newSetting
+Public Sub SetPenAlignment(ByVal newSetting As PD_2D_PenAlignment)
+     Me.SetPenProperty P2_PenAlignment, newSetting
 End Sub
 
-Public Sub SetPenStartCap(ByVal newSetting As GP_LineCap)
-     Me.SetPenProperty PD2D_PenStartCap, newSetting
+Public Sub SetPenStartCap(ByVal newSetting As PD_2D_LineCap)
+     Me.SetPenProperty P2_PenStartCap, newSetting
 End Sub
 
-Public Sub SetPenEndCap(ByVal newSetting As GP_LineCap)
-     Me.SetPenProperty PD2D_PenEndCap, newSetting
+Public Sub SetPenEndCap(ByVal newSetting As PD_2D_LineCap)
+     Me.SetPenProperty P2_PenEndCap, newSetting
 End Sub
 
 'Get/set individual settings by enum type
@@ -155,37 +155,37 @@ Public Function GetPenProperty(ByVal propID As PD_2D_PEN_SETTINGS) As Variant
     
     Select Case propID
         
-        Case PD2D_PenStyle
+        Case P2_PenStyle
             GetPenProperty = m_PenStyle
         
-        Case PD2D_PenColor
+        Case P2_PenColor
             GetPenProperty = m_PenColor
             
-        Case PD2D_PenOpacity
+        Case P2_PenOpacity
             GetPenProperty = m_PenOpacity
             
-        Case PD2D_PenWidth
+        Case P2_PenWidth
             GetPenProperty = m_PenWidth
             
-        Case PD2D_PenLineJoin
+        Case P2_PenLineJoin
             GetPenProperty = m_PenLineJoin
             
-        Case PD2D_PenLineCap
+        Case P2_PenLineCap
             GetPenProperty = m_PenLineCap
             
-        Case PD2D_PenDashCap
+        Case P2_PenDashCap
             GetPenProperty = m_PenDashCap
             
-        Case PD2D_PenMiterLimit
+        Case P2_PenMiterLimit
             GetPenProperty = m_PenMiterLimit
             
-        Case PD2D_PenAlignment
+        Case P2_PenAlignment
             GetPenProperty = m_PenAlignment
             
-        Case PD2D_PenStartCap
+        Case P2_PenStartCap
             GetPenProperty = m_PenStartCap
         
-        Case PD2D_PenEndCap
+        Case P2_PenEndCap
             GetPenProperty = m_PenEndCap
             
     End Select
@@ -196,33 +196,33 @@ Public Sub SetPenProperty(ByVal propID As PD_2D_PEN_SETTINGS, ByVal newSetting A
     
     Select Case propID
         
-        Case PD2D_PenStyle
+        Case P2_PenStyle
             m_PenStyle = CLng(newSetting)
         
-        Case PD2D_PenColor
+        Case P2_PenColor
             m_PenColor = CLng(newSetting)
             
-        Case PD2D_PenOpacity
+        Case P2_PenOpacity
             m_PenOpacity = CSng(newSetting)
             
-        Case PD2D_PenWidth
+        Case P2_PenWidth
             m_PenWidth = CSng(newSetting)
             
-        Case PD2D_PenLineJoin
+        Case P2_PenLineJoin
             m_PenLineJoin = CLng(newSetting)
             
-        Case PD2D_PenLineCap
+        Case P2_PenLineCap
             m_PenLineCap = CLng(newSetting)
             m_PenStartCap = CLng(newSetting)
             m_PenEndCap = CLng(newSetting)
             
-        Case PD2D_PenDashCap
+        Case P2_PenDashCap
             m_PenDashCap = CLng(newSetting)
             
-        Case PD2D_PenMiterLimit
+        Case P2_PenMiterLimit
             m_PenMiterLimit = CSng(newSetting)
             
-        Case PD2D_PenAlignment
+        Case P2_PenAlignment
             m_PenAlignment = CLng(newSetting)
             
     End Select
@@ -239,34 +239,34 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_PEN_SETTINGS)
         'Relays obviously vary by the active backend!
         Select Case m_PenBackend
             
-            Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
                 
                 Select Case propID
-                    Case PD2D_PenStyle
+                    Case P2_PenStyle
                         GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenStyle
                         
-                    Case PD2D_PenColor
+                    Case P2_PenColor
                         GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenColor
                         
-                    Case PD2D_PenOpacity
+                    Case P2_PenOpacity
                         GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenOpacity
                         
-                    Case PD2D_PenWidth
+                    Case P2_PenWidth
                         GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenWidth
                         
-                    Case PD2D_PenLineJoin
+                    Case P2_PenLineJoin
                         GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenLineJoin
                         
-                    Case PD2D_PenLineCap
+                    Case P2_PenLineCap
                         GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenLineCap
                         
-                    Case PD2D_PenDashCap
-                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenDashCap
+                    Case P2_PenDashCap
+                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, ConvertPDDashCapToGDIPDashCap(m_PenDashCap)
                         
-                    Case PD2D_PenMiterLimit
+                    Case P2_PenMiterLimit
                         GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenMiterLimit
                         
-                    Case PD2D_PenAlignment
+                    Case P2_PenAlignment
                         GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenAlignment
                         
                 End Select
@@ -313,17 +313,17 @@ Public Sub SetPenPropertiesFromXML(ByRef srcString As String)
         If (cSerialize Is Nothing) Then Set cSerialize = New pdParamXML
         With cSerialize
             .SetParamString srcString
-            Me.SetPenProperty PD2D_PenStyle, .GetLong("PenMode", GP_DS_Solid)
-            Me.SetPenProperty PD2D_PenColor, .GetLong("PenColor", vbBlack)
-            Me.SetPenProperty PD2D_PenOpacity, .GetDouble("PenOpacity", 100)
-            Me.SetPenProperty PD2D_PenWidth, .GetDouble("PenWidth", 1#)
-            Me.SetPenProperty PD2D_PenLineJoin, .GetLong("PenLineJoin", GP_LJ_Miter)
-            Me.SetPenProperty PD2D_PenLineCap, .GetLong("PenLineCap", GP_LC_Flat)
-            Me.SetPenProperty PD2D_PenDashCap, .GetLong("PenDashCap", GP_DC_Flat)
-            Me.SetPenProperty PD2D_PenMiterLimit, .GetDouble("PenMiterLimit", 3#)
-            Me.SetPenProperty PD2D_PenAlignment, .GetLong("PenAlignment", GP_PA_Center)
-            Me.SetPenProperty PD2D_PenStartCap, .GetLong("PenStartCap", m_PenLineCap)
-            Me.SetPenProperty PD2D_PenEndCap, .GetLong("PenEndCap", m_PenLineCap)
+            Me.SetPenProperty P2_PenStyle, .GetLong("PenMode", P2_DS_Solid)
+            Me.SetPenProperty P2_PenColor, .GetLong("PenColor", vbBlack)
+            Me.SetPenProperty P2_PenOpacity, .GetDouble("PenOpacity", 100)
+            Me.SetPenProperty P2_PenWidth, .GetDouble("PenWidth", 1#)
+            Me.SetPenProperty P2_PenLineJoin, .GetLong("PenLineJoin", P2_LJ_Miter)
+            Me.SetPenProperty P2_PenLineCap, .GetLong("PenLineCap", P2_LC_Flat)
+            Me.SetPenProperty P2_PenDashCap, .GetLong("PenDashCap", P2_DC_Flat)
+            Me.SetPenProperty P2_PenMiterLimit, .GetDouble("PenMiterLimit", 3#)
+            Me.SetPenProperty P2_PenAlignment, .GetLong("PenAlignment", P2_PA_Center)
+            Me.SetPenProperty P2_PenStartCap, .GetLong("PenStartCap", m_PenLineCap)
+            Me.SetPenProperty P2_PenEndCap, .GetLong("PenEndCap", m_PenLineCap)
         End With
         
     End If
@@ -348,7 +348,7 @@ End Function
 
 'You only need to manually initialize a pen backend if you plan on using a non-default backend.  (Pens with the
 ' default backend are initialized automatically.)
-Friend Function InitializePenBackend(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = PD2D_DefaultBackend) As Boolean
+Friend Function InitializePenBackend(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Boolean
     m_PenBackend = targetBackend
     InitializePenBackend = True
 End Function
@@ -363,12 +363,12 @@ Public Function CreatePen() As Boolean
     'Call the backend-specific surface creation function
     Select Case m_PenBackend
         
-        Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
             m_PenHandle = GDI_Plus.GetGDIPlusPenHandle(m_PenColor, m_PenOpacity * 2.55, m_PenWidth, m_PenLineCap, m_PenLineJoin, m_PenStyle, m_PenMiterLimit, m_PenAlignment)
             If (m_PenHandle <> 0) Then
-                GDI_Plus.SetGDIPlusPenProperty m_PenHandle, PD2D_PenDashCap, m_PenDashCap
-                If (m_PenStartCap <> m_PenLineCap) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, PD2D_PenStartCap, m_PenStartCap
-                If (m_PenEndCap <> m_PenLineCap) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, PD2D_PenEndCap, m_PenEndCap
+                GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenDashCap, ConvertPDDashCapToGDIPDashCap(m_PenDashCap)
+                If (m_PenStartCap <> m_PenLineCap) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenStartCap, m_PenStartCap
+                If (m_PenEndCap <> m_PenLineCap) Then GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenEndCap, m_PenEndCap
             End If
             CreatePen = (m_PenHandle <> 0)
             
@@ -385,7 +385,7 @@ Public Function ReleasePen() As Boolean
         
         'Call the backend-specific release function
         Select Case m_PenBackend
-            Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
                 ReleasePen = GDI_Plus.ReleaseGDIPlusPen(m_PenHandle)
         End Select
         
@@ -403,23 +403,38 @@ Public Function ReleasePen() As Boolean
 End Function
 
 Public Sub ResetAllProperties()
-    Me.SetPenProperty PD2D_PenStyle, GP_DS_Solid
-    Me.SetPenProperty PD2D_PenColor, vbBlack
-    Me.SetPenProperty PD2D_PenOpacity, 100
-    Me.SetPenProperty PD2D_PenWidth, 1#
-    Me.SetPenProperty PD2D_PenLineJoin, GP_LJ_Miter
-    Me.SetPenProperty PD2D_PenLineCap, GP_LC_Flat
-    Me.SetPenProperty PD2D_PenDashCap, GP_DC_Flat
-    Me.SetPenProperty PD2D_PenMiterLimit, 3#
-    Me.SetPenProperty PD2D_PenAlignment, GP_PA_Center
-    Me.SetPenProperty PD2D_PenStartCap, GP_LC_Flat
-    Me.SetPenProperty PD2D_PenEndCap, GP_LC_Flat
+    Me.SetPenProperty P2_PenStyle, P2_DS_Solid
+    Me.SetPenProperty P2_PenColor, vbBlack
+    Me.SetPenProperty P2_PenOpacity, 100
+    Me.SetPenProperty P2_PenWidth, 1#
+    Me.SetPenProperty P2_PenLineJoin, P2_LJ_Miter
+    Me.SetPenProperty P2_PenLineCap, P2_LC_Flat
+    Me.SetPenProperty P2_PenDashCap, P2_DC_Flat
+    Me.SetPenProperty P2_PenMiterLimit, 3#
+    Me.SetPenProperty P2_PenAlignment, P2_PA_Center
+    Me.SetPenProperty P2_PenStartCap, P2_LC_Flat
+    Me.SetPenProperty P2_PenEndCap, P2_LC_Flat
 End Sub
 
 'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
 Public Sub SetDebugMode(ByVal newMode As Boolean)
     m_DebugMode = newMode
 End Sub
+
+'Some GDI+ enums differ from their PD equivalents.  Use the functions below for convenience conversions.
+Private Function ConvertPDDashCapToGDIPDashCap(ByVal pdDashCap As PD_2D_DashCap) As GP_DashCap
+    
+    Select Case pdDashCap
+    
+        Case P2_DC_Square
+            ConvertPDDashCapToGDIPDashCap = GP_DC_Square
+            
+        Case Else
+            ConvertPDDashCapToGDIPDashCap = pdDashCap
+            
+    End Select
+    
+End Function
 
 Private Sub Class_Initialize()
     Me.ResetAllProperties
@@ -428,3 +443,4 @@ End Sub
 Private Sub Class_Terminate()
     Me.ReleasePen
 End Sub
+

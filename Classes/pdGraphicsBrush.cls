@@ -38,14 +38,14 @@ Option Explicit
 
 
 'Current brush mode (solid fill, gradient, texture, etc)
-Private m_BrushMode As GP_BrushMode
+Private m_BrushMode As PD_2D_BrushMode
 
 'Solid brush settings
 Private m_PrimaryColor As Long
 Private m_PrimaryOpacity As Single
 
 'Pattern brush settings
-Private m_PatternStyle As GP_PatternStyle
+Private m_PatternStyle As PD_2D_PatternStyle
 Private m_Pattern1Color As Long
 Private m_Pattern1Opacity As Single
 Private m_Pattern2Color As Long
@@ -56,7 +56,7 @@ Private m_Pattern2Opacity As Single
 Private cGradient As pdGradient
 
 'Gradient fills also require a boundary rect to define the start/end positions of the gradient line.  You *must set this prior
-' to requesting a gradient brush*!!
+' to requesting a gradient brush* or the gradient results will look funny!
 Private m_BoundaryRect As RECTF
 
 'This class is capable of serializing itself to/from XML strings
@@ -74,68 +74,68 @@ Private m_BrushHandle As Long
 'NOTE: texture brush settings are still TBD
 
 'Get/set individual settings.  Note that these just wrap the generic Get/SetBrushProperty functions, below.
-Public Function GetBrushMode() As GP_BrushMode
-    GetBrushMode = Me.GetBrushProperty(PD2D_BrushMode)
+Public Function GetBrushMode() As PD_2D_BrushMode
+    GetBrushMode = Me.GetBrushProperty(P2_BrushMode)
 End Function
 
 Public Function GetBrushColor() As Long
-    GetBrushColor = Me.GetBrushProperty(PD2D_BrushColor)
+    GetBrushColor = Me.GetBrushProperty(P2_BrushColor)
 End Function
 
 Public Function GetBrushOpacity() As Single
-    GetBrushOpacity = Me.GetBrushProperty(PD2D_BrushOpacity)
+    GetBrushOpacity = Me.GetBrushProperty(P2_BrushOpacity)
 End Function
 
-Public Function GetBrushPatternStyle() As GP_PatternStyle
-    GetBrushPatternStyle = Me.GetBrushProperty(PD2D_BrushPatternStyle)
+Public Function GetBrushPatternStyle() As PD_2D_PatternStyle
+    GetBrushPatternStyle = Me.GetBrushProperty(P2_BrushPatternStyle)
 End Function
 
 Public Function GetBrushPattern1Color() As Long
-    GetBrushPattern1Color = Me.GetBrushProperty(PD2D_BrushPattern1Color)
+    GetBrushPattern1Color = Me.GetBrushProperty(P2_BrushPattern1Color)
 End Function
 
 Public Function GetBrushPattern1Opacity() As Single
-    GetBrushPattern1Opacity = Me.GetBrushProperty(PD2D_BrushPattern1Opacity)
+    GetBrushPattern1Opacity = Me.GetBrushProperty(P2_BrushPattern1Opacity)
 End Function
 
 Public Function GetBrushPattern2Color() As Long
-    GetBrushPattern2Color = Me.GetBrushProperty(PD2D_BrushPattern2Color)
+    GetBrushPattern2Color = Me.GetBrushProperty(P2_BrushPattern2Color)
 End Function
 
 Public Function GetBrushPattern2Opacity() As Single
-    GetBrushPattern2Opacity = Me.GetBrushProperty(PD2D_BrushPattern2Opacity)
+    GetBrushPattern2Opacity = Me.GetBrushProperty(P2_BrushPattern2Opacity)
 End Function
 
-Public Sub SetBrushMode(ByVal newSetting As GP_BrushMode)
-    Me.SetBrushProperty PD2D_BrushMode, newSetting
+Public Sub SetBrushMode(ByVal newSetting As PD_2D_BrushMode)
+    Me.SetBrushProperty P2_BrushMode, newSetting
 End Sub
 
 Public Sub SetBrushColor(ByVal newSetting As Long)
-    Me.SetBrushProperty PD2D_BrushColor, newSetting
+    Me.SetBrushProperty P2_BrushColor, newSetting
 End Sub
 
 Public Sub SetBrushOpacity(ByVal newSetting As Single)
-    Me.SetBrushProperty PD2D_BrushOpacity, newSetting
+    Me.SetBrushProperty P2_BrushOpacity, newSetting
 End Sub
 
-Public Sub SetBrushPatternStyle(ByVal newSetting As GP_PatternStyle)
-    Me.SetBrushProperty PD2D_BrushPatternStyle, newSetting
+Public Sub SetBrushPatternStyle(ByVal newSetting As PD_2D_PatternStyle)
+    Me.SetBrushProperty P2_BrushPatternStyle, newSetting
 End Sub
 
 Public Sub SetBrushPattern1Color(ByVal newSetting As Long)
-    Me.SetBrushProperty PD2D_BrushPattern1Color, newSetting
+    Me.SetBrushProperty P2_BrushPattern1Color, newSetting
 End Sub
 
 Public Sub SetBrushPattern1Opacity(ByVal newSetting As Single)
-    Me.SetBrushProperty PD2D_BrushPattern1Opacity, newSetting
+    Me.SetBrushProperty P2_BrushPattern1Opacity, newSetting
 End Sub
 
 Public Sub SetBrushPattern2Color(ByVal newSetting As Long)
-    Me.SetBrushProperty PD2D_BrushPattern2Color, newSetting
+    Me.SetBrushProperty P2_BrushPattern2Color, newSetting
 End Sub
 
 Public Sub SetBrushPattern2Opacity(ByVal newSetting As Single)
-    Me.SetBrushProperty PD2D_BrushPattern2Opacity, newSetting
+    Me.SetBrushProperty P2_BrushPattern2Opacity, newSetting
 End Sub
 
 'Get/set individual settings by enum type
@@ -143,31 +143,31 @@ Public Function GetBrushProperty(ByVal propID As PD_2D_BRUSH_SETTINGS) As Varian
     
     Select Case propID
         
-        Case PD2D_BrushMode
+        Case P2_BrushMode
             GetBrushProperty = m_BrushMode
         
-        Case PD2D_BrushColor
+        Case P2_BrushColor
             GetBrushProperty = m_PrimaryColor
             
-        Case PD2D_BrushOpacity
+        Case P2_BrushOpacity
             GetBrushProperty = m_PrimaryOpacity
             
-        Case PD2D_BrushPatternStyle
+        Case P2_BrushPatternStyle
             GetBrushProperty = m_PatternStyle
             
-        Case PD2D_BrushPattern1Color
+        Case P2_BrushPattern1Color
             GetBrushProperty = m_Pattern1Color
             
-        Case PD2D_BrushPattern1Opacity
+        Case P2_BrushPattern1Opacity
             GetBrushProperty = m_Pattern1Opacity
             
-        Case PD2D_BrushPattern2Color
+        Case P2_BrushPattern2Color
             GetBrushProperty = m_Pattern2Color
             
-        Case PD2D_BrushPattern2Opacity
+        Case P2_BrushPattern2Opacity
             GetBrushProperty = m_Pattern2Opacity
             
-        Case PD2D_BrushGradientXML
+        Case P2_BrushGradientXML
             GetBrushProperty = cGradient.GetGradientAsString()
             
     End Select
@@ -178,31 +178,31 @@ Public Sub SetBrushProperty(ByVal propID As PD_2D_BRUSH_SETTINGS, ByVal newSetti
     
     Select Case propID
         
-        Case PD2D_BrushMode
+        Case P2_BrushMode
             m_BrushMode = CLng(newSetting)
         
-        Case PD2D_BrushColor
+        Case P2_BrushColor
             m_PrimaryColor = CLng(newSetting)
             
-        Case PD2D_BrushOpacity
+        Case P2_BrushOpacity
             m_PrimaryOpacity = CDbl(newSetting)
             
-        Case PD2D_BrushPatternStyle
+        Case P2_BrushPatternStyle
             m_PatternStyle = CLng(newSetting)
             
-        Case PD2D_BrushPattern1Color
+        Case P2_BrushPattern1Color
             m_Pattern1Color = CLng(newSetting)
             
-        Case PD2D_BrushPattern1Opacity
+        Case P2_BrushPattern1Opacity
             m_Pattern1Opacity = CDbl(newSetting)
             
-        Case PD2D_BrushPattern2Color
+        Case P2_BrushPattern2Color
             m_Pattern2Color = CLng(newSetting)
             
-        Case PD2D_BrushPattern2Opacity
+        Case P2_BrushPattern2Opacity
             m_Pattern2Opacity = CDbl(newSetting)
             
-        Case PD2D_BrushGradientXML
+        Case P2_BrushGradientXML
             If (cGradient Is Nothing) Then Set cGradient = New pdGradient
             cGradient.CreateGradientFromString newSetting
             
@@ -224,36 +224,36 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_BRUSH_SETTINGS)
         'Relays obviously vary by the active backend!
         Select Case m_BrushBackend
             
-            Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
                 
                 Select Case propID
                                 
-                    Case PD2D_BrushMode
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, PD2D_BrushMode, m_BrushMode)) Then ReleaseBrush
+                    Case P2_BrushMode
+                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushMode, m_BrushMode)) Then ReleaseBrush
                     
-                    Case PD2D_BrushColor
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, PD2D_BrushColor, m_PrimaryColor)) Then ReleaseBrush
+                    Case P2_BrushColor
+                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushColor, m_PrimaryColor)) Then ReleaseBrush
                         
-                    Case PD2D_BrushOpacity
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, PD2D_BrushOpacity, m_PrimaryOpacity)) Then ReleaseBrush
+                    Case P2_BrushOpacity
+                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushOpacity, m_PrimaryOpacity)) Then ReleaseBrush
                         
-                    Case PD2D_BrushPatternStyle
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, PD2D_BrushPatternStyle, m_PatternStyle)) Then ReleaseBrush
+                    Case P2_BrushPatternStyle
+                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPatternStyle, m_PatternStyle)) Then ReleaseBrush
                         
-                    Case PD2D_BrushPattern1Color
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, PD2D_BrushPattern1Color, m_Pattern1Color)) Then ReleaseBrush
+                    Case P2_BrushPattern1Color
+                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern1Color, m_Pattern1Color)) Then ReleaseBrush
                         
-                    Case PD2D_BrushPattern1Opacity
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, PD2D_BrushPattern1Opacity, m_Pattern1Opacity)) Then ReleaseBrush
+                    Case P2_BrushPattern1Opacity
+                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern1Opacity, m_Pattern1Opacity)) Then ReleaseBrush
                         
-                    Case PD2D_BrushPattern2Color
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, PD2D_BrushPattern2Color, m_Pattern2Color)) Then ReleaseBrush
+                    Case P2_BrushPattern2Color
+                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern2Color, m_Pattern2Color)) Then ReleaseBrush
                         
-                    Case PD2D_BrushPattern2Opacity
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, PD2D_BrushPattern2Opacity, m_Pattern2Opacity)) Then ReleaseBrush
+                    Case P2_BrushPattern2Opacity
+                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern2Opacity, m_Pattern2Opacity)) Then ReleaseBrush
                         
-                    Case PD2D_BrushGradientXML
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, PD2D_BrushGradientXML, cGradient.GetGradientAsString())) Then ReleaseBrush
+                    Case P2_BrushGradientXML
+                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientXML, cGradient.GetGradientAsString())) Then ReleaseBrush
                         
                 End Select
                 
@@ -268,7 +268,7 @@ End Sub
 
 Friend Sub SetBoundaryRect(ByRef srcRect As RECTF)
     m_BoundaryRect = srcRect
-    If (m_BrushMode = GP_BM_Gradient) Then ReleaseBrush
+    If (m_BrushMode = P2_BM_Gradient) Then ReleaseBrush
 End Sub
 
 'For interop purposes, brushes are often passed around PD as strings.  Any brush can be perfectly re-created from just this string.
@@ -302,10 +302,10 @@ Public Sub SetBrushPropertiesFromXML(ByRef srcString As String)
         If (cSerialize Is Nothing) Then Set cSerialize = New pdParamXML
         With cSerialize
             .SetParamString srcString
-            m_BrushMode = .GetLong("BrushMode", GP_BM_Solid)
+            m_BrushMode = .GetLong("BrushMode", P2_BM_Solid)
             m_PrimaryColor = .GetLong("PrimaryColor", vbWhite)
             m_PrimaryOpacity = .GetDouble("PrimaryOpacity", 100#)
-            m_PatternStyle = .GetLong("PatternID", GP_PS_Horizontal)
+            m_PatternStyle = .GetLong("PatternID", P2_PS_Horizontal)
             m_Pattern1Color = .GetLong("PatternColor1", vbWhite)
             m_Pattern1Opacity = .GetDouble("PatternColor1Opacity", 100#)
             m_Pattern2Color = .GetLong("PatternColor2", vbBlack)
@@ -335,7 +335,7 @@ End Function
 
 'You only need to manually initialize a brush backend if you plan on using a non-default backend.  (Brushes with the
 ' default backend are initialized automatically.)
-Friend Function InitializeBrushBackend(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = PD2D_DefaultBackend) As Boolean
+Friend Function InitializeBrushBackend(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Boolean
     m_BrushBackend = targetBackend
     InitializeBrushBackend = True
 End Function
@@ -352,30 +352,27 @@ Friend Function CreateBrush() As Boolean
     Select Case m_BrushMode
     
         'Solid fill
-        Case GP_BM_Solid
+        Case P2_BM_Solid
             m_BrushHandle = GDI_Plus.GetGDIPlusSolidBrushHandle(m_PrimaryColor, m_PrimaryOpacity * 2.55)
-            CreateBrush = CBool(m_BrushHandle <> 0)
             
         'Pattern fill
-        Case GP_BM_Pattern
+        Case P2_BM_Pattern
             Dim tmpOpacityModifier As Double
             tmpOpacityModifier = m_PrimaryOpacity / 100
             m_BrushHandle = GDI_Plus.GetGDIPlusPatternBrushHandle(m_PatternStyle, m_Pattern1Color, m_Pattern1Opacity * 2.55 * tmpOpacityModifier, m_Pattern2Color, m_Pattern2Opacity * 2.55 * tmpOpacityModifier)
-            CreateBrush = CBool(m_BrushHandle <> 0)
-        
+            
         'Gradient fill
-        Case GP_BM_Gradient
+        Case P2_BM_Gradient
             m_BrushHandle = cGradient.GetBrushHandle(m_BoundaryRect, False, m_PrimaryOpacity / 100)
-            CreateBrush = CBool(m_BrushHandle <> 0)
-        
+            
         'Texture fill (TODO)
-        Case GP_BM_Texture
+        Case P2_BM_Texture
             m_BrushHandle = 0
-            CreateBrush = CBool(m_BrushHandle <> 0)
-    
+            
     End Select
     
     'When debug mode is active, all object creations are reported back to the master Drawing2D module
+    CreateBrush = CBool(m_BrushHandle <> 0)
     If (CreateBrush And m_DebugMode) Then Drawing2D.DEBUG_NotifyBrushCountChange m_BrushBackend, True
     
 End Function
@@ -386,7 +383,7 @@ Public Function ReleaseBrush() As Boolean
         
         'Call the backend-specific release function
         Select Case m_BrushBackend
-            Case PD2D_DefaultBackend, PD2D_GDIPlusBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
                 ReleaseBrush = GDI_Plus.ReleaseGDIPlusBrush(m_BrushHandle)
         End Select
         
@@ -404,15 +401,15 @@ Public Function ReleaseBrush() As Boolean
 End Function
 
 Public Sub ResetAllProperties()
-    Me.SetBrushProperty PD2D_BrushMode, GP_BM_Solid
-    Me.SetBrushProperty PD2D_BrushColor, vbWhite
-    Me.SetBrushProperty PD2D_BrushOpacity, 100#
-    Me.SetBrushProperty PD2D_BrushPatternStyle, GP_PS_Horizontal
-    Me.SetBrushProperty PD2D_BrushPattern1Color, vbWhite
-    Me.SetBrushProperty PD2D_BrushPattern1Opacity, 100#
-    Me.SetBrushProperty PD2D_BrushPattern2Color, vbBlack
-    Me.SetBrushProperty PD2D_BrushPattern2Opacity, 100#
-    Me.SetBrushProperty PD2D_BrushGradientXML, vbNullString
+    Me.SetBrushProperty P2_BrushMode, P2_BM_Solid
+    Me.SetBrushProperty P2_BrushColor, vbWhite
+    Me.SetBrushProperty P2_BrushOpacity, 100#
+    Me.SetBrushProperty P2_BrushPatternStyle, P2_PS_Horizontal
+    Me.SetBrushProperty P2_BrushPattern1Color, vbWhite
+    Me.SetBrushProperty P2_BrushPattern1Opacity, 100#
+    Me.SetBrushProperty P2_BrushPattern2Color, vbBlack
+    Me.SetBrushProperty P2_BrushPattern2Opacity, 100#
+    Me.SetBrushProperty P2_BrushGradientXML, vbNullString
 End Sub
 
 'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
