@@ -413,7 +413,7 @@ Private Sub SyncUI_CurrentImageSettings()
     If (pdImages(g_CurrentImage).Width <> 0) Then DisplaySize pdImages(g_CurrentImage)
             
     'Update the form's icon to match the current image; if a custom icon is not available, use the stock PD one
-    If pdImages(g_CurrentImage).curFormIcon32 = 0 Then CreateCustomFormIcons pdImages(g_CurrentImage)
+    If (pdImages(g_CurrentImage).curFormIcon32 = 0) Or (pdImages(g_CurrentImage).curFormIcon16 = 0) Then CreateCustomFormIcons pdImages(g_CurrentImage)
     ChangeAppIcons pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
     
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
@@ -607,7 +607,7 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             
             'See if the "Find last relevant layer action" function in the Undo manager returns TRUE or FALSE.  If it returns TRUE,
             ' enable both Repeat and Fade, and rename each menu caption so the user knows what is being repeated/faded.
-            If pdImages(g_CurrentImage).undoManager.fillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
+            If pdImages(g_CurrentImage).undoManager.FillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
                 FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName))
                 FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName))
                 toolbar_Toolbox.cmdFile(FILE_FADE).AssignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, "Fade last action"
@@ -997,10 +997,15 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     'Mirror the current run-time window icons to the dialog; this allows the icons to appear in places like Alt+Tab
     ' on older OSes, even though a toolbox window has focus.
     If (Not g_IsWin8OrLater) Then g_WindowManager.ForceWindowAppearInAltTab dialogHwnd, True
-    MirrorCurrentIconsToWindow dialogHwnd
+    Dim tmpIconSmall As Long, tmpIconLarge As Long
+    MirrorCurrentIconsToWindow dialogHwnd, True, tmpIconSmall, tmpIconLarge
     
     'Use VB to actually display the dialog.  Note that the sub will pause here until the form is closed.
     dialogForm.Show dialogModality, FormMain
+    
+    'Now that the dialog has finished, we must replace the windows icons with its original ones - otherwise, VB will mistakenly
+    ' unload our custom icons with the window!
+    ChangeWindowIcon dialogHwnd, tmpIconSmall, tmpIconLarge
     
     'Release our reference to this dialog
     If isSecondaryDialog Then
@@ -1269,10 +1274,10 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         'STEP 1: give all clickable controls a hand icon instead of the default pointer.
         ' (Note: this code sets all command buttons, scroll bars, option buttons, check boxes, list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor)
         If (TypeOf eControl Is PictureBox) Then
-            setArrowCursor eControl
+            SetArrowCursor eControl
         Else
             If ((TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox)) Then
-                setHandCursor eControl
+                SetHandCursor eControl
             End If
         End If
         
@@ -1900,7 +1905,7 @@ Public Sub NotifyImageAdded(Optional ByVal newImageIndex As Long = -1)
     If (newImageIndex < 0) Then newImageIndex = g_CurrentImage
     
     'Generate an initial set of taskbar and titlebar icons
-    CreateCustomFormIcons pdImages(newImageIndex)
+    Icons_and_Cursors.CreateCustomFormIcons pdImages(newImageIndex)
     
     'Notify the image tabstrip of the addition.  (It has to make quite a few internal changes to accommodate new images.)
     FormMain.mainCanvas(0).NotifyTabstripAddNewThumb newImageIndex

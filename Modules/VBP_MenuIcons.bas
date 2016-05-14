@@ -751,8 +751,8 @@ End Function
 ' Note that this function currently requires the FreeImage plugin to be present on the system.
 Public Sub CreateCustomFormIcons(ByRef srcImage As pdImage)
 
-    If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
-    If Not g_ImageFormats.FreeImageEnabled Then Exit Sub
+    If (Not ALLOW_DYNAMIC_ICONS) Then Exit Sub
+    If (Not g_ImageFormats.FreeImageEnabled) Then Exit Sub
     If (srcImage Is Nothing) Then Exit Sub
     
     Dim thumbDIB As pdDIB
@@ -776,8 +776,8 @@ Public Sub CreateCustomFormIcons(ByRef srcImage As pdImage)
         'Set the new icons, then free the old ones
         srcImage.curFormIcon32 = hIcon32
         srcImage.curFormIcon16 = hIcon16
-        If oldIcon32 <> 0 Then DestroyIcon oldIcon32
-        If oldIcon16 <> 0 Then DestroyIcon oldIcon16
+        If (oldIcon32 <> 0) Then DestroyIcon oldIcon32
+        If (oldIcon16 <> 0) Then DestroyIcon oldIcon16
         
     Else
         Debug.Print "WARNING!  Image refused to provide a thumbnail!"
@@ -939,7 +939,7 @@ End Sub
 'Unload any custom cursors from memory
 Public Sub UnloadAllCursors()
     
-    If numOfCustomCursors = 0 Then Exit Sub
+    If (numOfCustomCursors = 0) Then Exit Sub
     
     Dim i As Long
     For i = 0 To numOfCustomCursors - 1
@@ -950,14 +950,14 @@ End Sub
 
 'Use any 32bpp PNG resource as a cursor (yes, it's amazing!).  When setting the mouse pointer of VB objects, please use
 ' setPNGCursorToObject, below.
-Public Sub setPNGCursorToHwnd(ByVal dstHwnd As Long, ByVal pngTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0)
+Public Sub SetPNGCursorToHwnd(ByVal dstHwnd As Long, ByVal pngTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0)
     SetClassLong dstHwnd, GCL_HCURSOR, RequestCustomCursor(pngTitle, curHotspotX, curHotspotY)
 End Sub
 
 'Use any 32bpp PNG resource as a cursor (yes, it's amazing!).  Use this function preferentially over the previous one, if
 ' you can.  If a VB object does not have its MousePointer property set to "custom", it will override our attempts to set
 ' a custom mouse icon.
-Public Sub setPNGCursorToObject(ByRef srcObject As Object, ByVal pngTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0)
+Public Sub SetPNGCursorToObject(ByRef srcObject As Object, ByVal pngTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0)
     
     'Force VB to use a custom cursor
     srcObject.MousePointer = vbCustom
@@ -967,53 +967,53 @@ Public Sub setPNGCursorToObject(ByRef srcObject As Object, ByVal pngTitle As Str
 End Sub
 
 'Set a single object to use the hand cursor
-Public Sub setHandCursor(ByRef tControl As Object)
+Public Sub SetHandCursor(ByRef tControl As Object)
     tControl.MouseIcon = LoadPicture("")
     tControl.MousePointer = 99
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_HAND)
 End Sub
 
-Public Sub setHandCursorToHwnd(ByVal dstHwnd As Long)
+Public Sub SetHandCursorToHwnd(ByVal dstHwnd As Long)
     SetClassLong dstHwnd, GCL_HCURSOR, LoadCursor(0, IDC_HAND)
 End Sub
 
-Public Sub setArrowCursorToHwnd(ByVal dstHwnd As Long)
+Public Sub SetArrowCursorToHwnd(ByVal dstHwnd As Long)
     SetClassLong dstHwnd, GCL_HCURSOR, LoadCursor(0, IDC_ARROW)
 End Sub
 
 'Set a single form to use the arrow cursor
-Public Sub setArrowCursor(ByRef tControl As Object)
+Public Sub SetArrowCursor(ByRef tControl As Object)
     tControl.MousePointer = vbCustom
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_ARROW)
 End Sub
 
 'Set a single form to use the cross cursor
-Public Sub setCrossCursor(ByRef tControl As Object)
+Public Sub SetCrossCursor(ByRef tControl As Object)
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_CROSS)
 End Sub
     
 'Set a single form to use the Size All cursor
-Public Sub setSizeAllCursor(ByRef tControl As Object)
+Public Sub SetSizeAllCursor(ByRef tControl As Object)
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZEALL)
 End Sub
 
 'Set a single form to use the Size NESW cursor
-Public Sub setSizeNESWCursor(ByRef tControl As Object)
+Public Sub SetSizeNESWCursor(ByRef tControl As Object)
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZENESW)
 End Sub
 
 'Set a single form to use the Size NS cursor
-Public Sub setSizeNSCursor(ByRef tControl As Object)
+Public Sub SetSizeNSCursor(ByRef tControl As Object)
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZENS)
 End Sub
 
 'Set a single form to use the Size NWSE cursor
-Public Sub setSizeNWSECursor(ByRef tControl As Object)
+Public Sub SetSizeNWSECursor(ByRef tControl As Object)
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZENWSE)
 End Sub
 
 'Set a single form to use the Size WE cursor
-Public Sub setSizeWECursor(ByRef tControl As Object)
+Public Sub SetSizeWECursor(ByRef tControl As Object)
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZEWE)
 End Sub
 
@@ -1152,23 +1152,23 @@ End Function
 'PD will automatically update its taskbar icon to reflect the current image being edited.  I find this especially helpful
 ' when multiple PD sessions are operating in parallel.
 Public Sub ChangeAppIcons(ByVal hIconSmall As Long, ByVal hIconLarge As Long)
-    If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
+    If (Not ALLOW_DYNAMIC_ICONS) Then Exit Sub
     SendMessageA FormMain.hWnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall
     SendMessageA FormMain.hWnd, WM_SETICON, ICON_BIG, ByVal hIconLarge
 End Sub
 
 'When loading a modal dialog, the dialog will not have an icon by default.  We can assign an icon at run-time to ensure that icons
 ' appear in the Alt+Tab dialog of older OSes.
-Public Sub ChangeWindowIcon(ByVal targetHwnd As Long, ByVal hIconSmall As Long, ByVal hIconLarge As Long)
-    SendMessageA targetHwnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall
-    SendMessageA targetHwnd, WM_SETICON, ICON_BIG, ByVal hIconLarge
+Public Sub ChangeWindowIcon(ByVal targetHwnd As Long, ByVal hIconSmall As Long, ByVal hIconLarge As Long, Optional ByRef dstSmallIcon As Long = 0, Optional ByRef dstLargeIcon As Long = 0)
+    dstSmallIcon = SendMessageA(targetHwnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall)
+    dstLargeIcon = SendMessageA(targetHwnd, WM_SETICON, ICON_BIG, ByVal hIconLarge)
 End Sub
 
-Public Sub MirrorCurrentIconsToWindow(ByVal targetHwnd As Long)
+Public Sub MirrorCurrentIconsToWindow(ByVal targetHwnd As Long, Optional ByVal setLargeIconOnly As Boolean = False, Optional ByRef dstSmallIcon As Long = 0, Optional ByRef dstLargeIcon As Long = 0)
     If (g_OpenImageCount > 0) Then
-        ChangeWindowIcon targetHwnd, pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
+        ChangeWindowIcon targetHwnd, IIf(setLargeIconOnly, 0&, pdImages(g_CurrentImage).curFormIcon16), pdImages(g_CurrentImage).curFormIcon32, dstSmallIcon, dstLargeIcon
     Else
-        ChangeWindowIcon targetHwnd, m_DefaultIconSmall, m_DefaultIconLarge
+        ChangeWindowIcon targetHwnd, IIf(setLargeIconOnly, 0&, m_DefaultIconSmall), m_DefaultIconLarge, dstSmallIcon, dstLargeIcon
     End If
 End Sub
 
