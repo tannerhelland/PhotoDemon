@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.168</langversion>
+<langversion>6.7.169</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -291,7 +291,17 @@ Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/co
 <translation>oorspronkelijke afbeelding</translation>
 </phrase>
 
-<!-- VBP_MenuModule.bas contains 25 phrases. 10 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<phrase>
+<original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Image too large</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_MenuModule.bas contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for VBP_MenuModule.bas-->
 
@@ -4026,6 +4036,16 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>The final width and height measurements must be between 1 and 32760 pixels.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Invalid measurement</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
 <translation>Preserveer aspect ratio (ook wel Verhoudingengenoemd). Gebruik deze optie om een afbeelding te wijzigen terwijl de breedte en hoogte in sync blijven.</translation>
 </phrase>
@@ -4085,7 +4105,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>exacte grootte is afhankelijk van de afbeelding</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- pdResize.ctl contains 30 phrases. 13 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for pdResize.ctl-->
 
@@ -15137,10 +15157,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2590</phrasecount>
+<phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4499 phrases. -->
-<!-- 1909 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13326 total words. -->
+<!-- As of this build, PhotoDemon contains 4505 phrases. -->
+<!-- 1911 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- These 2594 phrases contain approximately 13363 total words. -->
 
 </pdData>
