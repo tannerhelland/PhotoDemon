@@ -147,19 +147,17 @@ Private m_CompositeCacheClean As Boolean
 'The returned Long-type value is the CANONICAL ID of the new layer, NOT ITS INDEX.  (Returning its index would be pointless,
 ' as the calling function likely knows that in advance.)  Note that layers can be accessed by either ID or index; after
 ' calling this function, make sure to use the CANONICAL ID function with the returned value.
-Public Function createBlankLayer(Optional ByVal layerPosition As Long = -1) As Long
+Public Function CreateBlankLayer(Optional ByVal layerPosition As Long = -1) As Long
 
     'Start by seeing if the image has zero layers.  If it does, we can ignore layerPosition entirely.
-    If m_numOfLayersEverCreated = 0 Then
-    
-        'Make sure the current layer pointer is correct
+    If (m_numOfLayersEverCreated = 0) Then
         m_curLayer = 0
         
     'The layer has images.  Extra work is involved
     Else
 
         'If no layer has been specified, insert the new layer above the requested layer
-        If layerPosition = -1 Then m_curLayer = m_curLayer + 1 Else m_curLayer = layerPosition + 1
+        If (layerPosition = -1) Then m_curLayer = m_curLayer + 1 Else m_curLayer = layerPosition + 1
         
         'Resize the layers array by one, and shift all existing layers upward.
         ReDim Preserve imgLayers(0 To m_numOfLayers + 1) As pdLayer
@@ -182,7 +180,7 @@ Public Function createBlankLayer(Optional ByVal layerPosition As Long = -1) As L
     m_numOfLayers = m_numOfLayers + 1
     
     'Return the new layer's ID value (which is the number of layers ever created for this image)
-    createBlankLayer = m_numOfLayersEverCreated - 1
+    CreateBlankLayer = m_numOfLayersEverCreated - 1
 
 End Function
 
@@ -769,7 +767,7 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     
     'Note that the user's thumbnail performance setting affects the quality used here.
     Dim intMode As InterpolationMode
-    If g_ThumbnailPerformance = PD_PERF_FASTEST Then intMode = InterpolationModeNearestNeighbor Else intMode = InterpolationModeHighQualityBicubic
+    If (g_ThumbnailPerformance = PD_PERF_FASTEST) Then intMode = InterpolationModeNearestNeighbor Else intMode = InterpolationModeHighQualityBicubic
     Me.GetCompositedRect dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, 0, 0, Me.Width, Me.Height, intMode, , CLC_Thumbnail
     
     'Uncomment the line below to profile different thumbnail resize strategies

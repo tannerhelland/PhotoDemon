@@ -274,7 +274,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     rbClick = CBool((Button And pdRightButton) <> 0)
     
     'LMB clicks can select a new thumb, or close a thumb (if over the corner-aligned "close image" icon)
-    If lbClick Or rbClick Then
+    If (lbClick Or rbClick) Then
         
         'As a failsafe, the initial MouseDown event will mark whether a close icon is being clicked; this is to prevent
         ' the (admittedly weird) fringe case of click-dragging the list using a "close icon" region.
@@ -564,7 +564,7 @@ Public Sub AddNewThumb(ByVal pdImageIndex As Long)
     End If
     
     'If user preferences allow, create a matching drop-shadow DIB
-    If g_InterfacePerformance <> PD_PERF_FASTEST Then UpdateShadowDIB m_NumOfThumbs
+    If (g_InterfacePerformance <> PD_PERF_FASTEST) Then UpdateShadowDIB m_NumOfThumbs
     
     'Make a note of this thumbnail's index in the main pdImages array
     m_Thumbs(m_NumOfThumbs).indexInPDImages = pdImageIndex
@@ -572,10 +572,13 @@ Public Sub AddNewThumb(ByVal pdImageIndex As Long)
     
     'Prepare the array to receive another entry in the future, then redraw the strip
     m_NumOfThumbs = m_NumOfThumbs + 1
-    If m_NumOfThumbs > UBound(m_Thumbs) Then ReDim Preserve m_Thumbs(0 To UBound(m_Thumbs) * 2 + 1) As ImageThumbEntry
+    If (m_NumOfThumbs > UBound(m_Thumbs)) Then ReDim Preserve m_Thumbs(0 To UBound(m_Thumbs) * 2 + 1) As ImageThumbEntry
     
-    FitThumbnailOnscreen m_CurrentThumb
+    'This is a little clumsy, but the redraw function also calculates new scroll bar maximum values.  As such,
+    ' we need to perform one redraw to calculate a new max scroll value, then a *second* redraw if the image still
+    ' lies off-screen.
     RedrawBackBuffer
+    If (FitThumbnailOnscreen(m_CurrentThumb)) Then RedrawBackBuffer
     
 End Sub
 
@@ -636,7 +639,7 @@ Friend Function FitThumbnailOnscreen(ByVal thumbIndex As Long) As Boolean
             End If
         End If
         
-        If newScrollValue > m_ScrollMax Then newScrollValue = m_ScrollMax
+        If (newScrollValue > m_ScrollMax) Then newScrollValue = m_ScrollMax
         m_ScrollValue = newScrollValue
     
     End If
@@ -1044,7 +1047,7 @@ Private Sub RedrawBackBuffer()
         Dim maxThumbSize As Long
         maxThumbSize = constrainingDimension * m_NumOfThumbs - 1
         
-        If maxThumbSize < constrainingMax Then
+        If (maxThumbSize < constrainingMax) Then
             m_ScrollValue = 0
             m_ListScrollable = False
         Else

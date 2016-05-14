@@ -26,11 +26,7 @@ Option Explicit
 'Add an already-created pdImage object to the master pdImages() collection.  Do not pass empty objects!
 Public Function AddImageToMasterCollection(ByRef srcImage As pdImage) As Boolean
     
-    If Not (srcImage Is Nothing) Then
-        
-        If g_NumOfImagesLoaded > UBound(pdImages) Then
-            ReDim Preserve pdImages(0 To g_NumOfImagesLoaded * 2 - 1) As pdImage
-        End If
+    If (Not (srcImage Is Nothing)) Then
         
         Set pdImages(g_NumOfImagesLoaded) = srcImage
         
@@ -46,6 +42,10 @@ Public Function AddImageToMasterCollection(ByRef srcImage As pdImage) As Boolean
         g_NumOfImagesLoaded = g_NumOfImagesLoaded + 1
         g_OpenImageCount = g_OpenImageCount + 1
         
+        If (g_NumOfImagesLoaded > UBound(pdImages)) Then
+            ReDim Preserve pdImages(0 To g_NumOfImagesLoaded * 2 - 1) As pdImage
+        End If
+        
         AddImageToMasterCollection = True
         
     Else
@@ -58,6 +58,7 @@ End Function
 ' Note that this function *does not touch* the main pdImages object, and as such, the created image will not yet have
 ' an imageID value.  That values is assigned when the object is added to the main pdImages() collection.
 Public Sub GetDefaultPDImageObject(ByRef dstImage As pdImage)
+    
     If (dstImage Is Nothing) Then Set dstImage = New pdImage
     dstImage.currentZoomValue = g_Zoom.GetZoom100Index
     
@@ -79,7 +80,7 @@ End Function
 'Fit the current image onscreen at as large a size as possible (but never larger than 100% zoom)
 Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = False)
     
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     
     'Disable AutoScroll, because that messes with our calculations
     g_AllowViewportRendering = False
@@ -88,7 +89,7 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     Dim newZoomIndex As Long
     newZoomIndex = g_Zoom.GetZoomFitAllIndex
     
-    If g_Zoom.GetZoomValue(newZoomIndex) > 1 Then newZoomIndex = g_Zoom.GetZoom100Index
+    If (g_Zoom.GetZoomValue(newZoomIndex) > 1) Then newZoomIndex = g_Zoom.GetZoom100Index
     
     'Update the main canvas zoom drop-down, and the pdImage container for this image (so that zoom is restored properly when
     ' the user switches between loaded images).

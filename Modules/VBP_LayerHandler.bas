@@ -28,7 +28,7 @@ Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
     
     'Ask the parent pdImage to create a new layer object
     Dim newLayerID As Long
-    newLayerID = pdImages(g_CurrentImage).createBlankLayer(dLayerIndex)
+    newLayerID = pdImages(g_CurrentImage).CreateBlankLayer(dLayerIndex)
     
     'Until vector layers are implemented, let's just assign the newly created layer the IMAGE type,
     ' and initialize it to the size of the image.
@@ -67,7 +67,7 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
     
     'Ask the parent pdImage to create a new layer object
     Dim newLayerID As Long
-    newLayerID = pdImages(g_CurrentImage).createBlankLayer(dLayerIndex)
+    newLayerID = pdImages(g_CurrentImage).CreateBlankLayer(dLayerIndex)
     
     'Assign the newly created layer the IMAGE type, and initialize it to the size of the image
     Dim tmpDIB As pdDIB
@@ -220,7 +220,7 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             
             'Ask the current image to prepare a blank layer for us
             Dim newLayerID As Long
-            newLayerID = pdImages(g_CurrentImage).createBlankLayer()
+            newLayerID = pdImages(g_CurrentImage).CreateBlankLayer()
             
             'Convert the layer to an IMAGE-type layer and copy the newly loaded DIB's contents into it
             If Len(customLayerName) = 0 Then
@@ -290,7 +290,7 @@ End Sub
 Public Sub SetActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedrawViewport As Boolean = False, Optional ByVal alsoSyncInterface As Boolean = True)
 
     'If this layer is already active, ignore the request
-    If pdImages(g_CurrentImage).GetActiveLayerID = newLayerID Then Exit Sub
+    If (pdImages(g_CurrentImage).GetActiveLayerID = newLayerID) Then Exit Sub
     
     'Notify the parent PD image of the change
     pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
@@ -358,7 +358,7 @@ Public Sub DuplicateLayerByIndex(ByVal dLayerIndex As Long)
     
     'Ask the parent pdImage to create a new layer object
     Dim newLayerID As Long
-    newLayerID = pdImages(g_CurrentImage).createBlankLayer(dLayerIndex)
+    newLayerID = pdImages(g_CurrentImage).CreateBlankLayer(dLayerIndex)
             
     'Ask the new layer to copy the contents of the layer we are duplicating
     pdImages(g_CurrentImage).GetLayerByID(newLayerID).CopyExistingLayer pdImages(g_CurrentImage).GetLayerByID(dupedLayerID)
@@ -711,7 +711,7 @@ Public Sub MergeVisibleLayers()
     ' layer at the base of the image, then merge everything with it until finally all visible layers have been merged.
     
     'Insert a new layer at the bottom of the layer stack.
-    pdImages(g_CurrentImage).createBlankLayer 0
+    pdImages(g_CurrentImage).CreateBlankLayer 0
     
     'Technically, the command above does not actually insert a new layer at the base of the image.  Per convention,
     ' it always inserts the requested layer at the spot one *above* the requested spot.  To work around this, swap
@@ -1117,7 +1117,7 @@ Public Sub CropLayerToSelection(ByVal layerIndex As Long)
     'Because PD is awesome, we already have a function capable of doing this!
     If g_CurrentImage <= UBound(pdImages) Then
         If Not pdImages(g_CurrentImage) Is Nothing Then
-            pdImages(g_CurrentImage).eraseProcessedSelection layerIndex
+            pdImages(g_CurrentImage).EraseProcessedSelection layerIndex
         End If
     End If
         
