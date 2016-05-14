@@ -1745,7 +1745,7 @@ Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal n
     
     'If passed, create a local copy of the passed DIB.
     Set layerDIB = New pdDIB
-    If Not (srcDIB Is Nothing) Then layerDIB.CreateFromExistingDIB srcDIB
+    If Not (srcDIB Is Nothing) Then Set layerDIB = srcDIB
     
     'Set default offsets
     myLayerData.l_OffsetX = 0
