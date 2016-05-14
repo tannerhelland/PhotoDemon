@@ -303,22 +303,38 @@ Public Property Let Enabled(ByVal newValue As Boolean)
 End Property
 
 'If any text value is NOT valid, this will return FALSE
-Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
+Public Function IsValid(Optional ByVal showErrors As Boolean = True) As Boolean
     
     IsValid = True
     
     'If the current text value is not valid, highlight the problem and optionally display an error message box
-    If Not tudWidth.IsValid(showError) Then
+    If Not tudWidth.IsValid(showErrors) Then
         IsValid = False
         Exit Function
     End If
     
-    If Not tudHeight.IsValid(showError) Then
+    If Not tudHeight.IsValid(showErrors) Then
         IsValid = False
         Exit Function
     End If
     
-End Property
+    Dim pxWidthFloat As Double, pxHeightFloat As Double
+    pxWidthFloat = ConvertUnitToPixels(GetCurrentWidthUnit, tudWidth, GetResolutionAsPPI(), m_initWidth)
+    pxHeightFloat = ConvertUnitToPixels(GetCurrentWidthUnit, tudHeight, GetResolutionAsPPI(), m_initHeight)
+    
+    If (pxWidthFloat < 1) Or (pxHeightFloat < 1) Then
+        IsValid = False
+        If showErrors Then PDMsgBox "The final width and height measurements must be between 1 and 32760 pixels.", vbInformation Or vbApplicationModal Or vbOKOnly, "Invalid measurement"
+        Exit Function
+    End If
+    
+    If (pxWidthFloat > 32760) Or (pxHeightFloat > 32760) Then
+        IsValid = False
+        If showErrors Then PDMsgBox "The final width and height measurements must be between 1 and 32760 pixels.", vbInformation Or vbApplicationModal Or vbOKOnly, "Invalid measurement"
+        Exit Function
+    End If
+    
+End Function
 
 'For batch conversions, we can't display an exact size when using PERCENT mode (as the exact size will vary according
 ' to the original image dimensions).  Use this mode to enable/disable that feature.
@@ -359,9 +375,9 @@ Private Sub cmbResolution_Click()
             'If the user previously had PPCM selected, convert the resolution now
             If m_previousUnitOfResolution = RU_PPCM Then
                 If tudResolution.IsValid(False) Then
-                    tudResolution = getCMFromInches(tudResolution)
+                    tudResolution = GetCMFromInches(tudResolution)
                 Else
-                    tudResolution = getCMFromInches(m_initDPI)
+                    tudResolution = GetCMFromInches(m_initDPI)
                 End If
             End If
             
@@ -371,7 +387,7 @@ Private Sub cmbResolution_Click()
             'If the user previously had PPI selected, convert the resolution now
             If m_previousUnitOfResolution = RU_PPI Then
                 If tudResolution.IsValid(False) Then
-                    tudResolution = getInchesFromCM(tudResolution)
+                    tudResolution = GetInchesFromCM(tudResolution)
                 Else
                     tudResolution = m_initDPI
                 End If
@@ -439,28 +455,28 @@ End Property
 'Width and height can be set/retrieved from these properties. IMPORTANT NOTE: these functions will return width/height
 ' per the current unit of measurement, so make sure to also read (and process) the .UnitOfMeasurement property!
 ' If the current text value for either dimension is invalid, this function will simply return the image's original width/height.
-Public Property Get imgWidth() As Double
+Public Property Get ImgWidth() As Double
     If tudWidth.IsValid(False) Then
-        imgWidth = tudWidth
+        ImgWidth = tudWidth
     Else
-        imgWidth = convertOtherUnitToPixels(GetCurrentWidthUnit, m_initWidth, GetResolutionAsPPI(), m_initWidth)
+        ImgWidth = ConvertOtherUnitToPixels(GetCurrentWidthUnit, m_initWidth, GetResolutionAsPPI(), m_initWidth)
     End If
 End Property
 
-Public Property Let imgWidth(newWidth As Double)
+Public Property Let ImgWidth(newWidth As Double)
     tudWidth = newWidth
     SyncDimensions True
 End Property
 
-Public Property Get imgHeight() As Double
+Public Property Get ImgHeight() As Double
     If tudHeight.IsValid(False) Then
-        imgHeight = tudHeight
+        ImgHeight = tudHeight
     Else
-        imgHeight = convertOtherUnitToPixels(GetCurrentHeightUnit, m_initHeight, GetResolutionAsPPI(), m_initHeight)
+        ImgHeight = ConvertOtherUnitToPixels(GetCurrentHeightUnit, m_initHeight, GetResolutionAsPPI(), m_initHeight)
     End If
 End Property
 
-Public Property Let imgHeight(newHeight As Double)
+Public Property Let ImgHeight(newHeight As Double)
     tudHeight = newHeight
     SyncDimensions False
 End Property
@@ -480,25 +496,25 @@ Public Property Let ImgDPIAsPPI(newDPI As Long)
     SyncDimensions True
 End Property
 
-Public Property Get imgDPI() As Long
+Public Property Get ImgDPI() As Long
     If tudResolution.IsValid(False) Then
-        imgDPI = tudResolution
+        ImgDPI = tudResolution
     Else
-        imgDPI = m_initDPI
+        ImgDPI = m_initDPI
     End If
 End Property
 
-Public Property Let imgDPI(newDPI As Long)
+Public Property Let ImgDPI(newDPI As Long)
     tudResolution = newDPI
     SyncDimensions True
 End Property
 
 'The current unit of measurement can also be retrieved.  Note that these values are kept in sync for both width/height.
-Public Property Get unitOfMeasurement() As MeasurementUnit
-    unitOfMeasurement = GetCurrentWidthUnit
+Public Property Get UnitOfMeasurement() As MeasurementUnit
+    UnitOfMeasurement = GetCurrentWidthUnit
 End Property
 
-Public Property Let unitOfMeasurement(newUnit As MeasurementUnit)
+Public Property Let UnitOfMeasurement(newUnit As MeasurementUnit)
     
     If m_PercentDisabled Then
         cmbWidthUnit.ListIndex = newUnit - 1
@@ -586,8 +602,8 @@ Private Sub ConvertUnitsToNewValue(ByVal oldUnit As MeasurementUnit, ByVal newUn
     
     'Use those pixel measurements to retrieve new values in the desired unit of measurement
     Dim newWidth As Double, newHeight As Double
-    newWidth = convertPixelToOtherUnit(newUnit, imgWidthPixels, GetResolutionAsPPI(), m_initWidth)
-    newHeight = convertPixelToOtherUnit(newUnit, imgHeightPixels, GetResolutionAsPPI(), m_initHeight)
+    newWidth = ConvertPixelToOtherUnit(newUnit, imgWidthPixels, GetResolutionAsPPI(), m_initWidth)
+    newHeight = ConvertPixelToOtherUnit(newUnit, imgHeightPixels, GetResolutionAsPPI(), m_initHeight)
         
     'Depending on the unit of measurement, change the significant digits and upper limit of the text up/down boxes
     Select Case newUnit
@@ -600,7 +616,7 @@ Private Sub ConvertUnitsToNewValue(ByVal oldUnit As MeasurementUnit, ByVal newUn
         Case MU_PIXELS
             tudWidth.SigDigits = 0
             tudWidth.Min = 1
-            tudWidth.Max = 32765
+            tudWidth.Max = 32760
         
         Case MU_INCHES
             tudWidth.SigDigits = 2
@@ -616,7 +632,7 @@ Private Sub ConvertUnitsToNewValue(ByVal oldUnit As MeasurementUnit, ByVal newUn
     
     'As the height and width boxes will always match, simply mirror the tudBox limits
     tudHeight.Min = tudWidth.Min
-    tudHeight.Max = tudHeight.Max
+    tudHeight.Max = tudWidth.Max
     tudHeight.SigDigits = tudWidth.SigDigits
     
     'Copy the new values to their respective text boxes
@@ -834,7 +850,7 @@ Private Sub SyncDimensions(ByVal useWidthAsSource As Boolean)
                 
                     'For all other conversions, we simply want to calculate an aspect-ratio preserved height value (in pixels),
                     ' which we can then use to populate the height up/down box.
-                    tudHeight = convertPixelToOtherUnit(GetCurrentWidthUnit, Int((imgWidthPixels * m_hRatio) + 0.5), GetResolutionAsPPI(), m_initWidth)
+                    tudHeight = ConvertPixelToOtherUnit(GetCurrentWidthUnit, Int((imgWidthPixels * m_hRatio) + 0.5), GetResolutionAsPPI(), m_initWidth)
             
             End Select
             
@@ -854,7 +870,7 @@ Private Sub SyncDimensions(ByVal useWidthAsSource As Boolean)
                 
                 'Anything else
                 Case Else
-                    tudWidth = convertPixelToOtherUnit(GetCurrentHeightUnit, Int((imgHeightPixels * m_wRatio) + 0.5), GetResolutionAsPPI(), m_initWidth)
+                    tudWidth = ConvertPixelToOtherUnit(GetCurrentHeightUnit, Int((imgHeightPixels * m_wRatio) + 0.5), GetResolutionAsPPI(), m_initWidth)
                 
             End Select
             
@@ -880,7 +896,7 @@ End Sub
 ' trying to select new width/height values for a specific application with a set aspect ratio (e.g. 16:9 screens).
 Private Sub UpdateAspectRatio()
 
-    If Not g_IsProgramRunning Then Exit Sub
+    If (Not g_IsProgramRunning) Then Exit Sub
 
     Dim wholeNumber As Double, Numerator As Double, Denominator As Double
     
@@ -892,7 +908,7 @@ Private Sub UpdateAspectRatio()
         imgHeightPixels = ConvertUnitToPixels(GetCurrentHeightUnit, tudHeight, GetResolutionAsPPI(), m_initHeight)
         
         'Convert the floating-point aspect ratio to a fraction
-        If imgHeightPixels > 0 Then
+        If (imgHeightPixels > 0) Then
             convertToFraction imgWidthPixels / imgHeightPixels, wholeNumber, Numerator, Denominator, 4, 99.9
         End If
         
@@ -910,7 +926,7 @@ Private Sub UpdateAspectRatio()
         
         Else
         
-            If imgHeightPixels > 0 Then
+            If (imgHeightPixels > 0) Then
                 lblAspectRatio(1).Caption = " " & Numerator & ":" & Denominator & "  (" & Format$(imgWidthPixels / imgHeightPixels, "######0.0#####") & ")"
             End If
             
@@ -928,10 +944,10 @@ End Sub
 
 'This function is just a thin wrapper to the public convertOtherUnitToPixels function.  The only difference is that this function requests
 ' a reference to the actual pdSpinner control requesting conversion, and it will automatically validate that control as necessary.
-Private Function ConvertUnitToPixels(ByVal unitOfMeasurement As MeasurementUnit, ByRef tudSource As pdSpinner, Optional ByVal srcUnitResolution As Double, Optional ByVal initPixelValue As Double) As Double
+Private Function ConvertUnitToPixels(ByVal curUnit As MeasurementUnit, ByRef tudSource As pdSpinner, Optional ByVal srcUnitResolution As Double, Optional ByVal initPixelValue As Double) As Double
 
     If tudSource.IsValid(False) Then
-        ConvertUnitToPixels = convertOtherUnitToPixels(unitOfMeasurement, tudSource.Value, srcUnitResolution, initPixelValue)
+        ConvertUnitToPixels = ConvertOtherUnitToPixels(curUnit, tudSource.Value, srcUnitResolution, initPixelValue)
     Else
         ConvertUnitToPixels = initPixelValue
     End If
@@ -945,10 +961,10 @@ Private Function GetResolutionAsPPI() As Double
     If tudResolution.IsValid Then
     
         'cmbResolution only has two entries: inches (0), and cm (1).
-        If cmbResolution.ListIndex = RU_PPI Then
+        If (cmbResolution.ListIndex = RU_PPI) Then
             GetResolutionAsPPI = tudResolution.Value
         Else
-            GetResolutionAsPPI = getInchesFromCM(tudResolution)
+            GetResolutionAsPPI = GetInchesFromCM(tudResolution)
         End If
     
     Else
@@ -1035,6 +1051,4 @@ Public Sub UpdateAgainstCurrentTheme()
     cmbResolution.UpdateAgainstCurrentTheme
     
 End Sub
-
-
 
