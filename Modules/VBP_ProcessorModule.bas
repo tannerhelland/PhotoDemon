@@ -753,7 +753,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormReduceColors
             Else
-                FormReduceColors.ReduceImageColors_Auto cParams.GetLong(2)
+                FormReduceColors.ReduceImageColors_Auto processParameters
             End If
         
         

@@ -29,9 +29,9 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   1
       Top             =   120
       Width           =   7095
-      _extentx        =   12515
-      _extenty        =   1085
-      fontsize        =   11
+      _ExtentX        =   12515
+      _ExtentY        =   1085
+      FontSize        =   11
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -40,9 +40,9 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   0
       Top             =   5790
       Width           =   13110
-      _extentx        =   23125
-      _extenty        =   1323
-      dontautounloadparent=   -1
+      _ExtentX        =   23125
+      _ExtentY        =   1323
+      DontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -50,33 +50,8 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   2
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
-      Height          =   4695
-      Index           =   2
-      Left            =   5880
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   481
-      TabIndex        =   5
-      Top             =   1080
-      Width           =   7215
-      Begin PhotoDemon.pdMetadataExport mtdManager 
-         Height          =   4215
-         Left            =   240
-         TabIndex        =   7
-         Top             =   120
-         Width           =   6615
-         _extentx        =   11668
-         _extenty        =   7435
-      End
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -98,9 +73,9 @@ Begin VB.Form dialog_ExportJPEG
          TabIndex        =   8
          Top             =   1320
          Width           =   6975
-         _extentx        =   12303
-         _extenty        =   1931
-         caption         =   "compression method"
+         _ExtentX        =   12303
+         _ExtentY        =   1931
+         Caption         =   "compression method"
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   375
@@ -108,10 +83,10 @@ Begin VB.Form dialog_ExportJPEG
          Left            =   120
          Top             =   120
          Width           =   6975
-         _extentx        =   12303
-         _extenty        =   450
-         caption         =   "quality"
-         fontsize        =   12
+         _ExtentX        =   12303
+         _ExtentY        =   450
+         Caption         =   "quality"
+         FontSize        =   12
       End
       Begin PhotoDemon.pdDropDown cboSaveQuality 
          Height          =   375
@@ -119,8 +94,8 @@ Begin VB.Form dialog_ExportJPEG
          TabIndex        =   6
          Top             =   600
          Width           =   2730
-         _extentx        =   4815
-         _extenty        =   661
+         _ExtentX        =   4815
+         _ExtentY        =   661
       End
       Begin PhotoDemon.pdSlider sltQuality 
          Height          =   405
@@ -128,12 +103,12 @@ Begin VB.Form dialog_ExportJPEG
          TabIndex        =   4
          Top             =   600
          Width           =   4335
-         _extentx        =   7223
-         _extenty        =   873
-         max             =   99
-         min             =   1
-         value           =   90
-         notchposition   =   1
+         _ExtentX        =   7223
+         _ExtentY        =   873
+         Min             =   1
+         Max             =   99
+         Value           =   90
+         NotchPosition   =   1
       End
       Begin PhotoDemon.pdColorSelector clsBackground 
          Height          =   1095
@@ -141,9 +116,9 @@ Begin VB.Form dialog_ExportJPEG
          TabIndex        =   12
          Top             =   2640
          Width           =   6975
-         _extentx        =   12303
-         _extenty        =   1931
-         caption         =   "background color"
+         _ExtentX        =   12303
+         _ExtentY        =   1931
+         Caption         =   "background color"
       End
    End
    Begin VB.PictureBox picContainer 
@@ -167,9 +142,9 @@ Begin VB.Form dialog_ExportJPEG
          TabIndex        =   10
          Top             =   120
          Width           =   6975
-         _extentx        =   12303
-         _extenty        =   1931
-         caption         =   "chroma subsampling"
+         _ExtentX        =   12303
+         _ExtentY        =   1931
+         Caption         =   "chroma subsampling"
       End
       Begin PhotoDemon.pdButtonStrip btsDepth 
          Height          =   1095
@@ -177,9 +152,34 @@ Begin VB.Form dialog_ExportJPEG
          TabIndex        =   11
          Top             =   1440
          Width           =   6975
-         _extentx        =   12303
-         _extenty        =   1931
-         caption         =   "depth"
+         _ExtentX        =   12303
+         _ExtentY        =   1931
+         Caption         =   "depth"
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      HasDC           =   0   'False
+      Height          =   4695
+      Index           =   2
+      Left            =   5880
+      ScaleHeight     =   313
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   481
+      TabIndex        =   5
+      Top             =   1080
+      Width           =   7215
+      Begin PhotoDemon.pdMetadataExport mtdManager 
+         Height          =   4215
+         Left            =   240
+         TabIndex        =   7
+         Top             =   120
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   7435
       End
    End
 End

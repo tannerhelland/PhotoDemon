@@ -447,6 +447,7 @@
 			
 			<UIElements>
 				<UniversalCanvasElement>CanvasColor</UniversalCanvasElement>
+				<UniversalErrorRed>ErrorRed</UniversalErrorRed>
 				<UniversalLineEdge>Black</UniversalLineEdge>
 				<UniversalLineCenter>White</UniversalLineCenter>
 				<UniversalLineCenter-hover>AccentDefault</UniversalLineCenter-hover>

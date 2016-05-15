@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1485</langversion>
+<langversion>6.8.1486</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -11957,6 +11957,26 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <!-- BEGIN text for Image_IndexedColor.frm (FormReduceColors) -->
 
 <phrase>
+<original>palette size</original>
+<translation>调色板大小</translation>
+</phrase>
+
+<phrase>
+<original>quantization method</original>
+<translation>量化方法</translation>
+</phrase>
+
+<phrase>
+<original>transparency</original>
+<translation>透明度</translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation>阿尔法截止</translation>
+</phrase>
+
+<phrase>
 <original>Xiaolin Wu</original>
 <translation>Xiaolin Wu</translation>
 </phrase>
@@ -11967,8 +11987,13 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>Note: this operation will flatten the image before converting it to indexed color mode.</original>
-<translation>注意：在将图像转换为索引颜色模式之前，该操作将使图像变平。</translation>
+<original>full</original>
+<translation>全部</translation>
+</phrase>
+
+<phrase>
+<original>binary</original>
+<translation>二进制</translation>
 </phrase>
 
 <phrase>
@@ -11977,8 +12002,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>quantization method</original>
-<translation>量化方法</translation>
+<original>Note: this operation will flatten the image before converting it to indexed color mode.</original>
+<translation>注意：在将图像转换为索引颜色模式之前，该操作将使图像变平。</translation>
 </phrase>
 
 <phrase>
@@ -12005,7 +12030,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 请复制freeimage.dll文件到插件目录和加载程序。</translation>
 </phrase>
 
-<!-- Image_IndexedColor.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Image_IndexedColor.frm contains 21 phrases. 7 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Image_IndexedColor.frm-->
 
@@ -14871,16 +14896,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
-<original>alpha cut-off</original>
-<translation>阿尔法截止</translation>
-</phrase>
-
-<phrase>
-<original>transparency</original>
-<translation>透明度</translation>
-</phrase>
-
-<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>透明颜色（右键选择图像）</translation>
 </phrase>
@@ -14895,7 +14910,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>通过颜色</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 18 phrases. 14 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
@@ -14974,11 +14989,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
-<original>palette size</original>
-<translation>调色板大小</translation>
-</phrase>
-
-<phrase>
 <original>use interlacing</original>
 <translation>使用交错</translation>
 </phrase>
@@ -15024,11 +15034,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
-<original>full</original>
-<translation>全部</translation>
-</phrase>
-
-<phrase>
 <original>binary (by cut-off)</original>
 <translation>二进制（截断）</translation>
 </phrase>
@@ -15048,7 +15053,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>这些有损优化设置减少了 %1 的文件大小。</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 59 phrases. 34 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 59 phrases. 36 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15126,16 +15131,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
-<original>binary</original>
-<translation>二进制</translation>
-</phrase>
-
-<phrase>
 <original>ASCII</original>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
 
@@ -15155,8 +15155,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4505 phrases. -->
-<!-- 1911 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4513 phrases. -->
+<!-- 1919 are duplicates, so only 2594 unique phrases have been written to file. -->
 <!-- These 2594 phrases contain approximately 13363 total words. -->
 
 </pdData>
