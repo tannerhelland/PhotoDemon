@@ -126,12 +126,13 @@ Public Enum PD_UI_COLOR_LIST
     UI_UniversalCanvasElement = 0
     UI_UniversalLineEdge = 1
     UI_UniversalLineCenter = 2
-    [_Last] = 2
-    [_Count] = 3
+    UI_UniversalErrorRed = 3
+    [_Last] = 3
+    [_Count] = 4
 End Enum
 
 #If False Then
-    Private Const UI_UniversalCanvasElement = 0, UI_UniversalLineEdge = 1, UI_UniversalLineCenter = 2
+    Private Const UI_UniversalCanvasElement = 0, UI_UniversalLineEdge = 1, UI_UniversalLineCenter = 2, UI_UniversalErrorRed = 3
 #End If
 
 'Color retrieval and storage of program-wide UI colors is handled by a dedicated class
@@ -221,9 +222,9 @@ Public Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
     If g_IsProgramRunning And Not g_ProgramShuttingDown Then
     
         Dim fullThemePath As String
-        fullThemePath = g_UserPreferences.getThemePath & themeFilename
+        fullThemePath = g_UserPreferences.GetThemePath & themeFilename
         
-        If m_XML.loadXMLFile(fullThemePath) Then
+        If m_XML.LoadXMLFile(fullThemePath) Then
             
             'Perform minor validation on the file
             LoadThemeFile = m_XML.isPDDataType("Visual theme") And m_XML.validateLoadedXMLData("Colors")
@@ -236,8 +237,8 @@ Public Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
                 End If
             #End If
             
-            fullThemePath = g_UserPreferences.getThemePath & "Default_Light.xml"
-            LoadThemeFile = m_XML.loadXMLFile(fullThemePath)
+            fullThemePath = g_UserPreferences.GetThemePath & "Default_Light.xml"
+            LoadThemeFile = m_XML.LoadXMLFile(fullThemePath)
             LoadThemeFile = LoadThemeFile And m_XML.isPDDataType("Visual theme") And m_XML.validateLoadedXMLData("Colors")
             
         End If
@@ -254,7 +255,7 @@ Public Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
         
             'Color description files are listed under the DefinitionFile tag.  (This tag is optional, so we can
             ' assume all definitions are embedded in the file if the DefinitionFile tag doesn't exist.)
-            If m_XML.doesTagExist("DefinitionFile") Or (Len(overrideColorDefinitionFilename) <> 0) Then
+            If m_XML.DoesTagExist("DefinitionFile") Or (Len(overrideColorDefinitionFilename) <> 0) Then
             
                 'Load and validate the specified definition file
                 Dim tmpXML As pdXML
@@ -262,12 +263,12 @@ Public Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
                 
                 Dim fullDefinitionPath As String
                 If Len(overrideColorDefinitionFilename) <> 0 Then
-                    fullDefinitionPath = g_UserPreferences.getThemePath & overrideColorDefinitionFilename
+                    fullDefinitionPath = g_UserPreferences.GetThemePath & overrideColorDefinitionFilename
                 Else
-                    fullDefinitionPath = g_UserPreferences.getThemePath & m_XML.getUniqueTag_String("DefinitionFile")
+                    fullDefinitionPath = g_UserPreferences.GetThemePath & m_XML.getUniqueTag_String("DefinitionFile")
                 End If
                 
-                If tmpXML.loadXMLFile(fullDefinitionPath) Then
+                If tmpXML.LoadXMLFile(fullDefinitionPath) Then
                 
                     If tmpXML.isPDDataType("Color definitions") And tmpXML.validateLoadedXMLData("Definitions") Then
                     
@@ -440,7 +441,7 @@ End Function
 'Call this function to verify that an object exists inside the current theme file.  If it doesn't, you should not
 ' proceed with color loading.
 Public Function VerifyThemeObject(ByRef objectName As String) As Boolean
-    VerifyThemeObject = m_XML.doesTagExist(objectName)
+    VerifyThemeObject = m_XML.DoesTagExist(objectName)
 End Function
 
 'Look up a unique theme color in the current theme.  Object name is required, and this class will automatically fall back
@@ -453,10 +454,10 @@ Public Function LookUpColor(ByVal objectName As String, ByRef colorName As Strin
     ' "default" namespace.
     Const DEFAULT_NAMESPACE As String = "Default"
     Dim objectNameExists As Boolean
-    objectNameExists = m_XML.doesTagExist(objectName)
+    objectNameExists = m_XML.DoesTagExist(objectName)
     If Not objectNameExists Then
         objectName = DEFAULT_NAMESPACE
-        objectNameExists = m_XML.doesTagExist(objectName)
+        objectNameExists = m_XML.DoesTagExist(objectName)
     End If
     
     'If the color exists in either the Default or object-specific namespace, we can proceed with parsing.
@@ -476,7 +477,7 @@ Public Function LookUpColor(ByVal objectName As String, ByRef colorName As Strin
         Else
             If StrComp(objectName, DEFAULT_NAMESPACE, vbBinaryCompare) <> 0 Then
                 objectName = DEFAULT_NAMESPACE
-                If m_XML.doesTagExist(objectName) Then
+                If m_XML.DoesTagExist(objectName) Then
                     colorDescription = m_XML.GetNonUniqueTag_String(colorName, objectName)
                     If Len(colorDescription) <> 0 Then finalColor = ResolveColor(colorDescription)
                 End If
@@ -578,6 +579,7 @@ Private Sub CacheUniversalColors()
         .LoadThemeColor UI_UniversalCanvasElement, "UniversalCanvasElement", IDE_GRAY
         .LoadThemeColor UI_UniversalLineEdge, "UniversalLineEdge", IDE_BLUE
         .LoadThemeColor UI_UniversalLineCenter, "UniversalLineCenter", IDE_GRAY
+        .LoadThemeColor UI_UniversalErrorRed, "UniversalErrorRed", RGB(255, 0, 0)
     End With
     
 End Sub

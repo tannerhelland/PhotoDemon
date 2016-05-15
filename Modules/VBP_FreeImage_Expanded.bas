@@ -837,7 +837,7 @@ Public Function IsMultiImage(ByVal srcFilename As String) As Long
     On Error GoTo isMultiImage_Error
     
     'Double-check that FreeImage.dll was located at start-up
-    If Not g_ImageFormats.FreeImageEnabled Then
+    If (Not g_ImageFormats.FreeImageEnabled) Then
         IsMultiImage = 0
         Exit Function
     End If
@@ -845,7 +845,7 @@ Public Function IsMultiImage(ByVal srcFilename As String) As Long
     'Determine the file type.  (Currently, this feature only works on animated GIFs, multipage TIFFs, and icons.)
     Dim fileFIF As FREE_IMAGE_FORMAT
     fileFIF = FreeImage_GetFileTypeU(StrPtr(srcFilename))
-    If fileFIF = FIF_UNKNOWN Then fileFIF = FreeImage_GetFIFFromFilenameU(StrPtr(srcFilename))
+    If (fileFIF = FIF_UNKNOWN) Then fileFIF = FreeImage_GetFIFFromFilenameU(StrPtr(srcFilename))
     
     'If FreeImage can't determine the file type, or if the filetype is not GIF or TIF, return False
     If (Not FreeImage_FIFSupportsReading(fileFIF)) Or ((fileFIF <> PDIF_GIF) And (fileFIF <> PDIF_TIFF) And (fileFIF <> FIF_ICO)) Then
@@ -856,9 +856,9 @@ Public Function IsMultiImage(ByVal srcFilename As String) As Long
     'At this point, we are guaranteed that the image is a GIF, TIFF, or icon file.
     ' Open the file using the multipage function
     Dim fi_multi_hDIB As Long
-    If fileFIF = PDIF_GIF Then
+    If (fileFIF = PDIF_GIF) Then
         fi_multi_hDIB = FreeImage_OpenMultiBitmap(PDIF_GIF, srcFilename)
-    ElseIf fileFIF = FIF_ICO Then
+    ElseIf (fileFIF = FIF_ICO) Then
         fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename)
     Else
         fi_multi_hDIB = FreeImage_OpenMultiBitmap(PDIF_TIFF, srcFilename)
@@ -977,6 +977,37 @@ Public Function PaintFIDibToPDDib(ByRef dstDIB As pdDIB, ByVal fi_Handle As Long
     End If
     
 End Function
+
+'Convert a 32- or 24-bpp pdDIB object to its 8-bpp equivalent, but paint the 8-bpp results into some other pdDIB suitable for screen display.
+Public Sub ConvertPDDibToIndexedColor(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal numOfColors As Long = 256, Optional ByVal quantMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT)
+
+    If (srcDIB.GetDIBColorDepth = 32) Then srcDIB.ConvertTo24bpp
+    
+    Dim fi_DIB As Long
+    fi_DIB = GetFIHandleFromPDDib_NoCopy(srcDIB, False)
+    
+    Dim fi_DIB8 As Long
+    fi_DIB8 = FreeImage_ColorQuantizeEx(fi_DIB, quantMethod, True, numOfColors)
+    If (fi_DIB8 <> 0) Then
+        
+        fi_DIB = FreeImage_ConvertTo32Bits(fi_DIB8)
+        FreeImage_Unload fi_DIB8
+        
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+        If (dstDIB.GetDIBWidth = srcDIB.GetDIBWidth) And (dstDIB.GetDIBHeight = srcDIB.GetDIBHeight) Then
+            dstDIB.ResetDIB 255
+        Else
+            dstDIB.CreateBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 32, vbWhite, 255
+        End If
+        
+        Plugin_FreeImage.PaintFIDibToPDDib dstDIB, fi_DIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight
+        
+        FreeImage_Unload fi_DIB
+        
+    End If
+    
+End Sub
+
 'Prior to applying tone-mapping settings, query the user for their preferred behavior.  If the user doesn't want this dialog raised, this
 ' function will silently retrieve the proper settings from the preference file, and proceed with tone-mapping automatically.
 '
@@ -1976,7 +2007,7 @@ End Function
 ' "auto-convert to best depth" heuristics *prior* to calling this function!
 '
 'Returns: a non-zero FI handle if successful; 0 if something goes horribly wrong.
-Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputColorDepth As Long, Optional ByVal desiredAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal currentAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal alphaCutoffOrColor As Long = 127, Optional ByVal BackgroundColor As Long = vbWhite, Optional ByVal forceGrayscale As Boolean = False, Optional ByVal paletteCount As Long = 256, Optional ByVal RGB16bppUse565 As Boolean = True, Optional ByVal doNotUseFIGrayscale As Boolean = False) As Long
+Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputColorDepth As Long, Optional ByVal desiredAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal currentAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal alphaCutoffOrColor As Long = 127, Optional ByVal BackgroundColor As Long = vbWhite, Optional ByVal forceGrayscale As Boolean = False, Optional ByVal paletteCount As Long = 256, Optional ByVal RGB16bppUse565 As Boolean = True, Optional ByVal doNotUseFIGrayscale As Boolean = False, Optional ByVal quantMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT) As Long
     
     'If FreeImage is not enabled, exit immediately
     If (Not g_ImageFormats.FreeImageEnabled) Then
@@ -1988,7 +2019,6 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
     
     'Perform a quick check for 32-bpp images with complex alpha; we can return those immediately!
     If (outputColorDepth = 32) And (desiredAlphaState = PDAS_ComplicatedAlpha) And (srcDIB.GetDIBColorDepth = 32) And (Not forceGrayscale) Then
-        Debug.Print "Requested FreeImage object is 32-bpp; using shortcut path."
         GetFIDib_SpecificColorMode = FreeImage_CreateFromDC(srcDIB.GetDIBDC)
         Exit Function
     End If
@@ -2215,14 +2245,16 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                     '0 means the image has > 256 colors, and must be quantized via lossy means
                     If (tmpFIHandle = 0) Then
                         
+                        If (quantMethod = FIQ_LFPQUANT) Then quantMethod = FIQ_WUQUANT
+                        
                         'If we're going straight to 4-bits, ignore the user's palette count in favor of a 16-color one.
                         If (outputColorDepth = 4) Then
-                            tmpFIHandle = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_WUQUANT, False, 16)
+                            tmpFIHandle = FreeImage_ColorQuantizeEx(fi_DIB, quantMethod, False, 16)
                         Else
                             If (paletteCount = 256) Then
-                                tmpFIHandle = FreeImage_ColorQuantize(fi_DIB, FIQ_WUQUANT)
+                                tmpFIHandle = FreeImage_ColorQuantize(fi_DIB, quantMethod)
                             Else
-                                tmpFIHandle = FreeImage_ColorQuantizeExInt(fi_DIB, FIQ_WUQUANT, paletteCount)
+                                tmpFIHandle = FreeImage_ColorQuantizeExInt(fi_DIB, quantMethod, paletteCount)
                             End If
                         End If
                         
@@ -2339,13 +2371,12 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                             'Start by backing up the image's current transparency data.
                             srcDIB.RetrieveTransparencyTable tmpTransparencyTable
                             
-                            'Composite the image against the specified backcolor
+                            'Fix premultiplication
                             ResetExportPreviewDIB tmpDIBRequired, srcDIB
-                            'm_ExportPreviewDIB.CompositeBackgroundColor Colors.ExtractR(BackgroundColor), Colors.ExtractG(BackgroundColor), Colors.ExtractB(BackgroundColor)
                             Dim resetAlphaPremultiplication As Boolean: resetAlphaPremultiplication = False
                             If m_ExportPreviewDIB.GetAlphaPremultiplication Then
                                 resetAlphaPremultiplication = True
-                                m_ExportPreviewDIB.SetAlphaPremultiplication False
+                                m_ExportPreviewDIB.ConvertTo24bpp BackgroundColor
                             End If
                             
                             FreeImage_Unload fi_DIB
@@ -2355,7 +2386,8 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                             tmpFIHandle = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_LFPQUANT, False, paletteCount)
                             
                             '0 means the image has > 255 colors, and must be quantized via lossy means
-                            If (tmpFIHandle = 0) Then tmpFIHandle = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_WUQUANT, False, paletteCount)
+                            If (quantMethod = FIQ_LFPQUANT) Then quantMethod = FIQ_WUQUANT
+                            If (tmpFIHandle = 0) Then tmpFIHandle = FreeImage_ColorQuantizeEx(fi_DIB, quantMethod, False, paletteCount)
                             
                             'Regardless of what quantization method was applied, update our pointer to point at the new
                             ' 8-bpp copy of the source image.
@@ -2426,7 +2458,8 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                             
                             '0 means the image has > 255 colors, and must be quantized via lossy means
                             If (tmpFIHandle = 0) Then
-                                tmpFIHandle = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_WUQUANT, False, paletteCount)
+                                If (quantMethod = FIQ_LFPQUANT) Then quantMethod = FIQ_WUQUANT
+                                tmpFIHandle = FreeImage_ColorQuantizeEx(fi_DIB, quantMethod, False, paletteCount)
                             End If
                             
                             'Regardless of what quantization method was applied, update our pointer to point at the new
@@ -2491,10 +2524,6 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                                     pdDebug.LogAction "WARNING!  FreeImage returned a full palette, so transparency will have to steal an existing entry!"
                                 #End If
                                 transparentIndex = 255
-                            Else
-                                #If DEBUGMODE = 1 Then
-                                    Debug.Print "Using palette index " & transparentIndex & " for transparency."
-                                #End If
                             End If
                             
                             'Tell FreeImage which palette index we want to use for transparency

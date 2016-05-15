@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.169</langversion>
+<langversion>6.7.170</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -11962,6 +11962,26 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <!-- BEGIN text for Image_IndexedColor.frm (FormReduceColors) -->
 
 <phrase>
+<original>palette size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quantization method</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparency</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Xiaolin Wu</original>
 <translation>Xiaolin Wu</translation>
 </phrase>
@@ -11972,8 +11992,13 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
-<original>Note: this operation will flatten the image before converting it to indexed color mode.</original>
-<translation>Obs: denna operation kommer att platta till bilden innan du konverterar den till indexerad färgläge.</translation>
+<original>full</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>binary</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11982,8 +12007,8 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
-<original>quantization method</original>
-<translation></translation>
+<original>Note: this operation will flatten the image before converting it to indexed color mode.</original>
+<translation>Obs: denna operation kommer att platta till bilden innan du konverterar den till indexerad färgläge.</translation>
 </phrase>
 
 <phrase>
@@ -12010,7 +12035,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen till plugin-katalogen och ladda om programmet.</translation>
 </phrase>
 
-<!-- Image_IndexedColor.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Image_IndexedColor.frm contains 21 phrases. 7 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Image_IndexedColor.frm-->
 
@@ -14876,16 +14901,6 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
-<original>alpha cut-off</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>transparency</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation></translation>
 </phrase>
@@ -14900,7 +14915,7 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <translation></translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 18 phrases. 14 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
@@ -14979,11 +14994,6 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
-<original>palette size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>use interlacing</original>
 <translation></translation>
 </phrase>
@@ -15029,11 +15039,6 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
-<original>full</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>binary (by cut-off)</original>
 <translation></translation>
 </phrase>
@@ -15053,7 +15058,7 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 59 phrases. 34 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 59 phrases. 36 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15131,16 +15136,11 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
-<original>binary</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>ASCII</original>
 <translation></translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
 
@@ -15160,8 +15160,8 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <phrasecount>2594</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4505 phrases. -->
-<!-- 1911 are duplicates, so only 2594 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4513 phrases. -->
+<!-- 1919 are duplicates, so only 2594 unique phrases have been written to file. -->
 <!-- These 2594 phrases contain approximately 13363 total words. -->
 
 </pdData>
