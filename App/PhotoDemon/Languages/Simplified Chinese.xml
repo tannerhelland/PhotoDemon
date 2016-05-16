@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1486</langversion>
+<langversion>6.8.1530</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -292,12 +292,12 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
-<translation></translation>
+<translation>没有足够的内存来创建图像 %1 x %2 ，请选择一个小点的图像大小后再试。</translation>
 </phrase>
 
 <phrase>
 <original>Image too large</original>
-<translation></translation>
+<translation>图像太大</translation>
 </phrase>
 
 <!-- VBP_MenuModule.bas contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -472,7 +472,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Total unique colors: %1</original>
-<translation></translation>
+<translation>全部唯一颜色：%1</translation>
 </phrase>
 
 <phrase>
@@ -4037,12 +4037,12 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation></translation>
+<translation>最终的宽度和高度必须在1和32760像素之间。</translation>
 </phrase>
 
 <phrase>
 <original>Invalid measurement</original>
-<translation></translation>
+<translation>无效的大小</translation>
 </phrase>
 
 <phrase>
@@ -11487,7 +11487,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation></translation>
+<translation>一些程序（包括 Windows 应用商店程序）不允许直接屏幕捕获。如果一个应用程序预览显示为一个黑色方块，您需要采取一个完整的桌面截图，然后手动裁剪所需的窗口区域。</translation>
 </phrase>
 
 <phrase>
@@ -14866,17 +14866,17 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>installed, but version is unexpected</original>
-<translation>安装但忽略版本</translation>
+<translation>安装但忽略此版本</translation>
 </phrase>
 
 <phrase>
 <original>installed, but disabled by user</original>
-<translation>已经安装，但是由用户禁用</translation>
+<translation>已经安装，但是被用户禁用</translation>
 </phrase>
 
 <phrase>
 <original>not installed</original>
-<translation>不安装</translation>
+<translation>没有安装</translation>
 </phrase>
 
 <phrase>
