@@ -2007,7 +2007,7 @@ End Function
 ' "auto-convert to best depth" heuristics *prior* to calling this function!
 '
 'Returns: a non-zero FI handle if successful; 0 if something goes horribly wrong.
-Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputColorDepth As Long, Optional ByVal desiredAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal currentAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal alphaCutoffOrColor As Long = 127, Optional ByVal BackgroundColor As Long = vbWhite, Optional ByVal forceGrayscale As Boolean = False, Optional ByVal paletteCount As Long = 256, Optional ByVal RGB16bppUse565 As Boolean = True, Optional ByVal doNotUseFIGrayscale As Boolean = False, Optional ByVal quantMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT) As Long
+Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputColorDepth As Long, Optional ByVal desiredAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal currentAlphaState As PD_ALPHA_STATUS = PDAS_ComplicatedAlpha, Optional ByVal alphaCutoffOrColor As Long = 127, Optional ByVal backgroundColor As Long = vbWhite, Optional ByVal forceGrayscale As Boolean = False, Optional ByVal paletteCount As Long = 256, Optional ByVal RGB16bppUse565 As Boolean = True, Optional ByVal doNotUseFIGrayscale As Boolean = False, Optional ByVal quantMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT) As Long
     
     'If FreeImage is not enabled, exit immediately
     If (Not g_ImageFormats.FreeImageEnabled) Then
@@ -2071,7 +2071,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
     'If the caller does not want alpha in the final image, composite against the given backcolor now
     If (desiredAlphaState = PDAS_NoAlpha) Then
         ResetExportPreviewDIB tmpDIBRequired, srcDIB
-        m_ExportPreviewDIB.CompositeBackgroundColor Colors.ExtractR(BackgroundColor), Colors.ExtractG(BackgroundColor), Colors.ExtractB(BackgroundColor)
+        m_ExportPreviewDIB.CompositeBackgroundColor Colors.ExtractR(backgroundColor), Colors.ExtractG(backgroundColor), Colors.ExtractB(backgroundColor)
     
     'The color-based alpha mode requires us to leave the image in 32-bpp mode, but force it to use only "0" or "255"
     ' alpha values, with a specified transparent color providing the guide for which pixels get turned transparent.
@@ -2090,7 +2090,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
             'If the output color depth is 32-bpp, apply the new transparency table immediately
             If (outputColorDepth > 8) Then
                 ResetExportPreviewDIB tmpDIBRequired, srcDIB
-                m_ExportPreviewDIB.ApplyBinaryTransparencyTable tmpTransparencyTable, BackgroundColor
+                m_ExportPreviewDIB.ApplyBinaryTransparencyTable tmpTransparencyTable, backgroundColor
                 currentAlphaState = PDAS_BinaryAlpha
             
             'If the output color depth is 8-bpp, note that we need to re-apply the transparency table *after* quantization
@@ -2101,7 +2101,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
         'If the MakeColorTransparent function failed, no color matches are found; this lets us use 24-bpp output.
         Else
             ResetExportPreviewDIB tmpDIBRequired, srcDIB
-            m_ExportPreviewDIB.CompositeBackgroundColor Colors.ExtractR(BackgroundColor), Colors.ExtractG(BackgroundColor), Colors.ExtractB(BackgroundColor)
+            m_ExportPreviewDIB.CompositeBackgroundColor Colors.ExtractR(backgroundColor), Colors.ExtractG(backgroundColor), Colors.ExtractB(backgroundColor)
             desiredAlphaState = PDAS_NoAlpha
         End If
         
@@ -2112,7 +2112,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
         'A cutoff of zero means all pixels are gonna be opaque
         If (alphaCutoffOrColor = 0) Then
             ResetExportPreviewDIB tmpDIBRequired, srcDIB
-            m_ExportPreviewDIB.CompositeBackgroundColor Colors.ExtractR(BackgroundColor), Colors.ExtractG(BackgroundColor), Colors.ExtractB(BackgroundColor)
+            m_ExportPreviewDIB.CompositeBackgroundColor Colors.ExtractR(backgroundColor), Colors.ExtractG(backgroundColor), Colors.ExtractB(backgroundColor)
             desiredAlphaState = PDAS_NoAlpha
         Else
             
@@ -2124,7 +2124,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                 'If the output color depth is 32-bpp, apply the new transparency table immediately
                 If (outputColorDepth > 8) Then
                     ResetExportPreviewDIB tmpDIBRequired, srcDIB
-                    m_ExportPreviewDIB.ApplyBinaryTransparencyTable tmpTransparencyTable, BackgroundColor
+                    m_ExportPreviewDIB.ApplyBinaryTransparencyTable tmpTransparencyTable, backgroundColor
                     currentAlphaState = PDAS_BinaryAlpha
                 
                 'If the output color depth is 8-bpp, note that we need to re-apply the transparency table *after* quantization
@@ -2176,13 +2176,13 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
         
         'Forcibly remove alpha from the image
         If (outputColorDepth < 32) Or (outputColorDepth = 48) Or (outputColorDepth = 96) Then
-            If Not m_ExportPreviewDIB.ConvertTo24bpp(BackgroundColor) Then
+            If Not m_ExportPreviewDIB.ConvertTo24bpp(backgroundColor) Then
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "WARNING!  GetFIDib_SpecificColorMode could not convert the incoming DIB to 24-bpp."
                 #End If
             End If
         Else
-            m_ExportPreviewDIB.CompositeBackgroundColor Colors.ExtractR(BackgroundColor), Colors.ExtractG(BackgroundColor), Colors.ExtractB(BackgroundColor)
+            m_ExportPreviewDIB.CompositeBackgroundColor Colors.ExtractR(backgroundColor), Colors.ExtractG(backgroundColor), Colors.ExtractB(backgroundColor)
         End If
         
         'Reset the target alpha mode, so we can tell FreeImage that alpha handling is not required for this image
@@ -2196,7 +2196,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
     
     'Create a FreeImage handle that points to our source image
     If tmpDIBRequired Then
-        fi_DIB = FreeImage_CreateFromDC(m_ExportPreviewDIB.GetDIBDC)
+        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(m_ExportPreviewDIB, True)
     Else
         fi_DIB = FreeImage_CreateFromDC(srcDIB.GetDIBDC)
     End If
@@ -2376,7 +2376,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                             Dim resetAlphaPremultiplication As Boolean: resetAlphaPremultiplication = False
                             If m_ExportPreviewDIB.GetAlphaPremultiplication Then
                                 resetAlphaPremultiplication = True
-                                m_ExportPreviewDIB.ConvertTo24bpp BackgroundColor
+                                m_ExportPreviewDIB.ConvertTo24bpp backgroundColor
                             End If
                             
                             FreeImage_Unload fi_DIB
