@@ -27,11 +27,13 @@ Option Explicit
 Public Function ChoosePDColor(ByVal oldColor As Long, ByRef newColor As Long, Optional ByRef callingControl As pdColorSelector) As VbMsgBoxResult
 
     Load dialog_ColorSelector
+    Interface.FixPopupWindow dialog_ColorSelector.hWnd, True
     dialog_ColorSelector.ShowDialog oldColor, callingControl
     
     ChoosePDColor = dialog_ColorSelector.DialogResult
     If ChoosePDColor = vbOK Then newColor = dialog_ColorSelector.newColor
     
+    Interface.FixPopupWindow dialog_ColorSelector.hWnd, False
     Unload dialog_ColorSelector
     Set dialog_ColorSelector = Nothing
 
@@ -41,12 +43,14 @@ End Function
 Public Function ConfirmClose(ByVal formID As Long) As VbMsgBoxResult
 
     Load dialog_UnsavedChanges
+    Interface.FixPopupWindow dialog_UnsavedChanges.hWnd, True
     
     dialog_UnsavedChanges.formID = formID
     dialog_UnsavedChanges.ShowDialog FormMain
     
     ConfirmClose = dialog_UnsavedChanges.DialogResult
     
+    Interface.FixPopupWindow dialog_UnsavedChanges.hWnd, False
     Unload dialog_UnsavedChanges
     Set dialog_UnsavedChanges = Nothing
 
@@ -56,10 +60,12 @@ End Function
 Public Function PromptMultiImage(ByVal srcFilename As String, ByVal numOfPages As Long) As VbMsgBoxResult
 
     Load dialog_MultiImage
+    Interface.FixPopupWindow dialog_MultiImage.hWnd, True
     dialog_MultiImage.ShowDialog srcFilename, numOfPages
     
     PromptMultiImage = dialog_MultiImage.DialogResult
     
+    Interface.FixPopupWindow dialog_MultiImage.hWnd, False
     Unload dialog_MultiImage
     Set dialog_MultiImage = Nothing
 
@@ -68,6 +74,7 @@ End Function
 Public Function PromptBMPSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportBMP
+    Interface.FixPopupWindow dialog_ExportBMP.hWnd, True
     dialog_ExportBMP.ShowDialog srcImage
 
     PromptBMPSettings = dialog_ExportBMP.GetDialogResult
@@ -76,6 +83,7 @@ Public Function PromptBMPSettings(ByRef srcImage As pdImage, ByRef dstFormatPara
     'The BMP format does not currently support metadata, but if it ever does, this line can be changed to match
     dstMetadataParams = vbNullString        'dialog_ExportBMP.GetMetadataParams
     
+    Interface.FixPopupWindow dialog_ExportBMP.hWnd, False
     Unload dialog_ExportBMP
     Set dialog_ExportBMP = Nothing
     
@@ -84,12 +92,14 @@ End Function
 Public Function PromptGIFSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportGIF
+    Interface.FixPopupWindow dialog_ExportGIF.hWnd, True
     dialog_ExportGIF.ShowDialog srcImage
     
     PromptGIFSettings = dialog_ExportGIF.GetDialogResult
     dstFormatParams = dialog_ExportGIF.GetFormatParams
     dstMetadataParams = dialog_ExportGIF.GetMetadataParams
     
+    Interface.FixPopupWindow dialog_ExportGIF.hWnd, False
     Unload dialog_ExportGIF
     Set dialog_ExportGIF = Nothing
     
@@ -98,12 +108,14 @@ End Function
 Public Function PromptJP2Settings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
 
     Load dialog_ExportJP2
+    Interface.FixPopupWindow dialog_ExportJP2.hWnd, True
     dialog_ExportJP2.ShowDialog srcImage
     
     PromptJP2Settings = dialog_ExportJP2.GetDialogResult
     dstFormatParams = dialog_ExportJP2.GetFormatParams
     dstMetadataParams = dialog_ExportJP2.GetMetadataParams
     
+    Interface.FixPopupWindow dialog_ExportJP2.hWnd, False
     Unload dialog_ExportJP2
     Set dialog_ExportJP2 = Nothing
     
@@ -112,12 +124,14 @@ End Function
 Public Function PromptJPEGSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportJPEG
+    Interface.FixPopupWindow dialog_ExportJPEG.hWnd, True
     dialog_ExportJPEG.ShowDialog srcImage
     
     PromptJPEGSettings = dialog_ExportJPEG.GetDialogResult
     dstFormatParams = dialog_ExportJPEG.GetFormatParams
     dstMetadataParams = dialog_ExportJPEG.GetMetadataParams
     
+    Interface.FixPopupWindow dialog_ExportJPEG.hWnd, False
     Unload dialog_ExportJPEG
     Set dialog_ExportJPEG = Nothing
     
@@ -127,12 +141,14 @@ End Function
 Public Function PromptJXRSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
 
     Load dialog_ExportJXR
+    Interface.FixPopupWindow dialog_ExportJXR.hWnd, True
     dialog_ExportJXR.ShowDialog srcImage
     
     PromptJXRSettings = dialog_ExportJXR.GetDialogResult
     dstFormatParams = dialog_ExportJXR.GetFormatParams
     dstMetadataParams = dialog_ExportJXR.GetMetadataParams
     
+    Interface.FixPopupWindow dialog_ExportJXR.hWnd, False
     Unload dialog_ExportJXR
     Set dialog_ExportJXR = Nothing
     
@@ -141,12 +157,14 @@ End Function
 Public Function PromptPNGSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportPNG
+    Interface.FixPopupWindow dialog_ExportPNG.hWnd, True
     dialog_ExportPNG.ShowDialog srcImage
     
     PromptPNGSettings = dialog_ExportPNG.GetDialogResult
     dstFormatParams = dialog_ExportPNG.GetFormatParams
     dstMetadataParams = dialog_ExportPNG.GetMetadataParams
     
+    Interface.FixPopupWindow dialog_ExportPNG.hWnd, False
     Unload dialog_ExportPNG
     Set dialog_ExportPNG = Nothing
     
@@ -155,12 +173,14 @@ End Function
 Public Function PromptPNMSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportPixmap
+    Interface.FixPopupWindow dialog_ExportPixmap.hWnd, True
     dialog_ExportPixmap.ShowDialog srcImage
     
     PromptPNMSettings = dialog_ExportPixmap.GetDialogResult
     dstFormatParams = dialog_ExportPixmap.GetFormatParams
     dstMetadataParams = dialog_ExportPixmap.GetMetadataParams
     
+    Interface.FixPopupWindow dialog_ExportPixmap.hWnd, False
     Unload dialog_ExportPixmap
     Set dialog_ExportPixmap = Nothing
     
@@ -169,12 +189,14 @@ End Function
 Public Function PromptTIFFSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportTIFF
+    Interface.FixPopupWindow dialog_ExportTIFF.hWnd, True
     dialog_ExportTIFF.ShowDialog srcImage
     
     PromptTIFFSettings = dialog_ExportTIFF.GetDialogResult
     dstFormatParams = dialog_ExportTIFF.GetFormatParams
     dstMetadataParams = dialog_ExportTIFF.GetMetadataParams
     
+    Interface.FixPopupWindow dialog_ExportTIFF.hWnd, False
     Unload dialog_ExportTIFF
     Set dialog_ExportTIFF = Nothing
     
@@ -184,12 +206,14 @@ End Function
 Public Function PromptWebPSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
 
     Load dialog_ExportWebP
+    Interface.FixPopupWindow dialog_ExportWebP.hWnd, True
     dialog_ExportWebP.ShowDialog srcImage
     
     PromptWebPSettings = dialog_ExportWebP.GetDialogResult
     dstFormatParams = dialog_ExportWebP.GetFormatParams
     dstMetadataParams = dialog_ExportWebP.GetMetadataParams
     
+    Interface.FixPopupWindow dialog_ExportWebP.hWnd, False
     Unload dialog_ExportWebP
     Set dialog_ExportWebP = Nothing
     
@@ -200,11 +224,13 @@ End Function
 Public Function PromptAlphaCutoff(ByRef srcDIB As pdDIB) As VbMsgBoxResult
 
     Load dialog_AlphaCutoff
+    Interface.FixPopupWindow dialog_AlphaCutoff.hWnd, True
     dialog_AlphaCutoff.refDIB = srcDIB
     dialog_AlphaCutoff.ShowDialog
 
     PromptAlphaCutoff = dialog_AlphaCutoff.DialogResult
     
+    Interface.FixPopupWindow dialog_AlphaCutoff.hWnd, False
     Unload dialog_AlphaCutoff
     Set dialog_AlphaCutoff = Nothing
 
@@ -214,10 +240,12 @@ End Function
 Public Function DisplayIDEWarning() As VbMsgBoxResult
 
     Load dialog_IDEWarning
+    Interface.FixPopupWindow dialog_IDEWarning.hWnd, True
     dialog_IDEWarning.ShowDialog
 
     DisplayIDEWarning = dialog_IDEWarning.DialogResult
     
+    Interface.FixPopupWindow dialog_IDEWarning.hWnd, False
     Unload dialog_IDEWarning
     Set dialog_IDEWarning = Nothing
 
@@ -227,6 +255,7 @@ End Function
 Public Function DisplayAutosaveWarning(ByRef dstArray() As AutosaveXML) As VbMsgBoxResult
 
     Load dialog_AutosaveWarning
+    Interface.FixPopupWindow dialog_AutosaveWarning.hWnd, True
     dialog_AutosaveWarning.ShowDialog
     
     DisplayAutosaveWarning = dialog_AutosaveWarning.DialogResult
@@ -235,6 +264,7 @@ Public Function DisplayAutosaveWarning(ByRef dstArray() As AutosaveXML) As VbMsg
     ' dialog itself to do it (as VB makes it difficult to pass module-level array references).
     dialog_AutosaveWarning.fillArrayWithSaveResults dstArray
     
+    Interface.FixPopupWindow dialog_AutosaveWarning.hWnd, False
     Unload dialog_AutosaveWarning
     Set dialog_AutosaveWarning = Nothing
 
@@ -242,46 +272,26 @@ End Function
 
 'A thin wrapper to showPDDialog, customized for generic resizing.
 Public Sub ShowResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
-
-    'Notify the resize dialog of the intended target
     FormResize.ResizeTarget = ResizeTarget
-
-    'Display the resize dialog
     ShowPDDialog vbModal, FormResize
-
 End Sub
 
 'A thin wrapper to showPDDialog, customized for content-aware resizing.
 Public Sub ShowContentAwareResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
-
-    'Notify the resize dialog of the intended target
     FormResizeContentAware.ResizeTarget = ResizeTarget
-
-    'Display the resize dialog
     ShowPDDialog vbModal, FormResizeContentAware
-
 End Sub
 
 'A thin wrapper to showPDDialog, customized for arbitrary rotation.
 Public Sub ShowRotateDialog(ByVal RotateTarget As PD_ACTION_TARGET)
-
-    'Notify the resize dialog of the intended target
     FormRotate.RotateTarget = RotateTarget
-
-    'Display the resize dialog
     ShowPDDialog vbModal, FormRotate
-
 End Sub
 
 'A thin wrapper to showPDDialog, customized for arbitrary rotation.
 Public Sub ShowStraightenDialog(ByVal StraightenTarget As PD_ACTION_TARGET)
-
-    'Notify the resize dialog of the intended target
     FormStraighten.StraightenTarget = StraightenTarget
-
-    'Display the resize dialog
     ShowPDDialog vbModal, FormStraighten
-
 End Sub
 
 'Present a dialog box to ask the user how they want to tone map an incoming high bit-depth image.  Unlike other dialog
@@ -293,6 +303,7 @@ Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
     
         'Load the dialog, and supply it with any information it needs prior to display
         Load dialog_ToneMapping
+        Interface.FixPopupWindow dialog_ToneMapping.hWnd, True
         dialog_ToneMapping.fi_HandleCopy = fi_Handle
         
         'Display the (modal) dialog and wait for it to return
@@ -317,6 +328,7 @@ Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
         End If
             
         'Release any other references, then exit
+        Interface.FixPopupWindow dialog_ToneMapping.hWnd, False
         Unload dialog_ToneMapping
         Set dialog_ToneMapping = Nothing
         
@@ -329,7 +341,7 @@ Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
         
         'Check for an empty string; if found, build a default param string
         If Len(copyOfParamString) = 0 Then
-            copyOfParamString = buildParams(1, 0, 0)
+            copyOfParamString = BuildParams(1, 0, 0)
         End If
         
         'Return "OK"
@@ -343,12 +355,13 @@ End Function
 Public Function PromptNewPreset(ByRef srcPresetManager As pdToolPreset, ByRef parentForm As Form, ByRef dstPresetName As String) As VbMsgBoxResult
 
     Load dialog_AddPreset
+    Interface.FixPopupWindow dialog_AddPreset.hWnd, True
     dialog_AddPreset.ShowDialog srcPresetManager, parentForm
-
-    PromptNewPreset = dialog_AddPreset.DialogResult
     
+    PromptNewPreset = dialog_AddPreset.DialogResult
     dstPresetName = dialog_AddPreset.newPresetName
     
+    Interface.FixPopupWindow dialog_AddPreset.hWnd, False
     Unload dialog_AddPreset
     Set dialog_AddPreset = Nothing
 
@@ -383,7 +396,8 @@ Public Function PromptGenericYesNoDialog(ByVal questionID As String, ByVal quest
         
     'The user has not saved a previous answer.  Display the full dialog.
     Else
-    
+        
+        Interface.FixPopupWindow dialog_GenericMemory.hWnd, True
         dialog_GenericMemory.ShowDialog questionText, yesButtonText, noButtonText, cancelButtonText, rememberCheckBoxText, dialogTitleText, icon, defaultAnswer, defaultRemember
         
         'Retrieve the user's answer
@@ -394,7 +408,7 @@ Public Function PromptGenericYesNoDialog(ByVal questionID As String, ByVal quest
             g_UserPreferences.WritePreference "Dialogs", questionID, Trim$(Str(PromptGenericYesNoDialog))
         End If
         
-        'Release the dialog form
+        Interface.FixPopupWindow dialog_GenericMemory.hWnd, False
         Unload dialog_GenericMemory
         Set dialog_GenericMemory = Nothing
     
@@ -421,6 +435,7 @@ Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As Strin
     'The user has not saved a previous answer.  Display the full dialog.
     Else
     
+        Interface.FixPopupWindow dialog_GenericMemory.hWnd, True
         dialog_GenericMemory.ShowDialog questionText, yesButtonText, noButtonText, cancelButtonText, rememberCheckBoxText, dialogTitleText, icon, defaultAnswer, defaultRemember
         
         'Retrieve the user's answer
@@ -432,6 +447,7 @@ Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As Strin
         End If
         
         'Release the dialog form
+        Interface.FixPopupWindow dialog_GenericMemory.hWnd, False
         Unload dialog_GenericMemory
         Set dialog_GenericMemory = Nothing
     
@@ -454,11 +470,13 @@ End Function
 Public Function ChoosePDBrush(ByRef oldBrush As String, ByRef newBrush As String, Optional ByRef callingControl As pdBrushSelector) As VbMsgBoxResult
 
     Load dialog_FillSettings
+    Interface.FixPopupWindow dialog_FillSettings.hWnd, True
     dialog_FillSettings.ShowDialog oldBrush, callingControl
     
     ChoosePDBrush = dialog_FillSettings.DialogResult
     If ChoosePDBrush = vbOK Then newBrush = dialog_FillSettings.newBrush
     
+    Interface.FixPopupWindow dialog_FillSettings.hWnd, False
     Unload dialog_FillSettings
     Set dialog_FillSettings = Nothing
 
@@ -471,19 +489,21 @@ End Function
 '             (This reference will be used to provide live updates as the user plays with the pen dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function ShowPenDialog(ByRef newPen As String, Optional ByVal initialPen As String = vbNullString, Optional ByRef callingControl As pdPenSelector) As Boolean
-    ShowPenDialog = CBool(ChoosePDPen(initialPen, newPen, callingControl) = vbOK)
+Public Function ShowPenDialog(ByRef NewPen As String, Optional ByVal initialPen As String = vbNullString, Optional ByRef callingControl As pdPenSelector) As Boolean
+    ShowPenDialog = CBool(ChoosePDPen(initialPen, NewPen, callingControl) = vbOK)
 End Function
 
 'Display a custom pen selection dialog
-Public Function ChoosePDPen(ByRef oldPen As String, ByRef newPen As String, Optional ByRef callingControl As pdPenSelector) As VbMsgBoxResult
+Public Function ChoosePDPen(ByRef oldPen As String, ByRef NewPen As String, Optional ByRef callingControl As pdPenSelector) As VbMsgBoxResult
 
     Load dialog_OutlineSettings
+    Interface.FixPopupWindow dialog_OutlineSettings.hWnd, True
     dialog_OutlineSettings.ShowDialog oldPen, callingControl
     
     ChoosePDPen = dialog_OutlineSettings.DialogResult
-    If ChoosePDPen = vbOK Then newPen = dialog_OutlineSettings.newPen
+    If ChoosePDPen = vbOK Then NewPen = dialog_OutlineSettings.NewPen
     
+    Interface.FixPopupWindow dialog_OutlineSettings.hWnd, False
     Unload dialog_OutlineSettings
     Set dialog_OutlineSettings = Nothing
 
@@ -496,20 +516,22 @@ End Function
 '             (This reference will be used to provide live updates as the user plays with the dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function ShowGradientDialog(ByRef newGradient As String, Optional ByVal initialGradient As String = vbNullString, Optional ByRef callingControl As pdGradientSelector) As Boolean
-    ShowGradientDialog = CBool(ChoosePDGradient(initialGradient, newGradient, callingControl) = vbOK)
+Public Function ShowGradientDialog(ByRef NewGradient As String, Optional ByVal initialGradient As String = vbNullString, Optional ByRef callingControl As pdGradientSelector) As Boolean
+    ShowGradientDialog = CBool(ChoosePDGradient(initialGradient, NewGradient, callingControl) = vbOK)
 End Function
 
 'Display a custom gradient selection dialog
 ' RETURNS: MsgBoxResult from the dialog itself.  For easier interactions, I recommend using the showGradientDialog function, above.
-Public Function ChoosePDGradient(ByRef oldGradient As String, ByRef newGradient As String, Optional ByRef callingControl As pdGradientSelector) As VbMsgBoxResult
+Public Function ChoosePDGradient(ByRef oldGradient As String, ByRef NewGradient As String, Optional ByRef callingControl As pdGradientSelector) As VbMsgBoxResult
 
     Load dialog_GradientEditor
+    Interface.FixPopupWindow dialog_GradientEditor.hWnd, True
     dialog_GradientEditor.ShowDialog oldGradient, callingControl
     
     ChoosePDGradient = dialog_GradientEditor.DialogResult
-    If ChoosePDGradient = vbOK Then newGradient = dialog_GradientEditor.newGradient
+    If ChoosePDGradient = vbOK Then NewGradient = dialog_GradientEditor.NewGradient
     
+    Interface.FixPopupWindow dialog_GradientEditor.hWnd, False
     Unload dialog_GradientEditor
     Set dialog_GradientEditor = Nothing
 

@@ -94,7 +94,7 @@ End Enum
 ' 0: did not have to change smoothing, as ClearType is already enabled
 ' 1: had to change smoothing type from Standard to ClearType
 ' 2: had to turn on smoothing, as it was originally turned off
-Private hadToChangeSmoothing As Long
+Private m_ClearTypeForciblySet As Long
 
 'PhotoDemon is designed against pixels at an expected screen resolution of 96 DPI.  Other DPI settings mess up our calculations.
 ' To remedy this, we dynamically modify all pixels measurements at run-time, using the current screen resolution as our guide.
@@ -123,6 +123,12 @@ Private m_CurrentSystemDPI As Single
 ' we track the last sync operation we performed.  If we receive a duplicate sync request, we can safely ignore it.
 Private m_LastUISync_HadNoImages As PD_BOOL, m_LastUISync_HadNoLayers As PD_BOOL, m_LastUISync_HadMultipleLayers As PD_BOOL
 Private m_LastUILimitingSize_Small As Single, m_LastUILimitingSize_Large As Single
+
+'Popup dialogs present problems on non-Aero window managers, as VB's iconless approach results in the program "disappearing"
+' from places like the Alt+Tab menu.  As of v7.0, we now track nested popup windows and manually handle their icon updates.
+Private Const NESTED_POPUP_LIMIT As Long = 16&
+Private m_PopupHWnds() As Long, m_NumOfPopupHWnds As Long
+Private m_PopupIconsSmall() As Long, m_PopupIconsLarge() As Long
 
 'Because the Interface handler is a module and not a class, like I prefer, we need to use a dedicated initialization function.
 Public Sub InitializeInterfaceBackend()
@@ -996,16 +1002,14 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     
     'Mirror the current run-time window icons to the dialog; this allows the icons to appear in places like Alt+Tab
     ' on older OSes, even though a toolbox window has focus.
-    If (Not g_IsWin8OrLater) Then g_WindowManager.ForceWindowAppearInAltTab dialogHwnd, True
-    Dim tmpIconSmall As Long, tmpIconLarge As Long
-    MirrorCurrentIconsToWindow dialogHwnd, True, tmpIconSmall, tmpIconLarge
+    Interface.FixPopupWindow dialogHwnd, True
     
     'Use VB to actually display the dialog.  Note that the sub will pause here until the form is closed.
     dialogForm.Show dialogModality, FormMain
     
     'Now that the dialog has finished, we must replace the windows icons with its original ones - otherwise, VB will mistakenly
     ' unload our custom icons with the window!
-    ChangeWindowIcon dialogHwnd, tmpIconSmall, tmpIconLarge
+    Interface.FixPopupWindow dialogHwnd, False
     
     'Release our reference to this dialog
     If isSecondaryDialog Then
@@ -1065,6 +1069,50 @@ Public Function GetModalOwner(Optional ByVal assumeSecondaryDialog As Boolean = 
     End If
     
 End Function
+
+'When raising nested dialogs (e.g. a modal effect dialog raises a "new preset" window), we need to dynamically assign and release
+' icons to each popup.  This ensures that PD stays visible in places like Alt+Tab, even on pre-Win10 systems.
+Public Sub FixPopupWindow(ByVal targetHWnd As Long, Optional ByVal windowIsLoading As Boolean = False)
+
+    If windowIsLoading Then
+        
+        'We could dynamically resize our tracking collection to precisely match the number of open windows, but this would only
+        ' save us a few bytes.  Since we know we'll never exceed NESTED_POPUP_LIMIT, we just default to the max size off the bat.
+        If (Not VB_Hacks.IsArrayInitialized(m_PopupHWnds)) Then
+            m_NumOfPopupHWnds = 0
+            ReDim m_PopupHWnds(0 To NESTED_POPUP_LIMIT - 1) As Long
+            ReDim m_PopupIconsSmall(0 To NESTED_POPUP_LIMIT - 1) As Long
+            ReDim m_PopupIconsLarge(0 To NESTED_POPUP_LIMIT - 1) As Long
+        End If
+        
+        'We don't actually need to store the target window's hWnd (at present) but we grab it "just in case" future enhancements
+        ' require it.
+        m_PopupHWnds(m_NumOfPopupHWnds) = targetHWnd
+        
+        'We can't guarantee that Aero is active on Win 7 and earlier, so we must jump through some extra hoops to make
+        ' sure the popup window appears inside any raised Alt+Tab dialogs
+        If (Not g_IsWin8OrLater) Then g_WindowManager.ForceWindowAppearInAltTab targetHWnd, True
+        
+        'While here, cache the window's current icons.  (VB may insert its own default icons for some window types.)
+        ' When the dialog is closed, we will restore these icons to avoid leaking any of PD's custom icons.
+        Icons_and_Cursors.MirrorCurrentIconsToWindow targetHWnd, True, m_PopupIconsSmall(m_NumOfPopupHWnds), m_PopupIconsLarge(m_NumOfPopupHWnds)
+        m_NumOfPopupHWnds = m_NumOfPopupHWnds + 1
+        
+    Else
+    
+        m_NumOfPopupHWnds = m_NumOfPopupHWnds - 1
+        If (m_NumOfPopupHWnds >= 0) Then
+            Icons_and_Cursors.ChangeWindowIcon targetHWnd, m_PopupIconsSmall(m_NumOfPopupHWnds), m_PopupIconsLarge(m_NumOfPopupHWnds)
+        Else
+            m_NumOfPopupHWnds = 0
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  Interface.FixPopupWindow() has somehow unloaded more windows than it's loaded."
+            #End If
+        End If
+    
+    End If
+
+End Sub
 
 'Return the system keyboard delay, in seconds.  This isn't an exact science because the delay is actually hardware dependent
 ' (e.g. the system returns a value from 0 to 3), but we can use a "good enough" approximation.
@@ -1392,22 +1440,22 @@ Public Sub HandleClearType(ByVal startingProgram As Boolean)
     'At start-up, activate ClearType.  At shutdown, restore the original setting (as necessary).
     If startingProgram Then
     
-        hadToChangeSmoothing = 0
+        m_ClearTypeForciblySet = 0
     
         'Get current font smoothing setting
         Dim pv As Long
         SystemParametersInfo SPI_GETFONTSMOOTHING, 0, pv, 0
         
         'If font smoothing is disabled, mark it
-        If pv = 0 Then hadToChangeSmoothing = 2
+        If pv = 0 Then m_ClearTypeForciblySet = 2
         
         'If font smoothing is enabled but set to Standard instead of ClearType, mark it
         If pv <> 0 Then
             SystemParametersInfo SPI_GETFONTSMOOTHINGTYPE, 0, pv, 0
-            If pv = SmoothingStandardType Then hadToChangeSmoothing = 1
+            If pv = SmoothingStandardType Then m_ClearTypeForciblySet = 1
         End If
         
-        Select Case hadToChangeSmoothing
+        Select Case m_ClearTypeForciblySet
         
             'ClearType is enabled, no changes necessary
             Case 0
@@ -1425,7 +1473,7 @@ Public Sub HandleClearType(ByVal startingProgram As Boolean)
     
     Else
         
-        Select Case hadToChangeSmoothing
+        Select Case m_ClearTypeForciblySet
         
             'ClearType was enabled, no action necessary
             Case 0
