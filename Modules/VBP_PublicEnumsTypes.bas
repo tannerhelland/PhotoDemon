@@ -8,25 +8,11 @@ Public Type RGBQUAD
    alpha As Byte
 End Type
 
-Public Type RECTL
-    Left As Long
-    Top As Long
-    Right As Long
-    Bottom As Long
-End Type
-
 Public Type RECTF_RB
     Left As Single
     Top As Single
     Right As Single
     Bottom As Single
-End Type
-
-Public Type RECTF
-    Left As Single
-    Top As Single
-    Width As Single
-    Height As Single
 End Type
 
 'Currently supported tools; these numbers correspond to the index of the tool's command button on the main form.
