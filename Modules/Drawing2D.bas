@@ -238,6 +238,21 @@ End Enum
     Private Const P2_AA_None = 0&, P2_AA_Grayscale = 1&
 #End If
 
+'Certain structs are immensely helpful when drawing
+Public Type RECTL
+    Left As Long
+    Top As Long
+    Right As Long
+    Bottom As Long
+End Type
+
+Public Type RECTF
+    Left As Single
+    Top As Single
+    Width As Single
+    Height As Single
+End Type
+
 'If GDI+ is initialized successfully, this will be set to TRUE
 Private m_GDIPlusAvailable As Boolean
 
@@ -246,6 +261,13 @@ Private m_DebugMode As Boolean
 
 'When debug mode is active, live counts of various drawing objects are tracked on a per-backend basis
 Private m_SurfaceCount_GDIPlus As Long, m_PenCount_GDIPlus As Long, m_BrushCount_GDIPlus As Long
+
+'Shortcut function for creating a generic painter
+Public Function QuickCreatePainter(ByRef dstPainter As pd2DPainter) As Boolean
+    If (dstPainter Is Nothing) Then Set dstPainter = New pd2DPainter
+    dstPainter.SetDebugMode m_DebugMode
+    QuickCreatePainter = True
+End Function
 
 'Shortcut function for creating a new surface with the default rendering backend and default rendering settings
 Public Function QuickCreateSurfaceFromDC(ByRef dstSurface As pd2DSurface, ByVal srcDC As Long, Optional ByVal enableAntialiasing As Boolean = False) As Boolean

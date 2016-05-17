@@ -32,6 +32,9 @@ Private m_SurfaceBackend As PD_2D_RENDERING_BACKEND
 'The current surface handle.  Will be 0 if the surface is uninitialized.
 Private m_SurfaceHandle As Long
 
+'If this surface currently wraps an hDC, this will be non-zero
+Private m_SurfaceDC As Long
+
 'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
 Private m_DebugMode As Boolean
 
@@ -87,21 +90,34 @@ Public Sub SetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS, ByVal newS
     
 End Sub
 
+'Wrap this surface around some existing hDC.  It's fine to call this function multiple times on the same DC - changes to the handle
+' are detected automatically
 Public Function WrapSurfaceAroundDC(ByVal srcDC As Long) As Boolean
     
-    If (m_SurfaceHandle <> 0) Then ReleaseSurface
-    
-    'Call the backend-specific surface creation function
-    Select Case m_SurfaceBackend
+    If (srcDC = m_SurfaceDC) Then
+        WrapSurfaceAroundDC = True
+    Else
         
-        Case P2_DefaultBackend, P2_GDIPlusBackend
-            m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(srcDC, IIf(m_SurfaceAntialiasing >= P2_AA_Grayscale, GP_SM_AntiAlias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Normal, GP_POM_Half, GP_POM_None))
-            WrapSurfaceAroundDC = (m_SurfaceHandle <> 0)
+        If (srcDC <> 0) Then
+        
+            If (m_SurfaceHandle <> 0) Then ReleaseSurface
             
-    End Select
-    
-    'When debug mode is active, all object creations are reported back to the master Drawing2D module
-    If (WrapSurfaceAroundDC And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange m_SurfaceBackend, True
+            'Call the backend-specific surface creation function
+            Select Case m_SurfaceBackend
+                
+                Case P2_DefaultBackend, P2_GDIPlusBackend
+                    m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(srcDC, IIf(m_SurfaceAntialiasing >= P2_AA_Grayscale, GP_SM_AntiAlias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Normal, GP_POM_Half, GP_POM_None))
+                    WrapSurfaceAroundDC = (m_SurfaceHandle <> 0)
+                    If WrapSurfaceAroundDC Then m_SurfaceDC = srcDC
+                    
+            End Select
+            
+            'When debug mode is active, all object creations are reported back to the master Drawing2D module
+            If (WrapSurfaceAroundDC And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange m_SurfaceBackend, True
+            
+        End If
+        
+    End If
     
 End Function
 
@@ -146,6 +162,9 @@ Public Function ReleaseSurface() As Boolean
     Else
         ReleaseSurface = True
     End If
+    
+    'Releasing a handle also releases any underlying trackers (hDCs, pointers, etc)
+    m_SurfaceDC = 0
 
 End Function
 
@@ -182,7 +201,7 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_SURFACE_SETTINGS)
         End Select
     
     End If
-        
+    
 End Sub
 
 Public Sub ResetAllProperties()
