@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.170</langversion>
+<langversion>6.7.171</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -15155,6 +15155,12 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <!-- pdSurface2D.cls contains 0 phrases. -->
 
 <!-- END text for pdSurface2D.cls-->
+
+<!-- BEGIN text for pd2DPainter.cls -->
+
+<!-- pd2DPainter.cls contains 0 phrases. -->
+
+<!-- END text for pd2DPainter.cls-->
 
 <!-- Automatic text extraction complete. -->
 

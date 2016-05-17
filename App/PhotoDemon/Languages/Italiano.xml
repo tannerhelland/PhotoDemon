@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.170</langversion>
+<langversion>6.7.171</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -15153,6 +15153,12 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <!-- pdSurface2D.cls contains 0 phrases. -->
 
 <!-- END text for pdSurface2D.cls-->
+
+<!-- BEGIN text for pd2DPainter.cls -->
+
+<!-- pd2DPainter.cls contains 0 phrases. -->
+
+<!-- END text for pd2DPainter.cls-->
 
 <!-- Automatic text extraction complete. -->
 

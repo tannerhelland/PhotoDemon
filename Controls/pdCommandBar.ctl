@@ -449,7 +449,7 @@ Private Function SavePreset() As Boolean
     Dim newNameReturn As VbMsgBoxResult, newPresetName As String
     newNameReturn = DialogManager.PromptNewPreset(m_Presets, UserControl.Parent, newPresetName)
     
-    If newNameReturn = vbOK Then
+    If (newNameReturn = vbOK) Then
     
         'Create the new preset.  Note that this will also write the preset out to file, which is important as we want to save
         ' the user's work immediately, in case they cancel the dialog.
