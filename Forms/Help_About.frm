@@ -43,8 +43,8 @@ Begin VB.Form FormAbout
       Width           =   510
       _ExtentX        =   1296
       _ExtentY        =   661
-      BackColor       =   0
       AutoToggle      =   -1  'True
+      BackColor       =   0
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
@@ -76,8 +76,8 @@ Begin VB.Form FormAbout
       Width           =   510
       _ExtentX        =   1296
       _ExtentY        =   661
-      BackColor       =   0
       AutoToggle      =   -1  'True
+      BackColor       =   0
    End
    Begin PhotoDemon.pdButtonToolbox cmdSpeed 
       Height          =   510
@@ -168,13 +168,13 @@ Private Sub updateHoverState(ByVal isSomethingUsefulHovered As Boolean)
             tmrText.Interval = 50
             
             'Display a hand cursor
-            cMouseEvents.setSystemCursor IDC_HAND
+            cMouseEvents.SetSystemCursor IDC_HAND
             
             'Mark the new hover state
             inHoverState = True
             
         Else
-            cMouseEvents.setSystemCursor IDC_HAND
+            cMouseEvents.SetSystemCursor IDC_HAND
         End If
         
     Else
@@ -185,13 +185,13 @@ Private Sub updateHoverState(ByVal isSomethingUsefulHovered As Boolean)
             tmrText.Interval = 17
             
             'Restore an arrow cursor
-            cMouseEvents.setSystemCursor IDC_ARROW
+            cMouseEvents.SetSystemCursor IDC_ARROW
             
             'Mark the new hover state
             inHoverState = False
         
         Else
-            If Not (cMouseEvents Is Nothing) Then cMouseEvents.setSystemCursor IDC_ARROW
+            If Not (cMouseEvents Is Nothing) Then cMouseEvents.SetSystemCursor IDC_ARROW
         End If
         
     End If
@@ -271,25 +271,23 @@ Private Sub Form_Load()
     mouseY = -1
     curHoveredCredit = -1
     updateHoverState False
-    cmdOK.UseCustomBackgroundColor = True
-    cmdOK.BackgroundColor = Me.BackColor
     
     'Translate "click to visit" and cache it to improve performance
     clickToVisitText = "(" & g_Language.TranslateMessage("click to visit") & ") "
     
     'Enable mouse subclassing for the main buffer box, which allows us to track when the mouse leaves
     Set cMouseEvents = New pdInputMouse
-    cMouseEvents.addInputTracker picBuffer.hWnd, True, True, , True
-    cMouseEvents.setSystemCursor IDC_ARROW
+    cMouseEvents.AddInputTracker picBuffer.hWnd, True, True, , True
+    cMouseEvents.SetSystemCursor IDC_ARROW
 
     'Load the logo from the resource file
     Set logoDIB = New pdDIB
-    loadResourceToDIB "PDLOGONOTEXT", logoDIB
+    LoadResourceToDIB "PDLOGONOTEXT", logoDIB
     
     'Load the logo mask from the resource file into a temporary DIB
     Dim tmpMaskDIB As pdDIB
     Set tmpMaskDIB = New pdDIB
-    loadResourceToDIB "PDLOGOMASK", tmpMaskDIB
+    LoadResourceToDIB "PDLOGOMASK", tmpMaskDIB
     
     scrollOffset = 0
 
@@ -396,31 +394,31 @@ Private Sub Form_Load()
     ' Note that this DIB is dynamically resized; this solves issues with high-DPI screens
     Set backDIB = New pdDIB
     Dim logoAspectRatio As Double
-    logoAspectRatio = CDbl(logoDIB.getDIBWidth) / CDbl(logoDIB.getDIBHeight)
-    backDIB.createFromExistingDIB logoDIB, Me.ScaleWidth, Me.ScaleWidth / logoAspectRatio
+    logoAspectRatio = CDbl(logoDIB.GetDIBWidth) / CDbl(logoDIB.GetDIBHeight)
+    backDIB.CreateFromExistingDIB logoDIB, Me.ScaleWidth, Me.ScaleWidth / logoAspectRatio
     
     'Copy the resized logo into the logo DIB.  (We don't want to resize it every time we need it.)
-    logoDIB.eraseDIB
-    logoDIB.createFromExistingDIB backDIB
+    logoDIB.EraseDIB
+    logoDIB.CreateFromExistingDIB backDIB
     
     'Create a mask DIB at the same size.
     Set maskDIB = New pdDIB
-    maskDIB.createFromExistingDIB tmpMaskDIB, backDIB.getDIBWidth, backDIB.getDIBHeight, False
-    tmpMaskDIB.eraseDIB
+    maskDIB.CreateFromExistingDIB tmpMaskDIB, backDIB.GetDIBWidth, backDIB.GetDIBHeight, False
+    tmpMaskDIB.EraseDIB
     Set tmpMaskDIB = Nothing
     
     'In order to fix high-DPI screen issues, resize the buffer at run-time.  (Why not blit directly to the form?  Because
     ' the OK command button will flicker.  Instead, we just draw to a picture box sized to match the form.)
-    picBuffer.Move 0, 0, backDIB.getDIBWidth, backDIB.getDIBHeight
+    picBuffer.Move 0, 0, backDIB.GetDIBWidth, backDIB.GetDIBHeight
     
     'Remember that the PicBuffer picture box is used only as a placeholder.  We render everything manually to an
     ' off-screen buffer, then flip that buffer to the picture box after all rendering is complete.
     Set bufferDIB = New pdDIB
-    bufferDIB.createBlank backDIB.getDIBWidth, backDIB.getDIBHeight, 24, 0
+    bufferDIB.CreateBlank backDIB.GetDIBWidth, backDIB.GetDIBHeight, 24, 0
     
     'Initialize a few other variables for speed reasons
-    m_BufferWidth = backDIB.getDIBWidth
-    m_BufferHeight = backDIB.getDIBHeight
+    m_BufferWidth = backDIB.GetDIBWidth
+    m_BufferHeight = backDIB.GetDIBHeight
     m_FormWidth = Me.ScaleWidth
     
     'Initialize a custom font objects for names
@@ -449,7 +447,7 @@ Private Sub Form_Load()
     highlightFont.SetTextAlignment vbRightJustify
     
     'Render the primary background image to the form
-    BitBlt picBuffer.hDC, 0, 0, picBuffer.ScaleWidth, picBuffer.ScaleHeight, logoDIB.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt picBuffer.hDC, 0, 0, picBuffer.ScaleWidth, picBuffer.ScaleHeight, logoDIB.GetDIBDC, 0, 0, vbSrcCopy
     picBuffer.Picture = picBuffer.Image
     picBuffer.Refresh
     
@@ -488,7 +486,7 @@ End Sub
 Private Sub renderFullCreditList()
 
     'Erase the back DIB by copying over the logo (onto which we will render the text)
-    BitBlt backDIB.getDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, logoDIB.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt backDIB.GetDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, logoDIB.GetDIBDC, 0, 0, vbSrcCopy
         
     'Render all text
     Dim i As Long
@@ -500,19 +498,19 @@ Private Sub renderFullCreditList()
     
     'Black out the section of the back DIB where the base text appears - we don't want text rendering over
     ' the top of this section.
-    BitBlt backDIB.getDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, maskDIB.getDIBDC, 0, 0, vbMergePaint
+    BitBlt backDIB.GetDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, maskDIB.GetDIBDC, 0, 0, vbMergePaint
     
     'Blit a blank copy of the logo to the buffer DIB
-    BitBlt bufferDIB.getDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, logoDIB.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt bufferDIB.GetDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, logoDIB.GetDIBDC, 0, 0, vbSrcCopy
     
     'Blit the logo mask over the top
-    BitBlt bufferDIB.getDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, maskDIB.getDIBDC, 0, 0, vbSrcPaint
+    BitBlt bufferDIB.GetDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, maskDIB.GetDIBDC, 0, 0, vbSrcPaint
     
     'Blit the back DIB, with the text, over the top of the buffer
-    BitBlt bufferDIB.getDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, backDIB.getDIBDC, 0, 0, vbSrcAnd
+    BitBlt bufferDIB.GetDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, backDIB.GetDIBDC, 0, 0, vbSrcAnd
     
     'Copy the buffer to the main form and refresh it
-    BitBlt picBuffer.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferDIB.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt picBuffer.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferDIB.GetDIBDC, 0, 0, vbSrcCopy
     picBuffer.Picture = picBuffer.Image
     picBuffer.Refresh
 
@@ -557,7 +555,7 @@ Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal 
         If isHovered Then drawString = clickToVisitText & drawString
         
         'Render the "name" field
-        firstFont.AttachToDC backDIB.getDIBDC
+        firstFont.AttachToDC backDIB.GetDIBDC
         firstFont.FastRenderText m_BufferWidth - offsetX, offsetY, drawString
                 
         'Below the name, add the URL (or other description)
@@ -568,11 +566,11 @@ Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal 
         firstFont.ReleaseFromDC
         
         If isHovered Then
-            highlightFont.AttachToDC backDIB.getDIBDC
+            highlightFont.AttachToDC backDIB.GetDIBDC
             highlightFont.FastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
             highlightFont.ReleaseFromDC
         Else
-            secondFont.AttachToDC backDIB.getDIBDC
+            secondFont.AttachToDC backDIB.GetDIBDC
             secondFont.FastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
             secondFont.ReleaseFromDC
         End If
@@ -583,7 +581,7 @@ Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal 
             Dim tmpRect As RECTL, hBrush As Long
             SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + FixDPI(BLOCKHEIGHT)
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
-            FrameRect backDIB.getDIBDC, tmpRect, hBrush
+            FrameRect backDIB.GetDIBDC, tmpRect, hBrush
             DeleteObject hBrush
         
         End If
