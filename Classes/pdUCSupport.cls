@@ -91,8 +91,8 @@ Private WithEvents m_KeyEvents As pdInputKeyboard
 Attribute m_KeyEvents.VB_VarHelpID = -1
 Private WithEvents m_FocusDetector As pdFocusDetector
 Attribute m_FocusDetector.VB_VarHelpID = -1
-Private WithEvents m_Painter As pdWindowPainter
-Attribute m_Painter.VB_VarHelpID = -1
+Private WithEvents m_WindowPainter As pdWindowPainter
+Attribute m_WindowPainter.VB_VarHelpID = -1
 Private WithEvents m_MoveSize As pdWindowSize
 Attribute m_MoveSize.VB_VarHelpID = -1
 Private m_ToolTipManager As pdToolTip
@@ -149,6 +149,9 @@ Private m_CustomCaptionPaintingActive As Boolean
 ' This value is set to FALSE by default.
 Private m_NoBackBufferMode As Boolean
 
+'pd2DPaint classes, for generic fill/stroke capabilities
+Private m_Painter As pd2DPainter
+
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
 ' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
@@ -203,8 +206,8 @@ Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         If Not g_IsProgramRunning Then UpdateColorList
         
         'Flicker-free double-buffered window painting.  For IDE support of windowless controls, we have no choice but to subclass.
-        Set m_Painter = New pdWindowPainter
-        If g_IsProgramRunning Then m_Painter.StartPainter m_hWnd
+        Set m_WindowPainter = New pdWindowPainter
+        If g_IsProgramRunning Then m_WindowPainter.StartPainter m_hWnd
         
         'Reliable, API-based Got/LostFocus detection
         Set m_FocusDetector = New pdFocusDetector
@@ -567,11 +570,18 @@ Private Function ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Opti
     ' we want to wipe the entire buffer.  As a convenience to the caller, we also apply the backcolor inside the IDE.
     If (Not m_NoBackBufferMode) Then
         If g_IsProgramRunning Then
+            
+            'Use GDI+ to apply the fill
+            Dim cSurface As pd2DSurface, cBrush As pd2DBrush
+            Drawing2D.QuickCreateSolidBrush cBrush, newBackColor
+            Drawing2D.QuickCreateSurfaceFromDC cSurface, m_BackBuffer.GetDIBDC, False
+            
             If (rpLeft = 0#) And (rpTop = 0#) And (rpWidth = 0#) And (rpHeight = 0#) Then
-                GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0#, 0#, m_Width, m_Height, newBackColor
+                m_Painter.FillRectangleI cSurface, cBrush, 0#, 0#, m_Width, m_Height
             Else
-                GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, rpLeft, rpTop, rpWidth, rpHeight, newBackColor
+                m_Painter.FillRectangleF cSurface, cBrush, rpLeft, rpTop, rpWidth, rpHeight
             End If
+            
         Else
             If (rpLeft = 0#) And (rpTop = 0#) And (rpWidth = 0#) And (rpHeight = 0#) Then
                 Drawing.FillRectToDC m_BackBuffer.GetDIBDC, -1, -1, m_Width + 2, m_Height + 2, newBackColor
@@ -784,22 +794,22 @@ End Sub
 
 'Rather than bother the caller with paint requests, we handle them internally, by flipping the back buffer to the underlying
 ' control's DC.
-Private Sub m_Painter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
+Private Sub m_WindowPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
     
     Dim targetDC As Long
-    If m_hDC <> 0 Then targetDC = m_hDC Else targetDC = m_Painter.GetPaintStructDC
+    If m_hDC <> 0 Then targetDC = m_hDC Else targetDC = m_WindowPainter.GetPaintStructDC
     
     'If we are currently using "no backbuffer" mode, just paint our backcolor to the DC
     If m_NoBackBufferMode Then
     
-        Dim BackgroundColor As Long
+        Dim backgroundColor As Long
         If m_BackColor = -1 Then
-            BackgroundColor = m_Colors.RetrieveColor(UCS_Background)
+            backgroundColor = m_Colors.RetrieveColor(UCS_Background)
         Else
-            BackgroundColor = m_BackColor
+            backgroundColor = m_BackColor
         End If
         
-        Drawing.FillRectToDC targetDC, winLeft - 1, winTop - 1, winWidth + 2, winHeight + 2, BackgroundColor
+        Drawing.FillRectToDC targetDC, winLeft - 1, winTop - 1, winWidth + 2, winHeight + 2, backgroundColor
     
     'If backbuffering is active (as it is with most PD controls), copy the relevant portion of the buffer into place.
     Else
@@ -986,7 +996,7 @@ Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
     
     'When running, rely on the painter to paint the control for us
     If g_IsProgramRunning Then
-        m_Painter.RequestRepaint raiseImmediateDrawEvent
+        m_WindowPainter.RequestRepaint raiseImmediateDrawEvent
     Else
         'Inside the IDE, subclassing is disabled, so we must paint the control manually
         If (Not (m_BackBuffer Is Nothing)) And (Not m_NoBackBufferMode) Then
@@ -995,7 +1005,7 @@ Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
             If (Not m_CustomCaptionPaintingActive) Then SyncBackBufferSize True
             
             Dim targetDC As Long
-            If m_hDC <> 0 Then targetDC = m_hDC Else targetDC = m_Painter.GetPaintStructDC
+            If m_hDC <> 0 Then targetDC = m_hDC Else targetDC = m_WindowPainter.GetPaintStructDC
             BitBlt targetDC, 0, 0, m_Width, m_Height, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
             
         End If
@@ -1068,6 +1078,8 @@ Private Sub Class_Initialize()
     ' formal UC registration event.
     Set m_BackBuffer = New pdDIB
     Set m_Caption = New pdCaption
+    Set m_Painter = New pd2DPainter
+    Drawing2D.QuickCreatePainter m_Painter
     
 End Sub
 
@@ -1085,7 +1097,7 @@ Private Sub Class_Terminate()
     'Release default functionality next, also in reverse-order
     If Not (m_MoveSize Is Nothing) Then Set m_MoveSize = Nothing
     If Not (m_FocusDetector Is Nothing) Then Set m_FocusDetector = Nothing
-    If Not (m_Painter Is Nothing) Then Set m_Painter = Nothing
+    If Not (m_WindowPainter Is Nothing) Then Set m_WindowPainter = Nothing
     If Not (m_ToolTipManager Is Nothing) Then Set m_ToolTipManager = Nothing
     
     'As a final step, release this class's internal subclasser
