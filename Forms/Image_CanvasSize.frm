@@ -195,9 +195,9 @@ Option Explicit
 Private m_CurrentAnchor As Long
 
 'We must also track which arrows are drawn where on the command button array
-Private arrowLocations() As String
+Private m_ArrowLocations() As String
 
-Private Sub fillArrowLocations(ByRef aLocations() As String)
+Private Sub FillArrowLocations(ByRef aLocations() As String)
 
     'Start with the current position.  It's the easiest one to fill
     aLocations(m_CurrentAnchor) = "IMGMEDIUM"
@@ -225,18 +225,18 @@ End Sub
 'The user can use an array of command buttons to specify the image's anchor position on the new canvas.  I adopted this
 ' model from comparable tools in Photoshop and Paint.NET, among others.  Images are loaded from the resource section
 ' of the EXE and applied to the command buttons as necessary.
-Private Sub updateAnchorButtons()
+Private Sub UpdateAnchorButtons()
     
     Dim i As Long
     
     'Build an array that contains the arrow to appear in each location.
-    ReDim arrowLocations(0 To 8) As String
-    fillArrowLocations arrowLocations
+    ReDim m_ArrowLocations(0 To 8) As String
+    FillArrowLocations m_ArrowLocations
     
     'Next, extract relevant icons from the resource file, and render them onto the buttons at run-time.
     For i = 0 To 8
-        If Len(arrowLocations(i)) <> 0 Then
-            cmdAnchor(i).AssignImage arrowLocations(i)
+        If Len(m_ArrowLocations(i)) <> 0 Then
+            cmdAnchor(i).AssignImage m_ArrowLocations(i)
         Else
             cmdAnchor(i).AssignImage "", Nothing
         End If
@@ -246,21 +246,17 @@ End Sub
 
 Private Sub cmdAnchor_Click(Index As Integer)
     m_CurrentAnchor = Index
-    updateAnchorButtons
+    UpdateAnchorButtons
 End Sub
 
 'The current anchor must be manually saved as part of preset data
 Private Sub cmdBar_AddCustomPresetData()
-    cmdBar.AddPresetData "currentAnchor", Str(m_CurrentAnchor)
-End Sub
-
-Private Sub cmdBar_ExtraValidations()
-    If Not ucResize.IsValid(True) Then cmdBar.ValidationFailed
+    cmdBar.AddPresetData "currentAnchor", Trim$(Str(m_CurrentAnchor))
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Canvas size", , BuildParams(ucResize.ImgWidth, ucResize.ImgHeight, m_CurrentAnchor, colorPicker.Color, ucResize.UnitOfMeasurement, ucResize.ImgDPIAsPPI), UNDO_IMAGEHEADER
+    Process "Canvas size", , BuildParams(ucResize.ResizeWidth, ucResize.ResizeHeight, m_CurrentAnchor, colorPicker.Color, ucResize.UnitOfMeasurement, ucResize.ResizeDPIAsPPI), UNDO_IMAGEHEADER
 End Sub
 
 'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
@@ -268,8 +264,8 @@ End Sub
 Private Sub cmdBar_RandomizeClick()
     
     ucResize.LockAspectRatio = False
-    ucResize.ImgWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
-    ucResize.ImgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+    ucResize.ResizeWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
+    ucResize.ResizeHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
     
 End Sub
 
@@ -279,7 +275,7 @@ Private Sub cmdBar_ReadCustomPresetData()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updateAnchorButtons
+    UpdateAnchorButtons
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -312,7 +308,7 @@ Private Sub Form_Load()
     ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
     
     'Start with a default top-left position for the anchor
-    updateAnchorButtons
+    UpdateAnchorButtons
     
 End Sub
 
@@ -419,7 +415,4 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     Message "Finished."
     
 End Sub
-
-
-
 

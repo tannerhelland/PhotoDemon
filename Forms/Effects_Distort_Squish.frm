@@ -33,7 +33,6 @@ Begin VB.Form FormSquish
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -144,7 +143,7 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -154,9 +153,9 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -237,9 +236,9 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
     yRatio = yRatio / 100
     
     'Store region width and height as floating-point
-    Dim imgWidth As Double, imgHeight As Double
-    imgWidth = finalX - initX
-    imgHeight = finalY - initY
+    Dim iWidth As Double, iHeight As Double
+    iWidth = finalX - initX
+    iHeight = finalY - initY
     
     'Build a look-up table for horizontal line size and offset
     Dim leftX() As Double, lineWidth() As Double
@@ -252,7 +251,7 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
         Else
             leftX(y) = (y / finalY) * midX * -xRatio
         End If
-        lineWidth(y) = imgWidth - (leftX(y) * 2)
+        lineWidth(y) = iWidth - (leftX(y) * 2)
         If lineWidth(y) = 0 Then lineWidth(y) = 0.000000001
     Next y
     
@@ -267,7 +266,7 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
         Else
             topY(x) = (x / finalX) * midY * -yRatio
         End If
-        lineHeight(x) = imgHeight - (topY(x) * 2)
+        lineHeight(x) = iHeight - (topY(x) * 2)
         If lineHeight(x) = 0 Then lineHeight(x) = 0.000000001
     Next x
     
@@ -295,8 +294,8 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
             nY = y + ssY(sampleIndex)
             
             'Reverse-map the coordinates back onto the original image (to allow for resampling)
-            srcX = ((nX - leftX(nY)) / lineWidth(nY)) * imgWidth
-            srcY = ((nY - topY(nX)) / lineHeight(nX)) * imgHeight
+            srcX = ((nX - leftX(nY)) / lineWidth(nY)) * iWidth
+            srcY = ((nY - topY(nX)) / lineHeight(nX)) * iHeight
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
             fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
@@ -345,7 +344,7 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -359,12 +358,12 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Squish", , buildParams(sltRatioX, sltRatioY, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Squish", , BuildParams(sltRatioX, sltRatioY, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -382,7 +381,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
         
     'Create the preview
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -390,7 +389,7 @@ End Sub
 Private Sub Form_Load()
 
     'Suspend previews until the dialog is initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
@@ -416,7 +415,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then SquishImage sltRatioX, sltRatioY, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then SquishImage sltRatioX, sltRatioY, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

@@ -542,10 +542,10 @@ Private Sub CmdOK_Click()
         If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSpinner) Or (TypeOf eControl Is pdResize) Then
             
             'Just to be safe, verify matching container hWnd properties
-            If eControl.Container.hWnd = UserControl.ContainerHwnd Then
+            If (eControl.Container.hWnd = UserControl.ContainerHwnd) Then
                 
                 'Finally, ask the control to validate itself
-                If Not eControl.IsValid Then
+                If (Not eControl.IsValid) Then
                     validateCheck = False
                     Exit For
                 End If
@@ -580,7 +580,7 @@ Private Sub CmdOK_Click()
     RaiseEvent OKClick
     
     'When everything is done, unload our parent form (unless the override property is set, as it is by default)
-    If Not m_dontAutoUnloadParent Then Unload UserControl.Parent
+    If (Not m_dontAutoUnloadParent) Then Unload UserControl.Parent
     
 End Sub
 
@@ -912,7 +912,7 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
             'PhotoDemon's resize UC is a special case.  Because it uses multiple properties (despite being
             ' a single control), we must combine its various values into a single string.
             Case "pdResize"
-                controlValue = buildParams(eControl.imgWidth, eControl.imgHeight, eControl.LockAspectRatio, eControl.unitOfMeasurement, eControl.imgDPI, eControl.UnitOfResolution)
+                controlValue = BuildParams(eControl.ResizeWidth, eControl.ResizeHeight, eControl.LockAspectRatio, eControl.UnitOfMeasurement, eControl.ResizeDPI, eControl.UnitOfResolution)
                 
             'Metadata management controls provide their own XML string
             Case "pdMetadata"
@@ -1118,13 +1118,13 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
                         eControl.LockAspectRatio = False
                         
                         'Retrieve units for the combo boxes
-                        eControl.unitOfMeasurement = cParam.GetLong(4, MU_PIXELS)
+                        eControl.UnitOfMeasurement = cParam.GetLong(4, MU_PIXELS)
                         eControl.UnitOfResolution = cParam.GetLong(6, RU_PPI)
                         
                         'Retrieve any numeric values for the control
-                        eControl.imgDPI = cParam.GetLong(5, 96)
-                        eControl.imgWidth = cParam.GetDouble(1, 1920)
-                        eControl.imgHeight = cParam.GetDouble(2, 1080)
+                        eControl.ResizeDPI = cParam.GetLong(5, 96)
+                        eControl.ResizeWidth = cParam.GetDouble(1, 1920)
+                        eControl.ResizeHeight = cParam.GetDouble(2, 1080)
                         
                     'Metadata management controls handle their own XML string parsing
                     Case "pdMetadata"

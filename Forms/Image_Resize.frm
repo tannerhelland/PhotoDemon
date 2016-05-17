@@ -274,10 +274,6 @@ Private Sub chkNames_Click()
     SwitchResampleOption
 End Sub
 
-Private Sub cmdBar_ExtraValidations()
-    If Not ucResize.IsValid(True) Then cmdBar.ValidationFailed
-End Sub
-
 'OK button
 Private Sub cmdBar_OKClick()
     
@@ -293,10 +289,10 @@ Private Sub cmdBar_OKClick()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            Process "Resize image", , BuildParams(ucResize.ImgWidth, ucResize.ImgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.UnitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
+            Process "Resize image", , BuildParams(ucResize.ResizeWidth, ucResize.ResizeHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.UnitOfMeasurement, ucResize.ResizeDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
         
         Case PD_AT_SINGLELAYER
-            Process "Resize layer", , BuildParams(ucResize.ImgWidth, ucResize.ImgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.UnitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_LAYER
+            Process "Resize layer", , BuildParams(ucResize.ResizeWidth, ucResize.ResizeHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.UnitOfMeasurement, ucResize.ResizeDPIAsPPI, m_ResizeTarget), UNDO_LAYER
     
     End Select
     
@@ -307,8 +303,8 @@ End Sub
 Private Sub cmdBar_RandomizeClick()
 
     ucResize.LockAspectRatio = False
-    ucResize.ImgWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
-    ucResize.ImgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+    ucResize.ResizeWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
+    ucResize.ResizeHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
 
 End Sub
 

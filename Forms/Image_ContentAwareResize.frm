@@ -104,20 +104,16 @@ Public Property Let ResizeTarget(newTarget As PD_ACTION_TARGET)
     m_ResizeTarget = newTarget
 End Property
 
-Private Sub cmdBar_ExtraValidations()
-    If Not ucResize.IsValid(True) Then cmdBar.ValidationFailed
-End Sub
-
 'OK button
 Private Sub cmdBar_OKClick()
 
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            Process "Content-aware image resize", , BuildParams(ucResize.ImgWidth, ucResize.ImgHeight, ucResize.UnitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
+            Process "Content-aware image resize", , BuildParams(ucResize.ResizeWidth, ucResize.ResizeHeight, ucResize.UnitOfMeasurement, ucResize.ResizeDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
         
         Case PD_AT_SINGLELAYER
-            Process "Content-aware layer resize", , BuildParams(ucResize.ImgWidth, ucResize.ImgHeight, ucResize.UnitOfMeasurement, ucResize.ImgDPIAsPPI, m_ResizeTarget), UNDO_LAYER
+            Process "Content-aware layer resize", , BuildParams(ucResize.ResizeWidth, ucResize.ResizeHeight, ucResize.UnitOfMeasurement, ucResize.ResizeDPIAsPPI, m_ResizeTarget), UNDO_LAYER
     
     End Select
 
@@ -132,12 +128,12 @@ Private Sub cmdBar_RandomizeClick()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            ucResize.ImgWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
-            ucResize.ImgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+            ucResize.ResizeWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
+            ucResize.ResizeHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
         
         Case PD_AT_SINGLELAYER
-            ucResize.ImgWidthInPixels = (pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False) / 2) + (Rnd * pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False))
-            ucResize.ImgHeightInPixels = (pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False) / 2) + (Rnd * pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False))
+            ucResize.ResizeWidthInPixels = (pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False) / 2) + (Rnd * pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False))
+            ucResize.ResizeHeightInPixels = (pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False) / 2) + (Rnd * pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False))
     
     End Select
     

@@ -1651,7 +1651,7 @@ Private Sub cmbResizeFit_Click()
     
     'Paint the sample image to the screen
     picResizeDemo.Picture = LoadPicture("")
-    tmpDIB.alphaBlendToDC picResizeDemo.hDC
+    tmpDIB.AlphaBlendToDC picResizeDemo.hDC
     picResizeDemo.Picture = picResizeDemo.Image
 
 End Sub
@@ -1889,11 +1889,11 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                 Select Case g_ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)
                 
                     Case PDIF_BMP
-                        m_FormatParams = buildParams(CBool(chkBMPRLE))
+                        m_FormatParams = BuildParams(CBool(chkBMPRLE))
                     
                     Case PDIF_GIF
                         If sltThreshold.IsValid Then
-                            m_FormatParams = buildParams(sltThreshold.Value)
+                            m_FormatParams = BuildParams(sltThreshold.Value)
                         Else
                             Exit Sub
                         End If
@@ -1901,7 +1901,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                     Case PDIF_JP2
                             'Determine the compression ratio for the JPEG-2000 wavelet transformation
                             If sltJP2Quality.IsValid Then
-                                m_FormatParams = buildParams(sltQuality.Value)
+                                m_FormatParams = BuildParams(sltQuality.Value)
                             Else
                                 Exit Sub
                             End If
@@ -1912,7 +1912,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                         
                         'First, determine the compression quality for the quantization tables
                         If sltQuality.IsValid Then
-                            m_FormatParams = buildParams(sltQuality)
+                            m_FormatParams = BuildParams(sltQuality)
                         Else
                             Exit Sub
                         End If
@@ -2498,7 +2498,7 @@ Private Sub Form_Load()
     'For some reason, the container picture boxes automatically acquire the cursor of children objects.
     ' Manually force those cursors to arrows to prevent this.
     For i = 0 To picContainer.Count - 1
-        setArrowCursor picContainer(i)
+        SetArrowCursor picContainer(i)
     Next i
     
     'Cache the translations for words used in high-performance processes
@@ -2956,12 +2956,12 @@ Private Sub prepareForBatchConversion()
                 
                     'If the user has requested automatic lighting fixes, apply it now
                     If CBool(chkActions(0)) Then
-                        Process "White balance", , buildParams("0.1"), UNDO_LAYER
+                        Process "White balance", , BuildParams("0.1"), UNDO_LAYER
                     End If
                 
                     'If the user has requested an image resize, apply it now
                     If CBool(chkActions(1)) Then
-                        Process "Resize image", , buildParams(ucResize.imgWidth, ucResize.imgHeight, RESIZE_LANCZOS, cmbResizeFit.ListIndex, RGB(255, 255, 255), ucResize.unitOfMeasurement, ucResize.ImgDPIAsPPI, PD_AT_WHOLEIMAGE)
+                        Process "Resize image", , BuildParams(ucResize.ResizeWidth, ucResize.ResizeHeight, RESIZE_LANCZOS, cmbResizeFit.ListIndex, RGB(255, 255, 255), ucResize.UnitOfMeasurement, ucResize.ResizeDPIAsPPI, PD_AT_WHOLEIMAGE)
                     End If
                     
                     'If the user has requested a macro, play it now
