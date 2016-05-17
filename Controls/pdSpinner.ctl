@@ -189,9 +189,11 @@ End Property
 ' error message describing the invalidity in more detail.
 Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
     If m_ErrorState Then
-        If showError Then IsTextEntryValid True
-        m_EditBox.SetFocusToEditBox
-        m_EditBox.SelectAll
+        If showError Then
+            IsTextEntryValid True
+            m_EditBox.SetFocusToEditBox
+            m_EditBox.SelectAll
+        End If
     End If
     IsValid = Not m_ErrorState
 End Property

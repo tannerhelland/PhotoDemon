@@ -32,7 +32,6 @@ Begin VB.Form FormLensFlare
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -563,7 +562,7 @@ Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal cent
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -573,9 +572,9 @@ Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal cent
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -696,7 +695,7 @@ Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal cent
     Next y
         If toPreview = False Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -710,7 +709,7 @@ Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal cent
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
    
 End Sub
 
@@ -724,10 +723,10 @@ Private Sub btsSyncIntensity_Click(ByVal buttonIndex As Long)
     'Synchronize secondary and tertiary intensities to primary intensity
     If buttonIndex = 0 Then
     
-        cmdBar.markPreviewStatus False
+        cmdBar.MarkPreviewStatus False
         sltIntensity(1).Value = sltIntensity(0).Value
         sltIntensity(2).Value = sltIntensity(0).Value
-        cmdBar.markPreviewStatus True
+        cmdBar.MarkPreviewStatus True
         
         sltIntensity(1).Enabled = False
         sltIntensity(2).Enabled = False
@@ -745,7 +744,7 @@ Private Sub btsSyncIntensity_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Lens flare", , buildParams(sltXCenter, sltYCenter, sltRadius, sltIntensity(0), sltIntensity(1), sltIntensity(2), sltHue), UNDO_LAYER
+    Process "Lens flare", , BuildParams(sltXCenter, sltYCenter, sltRadius, sltIntensity(0), sltIntensity(1), sltIntensity(2), sltHue), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -795,14 +794,14 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then LensFlare sltXCenter.Value, sltYCenter.Value, sltRadius, sltIntensity(0), sltIntensity(1), sltIntensity(2), sltHue, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then LensFlare sltXCenter.Value, sltYCenter.Value, sltRadius, sltIntensity(0), sltIntensity(1), sltIntensity(2), sltHue, True, pdFxPreview
 End Sub
 
 Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
 End Sub
 
@@ -822,10 +821,10 @@ Private Sub sltIntensity_Change(Index As Integer)
         
         'We disable previews before changing the other two intensity sliders; otherwise, their value changes
         ' will cause additional preview events to fire, harming performance.
-        cmdBar.markPreviewStatus False
+        cmdBar.MarkPreviewStatus False
         sltIntensity(1).Value = sltIntensity(0).Value
         sltIntensity(2).Value = sltIntensity(0).Value
-        cmdBar.markPreviewStatus True
+        cmdBar.MarkPreviewStatus True
         
     End If
     

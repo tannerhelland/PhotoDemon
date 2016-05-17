@@ -318,6 +318,11 @@ Public Function IsValid(Optional ByVal showErrors As Boolean = True) As Boolean
         Exit Function
     End If
     
+    If Not tudResolution.IsValid(showErrors) Then
+        IsValid = False
+        Exit Function
+    End If
+    
     Dim pxWidthFloat As Double, pxHeightFloat As Double
     pxWidthFloat = ConvertUnitToPixels(GetCurrentWidthUnit, tudWidth, GetResolutionAsPPI(), m_initWidth)
     pxHeightFloat = ConvertUnitToPixels(GetCurrentWidthUnit, tudHeight, GetResolutionAsPPI(), m_initHeight)
@@ -420,11 +425,11 @@ End Property
 
 'Width and height in pixels can be set/retrieved from these properties.  Note that if the current text value for either dimension
 ' is invalid, this function will simply return the image's original width/height (in pixels, obviously).
-Public Property Get ImgWidthInPixels() As Long
-    ImgWidthInPixels = ConvertUnitToPixels(GetCurrentWidthUnit, tudWidth, GetResolutionAsPPI(), m_initWidth)
+Public Property Get ResizeWidthInPixels() As Long
+    ResizeWidthInPixels = ConvertUnitToPixels(GetCurrentWidthUnit, tudWidth, GetResolutionAsPPI(), m_initWidth)
 End Property
 
-Public Property Let ImgWidthInPixels(newWidth As Long)
+Public Property Let ResizeWidthInPixels(newWidth As Long)
     If m_PercentDisabled Then
         cmbWidthUnit.ListIndex = MU_PIXELS - 1
     Else
@@ -436,11 +441,11 @@ Public Property Let ImgWidthInPixels(newWidth As Long)
     SyncDimensions True
 End Property
 
-Public Property Get ImgHeightInPixels() As Long
-    ImgHeightInPixels = ConvertUnitToPixels(GetCurrentHeightUnit, tudHeight, GetResolutionAsPPI(), m_initHeight)
+Public Property Get ResizeHeightInPixels() As Long
+    ResizeHeightInPixels = ConvertUnitToPixels(GetCurrentHeightUnit, tudHeight, GetResolutionAsPPI(), m_initHeight)
 End Property
 
-Public Property Let ImgHeightInPixels(newHeight As Long)
+Public Property Let ResizeHeightInPixels(newHeight As Long)
     If m_PercentDisabled Then
         cmbWidthUnit.ListIndex = MU_PIXELS - 1
     Else
@@ -455,56 +460,56 @@ End Property
 'Width and height can be set/retrieved from these properties. IMPORTANT NOTE: these functions will return width/height
 ' per the current unit of measurement, so make sure to also read (and process) the .UnitOfMeasurement property!
 ' If the current text value for either dimension is invalid, this function will simply return the image's original width/height.
-Public Property Get ImgWidth() As Double
+Public Property Get ResizeWidth() As Double
     If tudWidth.IsValid(False) Then
-        ImgWidth = tudWidth
+        ResizeWidth = tudWidth
     Else
-        ImgWidth = ConvertOtherUnitToPixels(GetCurrentWidthUnit, m_initWidth, GetResolutionAsPPI(), m_initWidth)
+        ResizeWidth = ConvertOtherUnitToPixels(GetCurrentWidthUnit, m_initWidth, GetResolutionAsPPI(), m_initWidth)
     End If
 End Property
 
-Public Property Let ImgWidth(newWidth As Double)
+Public Property Let ResizeWidth(newWidth As Double)
     tudWidth = newWidth
     SyncDimensions True
 End Property
 
-Public Property Get ImgHeight() As Double
+Public Property Get ResizeHeight() As Double
     If tudHeight.IsValid(False) Then
-        ImgHeight = tudHeight
+        ResizeHeight = tudHeight
     Else
-        ImgHeight = ConvertOtherUnitToPixels(GetCurrentHeightUnit, m_initHeight, GetResolutionAsPPI(), m_initHeight)
+        ResizeHeight = ConvertOtherUnitToPixels(GetCurrentHeightUnit, m_initHeight, GetResolutionAsPPI(), m_initHeight)
     End If
 End Property
 
-Public Property Let ImgHeight(newHeight As Double)
+Public Property Let ResizeHeight(newHeight As Double)
     tudHeight = newHeight
     SyncDimensions False
 End Property
 
 'Resolution can be set/retrieved via this property.  Note that if the current text value for resolution is invalid,
 ' this function will simply return the image's original resolution.
-Public Property Get ImgDPIAsPPI() As Long
+Public Property Get ResizeDPIAsPPI() As Long
     If tudResolution.IsValid(False) Then
-        ImgDPIAsPPI = GetResolutionAsPPI()
+        ResizeDPIAsPPI = GetResolutionAsPPI()
     Else
-        ImgDPIAsPPI = m_initDPI
+        ResizeDPIAsPPI = m_initDPI
     End If
 End Property
 
-Public Property Let ImgDPIAsPPI(newDPI As Long)
+Public Property Let ResizeDPIAsPPI(newDPI As Long)
     tudResolution = newDPI
     SyncDimensions True
 End Property
 
-Public Property Get ImgDPI() As Long
+Public Property Get ResizeDPI() As Long
     If tudResolution.IsValid(False) Then
-        ImgDPI = tudResolution
+        ResizeDPI = tudResolution
     Else
-        ImgDPI = m_initDPI
+        ResizeDPI = m_initDPI
     End If
 End Property
 
-Public Property Let ImgDPI(newDPI As Long)
+Public Property Let ResizeDPI(newDPI As Long)
     tudResolution = newDPI
     SyncDimensions True
 End Property
@@ -684,7 +689,7 @@ End Sub
 ' width and height.  The only thing it immediately changes is the pixel size label, and it only changes that if the current
 ' width/height unit is inches or cm.
 Private Sub tudResolution_Change()
-    UpdateAspectRatio
+    If (tudResolution.IsValid(False)) Then UpdateAspectRatio
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -762,11 +767,11 @@ End Sub
 
 'If "Lock Image Aspect Ratio" is selected, these two routines keep all values in sync
 Private Sub tudHeight_Change()
-    If Not m_unitSyncingSuspended Then SyncDimensions False
+    If (Not m_unitSyncingSuspended) And (tudWidth.IsValid(False)) Then SyncDimensions False
 End Sub
 
 Private Sub tudWidth_Change()
-    If Not m_unitSyncingSuspended Then SyncDimensions True
+    If (Not m_unitSyncingSuspended) And (tudWidth.IsValid(False)) Then SyncDimensions True
 End Sub
 
 Private Sub PopulateDropdowns()
@@ -900,7 +905,7 @@ Private Sub UpdateAspectRatio()
 
     Dim wholeNumber As Double, Numerator As Double, Denominator As Double
     
-    If tudWidth.IsValid And tudHeight.IsValid Then
+    If tudWidth.IsValid(False) And tudHeight.IsValid(False) Then
     
         'Retrieve width and height values in pixel amounts
         Dim imgWidthPixels As Double, imgHeightPixels As Double
@@ -958,7 +963,7 @@ End Function
 ' if necessary.  (Note that all conversion functions in PD require resolution as PPI.)
 Private Function GetResolutionAsPPI() As Double
     
-    If tudResolution.IsValid Then
+    If tudResolution.IsValid(False) Then
     
         'cmbResolution only has two entries: inches (0), and cm (1).
         If (cmbResolution.ListIndex = RU_PPI) Then

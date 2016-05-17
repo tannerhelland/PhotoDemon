@@ -153,7 +153,7 @@ Private Sub cmdBar_OKClick()
         End If
     Next i
         
-    Process "New image", False, BuildParams(ucResize.ImgWidthInPixels, ucResize.ImgHeightInPixels, ucResize.ImgDPIAsPPI, backgroundType, colorPicker.Color), UNDO_NOTHING
+    Process "New image", False, BuildParams(ucResize.ResizeWidthInPixels, ucResize.ResizeHeightInPixels, ucResize.ResizeDPIAsPPI, backgroundType, colorPicker.Color), UNDO_NOTHING
     
 End Sub
 
@@ -221,8 +221,4 @@ Private Sub calculateDefaultSize()
     End If
 
 End Sub
-
-
-
-
 
