@@ -1072,7 +1072,7 @@ End Function
 
 'When raising nested dialogs (e.g. a modal effect dialog raises a "new preset" window), we need to dynamically assign and release
 ' icons to each popup.  This ensures that PD stays visible in places like Alt+Tab, even on pre-Win10 systems.
-Public Sub FixPopupWindow(ByVal targetHWnd As Long, Optional ByVal windowIsLoading As Boolean = False)
+Public Sub FixPopupWindow(ByVal targetHwnd As Long, Optional ByVal windowIsLoading As Boolean = False)
 
     If windowIsLoading Then
         
@@ -1087,22 +1087,22 @@ Public Sub FixPopupWindow(ByVal targetHWnd As Long, Optional ByVal windowIsLoadi
         
         'We don't actually need to store the target window's hWnd (at present) but we grab it "just in case" future enhancements
         ' require it.
-        m_PopupHWnds(m_NumOfPopupHWnds) = targetHWnd
+        m_PopupHWnds(m_NumOfPopupHWnds) = targetHwnd
         
         'We can't guarantee that Aero is active on Win 7 and earlier, so we must jump through some extra hoops to make
         ' sure the popup window appears inside any raised Alt+Tab dialogs
-        If (Not g_IsWin8OrLater) Then g_WindowManager.ForceWindowAppearInAltTab targetHWnd, True
+        If (Not g_IsWin8OrLater) Then g_WindowManager.ForceWindowAppearInAltTab targetHwnd, True
         
         'While here, cache the window's current icons.  (VB may insert its own default icons for some window types.)
         ' When the dialog is closed, we will restore these icons to avoid leaking any of PD's custom icons.
-        Icons_and_Cursors.MirrorCurrentIconsToWindow targetHWnd, True, m_PopupIconsSmall(m_NumOfPopupHWnds), m_PopupIconsLarge(m_NumOfPopupHWnds)
+        Icons_and_Cursors.MirrorCurrentIconsToWindow targetHwnd, True, m_PopupIconsSmall(m_NumOfPopupHWnds), m_PopupIconsLarge(m_NumOfPopupHWnds)
         m_NumOfPopupHWnds = m_NumOfPopupHWnds + 1
         
     Else
     
         m_NumOfPopupHWnds = m_NumOfPopupHWnds - 1
         If (m_NumOfPopupHWnds >= 0) Then
-            Icons_and_Cursors.ChangeWindowIcon targetHWnd, m_PopupIconsSmall(m_NumOfPopupHWnds), m_PopupIconsLarge(m_NumOfPopupHWnds)
+            Icons_and_Cursors.ChangeWindowIcon m_PopupHWnds(m_NumOfPopupHWnds), m_PopupIconsSmall(m_NumOfPopupHWnds), m_PopupIconsLarge(m_NumOfPopupHWnds)
         Else
             m_NumOfPopupHWnds = 0
             #If DEBUGMODE = 1 Then

@@ -133,8 +133,8 @@ Public Function GetResolution(ByRef xResolution As Double, ByRef yResolution As 
         
         'If the units are in centimeters, convert them to inches
         If unitIsCentimeters Then
-            xResolution = getInchesFromCM(xResolution)
-            yResolution = getInchesFromCM(yResolution)
+            xResolution = GetInchesFromCM(xResolution)
+            yResolution = GetInchesFromCM(yResolution)
         End If
         
         GetResolution = True
@@ -455,11 +455,13 @@ Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem, By
     
     'Next, ExifTool breaks down EXIF tags into their individual IFD blocks.  Simplify all of these under a single "Exif" header.
     ' (For TIFFs, which may have multiple pages, we handle this differently.)
-    If pdImages(parentImageID).originalFileFormat <> PDIF_TIFF Then
-        If InStr(1, groupNameCheck, "IFD1", vbBinaryCompare) > 0 Then
-            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif (thumbnail)")
-        ElseIf InStr(1, groupNameCheck, "IFD", vbBinaryCompare) > 0 Then
-            dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif")
+    If (Not (pdImages(parentImageID) Is Nothing)) Then
+        If (pdImages(parentImageID).originalFileFormat <> PDIF_TIFF) Then
+            If InStr(1, groupNameCheck, "IFD1", vbBinaryCompare) > 0 Then
+                dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif (thumbnail)")
+            ElseIf InStr(1, groupNameCheck, "IFD", vbBinaryCompare) > 0 Then
+                dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif")
+            End If
         End If
     End If
 

@@ -1160,8 +1160,10 @@ End Sub
 'When loading a modal dialog, the dialog will not have an icon by default.  We can assign an icon at run-time to ensure that icons
 ' appear in the Alt+Tab dialog of older OSes.
 Public Sub ChangeWindowIcon(ByVal targetHwnd As Long, ByVal hIconSmall As Long, ByVal hIconLarge As Long, Optional ByRef dstSmallIcon As Long = 0, Optional ByRef dstLargeIcon As Long = 0)
-    dstSmallIcon = SendMessageA(targetHwnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall)
-    dstLargeIcon = SendMessageA(targetHwnd, WM_SETICON, ICON_BIG, ByVal hIconLarge)
+    If (targetHwnd <> 0) Then
+        dstSmallIcon = SendMessageA(targetHwnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall)
+        dstLargeIcon = SendMessageA(targetHwnd, WM_SETICON, ICON_BIG, ByVal hIconLarge)
+    End If
 End Sub
 
 Public Sub MirrorCurrentIconsToWindow(ByVal targetHwnd As Long, Optional ByVal setLargeIconOnly As Boolean = False, Optional ByRef dstSmallIcon As Long = 0, Optional ByRef dstLargeIcon As Long = 0)

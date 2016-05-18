@@ -485,7 +485,7 @@ Private Sub UpdatePreview()
         If Plugin_FreeImage.GetPDDibFromFreeImageHandle(tmp_FIHandle, tmpDIB) Then
             
             'Premultiply as necessary
-            If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.SetAlphaPremultiplication True
+            If tmpDIB.GetDIBColorDepth = 32 Then tmpDIB.SetAlphaPremultiplication True
             tmpDIB.RenderToPictureBox picPreview
             
             'Release our DIB
@@ -640,7 +640,7 @@ Private Function getToneMapParamString() As String
         
     End Select
     
-    getToneMapParamString = buildParams(vParams(0), vParams(1), vParams(2), vParams(3), vParams(4))
+    getToneMapParamString = BuildParams(vParams(0), vParams(1), vParams(2), vParams(3), vParams(4))
     
 End Function
 
