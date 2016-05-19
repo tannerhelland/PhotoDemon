@@ -32,8 +32,8 @@ Attribute VB_Exposed = False
 'PhotoDemon standalone slider custom control
 'Copyright 2013-2016 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 12/February/16
-'Last update: finish last bits of theming work
+'Last updated: 19/May/16
+'Last update: migrate to new pd2D painting classes
 '
 'In PD, this control is never used on its own.  It's only a component of the pdSlider control (which also attaches
 ' a spinner), and it's split out here in an attempt to simplify its rendering code and input handling, which are
@@ -143,6 +143,9 @@ Private m_MouseOverSlider As Boolean, m_MouseOverSliderTrack As Boolean, m_Mouse
 ' can fire if necessary.  We use this tracker to guarantee that at least one Change() event is fired at initialization.
 Private m_FirstChangeEvent As Boolean
 
+'Painting support classes
+Private m_Painter As pd2DPainter
+
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -178,7 +181,7 @@ End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
     UserControl.Enabled = newValue
-    RedrawBackBuffer
+    RedrawSlider
     PropertyChanged "Enabled"
 End Property
 
@@ -548,6 +551,7 @@ Private Sub UserControl_Initialize()
     m_FirstChangeEvent = True
     
     'Initialize various back buffers and background DIBs
+    Set m_Painter = New pd2DPainter
     Set m_SliderBackgroundDIB = New pdDIB
     
     'Update the control size parameters at least once
@@ -647,17 +651,24 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     ' required, and we can shortcut the process by not redrawing the full slider on every update.
     
     'Start by retrieving the colors necessary to render various display elements
-    Dim BackgroundColor As Long, trackColor As Long
-    BackgroundColor = m_Colors.RetrieveColor(PDSS_Background, Me.Enabled, False, m_MouseOverSlider Or m_MouseOverSliderTrack)
+    Dim backgroundColor As Long, trackColor As Long
+    backgroundColor = m_Colors.RetrieveColor(PDSS_Background, Me.Enabled, False, m_MouseOverSlider Or m_MouseOverSliderTrack)
     trackColor = m_Colors.RetrieveColor(PDSS_TrackBack, Me.Enabled, False, m_MouseOverSlider Or m_MouseOverSliderTrack)
+    
+    Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
     
     'Initialize or repaint the background DIB, as necessary
     m_SliderAreaWidth = ucSupport.GetBackBufferWidth
     m_SliderAreaHeight = ucSupport.GetBackBufferHeight
     If (m_SliderBackgroundDIB.GetDIBWidth <> m_SliderAreaWidth) Or (m_SliderBackgroundDIB.GetDIBHeight <> m_SliderAreaHeight) Then
-        m_SliderBackgroundDIB.CreateBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, BackgroundColor, 255
+        m_SliderBackgroundDIB.CreateBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, backgroundColor, 255
+        If g_IsProgramRunning Then Drawing2D.QuickCreateSurfaceFromDC cSurface, m_SliderBackgroundDIB.GetDIBDC, False
     Else
-        If g_IsProgramRunning Then GDI_Plus.GDIPlusFillDIBRect m_SliderBackgroundDIB, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight, BackgroundColor, 255
+        If g_IsProgramRunning Then
+            Drawing2D.QuickCreateSurfaceFromDC cSurface, m_SliderBackgroundDIB.GetDIBDC, False
+            Drawing2D.QuickCreateSolidBrush cBrush, backgroundColor
+            m_Painter.FillRectangleI cSurface, cBrush, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight
+        End If
     End If
         
     'There are a few components to the slider:
@@ -669,7 +680,13 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     'We are going to assemble part (1) in this step.
     
     'We always start with the default style: a gray track with rounded edges
-    GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.GetDIBDC, GetTrackLeft, m_SliderAreaHeight \ 2, GetTrackRight, m_SliderAreaHeight \ 2, trackColor, 255, m_TrackDiameter + 1, True, GP_LC_Round
+    If g_IsProgramRunning Then
+        Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter + 1, trackColor, , , P2_LC_Round
+        cSurface.SetSurfaceAntialiasing P2_AA_Grayscale
+        m_Painter.DrawLineF cSurface, cPen, GetTrackLeft, m_SliderAreaHeight \ 2, GetTrackRight, m_SliderAreaHeight \ 2
+    End If
+    
+    Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
     
     If Me.Enabled Then
     
@@ -682,7 +699,7 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
             ' been calculated for the gradient DIB, so it will sit precisely inside the trackline drawn above, giving the track a
             ' sharp 1px border.)
             Case GradientTwoPoint, GradientThreePoint, HueSpectrum360
-                If m_GradientDIB Is Nothing Then CreateGradientTrack
+                If (m_GradientDIB Is Nothing) Then CreateGradientTrack
                 m_GradientDIB.AlphaBlendToDC m_SliderBackgroundDIB.GetDIBDC, 255, GetTrackLeft - (m_TrackDiameter \ 2), 0
             
             'In the future, we may support fully owner-drawn sliders, but this is not currently implemented.
@@ -715,7 +732,8 @@ End Sub
 Private Sub DrawNotchToDIB(ByRef dstDIB As pdDIB)
     
     'First, see if a notch needs to be drawn.  If the notch mode is "none", exit now.
-    If m_NotchPosition = DoNotDisplayNotch Then Exit Sub
+    If (m_NotchPosition = DoNotDisplayNotch) Then Exit Sub
+    If (Not g_IsProgramRunning) Then Exit Sub
     
     Dim notchColor As Long
     notchColor = m_Colors.RetrieveColor(PDSS_Notch, Me.Enabled, False, m_MouseOverSlider Or m_MouseOverSliderTrack)
@@ -730,13 +748,13 @@ Private Sub DrawNotchToDIB(ByRef dstDIB As pdDIB)
     
     'Next, calculate a notch position as necessary.  If the notch mode is "automatic", this function is responsible for
     ' determining what notch value to use.
-    If m_NotchPosition = AutomaticPosition Then
+    If (m_NotchPosition = AutomaticPosition) Then
     
         'The automatic position varies according to a few factors.  First, some slider styles have their own notch calculations.
         
         'Three-point gradients always display a notch at the position of the middle gradient point; this is the assumed default
         ' value of the control.
-        If m_SliderStyle = GradientThreePoint Then
+        If (m_SliderStyle = GradientThreePoint) Then
             renderNotchValue = GradientMiddleValue
         
         'All other slider styles use the same heuristic for automatic notch positioning.  If 0 is available, use it.
@@ -760,7 +778,7 @@ Private Sub DrawNotchToDIB(ByRef dstDIB As pdDIB)
         renderNotchValue = m_CustomNotchValue
     End If
     
-    If Not overrideNotchDraw Then
+    If (Not overrideNotchDraw) Then
     
         'Convert our calculated notch *value* into an actual *pixel position* on the track
         Dim customX As Single, customY As Single
@@ -771,8 +789,11 @@ Private Sub DrawNotchToDIB(ByRef dstDIB As pdDIB)
         notchSize = (m_SliderAreaHeight - m_TrackDiameter) \ 2 - 4
         
         'Currently, we draw a detached notch above and below the slider's track
-        GDI_Plus.GDIPlusDrawLineToDC dstDIB.GetDIBDC, customX, 1, customX, 1 + notchSize, notchColor, 255, 1, True, GP_LC_Flat
-        GDI_Plus.GDIPlusDrawLineToDC dstDIB.GetDIBDC, customX, m_SliderAreaHeight - 1, customX, m_SliderAreaHeight - 1 - notchSize, notchColor, 255, 1, True, GP_LC_Flat
+        Dim cSurface As pd2DSurface, cPen As pd2DPen
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, True
+        Drawing2D.QuickCreateSolidPen cPen, 1#, notchColor, , , P2_LC_Flat
+        m_Painter.DrawLineF cSurface, cPen, customX, 1, customX, 1 + notchSize
+        m_Painter.DrawLineF cSurface, cPen, customX, m_SliderAreaHeight - 1, customX, m_SliderAreaHeight - 1 - notchSize
         
     End If
     
@@ -781,7 +802,7 @@ End Sub
 'Given any arbitrary DIB, resize it to the area of the background track.
 ' (This is used for custom-drawn sliders, and it should be the first step in assembling the track DIB.)
 Public Sub SizeDIBToTrackArea(ByRef targetDIB As pdDIB)
-    If targetDIB Is Nothing Then Set targetDIB = New pdDIB
+    If (targetDIB Is Nothing) Then Set targetDIB = New pdDIB
     targetDIB.CreateBlank (GetTrackRight - GetTrackLeft) + m_TrackDiameter, m_SliderAreaHeight, 32, ConvertSystemColor(vbWindowBackground), 255
 End Sub
 
@@ -792,12 +813,15 @@ Private Sub CreateGradientTrack()
 
     'Recreate the gradient DIB to the size of the background track area
     SizeDIBToTrackArea m_GradientDIB
+    If (Not g_IsProgramRunning) Then Exit Sub
     
     Dim trackRadius As Single
     trackRadius = (m_TrackDiameter) \ 2
     
     Dim x As Long
     Dim relativeMiddlePosition As Single, tmpY As Single
+    
+    Dim cSurface As pd2DSurface, cPen As pd2DPen
     
     'Draw the gradient differently depending on the type of gradient
     Select Case m_SliderStyle
@@ -830,18 +854,21 @@ Private Sub CreateGradientTrack()
             
             Dim tmpR As Double, tmpG As Double, tmpB As Double
             
+            Drawing2D.QuickCreateSurfaceFromDC cSurface, m_GradientDIB.GetDIBDC, False
+            Drawing2D.QuickCreateSolidPen cPen, 1
+            
             For x = 0 To m_GradientDIB.GetDIBWidth - 1
                 
-                If x < trackRadius Then
+                If (x < trackRadius) Then
                     fHSVtoRGB 0, 1, 1, tmpR, tmpG, tmpB
-                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.GetDIBDC, x, 0, x, m_GradientDIB.GetDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, GP_LC_Flat
-                ElseIf x > (m_GradientDIB.GetDIBWidth - trackRadius) Then
+                ElseIf (x > (m_GradientDIB.GetDIBWidth - trackRadius)) Then
                     fHSVtoRGB 1, 1, 1, tmpR, tmpG, tmpB
-                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.GetDIBDC, x, 0, x, m_GradientDIB.GetDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, GP_LC_Flat
                 Else
                     fHSVtoRGB (x - trackRadius) / hueSpread, 1, 1, tmpR, tmpG, tmpB
-                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.GetDIBDC, x, 0, x, m_GradientDIB.GetDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, GP_LC_Flat
                 End If
+                
+                cPen.SetPenColor RGB(tmpR * 255, tmpG * 255, tmpB * 255)
+                m_Painter.DrawLineF cSurface, cPen, x, 0, x, m_GradientDIB.GetDIBHeight
                 
             Next x
             
@@ -852,13 +879,17 @@ Private Sub CreateGradientTrack()
     ' incorrect as we need some padding for the rounded edge of the track area).  Note that hue gradients automatically
     ' handle this step during the DIB creation phase.
     If (m_SliderStyle = GradientTwoPoint) Or (m_SliderStyle = GradientThreePoint) Then
-    
-        For x = 0 To trackRadius
-            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.GetDIBDC, x, 0, x, m_GradientDIB.GetDIBHeight, m_GradientColorLeft, 255, 1, False, GP_LC_Flat
+
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, m_GradientDIB.GetDIBDC, False
+        Drawing2D.QuickCreateSolidPen cPen, 1, m_GradientColorLeft
+
+        For x = 0 To trackRadius - 1
+            m_Painter.DrawLineI cSurface, cPen, x, 0, x, m_GradientDIB.GetDIBHeight
         Next x
-        
-        For x = m_GradientDIB.GetDIBWidth - trackRadius To m_GradientDIB.GetDIBWidth
-            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.GetDIBDC, x, 0, x, m_GradientDIB.GetDIBHeight, m_GradientColorRight, 255, 1, False, GP_LC_Flat
+
+        cPen.SetPenColor m_GradientColorRight
+        For x = (m_GradientDIB.GetDIBWidth - trackRadius + 1) To m_GradientDIB.GetDIBWidth
+            m_Painter.DrawLineI cSurface, cPen, x, 0, x, m_GradientDIB.GetDIBHeight
         Next x
         
     End If
@@ -872,12 +903,13 @@ Private Sub CreateGradientTrack()
     Set alphaMask = New pdDIB
     alphaMask.CreateBlank m_GradientDIB.GetDIBWidth, m_GradientDIB.GetDIBHeight, 32, 0, 0
     
-    'Next, use GDI+ to render a slightly smaller line than the typical track onto the alpha mask.  GDI+'s antialiasing code will automatically
-    ' set the relevant alpha bytes for the region of interest.
-    GDI_Plus.GDIPlusDrawLineToDC alphaMask.GetDIBDC, trackRadius, m_GradientDIB.GetDIBHeight \ 2, m_GradientDIB.GetDIBWidth - trackRadius, m_GradientDIB.GetDIBHeight \ 2, 0, 255, m_TrackDiameter - 1, True, GP_LC_Round
+    'Next, render a slightly smaller line than the typical track onto the alpha mask.  Antialiasing will automatically set the relevant
+    ' alpha bytes for the region of interest.
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, alphaMask.GetDIBDC, True
+    Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter - 1, vbBlack, , , P2_LC_Round
+    m_Painter.DrawLineF cSurface, cPen, trackRadius, m_GradientDIB.GetDIBHeight \ 2, m_GradientDIB.GetDIBWidth - trackRadius, m_GradientDIB.GetDIBHeight \ 2
     
     'Transfer the alpha from the alpha mask to the gradient DIB itself
-    'alphaMask.setAlphaPremultiplication False
     m_GradientDIB.CopyAlphaFromExistingDIB alphaMask
     
     'Premultiply the gradient DIB, so we can successfully alpha-blend it later
@@ -951,15 +983,15 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
     End If
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim BackgroundColor As Long, bufferDC As Long
-    BackgroundColor = m_Colors.RetrieveColor(PDSS_Background, Me.Enabled, m_MouseDown, m_MouseOverSlider Or m_MouseOverSliderTrack)
-    bufferDC = ucSupport.GetBackBufferDC(True, BackgroundColor)
+    Dim backgroundColor As Long, bufferDC As Long
+    backgroundColor = m_Colors.RetrieveColor(PDSS_Background, Me.Enabled, m_MouseDown, m_MouseOverSlider Or m_MouseOverSliderTrack)
+    bufferDC = ucSupport.GetBackBufferDC(True, backgroundColor)
     
     'Copy the previously assembled track onto the back buffer.  (This is faster than AlphaBlending the result, especially because
     ' we don't need any blending.)
     BitBlt bufferDC, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight, m_SliderBackgroundDIB.GetDIBDC, 0, 0, vbSrcCopy
     
-    If Me.Enabled And g_IsProgramRunning Then
+    If (Me.Enabled And g_IsProgramRunning) Then
         
         Dim trackHighlightColor As Long, trackJumpIndicatorColor As Long
         Dim thumbFillColor As Long, thumbBorderColor As Long
@@ -974,10 +1006,12 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
         
         'Additional draw variables are required for the "default" draw style, which fills the slider track to match the current
         ' knob position.
-        Dim customX As Single, customY As Single
-        Dim relevantMin As Single
+        Dim customX As Single, customY As Single, relevantMin As Single
         
-        If m_SliderStyle = DefaultStyle Then
+        Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+        
+        If (m_SliderStyle = DefaultStyle) Then
         
             'Determine a minimum value for the control, using the formula provided:
             ' 1) If 0 is a valid control value, use 0.
@@ -986,24 +1020,29 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
             
             'Convert that value into an actual pixel position on the track, then render a line between it and the current thumb position
             GetCustomValueCoordinates relevantMin, customX, customY
-            GDI_Plus.GDIPlusDrawLineToDC bufferDC, customX, customY, relevantSliderPosX, customY, trackHighlightColor, 255, m_TrackDiameter + 1, True, GP_LC_Round
+            Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter + 1, trackHighlightColor, , , P2_LC_Round
+            m_Painter.DrawLineF cSurface, cPen, customX, customY, relevantSliderPosX, customY
             
         End If
         
         'If the mouse is *not* over the slider, but it *is* over the track, draw a small dot to indicate where the slider will "jump"
         ' if the mouse is clicked.
         If m_MouseOverSliderTrack Then
-            Dim jumpIndicatorDiameter As Single: jumpIndicatorDiameter = m_TrackDiameter
-            GDI_Plus.GDIPlusFillEllipseToDC bufferDC, m_MouseTrackX - (jumpIndicatorDiameter / 2), (m_SliderAreaHeight \ 2) - (jumpIndicatorDiameter / 2), jumpIndicatorDiameter, jumpIndicatorDiameter, trackJumpIndicatorColor, True
+            Drawing2D.QuickCreateSolidBrush cBrush, trackJumpIndicatorColor
+            m_Painter.FillCircleF cSurface, cBrush, m_MouseTrackX, (m_SliderAreaHeight \ 2), m_TrackDiameter / 2
         End If
         
         'Finally, draw the thumb
-        GDI_Plus.GDIPlusFillEllipseToDC bufferDC, relevantSliderPosX - (m_SliderDiameter \ 2), relevantSliderPosY - (m_SliderDiameter \ 2), m_SliderDiameter, m_SliderDiameter, thumbFillColor, True
+        Drawing2D.QuickCreateSolidBrush cBrush, thumbFillColor
+        m_Painter.FillCircleF cSurface, cBrush, relevantSliderPosX, relevantSliderPosY, m_SliderDiameter \ 2
         
         'Draw the edge (exterior) circle around the slider.
         Dim sliderWidth As Single
-        If m_MouseOverSlider Then sliderWidth = 2 Else sliderWidth = 1.5
-        GDI_Plus.GDIPlusDrawCircleToDC bufferDC, relevantSliderPosX, relevantSliderPosY, m_SliderDiameter \ 2, thumbBorderColor, 255, sliderWidth, True
+        If m_MouseOverSlider Then sliderWidth = 2.5 Else sliderWidth = 1.5
+        Drawing2D.QuickCreateSolidPen cPen, sliderWidth, thumbBorderColor
+        m_Painter.DrawCircleF cSurface, cPen, relevantSliderPosX, relevantSliderPosY, m_SliderDiameter \ 2
+        
+        Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
         
     End If
     
