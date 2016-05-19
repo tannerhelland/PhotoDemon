@@ -53,7 +53,7 @@ Private m_XmlEntries() As AutosaveXML
 Public Function peekLastShutdownClean() As Boolean
 
     Dim safeShutdownPath As String
-    safeShutdownPath = g_UserPreferences.getPresetPath & "SafeShutdown.xml"
+    safeShutdownPath = g_UserPreferences.GetPresetPath & "SafeShutdown.xml"
     
     'If a previous program session terminated unexpectedly, its safe shutdown file will still be present
     Dim cFile As pdFSO
@@ -68,7 +68,7 @@ End Function
 Public Function WasLastShutdownClean() As Boolean
 
     Dim safeShutdownPath As String
-    safeShutdownPath = g_UserPreferences.getPresetPath & "SafeShutdown.xml"
+    safeShutdownPath = g_UserPreferences.GetPresetPath & "SafeShutdown.xml"
     
     'If a previous program session terminated unexpectedly, its safe shutdown file will still be present
     Dim cFile As pdFSO
@@ -105,10 +105,10 @@ End Function
 
 'If the program has shut itself down without incident, the last thing it does will be notifying this sub.
 ' (This sub clears the safe shutdown file.)
-Public Sub notifyCleanShutdown()
+Public Sub NotifyCleanShutdown()
     
     Dim safeShutdownPath As String
-    safeShutdownPath = g_UserPreferences.getPresetPath & "SafeShutdown.xml"
+    safeShutdownPath = g_UserPreferences.GetPresetPath & "SafeShutdown.xml"
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -252,7 +252,7 @@ Public Sub PurgeOldAutosaveData()
             'Delete all possible child references for this image.
             For j = 0 To m_XmlEntries(i).undoStackAbsoluteMaximum
                 
-                tmpFilename = tmpUndoEngine.generateUndoFilenameExternal(m_XmlEntries(i).parentImageID, j, m_XmlEntries(i).originalSessionID)
+                tmpFilename = tmpUndoEngine.GenerateUndoFilenameExternal(m_XmlEntries(i).parentImageID, j, m_XmlEntries(i).originalSessionID)
             
                 'Check image data first...
                 If cFile.FileExist(tmpFilename) Then cFile.KillFile tmpFilename
@@ -361,7 +361,7 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
         xmlEngine.LoadXMLFile fullXMLList(i).xmlPath
         
         'We now have everything we need.  Load the base Undo entry as a new image.
-        autosaveFile = tmpUndoEngine.generateUndoFilenameExternal(newImageID, 0, g_SessionID)
+        autosaveFile = tmpUndoEngine.GenerateUndoFilenameExternal(newImageID, 0, g_SessionID)
         LoadFileAsNewImage autosaveFile, fullXMLList(i).friendlyName, False
         
         'It is possible, but extraordinarily rare, for the LoadFileAsNewImage function to fail (for example, if the user removed
@@ -421,8 +421,8 @@ Private Sub renameAllUndoFiles(ByRef autosaveData As AutosaveXML, ByVal newImage
     Dim i As Long
     For i = 0 To autosaveData.undoStackAbsoluteMaximum
     
-        oldFilename = tmpUndoEngine.generateUndoFilenameExternal(oldImageID, i, autosaveData.originalSessionID)
-        newFilename = tmpUndoEngine.generateUndoFilenameExternal(newImageID, i, g_SessionID)
+        oldFilename = tmpUndoEngine.GenerateUndoFilenameExternal(oldImageID, i, autosaveData.originalSessionID)
+        newFilename = tmpUndoEngine.GenerateUndoFilenameExternal(newImageID, i, g_SessionID)
         
         'Check image data first...
         If cFile.FileExist(oldFilename) Then

@@ -2809,9 +2809,6 @@ End Sub
 'If the user is attempting to close the program, run some checks.  Specifically, we want to make sure all child forms have been saved.
 ' Note: in VB6, the order of events for program closing is MDI Parent QueryUnload, MDI children QueryUnload, MDI children Unload, MDI Unload
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-        
-    'If the histogram form is open, close it
-    'Unload FormHistogram
     
     'Store the main window's location to file now.  We will use this in the future to determine which monitor
     ' to display the splash screen on
@@ -2824,10 +2821,10 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     'Set a public variable to let other functions know that the user has initiated a program-wide shutdown
     g_ProgramShuttingDown = True
     
-    'Before exiting QueryUnload, attempt to unload all children forms.  If any of them cancel shutdown, postpone the program-wide
-    ' shutdown as well
+    'Before exiting QueryUnload, attempt to unload all open images.  If any of them cancel shutdown, postpone the
+    ' program-wide shutdown as well
     Dim i As Long
-    If g_NumOfImagesLoaded > 0 Then
+    If (g_NumOfImagesLoaded > 0) Then
     
         For i = 0 To UBound(pdImages)
             If Not (pdImages(i) Is Nothing) Then
@@ -2839,7 +2836,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                     Image_Canvas_Handler.FullPDImageUnload i, True
                     
                     'If the child form canceled shut down, it will have reset the g_ProgramShuttingDown variable
-                    If Not g_ProgramShuttingDown Then
+                    If (Not g_ProgramShuttingDown) Then
                         Cancel = True
                         Exit Sub
                     End If
@@ -2848,41 +2845,6 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
             End If
         Next i
         
-    End If
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Unloading all tool panels"
-    #End If
-        
-    'Manually unload all tool panels
-    If Not (toolpanel_MoveSize Is Nothing) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_MoveSize.hWnd
-        Unload toolpanel_MoveSize
-        Set toolpanel_MoveSize = Nothing
-    End If
-
-    If Not (toolpanel_NDFX Is Nothing) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_NDFX.hWnd
-        Unload toolpanel_NDFX
-        Set toolpanel_NDFX = Nothing
-    End If
-    
-    If Not (toolpanel_Selections Is Nothing) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_Selections.hWnd
-        Unload toolpanel_Selections
-        Set toolpanel_Selections = Nothing
-    End If
-
-    If Not (toolpanel_Text Is Nothing) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_Text.hWnd
-        Unload toolpanel_Text
-        Set toolpanel_Text = Nothing
-    End If
-    
-    If Not (toolpanel_FancyText Is Nothing) Then
-        g_WindowManager.DeactivateToolPanel True, toolpanel_FancyText.hWnd
-        Unload toolpanel_FancyText
-        Set toolpanel_FancyText = Nothing
     End If
     
 End Sub
@@ -2933,13 +2895,10 @@ Private Sub Form_Unload(Cancel As Integer)
     'Most core plugins are released as a final step, but ExifTool only matters when images are loaded, and we know
     ' no images are loaded by this point.  Because it also takes a moment to shut down, trigger it first.
     If g_ExifToolEnabled Then
-        
-        TerminateExifTool
-    
+        ExifTool.TerminateExifTool
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "ExifTool terminated"
         #End If
-        
     End If
         
     'Perform any printer-related cleanup
@@ -2995,14 +2954,43 @@ Private Sub Form_Unload(Cancel As Integer)
     
     ReleaseWin7Features
     
-    'Unload all toolbars
+    'Tool panels are forms that we manually embed inside other forms
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Unloading tool panels..."
+    #End If
+        
+    'Manually unload all tool panels
+    g_WindowManager.DeactivateToolPanel True, toolpanel_MoveSize.hWnd
+    Unload toolpanel_MoveSize
+    Set toolpanel_MoveSize = Nothing
+    
+    g_WindowManager.DeactivateToolPanel True, toolpanel_NDFX.hWnd
+    Unload toolpanel_NDFX
+    Set toolpanel_NDFX = Nothing
+    
+    g_WindowManager.DeactivateToolPanel True, toolpanel_Selections.hWnd
+    Unload toolpanel_Selections
+    Set toolpanel_Selections = Nothing
+    
+    g_WindowManager.DeactivateToolPanel True, toolpanel_Text.hWnd
+    Unload toolpanel_Text
+    Set toolpanel_Text = Nothing
+    
+    g_WindowManager.DeactivateToolPanel True, toolpanel_FancyText.hWnd
+    Unload toolpanel_FancyText
+    Set toolpanel_FancyText = Nothing
+    
+    'With all tool panels unloaded, unload all toolboxes as well
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Unloading toolboxes.."
     #End If
     
-    If Not (toolbar_Layers Is Nothing) Then Unload toolbar_Layers
-    If Not (toolbar_Options Is Nothing) Then Unload toolbar_Options
-    If Not (toolbar_Toolbox Is Nothing) Then Unload toolbar_Toolbox
+    Unload toolbar_Layers
+    Set toolbar_Layers = Nothing
+    Unload toolbar_Options
+    Set toolbar_Options = Nothing
+    Unload toolbar_Toolbox
+    Set toolbar_Toolbox = Nothing
     
     'Release this form from the window manager, and write out all window data to file
     #If DEBUGMODE = 1 Then
@@ -3021,7 +3009,7 @@ Private Sub Form_Unload(Cancel As Integer)
     For Each tmpForm In Forms
 
         'Note that there is no need to unload FormMain, as we're about to unload it anyway!
-        If tmpForm.Name <> "FormMain" Then
+        If (StrComp(LCase$(tmpForm.Name), "formmain", vbBinaryCompare) <> 0) Then
             Debug.Print "Forcibly unloading " & tmpForm.Name
             Unload tmpForm
             Set tmpForm = Nothing
@@ -3061,7 +3049,7 @@ Private Sub Form_Unload(Cancel As Integer)
     #End If
     
     Autosave_Handler.PurgeOldAutosaveData
-    Autosave_Handler.notifyCleanShutdown
+    Autosave_Handler.NotifyCleanShutdown
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutdown appears to be clean.  Turning final control over to modMain.finalShutdown()..."
