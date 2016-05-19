@@ -410,9 +410,9 @@ Private Sub SyncUI_CurrentImageSettings()
     
     'Display the image's path in the title bar.
     If Not (g_WindowManager Is Nothing) Then
-        g_WindowManager.SetWindowCaptionW FormMain.hWnd, GetWindowCaption(pdImages(g_CurrentImage))
+        g_WindowManager.SetWindowCaptionW FormMain.hWnd, Interface.GetWindowCaption(pdImages(g_CurrentImage))
     Else
-        FormMain.Caption = GetWindowCaption(pdImages(g_CurrentImage))
+        FormMain.Caption = Interface.GetWindowCaption(pdImages(g_CurrentImage))
     End If
             
     'Display the image's size in the status bar
@@ -520,9 +520,9 @@ Private Sub SetUIMode_NoImages()
     
     'Reset the main window's caption to its default PD name and version
     If Not (g_WindowManager Is Nothing) Then
-        g_WindowManager.SetWindowCaptionW FormMain.hWnd, Update_Support.GetPhotoDemonNameAndVersion()
+        g_WindowManager.SetWindowCaptionW FormMain.hWnd, Interface.GetWindowCaption(Nothing)
     Else
-        FormMain.Caption = GetPhotoDemonNameAndVersion()
+        FormMain.Caption = Update_Support.GetPhotoDemonNameAndVersion()
     End If
     
     'Ask the canvas to reset itself.  Note that this also covers the status bar area and the image tabstrip, if they were
@@ -1505,41 +1505,54 @@ Private Function GetWindowCaption(ByRef srcImage As pdImage) As String
     Dim captionBase As String
     Dim appendFileFormat As Boolean: appendFileFormat = False
     
-    'Start by seeing if this image has some kind of filename.  This field should always be populated by the load function,
-    ' but better safe than sorry!
-    If Len(srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)) <> 0 Then
+    If (Not (srcImage Is Nothing)) Then
     
-        'This image has a filename!  Next, check the user's preference for long or short window captions
+        'Start by seeing if this image has some kind of filename.  This field should always be populated by the load function,
+        ' but better safe than sorry!
+        If Len(srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)) <> 0 Then
         
-        'The user prefers short captions.  Use just the filename and extension (no folders ) as the base.
-        If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0 Then
-            captionBase = srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)
-            appendFileFormat = True
-        Else
-        
-            'The user prefers long captions.  Make sure this image has such a location; if they do not, fallback
-            ' and use just the filename.
-            If Len(srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0 Then
-                captionBase = srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
-            Else
+            'This image has a filename!  Next, check the user's preference for long or short window captions
+            
+            'The user prefers short captions.  Use just the filename and extension (no folders ) as the base.
+            If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0 Then
                 captionBase = srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)
                 appendFileFormat = True
-            End If
+            Else
             
+                'The user prefers long captions.  Make sure this image has such a location; if they do not, fallback
+                ' and use just the filename.
+                If Len(srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0 Then
+                    captionBase = srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+                Else
+                    captionBase = srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)
+                    appendFileFormat = True
+                End If
+                
+            End If
+        
+        'This image does not have a filename.  Assign it a default title.
+        Else
+            captionBase = g_Language.TranslateMessage("[untitled image]")
         End If
-    
-    'This image does not have a filename.  Assign it a default title.
+        
+        'File format can be useful when working with multiple copies of the same image; PD tries to append it, as relevant
+        If appendFileFormat And (Len(srcImage.imgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) <> 0) Then
+            captionBase = captionBase & " [" & UCase(srcImage.imgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) & "]"
+        End If
+        
     Else
-        captionBase = g_Language.TranslateMessage("[untitled image]")
-    End If
     
-    'File format can be useful when working with multiple copies of the same image; PD tries to append it, as relevant
-    If appendFileFormat And (Len(srcImage.imgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) <> 0) Then
-        captionBase = captionBase & " [" & UCase(srcImage.imgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) & "]"
     End If
     
     'Append the current PhotoDemon version number and exit
-    GetWindowCaption = captionBase & "  -  " & GetPhotoDemonNameAndVersion()
+    If (Len(captionBase) <> 0) Then
+        GetWindowCaption = captionBase & "  -  " & Update_Support.GetPhotoDemonNameAndVersion()
+    Else
+        GetWindowCaption = Update_Support.GetPhotoDemonNameAndVersion()
+    End If
+    
+    'When devs send me screenshots, it's helpful to see if they're running in the IDE or not, as this can explain some issues
+    If (Not g_IsProgramCompiled) Then GetWindowCaption = GetWindowCaption & " [IDE]"
 
 End Function
 
