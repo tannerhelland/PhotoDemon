@@ -133,12 +133,12 @@ End Sub
 Public Sub DrawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     
     'Create a pen with the specified color
-    Dim newPen As Long
-    newPen = CreatePen(PS_SOLID, 1, crColor)
+    Dim NewPen As Long
+    NewPen = CreatePen(PS_SOLID, 1, crColor)
     
     'Select the pen into the target DC
     Dim oldObject As Long
-    oldObject = SelectObject(targetDC, newPen)
+    oldObject = SelectObject(targetDC, NewPen)
     
     'Render the line
     MoveToEx targetDC, x1, y1, 0&
@@ -146,7 +146,7 @@ Public Sub DrawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Lo
     
     'Remove the pen and delete it
     SelectObject targetDC, oldObject
-    DeleteObject newPen
+    DeleteObject NewPen
 
 End Sub
 
@@ -265,7 +265,7 @@ Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Lon
     
     '32bpp DIBs need to use GDI+ instead of GDI, to make sure the alpha channel is supported
     Dim alphaMatters As Boolean
-    If dstDIB.GetDIBColorDepth = 32 Then alphaMatters = True Else alphaMatters = False
+    alphaMatters = CBool(dstDIB.GetDIBColorDepth = 32)
     
     'If alpha is relevant, cache a GDI+ image handle and pen in advance
     Dim hGdipImage As Long, hGdipPen As Long
@@ -638,10 +638,10 @@ Public Sub DrawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     
     'Note that we must add the layer boundary lines manually - otherwise, the top-right and bottom-left corners will connect
     ' due to the way srcLayer.getLayerCornerCoordinates returns the points!
-    tmpPath.addLine layerCorners(0).x, layerCorners(0).y, layerCorners(1).x, layerCorners(1).y
-    tmpPath.addLine layerCorners(1).x, layerCorners(1).y, layerCorners(3).x, layerCorners(3).y
-    tmpPath.addLine layerCorners(3).x, layerCorners(3).y, layerCorners(2).x, layerCorners(2).y
-    tmpPath.addLine layerCorners(2).x, layerCorners(2).y, layerCorners(0).x, layerCorners(0).y
+    tmpPath.AddLine layerCorners(0).x, layerCorners(0).y, layerCorners(1).x, layerCorners(1).y
+    tmpPath.AddLine layerCorners(1).x, layerCorners(1).y, layerCorners(3).x, layerCorners(3).y
+    tmpPath.AddLine layerCorners(3).x, layerCorners(3).y, layerCorners(2).x, layerCorners(2).y
+    tmpPath.AddLine layerCorners(2).x, layerCorners(2).y, layerCorners(0).x, layerCorners(0).y
     
     'Render the final UI
     tmpPath.StrokePath_UIStyle dstCanvas.hDC
@@ -712,7 +712,7 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
         ' will actually occur.
         Dim tmpPath As pdGraphicsPath
         Set tmpPath = New pdGraphicsPath
-        tmpPath.addLine layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(relevantPoint).x, layerRotateNodes(relevantPoint).y
+        tmpPath.AddLine layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(relevantPoint).x, layerRotateNodes(relevantPoint).y
         tmpPath.StrokePath_UIStyle dstDC
         
         'Next, we are going to draw an arc with arrows on the end, to display where the actual rotation will occur.
@@ -720,7 +720,7 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
         '  proper on-screen coordinate space.)
         If (srcLayer.GetLayerShearX = 0) And (srcLayer.GetLayerShearY = 0) Then
             
-            tmpPath.resetPath
+            tmpPath.ResetPath
         
             'Start by finding the distance of the rotation line.
             Dim rRadius As Double
@@ -755,7 +755,7 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
             Dim relevantAngle As Double
             relevantAngle = srcLayer.GetLayerAngle + ((relevantPoint - 1) * 90)
             
-            tmpPath.addArc rotateBoundRect, relevantAngle - arcSweep / 2, arcSweep
+            tmpPath.AddArc rotateBoundRect, relevantAngle - arcSweep / 2, arcSweep
             tmpPath.StrokePath_UIStyle dstDC, False, True, , GP_LC_ArrowAnchor, GP_LC_ArrowAnchor
             
         End If

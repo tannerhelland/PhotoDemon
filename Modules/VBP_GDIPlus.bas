@@ -233,8 +233,8 @@ Public Enum GP_PixelOffsetMode
     GP_POM_Default = GP_QM_Default
     GP_POM_HighSpeed = GP_QM_Low
     GP_POM_HighQuality = GP_QM_High
-    GP_POM_None = 3
-    GP_POM_Half = 4
+    GP_POM_None = 3&
+    GP_POM_Half = 4&
 End Enum
 
 #If False Then
@@ -3081,11 +3081,11 @@ Public Function GDIP_StartEngine(Optional ByVal hookDebugProc As Boolean = False
         .GDIPlusVersion = 1&
         
         'Hypothetically you could set a callback function here, but I haven't tested this thoroughly, so use with caution!
-        If hookDebugProc Then
-            .DebugEventCallback = FakeProcPtr(AddressOf GDIP_Debug_Proc)
-        Else
+        'If hookDebugProc Then
+        '    .DebugEventCallback = FakeProcPtr(AddressOf GDIP_Debug_Proc)
+        'Else
             .DebugEventCallback = 0&
-        End If
+        'End If
         
         .SuppressBackgroundThread = 0&
         .SuppressExternalCodecs = 0&
@@ -3191,7 +3191,7 @@ End Function
 
 'Retrieve a persistent handle to a GDI+-format graphics container.  Optionally, a smoothing mode can be specified so that it does
 ' not have to be repeatedly specified by a caller function.  (GDI+ sets smoothing mode by graphics container, not by function call.)
-Public Function GetGDIPlusGraphicsFromDC(ByVal srcDC As Long, Optional ByVal graphicsAntialiasing As GP_SmoothingMode = GP_SM_None, Optional ByVal graphicsPixelOffsetMode As GP_PixelOffsetMode = GP_POM_HighSpeed) As Long
+Public Function GetGDIPlusGraphicsFromDC(ByVal srcDC As Long, Optional ByVal graphicsAntialiasing As GP_SmoothingMode = GP_SM_None, Optional ByVal graphicsPixelOffsetMode As GP_PixelOffsetMode = GP_POM_None) As Long
     Dim hGraphics As Long
     If (GdipCreateFromHDC(srcDC, hGraphics) = GP_OK) Then
         SetGDIPlusGraphicsProperty hGraphics, P2_SurfaceAntialiasing, graphicsAntialiasing
@@ -3420,10 +3420,10 @@ Public Function SetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID
         Select Case propID
             
             Case P2_SurfaceAntialiasing
-                SetGDIPlusGraphicsProperty = CBool(GdipSetSmoothingMode(hGraphics, GP_SM_AntiAlias) = GP_OK)
+                SetGDIPlusGraphicsProperty = CBool(GdipSetSmoothingMode(hGraphics, CLng(newSetting)) = GP_OK)
                 
             Case P2_SurfacePixelOffset
-                SetGDIPlusGraphicsProperty = CBool(GdipSetPixelOffsetMode(hGraphics, GP_SM_AntiAlias) = GP_OK)
+                SetGDIPlusGraphicsProperty = CBool(GdipSetPixelOffsetMode(hGraphics, CLng(newSetting)) = GP_OK)
             
         End Select
     

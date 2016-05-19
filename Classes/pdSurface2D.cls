@@ -106,7 +106,7 @@ Public Function WrapSurfaceAroundDC(ByVal srcDC As Long) As Boolean
             Select Case m_SurfaceBackend
                 
                 Case P2_DefaultBackend, P2_GDIPlusBackend
-                    m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(srcDC, IIf(m_SurfaceAntialiasing >= P2_AA_Grayscale, GP_SM_AntiAlias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Normal, GP_POM_Half, GP_POM_None))
+                    m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(srcDC, IIf(m_SurfaceAntialiasing >= P2_AA_Grayscale, GP_SM_AntiAlias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Half, GP_POM_Half, GP_POM_None))
                     WrapSurfaceAroundDC = (m_SurfaceHandle <> 0)
                     If WrapSurfaceAroundDC Then m_SurfaceDC = srcDC
                     
