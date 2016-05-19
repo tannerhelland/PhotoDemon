@@ -3544,6 +3544,14 @@ Private Sub MnuFile_Click(Index As Integer)
         
         'Batch wizard
         Case 13
+            
+            'TODO 7.0: batch processing is a disaster right now, and it will remain that way for some time.
+            '  If you need to batch process something, use the stable build.
+            Dim warningString As String, warningTitle As String
+            warningString = "WARNING!  The batch processor is not integrated with a number of crucial nightly build changes.  It is likely to experience bugs and/or hard crashes." & vbCrLf & vbCrLf & "For batch processing tasks, please use the latest stable build from photodemon.org."
+            warningTitle = "Batch processing not recommended"
+            PDMsgBox warningString, vbCritical Or vbOKOnly Or vbApplicationModal, warningTitle
+            
             Process "Batch wizard", True
         
         '<separator>
