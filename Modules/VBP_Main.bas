@@ -644,7 +644,7 @@ End Sub
 Public Sub FinalShutdown()
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "finalShutdown() reached.  Forcibly unloading FormMain..."
+        pdDebug.LogAction "FinalShutdown() reached.  Forcibly unloading FormMain..."
     #End If
     
     Set FormMain = Nothing
