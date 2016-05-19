@@ -274,7 +274,7 @@ Public Function QuickCreateSurfaceFromDC(ByRef dstSurface As pd2DSurface, ByVal 
     If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface
     With dstSurface
         .SetDebugMode m_DebugMode
-        If enableAntialiasing Then .SetSurfaceAntialiasing GP_SM_AntiAlias Else .SetSurfaceAntialiasing GP_SM_None
+        If enableAntialiasing Then .SetSurfaceAntialiasing P2_AA_Grayscale Else .SetSurfaceAntialiasing P2_AA_None
         QuickCreateSurfaceFromDC = .WrapSurfaceAroundDC(srcDC)
     End With
 End Function
@@ -291,7 +291,7 @@ Public Function QuickCreateSolidBrush(ByRef dstBrush As pd2DBrush, Optional ByVa
 End Function
 
 'Shortcut function for creating a solid pen
-Public Function QuickCreateSolidPen(ByRef dstPen As pd2DPen, Optional ByVal penWidth As Single = 1#, Optional ByVal penColor As Long = vbWhite, Optional ByVal penOpacity As Single = 100#, Optional ByVal penLineJoin As PD_2D_LineJoin = P2_LJ_Miter) As Boolean
+Public Function QuickCreateSolidPen(ByRef dstPen As pd2DPen, Optional ByVal penWidth As Single = 1#, Optional ByVal penColor As Long = vbWhite, Optional ByVal penOpacity As Single = 100#, Optional ByVal penLineJoin As PD_2D_LineJoin = P2_LJ_Miter, Optional ByVal penLineCap As PD_2D_LineCap = P2_LC_Flat) As Boolean
     If (dstPen Is Nothing) Then Set dstPen = New pd2DPen
     With dstPen
         .SetDebugMode m_DebugMode
@@ -299,6 +299,7 @@ Public Function QuickCreateSolidPen(ByRef dstPen As pd2DPen, Optional ByVal penW
         .SetPenColor penColor
         .SetPenOpacity penOpacity
         .SetPenLineJoin penLineJoin
+        .SetPenLineCap penLineCap
         QuickCreateSolidPen = .CreatePen()
     End With
 End Function

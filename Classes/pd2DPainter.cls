@@ -99,6 +99,48 @@ Public Function DrawArcI(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPe
     End If
 End Function
 
+Public Function DrawCircleF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal centerX As Single, ByVal centerY As Single, ByVal circleRadius As Single) As Boolean
+    DrawCircleF = DrawEllipseF(dstSurface, srcPen, centerX - circleRadius, centerY - circleRadius, circleRadius * 2, circleRadius * 2)
+End Function
+
+Public Function DrawCircleI(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal centerX As Long, ByVal centerY As Long, ByVal circleRadius As Long) As Boolean
+    DrawCircleI = DrawEllipseI(dstSurface, srcPen, centerX - circleRadius, centerY - circleRadius, circleRadius * 2, circleRadius * 2)
+End Function
+
+Public Function DrawEllipseF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal ellipseLeft As Single, ByVal ellipseTop As Single, ByVal ellipseWidth As Single, ByVal ellipseHeight As Single) As Boolean
+    If VerifyDrawBackends(dstSurface, srcPen) Then
+        Select Case dstSurface.GetSurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                DrawEllipseF = GDI_Plus.GDIPlus_DrawEllipseF(dstSurface.GetHandle, srcPen.GetHandle, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight)
+        End Select
+    End If
+End Function
+
+Public Function DrawEllipseF_AbsoluteCoords(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal ellipseLeft As Single, ByVal ellipseTop As Single, ByVal ellipseRight As Single, ByVal ellipseBottom As Single) As Boolean
+    DrawEllipseF_AbsoluteCoords = Me.DrawEllipseF(dstSurface, srcPen, ellipseLeft, ellipseTop, ellipseRight - ellipseLeft, ellipseBottom - ellipseTop)
+End Function
+
+Friend Function DrawEllipseF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RECTF) As Boolean
+    DrawEllipseF_FromRectF = Me.DrawEllipseF(dstSurface, srcPen, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height)
+End Function
+
+Public Function DrawEllipseI(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal ellipseLeft As Long, ByVal ellipseTop As Long, ByVal ellipseWidth As Long, ByVal ellipseHeight As Long) As Boolean
+    If VerifyDrawBackends(dstSurface, srcPen) Then
+        Select Case dstSurface.GetSurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                DrawEllipseI = GDI_Plus.GDIPlus_DrawRectI(dstSurface.GetHandle, srcPen.GetHandle, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight)
+        End Select
+    End If
+End Function
+
+Public Function DrawEllipseI_AbsoluteCoords(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal ellipseLeft As Long, ByVal ellipseTop As Long, ByVal ellipseRight As Long, ByVal ellipseBottom As Long) As Boolean
+    DrawEllipseI_AbsoluteCoords = Me.DrawEllipseI(dstSurface, srcPen, ellipseLeft, ellipseTop, ellipseRight - ellipseLeft, ellipseBottom - ellipseTop)
+End Function
+
+Friend Function DrawEllipseI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RECTL) As Boolean
+    DrawEllipseI_FromRectL = Me.DrawEllipseI(dstSurface, srcPen, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
+End Function
+
 Public Function DrawLineF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Boolean
     If VerifyDrawBackends(dstSurface, srcPen) Then
         Select Case dstSurface.GetSurfaceBackend
@@ -151,74 +193,14 @@ Friend Function DrawRectangleI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef 
     DrawRectangleI_FromRectL = Me.DrawRectangleI(dstSurface, srcPen, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
 End Function
 
-Public Function DrawEllipseF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal ellipseLeft As Single, ByVal ellipseTop As Single, ByVal ellipseWidth As Single, ByVal ellipseHeight As Single) As Boolean
-    If VerifyDrawBackends(dstSurface, srcPen) Then
-        Select Case dstSurface.GetSurfaceBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                DrawEllipseF = GDI_Plus.GDIPlus_DrawEllipseF(dstSurface.GetHandle, srcPen.GetHandle, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight)
-        End Select
-    End If
-End Function
-
-Public Function DrawEllipseF_AbsoluteCoords(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal ellipseLeft As Single, ByVal ellipseTop As Single, ByVal ellipseRight As Single, ByVal ellipseBottom As Single) As Boolean
-    DrawEllipseF_AbsoluteCoords = Me.DrawEllipseF(dstSurface, srcPen, ellipseLeft, ellipseTop, ellipseRight - ellipseLeft, ellipseBottom - ellipseTop)
-End Function
-
-Friend Function DrawEllipseF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RECTF) As Boolean
-    DrawEllipseF_FromRectF = Me.DrawEllipseF(dstSurface, srcPen, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height)
-End Function
-
-Public Function DrawEllipseI(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal ellipseLeft As Long, ByVal ellipseTop As Long, ByVal ellipseWidth As Long, ByVal ellipseHeight As Long) As Boolean
-    If VerifyDrawBackends(dstSurface, srcPen) Then
-        Select Case dstSurface.GetSurfaceBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                DrawEllipseI = GDI_Plus.GDIPlus_DrawRectI(dstSurface.GetHandle, srcPen.GetHandle, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight)
-        End Select
-    End If
-End Function
-
-Public Function DrawEllipseI_AbsoluteCoords(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal ellipseLeft As Long, ByVal ellipseTop As Long, ByVal ellipseRight As Long, ByVal ellipseBottom As Long) As Boolean
-    DrawEllipseI_AbsoluteCoords = Me.DrawEllipseI(dstSurface, srcPen, ellipseLeft, ellipseTop, ellipseRight - ellipseLeft, ellipseBottom - ellipseTop)
-End Function
-
-Friend Function DrawEllipseI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RECTL) As Boolean
-    DrawEllipseI_FromRectL = Me.DrawEllipseI(dstSurface, srcPen, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
-End Function
-
 'Fill functions.  Given a target pd2dSurface and a source pd2dBrush, apply the brush to the surface in said shape.
 
-Public Function FillRectangleF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Boolean
-    If VerifyFillBackends(dstSurface, srcBrush) Then
-        Select Case dstSurface.GetSurfaceBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                FillRectangleF = GDI_Plus.GDIPlus_FillRectF(dstSurface.GetHandle, srcBrush.GetHandle, rectLeft, rectTop, rectWidth, rectHeight)
-        End Select
-    End If
+Public Function FillCircleF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal centerX As Single, ByVal centerY As Single, ByVal circleRadius As Single) As Boolean
+    FillCircleF = FillEllipseF(dstSurface, srcBrush, centerX - circleRadius, centerY - circleRadius, circleRadius * 2, circleRadius * 2)
 End Function
 
-Public Function FillRectangleF_AbsoluteCoords(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectRight As Single, ByVal rectBottom As Single) As Boolean
-    FillRectangleF_AbsoluteCoords = Me.FillRectangleF(dstSurface, srcBrush, rectLeft, rectTop, rectRight - rectLeft, rectBottom - rectTop)
-End Function
-
-Friend Function FillRectangleF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RECTF) As Boolean
-    FillRectangleF_FromRectF = Me.FillRectangleF(dstSurface, srcBrush, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height)
-End Function
-
-Public Function FillRectangleI(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal rectLeft As Long, ByVal rectTop As Long, ByVal rectWidth As Long, ByVal rectHeight As Long) As Boolean
-    If VerifyFillBackends(dstSurface, srcBrush) Then
-        Select Case dstSurface.GetSurfaceBackend
-            Case P2_DefaultBackend, P2_GDIPlusBackend
-                FillRectangleI = GDI_Plus.GDIPlus_FillRectI(dstSurface.GetHandle, srcBrush.GetHandle, rectLeft, rectTop, rectWidth, rectHeight)
-        End Select
-    End If
-End Function
-
-Public Function FillRectangleI_AbsoluteCoords(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal rectLeft As Long, ByVal rectTop As Long, ByVal rectRight As Long, ByVal rectBottom As Long) As Boolean
-    FillRectangleI_AbsoluteCoords = Me.FillRectangleI(dstSurface, srcBrush, rectLeft, rectTop, rectRight - rectLeft, rectBottom - rectTop)
-End Function
-
-Friend Function FillRectangleI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RECTL) As Boolean
-    FillRectangleI_FromRectL = Me.FillRectangleI(dstSurface, srcBrush, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
+Public Function FillCircleI(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal centerX As Long, ByVal centerY As Long, ByVal circleRadius As Long) As Boolean
+    FillCircleI = FillEllipseI(dstSurface, srcBrush, centerX - circleRadius, centerY - circleRadius, circleRadius * 2, circleRadius * 2)
 End Function
 
 Public Function FillEllipseF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal ellipseLeft As Single, ByVal ellipseTop As Single, ByVal ellipseWidth As Single, ByVal ellipseHeight As Single) As Boolean
@@ -253,5 +235,39 @@ End Function
 
 Friend Function FillEllipseI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RECTL) As Boolean
     FillEllipseI_FromRectL = Me.FillEllipseI(dstSurface, srcBrush, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
+End Function
+
+Public Function FillRectangleF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Boolean
+    If VerifyFillBackends(dstSurface, srcBrush) Then
+        Select Case dstSurface.GetSurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                FillRectangleF = GDI_Plus.GDIPlus_FillRectF(dstSurface.GetHandle, srcBrush.GetHandle, rectLeft, rectTop, rectWidth, rectHeight)
+        End Select
+    End If
+End Function
+
+Public Function FillRectangleF_AbsoluteCoords(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectRight As Single, ByVal rectBottom As Single) As Boolean
+    FillRectangleF_AbsoluteCoords = Me.FillRectangleF(dstSurface, srcBrush, rectLeft, rectTop, rectRight - rectLeft, rectBottom - rectTop)
+End Function
+
+Friend Function FillRectangleF_FromRectF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RECTF) As Boolean
+    FillRectangleF_FromRectF = Me.FillRectangleF(dstSurface, srcBrush, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height)
+End Function
+
+Public Function FillRectangleI(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal rectLeft As Long, ByVal rectTop As Long, ByVal rectWidth As Long, ByVal rectHeight As Long) As Boolean
+    If VerifyFillBackends(dstSurface, srcBrush) Then
+        Select Case dstSurface.GetSurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                FillRectangleI = GDI_Plus.GDIPlus_FillRectI(dstSurface.GetHandle, srcBrush.GetHandle, rectLeft, rectTop, rectWidth, rectHeight)
+        End Select
+    End If
+End Function
+
+Public Function FillRectangleI_AbsoluteCoords(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal rectLeft As Long, ByVal rectTop As Long, ByVal rectRight As Long, ByVal rectBottom As Long) As Boolean
+    FillRectangleI_AbsoluteCoords = Me.FillRectangleI(dstSurface, srcBrush, rectLeft, rectTop, rectRight - rectLeft, rectBottom - rectTop)
+End Function
+
+Friend Function FillRectangleI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RECTL) As Boolean
+    FillRectangleI_FromRectL = Me.FillRectangleI(dstSurface, srcBrush, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
 End Function
 
