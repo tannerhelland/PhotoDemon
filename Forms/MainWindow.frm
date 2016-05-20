@@ -2569,9 +2569,10 @@ Private Sub Form_Load()
     g_WindowManager.SetAutoRefreshMode False
     
     'DWM may cause issues inside the IDE, so forcibly refresh the main form after displaying it.
-    ' (Just to be safe, we'll apply a second refresh later, followed by a DoEvents to ensure the window is immediately repainted.)
+    ' (The DoEvents fixes an unpleasant flickering issue on Windows Vista/7 when the DWM isn't running full Aero.)
     FormMain.Show vbModeless
     FormMain.Refresh
+    DoEvents
     
     'Visibility for the options toolbox is automatically set according to the current tool; this is different from other dialogs.
     ' (Note that the .ResetToolButtonStates function checks the relevant preference prior to changing the window state, so all
