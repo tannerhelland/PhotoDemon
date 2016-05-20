@@ -312,14 +312,14 @@ Public Sub DisplayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
                 
             'Inches
             Case 1
-                iWidth = convertPixelToOtherUnit(MU_INCHES, srcImage.Width, srcImage.getDPI(), srcImage.Width)
-                iHeight = convertPixelToOtherUnit(MU_INCHES, srcImage.Height, srcImage.getDPI(), srcImage.Height)
+                iWidth = ConvertPixelToOtherUnit(MU_INCHES, srcImage.Width, srcImage.GetDPI(), srcImage.Width)
+                iHeight = ConvertPixelToOtherUnit(MU_INCHES, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
                 sizeString = Format(iWidth, "0.0##") & " x " & Format(iHeight, "0.0##")
             
             'CM
             Case 2
-                iWidth = convertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Width, srcImage.getDPI(), srcImage.Width)
-                iHeight = convertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Height, srcImage.getDPI(), srcImage.Height)
+                iWidth = ConvertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Width, srcImage.GetDPI(), srcImage.Width)
+                iHeight = ConvertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
                 sizeString = Format(iWidth, "0.0#") & " x " & Format(iHeight, "0.0#")
             
         End Select
@@ -434,12 +434,14 @@ Private Sub UserControl_Initialize()
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
+    ucSupport.RequestExtraFunctionality True
+    If g_IsProgramRunning Then ucSupport.RequestCursor IDC_ARROW
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDSTATUSBAR_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDStatusBar", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If (Not g_IsProgramRunning) Then UpdateColorList
     
     ReDim m_LinePositions(0 To 2) As Single
     
@@ -608,15 +610,15 @@ Private Sub RedrawBackBuffer()
     If g_IsProgramRunning Then
         
         If (Not (sbIconCoords Is Nothing)) And m_LastEnabledState Then
-            sbIconCoords.alphaBlendToDC bufferDC, , m_LinePositions(1) + FixDPI(8), FixDPI(4), FixDPI(sbIconCoords.getDIBWidth), FixDPI(sbIconCoords.getDIBHeight)
+            sbIconCoords.AlphaBlendToDC bufferDC, , m_LinePositions(1) + FixDPI(8), FixDPI(4), FixDPI(sbIconCoords.GetDIBWidth), FixDPI(sbIconCoords.GetDIBHeight)
         End If
         
         'Render the network access icon as necessary
         If m_NetworkAccessActive Then
             If m_LastEnabledState Then
-                sbIconNetwork.alphaBlendToDC bufferDC, , m_LinePositions(2) + FixDPI(8), FixDPI(4), FixDPI(sbIconNetwork.getDIBWidth), FixDPI(sbIconNetwork.getDIBHeight)
+                sbIconNetwork.AlphaBlendToDC bufferDC, , m_LinePositions(2) + FixDPI(8), FixDPI(4), FixDPI(sbIconNetwork.GetDIBWidth), FixDPI(sbIconNetwork.GetDIBHeight)
             Else
-                If m_NetworkAccessActive Then sbIconNetwork.alphaBlendToDC bufferDC, , m_LinePositions(0), FixDPI(4), FixDPI(sbIconNetwork.getDIBWidth), FixDPI(sbIconNetwork.getDIBHeight)
+                If m_NetworkAccessActive Then sbIconNetwork.AlphaBlendToDC bufferDC, , m_LinePositions(0), FixDPI(4), FixDPI(sbIconNetwork.GetDIBWidth), FixDPI(sbIconNetwork.GetDIBHeight)
             End If
         End If
         
@@ -629,10 +631,17 @@ Private Sub RedrawBackBuffer()
         lineColor = m_Colors.RetrieveColor(PDSB_Separator, Me.Enabled)
         
         If m_LastEnabledState Then
+            
+            Dim cSurface As pd2DSurface, cPainter As pd2DPainter, cPen As pd2DPen
+            Drawing2D.QuickCreatePainter cPainter
+            Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+            Drawing2D.QuickCreateSolidPen cPen, 1#, lineColor
+            
             Dim i As Long
             For i = 0 To UBound(m_LinePositions)
-                GDI_Plus.GDIPlusDrawLineToDC bufferDC, m_LinePositions(i), lineTop, m_LinePositions(i), lineBottom, lineColor
+                cPainter.DrawLineF cSurface, cPen, m_LinePositions(i), lineTop, m_LinePositions(i), lineBottom
             Next i
+            
         End If
         
     End If

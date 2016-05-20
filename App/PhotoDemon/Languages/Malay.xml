@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.172</langversion>
+<langversion>6.7.173</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -11943,12 +11943,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>kedudukan utama</translation>
 </phrase>
 
-<phrase>
-<original>fill empty areas with</original>
-<translation>mengisi bidang kosong dengan</translation>
-</phrase>
-
-<!-- Image_CanvasSize.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Image_CanvasSize.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Image_CanvasSize.frm-->
 
@@ -15176,12 +15171,33 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for pd2DPainter.cls-->
 
+<!-- BEGIN text for Layer_Flatten.frm (FormLayerFlatten) -->
+
+<phrase>
+<original>flatten behavior</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>keep transparency</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>remove transparency</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Layer_Flatten.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2595</phrasecount>
+<phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4515 phrases. -->
-<!-- 1920 are duplicates, so only 2595 unique phrases have been written to file. -->
-<!-- These 2595 phrases contain approximately 13366 total words. -->
+<!-- As of this build, PhotoDemon contains 4521 phrases. -->
+<!-- 1924 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- These 2597 phrases contain approximately 13368 total words. -->
 
 </pdData>
