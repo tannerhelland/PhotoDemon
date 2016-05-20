@@ -26,8 +26,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   2280
-      _ExtentX        =   661
-      _ExtentY        =   661
+      _extentx        =   661
+      _extenty        =   661
    End
    Begin VB.Timer tmrMetadata 
       Enabled         =   0   'False
@@ -48,22 +48,22 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   120
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   1680
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   1080
-      _ExtentX        =   635
-      _ExtentY        =   635
-      ErrAsOut        =   0   'False
-      PollInterval    =   5
+      _extentx        =   635
+      _extenty        =   635
+      errasout        =   0   'False
+      pollinterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -606,7 +606,7 @@ Begin VB.Form FormMain
          Index           =   14
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Flatten image"
+         Caption         =   "Flatten image..."
          Index           =   15
       End
       Begin VB.Menu MnuLayer 
@@ -1961,7 +1961,7 @@ Private Sub MnuLayer_Click(Index As Integer)
         
         'Flatten layers
         Case 15
-            Process "Flatten image", , , UNDO_IMAGE
+            Process "Flatten image", True
         
         'Merge visible layers
         Case 16
@@ -2417,12 +2417,10 @@ Private Sub tmrCountdown_Timer()
 
     Static intervalCount As Long
     
-    If intervalCount > 2 Then
-        
+    If (intervalCount > 2) Then
         intervalCount = 0
         g_DisableUserInput = False
         tmrCountdown.Enabled = False
-        
     End If
     
     intervalCount = intervalCount + 1

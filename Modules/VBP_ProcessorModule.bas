@@ -934,7 +934,11 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Flatten image
         Case "Flatten image"
-            Layer_Handler.FlattenImage
+            If ShowDialog Then
+                ShowPDDialog vbModal, FormLayerFlatten
+            Else
+                Layer_Handler.FlattenImage cXMLParams.GetParamString
+            End If
             
         'Merge visible layers
         Case "Merge visible layers"
