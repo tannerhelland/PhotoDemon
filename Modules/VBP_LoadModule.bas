@@ -137,7 +137,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     'Next, create a blank target layer and target DIB.  If all of these are loaded correctly, we'll eventually assemble them
     ' into the targetImage object.
     Dim newLayerID As Long
-    newLayerID = targetImage.createBlankLayer
+    newLayerID = targetImage.CreateBlankLayer
     
     Dim targetDIB As pdDIB
     Set targetDIB = New pdDIB
@@ -349,7 +349,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             For pageTracker = 1 To numOfPages - 1
                 
                 'Create a blank layer in the receiving image, and retrieve a pointer to it
-                newLayerID = targetImage.createBlankLayer
+                newLayerID = targetImage.CreateBlankLayer
                 
                 'Load the next page into the temporary DIB
                 targetDIB.ResetDIB 0
@@ -878,7 +878,7 @@ Public Sub LoadAccelerators()
         '.AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", FormMain.MnuImage(8), True, True, False, UNDO_IMAGE
         .AddAccelerator vbKeyX, vbCtrlMask Or vbAltMask, "Trim empty borders", FormMain.MnuImage(10), True, True, False, UNDO_IMAGEHEADER
         'KeyCode 188 = <,  (next to the letter M)
-        .AddAccelerator 188, vbCtrlMask Or vbAltMask, "Reduce colors", FormMain.MnuImage(16), True, True, False, UNDO_IMAGE
+        .AddAccelerator 188, vbCtrlMask Or vbAltMask, "Reduce colors", FormMain.MnuImage(16), True, True, True, UNDO_IMAGE
         
             'Image -> Rotate submenu
             .AddAccelerator vbKeyR, 0, "Rotate image 90 clockwise", FormMain.MnuRotate(2), True, True, False, UNDO_IMAGE
