@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.171</langversion>
+<langversion>6.7.172</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -11450,23 +11450,18 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
-<original>minimize PhotoDemon prior to capture</original>
-<translation>PhotoDemon minimaliseren voorafgaand aan vastlegging</translation>
-</phrase>
-
-<phrase>
-<original>entire desktop</original>
-<translation>volledig bureaublad</translation>
-</phrase>
-
-<phrase>
-<original>specific program (listed by window title)</original>
-<translation>specifiek programma (vermeld door venstertitel)</translation>
+<original>currently available programs (listed by window title)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>include window decorations</original>
 <translation>gebruik venster decoraties</translation>
+</phrase>
+
+<phrase>
+<original>minimize PhotoDemon prior to capture</original>
+<translation>PhotoDemon minimaliseren voorafgaand aan vastlegging</translation>
 </phrase>
 
 <phrase>
@@ -11482,6 +11477,16 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <phrase>
 <original>Target window required</original>
 <translation>Doelscherm nodig</translation>
+</phrase>
+
+<phrase>
+<original>entire desktop</original>
+<translation>volledig bureaublad</translation>
+</phrase>
+
+<phrase>
+<original>specific program</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11504,7 +11509,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation>Selecteer een ander.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 19 phrases. 7 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 21 phrases. 8 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -15163,10 +15168,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2594</phrasecount>
+<phrasecount>2595</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4513 phrases. -->
-<!-- 1919 are duplicates, so only 2594 unique phrases have been written to file. -->
-<!-- These 2594 phrases contain approximately 13363 total words. -->
+<!-- As of this build, PhotoDemon contains 4515 phrases. -->
+<!-- 1920 are duplicates, so only 2595 unique phrases have been written to file. -->
+<!-- These 2595 phrases contain approximately 13366 total words. -->
 
 </pdData>

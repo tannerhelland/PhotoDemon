@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.172</langversion>
+<langversion>6.7.173</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -11451,23 +11451,18 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 </phrase>
 
 <phrase>
-<original>minimize PhotoDemon prior to capture</original>
-<translation>PhotoDemon vor Aufnehmen minimieren</translation>
-</phrase>
-
-<phrase>
-<original>entire desktop</original>
-<translation>Gesamter Desktop</translation>
-</phrase>
-
-<phrase>
-<original>specific program (listed by window title)</original>
-<translation>Spezifisches Programm (gelistet durch Fenstertitel)</translation>
+<original>currently available programs (listed by window title)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>include window decorations</original>
 <translation>Fensterdekorationen einschließen</translation>
+</phrase>
+
+<phrase>
+<original>minimize PhotoDemon prior to capture</original>
+<translation>PhotoDemon vor Aufnehmen minimieren</translation>
 </phrase>
 
 <phrase>
@@ -11483,6 +11478,16 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <phrase>
 <original>Target window required</original>
 <translation>Zielfenster erforderlich</translation>
+</phrase>
+
+<phrase>
+<original>entire desktop</original>
+<translation>Gesamter Desktop</translation>
+</phrase>
+
+<phrase>
+<original>specific program</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11505,7 +11510,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <translation>Wählen Sie bitte einen anderen aus.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 19 phrases. 7 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 21 phrases. 8 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -15164,10 +15169,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2594</phrasecount>
+<phrasecount>2595</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4513 phrases. -->
-<!-- 1919 are duplicates, so only 2594 unique phrases have been written to file. -->
-<!-- These 2594 phrases contain approximately 13363 total words. -->
+<!-- As of this build, PhotoDemon contains 4515 phrases. -->
+<!-- 1920 are duplicates, so only 2595 unique phrases have been written to file. -->
+<!-- These 2595 phrases contain approximately 13366 total words. -->
 
 </pdData>

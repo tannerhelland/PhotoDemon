@@ -25,29 +25,93 @@ Begin VB.Form FormScreenCapture
    ScaleWidth      =   873
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
-   Begin PhotoDemon.pdListBox lstWindows 
-      Height          =   2895
-      Left            =   840
-      TabIndex        =   6
-      Top             =   2040
-      Width           =   5055
-      _extentx        =   8916
-      _extenty        =   5106
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      HasDC           =   0   'False
+      Height          =   4335
+      Index           =   1
+      Left            =   120
+      ScaleHeight     =   289
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   393
+      TabIndex        =   5
+      Top             =   1200
+      Width           =   5895
+      Begin PhotoDemon.pdListBox lstWindows 
+         Height          =   3135
+         Left            =   120
+         TabIndex        =   6
+         Top             =   0
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   5530
+         Caption         =   "currently available programs (listed by window title):"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdCheckBox chkChrome 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   7
+         Top             =   3240
+         Width           =   5475
+         _ExtentX        =   9657
+         _ExtentY        =   582
+         Caption         =   "include window decorations"
+      End
+      Begin PhotoDemon.pdLabel lblMinimizedWarning 
+         Height          =   615
+         Left            =   240
+         Top             =   3600
+         Visible         =   0   'False
+         Width           =   5535
+         _ExtentX        =   9763
+         _ExtentY        =   1085
+         Alignment       =   2
+         Caption         =   ""
+         FontSize        =   9
+         ForeColor       =   2627816
+         Layout          =   1
+         UseCustomForeColor=   -1  'True
+      End
    End
-   Begin PhotoDemon.pdLabel lblMinimizedWarning 
-      Height          =   495
-      Left            =   6120
-      Top             =   4980
-      Visible         =   0   'False
-      Width           =   6855
-      _extentx        =   12091
-      _extenty        =   873
-      alignment       =   2
-      caption         =   ""
-      fontsize        =   9
-      forecolor       =   2627816
-      layout          =   1
-      usecustomforecolor=   -1  'True
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      HasDC           =   0   'False
+      Height          =   4335
+      Index           =   0
+      Left            =   120
+      ScaleHeight     =   289
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   393
+      TabIndex        =   3
+      Top             =   1200
+      Width           =   5895
+      Begin PhotoDemon.pdCheckBox chkMinimize 
+         Height          =   300
+         Left            =   120
+         TabIndex        =   4
+         Top             =   120
+         Width           =   5115
+         _ExtentX        =   9022
+         _ExtentY        =   582
+         Caption         =   "minimize PhotoDemon prior to capture"
+      End
+   End
+   Begin PhotoDemon.pdButtonStrip btsSource 
+      Height          =   975
+      Left            =   120
+      TabIndex        =   2
+      Top             =   120
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1720
+      Caption         =   "screenshot source"
    End
    Begin PhotoDemon.pdCommandBarMini cmdBarMini 
       Align           =   2  'Align Bottom
@@ -56,65 +120,22 @@ Begin VB.Form FormScreenCapture
       TabIndex        =   0
       Top             =   6255
       Width           =   13095
-      _extentx        =   23098
-      _extenty        =   1323
+      _ExtentX        =   23098
+      _ExtentY        =   1323
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H00FFFFFF&
       ForeColor       =   &H80000008&
-      Height          =   4335
+      Height          =   4935
       Left            =   6120
-      ScaleHeight     =   287
+      ScaleHeight     =   327
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   455
-      TabIndex        =   5
-      Top             =   600
-      Width           =   6855
-   End
-   Begin PhotoDemon.pdCheckBox chkMinimize 
-      Height          =   300
-      Left            =   840
-      TabIndex        =   3
-      Top             =   1050
-      Width           =   5115
-      _extentx        =   9022
-      _extenty        =   582
-      caption         =   "minimize PhotoDemon prior to capture"
-   End
-   Begin PhotoDemon.pdRadioButton optSource 
-      Height          =   375
-      Index           =   0
-      Left            =   480
       TabIndex        =   1
       Top             =   600
-      Width           =   5370
-      _extentx        =   9472
-      _extenty        =   582
-      caption         =   "entire desktop"
-      value           =   -1  'True
-   End
-   Begin PhotoDemon.pdRadioButton optSource 
-      Height          =   375
-      Index           =   1
-      Left            =   480
-      TabIndex        =   2
-      Top             =   1560
-      Width           =   5370
-      _extentx        =   9472
-      _extenty        =   582
-      caption         =   "specific program (listed by window title)"
-   End
-   Begin PhotoDemon.pdCheckBox chkChrome 
-      Height          =   330
-      Left            =   840
-      TabIndex        =   4
-      Top             =   5040
-      Width           =   5115
-      _extentx        =   8599
-      _extenty        =   582
-      caption         =   "include window decorations"
+      Width           =   6855
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -122,34 +143,22 @@ Begin VB.Form FormScreenCapture
       Left            =   6120
       Top             =   180
       Width           =   6825
-      _extentx        =   0
-      _extenty        =   0
-      caption         =   "preview"
-      fontsize        =   12
-      forecolor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   240
-      Top             =   180
-      Width           =   5730
-      _extentx        =   0
-      _extenty        =   0
-      caption         =   "screenshot source"
-      fontsize        =   12
-      forecolor       =   4210752
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "preview"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblSecurity 
       Height          =   600
-      Left            =   840
-      Top             =   5550
-      Width           =   12015
-      _extentx        =   21193
-      _extenty        =   1058
-      caption         =   ""
-      forecolor       =   4210752
-      layout          =   1
+      Left            =   360
+      Top             =   5580
+      Width           =   12495
+      _ExtentX        =   22040
+      _ExtentY        =   1058
+      Caption         =   ""
+      ForeColor       =   4210752
+      Layout          =   1
    End
 End
 Attribute VB_Name = "FormScreenCapture"
@@ -181,6 +190,26 @@ Private m_WindowHWnds As pdStringStack
 'APIs for listing currently open applications (windows)
 Private Declare Function EnumWindows Lib "user32" (ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
 
+Private Sub btsSource_Click(ByVal buttonIndex As Long)
+    UpdateVisibleContainer
+    
+    'If the user has selected "specific program", make sure a program is selected
+    If (buttonIndex = 1) Then
+        If (lstWindows.ListIndex = -1) Then lstWindows.ListIndex = 0
+    End If
+    
+    UpdatePreview
+    
+End Sub
+
+Private Sub UpdateVisibleContainer()
+    Dim i As Long
+    For i = picContainer.lBound To picContainer.UBound
+        picContainer(i).Visible = CBool(i = btsSource.ListIndex)
+    Next i
+    lblSecurity.Visible = CBool(btsSource.ListIndex = 1)
+End Sub
+
 Private Sub chkChrome_Click()
     UpdatePreview
 End Sub
@@ -191,26 +220,37 @@ End Sub
 
 Private Sub cmdBarMini_OKClick()
     
-    If optSource(0) Then
-        Me.Visible = False
-        Process "Screen capture", False, buildParams(True, CBool(chkMinimize), 0, CBool(chkChrome), "Screen capture"), UNDO_NOTHING
-    Else
-        
-        'Make sure the user has selected a window to capture
-        If (lstWindows.ListIndex = -1) Then
-            PDMsgBox "Please select a window to capture.", vbInformation + vbApplicationModal + vbOKOnly, "Target window required"
-            Exit Sub
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+        .AddParam "CaptureWholeScreen", CBool(btsSource.ListIndex = 0)
+        .AddParam "CaptureMinimizePDFirst", CBool(chkMinimize)
+        If (btsSource.ListIndex <> 0) Then
+            .AddParam "CaptureTargetHWnd", IIf(lstWindows.ListIndex >= 0, m_WindowHWnds.GetString(lstWindows.ListIndex), 0&)
+            .AddParam "CaptureTargetChrome", CBool(chkChrome)
+            .AddParam "CaptureTargetWindowName", IIf(lstWindows.ListIndex >= 0, lstWindows.List(lstWindows.ListIndex), g_Language.TranslateMessage("Screen capture"))
         End If
-        
-        Me.Visible = False
-        Process "Screen capture", False, buildParams(False, CBool(chkMinimize.Value), IIf(lstWindows.ListIndex > -1, m_WindowHWnds.GetString(lstWindows.ListIndex), 0&), CBool(chkChrome), IIf(lstWindows.ListIndex > -1, lstWindows.List(lstWindows.ListIndex), "Screen capture")), UNDO_NOTHING
-        
+    End With
+    
+    'If the user wants a specific window captured, make sure they actually selected one from the list
+    If (btsSource.ListIndex = 1) And (lstWindows.ListIndex = -1) Then
+        PDMsgBox "Please select a window to capture.", vbInformation + vbApplicationModal + vbOKOnly, "Target window required"
+        Exit Sub
     End If
+        
+    Me.Visible = False
+    Process "Screen capture", False, cParams.GetParamString, UNDO_NOTHING
     
 End Sub
 
 Private Sub Form_Load()
-        
+            
+    btsSource.AddItem "entire desktop", 0
+    btsSource.AddItem "specific program", 1
+    btsSource.ListIndex = 0
+    UpdateVisibleContainer
+            
     'Populate the "window is minimized" warning
     lblMinimizedWarning.Caption = g_Language.TranslateMessage("This program is currently minimized.  Restore it to normal size for best results.")
     If Not (g_Themer Is Nothing) Then
@@ -258,19 +298,7 @@ Private Function FillListWithOpenApplications(ByVal dstListbox As pdListBox) As 
 End Function
 
 Private Sub lstWindows_Click()
-    If (Not optSource(1)) Then optSource(1) = True
     UpdatePreview
-End Sub
-
-Private Sub optSource_Click(Index As Integer)
-    
-    'If the user has selected "specific program", make sure a program is selected
-    If Index = 1 Then
-        If lstWindows.ListIndex = -1 Then lstWindows.ListIndex = 0
-    End If
-    
-    UpdatePreview
-    
 End Sub
 
 'Live previews of the screen capture are now provided
@@ -280,7 +308,7 @@ Private Sub UpdatePreview()
     Set tmpDIB = New pdDIB
 
     'Full screen capture was requested
-    If optSource(0) Then
+    If (btsSource.ListIndex = 0) Then
         Screen_Capture.GetDesktopAsDIB tmpDIB
         tmpDIB.RenderToPictureBox picPreview
     
@@ -296,6 +324,7 @@ Private Sub UpdatePreview()
                 lblMinimizedWarning.Visible = minimizeCheck
             Else
                 lstWindows.RemoveItem lstWindows.ListIndex
+                lblMinimizedWarning.Visible = False
                 DisplayScreenCaptureError
             End If
             
