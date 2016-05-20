@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.113</langversion>
+<langversion>6.6.114</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -11456,23 +11456,18 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>minimize PhotoDemon prior to capture</original>
-<translation>mengurangkan PhotoDemon sebelum menangkap</translation>
-</phrase>
-
-<phrase>
-<original>entire desktop</original>
-<translation>keseluruhan desktop</translation>
-</phrase>
-
-<phrase>
-<original>specific program (listed by window title)</original>
-<translation>program tertentu (yang disenaraikan oleh tajuk tetingkap)</translation>
+<original>currently available programs (listed by window title)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>include window decorations</original>
 <translation>termasuk hiasan tetingkap</translation>
+</phrase>
+
+<phrase>
+<original>minimize PhotoDemon prior to capture</original>
+<translation>mengurangkan PhotoDemon sebelum menangkap</translation>
 </phrase>
 
 <phrase>
@@ -11488,6 +11483,16 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <phrase>
 <original>Target window required</original>
 <translation>Tetingkap sasaran yang dikehendaki</translation>
+</phrase>
+
+<phrase>
+<original>entire desktop</original>
+<translation>keseluruhan desktop</translation>
+</phrase>
+
+<phrase>
+<original>specific program</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11510,7 +11515,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Sila pilih yang lain.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 19 phrases. 7 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 21 phrases. 8 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -15169,10 +15174,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2594</phrasecount>
+<phrasecount>2595</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4513 phrases. -->
-<!-- 1919 are duplicates, so only 2594 unique phrases have been written to file. -->
-<!-- These 2594 phrases contain approximately 13363 total words. -->
+<!-- As of this build, PhotoDemon contains 4515 phrases. -->
+<!-- 1920 are duplicates, so only 2595 unique phrases have been written to file. -->
+<!-- These 2595 phrases contain approximately 13366 total words. -->
 
 </pdData>

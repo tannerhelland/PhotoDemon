@@ -23,7 +23,7 @@ Public Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
+Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function PrintWindow Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long, ByVal nFlags As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
@@ -39,7 +39,6 @@ Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal ptrToString As Long, ByVal cch As Long) As Long
 
-Private Const SW_SHOWMINIMIZED As Long = &H2
 Private Type WindowPlacement
         wpLength As Long
         wpFlags As Long
@@ -63,17 +62,32 @@ Private m_WindowHWnds As pdStringStack
 'ShowWindow is used to minimize and restore the PhotoDemon window, if requested.  Using VB's internal .WindowState
 ' command doesn't notify the window manager (I have no idea why) so this necessary to prevent parts of the toolbar
 ' client areas from disappearing upon restoration.
+Private Const SW_SHOWMINIMIZED As Long = &H2
 Private Const SW_MINIMIZE As Long = 6&
 Private Const SW_RESTORE As Long = 9&
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As Long) As Long
 
 'Simple routine for capturing the screen and loading it as an image
-Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD As Boolean, ByVal alternateWindowHwnd As Long, ByVal includeChrome As Boolean, Optional ByVal windowName As String)
+Public Sub CaptureScreen(ByVal screenCaptureParams As String)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString screenCaptureParams
+    
+    Dim captureFullDesktop As Boolean, minimizePD As Boolean, alternateWindowHwnd As Long, includeChrome As Boolean, alternateWindowName As String
+    
+    With cParams
+        captureFullDesktop = .GetBool("CaptureWholeScreen", True)
+        minimizePD = .GetBool("CaptureMinimizePDFirst", False)
+        alternateWindowHwnd = .GetLong("CaptureTargetHWnd", 0&)
+        includeChrome = .GetBool("CaptureTargetChrome", True)
+        alternateWindowName = .GetString("CaptureTargetWindowName", vbNullString)
+    End With
     
     Message "Capturing screen..."
-        
+    
     'If the user wants us to minimize the form, obey their orders
-    If captureFullDesktop And minimizePD Then ShowWindow FormMain.hWnd, SW_MINIMIZE
+    If (captureFullDesktop And minimizePD) Then ShowWindow FormMain.hWnd, SW_MINIMIZE
     
     'The capture happens so quickly that the message box prompting the capture will be caught in the snapshot.  Sleep for 1/2 of a second
     ' to give the message box time to disappear
@@ -93,7 +107,7 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     End If
     
     'If we minimized the main window, now's the time to return it to normal size
-    If captureFullDesktop And minimizePD Then ShowWindow FormMain.hWnd, SW_RESTORE
+    If (captureFullDesktop And minimizePD) Then ShowWindow FormMain.hWnd, SW_RESTORE
         
     'TODO: confirm that the previous step is okay on XP.  Previously, we had to forcibly invoke a full refresh via
     ' the window manager, but since switching to the new, lightweight toolbox manager in v7.0, I haven't re-checked this.
@@ -111,7 +125,7 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
         
     'Once the capture is saved, load it up like any other bitmap
     Dim sTitle As String
-    If captureFullDesktop Then sTitle = g_Language.TranslateMessage("Screen Capture") Else sTitle = windowName
+    If captureFullDesktop Then sTitle = g_Language.TranslateMessage("Screen Capture") Else sTitle = alternateWindowName
     
     'Sanitize the calculated string to remove any potentially invalid characters
     Dim cFile As pdFSO
@@ -196,7 +210,7 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As 
     'See if the window is currently minimized; the caller may want to use this information to recognize that the capture
     ' isn't going to look right.
     If wpSuccess Then
-        isWindowMinimized = CBool((tmpWinPlacement.wpShowCmd And SW_SHOWMINIMIZED) <> 0)
+        isWindowMinimized = CBool((tmpWinPlacement.wpShowCmd And (SW_SHOWMINIMIZED Or SW_MINIMIZE)) <> 0)
     Else
         isWindowMinimized = False
     End If
@@ -245,7 +259,7 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As 
     
     'DWM-rendered windows have the (bizarre) side-effect of alpha values being set to 0 in some regions of the image.
     ' To circumvent this, we forcibly set all alpha values to opaque, which makes the resulting image okay.
-    If CBool(dstDIB.GetDIBColorDepth = 32) And GetHwndContentsAsDIB Then dstDIB.ForceNewAlpha 255
+    If ((dstDIB.GetDIBColorDepth = 32) And GetHwndContentsAsDIB) Then dstDIB.ForceNewAlpha 255
     
 End Function
 

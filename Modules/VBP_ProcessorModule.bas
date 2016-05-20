@@ -565,7 +565,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormScreenCapture
             Else
-                CaptureScreen cParams.GetBool(1), cParams.GetBool(2), cParams.GetLong(3), cParams.GetBool(4), cParams.GetString(5)
+                Screen_Capture.CaptureScreen cXMLParams.GetParamString
             End If
             
         Case "Internet import"
