@@ -3,7 +3,7 @@ Begin VB.Form FormCanvasSize
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resize Canvas"
-   ClientHeight    =   7680
+   ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   225
    ClientWidth     =   9705
@@ -19,7 +19,7 @@ Begin VB.Form FormCanvasSize
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   512
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   647
    ShowInTaskbar   =   0   'False
@@ -27,100 +27,91 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   0
       Left            =   840
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   3720
       Width           =   750
-      _ExtentX        =   1323
-      _ExtentY        =   1005
+      _extentx        =   1323
+      _extenty        =   1005
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   6930
+      Top             =   5790
       Width           =   9705
-      _ExtentX        =   17119
-      _ExtentY        =   1323
-      AutoloadLastPreset=   -1  'True
-   End
-   Begin PhotoDemon.pdColorSelector colorPicker 
-      Height          =   495
-      Left            =   840
-      TabIndex        =   3
-      Top             =   6120
-      Width           =   7935
-      _ExtentX        =   10398
-      _ExtentY        =   873
+      _extentx        =   17119
+      _extenty        =   1323
+      autoloadlastpreset=   -1  'True
    End
    Begin PhotoDemon.pdResize ucResize 
       Height          =   2850
       Left            =   360
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   360
       Width           =   8775
-      _ExtentX        =   15478
-      _ExtentY        =   5027
+      _extentx        =   15478
+      _extenty        =   5027
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
       Index           =   1
       Left            =   1680
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   3720
       Width           =   750
-      _ExtentX        =   1323
-      _ExtentY        =   1005
+      _extentx        =   1323
+      _extenty        =   1005
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
       Index           =   2
       Left            =   2520
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   3720
       Width           =   750
-      _ExtentX        =   1323
-      _ExtentY        =   1005
+      _extentx        =   1323
+      _extenty        =   1005
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
       Index           =   3
       Left            =   840
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   4320
       Width           =   750
-      _ExtentX        =   1323
-      _ExtentY        =   1005
+      _extentx        =   1323
+      _extenty        =   1005
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
       Index           =   4
       Left            =   1680
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   4320
       Width           =   750
-      _ExtentX        =   1323
-      _ExtentY        =   1005
+      _extentx        =   1323
+      _extenty        =   1005
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
       Index           =   5
       Left            =   2520
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   4320
       Width           =   750
-      _ExtentX        =   1323
-      _ExtentY        =   1005
+      _extentx        =   1323
+      _extenty        =   1005
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
       Index           =   6
       Left            =   840
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   4920
       Width           =   750
-      _ExtentX        =   1323
-      _ExtentY        =   1005
+      _extentx        =   1323
+      _extenty        =   1005
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
@@ -129,8 +120,8 @@ Begin VB.Form FormCanvasSize
       TabIndex        =   1
       Top             =   4920
       Width           =   750
-      _ExtentX        =   1323
-      _ExtentY        =   1005
+      _extentx        =   1323
+      _extenty        =   1005
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
@@ -139,30 +130,19 @@ Begin VB.Form FormCanvasSize
       TabIndex        =   2
       Top             =   4920
       Width           =   750
-      _ExtentX        =   1323
-      _ExtentY        =   1005
+      _extentx        =   1323
+      _extenty        =   1005
    End
    Begin PhotoDemon.pdLabel lblAnchor 
       Height          =   285
       Left            =   360
       Top             =   3360
       Width           =   8595
-      _ExtentX        =   15161
-      _ExtentY        =   503
-      Caption         =   "anchor position"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblFill 
-      Height          =   285
-      Left            =   360
-      Top             =   5760
-      Width           =   8385
-      _ExtentX        =   14790
-      _ExtentY        =   503
-      Caption         =   "fill empty areas with"
-      FontSize        =   12
-      ForeColor       =   4210752
+      _extentx        =   15161
+      _extenty        =   503
+      caption         =   "anchor position"
+      fontsize        =   12
+      forecolor       =   4210752
    End
 End
 Attribute VB_Name = "FormCanvasSize"
@@ -174,8 +154,8 @@ Attribute VB_Exposed = False
 'Canvas Size Handler
 'Copyright 2013-2016 by Tanner Helland
 'Created: 13/June/13
-'Last updated: 14/April/14
-'Last update: rewrite everything against layers
+'Last updated: 20/May/16
+'Last update: remove "fill blank area" setting; after the move to layers, this is always handled with transparency
 '
 'This form handles canvas resizing.  You may wonder why it took me over a decade to implement this tool, when it's such a
 ' trivial one algorithmically.  The answer is that a number of user-interface support functions are necessary to build
@@ -256,17 +236,31 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Canvas size", , BuildParams(ucResize.ResizeWidth, ucResize.ResizeHeight, m_CurrentAnchor, colorPicker.Color, ucResize.UnitOfMeasurement, ucResize.ResizeDPIAsPPI), UNDO_IMAGEHEADER
+    Process "Canvas size", , GetCurrentParams, UNDO_IMAGEHEADER
 End Sub
 
-'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
-' present, simply randomize the width/height to +/- the current image's width/height divided by two.
-Private Sub cmdBar_RandomizeClick()
+Private Function GetCurrentParams() As String
+
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    With cParams
+        .AddParam "NewCanvasWidth", ucResize.ResizeWidth
+        .AddParam "NewCanvasHeight", ucResize.ResizeHeight
+        .AddParam "CanvasResizeMeasurement", ucResize.UnitOfMeasurement
+        .AddParam "CanvasResizeAnchor", m_CurrentAnchor
+        .AddParam "NewCanvasDPI", ucResize.ResizeDPIAsPPI
+    End With
     
+    GetCurrentParams = cParams.GetParamString
+
+End Function
+
+'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button (at
+' present), simply randomize the width/height to +/- the current image's width/height divided by two.
+Private Sub cmdBar_RandomizeClick()
     ucResize.LockAspectRatio = False
     ucResize.ResizeWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
     ucResize.ResizeHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
-    
 End Sub
 
 'The saved anchor must be custom-loaded, as the command bar won't handle it automatically
@@ -284,21 +278,10 @@ Private Sub cmdBar_ResetClick()
     ucResize.UnitOfMeasurement = MU_PIXELS
     ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
     ucResize.LockAspectRatio = True
-    
-    'Make borders fill with black by default
-    colorPicker.Color = RGB(0, 0, 0)
-    
+        
     'Set the middle position as the anchor
     m_CurrentAnchor = 4
 
-End Sub
-
-'Upon form activation, determine the ratio between the width and height of the image
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-        
 End Sub
 
 'Certain actions are done at LOAD time instead of ACTIVATE time to minimize visible flickering
@@ -310,6 +293,8 @@ Private Sub Form_Load()
     'Start with a default top-left position for the anchor
     UpdateAnchorButtons
     
+    ApplyThemeAndTranslations Me
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -317,8 +302,22 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
-Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal anchorPosition As Long, Optional ByVal newBackColor As Long = vbWhite, Optional ByVal curUnit As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long)
-
+Public Sub ResizeCanvas(ByVal functionParams As String)
+    
+    Dim iWidth As Long, iHeight As Long, anchorPosition As Long, curUnit As MeasurementUnit, iDPI As Long
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString functionParams
+    
+    With cParams
+        iWidth = .GetDouble("NewCanvasWidth", pdImages(g_CurrentImage).Width)
+        iHeight = .GetDouble("NewCanvasHeight", pdImages(g_CurrentImage).Height)
+        anchorPosition = .GetLong("CanvasResizeAnchor", 0&)
+        curUnit = .GetLong("CanvasResizeMeasurement", MU_PIXELS)
+        iDPI = .GetDouble("NewCanvasDPI", pdImages(g_CurrentImage).GetDPI)
+    End With
+    
     Dim srcWidth As Long, srcHeight As Long
     srcWidth = pdImages(g_CurrentImage).Width
     srcHeight = pdImages(g_CurrentImage).Height
