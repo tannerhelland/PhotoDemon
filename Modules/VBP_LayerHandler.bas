@@ -654,13 +654,24 @@ End Sub
 
 'Given a multi-layered image, flatten it.  Note that flattening does *not* remove alpha!  It simply merges all layers,
 ' including discarding invisible ones.
-Public Sub FlattenImage()
-
+Public Sub FlattenImage(Optional ByVal functionParams As String = vbNullString)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString functionParams
+    
+    Dim removeTransparency As Boolean, newBackgroundColor As Long
+    removeTransparency = cParams.GetBool("FlattenRemoveTransparency", False)
+    newBackgroundColor = cParams.GetLong("FlattenBackgroundColor", vbWhite)
+    
     'Start by retrieving a copy of the composite image
     Dim compositeDIB As pdDIB
     Set compositeDIB = New pdDIB
     
     pdImages(g_CurrentImage).GetCompositedImage compositeDIB
+    
+    'If the caller wants the flattened image to *not* have transparency, remove said transparency now
+    If removeTransparency Then compositeDIB.CompositeBackgroundColor Colors.ExtractR(newBackgroundColor), Colors.ExtractG(newBackgroundColor), Colors.ExtractB(newBackgroundColor)
     
     'Also, grab the name of the bottom-most layer.  This will be used as the name of our only layer in the flattened image.
     Dim flattenedName As String
