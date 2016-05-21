@@ -210,7 +210,7 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As 
     'See if the window is currently minimized; the caller may want to use this information to recognize that the capture
     ' isn't going to look right.
     If wpSuccess Then
-        isWindowMinimized = CBool((tmpWinPlacement.wpShowCmd And (SW_SHOWMINIMIZED Or SW_MINIMIZE)) <> 0)
+        isWindowMinimized = CBool(tmpWinPlacement.wpShowCmd = SW_SHOWMINIMIZED) Or CBool(tmpWinPlacement.wpShowCmd = SW_MINIMIZE)
     Else
         isWindowMinimized = False
     End If
