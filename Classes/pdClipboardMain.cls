@@ -1068,6 +1068,8 @@ End Function
 ' (if valid) should be loaded as new layers or new images.
 Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As Long, ByVal intendedTargetIsLayer As Boolean) As Boolean
     
+    If (Data Is Nothing) Then Exit Function
+    
     Dim dragWasSuccessful As Boolean
     dragWasSuccessful = False
     

@@ -143,7 +143,7 @@ Public Function GetOpenFileName(ByRef FileName As String, _
                            Optional ByRef InitDir As String, _
                            Optional ByRef DlgTitle As String, _
                            Optional ByRef DefaultExt As String, _
-                           Optional ByVal Owner As Long = -1) As Boolean
+                           Optional ByVal Owner As Long = 0&) As Boolean
                            
     Dim lReturn As Long, lInitPathSize As Long, Flags As Long
     
@@ -160,7 +160,7 @@ Public Function GetOpenFileName(ByRef FileName As String, _
         If MultiSelect Then .Flags = .Flags Or OFN_ALLOWMULTISELECT Or OFN_EXPLORER
         
         'Various other obvious flags
-        If Owner <> -1 Then .hWndOwner = Owner Else .hWndOwner = 0&
+        .hWndOwner = Owner
         .lpstrInitialDir = InitDir
         .lpstrDefExt = DefaultExt
         .lpstrTitle = DlgTitle
@@ -216,13 +216,13 @@ Public Function GetOpenFileName(ByRef FileName As String, _
     ' (We could technically handle buffer overflows by retrying with a larger buffer, but I don't know how to do that
     '  without re-displaying the entire effing common dialog; to that end, I've hard-coded a 16K buffer as a limit,
     '  since PD won't do well with that many loaded images anyway.)
-    If lReturn <> 0 Then
+    If (lReturn <> 0) Then
         
         'Success!  Parse out the relevant strings.
         
         Dim lLen As Long
         
-        If Not MultiSelect Then
+        If (Not MultiSelect) Then
         
             If tmpOFN.nFileOffset <> 0 Then
                 lLen = InStr(tmpOFN.nFileOffset, tmpOFN.lpstrFile, vbNullChar) - 1&
