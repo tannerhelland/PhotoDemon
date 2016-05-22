@@ -2122,6 +2122,50 @@ Private Function Blend2Colors(ByVal Color1 As Long, ByVal Color2 As Long, ByRef 
     Blend2Colors = mixRatio * (Color1 - Color2) + Color2
 End Function
 
+'Quick and dirty function to reverse scanlines in the DIB
+Public Sub ReverseScanlines(Optional ByVal updateTopDownTracker As Boolean = True)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    Dim finalY As Long
+    finalY = (m_dibHeight - 1)
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use a
+    ' 1D array, which we reset between scanlines.
+    Dim scanlineSize As Long, dibPointer As Long
+    scanlineSize = Me.GetDIBArrayWidth
+    dibPointer = Me.GetActualDIBBits
+    
+    Dim tmpScanLine() As Byte
+    ReDim tmpScanLine(0 To scanlineSize - 1) As Byte
+    
+    Dim srcPointer As Long, dstPointer As Long
+    
+    'Loop through the image, converting alpha as we go
+    Dim y As Long
+    For y = 0 To (finalY \ 2)
+        
+        'Copy the source line to a temporary array
+        dstPointer = VarPtr(tmpScanLine(0))
+        srcPointer = dibPointer + scanlineSize * (finalY - y)
+        CopyMemory ByVal dstPointer, ByVal srcPointer, scanlineSize
+        
+        'Copy the destination line over the source line
+        dstPointer = srcPointer
+        srcPointer = dibPointer + scanlineSize * y
+        CopyMemory ByVal dstPointer, ByVal srcPointer, scanlineSize
+        
+        'Copy the temporary array into the destination line
+        dstPointer = srcPointer
+        srcPointer = VarPtr(tmpScanLine(0))
+        CopyMemory ByVal dstPointer, ByVal srcPointer, scanlineSize
+        
+    Next y
+    
+    If updateTopDownTracker Then m_dibHeader.Height = m_dibHeader.Height * -1
+
+End Sub
+
 'Copy the alpha values from another pdDIB object to this one. This is useful when the alpha channel for this DIB must be lost
 ' during a transformation (typically something involving FreeImage or GDI+), and a temporary DIB was made to preserve the alpha
 ' data. If the image is currently 24bpp, this function will first convert it to 32bpp before copying the alpha data.
@@ -2135,7 +2179,7 @@ End Function
 Public Sub CopyAlphaFromExistingDIB(ByRef srcDIB As pdDIB)
 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
-    If m_DibColorDepth <> 32 Then ConvertTo32bpp
+    If (m_DibColorDepth <> 32) Then ConvertTo32bpp
 
     'Prepare a SafeArray that points to our own DIB data
     Dim iData() As Byte
@@ -2172,7 +2216,7 @@ End Sub
 Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Boolean = False, Optional ByVal ignoreEmbeddedValue As Boolean = False)
 
     'This function doesn't matter if the image isn't 32bpp
-    If m_DibColorDepth <> 32 Then Exit Sub
+    If (m_DibColorDepth <> 32) Then Exit Sub
     
     'If alpha premultiplication already matches the requested state, exit now
     If (m_IsAlphaPremultiplied = applyPremultiplication) And (Not ignoreEmbeddedValue) Then
