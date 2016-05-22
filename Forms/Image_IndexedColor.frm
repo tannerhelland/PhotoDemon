@@ -199,7 +199,7 @@ Private Sub Form_Load()
         sldPalette.Enabled = False
         
         lblWarning.Caption = g_Language.TranslateMessage("The FreeImage plugin is missing.  Please install it if you wish to use this tool.")
-        lblWarning.ForeColor = g_Themer.GetGenericUIColor(UI_UniversalErrorRed)
+        lblWarning.ForeColor = g_Themer.GetGenericUIColor(UI_ErrorRed)
         lblWarning.UseCustomForeColor = True
         lblWarning.Visible = True
     

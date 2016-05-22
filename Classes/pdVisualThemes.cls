@@ -123,16 +123,19 @@ Private Const DEFAULT_COLOR_CACHE_SIZE As Long = 16
 ' to cache them here, so one-off functions don't need to deal with messy color maintenance.
 Public Enum PD_UI_COLOR_LIST
     [_First] = 0
-    UI_UniversalCanvasElement = 0
-    UI_UniversalLineEdge = 1
-    UI_UniversalLineCenter = 2
-    UI_UniversalErrorRed = 3
-    [_Last] = 3
-    [_Count] = 4
+    UI_CanvasElement = 0
+    UI_LineEdge = 1
+    UI_LineCenter = 2
+    UI_ErrorRed = 3
+    UI_TextReadOnly = 4
+    UI_TextClickableSelected = 5
+    UI_TextClickableUnselected = 6
+    [_Last] = 6
+    [_Count] = 7
 End Enum
 
 #If False Then
-    Private Const UI_UniversalCanvasElement = 0, UI_UniversalLineEdge = 1, UI_UniversalLineCenter = 2, UI_UniversalErrorRed = 3
+    Private Const UI_CanvasElement = 0, UI_LineEdge = 1, UI_LineCenter = 2, UI_ErrorRed = 3, UI_TextReadOnly = 4, UI_TextClickableSelected = 5, UI_TextClickableUnselected = 6
 #End If
 
 'Color retrieval and storage of program-wide UI colors is handled by a dedicated class
@@ -576,10 +579,13 @@ Private Sub CacheUniversalColors()
     m_UniversalColors.InitializeColorList "UIElements", colorCount
     
     With m_UniversalColors
-        .LoadThemeColor UI_UniversalCanvasElement, "UniversalCanvasElement", IDE_GRAY
-        .LoadThemeColor UI_UniversalLineEdge, "UniversalLineEdge", IDE_BLUE
-        .LoadThemeColor UI_UniversalLineCenter, "UniversalLineCenter", IDE_GRAY
-        .LoadThemeColor UI_UniversalErrorRed, "UniversalErrorRed", RGB(255, 0, 0)
+        .LoadThemeColor UI_CanvasElement, "UniversalCanvasElement", IDE_GRAY
+        .LoadThemeColor UI_LineEdge, "UniversalLineEdge", IDE_BLUE
+        .LoadThemeColor UI_LineCenter, "UniversalLineCenter", IDE_GRAY
+        .LoadThemeColor UI_ErrorRed, "UniversalErrorRed", RGB(255, 0, 0)
+        .LoadThemeColor UI_TextReadOnly, "UniversalTextReadOnly", IDE_BLACK
+        .LoadThemeColor UI_TextClickableSelected, "UniversalTextClickableSelected", IDE_WHITE
+        .LoadThemeColor UI_TextClickableUnselected, "UniversalTextClickableUnselected", IDE_GRAY
     End With
     
 End Sub

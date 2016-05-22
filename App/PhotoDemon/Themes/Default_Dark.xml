@@ -453,6 +453,13 @@
 				<UniversalLineEdge>Black</UniversalLineEdge>
 				<UniversalLineCenter>White</UniversalLineCenter>
 				<UniversalLineCenter-hover>AccentDefault</UniversalLineCenter-hover>
+				<UniversalTextReadOnly>TextDefault</UniversalTextReadOnly>
+				<UniversalTextReadOnly-disabled>GrayDisabled</UniversalTextReadOnly-disabled>
+				<UniversalTextClickableSelected>TextInvert</UniversalTextClickableSelected> 
+				<UniversalTextClickableSelected-disabled>BackgroundDefault</UniversalTextClickableSelected-disabled> 
+				<UniversalTextClickableUnselected>TextDefault</UniversalTextClickableUnselected>
+				<UniversalTextClickableUnselected-hover>TextHyperlink</UniversalTextClickableUnselected-hover>
+				<UniversalTextClickableUnselected-disabled>GrayDisabled</UniversalTextClickableUnselected-disabled>
 			</UIElements>
 			
 			<!-- ****************************************************************************************** -->

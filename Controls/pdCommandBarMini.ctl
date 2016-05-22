@@ -176,10 +176,10 @@ Private Sub CmdOK_Click()
     Interface.NotifyShowDialogResult vbOK
     
     'Hide the parent form from view
-    If UserControl.Parent.Visible Then UserControl.Parent.Hide
+    UserControl.Parent.Visible = False
         
     'When everything is done, unload our parent form (unless the override property is set, as it is by default)
-    If Not m_dontAutoUnloadParent Then Unload UserControl.Parent
+    If (Not m_dontAutoUnloadParent) Then Unload UserControl.Parent
     
 End Sub
 
