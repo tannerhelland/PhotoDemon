@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.115</langversion>
+<langversion>6.6.116</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -8468,8 +8468,8 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Edit_UndoHistory.frm (FormUndoHistory) -->
 
 <phrase>
-<original>&Restore selected state</original>
-<translation>Simpan semula negeri dipilih</translation>
+<original>* current image state</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8478,11 +8478,16 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
+<original>layer: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>selection shape shown</original>
 <translation>bentuk pemilihan ditunjukkan</translation>
 </phrase>
 
-<!-- Edit_UndoHistory.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Edit_UndoHistory.frm-->
 
@@ -15190,10 +15195,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2597</phrasecount>
+<phrasecount>2598</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4521 phrases. -->
-<!-- 1924 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 13368 total words. -->
+<!-- As of this build, PhotoDemon contains 4522 phrases. -->
+<!-- 1924 are duplicates, so only 2598 unique phrases have been written to file. -->
+<!-- These 2598 phrases contain approximately 13369 total words. -->
 
 </pdData>
