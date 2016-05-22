@@ -1741,6 +1741,9 @@ Public Sub DisableUserInput()
     'Set the "input disabled" flag, which individual functions can use to modify their own behavior
     g_DisableUserInput = True
     
+    'We also forcibly disable drag/drop whenever the interface is locked.
+    g_AllowDragAndDrop = False
+    
     'Forcibly disable the main form
     FormMain.Enabled = False
 
@@ -1754,6 +1757,9 @@ Public Sub EnableUserInput()
     ' which may be incorrectly passed through to the main form.  (I know, this seems like a ridiculous solution, but I tried
     ' a thousand others before settling on this.  It's the least of many evils.)
     FormMain.tmrCountdown.Enabled = True
+    
+    'Drag/drop allowance doesn't suffer the issue described above, so we can enable it immediately
+    g_AllowDragAndDrop = True
     
     'Re-enable the main form
     FormMain.Enabled = True

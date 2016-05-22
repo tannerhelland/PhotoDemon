@@ -26,8 +26,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   2280
-      _extentx        =   661
-      _extenty        =   661
+      _ExtentX        =   661
+      _ExtentY        =   661
    End
    Begin VB.Timer tmrMetadata 
       Enabled         =   0   'False
@@ -48,22 +48,22 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   120
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   1680
-      _extentx        =   873
-      _extenty        =   873
+      _ExtentX        =   873
+      _ExtentY        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   1080
-      _extentx        =   635
-      _extenty        =   635
-      errasout        =   0   'False
-      pollinterval    =   5
+      _ExtentX        =   635
+      _ExtentY        =   635
+      ErrAsOut        =   0   'False
+      PollInterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -2785,7 +2785,7 @@ End Sub
 Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
-    If Not g_AllowDragAndDrop Then Exit Sub
+    If (Not g_AllowDragAndDrop) Then Exit Sub
     
     'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
     ' to load the OLE source.
@@ -2797,7 +2797,7 @@ Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integ
     
     'PD supports a lot of potential drop sources these days.  These values are defined and addressed by the main
     ' clipboard handler, as Drag/Drop and clipboard actions share a ton of similar code.
-    If g_Clipboard.IsObjectDragDroppable(Data) Then
+    If g_Clipboard.IsObjectDragDroppable(Data) And g_AllowDragAndDrop Then
         Effect = vbDropEffectCopy And Effect
     Else
         Effect = vbDropEffectNone

@@ -37,7 +37,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef dstStringStack As pdStringStack
     'Prep a common dialog interface
     Dim openDialog As pdOpenSaveDialog
     Set openDialog = New pdOpenSaveDialog
-        
+    
     Dim sFileList As String
         
     'Retrieve one (or more) files to open
@@ -462,7 +462,7 @@ Public Sub MenuCloseAll()
 End Sub
 
 'Create a new, blank image from scratch
-Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, ByVal newDPI As Long, ByVal defaultBackground As Long, ByVal BackgroundColor As Long)
+Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, ByVal newDPI As Long, ByVal defaultBackground As Long, ByVal newBackgroundColor As Long)
 
     'Display a busy cursor
     If (Screen.MousePointer <> vbHourglass) Then Screen.MousePointer = vbHourglass
@@ -500,7 +500,7 @@ Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, 
         
         'Custom color
         Case 3
-            newBackColor = BackgroundColor
+            newBackColor = newBackgroundColor
             newBackAlpha = 255
     
     End Select

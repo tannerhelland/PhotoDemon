@@ -189,7 +189,7 @@ Public Sub ClearCanvas()
 
         'Set the font size dynamically.  en-US gets a larger size; other languages, whose text may be longer, use a smaller one.
         If Not (g_Language Is Nothing) Then
-            If g_Language.translationActive Then notifyFont.SetFontSize 13 Else notifyFont.SetFontSize 14
+            If g_Language.TranslationActive Then notifyFont.SetFontSize 13 Else notifyFont.SetFontSize 14
         Else
             notifyFont.SetFontSize 14
         End If
@@ -205,7 +205,7 @@ Public Sub ClearCanvas()
         If Not (iconLoadAnImage Is Nothing) Then
 
             Dim modifiedHeight As Long
-            modifiedHeight = bHeight + (iconLoadAnImage.getDIBHeight / 2) + FixDPI(24)
+            modifiedHeight = bHeight + (iconLoadAnImage.GetDIBHeight / 2) + FixDPI(24)
 
             Dim loadImageMessage As String
             If Not (g_Language Is Nothing) Then
@@ -214,7 +214,7 @@ Public Sub ClearCanvas()
             notifyFont.DrawCenteredText loadImageMessage, bWidth, modifiedHeight
 
             'Just above the text instructions, add a generic image icon
-            iconLoadAnImage.alphaBlendToDC bufferDC, 192, (bWidth - iconLoadAnImage.getDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.getDIBHeight) - FixDPI(20)
+            iconLoadAnImage.AlphaBlendToDC bufferDC, 192, (bWidth - iconLoadAnImage.GetDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.GetDIBHeight) - FixDPI(20)
 
         End If
 
@@ -402,9 +402,9 @@ End Sub
 '(This code is copied from FormMain's OLEDragDrop event - please mirror any changes there, or even better, stop being lazy
 ' and write a universal drag/drop handler!)
 Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
-
+    
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
-    If Not g_AllowDragAndDrop Then Exit Sub
+    If (Not g_AllowDragAndDrop) Then Exit Sub
     
     'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
     ' to load the OLE source.
@@ -418,7 +418,7 @@ Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button A
 
     'PD supports a lot of potential drop sources these days.  These values are defined and addressed by the main
     ' clipboard handler, as Drag/Drop and clipboard actions share a ton of similar code.
-    If g_Clipboard.IsObjectDragDroppable(Data) Then
+    If g_Clipboard.IsObjectDragDroppable(Data) And g_AllowDragAndDrop Then
         Effect = vbDropEffectCopy And Effect
     Else
         Effect = vbDropEffectNone

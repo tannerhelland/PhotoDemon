@@ -875,12 +875,12 @@ Private Sub UserControl_InitProperties()
 End Sub
 
 Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
-    If Not g_AllowDragAndDrop Then Exit Sub
+    If (Not g_AllowDragAndDrop) Then Exit Sub
     g_Clipboard.LoadImageFromDragDrop Data, Effect, False
 End Sub
 
 Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
-    If g_Clipboard.IsObjectDragDroppable(Data) Then
+    If g_Clipboard.IsObjectDragDroppable(Data) And g_AllowDragAndDrop Then
         Effect = vbDropEffectCopy And Effect
     Else
         Effect = vbDropEffectNone
