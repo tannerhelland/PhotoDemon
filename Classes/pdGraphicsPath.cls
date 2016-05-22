@@ -589,8 +589,8 @@ Public Sub StrokePath_UIStyle(ByVal dstDC As Long, Optional ByVal useHighlightCo
     
     'Create two pens, each of which will be used to stroke the line.  Note that specific color definitions are pulled from PD's central themer.
     Dim hBlackPen As Long, hWhitePen As Long
-    GdipCreatePen1 GDI_Plus.FillQuadWithVBRGB(g_Themer.GetGenericUIColor(UI_UniversalLineEdge, , , useHighlightColor), 192), 3#, GP_U_Pixel, hBlackPen
-    GdipCreatePen1 GDI_Plus.FillQuadWithVBRGB(g_Themer.GetGenericUIColor(UI_UniversalLineCenter, , , useHighlightColor), 220), 1.6, GP_U_Pixel, hWhitePen
+    GdipCreatePen1 GDI_Plus.FillQuadWithVBRGB(g_Themer.GetGenericUIColor(UI_LineEdge, , , useHighlightColor), 192), 3#, GP_U_Pixel, hBlackPen
+    GdipCreatePen1 GDI_Plus.FillQuadWithVBRGB(g_Themer.GetGenericUIColor(UI_LineCenter, , , useHighlightColor), 220), 1.6, GP_U_Pixel, hWhitePen
     
     'Populate line end and join parameters
     GdipSetPenLineCap hBlackPen, useCustomStartCap, useCustomEndCap, GP_DC_Round
