@@ -377,13 +377,13 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     On Error GoTo SavePDIError
     
     'Perform a few failsafe checks
-    If srcPDImage Is Nothing Then Exit Function
-    If Len(PDIPath) = 0 Then Exit Function
+    If (srcPDImage Is Nothing) Then Exit Function
+    If (Len(PDIPath) = 0) Then Exit Function
     
     Dim sFileType As String
     sFileType = "PDI"
     
-    If Not suppressMessages Then Message "Saving %1 image...", sFileType
+    If (Not suppressMessages) Then Message "Saving %1 image...", sFileType
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of compressing individual layers,
     ' and storing everything to a running byte stream.
@@ -429,7 +429,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
         'If this is not a header-only file, retrieve any layer-type-specific data and add it to the data section of this node
         ' (Note: the user's compression setting *is* used for this data section, as it can be quite large for raster layers
         '        as we have to store a raw stream of the DIB contents.)
-        If Not writeHeaderOnlyFile Then
+        If (Not writeHeaderOnlyFile) Then
         
             'Specific handling varies by layer type
             
@@ -471,7 +471,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     'That's all there is to it!  Write the completed pdPackage out to file.
     SavePhotoDemonImage = pdiWriter.WritePackageToFile(PDIPath, secondPassDirectoryCompression, secondPassDataCompression, srcIsUndo)
     
-    If Not suppressMessages Then Message "%1 save complete.", sFileType
+    If (Not suppressMessages) Then Message "%1 save complete.", sFileType
     
     Exit Function
     
@@ -766,7 +766,7 @@ Public Function QuickSaveDIBAsPNG(ByVal dstFilename As String, ByRef srcDIB As p
         
         'Convert the temporary DIB to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB, True)
+        fi_DIB = FreeImage_CreateFromDC(srcDIB.GetDIBDC)
     
         'Use that handle to save the image to PNG format
         If fi_DIB <> 0 Then

@@ -3,10 +3,10 @@ Begin VB.Form FormUndoHistory
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Undo history"
-   ClientHeight    =   6345
+   ClientHeight    =   6420
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   9135
+   ClientWidth     =   9615
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,88 +19,40 @@ Begin VB.Form FormUndoHistory
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   423
+   ScaleHeight     =   428
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   609
+   ScaleWidth      =   641
    ShowInTaskbar   =   0   'False
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   7590
-      TabIndex        =   0
-      Top             =   5670
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&Restore selected state"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   3840
-      TabIndex        =   3
-      Top             =   5670
-      Width           =   3645
-   End
-   Begin VB.PictureBox picBuffer 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ClipControls    =   0   'False
-      FillColor       =   &H80000007&
-      ForeColor       =   &H80000008&
-      Height          =   4485
-      Left            =   240
-      ScaleHeight     =   297
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   551
-      TabIndex        =   2
-      Top             =   600
-      Width           =   8295
-   End
-   Begin VB.VScrollBar vsBuffer 
-      Height          =   4425
-      LargeChange     =   32
-      Left            =   8520
-      TabIndex        =   1
-      Top             =   600
-      Width           =   330
-   End
    Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   330
-      Left            =   240
-      Top             =   120
-      Width           =   8655
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "available image states"
-      FontSize        =   12
-      ForeColor       =   4210752
+      Height          =   255
+      Left            =   480
+      Top             =   5280
+      Width           =   8895
+      _ExtentX        =   15690
+      _ExtentY        =   450
+      Caption         =   "* current image state"
+      FontItalic      =   -1  'True
    End
-   Begin VB.Label lblBackground 
-      BackColor       =   &H00E0E0E0&
-      Height          =   900
-      Left            =   0
-      TabIndex        =   4
-      Top             =   5490
+   Begin PhotoDemon.pdListBoxOD lstUndo 
+      Height          =   5055
+      Left            =   240
+      TabIndex        =   1
+      Top             =   120
       Width           =   9135
+      _ExtentX        =   20558
+      _ExtentY        =   8916
+      Caption         =   "available image states"
+   End
+   Begin PhotoDemon.pdCommandBarMini cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   735
+      Left            =   0
+      TabIndex        =   0
+      Top             =   5685
+      Width           =   9615
+      _ExtentX        =   16960
+      _ExtentY        =   1296
+      DontAutoUnloadParent=   -1  'True
    End
 End
 Attribute VB_Name = "FormUndoHistory"
@@ -112,8 +64,8 @@ Attribute VB_Exposed = False
 'Undo History dialog
 'Copyright 2014-2016 by Tanner Helland
 'Created: 14/July/14
-'Last updated: 14/July/14
-'Last update: initial build
+'Last updated: 22/May/16
+'Last update: overhaul UI to use new owner-drawn pdListBox
 '
 'This is a first draft of a functional Undo History browser for PD.  Most applications provide this as a floating
 ' toolbar, but because that would require some complicated UI work (including integration into PD's window manager),
@@ -134,127 +86,23 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This array will contain the contents of the current Undo stack, as copied from the pdUndo class
-Dim undoEntries() As UndoEntry
+'This array contains the contents of the current Undo stack, as copied from the pdUndo class
+Private m_undoEntries() As UndoEntry
 
-'Total number of Undo entries, and index of the current Undo entry.
-Dim numOfUndos As Long, curUndoIndex As Long
+'Total number of Undo entries, and index of the current Undo entry (e.g. the current image state in the undo/redo chain).
+Private m_numOfUndos As Long, m_curUndoIndex As Long
 
 'Height of each Undo content block
-Private Const BLOCKHEIGHT As Long = 53
-
-'An outside class provides access to mousewheel events for scrolling the filter view
-Private WithEvents cMouseEvents As pdInputMouse
-Attribute cMouseEvents.VB_VarHelpID = -1
-Private WithEvents cKeyEvents As pdInputKeyboard
-Attribute cKeyEvents.VB_VarHelpID = -1
-
-'Extra variables for custom list rendering
-Private bufferDIB As pdDIB
-Private m_BufferWidth As Long, m_BufferHeight As Long
+Private Const BLOCKHEIGHT As Long = 58
 
 'Two font objects; one for names and one for descriptions.  (Two are needed because they have different sizes and colors,
 ' and it is faster to cache these values rather than constantly recreating them on a single pdFont object.)
-Private firstFont As pdFont, secondFont As pdFont
-
-'A primary and secondary color for font rendering
-Private primaryColor As Long, secondaryColor As Long
-
-'The currently selected and currently hovered undo entry
-Private curBlock As Long, curBlockHover As Long
+Private m_titleFont As pdFont, m_descriptionFont As pdFont
 
 'The size at which we render the thumbnail images
 Private Const UNDO_THUMB_SMALL As Long = 48
 
-'Redraw the current list of undo entries
-Private Sub redrawUndoList()
-        
-    Dim scrollOffset As Long
-    scrollOffset = vsBuffer.Value
-    
-    bufferDIB.createBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight
-    
-    Dim i As Long
-    For i = 0 To numOfUndos - 1
-        renderUndoBlock i, 0, FixDPI(i * BLOCKHEIGHT) - scrollOffset - FixDPI(2)
-    Next i
-    
-    'Copy the buffer to the main form
-    BitBlt picBuffer.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferDIB.getDIBDC, 0, 0, vbSrcCopy
-    picBuffer.Picture = picBuffer.Image
-    picBuffer.Refresh
-    
-End Sub
-
-'Render an individual "block" for a given filter (including name, description, color)
-Private Sub renderUndoBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
-
-    'Only draw the current block if it will be visible
-    If ((offsetY + FixDPI(BLOCKHEIGHT)) > 0) And (offsetY < m_BufferHeight) Then
-    
-        offsetY = offsetY + FixDPI(2)
-        
-        Dim linePadding As Long
-        linePadding = FixDPI(2)
-    
-        Dim mHeight As Single
-        Dim tmpRect As RECTL
-        Dim hBrush As Long
-        
-        'If this filter has been selected, draw the background with the system's current selection color
-        If blockIndex = curBlock Then
-        
-            SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + FixDPI(BLOCKHEIGHT)
-            hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
-            FillRect bufferDIB.getDIBDC, tmpRect, hBrush
-            DeleteObject hBrush
-            
-            'Also, color the fonts with the matching highlighted text color (otherwise they won't be readable)
-            firstFont.SetFontColor ConvertSystemColor(vbHighlightText)
-            secondFont.SetFontColor ConvertSystemColor(vbHighlightText)
-        
-        Else
-            firstFont.SetFontColor primaryColor
-            secondFont.SetFontColor secondaryColor
-        End If
-        
-        'If the current filter is highlighted but not selected, simply render the border with a highlight
-        If (blockIndex <> curBlock) And (blockIndex = curBlockHover) Then
-            SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + FixDPI(BLOCKHEIGHT)
-            hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
-            FrameRect bufferDIB.getDIBDC, tmpRect, hBrush
-            DeleteObject hBrush
-        End If
-        
-        Dim drawString As String
-        drawString = ""
-        
-        If (blockIndex + 1) = curUndoIndex Then drawString = "* "
-        drawString = drawString & blockIndex & " - " & g_Language.TranslateMessage(undoEntries(blockIndex).processID)
-        
-        'Render the thumbnail for this entry onto its block
-        Dim thumbWidth As Long
-        thumbWidth = offsetX + FixDPI(4) + FixDPI(UNDO_THUMB_SMALL)
-        GDI_Plus.GDIPlus_StretchBlt bufferDIB, offsetX + FixDPI(4), offsetY + (FixDPI(BLOCKHEIGHT) - FixDPI(UNDO_THUMB_SMALL)) \ 2, FixDPI(UNDO_THUMB_SMALL), FixDPI(UNDO_THUMB_SMALL), undoEntries(blockIndex).thumbnailLarge, 0, 0, undoEntries(blockIndex).thumbnailLarge.getDIBWidth, undoEntries(blockIndex).thumbnailLarge.getDIBHeight
-        
-        'Render the index and name fields
-        firstFont.AttachToDC bufferDIB.getDIBDC
-        firstFont.FastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4), drawString
-        firstFont.ReleaseFromDC
-                
-        'Below that, add the description text
-        mHeight = firstFont.GetHeightOfString(drawString) + linePadding
-        drawString = getStringForUndoType(undoEntries(blockIndex).undoType, undoEntries(blockIndex).undoLayerID)
-        
-        secondFont.AttachToDC bufferDIB.getDIBDC
-        secondFont.FastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4) + mHeight, drawString
-        secondFont.ReleaseFromDC
-        
-    End If
-
-End Sub
-
-Private Function getStringForUndoType(ByVal typeOfUndo As PD_UNDO_TYPE, Optional ByVal layerID As Long = 0) As String
+Private Function GetStringForUndoType(ByVal typeOfUndo As PD_UNDO_TYPE, Optional ByVal layerID As Long = 0) As String
 
     Dim newText As String
     
@@ -267,8 +115,8 @@ Private Function getStringForUndoType(ByVal typeOfUndo As PD_UNDO_TYPE, Optional
             newText = ""
             
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE, UNDO_LAYERHEADER
-            If Not (pdImages(g_CurrentImage).getLayerByID(layerID) Is Nothing) Then
-                newText = pdImages(g_CurrentImage).getLayerByID(layerID).getLayerName()
+            If Not (pdImages(g_CurrentImage).GetLayerByID(layerID) Is Nothing) Then
+                newText = g_Language.TranslateMessage("layer: %1", pdImages(g_CurrentImage).GetLayerByID(layerID).GetLayerName())
             Else
                 newText = ""
             End If
@@ -278,211 +126,103 @@ Private Function getStringForUndoType(ByVal typeOfUndo As PD_UNDO_TYPE, Optional
         
     End Select
     
-    getStringForUndoType = newText
+    GetStringForUndoType = newText
 
 End Function
 
-Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-
-    'Up and down arrows navigate the list
-    If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Then
-    
-        If (vkCode = VK_UP) Then
-            curBlock = curBlock - 1
-            If curBlock < 0 Then curBlock = numOfUndos - 1
-        End If
-        
-        If (vkCode = VK_DOWN) Then
-            curBlock = curBlock + 1
-            If curBlock >= numOfUndos Then curBlock = 0
-        End If
-        
-        'Calculate a new vertical scroll position so that the selected filter appears on-screen
-        Dim newScrollOffset As Long
-        newScrollOffset = curBlock * FixDPI(BLOCKHEIGHT)
-        If newScrollOffset > vsBuffer.Max Then newScrollOffset = vsBuffer.Max
-        vsBuffer.Value = newScrollOffset
-        
-        'Redraw the custom filter list
-        redrawUndoList
-        
-    End If
-
-End Sub
-
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-Private Sub CmdOK_Click()
-    
-    Me.Visible = False
-    Process "Undo history", , buildParams(curBlock + 1), UNDO_NOTHING
-    Unload Me
-    
-End Sub
-
-'When the mouse leaves the filter box, remove any hovered entries and redraw
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    curBlockHover = -1
-    redrawUndoList
-End Sub
-
-Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-
-    'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
-    If vsBuffer.Visible Then
-  
-        If scrollAmount < 0 Then
-            
-            If vsBuffer.Value + vsBuffer.LargeChange > vsBuffer.Max Then
-                vsBuffer.Value = vsBuffer.Max
-            Else
-                vsBuffer.Value = vsBuffer.Value + vsBuffer.LargeChange
-            End If
-            
-            curBlockHover = getUndoAtPosition(x, y)
-            redrawUndoList
-        
-        ElseIf scrollAmount > 0 Then
-            
-            If vsBuffer.Value - vsBuffer.LargeChange < vsBuffer.Min Then
-                vsBuffer.Value = vsBuffer.Min
-            Else
-                vsBuffer.Value = vsBuffer.Value - vsBuffer.LargeChange
-            End If
-            
-            curBlockHover = getUndoAtPosition(x, y)
-            redrawUndoList
-            
-        End If
-        
-    End If
-
-End Sub
-
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Redraw the undo list
-    redrawUndoList
-    
+Private Sub cmdBar_OKClick()
+    Process "Undo history", , BuildParams(lstUndo.ListIndex + 1), UNDO_NOTHING
 End Sub
 
 Private Sub Form_Load()
     
-    'Enable mousewheel scrolling for the filter box
-    Set cMouseEvents = New pdInputMouse
-    cMouseEvents.addInputTracker picBuffer.hWnd, True, , , True
-    cMouseEvents.addInputTracker Me.hWnd
-    cMouseEvents.setSystemCursor IDC_HAND
+    'Initialize a custom font object for undo action names
+    Set m_titleFont = New pdFont
+    m_titleFont.SetFontBold True
+    m_titleFont.SetFontSize 12
+    m_titleFont.CreateFontObject
+    m_titleFont.SetTextAlignment vbLeftJustify
     
-    'Enable some key events as well
-    Set cKeyEvents = New pdInputKeyboard
-    cKeyEvents.CreateKeyboardTracker "Undo History picBuffer", picBuffer.hWnd, VK_UP, VK_DOWN
-    
-    'Create a background buffer the same size as the buffer picture box
-    Set bufferDIB = New pdDIB
-    bufferDIB.createBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight
-    
-    'Initialize a few other variables now (for performance reasons)
-    m_BufferWidth = picBuffer.ScaleWidth
-    m_BufferHeight = picBuffer.ScaleHeight
-    
-    'Initialize a custom font object for names
-    primaryColor = RGB(64, 64, 64)
-    Set firstFont = New pdFont
-    firstFont.SetFontColor primaryColor
-    firstFont.SetFontBold True
-    firstFont.SetFontSize 12
-    firstFont.CreateFontObject
-    firstFont.SetTextAlignment vbLeftJustify
-    
-    '...and a second custom font object for descriptions
-    secondaryColor = RGB(92, 92, 92)
-    Set secondFont = New pdFont
-    secondFont.SetFontColor secondaryColor
-    secondFont.SetFontBold False
-    secondFont.SetFontSize 10
-    secondFont.CreateFontObject
-    secondFont.SetTextAlignment vbLeftJustify
+    '...and a second custom font object for undo descriptions
+    Set m_descriptionFont = New pdFont
+    m_descriptionFont.SetFontBold False
+    m_descriptionFont.SetFontSize 10
+    m_descriptionFont.CreateFontObject
+    m_descriptionFont.SetTextAlignment vbLeftJustify
     
     'Retrieve a copy of all Undo data from the current image's undo manager
-    pdImages(g_CurrentImage).undoManager.CopyUndoStack numOfUndos, curUndoIndex, undoEntries
+    pdImages(g_CurrentImage).undoManager.CopyUndoStack m_numOfUndos, m_curUndoIndex, m_undoEntries
     
-    'Select the current undo state by default
-    curBlock = curUndoIndex - 1
-    curBlockHover = -1
+    'Populate the owner-drawn listbox with the retrieved Undo data (including thumbnails)
+    lstUndo.ListItemHeight = FixDPI(BLOCKHEIGHT)
+    lstUndo.SetAutomaticRedraws False
+    Dim i As Long
+    For i = 0 To m_numOfUndos - 1
+        lstUndo.AddItem , i
+    Next i
+    lstUndo.SetAutomaticRedraws True, True
+    lstUndo.ListIndex = m_curUndoIndex - 1
     
-    'Determine if the vertical scrollbar needs to be visible or not
-    Dim maxListSize As Long
-    maxListSize = FixDPIFloat(BLOCKHEIGHT) * numOfUndos - 1
-    
-    vsBuffer.Value = 0
-    If maxListSize < picBuffer.ScaleHeight Then
-        vsBuffer.Visible = False
-    Else
-        vsBuffer.Visible = True
-        vsBuffer.Max = maxListSize - picBuffer.ScaleHeight
-        
-        'We also want to calculate an ideal position for the vertical scroll bar, so that the current image state
-        ' is displayed in the center of the box by default.  (This gives the user a chance to see several actions
-        ' above and below the current state.)
-        Dim idealPosition As Long
-        idealPosition = curBlock * FixDPIFloat(BLOCKHEIGHT) - ((picBuffer.ScaleHeight - FixDPIFloat(BLOCKHEIGHT)) / 2)
-        
-        If idealPosition < vsBuffer.Max Then
-            If idealPosition < 0 Then idealPosition = 0
-            vsBuffer.Value = idealPosition
-        Else
-            vsBuffer.Value = vsBuffer.Max
-        End If
-        
-    End If
-    
-    vsBuffer.Height = picBuffer.Height
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
     
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
-      
-    'Unload the mouse tracker
-    Set cMouseEvents = Nothing
     ReleaseFormTheming Me
+End Sub
+
+Private Sub lstUndo_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
+    
+    'Retrieve the boundary region for this list entry
+    Dim tmpRectF As RECTF
+    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    
+    Dim offsetY As Single, offsetX As Single
+    offsetX = tmpRectF.Left
+    offsetY = tmpRectF.Top + FixDPI(2)
         
-End Sub
-
-Private Sub picBuffer_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+    Dim linePadding As Long
+    linePadding = FixDPI(2)
     
-    curBlock = getUndoAtPosition(x, y)
-    redrawUndoList
+    Dim mHeight As Single
+        
+    'If this filter has been selected, draw the background with the system's current selection color
+    If itemIsSelected Then
+        m_titleFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableSelected)
+        m_descriptionFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableSelected)
+    Else
+        m_titleFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, , , itemIsHovered)
+        m_descriptionFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, , , itemIsHovered)
+    End If
     
-End Sub
-
-Private Sub picBuffer_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    'Prepare a title string (with an asterisk added to the "current" image state title)
+    Dim drawString As String
+    drawString = ""
+    If (itemIndex + 1) = m_curUndoIndex Then drawString = "* "
+    drawString = drawString & CStr(itemIndex + 1) & " - " & g_Language.TranslateMessage(m_undoEntries(itemIndex).processID)
     
-    curBlockHover = getUndoAtPosition(x, y)
-    redrawUndoList
+    'Render the thumbnail for this entry
+    Dim thumbWidth As Long
+    thumbWidth = offsetX + FixDPI(4) + FixDPI(UNDO_THUMB_SMALL)
+    GDI_Plus.GDIPlus_StretchBlt Nothing, offsetX + FixDPI(4), offsetY + (FixDPI(BLOCKHEIGHT) - FixDPI(UNDO_THUMB_SMALL)) \ 2, FixDPI(UNDO_THUMB_SMALL), FixDPI(UNDO_THUMB_SMALL), m_undoEntries(itemIndex).thumbnailLarge, 0, 0, m_undoEntries(itemIndex).thumbnailLarge.GetDIBWidth, m_undoEntries(itemIndex).thumbnailLarge.GetDIBHeight, , , bufferDC
     
-End Sub
-
-'Given mouse coordinates over the buffer picture box, return the filter at that location
-Private Function getUndoAtPosition(ByVal x As Long, ByVal y As Long) As Long
+    'Render the title text
+    If (Len(drawString) <> 0) Then
+        m_titleFont.AttachToDC bufferDC
+        m_titleFont.FastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4), drawString
+        m_titleFont.ReleaseFromDC
+    End If
+            
+    'Below that, add the description text (if any)
+    drawString = GetStringForUndoType(m_undoEntries(itemIndex).undoType, m_undoEntries(itemIndex).undoLayerID)
     
-    Dim vOffset As Long
-    vOffset = vsBuffer.Value
-    
-    getUndoAtPosition = (y + vOffset) \ FixDPI(BLOCKHEIGHT)
-    
-End Function
-
-Private Sub vsBuffer_Change()
-    redrawUndoList
-End Sub
-
-Private Sub vsBuffer_Scroll()
-    redrawUndoList
+    If (Len(drawString) <> 0) Then
+        mHeight = m_titleFont.GetHeightOfString(drawString) + linePadding
+        m_descriptionFont.AttachToDC bufferDC
+        m_descriptionFont.FastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4) + mHeight, drawString
+        m_descriptionFont.ReleaseFromDC
+    End If
+        
 End Sub
 
