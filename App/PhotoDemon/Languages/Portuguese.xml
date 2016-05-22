@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.173</langversion>
+<langversion>6.7.174</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -8472,8 +8472,8 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 <!-- BEGIN text for Edit_UndoHistory.frm (FormUndoHistory) -->
 
 <phrase>
-<original>&Restore selected state</original>
-<translation>Restaurar estado selecionado</translation>
+<original>* current image state</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8482,11 +8482,16 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 </phrase>
 
 <phrase>
+<original>layer: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>selection shape shown</original>
 <translation>forma de selecção mostrada</translation>
 </phrase>
 
-<!-- Edit_UndoHistory.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Edit_UndoHistory.frm-->
 
@@ -15194,10 +15199,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2597</phrasecount>
+<phrasecount>2598</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4521 phrases. -->
-<!-- 1924 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 13368 total words. -->
+<!-- As of this build, PhotoDemon contains 4522 phrases. -->
+<!-- 1924 are duplicates, so only 2598 unique phrases have been written to file. -->
+<!-- These 2598 phrases contain approximately 13369 total words. -->
 
 </pdData>
