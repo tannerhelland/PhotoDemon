@@ -139,6 +139,8 @@ Private Type LayerData
     l_CanvasXModifier As Double         'Width/height modifier for the image; by default, these are set to 1.0.
     l_CanvasYModifier As Double
     l_Angle As Double                   'Layer angle (implemented in PD 7.0)
+    l_RotateCenterX As Double           'Layer rotation center point (implemented in PD 7.0)
+    l_RotateCenterY As Double
     l_Visibility As Boolean             'Layer visibility
     l_NonDestructiveFXActive As Boolean 'Are any non-destructive edits or other FX active?
     l_ResizeQuality As LAYER_RESIZE_QUALITY   'Resampling algorithm used when non-destructive resizes are active
@@ -168,12 +170,13 @@ Public Enum PDLAYER_GENERIC_PROPERTY
     pgp_ShearX = 12
     pgp_ShearY = 13
     pgp_AlphaMode = 14
+    pgp_RotateCenterX = 15
+    pgp_RotateCenterY = 16
 End Enum
 
 #If False Then
-    Const pgp_Name = 0, pgp_GroupID = 1, pgp_Opacity = 2, pgp_BlendMode = 3, pgp_OffsetX = 4, pgp_OffsetY = 5, pgp_CanvasXModifier = 6
-    Const pgp_CanvasYModifier = 7, pgp_Angle = 8, pgp_Visibility = 9, pgp_NonDestructiveFXActive = 10, pgp_ResizeQuality = 11
-    Const pgp_ShearX = 12, pgp_ShearY = 13, pgp_AlphaMode = 14
+    Private Const pgp_Name = 0, pgp_GroupID = 1, pgp_Opacity = 2, pgp_BlendMode = 3, pgp_OffsetX = 4, pgp_OffsetY = 5, pgp_CanvasXModifier = 6, pgp_CanvasYModifier = 7, pgp_Angle = 8, pgp_Visibility = 9, pgp_NonDestructiveFXActive = 10
+    Private Const pgp_ResizeQuality = 11, pgp_ShearX = 12, pgp_ShearY = 13, pgp_AlphaMode = 14, pgp_RotateCenterX = 15, pgp_RotateCenterY = 16
 #End If
 
 'Non-destructive edits currently supported by the program.
@@ -304,8 +307,8 @@ End Function
 Public Sub AssignLayerID(ByVal thisLayerID As Long)
     
     'As a failsafe, warn me if this layer has already been assigned an ID.  (This should *never* happen, but I like to verify.)
-    If Not g_IsProgramCompiled Then
-        If layerID <> -1 Then Debug.Print "WARNING! This layer already has an ID!"
+    If (Not g_IsProgramCompiled) Then
+        If (layerID <> -1) Then Debug.Print "WARNING! This layer already has an ID!"
     End If
     
     layerID = thisLayerID
@@ -497,7 +500,7 @@ Public Function GetLayerWidth(Optional ByVal applyCanvasModifier As Boolean = Tr
         
                 If applyCanvasModifier Then
                     GetLayerWidth = layerDIB.GetDIBWidth * GetLayerCanvasXModifier
-                    If GetLayerWidth < 1 Then GetLayerWidth = 1
+                    If (GetLayerWidth < 1) Then GetLayerWidth = 1
                 Else
                     GetLayerWidth = layerDIB.GetDIBWidth
                 End If
@@ -523,11 +526,11 @@ Public Function GetLayerHeight(Optional ByVal applyCanvasModifier As Boolean = T
         'Image layers do not store persistent width/height values.  Return the layer DIB's dimensions in its place
         Case PDL_IMAGE
             
-            If Not (layerDIB Is Nothing) Then
+            If (Not (layerDIB Is Nothing)) Then
         
                 If applyCanvasModifier Then
                     GetLayerHeight = layerDIB.GetDIBHeight * GetLayerCanvasYModifier
-                    If GetLayerHeight < 1 Then GetLayerHeight = 1
+                    If (GetLayerHeight < 1) Then GetLayerHeight = 1
                 Else
                     GetLayerHeight = layerDIB.GetDIBHeight
                 End If
@@ -820,6 +823,12 @@ Friend Function GetGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC
             
         Case pgp_AlphaMode
             GetGenericLayerProperty = myLayerData.l_AlphaMode
+            
+        Case pgp_RotateCenterX
+            GetGenericLayerProperty = myLayerData.l_RotateCenterX
+        
+        Case pgp_RotateCenterY
+            GetGenericLayerProperty = myLayerData.l_RotateCenterY
     
     End Select
 
@@ -830,49 +839,55 @@ Friend Sub SetGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC_PROP
     Select Case desiredProperty
         
         Case pgp_Name
-            If myLayerData.l_Name <> CStr(newValue) Then myLayerData.l_Name = CStr(newValue)
+            If (myLayerData.l_Name <> CStr(newValue)) Then myLayerData.l_Name = CStr(newValue)
             
         Case pgp_GroupID
-            If myLayerData.l_GroupID <> CLng(newValue) Then myLayerData.l_GroupID = CLng(newValue)
+            If (myLayerData.l_GroupID <> CLng(newValue)) Then myLayerData.l_GroupID = CLng(newValue)
             
         Case pgp_Opacity
-            If myLayerData.l_Opacity <> CLng(newValue) Then Me.SetLayerOpacity CLng(newValue)
+            If (myLayerData.l_Opacity <> CLng(newValue)) Then Me.SetLayerOpacity CLng(newValue)
             
         Case pgp_BlendMode
-            If myLayerData.l_BlendMode <> CLng(newValue) Then myLayerData.l_BlendMode = CLng(newValue)
+            If (myLayerData.l_BlendMode <> CLng(newValue)) Then myLayerData.l_BlendMode = CLng(newValue)
             
         Case pgp_OffsetX
-            If myLayerData.l_OffsetX <> CDbl(newValue) Then myLayerData.l_OffsetX = CDbl(newValue)
+            If (myLayerData.l_OffsetX <> CDbl(newValue)) Then myLayerData.l_OffsetX = CDbl(newValue)
             
         Case pgp_OffsetY
-            If myLayerData.l_OffsetY <> CDbl(newValue) Then myLayerData.l_OffsetY = CDbl(newValue)
+            If (myLayerData.l_OffsetY <> CDbl(newValue)) Then myLayerData.l_OffsetY = CDbl(newValue)
             
         Case pgp_CanvasXModifier
-            If myLayerData.l_CanvasXModifier <> CDbl(newValue) Then Me.SetLayerCanvasXModifier CDbl(newValue)
+            If (myLayerData.l_CanvasXModifier <> CDbl(newValue)) Then Me.SetLayerCanvasXModifier CDbl(newValue)
             
         Case pgp_CanvasYModifier
-            If myLayerData.l_CanvasYModifier <> CDbl(newValue) Then Me.SetLayerCanvasYModifier CDbl(newValue)
+            If (myLayerData.l_CanvasYModifier <> CDbl(newValue)) Then Me.SetLayerCanvasYModifier CDbl(newValue)
             
         Case pgp_Angle
-            If myLayerData.l_Angle <> CDbl(newValue) Then myLayerData.l_Angle = CDbl(newValue)
+            If (myLayerData.l_Angle <> CDbl(newValue)) Then myLayerData.l_Angle = CDbl(newValue)
             
         Case pgp_Visibility
-            If myLayerData.l_Visibility <> CBool(newValue) Then myLayerData.l_Visibility = CBool(newValue)
+            If (myLayerData.l_Visibility <> CBool(newValue)) Then myLayerData.l_Visibility = CBool(newValue)
             
         Case pgp_NonDestructiveFXActive
-            If myLayerData.l_NonDestructiveFXActive <> CBool(newValue) Then myLayerData.l_NonDestructiveFXActive = CBool(newValue)
+            If (myLayerData.l_NonDestructiveFXActive <> CBool(newValue)) Then myLayerData.l_NonDestructiveFXActive = CBool(newValue)
             
         Case pgp_ResizeQuality
-            If myLayerData.l_ResizeQuality <> CLng(newValue) Then myLayerData.l_ResizeQuality = CLng(newValue)
+            If (myLayerData.l_ResizeQuality <> CLng(newValue)) Then myLayerData.l_ResizeQuality = CLng(newValue)
             
         Case pgp_ShearX
-            If myLayerData.l_ShearX <> CDbl(newValue) Then myLayerData.l_ShearX = CDbl(newValue)
+            If (myLayerData.l_ShearX <> CDbl(newValue)) Then myLayerData.l_ShearX = CDbl(newValue)
             
         Case pgp_ShearY
-            If myLayerData.l_ShearY <> CDbl(newValue) Then myLayerData.l_ShearY = CDbl(newValue)
+            If (myLayerData.l_ShearY <> CDbl(newValue)) Then myLayerData.l_ShearY = CDbl(newValue)
             
         Case pgp_AlphaMode
-            If myLayerData.l_AlphaMode <> CLng(newValue) Then myLayerData.l_AlphaMode = CLng(newValue)
+            If (myLayerData.l_AlphaMode <> CLng(newValue)) Then myLayerData.l_AlphaMode = CLng(newValue)
+            
+        Case pgp_RotateCenterX
+            If (myLayerData.l_RotateCenterX <> CDbl(newValue)) Then myLayerData.l_RotateCenterX = CDbl(newValue)
+        
+        Case pgp_RotateCenterY
+            If (myLayerData.l_RotateCenterY <> CDbl(newValue)) Then myLayerData.l_RotateCenterY = CDbl(newValue)
         
     End Select
     
@@ -926,6 +941,8 @@ Public Sub MakeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Op
                 .l_Angle = 0
                 .l_ShearX = 0
                 .l_ShearY = 0
+                .l_RotateCenterX = 0.5
+                .l_RotateCenterY = 0.5
             End With
         
         'If rescaling is the only active transform, we can shortcut this function
@@ -953,13 +970,29 @@ Public Sub MakeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Op
 
 End Sub
 
-'Get/set layer angle
+'Get/set layer angle and rotation center point.  (Rotation center point is a fraction on the scale [0, 1])
 Public Function GetLayerAngle() As Double
     GetLayerAngle = myLayerData.l_Angle
 End Function
 
 Public Sub SetLayerAngle(ByVal newAngle As Double)
     myLayerData.l_Angle = newAngle
+End Sub
+
+Public Function GetLayerRotateCenterX() As Double
+    GetLayerRotateCenterX = myLayerData.l_RotateCenterX
+End Function
+
+Public Sub SetLayerRotateCenterX(ByVal newCenterX As Double)
+    myLayerData.l_RotateCenterX = newCenterX
+End Sub
+
+Public Function GetLayerRotateCenterY() As Double
+    GetLayerRotateCenterY = myLayerData.l_RotateCenterY
+End Function
+
+Public Sub SetLayerRotateCenterY(ByVal newCenterY As Double)
+    myLayerData.l_RotateCenterY = newCenterY
 End Sub
 
 'Get/set layer shear
@@ -993,7 +1026,8 @@ Public Function AffineTransformsActive(Optional ByVal includeScaling As Boolean 
     
     End If
     
-    'Rotate and shear are the only other relevant affine transforms
+    'Rotate and shear are the only other relevant affine transforms.  Note that we don't care about rotation center point here;
+    ' when the layer angle is 0, rotation center point is irrelevant.
     If (myLayerData.l_Angle <> 0) Or (myLayerData.l_ShearX <> 0) Or (myLayerData.l_ShearY <> 0) Then
         AffineTransformsActive = True
     Else
@@ -1118,10 +1152,10 @@ Friend Sub GetCopyOfLayerTransformationMatrix(ByRef dstMatrix As pdGraphicsMatri
     With myLayerData
     
         'If an angle is active, rotate the matrix accordingly
-        If (.l_Angle <> 0) Then dstMatrix.RotateMatrix .l_Angle, Me.GetLayerWidth(True) / 2, Me.GetLayerHeight(True) / 2
+        If (.l_Angle <> 0) Then dstMatrix.RotateMatrix .l_Angle, Me.GetLayerWidth(True) * .l_RotateCenterX, Me.GetLayerHeight(True) * .l_RotateCenterY
         
         'If shearing is active, shear the matrix accordingly
-        If (.l_ShearX <> 0) Or (.l_ShearY <> 0) Then dstMatrix.ShearMatrix .l_ShearX, .l_ShearY, Me.GetLayerWidth(True) / 2, Me.GetLayerHeight(True) / 2
+        If (.l_ShearX <> 0) Or (.l_ShearY <> 0) Then dstMatrix.ShearMatrix .l_ShearX, .l_ShearY, Me.GetLayerWidth(True) * .l_RotateCenterX, Me.GetLayerHeight(True) * .l_RotateCenterY
         
         'Finally, if translation is desired, scale all points by the current layer offset
         If applyTranslation Then dstMatrix.TranslateMatrix .l_OffsetX, .l_OffsetY
@@ -1322,6 +1356,8 @@ Private Sub Class_Initialize()
         .l_CanvasXModifier = 1
         .l_CanvasYModifier = 1
         .l_Angle = 0
+        .l_RotateCenterX = 0.5
+        .l_RotateCenterY = 0.5
         .l_Visibility = True
         .l_NonDestructiveFXActive = False
         .l_ResizeQuality = LRQ_BICUBIC_NORMAL
@@ -1417,6 +1453,8 @@ Public Function GetLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
         xmlEngine.writeTag "CanvasXModifier", .l_CanvasXModifier
         xmlEngine.writeTag "CanvasYModifier", .l_CanvasYModifier
         xmlEngine.writeTag "Angle", .l_Angle
+        xmlEngine.writeTag "RotateCenterX", .l_RotateCenterX
+        xmlEngine.writeTag "RotateCenterY", .l_RotateCenterY
         xmlEngine.writeTag "Visibility", .l_Visibility
         xmlEngine.writeTag "NonDestructiveFXActive", .l_NonDestructiveFXActive
         xmlEngine.writeTag "ResizeQuality", .l_ResizeQuality
@@ -1447,74 +1485,14 @@ Public Function GetLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
     
     'Note: we obviously do not write out the layer's DIB contents.  It must be handled via separate binary methods.
     
-    If Not avoidFluffEntries Then xmlEngine.writeBlankLine
+    If (Not avoidFluffEntries) Then xmlEngine.writeBlankLine
     
     'The layer XML string is now complete.  Return it.
     GetLayerHeaderAsXML = xmlEngine.returnCurrentXMLString(avoidFluffEntries)
 
 End Function
 
-'Retrieve the layer's key data bits, but in PD's native param-string format.  This is used internally to check for
-' non-destructive changes to layer data; if any are found, the Undo/Redo engine knows to create a new point on the stack.
-Public Function GetLayerHeaderAsParamString() As String
-
-    'Start by compiling a layer header
-    With myLayerData
-        GetLayerHeaderAsParamString = BuildParams(.l_Name, .l_GroupID, .l_Opacity, .l_BlendMode, .l_OffsetX, .l_OffsetY, .l_CanvasXModifier, .l_CanvasYModifier, .l_Angle, .l_Visibility, .l_NonDestructiveFXActive, .l_ResizeQuality, .l_ShearX, .l_ShearY, .l_AlphaMode)
-    End With
-    
-    'Next, add any non-destructive FX parameters
-    With myNonDestructiveFX
-        GetLayerHeaderAsParamString = GetLayerHeaderAsParamString & "|" & BuildParams(.fx_Exposure, .fx_Contrast, .fx_Clarity, .fx_Vibrance, .fx_Temperature, .fx_Tint)
-    End With
-    
-End Function
-
-'Given a param string, recreate the layer header accordingly.  Note that BY DESIGN, immutable layer parameters - including
-' layer ID and layer type - are never stored in param strings, and thus cannot be changed by this function.
-Public Sub SetLayerHeaderFromParamString(ByVal srcParamString As String)
-
-    'Create a param string parser
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    cParams.SetParamString srcParamString
-    
-    'Assign all params to the layer header
-    With myLayerData
-        .l_Name = cParams.GetString(1)
-        .l_GroupID = cParams.GetLong(2)
-        .l_Opacity = cParams.GetLong(3)
-        .l_BlendMode = cParams.GetLong(4)
-        .l_OffsetX = cParams.GetDouble(5)
-        .l_OffsetY = cParams.GetDouble(6)
-        .l_CanvasXModifier = cParams.GetDouble(7)
-        .l_CanvasYModifier = cParams.GetDouble(8)
-        .l_Angle = cParams.GetDouble(9)
-        .l_Visibility = cParams.GetBool(10)
-        .l_NonDestructiveFXActive = cParams.GetBool(11)
-        .l_ResizeQuality = cParams.GetLong(12)
-        .l_ShearX = cParams.GetDouble(13, 0)
-        .l_ShearY = cParams.GetDouble(14, 0)
-        .l_AlphaMode = cParams.GetLong(15, 0)
-    End With
-    
-    'After the layer header comes non-destructive FX settings.  Make sure to adjust these indices if new values get added to
-    ' myLayerData, above!
-    With myNonDestructiveFX
-        .fx_Exposure = cParams.GetDouble(13)
-        .fx_Contrast = cParams.GetLong(14)
-        .fx_Clarity = cParams.GetLong(15)
-        .fx_Vibrance = cParams.GetLong(16)
-        .fx_Temperature = cParams.GetLong(17)
-        .fx_Tint = cParams.GetLong(18)
-    End With
-        
-    'Per PD convention, this class has no way to notify outsiders of updates, so the calling function must handle any
-    ' viewport redraws or other interface changes resulting from this assignment.
-
-End Sub
-
-'The sister function to "getLayerHeaderAsXML" above, this function will initialize a layer header from an XML-format string.
+'The sister function to "GetLayerHeaderAsXML" above, this function will initialize a layer header from an XML-format string.
 '
 'Note that if the optional createNonDestructively parameter is FALSE (as it is by default), this function will create a
 ' blank DIB for the layer DIB, using the dimensions and color depth stored in the XML string.  However, it will obviously
@@ -1552,6 +1530,8 @@ Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
             .l_CanvasXModifier = xmlEngine.getUniqueTag_Double("CanvasXModifier", 1)
             .l_CanvasYModifier = xmlEngine.getUniqueTag_Double("CanvasYModifier", 1)
             .l_Angle = xmlEngine.getUniqueTag_Double("Angle")
+            .l_RotateCenterX = xmlEngine.getUniqueTag_Double("RotateCenterX", 0.5)
+            .l_RotateCenterY = xmlEngine.getUniqueTag_Double("RotateCenterY", 0.5)
             .l_Visibility = xmlEngine.getUniqueTag_Boolean("Visibility")
             .l_NonDestructiveFXActive = xmlEngine.getUniqueTag_Boolean("NonDestructiveFXActive", False)
             .l_ResizeQuality = xmlEngine.getUniqueTag_Long("ResizeQuality", LRQ_BILINEAR_NORMAL)
@@ -1706,7 +1686,7 @@ Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal n
     
     'Copy the name locally, and set other values to their natural defaults
     With myLayerData
-        If Len(newLayerName) <> 0 Then
+        If (Len(newLayerName) <> 0) Then
             .l_Name = newLayerName
         Else
             .l_Name = g_Language.TranslateMessage("New layer")
@@ -1717,6 +1697,9 @@ Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal n
         .l_Visibility = True
         .l_NonDestructiveFXActive = False
         .l_ResizeQuality = LRQ_BILINEAR_NORMAL
+        .l_Angle = 0
+        .l_RotateCenterX = 0.5
+        .l_RotateCenterY = 0.5
         .l_ShearX = 0
         .l_ShearY = 0
         .l_AlphaMode = LA_NORMAL
@@ -1774,6 +1757,8 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
         .l_CanvasXModifier = srcLayer.GetLayerCanvasXModifier
         .l_CanvasYModifier = srcLayer.GetLayerCanvasYModifier
         .l_Angle = srcLayer.GetLayerAngle
+        .l_RotateCenterX = srcLayer.GetLayerRotateCenterX
+        .l_RotateCenterY = srcLayer.GetLayerRotateCenterY
         .l_Visibility = srcLayer.GetLayerVisibility
         .l_NonDestructiveFXActive = srcLayer.GetLayerNonDestructiveFXState
         .l_ResizeQuality = srcLayer.GetLayerResizeQuality
@@ -2253,6 +2238,8 @@ Public Sub ResetLayerParameters()
         .l_CanvasXModifier = 1
         .l_CanvasYModifier = 1
         .l_Angle = 0
+        .l_RotateCenterX = 0.5
+        .l_RotateCenterY = 0.5
         .l_Visibility = True
         .l_NonDestructiveFXActive = False
         .l_ResizeQuality = LRQ_BILINEAR_NORMAL
