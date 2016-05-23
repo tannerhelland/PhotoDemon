@@ -127,6 +127,8 @@ Public Sub ContinueLoadingProgram()
     
     'Before doing any 2D rendering, we need to start at least one valid 2D rendering backend.
     ' (At present, only GDI+ is used)
+    Interface.InitializeInterfaceBackend
+    
     If Drawing2D.StartRenderingBackend(P2_DefaultBackend) Then
         
         #If DEBUGMODE = 1 Then

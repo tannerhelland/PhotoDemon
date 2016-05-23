@@ -215,7 +215,7 @@ Public Sub SyncInterfaceToCurrentImage()
                 ' (like "Flatten" or "Delete layer") are only relevant if this is a multi-layer image.
                 
                 'If only one layer is present, a number of layer menu items (Delete, Flatten, Merge, Order) will be disabled.
-                If pdImages(g_CurrentImage).GetNumOfLayers = 1 Then
+                If (pdImages(g_CurrentImage).GetNumOfLayers = 1) Then
                 
                     If Not (m_LastUISync_HadMultipleLayers = PD_BOOL_FALSE) Then
                         SetUIMode_OnlyOneLayer
@@ -242,6 +242,7 @@ Public Sub SyncInterfaceToCurrentImage()
                     SetUIMode_NoLayers
                     m_LastUISync_HadNoLayers = PD_BOOL_TRUE
                 End If
+                m_LastUISync_HadMultipleLayers = PD_BOOL_FALSE
             End If
                     
         End If
@@ -436,8 +437,8 @@ End Sub
 ' two visible layers, so it must still be handled specially.  This function is only for functions that are ALWAYS available if
 ' multiple layers are present in an image.
 Private Sub SetUIMode_MultipleLayers()
-    If Not FormMain.MnuLayer(1).Enabled Then FormMain.MnuLayer(1).Enabled = True    'Delete layer
-    If Not FormMain.MnuLayer(5).Enabled Then FormMain.MnuLayer(5).Enabled = True    'Order submenu
+    If (Not FormMain.MnuLayer(1).Enabled) Then FormMain.MnuLayer(1).Enabled = True    'Delete layer
+    If (Not FormMain.MnuLayer(5).Enabled) Then FormMain.MnuLayer(5).Enabled = True    'Order submenu
 End Sub
 
 'If an image has only one layer (e.g. a loaded JPEG), call this function to disable any UI elements that operate on multiple layers.
@@ -453,7 +454,7 @@ End Sub
 'If an image has at least one valid layer (as they always do in PD), call this function to enable relevant layer menus and controls.
 Private Sub SetUIMode_AtLeastOneLayer()
     
-    If Not FormMain.MnuLayer(7).Enabled Then
+    If (Not FormMain.MnuLayer(7).Enabled) Then
         FormMain.MnuLayer(7).Enabled = True
         FormMain.MnuLayer(8).Enabled = True
         FormMain.MnuLayer(11).Enabled = True
@@ -597,11 +598,11 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
         'Undo, Redo, Repeat and Fade are all closely related
         If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then
         
-            SetUIGroupState PDUI_Undo, pdImages(g_CurrentImage).undoManager.getUndoState
-            SetUIGroupState PDUI_Redo, pdImages(g_CurrentImage).undoManager.getRedoState
+            SetUIGroupState PDUI_Undo, pdImages(g_CurrentImage).undoManager.GetUndoState
+            SetUIGroupState PDUI_Redo, pdImages(g_CurrentImage).undoManager.GetRedoState
             
             'Undo history is enabled if either Undo or Redo is active
-            If pdImages(g_CurrentImage).undoManager.getUndoState Or pdImages(g_CurrentImage).undoManager.getRedoState Then
+            If pdImages(g_CurrentImage).undoManager.GetUndoState Or pdImages(g_CurrentImage).undoManager.GetRedoState Then
                 FormMain.MnuEdit(2).Enabled = True
             Else
                 FormMain.MnuEdit(2).Enabled = False
@@ -616,7 +617,7 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             If pdImages(g_CurrentImage).undoManager.FillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
                 FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName))
                 FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName))
-                toolbar_Toolbox.cmdFile(FILE_FADE).AssignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, "Fade last action"
+                toolbar_Toolbox.cmdFile(FILE_FADE).AssignTooltip pdImages(g_CurrentImage).undoManager.GetUndoProcessID, "Fade last action"
                 
                 toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = True
                 FormMain.MnuEdit(4).Enabled = True
@@ -685,8 +686,8 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If newState Then
-                toolbar_Toolbox.cmdFile(FILE_UNDO).AssignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, "Undo"
-                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getUndoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Z"
+                toolbar_Toolbox.cmdFile(FILE_UNDO).AssignTooltip pdImages(g_CurrentImage).undoManager.GetUndoProcessID, "Undo"
+                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.GetUndoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Z"
             Else
                 toolbar_Toolbox.cmdFile(FILE_UNDO).AssignTooltip "Undo last action"
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & g_Language.TranslateMessage("Ctrl") & "+Z"
@@ -704,8 +705,8 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If newState Then
-                toolbar_Toolbox.cmdFile(FILE_REDO).AssignTooltip pdImages(g_CurrentImage).undoManager.getRedoProcessID, "Redo"
-                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getRedoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Y"
+                toolbar_Toolbox.cmdFile(FILE_REDO).AssignTooltip pdImages(g_CurrentImage).undoManager.GetRedoProcessID, "Redo"
+                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.GetRedoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Y"
             Else
                 toolbar_Toolbox.cmdFile(FILE_REDO).AssignTooltip "Redo previous action"
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & g_Language.TranslateMessage("Ctrl") & "+Y"
