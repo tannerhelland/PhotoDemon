@@ -940,25 +940,6 @@ Public Sub FillRectForLayerF(ByRef srcLayer As pdLayer, ByRef dstRect As RECTF, 
 
 End Sub
 
-'Given a param string (where the first entry denotes the target layer, and the subsequent parameters were set by
-' a pdLayer object's getLayerHeaderAsParamString function), apply any changes to the specified layer.
-Public Sub ModifyLayerByParamString(ByVal pString As String)
-
-    'Create a param string parser
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    cParams.SetParamString pString
-    
-    'Retrieve the ID of the layer in question
-    Dim curLayerID As Long
-    curLayerID = cParams.GetLong(1)
-    
-    'Remove that initial entry from the param string, then forward the rest of the string on to the specified layer class
-    cParams.RemoveParamAtPosition 1
-    pdImages(g_CurrentImage).GetLayerByID(curLayerID).SetLayerHeaderFromParamString cParams.GetParamString
-
-End Sub
-
 'Given a layer index and an x/y position (IMAGE COORDINATE SPACE - necessary because we have to adjust the coordinates if the
 ' current layer has non-destructive resize modifiers applied), return an RGBQUAD for the pixel at that location.
 '
