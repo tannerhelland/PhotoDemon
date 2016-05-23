@@ -725,7 +725,8 @@ Public Sub FinalShutdown()
     
     'We have now terminated everything we can physically terminate.
     
-    'Suppress any crashes caused by VB herself (which are possible, unfortunately), then let the program go...
-    'SetErrorMode SEM_NOGPFAULTERRORBOX
+    'Suppress any crashes caused by VB herself (which may be possible due to a variety of issues outside our control),
+    ' then let the program go...
+    SetErrorMode SEM_NOGPFAULTERRORBOX
     
 End Sub
