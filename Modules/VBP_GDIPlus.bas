@@ -2686,12 +2686,12 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         
         'To improve performance, explicitly request high-speed (aka linear) alpha compositing operation, and standard
         ' pixel offsets (on pixel borders, instead of center points)
-        If Not disableEdgeFix Then GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0, 0
+        If (Not disableEdgeFix) Then GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0, 0
         GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
         If isZoomedIn Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
         
         'If modified alpha is requested, pass the new value to this image container
-        If newAlpha <> 1 Then
+        If (newAlpha <> 1) Then
             m_AttributesMatrix(3, 3) = newAlpha
             GdipSetImageAttributesColorMatrix imgAttributesHandle, ColorAdjustTypeBitmap, 1, VarPtr(m_AttributesMatrix(0, 0)), 0, ColorMatrixFlagsDefault
         End If
@@ -2703,10 +2703,10 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         GdipDisposeImageAttributes imgAttributesHandle
         
         'Reset alpha in the master identity matrix
-        If newAlpha <> 1 Then m_AttributesMatrix(3, 3) = 1
+        If (newAlpha <> 1) Then m_AttributesMatrix(3, 3) = 1
         
         'Update premultiplication status in the target
-        If Not (dstDIB Is Nothing) Then dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
+        If (Not (dstDIB Is Nothing)) Then dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
         
     End If
     

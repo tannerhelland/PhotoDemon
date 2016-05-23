@@ -69,7 +69,7 @@ Private m_TargetDC As Long
 Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional curPOI As Long = -1)
 
     'If no images have been loaded, clear the canvas and exit
-    If g_OpenImageCount <= 0 Then
+    If (g_OpenImageCount <= 0) Then
         FormMain.mainCanvas(0).ClearCanvas
         Exit Sub
     Else
@@ -77,10 +77,11 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
     End If
 
     'Make sure the canvas is valid
-    If dstCanvas Is Nothing Then Exit Sub
+    If (dstCanvas Is Nothing) Then Exit Sub
     
     'If the image associated with this form is inactive, ignore this request
-    If Not srcImage.IsActive Then Exit Sub
+    If (srcImage Is Nothing) Then Exit Sub
+    If (Not srcImage.IsActive) Then Exit Sub
     
     'Because AutoRedraw can cause the form's DC to change without warning, we must re-apply color management settings any time
     ' we redraw the screen.  I do not like this any more than you do, but we risk losing our DC's settings otherwise.
@@ -156,20 +157,20 @@ End Sub
 Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional curPOI As Long = -1)
 
     'If no images have been loaded, clear the canvas and exit
-    If g_OpenImageCount = 0 Then
+    If (g_OpenImageCount = 0) Then
         FormMain.mainCanvas(0).ClearCanvas
         Exit Sub
     End If
 
     'Make sure the canvas is valid
-    If dstCanvas Is Nothing Then Exit Sub
+    If (dstCanvas Is Nothing) Then Exit Sub
     
     'If the image associated with this form is inactive, ignore this request
-    If Not srcImage.IsActive Then Exit Sub
+    If (srcImage Is Nothing) Then Exit Sub
+    If (Not srcImage.IsActive) Then Exit Sub
 
     'Create the front buffer as necessary
-    If frontBuffer Is Nothing Then Set frontBuffer = New pdDIB
-        
+    If (frontBuffer Is Nothing) Then Set frontBuffer = New pdDIB
     If (frontBuffer.GetDIBWidth <> srcImage.canvasBuffer.GetDIBWidth) Or (frontBuffer.GetDIBHeight <> srcImage.canvasBuffer.GetDIBHeight) Then
         frontBuffer.CreateFromExistingDIB srcImage.canvasBuffer
     Else
@@ -297,18 +298,18 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
             'PD provides two options for rendering the viewport.  One composites the full image in the background, and just snips
             ' out the relevant bit of the finished image.  The other does not maintain a composited image copy, but instead returns
             ' a composited rect whenever it's requested.  Branch down either path now.
-            If g_ViewportPerformance = PD_PERF_BESTQUALITY Then
+            If (g_ViewportPerformance = PD_PERF_BESTQUALITY) Then
                 GDI_Plus.GDIPlus_StretchBlt srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcImage.compositeBuffer, srcLeft, srcTop, srcWidth, srcHeight, 1, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
             
             Else
                 
-                'We can now use PD's amazing rect-specific compositor to retrieve only the relevant section of the current viewport.
+                'We can now use PD's rect-specific compositor to retrieve only the relevant section of the current viewport.
                 ' Note that we request our own interpolation mode, and we determine this based on the user's viewport performance preference.
                 ' (TODO: consider exposing bilinear interpolation as an option, which is blurrier, but doesn't suffer from the defects of
                 '        GDI+'s preprocessing, which screws up subpixel positioning.)
                 
                 'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
-                If g_ViewportPerformance = PD_PERF_FASTEST Then
+                If (g_ViewportPerformance = PD_PERF_FASTEST) Then
                     srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, InterpolationModeNearestNeighbor, pipelineOriginatedAtStageOne, CLC_Viewport
                     
                 'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
@@ -369,13 +370,14 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     'Like the previous stage of the pipeline, we start by performing a number of "do not render the viewport at all" checks.
     
     'First, and most obvious, is to exit now if the public g_AllowViewportRendering parameter has been forcibly disabled.
-    If Not g_AllowViewportRendering Then Exit Sub
+    If (Not g_AllowViewportRendering) Then Exit Sub
     
     'Make sure the target canvas is valid
-    If dstCanvas Is Nothing Then Exit Sub
+    If (dstCanvas Is Nothing) Then Exit Sub
     
     'If the pdImage object associated with this form is inactive, ignore this request
-    If Not srcImage.IsActive Then Exit Sub
+    If (srcImage Is Nothing) Then Exit Sub
+    If (Not srcImage.IsActive) Then Exit Sub
     
     'This function can return timing reports if desired; at present, this is automatically activated in PRE-ALPHA and ALPHA builds,
     ' but disabled for BETA and PRODUCTION builds; see the LoadTheProgram() function for details.
@@ -385,19 +387,15 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.compositeBuffer for us.  The goal of this stage
     ' is simple: fill the compositeBuffer object with a fully composited copy of the current image.
     
-    '(Temporary switch while working on new viewport engine)
-    If g_ViewportPerformance = PD_PERF_BESTQUALITY Then
+    'Note that only the "Best Quality" viewport mode actually requires this step.  The accelerated viewport pipeline assembles a
+    ' shrunken version of the image, so it never requires a full-sized composite for the viewport
+    If (g_ViewportPerformance = PD_PERF_BESTQUALITY) Then
         
         'Notify the parent object that a prepared composite buffer is required.  If the buffer is dirty, the parent will regenerate
         ' the composite for us.
         srcImage.RebuildCompositeBuffer
         
     'Other viewport performance settings can automatically proceed to stage 3
-    Else
-        
-        'Proceed directly to the next pipeline stage, as the canvas buffer assembly happens simultaneous to
-        ' viewport crop and zoom calculations.
-        
     End If
     
     'Pass control to the next stage of the pipeline.
