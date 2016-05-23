@@ -2100,13 +2100,8 @@ Private Sub UpdateInternalThumbnail()
         layerThumbnail.ResetDIB 0
     End If
     
-    'There are two possible ways to create a thumbnail image.  If FreeImage is available, we prefer to use it, as it
-    ' is faster (I've actually profiled it!), but if FreeImage is not available, GDI+ will suffice.
-    If g_ImageFormats.FreeImageEnabled Then
-        FreeImageResizeDIBFast layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, FILTER_BOX, FILTER_BILINEAR), True
-    Else
-        GDIPlusResizeDIB layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, 0, 0, layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, InterpolationModeNearestNeighbor, InterpolationModeHighQualityBicubic)
-    End If
+    'Use GDI+ to perform a fast resize
+    GDI_Plus.GDIPlusResizeDIB layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, 0, 0, layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, InterpolationModeNearestNeighbor, InterpolationModeHighQualityBicubic)
     
     'Uncomment the line below to profile different thumbnail resize strategies
     'Debug.Print "Time taken for layer thumbnail generation: " & CStr((Timer - startTime) * 1000) & " ms"
@@ -2134,12 +2129,7 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
             dstThumbnailDIB.ResetDIB 0
         End If
         
-        If g_ImageFormats.FreeImageEnabled Then
-            FreeImageResizeDIBFast dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, FILTER_BOX, FILTER_BILINEAR), True
-        Else
-            GDIPlusResizeDIB dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, 0, 0, layerThumbnail.GetDIBWidth, layerThumbnail.GetDIBHeight, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, InterpolationModeNearestNeighbor, InterpolationModeHighQualityBicubic)
-        End If
-        
+        GDIPlusResizeDIB dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, 0, 0, layerThumbnail.GetDIBWidth, layerThumbnail.GetDIBHeight, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, InterpolationModeNearestNeighbor, InterpolationModeHighQualityBicubic)
         dstThumbnailDIB.SetInitialAlphaPremultiplicationState True
         
     Else
