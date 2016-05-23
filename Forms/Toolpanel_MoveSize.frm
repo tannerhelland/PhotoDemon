@@ -39,6 +39,124 @@ Begin VB.Form toolpanel_MoveSize
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   1455
+      Index           =   0
+      Left            =   2520
+      ScaleHeight     =   97
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   937
+      TabIndex        =   1
+      Top             =   0
+      Width           =   14055
+      Begin PhotoDemon.pdDropDown cboLayerResizeQuality 
+         Height          =   660
+         Left            =   5190
+         TabIndex        =   2
+         Top             =   60
+         Width           =   2775
+         _ExtentX        =   4895
+         _ExtentY        =   1164
+         Caption         =   "transform quality"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdSpinner tudLayerMove 
+         Height          =   345
+         Index           =   0
+         Left            =   240
+         TabIndex        =   3
+         Top             =   420
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   609
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   9
+         Left            =   135
+         Top             =   75
+         Width           =   2370
+         _ExtentX        =   4180
+         _ExtentY        =   503
+         Caption         =   "layer position (x, y)"
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   10
+         Left            =   2655
+         Top             =   75
+         Width           =   2370
+         _ExtentX        =   4180
+         _ExtentY        =   503
+         Caption         =   "layer size (w, h)"
+      End
+      Begin PhotoDemon.pdSpinner tudLayerMove 
+         Height          =   345
+         Index           =   1
+         Left            =   240
+         TabIndex        =   4
+         Top             =   840
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   609
+      End
+      Begin PhotoDemon.pdSpinner tudLayerMove 
+         Height          =   345
+         Index           =   2
+         Left            =   2760
+         TabIndex        =   5
+         Top             =   420
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   609
+      End
+      Begin PhotoDemon.pdSpinner tudLayerMove 
+         Height          =   345
+         Index           =   3
+         Left            =   2760
+         TabIndex        =   6
+         Top             =   840
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   609
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
+         Height          =   570
+         Index           =   0
+         Left            =   8520
+         TabIndex        =   7
+         Top             =   420
+         Width           =   660
+         _ExtentX        =   1164
+         _ExtentY        =   1005
+         AutoToggle      =   -1  'True
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
+         Height          =   570
+         Index           =   1
+         Left            =   9240
+         TabIndex        =   8
+         Top             =   420
+         Width           =   660
+         _ExtentX        =   1164
+         _ExtentY        =   1005
+         AutoToggle      =   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   12
+         Left            =   8400
+         Top             =   60
+         Width           =   3360
+         _ExtentX        =   5927
+         _ExtentY        =   503
+         Caption         =   "other options"
+      End
+   End
+   Begin VB.PictureBox picMoveContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00FFFFFF&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   1455
       Index           =   1
       Left            =   2520
       ScaleHeight     =   97
@@ -48,65 +166,49 @@ Begin VB.Form toolpanel_MoveSize
       Top             =   0
       Width           =   14055
       Begin PhotoDemon.pdSlider sltLayerAngle 
-         Height          =   405
+         Height          =   765
          Left            =   120
          TabIndex        =   15
-         Top             =   420
+         Top             =   60
          Width           =   4095
          _ExtentX        =   7223
-         _ExtentY        =   847
+         _ExtentY        =   1349
+         Caption         =   "layer angle"
+         FontSizeCaption =   10
          Min             =   -360
          Max             =   360
          SigDigits       =   2
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   2
-         Left            =   120
-         Top             =   60
-         Width           =   5010
-         _ExtentX        =   8837
-         _ExtentY        =   503
-         Caption         =   "layer angle:"
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAngleReset 
          Height          =   570
          Left            =   4440
          TabIndex        =   17
-         Top             =   360
+         Top             =   270
          Width           =   660
          _ExtentX        =   1164
          _ExtentY        =   1005
          AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdSlider sltLayerShearX 
-         Height          =   405
+         Height          =   765
          Left            =   5400
          TabIndex        =   18
-         Top             =   420
+         Top             =   60
          Width           =   4095
          _ExtentX        =   7223
-         _ExtentY        =   847
+         _ExtentY        =   1349
+         Caption         =   "layer shear (x, y)"
+         FontSizeCaption =   10
          Min             =   -5
          Max             =   5
          SigDigits       =   2
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   3
-         Left            =   5400
-         Top             =   60
-         Width           =   4770
-         _ExtentX        =   9472
-         _ExtentY        =   503
-         Caption         =   "layer shear (x, y):"
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerShearReset 
          Height          =   540
          Index           =   0
          Left            =   9600
          TabIndex        =   19
-         Top             =   390
+         Top             =   270
          Width           =   660
          _ExtentX        =   1164
          _ExtentY        =   953
@@ -126,10 +228,10 @@ Begin VB.Form toolpanel_MoveSize
          Height          =   405
          Left            =   5400
          TabIndex        =   21
-         Top             =   930
+         Top             =   840
          Width           =   4095
          _ExtentX        =   7223
-         _ExtentY        =   847
+         _ExtentY        =   714
          Min             =   -5
          Max             =   5
          SigDigits       =   2
@@ -142,14 +244,14 @@ Begin VB.Form toolpanel_MoveSize
          Width           =   3120
          _ExtentX        =   5503
          _ExtentY        =   503
-         Caption         =   "other options:"
+         Caption         =   "other options"
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerShearReset 
          Height          =   540
          Index           =   1
          Left            =   9600
          TabIndex        =   22
-         Top             =   900
+         Top             =   780
          Width           =   660
          _ExtentX        =   1164
          _ExtentY        =   953
@@ -173,198 +275,72 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   0
-         Left            =   120
-         Top             =   60
+         Left            =   135
+         Top             =   75
          Width           =   5370
          _ExtentX        =   9472
          _ExtentY        =   503
-         Caption         =   "interaction options:"
+         Caption         =   "interaction options"
       End
       Begin PhotoDemon.pdCheckBox chkAutoActivateLayer 
          Height          =   330
-         Left            =   120
+         Left            =   240
          TabIndex        =   10
          Top             =   360
-         Width           =   5370
-         _ExtentX        =   9472
+         Width           =   5250
+         _ExtentX        =   9260
          _ExtentY        =   582
          Caption         =   "automatically activate layer beneath mouse"
       End
       Begin PhotoDemon.pdCheckBox chkIgnoreTransparent 
          Height          =   330
-         Left            =   120
+         Left            =   240
          TabIndex        =   11
          Top             =   720
-         Width           =   5370
-         _ExtentX        =   9472
+         Width           =   5250
+         _ExtentX        =   9260
          _ExtentY        =   582
          Caption         =   "ignore transparent pixels when auto-activating layers"
       End
       Begin PhotoDemon.pdCheckBox chkLayerBorder 
          Height          =   330
-         Left            =   5640
+         Left            =   5760
          TabIndex        =   12
          Top             =   360
-         Width           =   5370
-         _ExtentX        =   9472
+         Width           =   5250
+         _ExtentX        =   9260
          _ExtentY        =   582
          Caption         =   "show layer borders"
       End
       Begin PhotoDemon.pdCheckBox chkLayerNodes 
          Height          =   330
-         Left            =   5640
+         Left            =   5760
          TabIndex        =   0
          Top             =   720
-         Width           =   5370
-         _ExtentX        =   9472
+         Width           =   5250
+         _ExtentX        =   9260
          _ExtentY        =   582
          Caption         =   "show resize nodes"
       End
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   1
-         Left            =   5640
-         Top             =   60
+         Left            =   5655
+         Top             =   75
          Width           =   5370
          _ExtentX        =   9472
          _ExtentY        =   503
-         Caption         =   "display options:"
+         Caption         =   "display options"
       End
       Begin PhotoDemon.pdCheckBox chkRotateNode 
          Height          =   330
-         Left            =   5640
+         Left            =   5760
          TabIndex        =   16
          Top             =   1080
-         Width           =   5370
-         _ExtentX        =   9472
+         Width           =   5250
+         _ExtentX        =   9260
          _ExtentY        =   582
          Caption         =   "show rotate nodes"
-      End
-   End
-   Begin VB.PictureBox picMoveContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   1455
-      Index           =   0
-      Left            =   2520
-      ScaleHeight     =   97
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   937
-      TabIndex        =   1
-      Top             =   0
-      Width           =   14055
-      Begin PhotoDemon.pdDropDown cboLayerResizeQuality 
-         Height          =   300
-         Left            =   5190
-         TabIndex        =   2
-         Top             =   420
-         Width           =   2775
-         _ExtentX        =   4895
-         _ExtentY        =   529
-      End
-      Begin PhotoDemon.pdSpinner tudLayerMove 
-         Height          =   345
-         Index           =   0
-         Left            =   120
-         TabIndex        =   3
-         Top             =   420
-         Width           =   2055
-         _ExtentX        =   3625
-         _ExtentY        =   609
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   9
-         Left            =   120
-         Top             =   60
-         Width           =   2370
-         _ExtentX        =   4180
-         _ExtentY        =   503
-         Caption         =   "layer position (x, y):"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   10
-         Left            =   2640
-         Top             =   60
-         Width           =   2370
-         _ExtentX        =   4180
-         _ExtentY        =   503
-         Caption         =   "layer size (w, h):"
-      End
-      Begin PhotoDemon.pdSpinner tudLayerMove 
-         Height          =   345
-         Index           =   1
-         Left            =   120
-         TabIndex        =   4
-         Top             =   840
-         Width           =   2055
-         _ExtentX        =   3625
-         _ExtentY        =   609
-      End
-      Begin PhotoDemon.pdSpinner tudLayerMove 
-         Height          =   345
-         Index           =   2
-         Left            =   2640
-         TabIndex        =   5
-         Top             =   420
-         Width           =   2055
-         _ExtentX        =   3625
-         _ExtentY        =   609
-      End
-      Begin PhotoDemon.pdSpinner tudLayerMove 
-         Height          =   345
-         Index           =   3
-         Left            =   2640
-         TabIndex        =   6
-         Top             =   840
-         Width           =   2055
-         _ExtentX        =   3625
-         _ExtentY        =   609
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
-         Height          =   570
-         Index           =   0
-         Left            =   8400
-         TabIndex        =   7
-         Top             =   420
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   1005
-         AutoToggle      =   -1  'True
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
-         Height          =   570
-         Index           =   1
-         Left            =   9240
-         TabIndex        =   8
-         Top             =   420
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   1005
-         AutoToggle      =   -1  'True
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   11
-         Left            =   5190
-         Top             =   60
-         Width           =   3090
-         _ExtentX        =   5450
-         _ExtentY        =   503
-         Caption         =   "transform quality:"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   12
-         Left            =   8400
-         Top             =   60
-         Width           =   3360
-         _ExtentX        =   5927
-         _ExtentY        =   503
-         Caption         =   "other options:"
       End
    End
 End
@@ -415,7 +391,7 @@ Private Sub cboLayerResizeQuality_Click()
     Tool_Support.setToolBusyState True
     
     'Apply the new quality mode
-    pdImages(g_CurrentImage).GetActiveLayer.setLayerResizeQuality cboLayerResizeQuality.ListIndex
+    pdImages(g_CurrentImage).GetActiveLayer.SetLayerResizeQuality cboLayerResizeQuality.ListIndex
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -448,12 +424,12 @@ Private Sub chkRotateNode_Click()
 End Sub
 
 Private Sub cmdLayerAffinePermanent_Click()
-    Process "Make layer changes permanent", , buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
+    Process "Make layer changes permanent", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
 End Sub
 
 'Reset layer angle to 0.0 degrees.  (This action is non-destructive.)
 Private Sub cmdLayerAngleReset_Click()
-    Process "Reset layer angle", , buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
+    Process "Reset layer angle", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
 End Sub
 
 Private Sub cmdLayerMove_Click(Index As Integer)
@@ -462,11 +438,11 @@ Private Sub cmdLayerMove_Click(Index As Integer)
     
         'Reset layer to original size
         Case 0
-            Process "Reset layer size", , buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
+            Process "Reset layer size", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
         
         'Make non-destructive resize permanent
         Case 1
-            Process "Make layer changes permanent", , buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
+            Process "Make layer changes permanent", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
     
     End Select
     
@@ -479,11 +455,11 @@ Private Sub cmdLayerShearReset_Click(Index As Integer)
     
         'Reset x
         Case 0
-            Process "Reset horizontal layer shear", , buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
+            Process "Reset horizontal layer shear", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
         
         'Reset y
         Case 1
-            Process "Reset vertical layer shear", , buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
+            Process "Reset vertical layer shear", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
     
     End Select
     
@@ -550,7 +526,7 @@ Private Sub sltLayerAngle_Change()
     Tool_Support.setToolBusyState True
     
     'Notify the layer of the setting change
-    pdImages(g_CurrentImage).GetActiveLayer.setLayerAngle sltLayerAngle.Value
+    pdImages(g_CurrentImage).GetActiveLayer.SetLayerAngle sltLayerAngle.Value
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -564,8 +540,8 @@ Private Sub sltLayerAngle_Change()
     If cmdLayerAngleReset.Enabled <> resetAvailable Then cmdLayerAngleReset.Enabled = resetAvailable
     
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
-    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
+    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     
 End Sub
 
@@ -588,7 +564,7 @@ Private Sub sltLayerShearX_Change()
     Tool_Support.setToolBusyState True
     
     'Notify the layer of the setting change
-    pdImages(g_CurrentImage).GetActiveLayer.setLayerShearX sltLayerShearX.Value
+    pdImages(g_CurrentImage).GetActiveLayer.SetLayerShearX sltLayerShearX.Value
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -602,8 +578,8 @@ Private Sub sltLayerShearX_Change()
     If cmdLayerShearReset(0).Enabled <> resetAvailable Then cmdLayerShearReset(0).Enabled = resetAvailable
     
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
-    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
+    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     
 End Sub
 
@@ -626,7 +602,7 @@ Private Sub sltLayerShearY_Change()
     Tool_Support.setToolBusyState True
     
     'Notify the layer of the setting change
-    pdImages(g_CurrentImage).GetActiveLayer.setLayerShearY sltLayerShearY.Value
+    pdImages(g_CurrentImage).GetActiveLayer.SetLayerShearY sltLayerShearY.Value
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -640,8 +616,8 @@ Private Sub sltLayerShearY_Change()
     If cmdLayerShearReset(1).Enabled <> resetAvailable Then cmdLayerShearReset(1).Enabled = resetAvailable
     
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
-    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
+    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     
 End Sub
 
@@ -667,19 +643,19 @@ Private Sub tudLayerMove_Change(Index As Integer)
     
         'Layer position (x)
         Case 0
-            pdImages(g_CurrentImage).GetActiveLayer.setLayerOffsetX tudLayerMove(Index).Value
+            pdImages(g_CurrentImage).GetActiveLayer.SetLayerOffsetX tudLayerMove(Index).Value
         
         'Layer position (y)
         Case 1
-            pdImages(g_CurrentImage).GetActiveLayer.setLayerOffsetY tudLayerMove(Index).Value
+            pdImages(g_CurrentImage).GetActiveLayer.SetLayerOffsetY tudLayerMove(Index).Value
         
         'Layer width
         Case 2
-            pdImages(g_CurrentImage).GetActiveLayer.setLayerCanvasXModifier tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.getLayerWidth(False)
+            pdImages(g_CurrentImage).GetActiveLayer.SetLayerCanvasXModifier tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)
             
         'Layer height
         Case 3
-            pdImages(g_CurrentImage).GetActiveLayer.setLayerCanvasYModifier tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.getLayerHeight(False)
+            pdImages(g_CurrentImage).GetActiveLayer.SetLayerCanvasYModifier tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
         
     End Select
     
@@ -690,8 +666,8 @@ Private Sub tudLayerMove_Change(Index As Integer)
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
-    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.affineTransformsActive(True)
+    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
 
 End Sub
 
