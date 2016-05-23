@@ -595,8 +595,8 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                     
                     'Apply the offsets
                     With pdImages(g_CurrentImage).GetActiveLayer
-                        .setLayerOffsetX .getLayerOffsetX + hOffset
-                        .setLayerOffsetY .getLayerOffsetY + vOffset
+                        .SetLayerOffsetX .GetLayerOffsetX + hOffset
+                        .SetLayerOffsetY .GetLayerOffsetY + vOffset
                     End With
                     
                     'Redraw the viewport if necessary
@@ -611,7 +611,7 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                     'Delete key: delete the active layer (if allowed)
                     If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).GetNumOfLayers > 1 Then
                         markEventHandled = True
-                        Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
+                        Process "Delete layer", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
                     End If
                     
                     'Insert: raise Add New Layer dialog
@@ -651,7 +651,7 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                     'Space bar: toggle active layer visibility
                     If (vkCode = VK_SPACE) Then
                         markEventHandled = True
-                        pdImages(g_CurrentImage).GetActiveLayer.setLayerVisibility (Not pdImages(g_CurrentImage).GetActiveLayer.getLayerVisibility)
+                        pdImages(g_CurrentImage).GetActiveLayer.SetLayerVisibility (Not pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility)
                         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
                         SyncInterfaceToCurrentImage
                     End If
@@ -745,7 +745,7 @@ Private Sub CanvasView_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
                 'Delete key: if a selection is active, erase the selected area
                 If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).selectionActive Then
                     markEventHandled = True
-                    Process "Erase selected area", False, buildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
+                    Process "Erase selected area", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
                 End If
                 
                 'Escape key: if a selection is active, clear it
@@ -813,14 +813,14 @@ Private Sub CanvasView_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shif
             Case AC_BROWSER_BACKWARD, AC_UNDO
             
                 If pdImages(g_CurrentImage).IsActive Then
-                    If pdImages(g_CurrentImage).undoManager.getUndoState Then Process "Undo", , , UNDO_NOTHING
+                    If pdImages(g_CurrentImage).undoManager.GetUndoState Then Process "Undo", , , UNDO_NOTHING
                 End If
             
             'Forward button
             Case AC_BROWSER_FORWARD, AC_REDO
             
                 If pdImages(g_CurrentImage).IsActive Then
-                    If pdImages(g_CurrentImage).undoManager.getRedoState Then Process "Redo", , , UNDO_NOTHING
+                    If pdImages(g_CurrentImage).undoManager.GetRedoState Then Process "Redo", , , UNDO_NOTHING
                 End If
         
         End Select
@@ -877,7 +877,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
         'Ask the current layer if these coordinates correspond to a point of interest.  We don't always use this return value,
         ' but a number of functions could potentially ask for it, so we cache it at MouseDown time and hang onto it until
         ' the mouse is released.
-        m_CurPointOfInterest = pdImages(g_CurrentImage).GetActiveLayer.checkForPointOfInterest(layerX, layerY)
+        m_CurPointOfInterest = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
         
         'Any further processing depends on which tool is currently active
         Select Case g_CurrentTool
@@ -910,7 +910,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 End If
                 
                 'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
-                Tool_Support.setInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, pdImages(g_CurrentImage).GetActiveLayer.checkForPointOfInterest(layerX, layerY)
+                Tool_Support.setInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
         
             'Standard selections
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO
@@ -1017,7 +1017,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 Dim userIsEditingCurrentTextLayer As Boolean
                 
                 'Check to see if the current layer is a text layer
-                If pdImages(g_CurrentImage).GetActiveLayer.isLayerText Then
+                If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then
                 
                     'Did the user click on a POI for this layer?  If they did, the user is editing the current text layer.
                     If m_CurPointOfInterest >= 0 Then
@@ -1035,7 +1035,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 If userIsEditingCurrentTextLayer Then
                     
                     'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
-                    Tool_Support.setInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, pdImages(g_CurrentImage).GetActiveLayer.checkForPointOfInterest(layerX, layerY)
+                    Tool_Support.setInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
                     
                 'The user is not editing a text layer.  Create a new text layer now.
                 Else
@@ -1207,9 +1207,9 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                         'To spare the debug logger from receiving too many events, forcibly prevent logging of this message
                         ' while in debug mode.
                         #If DEBUGMODE = 1 Then
-                            Message "Target layer: %1", pdImages(g_CurrentImage).GetLayerByIndex(layerUnderMouse).getLayerName, "DONOTLOG"
+                            Message "Target layer: %1", pdImages(g_CurrentImage).GetLayerByIndex(layerUnderMouse).GetLayerName, "DONOTLOG"
                         #Else
-                            Message "Target layer: %1", pdImages(g_CurrentImage).GetLayerByIndex(layerUnderMouse).getLayerName
+                            Message "Target layer: %1", pdImages(g_CurrentImage).GetLayerByIndex(layerUnderMouse).GetLayerName
                         #End If
                     
                     'The mouse is not over a layer.  Default to the active layer, which allows the user to interact with the
@@ -1481,17 +1481,17 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                     Tool_Support.setToolBusyState True
                     
                     'See if this was just a click (as it might be at creation time).
-                    If ClickEventAlsoFiring Or (m_NumOfMouseMovements <= 2) Or (pdImages(g_CurrentImage).GetActiveLayer.getLayerWidth < 4) Or (pdImages(g_CurrentImage).GetActiveLayer.getLayerHeight < 4) Then
+                    If ClickEventAlsoFiring Or (m_NumOfMouseMovements <= 2) Or (pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth < 4) Or (pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight < 4) Then
                         
                         'Update the layer's size.  At present, we simply make it fill the current viewport.
                         Dim curImageRectF As RECTF
                         pdImages(g_CurrentImage).imgViewport.getIntersectRectImage curImageRectF
                         
                         With pdImages(g_CurrentImage)
-                            .GetActiveLayer.setLayerOffsetX curImageRectF.Left
-                            .GetActiveLayer.setLayerOffsetY curImageRectF.Top
-                            .GetActiveLayer.setLayerWidth curImageRectF.Width
-                            .GetActiveLayer.setLayerHeight curImageRectF.Height
+                            .GetActiveLayer.SetLayerOffsetX curImageRectF.Left
+                            .GetActiveLayer.SetLayerOffsetY curImageRectF.Top
+                            .GetActiveLayer.SetLayerWidth curImageRectF.Width
+                            .GetActiveLayer.SetLayerHeight curImageRectF.Height
                         End With
                         
                         'If the current text box is empty, set some new text to orient the user
@@ -1526,7 +1526,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                     'Process the addition of the new layer; this will create proper Undo/Redo data for the entire image (required, as the layer order
                     ' has changed due to this new addition).
                     With pdImages(g_CurrentImage).GetActiveLayer
-                        Process "New text layer", , buildParams(.getLayerOffsetX, .getLayerOffsetY, .getLayerWidth, .getLayerHeight, .getVectorDataAsXML), UNDO_IMAGE_VECTORSAFE
+                        Process "New text layer", , BuildParams(.GetLayerOffsetX, .GetLayerOffsetY, .GetLayerWidth, .GetLayerHeight, .GetVectorDataAsXML), UNDO_IMAGE_VECTORSAFE
                     End With
                     
                     'Manually synchronize menu, layer toolbox, and other UI settings against the newly created layer.
@@ -1700,7 +1700,7 @@ Private Sub mnuTabstripPopup_Click(Index As Integer)
         'Revert
         Case 3
             
-            pdImages(g_CurrentImage).undoManager.revertToLastSavedState
+            pdImages(g_CurrentImage).undoManager.RevertToLastSavedState
                         
             'Also, redraw the current child form icon
             CreateCustomFormIcons pdImages(g_CurrentImage)
@@ -2078,7 +2078,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         Case NAV_MOVE
             
             'When transforming layers, the cursor depends on the active POI
-            curPOI = pdImages(g_CurrentImage).GetActiveLayer.checkForPointOfInterest(layerX, layerY)
+            curPOI = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
             
             Select Case curPOI
             
@@ -2251,10 +2251,10 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             ' obviously quite different.
             
             'First, see if the active layer is a text layer.  If it is, we need to check for POIs.
-            If pdImages(g_CurrentImage).GetActiveLayer.isLayerText Then
+            If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then
                 
                 'When transforming layers, the cursor depends on the active POI
-                curPOI = pdImages(g_CurrentImage).GetActiveLayer.checkForPointOfInterest(layerX, layerY)
+                curPOI = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
                 
                 Select Case curPOI
     
