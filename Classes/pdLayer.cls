@@ -548,7 +548,7 @@ End Function
 Public Sub SetLayerWidth(ByVal newSize As Single)
     
     'Force size in-bounds
-    If newSize < 1 Then newSize = 1
+    If (newSize < 1) Then newSize = 1
     
     'Make sure the layer is a vector layer
     If (myLayerType <> PDL_IMAGE) And (newSize <> myVectorData.vd_Width) Then
@@ -566,7 +566,7 @@ End Sub
 Public Sub SetLayerHeight(ByVal newSize As Single)
     
     'Force size in-bounds
-    If newSize < 1 Then newSize = 1
+    If (newSize < 1) Then newSize = 1
     
     'Make sure the layer is a vector layer
     If (myLayerType <> PDL_IMAGE) And (newSize <> myVectorData.vd_Width) Then
@@ -594,7 +594,7 @@ End Function
 Public Sub SetLayerCanvasXModifier(ByVal newXModifier As Double)
     
     'Check bounds
-    If newXModifier <= 0 Then newXModifier = 0.00000001
+    If (newXModifier <= 0) Then newXModifier = 0.00000001
     
     'Separate handling by layer type
     Select Case myLayerType
@@ -613,7 +613,7 @@ End Sub
 Public Sub SetLayerCanvasYModifier(ByVal newYModifier As Double)
     
     'Check bounds
-    If newYModifier <= 0 Then newYModifier = 0.00000001
+    If (newYModifier <= 0) Then newYModifier = 0.00000001
     
     'Separate handling by layer type
     Select Case myLayerType
@@ -737,12 +737,12 @@ Public Sub SetLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_
         ' has active non-destructive effects.
         With myNonDestructiveFX
         
-            If .fx_Exposure <> 0 Then myLayerData.l_NonDestructiveFXActive = True
-            If .fx_Contrast <> 0 Then myLayerData.l_NonDestructiveFXActive = True
-            If .fx_Clarity <> 0 Then myLayerData.l_NonDestructiveFXActive = True
-            If .fx_Vibrance <> 0 Then myLayerData.l_NonDestructiveFXActive = True
-            If .fx_Temperature <> 0 Then myLayerData.l_NonDestructiveFXActive = True
-            If .fx_Tint <> 0 Then myLayerData.l_NonDestructiveFXActive = True
+            If (.fx_Exposure <> 0) Then myLayerData.l_NonDestructiveFXActive = True
+            If (.fx_Contrast <> 0) Then myLayerData.l_NonDestructiveFXActive = True
+            If (.fx_Clarity <> 0) Then myLayerData.l_NonDestructiveFXActive = True
+            If (.fx_Vibrance <> 0) Then myLayerData.l_NonDestructiveFXActive = True
+            If (.fx_Temperature <> 0) Then myLayerData.l_NonDestructiveFXActive = True
+            If (.fx_Tint <> 0) Then myLayerData.l_NonDestructiveFXActive = True
         
         End With
     
@@ -1038,21 +1038,21 @@ Friend Sub GetLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional B
     tmpMatrix.applyMatrixToPointF dstPoints(0)
     tmpMatrix.applyMatrixToPointF dstPoints(1)
     tmpMatrix.applyMatrixToPointF dstPoints(2)
-    If UBound(dstPoints) = 3 Then tmpMatrix.applyMatrixToPointF dstPoints(3)
+    If (UBound(dstPoints) = 3) Then tmpMatrix.applyMatrixToPointF dstPoints(3)
     
     'Some compositing operations are easier if the layer is normalized to a standard origin of (0, 0).
     ' If the caller requested that, apply normalizing now.
     If normalizeToNewOrigin Then
         
         'Find the largest and smallest (x, y) coordinates
-        Dim minX As Single, maxX As Single, MinY As Single, MaxY As Single
-        FindMaxMinOfPointFs dstPoints, UBound(dstPoints) + 1, minX, MinY, maxX, MaxY
+        Dim minX As Single, maxX As Single, minY As Single, maxY As Single
+        FindMaxMinOfPointFs dstPoints, UBound(dstPoints) + 1, minX, minY, maxX, maxY
         
         'Normalize all points against the minimum values
         Dim i As Long
         For i = 0 To UBound(dstPoints)
             dstPoints(i).x = dstPoints(i).x + (normalizeX - minX)
-            dstPoints(i).y = dstPoints(i).y + (normalizeY - MinY)
+            dstPoints(i).y = dstPoints(i).y + (normalizeY - minY)
         Next i
         
     End If
@@ -1109,7 +1109,7 @@ End Sub
 Friend Sub GetCopyOfLayerTransformationMatrix(ByRef dstMatrix As pdGraphicsMatrix, Optional ByVal applyTranslation As Boolean = True)
 
     'Create and/or reset the destination matrix, as necessary
-    If dstMatrix Is Nothing Then
+    If (dstMatrix Is Nothing) Then
         Set dstMatrix = New pdGraphicsMatrix
     Else
         dstMatrix.ResetToIdentityMatrix
@@ -1118,7 +1118,7 @@ Friend Sub GetCopyOfLayerTransformationMatrix(ByRef dstMatrix As pdGraphicsMatri
     With myLayerData
     
         'If an angle is active, rotate the matrix accordingly
-        If .l_Angle <> 0 Then dstMatrix.RotateMatrix .l_Angle, Me.GetLayerWidth(True) / 2, Me.GetLayerHeight(True) / 2
+        If (.l_Angle <> 0) Then dstMatrix.RotateMatrix .l_Angle, Me.GetLayerWidth(True) / 2, Me.GetLayerHeight(True) / 2
         
         'If shearing is active, shear the matrix accordingly
         If (.l_ShearX <> 0) Or (.l_ShearY <> 0) Then dstMatrix.ShearMatrix .l_ShearX, .l_ShearY, Me.GetLayerWidth(True) / 2, Me.GetLayerHeight(True) / 2
@@ -1141,15 +1141,15 @@ Friend Sub GetLayerBoundaryRect(ByRef dstRect As RECTF, Optional ByVal applyTran
     Me.GetLayerCornerCoordinates layerCorners, applyTranslation, normalizeToNewOrigin, normalizeX, normalizeY
     
     'Find the largest and smallest (x, y) coordinates
-    Dim minX As Single, maxX As Single, MinY As Single, MaxY As Single
-    FindMaxMinOfPointFs layerCorners, 4, minX, MinY, maxX, MaxY
+    Dim minX As Single, maxX As Single, minY As Single, maxY As Single
+    FindMaxMinOfPointFs layerCorners, 4, minX, minY, maxX, maxY
     
     'The difference between max and min values define the boundary rect for this layer
     With dstRect
         .Left = minX
-        .Top = MinY
+        .Top = minY
         .Width = maxX - minX
-        .Height = MaxY - MinY
+        .Height = maxY - minY
     End With
     
 End Sub
@@ -1174,16 +1174,16 @@ Friend Function GetAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
     Me.GetLayerCornerCoordinates m_PlgPoints, True, False
     
     'From our boundary points, find the largest and smallest (x, y) values.  These give us a bounding box for the layer as a whole.
-    Dim minX As Single, maxX As Single, MinY As Single, MaxY As Single
-    FindMaxMinOfPointFs m_PlgPoints, 4, minX, MinY, maxX, MaxY
+    Dim minX As Single, maxX As Single, minY As Single, maxY As Single
+    FindMaxMinOfPointFs m_PlgPoints, 4, minX, minY, maxX, maxY
     
     'Copy those values into a RECTF struct, for convenience
     Dim layerRect As RECTF
     With layerRect
         .Left = minX
-        .Top = MinY
+        .Top = minY
         .Width = maxX - minX
-        .Height = MaxY - MinY
+        .Height = maxY - minY
     End With
     
     'We now know two crucial pieces of data:
@@ -1206,7 +1206,7 @@ Friend Function GetAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
     Dim intLayerWidth As Long, intLayerHeight As Long
     Dim normalizeX As Single, normalizeY As Single
     
-    If minX < 0 Then
+    If (minX < 0) Then
         dstX = 0
         normalizeX = 0
         intLayerWidth = Int(maxX + 0.999)
@@ -1216,22 +1216,22 @@ Friend Function GetAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
         intLayerWidth = Int(layerRect.Width + 0.999 + normalizeX)
     End If
     
-    If MinY < 0 Then
+    If (minY < 0) Then
         dstY = 0
         normalizeY = 0
-        intLayerHeight = Int(MaxY + 0.999)
+        intLayerHeight = Int(maxY + 0.999)
     Else
-        dstY = Int(MinY)
-        normalizeY = MinY - dstY
+        dstY = Int(minY)
+        normalizeY = minY - dstY
         intLayerHeight = Int(layerRect.Height + 0.999 + normalizeY)
     End If
     
     'Next, replace the results of (2) or (3) with (1), as relevant
-    If cropWidth > 0 Then
+    If (cropWidth > 0) Then
         If dstX + intLayerWidth > cropWidth Then intLayerWidth = cropWidth - dstX
     End If
                     
-    If cropHeight > 0 Then
+    If (cropHeight > 0) Then
         If dstY + intLayerHeight > cropHeight Then intLayerHeight = cropHeight - dstY
     End If
     
@@ -1281,9 +1281,9 @@ End Function
 ' of the layer *IN IMAGE COORDINATES*.
 
 'Given an array with at least upper bound 2, find the max and min x/y values.
-Private Sub FindMaxMinOfPointFs(ByRef srcPoints() As POINTFLOAT, ByVal numOfPoints As Long, ByRef minX As Single, ByRef MinY As Single, ByRef maxX As Single, ByRef MaxY As Single)
+Private Sub FindMaxMinOfPointFs(ByRef srcPoints() As POINTFLOAT, ByVal numOfPoints As Long, ByRef minX As Single, ByRef minY As Single, ByRef maxX As Single, ByRef maxY As Single)
     
-    If srcPoints(0).x < srcPoints(1).x Then
+    If (srcPoints(0).x < srcPoints(1).x) Then
         minX = srcPoints(0).x
         maxX = srcPoints(1).x
     Else
@@ -1291,23 +1291,20 @@ Private Sub FindMaxMinOfPointFs(ByRef srcPoints() As POINTFLOAT, ByVal numOfPoin
         maxX = srcPoints(0).x
     End If
     
-    If srcPoints(0).y < srcPoints(1).y Then
-        MinY = srcPoints(0).y
-        MaxY = srcPoints(1).y
+    If (srcPoints(0).y < srcPoints(1).y) Then
+        minY = srcPoints(0).y
+        maxY = srcPoints(1).y
     Else
-        MinY = srcPoints(1).y
-        MaxY = srcPoints(0).y
+        minY = srcPoints(1).y
+        maxY = srcPoints(0).y
     End If
     
     Dim i As Long
     For i = 2 To numOfPoints - 1
-        
-        If srcPoints(i).x < minX Then minX = srcPoints(i).x
-        If srcPoints(i).y < MinY Then MinY = srcPoints(i).y
-        
-        If srcPoints(i).x > maxX Then maxX = srcPoints(i).x
-        If srcPoints(i).y > MaxY Then MaxY = srcPoints(i).y
-        
+        If (srcPoints(i).x < minX) Then minX = srcPoints(i).x
+        If (srcPoints(i).y < minY) Then minY = srcPoints(i).y
+        If (srcPoints(i).x > maxX) Then maxX = srcPoints(i).x
+        If (srcPoints(i).y > maxY) Then maxY = srcPoints(i).y
     Next i
     
 End Sub
@@ -1531,10 +1528,10 @@ Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
     Set xmlEngine = New pdXML
     
     'Validate the XML header...
-    If xmlEngine.loadXMLFromString(xmlString) And xmlEngine.isPDDataType("pdLayer") Then
+    If (xmlEngine.loadXMLFromString(xmlString) And xmlEngine.isPDDataType("pdLayer")) Then
         
         'If the caller has not specified their own layerID, use the one from file.
-        If useCustomLayerID = -1 Then
+        If (useCustomLayerID = -1) Then
             layerID = xmlEngine.getUniqueTag_Long("ID")
         Else
             layerID = useCustomLayerID
@@ -1581,7 +1578,7 @@ Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
         'Note that this behavior can be overridden by setting the optional createNonDestructively parameter to TRUE.
         ' This is used by the Undo/Redo engine to re-load an image's header data, without actually overwriting the
         ' current layer DIB.
-        If Not createNonDestructively Then
+        If (Not createNonDestructively) Then
         
             Set layerDIB = New pdDIB
             With xmlEngine
@@ -1630,7 +1627,7 @@ Public Function GetVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
     xmlEngine.prepareNewXML "pdVector"
     
     'Add a helpful comment, if requested.
-    If Not avoidFluffEntries Then
+    If (Not avoidFluffEntries) Then
         xmlEngine.writeBlankLine
         xmlEngine.writeComment "This XML string contains a summary of crucial data for a pdVector object."
         xmlEngine.writeBlankLine
@@ -1652,7 +1649,7 @@ Public Function GetVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
         
     End Select
         
-    If Not avoidFluffEntries Then xmlEngine.writeBlankLine
+    If (Not avoidFluffEntries) Then xmlEngine.writeBlankLine
     
     'The layer XML string is now complete.  Return it.
     GetVectorDataAsXML = xmlEngine.returnCurrentXMLString(avoidFluffEntries)
@@ -2123,13 +2120,13 @@ End Sub
 Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
     
     'Is the current thumbnail dirty?  If so, regenerate it.
-    If Not m_IsThumbClean Then UpdateInternalThumbnail
+    If (Not m_IsThumbClean) Then UpdateInternalThumbnail
     
     'Clear the destination thumbnail
-    If dstThumbnailDIB Is Nothing Then Set dstThumbnailDIB = New pdDIB
+    If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
     
     'If the requested thumbnail size differs from our cached version, resize the thumbnail prior to passing it along
-    If thumbnailSize <> LAYER_THUMB_SIZE Then
+    If (thumbnailSize <> LAYER_THUMB_SIZE) Then
         
         If (dstThumbnailDIB.GetDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.GetDIBHeight <> thumbnailSize) Then
             dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0

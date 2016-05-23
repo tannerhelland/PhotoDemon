@@ -90,7 +90,7 @@ Public Sub setInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer A
     Drawing.ConvertImageCoordsToLayerCoords srcImage, srcLayer, m_InitImageX, m_InitImageY, m_InitLayerX, m_InitLayerY
     
     'Make a copy of the current layer coordinates, with any affine transforms applied (rotation, etc)
-    srcLayer.getLayerCornerCoordinates m_InitLayerCoords_Transformed
+    srcLayer.GetLayerCornerCoordinates m_InitLayerCoords_Transformed
     
     'Finally, make a copy of the current layer coordinates, *without* affine transforms applied.  This is basically the rect of
     ' the layer as it would appear if no affine modifiers were active (e.g. without rotation, etc)
@@ -100,8 +100,8 @@ Public Sub setInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer A
     Next i
     
     'Cache the layer's aspect ratio.  Note that this *does include any current non-destructive transforms*!
-    If srcLayer.getLayerHeight(False) <> 0 Then
-        m_LayerAspectRatio = srcLayer.getLayerWidth(False) / srcLayer.getLayerHeight(False)
+    If srcLayer.GetLayerHeight(False) <> 0 Then
+        m_LayerAspectRatio = srcLayer.GetLayerWidth(False) / srcLayer.GetLayerHeight(False)
     Else
         m_LayerAspectRatio = 1
     End If
@@ -299,14 +299,14 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 'If shearing is active on the current layer, we need to account for its effect on the current mouse location.
                 ' (Note that we could apply this matrix transformation regardless of current shear values, as values of zero
                 ' will simply return an identity matrix, but why do extra math if it's not required?)
-                If (srcLayer.getLayerShearX <> 0) Or (srcLayer.getLayerShearY <> 0) Then
+                If (srcLayer.GetLayerShearX <> 0) Or (srcLayer.GetLayerShearY <> 0) Then
                 
                     'Apply the current layer's shear effect to the mouse position.  This gives us its unadulterated equivalent,
                     ' e.g. its location in the same coordinate space as the two points we've already calculated.
                     Dim tmpMatrix As pdGraphicsMatrix
                     Set tmpMatrix = New pdGraphicsMatrix
                     
-                    tmpMatrix.ShearMatrix srcLayer.getLayerShearX, srcLayer.getLayerShearY, ptIntersect.x, ptIntersect.y
+                    tmpMatrix.ShearMatrix srcLayer.GetLayerShearX, srcLayer.GetLayerShearY, ptIntersect.x, ptIntersect.y
                     tmpMatrix.InvertMatrix
                     
                     tmpMatrix.applyMatrixToPointF pt2
@@ -321,23 +321,23 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 ' that +90 and -90 (from a UI standpoint) return the same 90 result.  A simple workaround is to force the sign to
                 ' match the difference between the relevant coordinate of the intersecting lines.  (The relevant coordinate varies
                 ' based on the orientation of the default, non-rotated line defined by ptIntersect and pt1.)
-                If m_curPOI = 4 Then
+                If (m_curPOI = 4) Then
                     If pt2.y < pt1.y Then newAngle = -newAngle
-                ElseIf m_curPOI = 5 Then
+                ElseIf (m_curPOI = 5) Then
                     If pt2.x > pt1.x Then newAngle = -newAngle
-                ElseIf m_curPOI = 6 Then
+                ElseIf (m_curPOI = 6) Then
                     If pt2.y > pt1.y Then newAngle = -newAngle
                 Else
                     If pt2.x < pt1.x Then newAngle = -newAngle
                 End If
                 
                 'Apply the angle to the layer, and our work here is done!
-                .setLayerAngle newAngle
+                .SetLayerAngle newAngle
                             
             '5: interior of the layer (e.g. move the layer instead of resize it)
             Case 8
-                .setLayerOffsetX m_InitLayerCoords_Pure(0).x + hOffsetImage
-                .setLayerOffsetY m_InitLayerCoords_Pure(0).y + vOffsetImage
+                .SetLayerOffsetX m_InitLayerCoords_Pure(0).x + hOffsetImage
+                .SetLayerOffsetY m_InitLayerCoords_Pure(0).y + vOffsetImage
             
         End Select
         
@@ -358,7 +358,7 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
             End If
             
             'Make sure the new (x, y) values don't result in negative width/height modifiers
-            If (newRight > newLeft) And (newBottom > newTop) Then .setOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
+            If (newRight > newLeft) And (newBottom > newTop) Then .SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
         
         End If
         
@@ -384,20 +384,20 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
             Case 0 To 3
             
                 With srcImage.GetActiveLayer
-                    Process "Resize layer (on-canvas)", False, buildParams(.getLayerOffsetX, .getLayerOffsetY, .getLayerCanvasXModifier, .getLayerCanvasYModifier), UNDO_LAYERHEADER
+                    Process "Resize layer (on-canvas)", False, BuildParams(.GetLayerOffsetX, .GetLayerOffsetY, .GetLayerCanvasXModifier, .GetLayerCanvasYModifier), UNDO_LAYERHEADER
                 End With
                 
             'Rotation
             Case 4 To 7
                 With srcImage.GetActiveLayer
-                    Process "Rotate layer (on-canvas)", False, buildParams(.getLayerAngle), UNDO_LAYERHEADER
+                    Process "Rotate layer (on-canvas)", False, BuildParams(.GetLayerAngle), UNDO_LAYERHEADER
                 End With
             
             'Move-only transformations
             Case 8
                 
                 With srcImage.GetActiveLayer
-                    Process "Move layer", False, buildParams(.getLayerOffsetX, .getLayerOffsetY), UNDO_LAYERHEADER
+                    Process "Move layer", False, BuildParams(.GetLayerOffsetX, .GetLayerOffsetY), UNDO_LAYERHEADER
                 End With
                 
             'The caller can specify other dummy values if they don't want us to redraw the screen
@@ -428,7 +428,7 @@ Public Sub makeQuickFixesPermanent()
     'Reset the quick-fix settings stored inside the pdLayer object
     Dim i As Long
     For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
-        pdImages(g_CurrentImage).GetActiveLayer.setLayerNonDestructiveFXState i, 0
+        pdImages(g_CurrentImage).GetActiveLayer.SetLayerNonDestructiveFXState i, 0
     Next i
     
 End Sub
@@ -495,7 +495,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
             layerToolActive = True
         
         Case VECTOR_TEXT, VECTOR_FANCYTEXT
-            If pdImages(g_CurrentImage).GetActiveLayer.isLayerText Then
+            If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then
                 layerToolActive = True
             Else
             
@@ -529,34 +529,34 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
             Case NAV_MOVE
             
                 'The Layer Move tool has four text up/downs: two for layer position (x, y) and two for layer size (w, y)
-                toolpanel_MoveSize.tudLayerMove(0).Value = pdImages(g_CurrentImage).GetActiveLayer.getLayerOffsetX
-                toolpanel_MoveSize.tudLayerMove(1).Value = pdImages(g_CurrentImage).GetActiveLayer.getLayerOffsetY
-                toolpanel_MoveSize.tudLayerMove(2).Value = pdImages(g_CurrentImage).GetActiveLayer.getLayerWidth
-                toolpanel_MoveSize.tudLayerMove(3).Value = pdImages(g_CurrentImage).GetActiveLayer.getLayerHeight
+                toolpanel_MoveSize.tudLayerMove(0).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOffsetX
+                toolpanel_MoveSize.tudLayerMove(1).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOffsetY
+                toolpanel_MoveSize.tudLayerMove(2).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth
+                toolpanel_MoveSize.tudLayerMove(3).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight
                 
                 'The layer resize quality combo box also needs to be synched
-                toolpanel_MoveSize.cboLayerResizeQuality.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.getLayerResizeQuality
+                toolpanel_MoveSize.cboLayerResizeQuality.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetLayerResizeQuality
                 
                 'Layer angle and shear are newly available as of 7.0
-                toolpanel_MoveSize.sltLayerAngle.Value = pdImages(g_CurrentImage).GetActiveLayer.getLayerAngle
-                toolpanel_MoveSize.sltLayerShearX.Value = pdImages(g_CurrentImage).GetActiveLayer.getLayerShearX
-                toolpanel_MoveSize.sltLayerShearY.Value = pdImages(g_CurrentImage).GetActiveLayer.getLayerShearY
+                toolpanel_MoveSize.sltLayerAngle.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerAngle
+                toolpanel_MoveSize.sltLayerShearX.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerShearX
+                toolpanel_MoveSize.sltLayerShearY.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerShearY
             
             Case VECTOR_TEXT
                 
                 With toolpanel_Text
-                    .txtTextTool.Text = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_Text)
-                    .cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_FontFace)
-                    .tudTextFontSize.Value = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_FontSize)
-                    .csTextFontColor.Color = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_FontColor)
-                    .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_TextAntialiasing)
-                    .sltTextClarity.Value = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_TextContrast)
-                    .btnFontStyles(0).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_FontBold))
-                    .btnFontStyles(1).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_FontItalic))
-                    .btnFontStyles(2).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_FontUnderline))
-                    .btnFontStyles(3).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_FontStrikeout))
-                    .btsHAlignment.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_HorizontalAlignment)
-                    .btsVAlignment.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_VerticalAlignment)
+                    .txtTextTool.Text = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_Text)
+                    .cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontFace)
+                    .tudTextFontSize.Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
+                    .csTextFontColor.Color = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontColor)
+                    .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_TextAntialiasing)
+                    .sltTextClarity.Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_TextContrast)
+                    .btnFontStyles(0).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontBold))
+                    .btnFontStyles(1).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontItalic))
+                    .btnFontStyles(2).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontUnderline))
+                    .btnFontStyles(3).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontStrikeout))
+                    .btsHAlignment.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_HorizontalAlignment)
+                    .btsVAlignment.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_VerticalAlignment)
                 End With
                 
                 'Display the "convert to basic text layer" panel as necessary
@@ -565,37 +565,37 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
             Case VECTOR_FANCYTEXT
                 
                 With toolpanel_FancyText
-                    .txtTextTool.Text = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_Text)
-                    .cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_FontFace)
-                    .tudTextFontSize.Value = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_FontSize)
-                    .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_TextAntialiasing)
-                    .chkHinting.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_TextHinting), vbChecked, vbUnchecked)
-                    .btnFontStyles(0).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_FontBold))
-                    .btnFontStyles(1).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_FontItalic))
-                    .btnFontStyles(2).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_FontUnderline))
-                    .btnFontStyles(3).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_FontStrikeout))
-                    .btsHAlignment.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_HorizontalAlignment)
-                    .btsVAlignment.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_VerticalAlignment)
-                    .cboWordWrap.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_WordWrap)
-                    .chkFillText.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_FillActive), vbChecked, vbUnchecked)
-                    .bsText.Brush = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_FillBrush)
-                    .chkOutlineText.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_OutlineActive), vbChecked, vbUnchecked)
-                    .psText.Pen = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_OutlinePen)
-                    .chkBackground.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_BackgroundActive), vbChecked, vbUnchecked)
-                    .bsTextBackground.Brush = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_BackgroundBrush)
-                    .chkBackgroundBorder.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_BackBorderActive), vbChecked, vbUnchecked)
-                    .psTextBackground.Pen = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_BackBorderPen)
-                    .tudMargin(0).Value = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_MarginLeft)
-                    .tudMargin(1).Value = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_MarginRight)
-                    .tudMargin(2).Value = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_MarginTop)
-                    .tudMargin(3).Value = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_MarginBottom)
-                    .sltCharInflation.Value = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_CharInflation)
-                    .tudJitter(0).Value = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_CharJitterX)
-                    .tudJitter(1).Value = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_CharJitterY)
-                    .cboCharMirror.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_CharMirror)
-                    .sltCharOrientation.Value = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_CharOrientation)
-                    .cboCharCase.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_CharRemap)
-                    .sltCharSpacing.Value = pdImages(g_CurrentImage).GetActiveLayer.getTextLayerProperty(ptp_CharSpacing)
+                    .txtTextTool.Text = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_Text)
+                    .cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontFace)
+                    .tudTextFontSize.Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
+                    .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_TextAntialiasing)
+                    .chkHinting.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_TextHinting), vbChecked, vbUnchecked)
+                    .btnFontStyles(0).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontBold))
+                    .btnFontStyles(1).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontItalic))
+                    .btnFontStyles(2).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontUnderline))
+                    .btnFontStyles(3).Value = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontStrikeout))
+                    .btsHAlignment.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_HorizontalAlignment)
+                    .btsVAlignment.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_VerticalAlignment)
+                    .cboWordWrap.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_WordWrap)
+                    .chkFillText.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FillActive), vbChecked, vbUnchecked)
+                    .bsText.Brush = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FillBrush)
+                    .chkOutlineText.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_OutlineActive), vbChecked, vbUnchecked)
+                    .psText.Pen = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_OutlinePen)
+                    .chkBackground.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_BackgroundActive), vbChecked, vbUnchecked)
+                    .bsTextBackground.Brush = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_BackgroundBrush)
+                    .chkBackgroundBorder.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_BackBorderActive), vbChecked, vbUnchecked)
+                    .psTextBackground.Pen = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_BackBorderPen)
+                    .tudMargin(0).Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_MarginLeft)
+                    .tudMargin(1).Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_MarginRight)
+                    .tudMargin(2).Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_MarginTop)
+                    .tudMargin(3).Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_MarginBottom)
+                    .sltCharInflation.Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_CharInflation)
+                    .tudJitter(0).Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_CharJitterX)
+                    .tudJitter(1).Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_CharJitterY)
+                    .cboCharMirror.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_CharMirror)
+                    .sltCharOrientation.Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_CharOrientation)
+                    .cboCharCase.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_CharRemap)
+                    .sltCharSpacing.Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_CharSpacing)
                 End With
                 
                 'Display the "convert to typography layer" panel as necessary
@@ -629,7 +629,7 @@ Public Sub syncCurrentLayerToToolOptionsUI()
             layerToolActive = True
         
         Case VECTOR_TEXT, VECTOR_FANCYTEXT
-            If pdImages(g_CurrentImage).GetActiveLayer.isLayerText Then layerToolActive = True
+            If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then layerToolActive = True
         
         Case Else
             layerToolActive = False
@@ -648,82 +648,82 @@ Public Sub syncCurrentLayerToToolOptionsUI()
             Case NAV_MOVE
             
                 'The Layer Move tool has four text up/downs: two for layer position (x, y) and two for layer size (w, y)
-                pdImages(g_CurrentImage).GetActiveLayer.setLayerOffsetX toolpanel_MoveSize.tudLayerMove(0).Value
-                pdImages(g_CurrentImage).GetActiveLayer.setLayerOffsetY toolpanel_MoveSize.tudLayerMove(1).Value
+                pdImages(g_CurrentImage).GetActiveLayer.SetLayerOffsetX toolpanel_MoveSize.tudLayerMove(0).Value
+                pdImages(g_CurrentImage).GetActiveLayer.SetLayerOffsetY toolpanel_MoveSize.tudLayerMove(1).Value
                 
                 'Setting layer width and height isn't activated at present, on purpose
                 'pdImages(g_CurrentImage).getActiveLayer.setLayerWidth toolpanel_MoveSize.tudLayerMove(2).Value
                 'pdImages(g_CurrentImage).getActiveLayer.setLayerHeight toolpanel_MoveSize.tudLayerMove(3).Value
                 
                 'The layer resize quality combo box also needs to be synched
-                pdImages(g_CurrentImage).GetActiveLayer.setLayerResizeQuality toolpanel_MoveSize.cboLayerResizeQuality.ListIndex
+                pdImages(g_CurrentImage).GetActiveLayer.SetLayerResizeQuality toolpanel_MoveSize.cboLayerResizeQuality.ListIndex
                 
                 'Layer angle and shear are newly available as of 7.0
-                pdImages(g_CurrentImage).GetActiveLayer.setLayerAngle toolpanel_MoveSize.sltLayerAngle.Value
-                pdImages(g_CurrentImage).GetActiveLayer.setLayerShearX toolpanel_MoveSize.sltLayerShearX.Value
-                pdImages(g_CurrentImage).GetActiveLayer.setLayerShearY toolpanel_MoveSize.sltLayerShearY.Value
+                pdImages(g_CurrentImage).GetActiveLayer.SetLayerAngle toolpanel_MoveSize.sltLayerAngle.Value
+                pdImages(g_CurrentImage).GetActiveLayer.SetLayerShearX toolpanel_MoveSize.sltLayerShearX.Value
+                pdImages(g_CurrentImage).GetActiveLayer.SetLayerShearY toolpanel_MoveSize.sltLayerShearY.Value
             
             Case VECTOR_TEXT
                 
                 With pdImages(g_CurrentImage).GetActiveLayer
-                    .setTextLayerProperty ptp_Text, toolpanel_Text.txtTextTool.Text
-                    .setTextLayerProperty ptp_FontFace, toolpanel_Text.cboTextFontFace.List(toolpanel_Text.cboTextFontFace.ListIndex)
-                    .setTextLayerProperty ptp_FontSize, toolpanel_Text.tudTextFontSize.Value
-                    .setTextLayerProperty ptp_FontColor, toolpanel_Text.csTextFontColor.Color
-                    .setTextLayerProperty ptp_TextAntialiasing, toolpanel_Text.cboTextRenderingHint.ListIndex
-                    .setTextLayerProperty ptp_TextContrast, toolpanel_Text.sltTextClarity.Value
-                    .setTextLayerProperty ptp_FontBold, toolpanel_Text.btnFontStyles(0).Value
-                    .setTextLayerProperty ptp_FontItalic, toolpanel_Text.btnFontStyles(1).Value
-                    .setTextLayerProperty ptp_FontUnderline, toolpanel_Text.btnFontStyles(2).Value
-                    .setTextLayerProperty ptp_FontStrikeout, toolpanel_Text.btnFontStyles(3).Value
-                    .setTextLayerProperty ptp_HorizontalAlignment, toolpanel_Text.btsHAlignment.ListIndex
-                    .setTextLayerProperty ptp_VerticalAlignment, toolpanel_Text.btsVAlignment.ListIndex
+                    .SetTextLayerProperty ptp_Text, toolpanel_Text.txtTextTool.Text
+                    .SetTextLayerProperty ptp_FontFace, toolpanel_Text.cboTextFontFace.List(toolpanel_Text.cboTextFontFace.ListIndex)
+                    .SetTextLayerProperty ptp_FontSize, toolpanel_Text.tudTextFontSize.Value
+                    .SetTextLayerProperty ptp_FontColor, toolpanel_Text.csTextFontColor.Color
+                    .SetTextLayerProperty ptp_TextAntialiasing, toolpanel_Text.cboTextRenderingHint.ListIndex
+                    .SetTextLayerProperty ptp_TextContrast, toolpanel_Text.sltTextClarity.Value
+                    .SetTextLayerProperty ptp_FontBold, toolpanel_Text.btnFontStyles(0).Value
+                    .SetTextLayerProperty ptp_FontItalic, toolpanel_Text.btnFontStyles(1).Value
+                    .SetTextLayerProperty ptp_FontUnderline, toolpanel_Text.btnFontStyles(2).Value
+                    .SetTextLayerProperty ptp_FontStrikeout, toolpanel_Text.btnFontStyles(3).Value
+                    .SetTextLayerProperty ptp_HorizontalAlignment, toolpanel_Text.btsHAlignment.ListIndex
+                    .SetTextLayerProperty ptp_VerticalAlignment, toolpanel_Text.btsVAlignment.ListIndex
                 End With
                 
                 'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
                 ' This is because this property changes according to the active text tool.
-                pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_RenderingEngine, tre_WAPI
+                pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_RenderingEngine, tre_WAPI
             
             Case VECTOR_FANCYTEXT
                 
                 With pdImages(g_CurrentImage).GetActiveLayer
-                    .setTextLayerProperty ptp_Text, toolpanel_FancyText.txtTextTool.Text
-                    .setTextLayerProperty ptp_FontFace, toolpanel_FancyText.cboTextFontFace.List(toolpanel_FancyText.cboTextFontFace.ListIndex)
-                    .setTextLayerProperty ptp_FontSize, toolpanel_FancyText.tudTextFontSize.Value
-                    .setTextLayerProperty ptp_TextAntialiasing, toolpanel_FancyText.cboTextRenderingHint.ListIndex
-                    .setTextLayerProperty ptp_TextHinting, CBool(toolpanel_FancyText.chkHinting.Value)
-                    .setTextLayerProperty ptp_FontBold, toolpanel_FancyText.btnFontStyles(0).Value
-                    .setTextLayerProperty ptp_FontItalic, toolpanel_FancyText.btnFontStyles(1).Value
-                    .setTextLayerProperty ptp_FontUnderline, toolpanel_FancyText.btnFontStyles(2).Value
-                    .setTextLayerProperty ptp_FontStrikeout, toolpanel_FancyText.btnFontStyles(3).Value
-                    .setTextLayerProperty ptp_HorizontalAlignment, toolpanel_FancyText.btsHAlignment.ListIndex
-                    .setTextLayerProperty ptp_VerticalAlignment, toolpanel_FancyText.btsVAlignment.ListIndex
-                    .setTextLayerProperty ptp_WordWrap, toolpanel_FancyText.cboWordWrap.ListIndex
-                    .setTextLayerProperty ptp_FillActive, CBool(toolpanel_FancyText.chkFillText.Value)
-                    .setTextLayerProperty ptp_FillBrush, toolpanel_FancyText.bsText.Brush
-                    .setTextLayerProperty ptp_OutlineActive, CBool(toolpanel_FancyText.chkOutlineText.Value)
-                    .setTextLayerProperty ptp_OutlinePen, toolpanel_FancyText.psText.Pen
-                    .setTextLayerProperty ptp_BackgroundActive, CBool(toolpanel_FancyText.chkBackground.Value)
-                    .setTextLayerProperty ptp_BackgroundBrush, toolpanel_FancyText.bsTextBackground.Brush
-                    .setTextLayerProperty ptp_BackBorderActive, CBool(toolpanel_FancyText.chkBackgroundBorder.Value)
-                    .setTextLayerProperty ptp_BackBorderPen, toolpanel_FancyText.psTextBackground.Pen
-                    .setTextLayerProperty ptp_LineSpacing, toolpanel_FancyText.tudLineSpacing.Value
-                    .setTextLayerProperty ptp_MarginLeft, toolpanel_FancyText.tudMargin(0).Value
-                    .setTextLayerProperty ptp_MarginRight, toolpanel_FancyText.tudMargin(1).Value
-                    .setTextLayerProperty ptp_MarginTop, toolpanel_FancyText.tudMargin(2).Value
-                    .setTextLayerProperty ptp_MarginBottom, toolpanel_FancyText.tudMargin(3).Value
-                    .setTextLayerProperty ptp_CharInflation, toolpanel_FancyText.sltCharInflation.Value
-                    .setTextLayerProperty ptp_CharJitterX, toolpanel_FancyText.tudJitter(0).Value
-                    .setTextLayerProperty ptp_CharJitterY, toolpanel_FancyText.tudJitter(1).Value
-                    .setTextLayerProperty ptp_CharMirror, toolpanel_FancyText.cboCharMirror.ListIndex
-                    .setTextLayerProperty ptp_CharOrientation, toolpanel_FancyText.sltCharOrientation.Value
-                    .setTextLayerProperty ptp_CharRemap, toolpanel_FancyText.cboCharCase.ListIndex
-                    .setTextLayerProperty ptp_CharSpacing, toolpanel_FancyText.sltCharSpacing.Value
+                    .SetTextLayerProperty ptp_Text, toolpanel_FancyText.txtTextTool.Text
+                    .SetTextLayerProperty ptp_FontFace, toolpanel_FancyText.cboTextFontFace.List(toolpanel_FancyText.cboTextFontFace.ListIndex)
+                    .SetTextLayerProperty ptp_FontSize, toolpanel_FancyText.tudTextFontSize.Value
+                    .SetTextLayerProperty ptp_TextAntialiasing, toolpanel_FancyText.cboTextRenderingHint.ListIndex
+                    .SetTextLayerProperty ptp_TextHinting, CBool(toolpanel_FancyText.chkHinting.Value)
+                    .SetTextLayerProperty ptp_FontBold, toolpanel_FancyText.btnFontStyles(0).Value
+                    .SetTextLayerProperty ptp_FontItalic, toolpanel_FancyText.btnFontStyles(1).Value
+                    .SetTextLayerProperty ptp_FontUnderline, toolpanel_FancyText.btnFontStyles(2).Value
+                    .SetTextLayerProperty ptp_FontStrikeout, toolpanel_FancyText.btnFontStyles(3).Value
+                    .SetTextLayerProperty ptp_HorizontalAlignment, toolpanel_FancyText.btsHAlignment.ListIndex
+                    .SetTextLayerProperty ptp_VerticalAlignment, toolpanel_FancyText.btsVAlignment.ListIndex
+                    .SetTextLayerProperty ptp_WordWrap, toolpanel_FancyText.cboWordWrap.ListIndex
+                    .SetTextLayerProperty ptp_FillActive, CBool(toolpanel_FancyText.chkFillText.Value)
+                    .SetTextLayerProperty ptp_FillBrush, toolpanel_FancyText.bsText.Brush
+                    .SetTextLayerProperty ptp_OutlineActive, CBool(toolpanel_FancyText.chkOutlineText.Value)
+                    .SetTextLayerProperty ptp_OutlinePen, toolpanel_FancyText.psText.Pen
+                    .SetTextLayerProperty ptp_BackgroundActive, CBool(toolpanel_FancyText.chkBackground.Value)
+                    .SetTextLayerProperty ptp_BackgroundBrush, toolpanel_FancyText.bsTextBackground.Brush
+                    .SetTextLayerProperty ptp_BackBorderActive, CBool(toolpanel_FancyText.chkBackgroundBorder.Value)
+                    .SetTextLayerProperty ptp_BackBorderPen, toolpanel_FancyText.psTextBackground.Pen
+                    .SetTextLayerProperty ptp_LineSpacing, toolpanel_FancyText.tudLineSpacing.Value
+                    .SetTextLayerProperty ptp_MarginLeft, toolpanel_FancyText.tudMargin(0).Value
+                    .SetTextLayerProperty ptp_MarginRight, toolpanel_FancyText.tudMargin(1).Value
+                    .SetTextLayerProperty ptp_MarginTop, toolpanel_FancyText.tudMargin(2).Value
+                    .SetTextLayerProperty ptp_MarginBottom, toolpanel_FancyText.tudMargin(3).Value
+                    .SetTextLayerProperty ptp_CharInflation, toolpanel_FancyText.sltCharInflation.Value
+                    .SetTextLayerProperty ptp_CharJitterX, toolpanel_FancyText.tudJitter(0).Value
+                    .SetTextLayerProperty ptp_CharJitterY, toolpanel_FancyText.tudJitter(1).Value
+                    .SetTextLayerProperty ptp_CharMirror, toolpanel_FancyText.cboCharMirror.ListIndex
+                    .SetTextLayerProperty ptp_CharOrientation, toolpanel_FancyText.sltCharOrientation.Value
+                    .SetTextLayerProperty ptp_CharRemap, toolpanel_FancyText.cboCharCase.ListIndex
+                    .SetTextLayerProperty ptp_CharSpacing, toolpanel_FancyText.sltCharSpacing.Value
                 End With
                 
                 'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
                 ' This is because this property changes according to the active text tool.
-                pdImages(g_CurrentImage).GetActiveLayer.setTextLayerProperty ptp_RenderingEngine, tre_PHOTODEMON
+                pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_RenderingEngine, tre_PHOTODEMON
         
         End Select
         
