@@ -658,13 +658,13 @@ Private Sub UpdateHoveredColor()
     srcDC = GetWindowDC(GetDesktopWindow())
     
     'Retrieve the color at the given pixel location
-    Dim NewColor As Long
-    NewColor = GetPixel(srcDC, mouseLocation.x, mouseLocation.y)
+    Dim hColor As Long
+    hColor = GetPixel(srcDC, mouseLocation.x, mouseLocation.y)
     
     'Extract RGB components from the Long-type color
-    curRed = ExtractR(NewColor)
-    curGreen = ExtractG(NewColor)
-    curBlue = ExtractB(NewColor)
+    curRed = ExtractR(hColor)
+    curGreen = ExtractG(hColor)
+    curBlue = ExtractB(hColor)
     
     'Calculate new HSV values to match
     RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
@@ -1522,7 +1522,7 @@ End Sub
 'Full validation of hex input happens in its LostFocus event, but we also do a quick-and-dirty sync during change events
 Private Sub txtHex_Change()
     
-    If m_suspendHexInput Then Exit Sub
+    If m_suspendHexInput Or m_suspendTextResync Then Exit Sub
     
     m_suspendHexInput = True
     
