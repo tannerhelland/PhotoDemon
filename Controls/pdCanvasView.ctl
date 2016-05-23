@@ -332,7 +332,7 @@ End Sub
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'If no images have been loaded, reset the cursor
-    If g_OpenImageCount = 0 Then ucSupport.RequestCursor IDC_DEFAULT
+    If (g_OpenImageCount = 0) Then ucSupport.RequestCursor IDC_DEFAULT
     
     RaiseEvent MouseEnter(Button, Shift, x, y)
     
