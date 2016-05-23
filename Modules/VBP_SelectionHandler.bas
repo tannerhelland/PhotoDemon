@@ -135,7 +135,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         Dim cdTitle As String
         cdTitle = g_Language.TranslateMessage("Load a previously saved selection")
                 
-        If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, g_UserPreferences.getSelectionPath, cdTitle, , GetModalOwner().hWnd) Then
+        If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, g_UserPreferences.GetSelectionPath, cdTitle, , GetModalOwner().hWnd) Then
             
             'Use a temporary selection object to validate the requested selection file
             Dim tmpSelection As pdSelection
@@ -145,7 +145,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
             If tmpSelection.readSelectionFromFile(sFile, True) Then
                 
                 'Save the new directory as the default path for future usage
-                g_UserPreferences.setSelectionPath sFile
+                g_UserPreferences.SetSelectionPath sFile
                 
                 'Call this function again, but with displayDialog set to FALSE and the path of the requested selection file
                 Process "Load selection", False, sFile, UNDO_SELECTION
@@ -195,10 +195,10 @@ Public Sub SaveSelectionToFile()
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Save the current selection")
         
-    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, g_UserPreferences.getSelectionPath, cdTitle, "." & SELECTION_EXT, GetModalOwner().hWnd) Then
+    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, g_UserPreferences.GetSelectionPath, cdTitle, "." & SELECTION_EXT, GetModalOwner().hWnd) Then
         
         'Save the new directory as the default path for future usage
-        g_UserPreferences.setSelectionPath sFile
+        g_UserPreferences.SetSelectionPath sFile
         
         'Write out the selection file
         If pdImages(g_CurrentImage).mainSelection.writeSelectionToFile(sFile) Then
@@ -230,14 +230,14 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     'Copy the current selection DIB into a temporary DIB.
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, False, True
+    pdImages(g_CurrentImage).RetrieveProcessedSelection tmpDIB, False, True
     
     'If the selected area has a blank alpha channel, convert it to 24bpp
     If Not DIB_Handler.IsDIBAlphaBinary(tmpDIB, False) Then tmpDIB.ConvertTo24bpp
     
     'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
-    newLayerID = tmpImage.createBlankLayer
+    newLayerID = tmpImage.CreateBlankLayer
     tmpImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, , tmpDIB
     tmpImage.UpdateSize
         
@@ -308,7 +308,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     
     'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
-    newLayerID = tmpImage.createBlankLayer
+    newLayerID = tmpImage.CreateBlankLayer
     tmpImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, , tmpDIB
     tmpImage.UpdateSize
     
@@ -616,10 +616,10 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             gdipRegionHandle = pdImages(g_CurrentImage).mainSelection.getGdipRegionForSelection()
             
             'Check the point for a hit
-            gdipHitCheck = GDI_Plus.isPointInGDIPlusRegion(imgX, imgY, gdipRegionHandle)
+            gdipHitCheck = GDI_Plus.IsPointInGDIPlusRegion(imgX, imgY, gdipRegionHandle)
             
             'Release the GDI+ region
-            GDI_Plus.releaseGDIPlusRegion gdipRegionHandle
+            GDI_Plus.ReleaseGDIPlusRegion gdipRegionHandle
             
             If gdipHitCheck Then findNearestSelectionCoordinates = pdImages(g_CurrentImage).mainSelection.getNumOfPolygonPoints Else findNearestSelectionCoordinates = -1
         
@@ -628,10 +628,10 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             gdipRegionHandle = pdImages(g_CurrentImage).mainSelection.getGdipRegionForSelection()
             
             'Check the point for a hit
-            gdipHitCheck = GDI_Plus.isPointInGDIPlusRegion(imgX, imgY, gdipRegionHandle)
+            gdipHitCheck = GDI_Plus.IsPointInGDIPlusRegion(imgX, imgY, gdipRegionHandle)
             
             'Release the GDI+ region
-            GDI_Plus.releaseGDIPlusRegion gdipRegionHandle
+            GDI_Plus.ReleaseGDIPlusRegion gdipRegionHandle
             
             If gdipHitCheck Then findNearestSelectionCoordinates = 0 Else findNearestSelectionCoordinates = -1
         
@@ -737,7 +737,7 @@ Public Sub featherCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal f
         pdImages(g_CurrentImage).selectionActive = False
         
         'Use PD's built-in Gaussian blur function to apply the blur
-        quickBlurDIB pdImages(g_CurrentImage).mainSelection.selMask, featherRadius, True
+        QuickBlurDIB pdImages(g_CurrentImage).mainSelection.selMask, featherRadius, True
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
@@ -792,7 +792,7 @@ Public Sub sharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
         Dim x As Long, y As Long
         
         'Unsharp masking requires a gaussian blur DIB to operate.  Create one now.
-        quickBlurDIB srcDIB, sharpenRadius, True
+        QuickBlurDIB srcDIB, sharpenRadius, True
         
         'Now that we have a gaussian DIB created in workingDIB, we can point arrays toward it and the source DIB
         PrepSafeArray selMaskSA, pdImages(g_CurrentImage).mainSelection.selMask
@@ -1063,7 +1063,7 @@ End Sub
 'Erase the currently selected area (LAYER ONLY!).  Note that this will not modify the current selection in any way.
 Public Sub eraseSelectedArea(ByVal targetLayerIndex As Long)
 
-    pdImages(g_CurrentImage).eraseProcessedSelection targetLayerIndex
+    pdImages(g_CurrentImage).EraseProcessedSelection targetLayerIndex
     
     'Redraw the active viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -1219,16 +1219,16 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     Select Case getSelectionShapeFromCurrentTool()
     
         Case sRectangle, sCircle, sLine
-            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
+            pdImages(g_CurrentImage).mainSelection.initFromParamString BuildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
         
         Case sPolygon
-            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolpanel_Selections.sltPolygonCurvature.Value, 0, 0, 0)
+            pdImages(g_CurrentImage).mainSelection.initFromParamString BuildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolpanel_Selections.sltPolygonCurvature.Value, 0, 0, 0)
             
         Case sLasso
-            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolpanel_Selections.sltSmoothStroke.Value, 0, 0, 0)
+            pdImages(g_CurrentImage).mainSelection.initFromParamString BuildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolpanel_Selections.sltSmoothStroke.Value, 0, 0, 0)
             
         Case sWand
-            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(0).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(0).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, x, y, toolpanel_Selections.sltWandTolerance.Value, toolpanel_Selections.btsWandMerge.ListIndex, toolpanel_Selections.btsWandArea.ListIndex, toolpanel_Selections.cboWandCompare.ListIndex)
+            pdImages(g_CurrentImage).mainSelection.initFromParamString BuildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(0).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(0).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, x, y, toolpanel_Selections.sltWandTolerance.Value, toolpanel_Selections.btsWandMerge.ListIndex, toolpanel_Selections.btsWandArea.ListIndex, toolpanel_Selections.cboWandCompare.ListIndex)
         
     End Select
     
@@ -1251,7 +1251,7 @@ End Sub
 ' transformable-type selection (squares, etc) to the evaluation list.
 Public Function selectionsAllowed(ByVal transformableMatters As Boolean) As Boolean
 
-    If g_OpenImageCount > 0 Then
+    If (g_OpenImageCount > 0) Then
         If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
             If (Not pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests) Then
                 If transformableMatters Then
