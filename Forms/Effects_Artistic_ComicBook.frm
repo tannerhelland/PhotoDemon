@@ -42,7 +42,6 @@ Begin VB.Form FormComicBook
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -86,8 +85,8 @@ Attribute VB_Exposed = False
 'Comic Book Image Effect
 'Copyright 2013-2016 by Tanner Helland
 'Created: 02/Feb/13 (ish... I didn't write it down, alas)
-'Last updated: 02/October/15
-'Last update: added "strength" parameter, for a really powerful comic book effect
+'Last updated: 23/May/16
+'Last update: optimize function a bit
 '
 'PhotoDemon has provided a "comic book" effect for a long time, but despite going through many incarnations, it always
 ' used low-quality, "quick and dirty" approximations.
@@ -109,11 +108,11 @@ Option Explicit
 ' 2) color smudging, which controls the radius of the median effect applied to the base image
 Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, ByVal colorStrength As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Animating image (stage %1 of %2)...", 1, 3 + colorStrength
+    If (Not toPreview) Then Message "Animating image (stage %1 of %2)...", 1, 3 + colorStrength
     
     'Initiate PhotoDemon's central image handler
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'During a preview, the smudge radius must be reduced to match the preview size
     If toPreview Then colorSmudge = colorSmudge * curDIBValues.previewModifier
@@ -125,26 +124,26 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, ByVa
     ' iterations we must run to obtain a proper colored image.
     Dim numOfSteps As Long, newProgBarMax As Long
     
-    If inkOpacity > 0 Then
+    If (inkOpacity > 0) Then
         numOfSteps = 2 + colorStrength
     Else
         numOfSteps = 1 + colorStrength
     End If
     
-    newProgBarMax = workingDIB.getDIBWidth * numOfSteps + ((colorStrength + 1) * workingDIB.getDIBWidth)
-    If Not toPreview Then SetProgBarMax newProgBarMax
+    newProgBarMax = workingDIB.GetDIBWidth * numOfSteps + ((colorStrength + 1) * workingDIB.GetDIBWidth)
+    If (Not toPreview) Then SetProgBarMax newProgBarMax
     
     'If the user wants the image inked, we're actually going to generate a contour map now, before applying any coloring.
     ' This gives us more interesting lines to work with.
-    If inkOpacity > 0 Then
+    If (inkOpacity > 0) Then
             
-        If Not toPreview Then Message "Animating image (stage %1 of %2)...", 1, numOfSteps
+        If (Not toPreview) Then Message "Animating image (stage %1 of %2)...", 1, numOfSteps
         
         'Create two copies of the working image.  This filter overlays an inked image over a color-smudged version, and we need to
         ' handle these separately until the final step.
         Dim inkDIB As pdDIB
         Set inkDIB = New pdDIB
-        inkDIB.createFromExistingDIB workingDIB
+        inkDIB.CreateFromExistingDIB workingDIB
         Filters_Layers.CreateContourDIB True, workingDIB, inkDIB, toPreview, newProgBarMax, 0
         
         'Apply premultiplication to the DIB prior to compositing
@@ -153,15 +152,15 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, ByVa
     End If
     
     'We now need to obtain the underlying color-smudged version of the source image
-    If colorSmudge > 0 Then
+    If (colorSmudge > 0) Then
         
         'Use PD's excellent bilateral smoothing function to handle color smudging.
         Dim i As Long
         For i = 0 To colorStrength
             
-            If Not toPreview Then
-                If numOfSteps > 1 Then
-                    If inkOpacity > 0 Then
+            If (Not toPreview) Then
+                If (numOfSteps > 1) Then
+                    If (inkOpacity > 0) Then
                         Message "Animating image (stage %1 of %2)...", i + 2, numOfSteps
                     Else
                         Message "Animating image (stage %1 of %2)...", i + 1, numOfSteps
@@ -171,7 +170,7 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, ByVa
                 End If
             End If
             
-            createBilateralDIB workingDIB, colorSmudge, 100, 2, 10, 10, toPreview, newProgBarMax, workingDIB.getDIBWidth * (i * 2 + 1)
+            createBilateralDIB workingDIB, colorSmudge, 100, 2, 10, 10, toPreview, newProgBarMax, workingDIB.GetDIBWidth * (i * 2 + 1)
             
         Next i
         
@@ -181,40 +180,18 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, ByVa
     workingDIB.SetAlphaPremultiplication True
     
     'If the caller doesn't want us to ink the image, we're all done!
-    If inkOpacity > 0 Then
+    If (inkOpacity > 0) Then
         
         'With an ink image and color image now available, we can composite the two into a single "comic book" image
         ' via PD's central compositor.
         Dim cComposite As pdCompositor
         Set cComposite = New pdCompositor
-        
-        'Finally, composite the ink over the color smudge, using the opacity supplied by the user.  To make the composite
-        ' operation easier, we're going to place our DIBs inside temporary layers.  This allows us to use existing layer
-        ' code to handle the merge.
-        Dim tmpLayerTop As pdLayer, tmpLayerBottom As pdLayer
-        Set tmpLayerTop = New pdLayer
-        Set tmpLayerBottom = New pdLayer
-        
-        tmpLayerTop.InitializeNewLayer PDL_IMAGE, , inkDIB
-        Set inkDIB = Nothing
-        
-        tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , workingDIB
-        workingDIB.eraseDIB
-        
-        tmpLayerTop.setLayerBlendMode BL_DIFFERENCE
-        tmpLayerTop.setLayerOpacity inkOpacity
-        
-        cComposite.mergeLayers tmpLayerTop, tmpLayerBottom, True
-        Set tmpLayerTop = Nothing
-        
-        'Refresh the workingDIB instance, then exit!
-        workingDIB.createFromExistingDIB tmpLayerBottom.layerDIB
-        Set tmpLayerBottom = Nothing
+        cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, inkDIB, BL_DIFFERENCE, inkOpacity
         
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic, True
+    FinalizeImageData toPreview, dstPic, True
     
 End Sub
 
@@ -223,7 +200,7 @@ Private Sub btsStrength_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Comic book", , buildParams(sltInk, sltColor, btsStrength.ListIndex), UNDO_LAYER
+    Process "Comic book", , BuildParams(sltInk, sltColor, btsStrength.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -236,26 +213,23 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-        
-    'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully loaded
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Populate the button strip
     btsStrength.AddItem "low", 0
     btsStrength.AddItem "medium", 1
     btsStrength.AddItem "high", 2
     btsStrength.ListIndex = 0
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
     
 End Sub
 
@@ -265,7 +239,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxComicBook sltInk, sltColor, btsStrength.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then fxComicBook sltInk, sltColor, btsStrength.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -280,7 +254,4 @@ End Sub
 Private Sub sltInk_Change()
     UpdatePreview
 End Sub
-
-
-
 
