@@ -27,9 +27,9 @@ Begin VB.Form toolpanel_NDFX
    Begin PhotoDemon.pdButtonToolbox cmdQuickFix 
       Height          =   570
       Index           =   0
-      Left            =   13290
+      Left            =   12240
       TabIndex        =   1
-      Top             =   120
+      Top             =   360
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   1005
@@ -37,14 +37,16 @@ Begin VB.Form toolpanel_NDFX
    End
    Begin PhotoDemon.pdSlider sltQuickFix 
       CausesValidation=   0   'False
-      Height          =   405
+      Height          =   690
       Index           =   0
-      Left            =   1530
+      Left            =   150
       TabIndex        =   2
-      Top             =   165
-      Width           =   2670
-      _ExtentX        =   4710
-      _ExtentY        =   873
+      Top             =   30
+      Width           =   3750
+      _ExtentX        =   6615
+      _ExtentY        =   1217
+      Caption         =   "exposure"
+      FontSizeCaption =   10
       Min             =   -2
       Max             =   2
       SigDigits       =   2
@@ -52,53 +54,61 @@ Begin VB.Form toolpanel_NDFX
    End
    Begin PhotoDemon.pdSlider sltQuickFix 
       CausesValidation=   0   'False
-      Height          =   405
+      Height          =   690
       Index           =   1
-      Left            =   1530
+      Left            =   150
       TabIndex        =   3
-      Top             =   780
-      Width           =   2670
-      _ExtentX        =   4710
-      _ExtentY        =   873
+      Top             =   720
+      Width           =   3750
+      _ExtentX        =   6615
+      _ExtentY        =   1217
+      Caption         =   "contrast"
+      FontSizeCaption =   10
       Min             =   -100
       Max             =   100
    End
    Begin PhotoDemon.pdSlider sltQuickFix 
       CausesValidation=   0   'False
-      Height          =   405
+      Height          =   690
       Index           =   2
-      Left            =   5520
+      Left            =   4110
       TabIndex        =   4
-      Top             =   165
-      Width           =   2670
-      _ExtentX        =   4710
-      _ExtentY        =   873
+      Top             =   30
+      Width           =   3750
+      _ExtentX        =   6615
+      _ExtentY        =   1217
+      Caption         =   "clarity"
+      FontSizeCaption =   10
       Min             =   -100
       Max             =   100
    End
    Begin PhotoDemon.pdSlider sltQuickFix 
       CausesValidation=   0   'False
-      Height          =   405
+      Height          =   690
       Index           =   3
-      Left            =   5520
+      Left            =   4110
       TabIndex        =   5
-      Top             =   780
-      Width           =   2670
-      _ExtentX        =   4710
-      _ExtentY        =   873
+      Top             =   720
+      Width           =   3750
+      _ExtentX        =   6615
+      _ExtentY        =   1217
+      Caption         =   "vibrance"
+      FontSizeCaption =   10
       Min             =   -100
       Max             =   100
    End
    Begin PhotoDemon.pdSlider sltQuickFix 
       CausesValidation=   0   'False
-      Height          =   405
+      Height          =   690
       Index           =   4
-      Left            =   9660
+      Left            =   8070
       TabIndex        =   6
-      Top             =   165
-      Width           =   2670
-      _ExtentX        =   4710
-      _ExtentY        =   873
+      Top             =   30
+      Width           =   3750
+      _ExtentX        =   6615
+      _ExtentY        =   1217
+      Caption         =   "temperature"
+      FontSizeCaption =   10
       Min             =   -100
       Max             =   100
       SliderTrackStyle=   3
@@ -108,14 +118,16 @@ Begin VB.Form toolpanel_NDFX
    End
    Begin PhotoDemon.pdSlider sltQuickFix 
       CausesValidation=   0   'False
-      Height          =   405
+      Height          =   690
       Index           =   5
-      Left            =   9660
+      Left            =   8070
       TabIndex        =   7
-      Top             =   780
-      Width           =   2670
-      _ExtentX        =   4710
-      _ExtentY        =   873
+      Top             =   720
+      Width           =   3750
+      _ExtentX        =   6615
+      _ExtentY        =   1217
+      Caption         =   "tint"
+      FontSizeCaption =   10
       Min             =   -100
       Max             =   100
       SliderTrackStyle=   3
@@ -123,78 +135,12 @@ Begin VB.Form toolpanel_NDFX
       GradientColorRight=   8253041
       GradientColorMiddle=   16777215
    End
-   Begin PhotoDemon.pdLabel lblOptions 
-      Height          =   240
-      Index           =   7
-      Left            =   8190
-      Top             =   270
-      Width           =   1335
-      _ExtentX        =   2355
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "temperature:"
-   End
-   Begin PhotoDemon.pdLabel lblOptions 
-      Height          =   240
-      Index           =   6
-      Left            =   8190
-      Top             =   885
-      Width           =   1335
-      _ExtentX        =   2355
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "tint:"
-   End
-   Begin PhotoDemon.pdLabel lblOptions 
-      Height          =   240
-      Index           =   5
-      Left            =   4050
-      Top             =   885
-      Width           =   1335
-      _ExtentX        =   2355
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "vibrance:"
-   End
-   Begin PhotoDemon.pdLabel lblOptions 
-      Height          =   240
-      Index           =   4
-      Left            =   4050
-      Top             =   270
-      Width           =   1335
-      _ExtentX        =   2355
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "clarity:"
-   End
-   Begin PhotoDemon.pdLabel lblOptions 
-      Height          =   240
-      Index           =   3
-      Left            =   120
-      Top             =   885
-      Width           =   1155
-      _ExtentX        =   2037
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "contrast:"
-   End
-   Begin PhotoDemon.pdLabel lblOptions 
-      Height          =   240
-      Index           =   2
-      Left            =   120
-      Top             =   270
-      Width           =   1155
-      _ExtentX        =   2037
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "exposure:"
-   End
    Begin PhotoDemon.pdButtonToolbox cmdQuickFix 
       Height          =   570
       Index           =   1
-      Left            =   13290
+      Left            =   12960
       TabIndex        =   0
-      Top             =   720
+      Top             =   360
       Width           =   660
       _ExtentX        =   1164
       _ExtentY        =   1005
@@ -202,14 +148,13 @@ Begin VB.Form toolpanel_NDFX
    End
    Begin PhotoDemon.pdLabel lblOptions 
       Height          =   240
-      Index           =   13
-      Left            =   12360
-      Top             =   270
-      Width           =   795
-      _ExtentX        =   1402
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "all:"
+      Index           =   0
+      Left            =   12120
+      Top             =   45
+      Width           =   2715
+      _ExtentX        =   4789
+      _ExtentY        =   423
+      Caption         =   "all effects"
    End
 End
 Attribute VB_Name = "toolpanel_NDFX"
@@ -265,7 +210,7 @@ Private Sub cmdQuickFix_Click(Index As Integer)
             For i = 0 To sltQuickFix.Count - 1
                 
                 sltQuickFix(i).Value = 0
-                pdImages(g_CurrentImage).GetActiveLayer.setLayerNonDestructiveFXState i, 0
+                pdImages(g_CurrentImage).GetActiveLayer.SetLayerNonDestructiveFXState i, 0
                 
             Next i
             
@@ -273,7 +218,7 @@ Private Sub cmdQuickFix_Click(Index As Integer)
         Case 1
             
             'First, make sure at least one or more quick-fixes are active
-            If pdImages(g_CurrentImage).GetActiveLayer.getLayerNonDestructiveFXState Then
+            If pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXState Then
                 
                 'Now we do something odd; we reset all sliders, then forcibly set an image checkpoint.  This prevents PD's internal
                 ' processor from auto-detecting the slider resets and applying *another* entry to the Undo/Redo chain.
@@ -340,10 +285,10 @@ Private Sub sltQuickFix_Change(Index As Integer)
         
         'Check the state of the layer's non-destructive FX tracker before making any changes
         Dim initFXState As Boolean
-        initFXState = pdImages(g_CurrentImage).GetActiveLayer.getLayerNonDestructiveFXState
+        initFXState = pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXState
         
         'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
-        pdImages(g_CurrentImage).GetActiveLayer.setLayerNonDestructiveFXState Index, sltQuickFix(Index).Value
+        pdImages(g_CurrentImage).GetActiveLayer.SetLayerNonDestructiveFXState Index, sltQuickFix(Index).Value
         
         'Redraw the viewport
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -351,7 +296,7 @@ Private Sub sltQuickFix_Change(Index As Integer)
         'If the layer now has non-destructive effects active, enable the quick fix buttons (if they aren't already)
         Dim i As Long
         
-        If pdImages(g_CurrentImage).GetActiveLayer.getLayerNonDestructiveFXState Then
+        If pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXState Then
         
             For i = 0 To cmdQuickFix.Count - 1
                 If Not cmdQuickFix(i).Enabled Then cmdQuickFix(i).Enabled = True
@@ -366,7 +311,7 @@ Private Sub sltQuickFix_Change(Index As Integer)
         End If
         
         'Even though this action is not destructive, we want to allow the user to save after making non-destructive changes.
-        If pdImages(g_CurrentImage).GetSaveState(pdSE_AnySave) And (pdImages(g_CurrentImage).GetActiveLayer.getLayerNonDestructiveFXState <> initFXState) Then
+        If pdImages(g_CurrentImage).GetSaveState(pdSE_AnySave) And (pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXState <> initFXState) Then
             pdImages(g_CurrentImage).SetSaveState False, pdSE_AnySave
             SyncInterfaceToCurrentImage
         End If
