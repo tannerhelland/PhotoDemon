@@ -373,9 +373,6 @@ Private Sub SyncUI_CurrentLayerSettings()
     toolpanel_MoveSize.cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     
     'Similar logic is used for other non-destructive affine transforms
-    toolpanel_MoveSize.cmdLayerAngleReset.Enabled = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetLayerAngle <> 0)
-    toolpanel_MoveSize.cmdLayerShearReset(0).Enabled = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetLayerShearX <> 0)
-    toolpanel_MoveSize.cmdLayerShearReset(1).Enabled = CBool(pdImages(g_CurrentImage).GetActiveLayer.GetLayerShearY <> 0)
     toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     
     'If non-destructive FX are active on the current layer, update the non-destructive tool enablement to match
@@ -503,9 +500,6 @@ Private Sub SetUIMode_NoImages()
     'Disable various layer-related toolbox options as well
     toolpanel_MoveSize.cmdLayerMove(0).Enabled = False
     toolpanel_MoveSize.cmdLayerMove(1).Enabled = False
-    toolpanel_MoveSize.cmdLayerAngleReset.Enabled = False
-    toolpanel_MoveSize.cmdLayerShearReset(0).Enabled = False
-    toolpanel_MoveSize.cmdLayerShearReset(1).Enabled = False
     toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = False
         
     'Multiple edit menu items must also be disabled
@@ -836,19 +830,19 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             End If
             
             'Make sure width/height values are non-zero
-            If maxLayerUIValue_Width = 0 Then maxLayerUIValue_Width = 1
-            If maxLayerUIValue_Height = 0 Then maxLayerUIValue_Height = 1
+            If (maxLayerUIValue_Width = 0) Then maxLayerUIValue_Width = 1
+            If (maxLayerUIValue_Height = 0) Then maxLayerUIValue_Height = 1
             
             'Minimum values are simply the negative of the max values
             minLayerUIValue_Width = -1 * maxLayerUIValue_Width
             minLayerUIValue_Height = -1 * maxLayerUIValue_Height
             
             'Mark the tool engine as busy; this prevents control changes from triggering viewport redraws
-            Tool_Support.setToolBusyState True
+            Tool_Support.SetToolBusyState True
             
             'Enable/disable all UI elements as necessary
             For i = 0 To toolpanel_MoveSize.tudLayerMove.Count - 1
-                If toolpanel_MoveSize.tudLayerMove(i).Enabled <> newState Then toolpanel_MoveSize.tudLayerMove(i).Enabled = newState
+                If (toolpanel_MoveSize.tudLayerMove(i).Enabled <> newState) Then toolpanel_MoveSize.tudLayerMove(i).Enabled = newState
             Next i
             
             'Where relevant, also update control bounds
@@ -857,27 +851,27 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                 For i = 0 To toolpanel_MoveSize.tudLayerMove.Count - 1
                     
                     'Even-numbered indices correspond to width; odd-numbered to height
-                    If i Mod 2 = 0 Then
+                    If (i Mod 2 = 0) Then
                         
-                        If toolpanel_MoveSize.tudLayerMove(i).Min <> minLayerUIValue_Width Then
+                        If (toolpanel_MoveSize.tudLayerMove(i).Min <> minLayerUIValue_Width) Then
                             toolpanel_MoveSize.tudLayerMove(i).Min = minLayerUIValue_Width
                             toolpanel_MoveSize.tudLayerMove(i).Max = maxLayerUIValue_Width
                         End If
                         
                     Else
                     
-                        If toolpanel_MoveSize.tudLayerMove(i).Min <> minLayerUIValue_Height Then
+                        If (toolpanel_MoveSize.tudLayerMove(i).Min <> minLayerUIValue_Height) Then
                             toolpanel_MoveSize.tudLayerMove(i).Min = minLayerUIValue_Height
                             toolpanel_MoveSize.tudLayerMove(i).Max = maxLayerUIValue_Height
                         End If
                     
                     End If
                 Next i
-            
+                
             End If
             
             'Free the tool engine
-            Tool_Support.setToolBusyState False
+            Tool_Support.SetToolBusyState False
         
         'Non-destructive FX are effects that the user can apply to a layer, without permanently modifying the layer
         Case PDUI_NonDestructiveFX

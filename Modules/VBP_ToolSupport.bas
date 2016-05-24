@@ -569,6 +569,8 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                 toolpanel_MoveSize.tudLayerMove(1).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOffsetY
                 toolpanel_MoveSize.tudLayerMove(2).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth
                 toolpanel_MoveSize.tudLayerMove(3).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight
+                toolpanel_MoveSize.tudLayerMove(2).DefaultValue = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)
+                toolpanel_MoveSize.tudLayerMove(3).DefaultValue = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
                 
                 'The layer resize quality combo box also needs to be synched
                 toolpanel_MoveSize.cboLayerResizeQuality.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetLayerResizeQuality
