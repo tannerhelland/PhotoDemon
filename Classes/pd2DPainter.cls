@@ -150,6 +150,15 @@ Public Function DrawLineF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DP
     End If
 End Function
 
+Friend Function DrawLineF_FromPtF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcPoint1 As POINTFLOAT, ByRef srcPoint2 As POINTFLOAT) As Boolean
+    If VerifyDrawBackends(dstSurface, srcPen) Then
+        Select Case dstSurface.GetSurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                DrawLineF_FromPtF = GDI_Plus.GDIPlus_DrawLineF(dstSurface.GetHandle, srcPen.GetHandle, srcPoint1.x, srcPoint1.y, srcPoint2.x, srcPoint2.y)
+        End Select
+    End If
+End Function
+
 Public Function DrawLineI(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Boolean
     If VerifyDrawBackends(dstSurface, srcPen) Then
         Select Case dstSurface.GetSurfaceBackend
