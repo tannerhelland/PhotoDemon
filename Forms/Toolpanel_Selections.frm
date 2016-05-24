@@ -106,6 +106,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   1
          Max             =   10000
          Value           =   1
+         DefaultValue    =   1
       End
       Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
@@ -140,6 +141,7 @@ Begin VB.Form toolpanel_Selections
          Width           =   1320
          _ExtentX        =   2328
          _ExtentY        =   714
+         DefaultValue    =   100
          Min             =   -30000
          Max             =   30000
       End
@@ -152,6 +154,7 @@ Begin VB.Form toolpanel_Selections
          Width           =   1320
          _ExtentX        =   2328
          _ExtentY        =   714
+         DefaultValue    =   100
          Min             =   -30000
          Max             =   30000
       End
@@ -228,6 +231,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   1
          Max             =   10000
          Value           =   1
+         DefaultValue    =   1
       End
       Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
@@ -262,6 +266,7 @@ Begin VB.Form toolpanel_Selections
          Width           =   1320
          _ExtentX        =   2328
          _ExtentY        =   714
+         DefaultValue    =   100
          Min             =   -30000
          Max             =   30000
       End
@@ -274,6 +279,7 @@ Begin VB.Form toolpanel_Selections
          Width           =   1320
          _ExtentX        =   2328
          _ExtentY        =   714
+         DefaultValue    =   100
          Min             =   -30000
          Max             =   30000
       End
@@ -337,6 +343,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   1
          Max             =   10000
          Value           =   1
+         DefaultValue    =   1
       End
       Begin PhotoDemon.pdSpinner tudSel 
          Height          =   345
@@ -400,6 +407,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   1
          Max             =   10000
          Value           =   1
+         DefaultValue    =   1
       End
       Begin PhotoDemon.pdLabel lblSelection 
          Height          =   240
@@ -461,6 +469,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   1
          Max             =   10000
          Value           =   1
+         DefaultValue    =   1
       End
       Begin PhotoDemon.pdSlider sltPolygonCurvature 
          CausesValidation=   0   'False
@@ -516,6 +525,7 @@ Begin VB.Form toolpanel_Selections
          Min             =   1
          Max             =   10000
          Value           =   1
+         DefaultValue    =   1
       End
       Begin PhotoDemon.pdSlider sltSmoothStroke 
          CausesValidation=   0   'False
@@ -884,10 +894,10 @@ End Sub
 
 'When the selection text boxes are updated, change the scrollbars to match
 Private Sub tudSel_Change(Index As Integer)
-    updateSelectionsValuesViaText
+    UpdateSelectionsValuesViaText
 End Sub
 
-Private Sub updateSelectionsValuesViaText()
+Private Sub UpdateSelectionsValuesViaText()
     If selectionsAllowed(True) Then
         If Not pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests Then
             pdImages(g_CurrentImage).mainSelection.updateViaTextBox

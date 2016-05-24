@@ -389,16 +389,14 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
         Else
         
             For i = 0 To toolpanel_Selections.tudSel.Count - 1
-                If toolpanel_Selections.tudSel(i).Value <> 0 Then toolpanel_Selections.tudSel(i).Value = 0
+                If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
             Next i
             
         End If
         
         'Next, sync all non-coordinate information
         If (pdImages(formID).mainSelection.getSelectionShape <> sRaster) And (pdImages(formID).mainSelection.getSelectionShape <> sWand) Then
-            'If toolpanel_Selections.cboSelArea(Selection_Handler.getSelectionSubPanelFromCurrentTool()).ListIndex <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_AREA) Then
             toolpanel_Selections.cboSelArea(Selection_Handler.getSelectionSubPanelFromSelectionShape(pdImages(formID))).ListIndex = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_AREA)
-            'If toolpanel_Selections.sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromCurrentTool()).Value <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_BORDER_WIDTH) Then
             toolpanel_Selections.sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromSelectionShape(pdImages(formID))).Value = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_BORDER_WIDTH)
         End If
         
@@ -437,7 +435,7 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
         SetUIGroupState PDUI_Selections, False
         SetUIGroupState PDUI_SelectionTransforms, False
         For i = 0 To toolpanel_Selections.tudSel.Count - 1
-            If toolpanel_Selections.tudSel(i).Value <> 0 Then toolpanel_Selections.tudSel(i).Value = 0
+            If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
         Next i
         
     End If

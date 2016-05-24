@@ -170,7 +170,7 @@ Begin VB.Form toolpanel_MoveSize
          Left            =   120
          TabIndex        =   15
          Top             =   60
-         Width           =   4095
+         Width           =   4950
          _ExtentX        =   7223
          _ExtentY        =   1349
          Caption         =   "layer angle"
@@ -179,22 +179,12 @@ Begin VB.Form toolpanel_MoveSize
          Max             =   360
          SigDigits       =   2
       End
-      Begin PhotoDemon.pdButtonToolbox cmdLayerAngleReset 
-         Height          =   570
-         Left            =   4440
-         TabIndex        =   17
-         Top             =   270
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   1005
-         AutoToggle      =   -1  'True
-      End
       Begin PhotoDemon.pdSlider sltLayerShearX 
          Height          =   765
          Left            =   5400
-         TabIndex        =   18
+         TabIndex        =   17
          Top             =   60
-         Width           =   4095
+         Width           =   4950
          _ExtentX        =   7223
          _ExtentY        =   1349
          Caption         =   "layer shear (x, y)"
@@ -203,21 +193,10 @@ Begin VB.Form toolpanel_MoveSize
          Max             =   5
          SigDigits       =   2
       End
-      Begin PhotoDemon.pdButtonToolbox cmdLayerShearReset 
-         Height          =   540
-         Index           =   0
-         Left            =   9600
-         TabIndex        =   19
-         Top             =   270
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   953
-         AutoToggle      =   -1  'True
-      End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAffinePermanent 
          Height          =   570
          Left            =   10800
-         TabIndex        =   20
+         TabIndex        =   18
          Top             =   360
          Width           =   660
          _ExtentX        =   1164
@@ -227,9 +206,9 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdSlider sltLayerShearY 
          Height          =   405
          Left            =   5400
-         TabIndex        =   21
+         TabIndex        =   19
          Top             =   840
-         Width           =   4095
+         Width           =   4950
          _ExtentX        =   7223
          _ExtentY        =   714
          Min             =   -5
@@ -245,17 +224,6 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentX        =   5503
          _ExtentY        =   503
          Caption         =   "other options"
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdLayerShearReset 
-         Height          =   540
-         Index           =   1
-         Left            =   9600
-         TabIndex        =   22
-         Top             =   780
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   953
-         AutoToggle      =   -1  'True
       End
    End
    Begin VB.PictureBox picMoveContainer 
@@ -385,16 +353,16 @@ Private Sub cboLayerResizeQuality_Click()
     
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.setToolBusyState True
+    Tool_Support.SetToolBusyState True
     
     'Apply the new quality mode
     pdImages(g_CurrentImage).GetActiveLayer.SetLayerResizeQuality cboLayerResizeQuality.ListIndex
     
     'Free the tool engine
-    Tool_Support.setToolBusyState False
+    Tool_Support.SetToolBusyState False
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -427,11 +395,6 @@ Private Sub cmdLayerAffinePermanent_Click()
     Process "Make layer changes permanent", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
 End Sub
 
-'Reset layer angle to 0.0 degrees.  (This action is non-destructive.)
-Private Sub cmdLayerAngleReset_Click()
-    Process "Reset layer angle", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
-End Sub
-
 Private Sub cmdLayerMove_Click(Index As Integer)
     
     Select Case Index
@@ -443,23 +406,6 @@ Private Sub cmdLayerMove_Click(Index As Integer)
         'Make non-destructive resize permanent
         Case 1
             Process "Make layer changes permanent", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
-    
-    End Select
-    
-End Sub
-
-'Reset x or y shear to 0.  (These actions are non-destructive.)
-Private Sub cmdLayerShearReset_Click(Index As Integer)
-    
-    Select Case Index
-    
-        'Reset x
-        Case 0
-            Process "Reset horizontal layer shear", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
-        
-        'Reset y
-        Case 1
-            Process "Reset vertical layer shear", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
     
     End Select
     
@@ -480,13 +426,6 @@ Private Sub Form_Load()
     cmdLayerMove(0).AssignTooltip "Reset layer to original size"
     cmdLayerMove(1).AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
     
-    cmdLayerAngleReset.AssignImage "CMDBAR_RESET", , 50
-    cmdLayerAngleReset.AssignTooltip "Reset layer angle to zero"
-    
-    cmdLayerShearReset(0).AssignImage "CMDBAR_RESET", , 50
-    cmdLayerShearReset(1).AssignImage "CMDBAR_RESET", , 50
-    cmdLayerShearReset(0).AssignTooltip "Reset horizontal layer shear to zero"
-    cmdLayerShearReset(1).AssignTooltip "Reset vertical layer shear to zero"
     cmdLayerAffinePermanent.AssignImage "TO_APPLY", , 50
     cmdLayerAffinePermanent.AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
     
@@ -520,25 +459,20 @@ Private Sub sltLayerAngle_Change()
     
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.setToolBusyState True
+    Tool_Support.SetToolBusyState True
     
     'Notify the layer of the setting change
     pdImages(g_CurrentImage).GetActiveLayer.SetLayerAngle sltLayerAngle.Value
     
     'Free the tool engine
-    Tool_Support.setToolBusyState False
+    Tool_Support.SetToolBusyState False
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    
-    'Activate the reset button as necessary
-    Dim resetAvailable As Boolean
-    resetAvailable = CBool(sltLayerAngle.Value <> 0)
-    If cmdLayerAngleReset.Enabled <> resetAvailable Then cmdLayerAngleReset.Enabled = resetAvailable
-    
+        
     'Also, activate the "make transforms permanent" button(s) as necessary
     If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
@@ -558,24 +492,19 @@ Private Sub sltLayerShearX_Change()
     
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.setToolBusyState True
+    Tool_Support.SetToolBusyState True
     
     'Notify the layer of the setting change
     pdImages(g_CurrentImage).GetActiveLayer.SetLayerShearX sltLayerShearX.Value
     
     'Free the tool engine
-    Tool_Support.setToolBusyState False
+    Tool_Support.SetToolBusyState False
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    
-    'Activate the reset button as necessary
-    Dim resetAvailable As Boolean
-    resetAvailable = CBool(sltLayerShearX.Value <> 0)
-    If cmdLayerShearReset(0).Enabled <> resetAvailable Then cmdLayerShearReset(0).Enabled = resetAvailable
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
@@ -596,24 +525,19 @@ Private Sub sltLayerShearY_Change()
     
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.setToolBusyState True
+    Tool_Support.SetToolBusyState True
     
     'Notify the layer of the setting change
     pdImages(g_CurrentImage).GetActiveLayer.SetLayerShearY sltLayerShearY.Value
     
     'Free the tool engine
-    Tool_Support.setToolBusyState False
+    Tool_Support.SetToolBusyState False
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    
-    'Activate the reset button as necessary
-    Dim resetAvailable As Boolean
-    resetAvailable = CBool(sltLayerShearY.Value <> 0)
-    If cmdLayerShearReset(1).Enabled <> resetAvailable Then cmdLayerShearReset(1).Enabled = resetAvailable
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
@@ -634,10 +558,10 @@ Private Sub tudLayerMove_Change(Index As Integer)
     
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.setToolBusyState True
+    Tool_Support.SetToolBusyState True
     
     Select Case Index
     
@@ -660,7 +584,7 @@ Private Sub tudLayerMove_Change(Index As Integer)
     End Select
     
     'Free the tool engine
-    Tool_Support.setToolBusyState False
+    Tool_Support.SetToolBusyState False
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -677,7 +601,7 @@ Private Sub tudLayerMove_FinalChange(Index As Integer)
     
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
     
     Select Case Index
         
