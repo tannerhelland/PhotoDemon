@@ -718,7 +718,7 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
         'Next, we are going to draw an arc with arrows on the end, to display where the actual rotation will occur.
         ' (At present, we skip this step if shearing is active, as I haven't figured out how to correctly skew the arc into the
         '  proper on-screen coordinate space.)
-        If (srcLayer.GetLayerShearX = 0) And (srcLayer.GetLayerShearY = 0) Then
+        If (srcLayer.GetLayerShearX = 0#) And (srcLayer.GetLayerShearY = 0#) Then
             
             tmpPath.ResetPath
         
