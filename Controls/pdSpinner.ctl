@@ -93,18 +93,23 @@ Private m_Value As Double, m_Min As Double, m_Max As Double
 'The number of significant digits used by this control.  0 means integer values.
 Private m_SigDigits As Long
 
+'As of 7.0, all spinners now support a "default value" property
+Private m_DefaultValue As Double
+
 'If the text box initiates a value change, we must track that so as to not overwrite the user's entry mid-typing
 Private m_TextBoxInitiated As Boolean
 
-'To simplify mouse_down handling, resize events fill three rects: one for the "up" spin button, one for the "down"
-' spin button, and one for the edit box itself.  Use these for simplified hit-detection.
-Private m_UpRect As RECTF, m_DownRect As RECTF, m_EditBoxRect As RECTF
+'To simplify mouse_down handling, resize events fill four rects: one for the "reset" button, one for the "up" spin
+' button, one for the "down" spin button, and one for the edit box itself.  Use these for simplified hit-detection.
+Private m_ResetRect As RECTF, m_UpRect As RECTF, m_DownRect As RECTF, m_EditBoxRect As RECTF
 
-'Mouse state for the spin button area
+'Mouse state for the various button areas
 Private m_MouseDownUpButton As Boolean, m_MouseDownDownButton As Boolean
-Private m_MouseOverUpButton As Boolean, m_MouseOverDownButton As Boolean
+Private m_MouseOverUpButton As Boolean, m_MouseOverDownButton As Boolean, m_MouseOverResetButton As Boolean
+Private m_MouseDownResetButton As Boolean, m_MouseUpResetButton As Boolean
 
-'To mimic standard scroll bar behavior on the spin buttons, we repeat scroll events when the buttons are clicked and held.
+'To mimic standard scroll bar behavior on the spin buttons, we repeat scroll events when the buttons are clicked
+' and held.
 Private WithEvents m_UpButtonTimer As pdTimer
 Attribute m_UpButtonTimer.VB_VarHelpID = -1
 Private WithEvents m_DownButtonTimer As pdTimer
@@ -143,6 +148,14 @@ Private Const EDITBOX_BORDER_PADDING As Long = 2&
 
 Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
+End Property
+
+Public Property Get DefaultValue() As Double
+    DefaultValue = m_DefaultValue
+End Property
+
+Public Property Let DefaultValue(ByVal newValue As Double)
+    m_DefaultValue = newValue
 End Property
 
 Public Property Get Enabled() As Boolean
@@ -207,8 +220,9 @@ Public Property Let Max(ByVal newValue As Double)
         
     m_Max = newValue
     
-    'If the current control .Value is greater than the new max, change it to match
-    If m_Value > m_Max Then
+    'If current control values are greater than the new max, change them to match
+    If (m_DefaultValue > m_Max) Then m_DefaultValue = m_Max
+    If (m_Value > m_Max) Then
         m_Value = m_Max
         m_EditBox.Text = GetFormattedStringValue(m_Value)
         RaiseEvent Change
@@ -226,8 +240,9 @@ Public Property Let Min(ByVal newValue As Double)
         
     m_Min = newValue
     
-    'If the current control .Value is less than the new minimum, change it to match
-    If m_Value < m_Min Then
+    'If current control values are less than the new minimum, change them to match
+    If (m_DefaultValue < m_Min) Then m_DefaultValue = m_Min
+    If (m_Value < m_Min) Then
         m_Value = m_Min
         m_EditBox.Text = GetFormattedStringValue(m_Value)
         RaiseEvent Change
@@ -299,6 +314,10 @@ Public Property Let Value(ByVal newValue As Double)
                 
 End Property
 
+Public Sub Reset()
+    Me.Value = Me.DefaultValue
+End Sub
+
 'To support high-DPI settings properly, we expose some specialized move+size functions
 Public Function GetLeft() As Long
     GetLeft = ucSupport.GetControlLeft
@@ -332,6 +351,10 @@ Public Sub SetHeight(ByVal newHeight As Long)
     ucSupport.RequestNewSize , newHeight, True
 End Sub
 
+Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    If Math_Functions.IsPointInRectF(x, y, m_ResetRect) Then Me.Reset
+End Sub
+
 Private Sub ucSupport_GotFocusAPI()
     m_FocusCount = m_FocusCount + 1
     EvaluateFocusCount
@@ -347,11 +370,12 @@ End Sub
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'Determine mouse button state for the up and down button areas
-    If (Button = pdLeftButton) And Me.Enabled Then
+    If ((Button = pdLeftButton) And Me.Enabled) Then
     
-        If IsPointInRectF(x, y, m_UpRect) Then
+        If Math_Functions.IsPointInRectF(x, y, m_UpRect) Then
             m_MouseDownUpButton = True
             m_MouseDownDownButton = False
+            m_MouseDownResetButton = False
             
             'Adjust the value immediately
             MoveValueDown
@@ -364,13 +388,15 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
         
             m_MouseDownUpButton = False
         
-            If IsPointInRectF(x, y, m_DownRect) Then
+            If Math_Functions.IsPointInRectF(x, y, m_DownRect) Then
                 m_MouseDownDownButton = True
+                m_MouseDownResetButton = False
                 MoveValueUp
                 m_DownButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
                 m_DownButtonTimer.StartTimer
             Else
                 m_MouseDownDownButton = False
+                m_MouseDownResetButton = Math_Functions.IsPointInRectF(x, y, m_ResetRect)
             End If
             
         End If
@@ -392,6 +418,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     
     m_MouseOverUpButton = False
     m_MouseOverDownButton = False
+    m_MouseOverResetButton = False
     
     'Request a button redraw
     RedrawBackBuffer
@@ -401,20 +428,23 @@ End Sub
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'Determine mouse hover state for the up and down button areas
-    If IsPointInRectF(x, y, m_UpRect) Then
+    If Math_Functions.IsPointInRectF(x, y, m_UpRect) Then
         m_MouseOverUpButton = True
         m_MouseOverDownButton = False
+        m_MouseOverResetButton = False
     Else
         m_MouseOverUpButton = False
-        If IsPointInRectF(x, y, m_DownRect) Then
+        If Math_Functions.IsPointInRectF(x, y, m_DownRect) Then
             m_MouseOverDownButton = True
+            m_MouseOverResetButton = False
         Else
             m_MouseOverDownButton = False
+            m_MouseOverResetButton = Math_Functions.IsPointInRectF(x, y, m_ResetRect)
         End If
     End If
     
     'Set an appropriate cursor
-    If m_MouseOverUpButton Or m_MouseOverDownButton Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
+    If (m_MouseOverUpButton Or m_MouseOverDownButton Or m_MouseOverResetButton) Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
     
     'Request a button redraw
     RedrawBackBuffer
@@ -424,12 +454,14 @@ End Sub
 'Reset spin control button state on a mouse up event
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     
-    If Button = pdLeftButton Then
+    If (Button = pdLeftButton) Then
         
         m_MouseDownUpButton = False
         m_MouseDownDownButton = False
         m_UpButtonTimer.StopTimer
         m_DownButtonTimer.StopTimer
+        
+        m_MouseDownResetButton = False
         
         'When the mouse is release, raise a "FinalChange" event, which lets the caller know that they can perform any
         ' long-running actions now.
@@ -446,7 +478,7 @@ Private Sub m_DownButtonTimer_Timer()
     
     'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
     ' of the delay rate.
-    If m_DownButtonTimer.Interval = Interface.GetKeyboardDelay * 1000 Then
+    If (m_DownButtonTimer.Interval = Interface.GetKeyboardDelay * 1000) Then
         m_DownButtonTimer.Interval = Interface.GetKeyboardRepeatRate * 1000
     End If
     
@@ -459,7 +491,7 @@ Private Sub m_UpButtonTimer_Timer()
 
     'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
     ' of the delay rate.
-    If m_UpButtonTimer.Interval = Interface.GetKeyboardDelay * 1000 Then
+    If (m_UpButtonTimer.Interval = Interface.GetKeyboardDelay * 1000) Then
         m_UpButtonTimer.Interval = Interface.GetKeyboardRepeatRate * 1000
     End If
     
@@ -532,7 +564,7 @@ Private Sub m_EditBox_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
 End Sub
 
 Private Sub m_EditBox_Resize()
-    If Not m_InternalResizeState Then UpdateControlLayout
+    If (Not m_InternalResizeState) Then UpdateControlLayout
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -541,16 +573,16 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
 End Sub
 
 Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
-    If Not (m_EditBox Is Nothing) Then m_EditBox.Visible = newVisibility
+    If (Not (m_EditBox Is Nothing)) Then m_EditBox.Visible = newVisibility
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    If Not m_InternalResizeState Then UpdateControlLayout
+    If (Not m_InternalResizeState) Then UpdateControlLayout
     RaiseEvent Resize
 End Sub
 
 Private Sub UserControl_Hide()
-    If Not (m_EditBox Is Nothing) Then m_EditBox.Visible = False
+    If (Not (m_EditBox Is Nothing)) Then m_EditBox.Visible = False
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -584,6 +616,7 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Private Sub UserControl_InitProperties()
+    DefaultValue = 0
     FontSize = 10
     Value = 0
     Min = 0
@@ -593,6 +626,7 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
+        DefaultValue = .ReadProperty("DefaultValue", 0)
         FontSize = .ReadProperty("FontSize", 10)
         SigDigits = .ReadProperty("SigDigits", 0)
         Max = .ReadProperty("Max", 10)
@@ -602,11 +636,12 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Show()
-    If Not (m_EditBox Is Nothing) And g_IsProgramRunning Then CreateEditBox
+    If ((Not (m_EditBox Is Nothing)) And g_IsProgramRunning) Then CreateEditBox
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
+        .WriteProperty "DefaultValue", Me.DefaultValue, 0
         .WriteProperty "Min", Me.Min, 0
         .WriteProperty "Max", Me.Max, 10
         .WriteProperty "SigDigits", Me.SigDigits, 0
@@ -637,7 +672,7 @@ End Sub
 ' single-line instance; multiline boxes can be whatever vertical size we want).
 Private Sub CreateEditBox()
     
-    If Not (m_EditBox Is Nothing) Then
+    If (Not (m_EditBox Is Nothing)) Then
         
         Dim tmpRect As winRect
         
@@ -676,13 +711,18 @@ Private Sub UpdatePositionRects()
     bWidth = ucSupport.GetControlWidth
     bHeight = ucSupport.GetControlHeight
     
-    'The goal here is to keep the text box and scroll bar nicely aligned, with a 2px border left around everything
-    ' in case we need to display a red "error" state border.
+    'The reset button is fixed-width and right-aligned, so position it first
+    With m_ResetRect
+        .Height = (bHeight - 1) - EDITBOX_BORDER_PADDING
+        .Width = .Height
+        .Left = (bWidth - 1) - .Width
+        .Top = EDITBOX_BORDER_PADDING - 1
+    End With
     
-    'Because the up/down buttons are fixed-width, we position them first.
+    'Because the up/down buttons are also fixed-width, position them next.
     Dim buttonWidth As Long, buttonHeight As Long, buttonTop As Long, buttonLeft As Long
     buttonWidth = FixDPI(18)
-    buttonLeft = (bWidth - 1) - buttonWidth
+    buttonLeft = m_ResetRect.Left - buttonWidth
     buttonTop = EDITBOX_BORDER_PADDING - 1
     buttonHeight = ((bHeight - 1) - (buttonTop * 2)) \ 2
     
@@ -698,10 +738,11 @@ Private Sub UpdatePositionRects()
     With m_EditBoxRect
         .Left = EDITBOX_BORDER_PADDING
         .Top = EDITBOX_BORDER_PADDING
-        .Height = (bHeight - 1) - EDITBOX_BORDER_PADDING * 2 '+ 1
+        .Height = (bHeight - 1) - EDITBOX_BORDER_PADDING * 2
         .Width = (buttonLeft - .Left) - 1
     End With
     
+    'Mirror the up button rect positions to the down button reect positions
     With m_DownRect
         .Left = buttonLeft
         .Width = buttonWidth
@@ -771,6 +812,7 @@ Private Sub RedrawBackBuffer()
         Dim upButtonBorderColor As Long, downButtonBorderColor As Long
         Dim upButtonFillColor As Long, downButtonFillColor As Long
         Dim upButtonArrowColor As Long, downButtonArrowColor As Long
+        Dim resetButtonBorderColor As Long, resetButtonFillColor As Long, resetButtonArrowColor As Long
         
         If m_ErrorState Then
             editBoxBorderColor = m_Colors.RetrieveColor(PDS_ErrorBorder, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
@@ -784,6 +826,9 @@ Private Sub RedrawBackBuffer()
         downButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
         downButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
         downButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
+        resetButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, Me.Enabled, m_MouseDownResetButton, m_MouseOverResetButton)
+        resetButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, Me.Enabled, m_MouseDownResetButton, m_MouseOverResetButton)
+        resetButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, Me.Enabled, m_MouseDownResetButton, m_MouseOverResetButton)
         
         Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, False
@@ -793,6 +838,8 @@ Private Sub RedrawBackBuffer()
         m_Painter.FillRectangleF_FromRectF cSurface, cBrush, m_DownRect
         cBrush.SetBrushColor upButtonFillColor
         m_Painter.FillRectangleF_FromRectF cSurface, cBrush, m_UpRect
+        cBrush.SetBrushColor resetButtonFillColor
+        m_Painter.FillRectangleF_FromRectF cSurface, cBrush, m_ResetRect
         
         'Calculate positioning and color of the edit box border.  (Note that the edit box doesn't paint its own border;
         ' we render a pseudo-border onto the underlying UC around its position, instead.)
@@ -800,7 +847,7 @@ Private Sub RedrawBackBuffer()
         halfPadding = 1
         
         Dim borderWidth As Single
-        If Not (m_EditBox Is Nothing) Then
+        If (Not (m_EditBox Is Nothing)) Then
             If m_EditBox.HasFocus Or m_MouseOverEditBox Then borderWidth = 3 Else borderWidth = 1
         Else
             borderWidth = 1
@@ -814,20 +861,25 @@ Private Sub RedrawBackBuffer()
             .Height = m_EditBoxRect.Height + halfPadding * 2 - 1
         End With
         
-        'If the spin buttons are active, we can paint the rectangle immediately.  (If they are NOT active, and we attempt
-        ' to draw a chunky border, their border will accidentally overlap ours, so we must paint later.)
-        If m_MouseOverUpButton Or m_MouseOverDownButton Then
+        'If the spin buttons are active, we can paint the edit box rectangle immediately.  (If they are NOT active,
+        ' and we attempt to draw a chunky border, their border will accidentally overlap ours, so we must paint later.)
+        If (m_MouseOverUpButton Or m_MouseOverDownButton) Then
             Drawing2D.QuickCreateSolidPen cPen, borderWidth, editBoxBorderColor, , P2_LJ_Miter
             m_Painter.DrawRectangleF_FromRectF cSurface, cPen, editBoxRenderRect
         End If
         
         'Paint button backgrounds and borders.  Note that the active button (if any) is drawn LAST, so that its chunky
         ' hover border appears over the top of any neighboring UI elements.
-        Dim upButtonBorderWidth As Single, downButtonBorderWidth As Single
-        If m_MouseOverUpButton Then upButtonBorderWidth = 2 Else upButtonBorderWidth = 1
-        If m_MouseOverDownButton Then downButtonBorderWidth = 2 Else downButtonBorderWidth = 1
+        Dim upButtonBorderWidth As Single, downButtonBorderWidth As Single, resetButtonBorderWidth As Single
+        If m_MouseOverUpButton Then upButtonBorderWidth = 2# Else upButtonBorderWidth = 1#
+        If m_MouseOverDownButton Then downButtonBorderWidth = 2# Else downButtonBorderWidth = 1#
+        If m_MouseOverResetButton Then resetButtonBorderWidth = 2# Else resetButtonBorderWidth = 1#
         
         If m_MouseOverUpButton Then
+            If (resetButtonBorderColor <> backgroundColor) Then
+                Drawing2D.QuickCreateSolidPen cPen, resetButtonBorderWidth, resetButtonBorderColor, , P2_LJ_Miter
+                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_ResetRect
+            End If
             If (downButtonBorderColor <> backgroundColor) Then
                 Drawing2D.QuickCreateSolidPen cPen, downButtonBorderWidth, downButtonBorderColor, , P2_LJ_Miter
                 m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_DownRect
@@ -837,18 +889,37 @@ Private Sub RedrawBackBuffer()
                 m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
             End If
         Else
-            If (upButtonBorderColor <> backgroundColor) Then
-                Drawing2D.QuickCreateSolidPen cPen, upButtonBorderWidth, upButtonBorderColor, , P2_LJ_Miter
-                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
-            End If
-            If (downButtonBorderColor <> backgroundColor) Then
-                Drawing2D.QuickCreateSolidPen cPen, downButtonBorderWidth, downButtonBorderColor, , P2_LJ_Miter
-                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_DownRect
+            If m_MouseOverDownButton Then
+                If (resetButtonBorderColor <> backgroundColor) Then
+                    Drawing2D.QuickCreateSolidPen cPen, resetButtonBorderWidth, resetButtonBorderColor, , P2_LJ_Miter
+                    m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_ResetRect
+                End If
+                If (upButtonBorderColor <> backgroundColor) Then
+                    Drawing2D.QuickCreateSolidPen cPen, upButtonBorderWidth, upButtonBorderColor, , P2_LJ_Miter
+                    m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
+                End If
+                If (downButtonBorderColor <> backgroundColor) Then
+                    Drawing2D.QuickCreateSolidPen cPen, downButtonBorderWidth, downButtonBorderColor, , P2_LJ_Miter
+                    m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_DownRect
+                End If
+            Else
+                If (upButtonBorderColor <> backgroundColor) Then
+                    Drawing2D.QuickCreateSolidPen cPen, upButtonBorderWidth, upButtonBorderColor, , P2_LJ_Miter
+                    m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
+                End If
+                If (downButtonBorderColor <> backgroundColor) Then
+                    Drawing2D.QuickCreateSolidPen cPen, downButtonBorderWidth, downButtonBorderColor, , P2_LJ_Miter
+                    m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_DownRect
+                End If
+                If (resetButtonBorderColor <> backgroundColor) Then
+                    Drawing2D.QuickCreateSolidPen cPen, resetButtonBorderWidth, resetButtonBorderColor, , P2_LJ_Miter
+                    m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_ResetRect
+                End If
             End If
         End If
         
-        'If neither spin button is active, paint the edit box border last
-        If Not (m_MouseOverUpButton Or m_MouseOverDownButton) Then
+        'If neither spin button is active, paint the edit box last
+        If (Not (m_MouseOverUpButton Or m_MouseOverDownButton)) Then
             Drawing2D.QuickCreateSolidPen cPen, borderWidth, editBoxBorderColor, , P2_LJ_Miter
             m_Painter.DrawRectangleF_FromRectF cSurface, cPen, editBoxRenderRect
         End If
@@ -885,6 +956,22 @@ Private Sub RedrawBackBuffer()
         cPen.SetPenColor downButtonArrowColor
         m_Painter.DrawLineF_FromPtF cSurface, cPen, buttonPt1, buttonPt2
         m_Painter.DrawLineF_FromPtF cSurface, cPen, buttonPt2, buttonPt3
+        
+        'Finally, calculate coordinate positions for the reset button arcs.  (These are drawn dynamically.)
+        Dim resetCenterX As Single, resetCenterY As Single, resetArcRadius As Single, resetAngleStart As Single
+        With m_ResetRect
+            resetCenterX = .Left + (.Width / 2)
+            resetCenterY = .Top + (.Height / 2)
+            resetArcRadius = (.Width / 2) - 3.5
+        End With
+        resetAngleStart = 20#
+        
+        cSurface.SetSurfacePixelOffset P2_PO_Half
+        Drawing2D.QuickCreateSolidPen cPen, 1#, resetButtonArrowColor, , P2_LJ_Round, P2_LC_Round
+        cPen.SetPenStartCap P2_LC_Round
+        cPen.SetPenEndCap P2_LC_ArrowAnchor
+        m_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, resetAngleStart, (180 - resetAngleStart)
+        m_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, (180 + resetAngleStart), (180 - resetAngleStart)
         
         Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
     
@@ -938,11 +1025,11 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
     If InStr(1, chkString, "..") Then
         chkString = Replace(chkString, "..", ".")
         m_EditBox.Text = chkString
-        If cursorPos >= Len(chkString) Then cursorPos = Len(chkString)
+        If (cursorPos >= Len(chkString)) Then cursorPos = Len(chkString)
         m_EditBox.SelStart = cursorPos
     End If
         
-    If Not IsNumeric(chkString) Then
+    If (Not IsNumeric(chkString)) Then
         If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", m_EditBox.Text
         IsTextEntryValid = False
     Else
@@ -964,7 +1051,7 @@ End Function
 'After a component of this control obtains or loses focus, you need to call this function.  This function will figure
 ' out if it's time to raise a matching Got/LostFocusAPI event for the control as a whole.
 Private Sub EvaluateFocusCount()
-    If m_FocusCount <> 0 Then
+    If (m_FocusCount <> 0) Then
         If Not m_HasFocus Then
             m_HasFocus = True
             RaiseEvent GotFocusAPI
@@ -1000,7 +1087,7 @@ End Sub
 'When this control has special knowledge of a state change that affects the edit box's visual appearance, call this function.
 ' It will relay the relevant themed colors to the edit box class.
 Private Sub RelayUpdatedColorsToEditBox()
-    If Not (m_EditBox Is Nothing) Then
+    If (Not (m_EditBox Is Nothing)) Then
         m_EditBox.BackColor = m_Colors.RetrieveColor(PDS_Background, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
         m_EditBox.textColor = m_Colors.RetrieveColor(PDS_Text, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
     End If

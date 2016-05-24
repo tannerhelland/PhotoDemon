@@ -225,6 +225,12 @@ Public Sub SetPenProperty(ByVal propID As PD_2D_PEN_SETTINGS, ByVal newSetting A
         Case P2_PenAlignment
             m_PenAlignment = CLng(newSetting)
             
+        Case P2_PenStartCap
+            m_PenStartCap = CLng(newSetting)
+        
+        Case P2_PenEndCap
+            m_PenEndCap = CLng(newSetting)
+            
     End Select
     
     RelayPropertyChangeToBackend propID
@@ -268,6 +274,12 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_PEN_SETTINGS)
                         
                     Case P2_PenAlignment
                         GDI_Plus.SetGDIPlusPenProperty m_PenHandle, propID, m_PenAlignment
+                        
+                    Case P2_PenStartCap
+                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenStartCap, m_PenStartCap
+                    
+                    Case P2_PenEndCap
+                        GDI_Plus.SetGDIPlusPenProperty m_PenHandle, P2_PenEndCap, m_PenEndCap
                         
                 End Select
                 

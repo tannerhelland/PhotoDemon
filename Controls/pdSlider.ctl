@@ -23,20 +23,20 @@ Begin VB.UserControl pdSlider
    ToolboxBitmap   =   "pdSlider.ctx":0000
    Begin PhotoDemon.pdSliderStandalone pdssPrimary 
       Height          =   360
-      Left            =   60
+      Left            =   0
       TabIndex        =   1
       Top             =   60
-      Width           =   4695
+      Width           =   4335
       _ExtentX        =   8281
       _ExtentY        =   635
    End
    Begin PhotoDemon.pdSpinner tudPrimary 
       Height          =   345
-      Left            =   4800
+      Left            =   4440
       TabIndex        =   0
       Top             =   45
-      Width           =   1080
-      _ExtentX        =   1905
+      Width           =   1260
+      _ExtentX        =   2223
       _ExtentY        =   609
    End
 End
@@ -123,6 +123,14 @@ End Property
 Public Property Let Caption(ByRef newCaption As String)
     ucSupport.SetCaptionText newCaption
     PropertyChanged "Caption"
+End Property
+
+Public Property Get DefaultValue() As Double
+    DefaultValue = tudPrimary.DefaultValue
+End Property
+
+Public Property Let DefaultValue(ByVal newValue As Double)
+    tudPrimary.DefaultValue = newValue
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -285,6 +293,10 @@ Public Property Let Value(ByVal newValue As Double)
     
 End Property
 
+Public Sub Reset()
+    tudPrimary.Reset
+End Sub
+
 'To support high-DPI settings properly, we expose specialized move+size functions
 Public Function GetLeft() As Long
     GetLeft = ucSupport.GetControlLeft
@@ -401,6 +413,7 @@ Private Sub UserControl_InitProperties()
     GradientMiddleValue = 0
     NotchPosition = AutomaticPosition
     NotchValueCustom = 0
+    DefaultValue = NotchValueCustom
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -420,6 +433,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         GradientMiddleValue = .ReadProperty("GradientMiddleValue", 0)
         NotchPosition = .ReadProperty("NotchPosition", 0)
         NotchValueCustom = .ReadProperty("NotchValueCustom", 0)
+        DefaultValue = .ReadProperty("DefaultValue", NotchValueCustom)
     End With
     
 End Sub
@@ -454,6 +468,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "GradientMiddleValue", Me.GradientMiddleValue, 0
         .WriteProperty "NotchPosition", Me.NotchPosition, 0
         .WriteProperty "NotchValueCustom", Me.NotchValueCustom, 0
+        .WriteProperty "DefaultValue", Me.DefaultValue, Me.NotchValueCustom
     End With
     
 End Sub
@@ -503,7 +518,7 @@ Private Sub UpdateControlLayout()
         
         'Center the slider box inside the newly calculated height
         newTop_Slider = (newControlHeight - pdssPrimary.GetHeight) \ 2
-                
+        
     End If
     
     'Apply the new height to this UC instance
@@ -513,7 +528,7 @@ Private Sub UpdateControlLayout()
     newLeft_TUD = ucSupport.GetControlWidth - (tudPrimary.GetWidth + FixDPI(2))
     
     'Because the slider width is contingent on the spinner position, calculate it next, then move it into place
-    newWidth_Slider = newLeft_TUD - FixDPI(10)
+    newWidth_Slider = newLeft_TUD - FixDPI(6)
     If (newTop_Slider <> pdssPrimary.GetTop) Then pdssPrimary.SetTop newTop_Slider
     If (newWidth_Slider > 0) And (newWidth_Slider <> pdssPrimary.GetWidth) Then pdssPrimary.SetWidth newWidth_Slider
     
