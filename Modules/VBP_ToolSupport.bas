@@ -36,6 +36,7 @@ Private m_InitLayerCoords_Transformed(0 To 3) As POINTFLOAT
 Private m_InitLayerCoords_Pure(0 To 3) As POINTFLOAT
 Private m_LayerAspectRatio As Double
 Private m_InitImageX As Double, m_InitImageY As Double, m_InitLayerX As Single, m_InitLayerY As Single
+Private m_InitLayerRotateCenterX As Single, m_InitLayerRotateCenterY As Single
 
 'If a point of interest is being modified by a tool action, its ID will be stored here.  Make sure to clear this value
 ' (to -1, which means "no point of interest") when you are finished with it (typically after MouseUp).
@@ -53,25 +54,25 @@ Private m_ToolIsBusy As Boolean
 'IMPORTANT: after retrieval, this value is forcibly reset to zero.  Do not check it more than once without internally caching it.
 Private m_CustomToolMarker As Long
 
-Public Function getToolBusyState() As Boolean
-    getToolBusyState = m_ToolIsBusy
+Public Function GetToolBusyState() As Boolean
+    GetToolBusyState = m_ToolIsBusy
 End Function
 
-Public Sub setToolBusyState(ByVal newState As Boolean)
+Public Sub SetToolBusyState(ByVal newState As Boolean)
     m_ToolIsBusy = newState
 End Sub
 
-Public Function getCustomToolState() As Long
-    getCustomToolState = m_CustomToolMarker
+Public Function GetCustomToolState() As Long
+    GetCustomToolState = m_CustomToolMarker
     m_CustomToolMarker = 0
 End Function
 
-Public Sub setCustomToolState(ByVal newState As Long)
+Public Sub SetCustomToolState(ByVal newState As Long)
     m_CustomToolMarker = newState
 End Sub
 
 'When a tool is finished processing, it can call this function to release all tool tracking variables
-Public Sub terminateGenericToolTracking()
+Public Sub TerminateGenericToolTracking()
     
     'Reset the current POI, if any
     m_curPOI = -1
@@ -79,7 +80,7 @@ Public Sub terminateGenericToolTracking()
 End Sub
 
 'The move tool uses this function to set various initial parameters for layer interactions.
-Public Sub setInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal mouseX_ImageSpace As Double, ByVal mouseY_ImageSpace As Double, Optional ByVal relevantPOI As Long = -1)
+Public Sub SetInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal mouseX_ImageSpace As Double, ByVal mouseY_ImageSpace As Double, Optional ByVal relevantPOI As Long = -1)
     
     'Cache the initial mouse values.  Note that, per the parameter names, these must have already been converted to the image's
     ' coordinate space (NOT the canvas's!)
@@ -92,7 +93,11 @@ Public Sub setInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer A
     'Make a copy of the current layer coordinates, with any affine transforms applied (rotation, etc)
     srcLayer.GetLayerCornerCoordinates m_InitLayerCoords_Transformed
     
-    'Finally, make a copy of the current layer coordinates, *without* affine transforms applied.  This is basically the rect of
+    'Make a copy of the layer's rotational center point
+    m_InitLayerRotateCenterX = srcLayer.GetLayerRotateCenterX
+    m_InitLayerRotateCenterY = srcLayer.GetLayerRotateCenterY
+    
+    'Make a copy of the current layer coordinates, *without* affine transforms applied.  This is basically the rect of
     ' the layer as it would appear if no affine modifiers were active (e.g. without rotation, etc)
     Dim i As Long
     For i = 0 To 3
@@ -100,7 +105,7 @@ Public Sub setInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer A
     Next i
     
     'Cache the layer's aspect ratio.  Note that this *does include any current non-destructive transforms*!
-    If srcLayer.GetLayerHeight(False) <> 0 Then
+    If (srcLayer.GetLayerHeight(False) <> 0) Then
         m_LayerAspectRatio = srcLayer.GetLayerWidth(False) / srcLayer.GetLayerHeight(False)
     Else
         m_LayerAspectRatio = 1
@@ -112,7 +117,7 @@ Public Sub setInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer A
 End Sub
 
 'The drag-to-pan tool uses this function to set the initial scroll bar values for a pan operation
-Public Sub setInitialCanvasScrollValues(ByRef srcCanvas As pdCanvas)
+Public Sub SetInitialCanvasScrollValues(ByRef srcCanvas As pdCanvas)
 
     m_InitHScroll = srcCanvas.GetScrollValue(PD_HORIZONTAL)
     m_InitVScroll = srcCanvas.GetScrollValue(PD_VERTICAL)
@@ -120,7 +125,7 @@ Public Sub setInitialCanvasScrollValues(ByRef srcCanvas As pdCanvas)
 End Sub
 
 'The drag-to-pan tool uses this function to actually scroll the viewport area
-Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX As Long, ByVal curY As Long, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas)
+Public Sub PanImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX As Long, ByVal curY As Long, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas)
 
     'Prevent the canvas from redrawing itself until our pan operation is complete.  (This prevents juddery movement.)
     srcCanvas.SetRedrawSuspension True
@@ -167,14 +172,14 @@ End Sub
 '
 'If this action occurs during a Mouse_Up event, the finalizeTransform parameter should be set to TRUE. This instructs the function
 ' to forward the transformation request to PD's central processor, so it can generate Undo/Redo data, be recorded as part of macros, etc.
-Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As Double, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef srcCanvas As pdCanvas, Optional ByVal isShiftDown As Boolean = False, Optional ByVal finalizeTransform As Boolean = False)
+Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As Double, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef srcCanvas As pdCanvas, Optional ByVal isShiftDown As Boolean = False, Optional ByVal finalizeTransform As Boolean = False)
     
     'Prevent the canvas from redrawing itself until our movement calculations are complete.
     ' (This prevents juddery movement.)
     srcCanvas.SetRedrawSuspension True
     
     'Also, mark the tool engine as busy to prevent re-entrance issues
-    Tool_Support.setToolBusyState True
+    Tool_Support.SetToolBusyState True
     
     'Convert the current x/y pair to the layer coordinate space.  This takes into account any active affine transforms
     ' on the image (e.g. rotation), which may place the point in a totally different position relative to the underlying layer.
@@ -212,7 +217,7 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
             
             '-1: the mouse is not over the layer.  Do nothing.
             Case -1
-                Tool_Support.setToolBusyState False
+                Tool_Support.SetToolBusyState False
                 srcCanvas.SetRedrawSuspension False
                 Exit Sub
                 
@@ -242,7 +247,7 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 
                 poiCleanupRequired = True
                 
-            '3: bottom-left
+            '2: bottom-left
             Case 2
                 
                 'Calculate a new boundary rect
@@ -253,7 +258,7 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 
                 poiCleanupRequired = True
                 
-            '2: bottom-right
+            '3: bottom-right
             Case 3
                 
                 'Calculate a new boundary rect
@@ -263,7 +268,38 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 newTop = m_InitLayerCoords_Pure(0).y - vOffsetLayer
                 
                 poiCleanupRequired = True
-            
+                
+                'If you want to resize the layer in one dimension only (instead of equally resizing it around its center),
+                ' you can do so with the following block of code.  Why I have not enabled this code everywhere?  The problem
+                ' still left to solve is what to do with the layer's center rotation coordinates after the mouse is released.
+                
+                'Ideally, we would re-center the rotation center to [0.5, 0.5], but I haven't sat down and figured out the
+                ' geometry necessary to redefine the layer that way.  (At a glance, both the layer offsets would also need
+                ' to be modified, too; this gets messy rather quickly.)
+                
+                'Anyway, my idea of maintaining the layer's current center point is a good one.  It solves the problem of
+                ' the layer corners being "jittery" during the drag, but for it to work persistently, the center point would
+                ' need to be reset after the mouse is released (so that subsequent rotate/resize events are intuitive).
+                'Dim origWidth As Single, origHeight As Single
+                'origWidth = m_InitLayerCoords_Pure(1).x - m_InitLayerCoords_Pure(0).x
+                'origHeight = m_InitLayerCoords_Pure(2).y - m_InitLayerCoords_Pure(0).y
+                '
+                'Dim origRotateX As Single, origRotateY As Single
+                'origRotateX = (m_InitLayerRotateCenterX * origWidth)
+                'origRotateY = (m_InitLayerRotateCenterY * origHeight)
+                '
+                'newRight = curLayerX
+                'newBottom = curLayerY
+                'newLeft = m_InitLayerCoords_Pure(0).x
+                'newTop = m_InitLayerCoords_Pure(0).y
+                '
+                'Dim adjustedWidth As Single, adjustedHeight As Single
+                'adjustedWidth = (newRight - m_InitLayerCoords_Pure(0).x)
+                'adjustedHeight = (newBottom - m_InitLayerCoords_Pure(0).y)
+                '
+                'srcLayer.SetLayerRotateCenterX origRotateX / adjustedWidth
+                'srcLayer.SetLayerRotateCenterY origRotateY / adjustedHeight
+                
             '4-7: rotation nodes
             Case 4 To 7
             
@@ -322,13 +358,13 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 ' match the difference between the relevant coordinate of the intersecting lines.  (The relevant coordinate varies
                 ' based on the orientation of the default, non-rotated line defined by ptIntersect and pt1.)
                 If (m_curPOI = 4) Then
-                    If pt2.y < pt1.y Then newAngle = -newAngle
+                    If (pt2.y < pt1.y) Then newAngle = -newAngle
                 ElseIf (m_curPOI = 5) Then
-                    If pt2.x > pt1.x Then newAngle = -newAngle
+                    If (pt2.x > pt1.x) Then newAngle = -newAngle
                 ElseIf (m_curPOI = 6) Then
-                    If pt2.y > pt1.y Then newAngle = -newAngle
+                    If (pt2.y > pt1.y) Then newAngle = -newAngle
                 Else
-                    If pt2.x < pt1.x Then newAngle = -newAngle
+                    If (pt2.x < pt1.x) Then newAngle = -newAngle
                 End If
                 
                 'Apply the angle to the layer, and our work here is done!
@@ -368,7 +404,7 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     Tool_Support.SyncToolOptionsUIToCurrentLayer
     
     'Free the tool engine
-    Tool_Support.setToolBusyState False
+    Tool_Support.SetToolBusyState False
     
     'Reinstate canvas redraws
     srcCanvas.SetRedrawSuspension False
@@ -416,7 +452,7 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
 End Sub
 
 'Assuming the user has made one or more edits via the Quick-Fix function, permanently apply those changes to the image now.
-Public Sub makeQuickFixesPermanent()
+Public Sub MakeQuickFixesPermanent()
 
     'Prepare a PD Compositor object, which will handle the actual compositing step
     Dim tmpCompositor As pdCompositor
@@ -435,7 +471,7 @@ End Sub
 
 'Are on-canvas tools currently allowed?  This master function will evaluate all relevant program states for allowing on-canvas
 ' tool operations (e.g. "no open images", "main form locked").
-Public Function canvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean = True) As Boolean
+Public Function CanvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean = True) As Boolean
 
     'Start with a few failsafe checks
     
@@ -449,21 +485,21 @@ Public Function canvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean 
             ' if they don't need it.
             If alsoCheckBusyState Then
                 
-                If (Not Processor.IsProgramBusy) And (Not getToolBusyState) Then
-                    canvasToolsAllowed = True
+                If (Not Processor.IsProgramBusy) And (Not GetToolBusyState) Then
+                    CanvasToolsAllowed = True
                 Else
-                    canvasToolsAllowed = False
+                    CanvasToolsAllowed = False
                 End If
             
             Else
-                canvasToolsAllowed = True
+                CanvasToolsAllowed = True
             End If
             
         Else
-            canvasToolsAllowed = False
+            CanvasToolsAllowed = False
         End If
     Else
-        canvasToolsAllowed = False
+        CanvasToolsAllowed = False
     End If
     
 End Function
@@ -473,7 +509,7 @@ End Function
 Public Sub SyncToolOptionsUIToCurrentLayer()
     
     'Before doing anything else, make sure canvas tool operations are allowed
-    If Not canvasToolsAllowed(False) Then
+    If Not CanvasToolsAllowed(False) Then
         
         'Some panels may redraw their contents if no images are loaded
         If g_CurrentTool = VECTOR_TEXT Then
@@ -520,7 +556,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
     If layerToolActive Then
         
         'Mark the tool engine as busy; this prevents each change from triggering viewport redraws
-        Tool_Support.setToolBusyState True
+        Tool_Support.SetToolBusyState True
         
         'Start iterating various layer properties, and reflecting them across their corresponding UI elements.
         ' (Obviously, this step is separated by tool type.)
@@ -604,7 +640,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
         End Select
         
         'Free the tool engine
-        Tool_Support.setToolBusyState False
+        Tool_Support.SetToolBusyState False
     
     End If
     
@@ -612,14 +648,14 @@ End Sub
 
 'this function is the reverse of syncToolOptionsUIToCurrentLayer(), above.  If you want to copy all current UI settings into
 ' the currently active layer, call this function.
-Public Sub syncCurrentLayerToToolOptionsUI()
+Public Sub SyncCurrentLayerToToolOptionsUI()
     
     'Before doing anything else, make sure canvas tool operations are allowed
-    If Not canvasToolsAllowed(False) Then Exit Sub
+    If (Not CanvasToolsAllowed(False)) Then Exit Sub
     
     'To improve performance, we'll only sync the UI if a layer-specific tool is active, and the tool options panel is currently
     ' set to VISIBLE.
-    If Not toolbar_Options.Visible Then Exit Sub
+    If (Not toolbar_Options.Visible) Then Exit Sub
     
     Dim layerToolActive As Boolean
     
@@ -639,7 +675,7 @@ Public Sub syncCurrentLayerToToolOptionsUI()
     If layerToolActive Then
         
         'Mark the tool engine as busy; this prevents each change from triggering viewport redraws
-        Tool_Support.setToolBusyState True
+        Tool_Support.SetToolBusyState True
         
         'Start iterating various layer properties, and reflecting them across their corresponding UI elements.
         ' (Obviously, this step is separated by tool type.)
@@ -728,7 +764,7 @@ Public Sub syncCurrentLayerToToolOptionsUI()
         End Select
         
         'Free the tool engine
-        Tool_Support.setToolBusyState False
+        Tool_Support.SetToolBusyState False
     
     End If
     
