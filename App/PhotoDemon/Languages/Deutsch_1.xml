@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.174</langversion>
+<langversion>6.7.175</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -13042,6 +13042,21 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 <!-- BEGIN text for Toolpanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
+<original>transform quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>layer angle</original>
 <translation></translation>
 </phrase>
@@ -13083,21 +13098,6 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 
 <phrase>
 <original>show rotate nodes</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer position (x, y)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>transform quality</original>
 <translation></translation>
 </phrase>
 
@@ -13173,7 +13173,7 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 <!-- BEGIN text for Toolpanel_QuickFix.frm (toolpanel_NDFX) -->
 
 <phrase>
-<original>all</original>
+<original>all effects</original>
 <translation></translation>
 </phrase>
 
@@ -15192,6 +15192,6 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- As of this build, PhotoDemon contains 4522 phrases. -->
 <!-- 1924 are duplicates, so only 2598 unique phrases have been written to file. -->
-<!-- These 2598 phrases contain approximately 13369 total words. -->
+<!-- These 2598 phrases contain approximately 13370 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.174</langversion>
+<langversion>6.7.175</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -13042,6 +13042,21 @@ Per attivare il supporto per questa funzionalità, per favore copia il file Free
 <!-- BEGIN text for Toolpanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
+<original>transform quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>layer angle</original>
 <translation></translation>
 </phrase>
@@ -13083,21 +13098,6 @@ Per attivare il supporto per questa funzionalità, per favore copia il file Free
 
 <phrase>
 <original>show rotate nodes</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer position (x, y)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>transform quality</original>
 <translation></translation>
 </phrase>
 
@@ -13173,7 +13173,7 @@ Per attivare il supporto per questa funzionalità, per favore copia il file Free
 <!-- BEGIN text for Toolpanel_QuickFix.frm (toolpanel_NDFX) -->
 
 <phrase>
-<original>all</original>
+<original>all effects</original>
 <translation></translation>
 </phrase>
 
@@ -15192,6 +15192,6 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- As of this build, PhotoDemon contains 4522 phrases. -->
 <!-- 1924 are duplicates, so only 2598 unique phrases have been written to file. -->
-<!-- These 2598 phrases contain approximately 13369 total words. -->
+<!-- These 2598 phrases contain approximately 13370 total words. -->
 
 </pdData>

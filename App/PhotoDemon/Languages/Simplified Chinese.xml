@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1534</langversion>
+<langversion>6.8.1535</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -13042,6 +13042,21 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <!-- BEGIN text for Toolpanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
+<original>transform quality</original>
+<translation>转换质量</translation>
+</phrase>
+
+<phrase>
+<original>layer position (x, y)</original>
+<translation>层位置（X，Y）</translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation>层大小（W，H）</translation>
+</phrase>
+
+<phrase>
 <original>layer angle</original>
 <translation>层角度</translation>
 </phrase>
@@ -13084,21 +13099,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <phrase>
 <original>show rotate nodes</original>
 <translation>显示旋转节点</translation>
-</phrase>
-
-<phrase>
-<original>layer position (x, y)</original>
-<translation>层位置（X，Y）</translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation>层大小（W，H）</translation>
-</phrase>
-
-<phrase>
-<original>transform quality</original>
-<translation>转换质量</translation>
 </phrase>
 
 <phrase>
@@ -13173,8 +13173,8 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <!-- BEGIN text for Toolpanel_QuickFix.frm (toolpanel_NDFX) -->
 
 <phrase>
-<original>all</original>
-<translation>全部</translation>
+<original>all effects</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15189,6 +15189,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- As of this build, PhotoDemon contains 4522 phrases. -->
 <!-- 1924 are duplicates, so only 2598 unique phrases have been written to file. -->
-<!-- These 2598 phrases contain approximately 13369 total words. -->
+<!-- These 2598 phrases contain approximately 13370 total words. -->
 
 </pdData>

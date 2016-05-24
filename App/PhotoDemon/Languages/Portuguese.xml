@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.174</langversion>
+<langversion>6.7.175</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -13053,6 +13053,21 @@ To ativar o suporte para esse recurso, copie o arquivo FreeImage.dll para o plug
 <!-- BEGIN text for Toolpanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
+<original>transform quality</original>
+<translation>transformar a qualidade</translation>
+</phrase>
+
+<phrase>
+<original>layer position (x, y)</original>
+<translation>camada posição (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation>tamanho camada (w, h)</translation>
+</phrase>
+
+<phrase>
 <original>layer angle</original>
 <translation>ângulo de camada</translation>
 </phrase>
@@ -13095,21 +13110,6 @@ To ativar o suporte para esse recurso, copie o arquivo FreeImage.dll para o plug
 <phrase>
 <original>show rotate nodes</original>
 <translation>mostrar os nós de rotação</translation>
-</phrase>
-
-<phrase>
-<original>layer position (x, y)</original>
-<translation>camada posição (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation>tamanho camada (w, h)</translation>
-</phrase>
-
-<phrase>
-<original>transform quality</original>
-<translation>transformar a qualidade</translation>
 </phrase>
 
 <phrase>
@@ -13184,8 +13184,8 @@ To ativar o suporte para esse recurso, copie o arquivo FreeImage.dll para o plug
 <!-- BEGIN text for Toolpanel_QuickFix.frm (toolpanel_NDFX) -->
 
 <phrase>
-<original>all</original>
-<translation>todos</translation>
+<original>all effects</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -15203,6 +15203,6 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- As of this build, PhotoDemon contains 4522 phrases. -->
 <!-- 1924 are duplicates, so only 2598 unique phrases have been written to file. -->
-<!-- These 2598 phrases contain approximately 13369 total words. -->
+<!-- These 2598 phrases contain approximately 13370 total words. -->
 
 </pdData>
