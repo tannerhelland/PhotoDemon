@@ -239,6 +239,11 @@ End Enum
 #End If
 
 'Certain structs are immensely helpful when drawing
+Public Type POINTFLOAT
+   x As Single
+   y As Single
+End Type
+
 Public Type RECTL
     Left As Long
     Top As Long

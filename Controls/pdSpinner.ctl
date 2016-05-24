@@ -30,8 +30,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Spinner (formerly Text+UpDown) custom control
 'Copyright 2013-2016 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 09/February/16
-'Last update: overhaul against ucSupport, new pdEditBoxW class
+'Last updated: 24/May/16
+'Last update: migrate to the new Drawing2D classes
 '
 'Software like PhotoDemon requires a lot of controls.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -41,15 +41,13 @@ Attribute VB_Exposed = False
 ' This got the job done, but it had a number of limitations - such as requiring an enormous amount of time if
 ' changes ever needed to be made, and custom code being required in every form to handle text / scroll synching.
 '
-'In April 2013, it was brought to my attention that some locales (e.g. Italy) use a comma instead of a decimal
-' for float values.  Rather than go through and add custom support for this to every damn form, I finally did
-' the smart thing and built a custom text/scroll user control.  This effectively replaces all other text/scroll
-' combos in the program.
+'In April 2013, I finally did the smart thing and built a custom text/scroll user control.  This effectively
+' replaces all other text/scroll combos in the program.
 '
 'This control handles the following things automatically:
 ' 1) Synching of text and spinner values
 ' 2) Validation of text entries, including a function for external validation requests
-' 3) Locale handling (like the aforementioned comma/decimal replacement in some countries)
+' 3) Locale handling (so that both comma and decimal can be supported as valid input)
 ' 4) A single "Change" event that fires for either scroll or text changes, and only if a text change is valid
 ' 5) Support for floating-point values, with automatic formatting as relevant
 '
@@ -114,6 +112,9 @@ Attribute m_DownButtonTimer.VB_VarHelpID = -1
 
 'When the current control value is invalid, this is set to TRUE
 Private m_ErrorState As Boolean
+
+'2D painting support classes
+Private m_Painter As pd2DPainter
 
 'Local list of themable colors.  This list includes all potential colors used by the control, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
@@ -565,6 +566,9 @@ Private Sub UserControl_Initialize()
     ucSupport.RegisterControl UserControl.hWnd
     ucSupport.RequestExtraFunctionality True, True
     
+    'Prep painting classes
+    Drawing2D.QuickCreatePainter m_Painter
+    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDSPINNER_COLOR_LIST: colorCount = [_Count]
@@ -747,14 +751,14 @@ Private Sub RedrawBackBuffer()
     End If
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim BackgroundColor As Long
-    BackgroundColor = m_Colors.RetrieveColor(PDS_Background, Me.Enabled)
+    Dim backgroundColor As Long
+    backgroundColor = m_Colors.RetrieveColor(PDS_Background, Me.Enabled)
     
     Dim bufferDC As Long, bWidth As Long, bHeight As Long
-    bufferDC = ucSupport.GetBackBufferDC(True, BackgroundColor)
+    bufferDC = ucSupport.GetBackBufferDC(True, backgroundColor)
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
-        
+    
     'This control's render code relies on GDI+ exclusively, so there's no point calling it in the IDE - sorry!
     If g_IsProgramRunning Then
     
@@ -781,9 +785,14 @@ Private Sub RedrawBackBuffer()
         downButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
         downButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, Me.Enabled, m_MouseDownDownButton, m_MouseOverDownButton)
         
+        Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, False
+        
         'Start by filling the button regions.  We will overpaint these (as necessary) with relevant border styles
-        GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_DownRect, downButtonFillColor
-        GDI_Plus.GDIPlusFillRectFToDC bufferDC, m_UpRect, upButtonFillColor
+        Drawing2D.QuickCreateSolidBrush cBrush, downButtonFillColor
+        m_Painter.FillRectangleF_FromRectF cSurface, cBrush, m_DownRect
+        cBrush.SetBrushColor upButtonFillColor
+        m_Painter.FillRectangleF_FromRectF cSurface, cBrush, m_UpRect
         
         'Calculate positioning and color of the edit box border.  (Note that the edit box doesn't paint its own border;
         ' we render a pseudo-border onto the underlying UC around its position, instead.)
@@ -808,7 +817,8 @@ Private Sub RedrawBackBuffer()
         'If the spin buttons are active, we can paint the rectangle immediately.  (If they are NOT active, and we attempt
         ' to draw a chunky border, their border will accidentally overlap ours, so we must paint later.)
         If m_MouseOverUpButton Or m_MouseOverDownButton Then
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, editBoxRenderRect, editBoxBorderColor, , borderWidth, False, GP_LJ_Miter
+            Drawing2D.QuickCreateSolidPen cPen, borderWidth, editBoxBorderColor, , P2_LJ_Miter
+            m_Painter.DrawRectangleF_FromRectF cSurface, cPen, editBoxRenderRect
         End If
         
         'Paint button backgrounds and borders.  Note that the active button (if any) is drawn LAST, so that its chunky
@@ -818,20 +828,34 @@ Private Sub RedrawBackBuffer()
         If m_MouseOverDownButton Then downButtonBorderWidth = 2 Else downButtonBorderWidth = 1
         
         If m_MouseOverUpButton Then
-            If downButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_DownRect, downButtonBorderColor, , downButtonBorderWidth, False, GP_LJ_Miter
-            If upButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_UpRect, upButtonBorderColor, , upButtonBorderWidth, False, GP_LJ_Miter
+            If (downButtonBorderColor <> backgroundColor) Then
+                Drawing2D.QuickCreateSolidPen cPen, downButtonBorderWidth, downButtonBorderColor, , P2_LJ_Miter
+                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_DownRect
+            End If
+            If (upButtonBorderColor <> backgroundColor) Then
+                Drawing2D.QuickCreateSolidPen cPen, upButtonBorderWidth, upButtonBorderColor, , P2_LJ_Miter
+                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
+            End If
         Else
-            If upButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_UpRect, upButtonBorderColor, , upButtonBorderWidth, False, GP_LJ_Miter
-            If downButtonBorderColor <> BackgroundColor Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_DownRect, downButtonBorderColor, , downButtonBorderWidth, False, GP_LJ_Miter
+            If (upButtonBorderColor <> backgroundColor) Then
+                Drawing2D.QuickCreateSolidPen cPen, upButtonBorderWidth, upButtonBorderColor, , P2_LJ_Miter
+                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
+            End If
+            If (downButtonBorderColor <> backgroundColor) Then
+                Drawing2D.QuickCreateSolidPen cPen, downButtonBorderWidth, downButtonBorderColor, , P2_LJ_Miter
+                m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_DownRect
+            End If
         End If
         
         'If neither spin button is active, paint the edit box border last
         If Not (m_MouseOverUpButton Or m_MouseOverDownButton) Then
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, editBoxRenderRect, editBoxBorderColor, , borderWidth, False, GP_LJ_Miter
+            Drawing2D.QuickCreateSolidPen cPen, borderWidth, editBoxBorderColor, , P2_LJ_Miter
+            m_Painter.DrawRectangleF_FromRectF cSurface, cPen, editBoxRenderRect
         End If
         
         'Calculate coordinate positions for the spin button arrows.  These calculations include a lot of magic numbers, alas,
         ' to account for things like padding and subpixel positioning.
+        cSurface.SetSurfaceAntialiasing P2_AA_Grayscale
         Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
                     
         'Start with the up-pointing arrow
@@ -844,8 +868,9 @@ Private Sub RedrawBackBuffer()
         buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
         buttonPt2.y = buttonPt1.y - FixDPIFloat(3)
         
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, upButtonArrowColor, 255, 2, True, GP_LC_Round
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, upButtonArrowColor, 255, 2, True, GP_LC_Round
+        Drawing2D.QuickCreateSolidPen cPen, 2#, upButtonArrowColor, , P2_LJ_Round, P2_LC_Round
+        m_Painter.DrawLineF_FromPtF cSurface, cPen, buttonPt1, buttonPt2
+        m_Painter.DrawLineF_FromPtF cSurface, cPen, buttonPt2, buttonPt3
                     
         'Next, the down-pointing arrow
         buttonPt1.x = m_DownRect.Left + FixDPIFloat(4) + 0.5
@@ -857,9 +882,12 @@ Private Sub RedrawBackBuffer()
         buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
         buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
         
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, downButtonArrowColor, 255, 2, True, GP_LC_Round
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, downButtonArrowColor, 255, 2, True, GP_LC_Round
+        cPen.SetPenColor downButtonArrowColor
+        m_Painter.DrawLineF_FromPtF cSurface, cPen, buttonPt1, buttonPt2
+        m_Painter.DrawLineF_FromPtF cSurface, cPen, buttonPt2, buttonPt3
         
+        Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
+    
     End If
     
     'Paint the final result to the screen, as relevant
