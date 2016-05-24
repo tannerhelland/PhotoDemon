@@ -968,10 +968,10 @@ Private Sub RedrawBackBuffer()
         
         cSurface.SetSurfacePixelOffset P2_PO_Half
         Drawing2D.QuickCreateSolidPen cPen, 1#, resetButtonArrowColor, , P2_LJ_Round, P2_LC_Round
-        cPen.SetPenStartCap P2_LC_Round
-        cPen.SetPenEndCap P2_LC_ArrowAnchor
-        m_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, resetAngleStart, (180 - resetAngleStart)
-        m_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, (180 + resetAngleStart), (180 - resetAngleStart)
+        cPen.SetPenStartCap P2_LC_ArrowAnchor
+        cPen.SetPenEndCap P2_LC_Round
+        m_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, resetAngleStart, (170 - resetAngleStart)
+        m_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, (180 + resetAngleStart), (170 - resetAngleStart)
         
         Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
     
