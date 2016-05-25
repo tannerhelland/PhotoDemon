@@ -75,133 +75,6 @@ Begin VB.Form dialog_ToneMapping
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   3375
-      Index           =   0
-      Left            =   4800
-      ScaleHeight     =   225
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   457
-      TabIndex        =   5
-      Top             =   2040
-      Width           =   6855
-      Begin PhotoDemon.pdSlider sltGamma 
-         Height          =   690
-         Index           =   0
-         Left            =   120
-         TabIndex        =   7
-         Top             =   0
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   1244
-         Caption         =   "gamma"
-         FontSizeCaption =   11
-         Min             =   1
-         Max             =   5
-         SigDigits       =   2
-         Value           =   2.2
-         NotchPosition   =   2
-         NotchValueCustom=   2.2
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
-         Index           =   9
-         Left            =   120
-         Top             =   960
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   582
-         Caption         =   "normalize"
-         FontSize        =   11
-      End
-      Begin PhotoDemon.pdRadioButton optNormalize 
-         Height          =   330
-         Index           =   0
-         Left            =   360
-         TabIndex        =   18
-         Top             =   1380
-         Width           =   6255
-         _ExtentX        =   11033
-         _ExtentY        =   582
-         Caption         =   "none"
-         Value           =   -1  'True
-      End
-      Begin PhotoDemon.pdRadioButton optNormalize 
-         Height          =   330
-         Index           =   1
-         Left            =   360
-         TabIndex        =   19
-         Top             =   1740
-         Width           =   6255
-         _ExtentX        =   11033
-         _ExtentY        =   582
-         Caption         =   "visible spectrum"
-      End
-      Begin PhotoDemon.pdRadioButton optNormalize 
-         Height          =   330
-         Index           =   2
-         Left            =   360
-         TabIndex        =   0
-         Top             =   2100
-         Width           =   6255
-         _ExtentX        =   11033
-         _ExtentY        =   582
-         Caption         =   "full spectrum"
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   3375
-      Index           =   2
-      Left            =   4800
-      ScaleHeight     =   225
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   457
-      TabIndex        =   8
-      Top             =   2040
-      Visible         =   0   'False
-      Width           =   6855
-      Begin PhotoDemon.pdSlider sltGamma 
-         Height          =   690
-         Index           =   1
-         Left            =   120
-         TabIndex        =   9
-         Top             =   0
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   1244
-         Caption         =   "gamma"
-         FontSizeCaption =   11
-         Min             =   1
-         Max             =   5
-         SigDigits       =   2
-         Value           =   1
-         NotchPosition   =   2
-         NotchValueCustom=   1
-      End
-      Begin PhotoDemon.pdSlider sltExposure 
-         Height          =   690
-         Index           =   0
-         Left            =   120
-         TabIndex        =   10
-         Top             =   960
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   1244
-         Caption         =   "exposure"
-         FontSizeCaption =   11
-         Min             =   -8
-         Max             =   8
-         SigDigits       =   2
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   3375
       Index           =   3
       Left            =   4800
       ScaleHeight     =   225
@@ -336,6 +209,133 @@ Begin VB.Form dialog_ToneMapping
       Caption         =   ""
       ForeColor       =   2105376
       Layout          =   1
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   3375
+      Index           =   0
+      Left            =   4800
+      ScaleHeight     =   225
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   457
+      TabIndex        =   5
+      Top             =   2040
+      Width           =   6855
+      Begin PhotoDemon.pdSlider sltGamma 
+         Height          =   690
+         Index           =   0
+         Left            =   120
+         TabIndex        =   7
+         Top             =   0
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "gamma"
+         FontSizeCaption =   11
+         Min             =   1
+         Max             =   5
+         SigDigits       =   2
+         Value           =   2.2
+         NotchPosition   =   2
+         NotchValueCustom=   2.2
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   330
+         Index           =   9
+         Left            =   120
+         Top             =   960
+         Width           =   6495
+         _ExtentX        =   11456
+         _ExtentY        =   582
+         Caption         =   "normalize"
+         FontSize        =   11
+      End
+      Begin PhotoDemon.pdRadioButton optNormalize 
+         Height          =   330
+         Index           =   0
+         Left            =   360
+         TabIndex        =   18
+         Top             =   1380
+         Width           =   6255
+         _ExtentX        =   11033
+         _ExtentY        =   582
+         Caption         =   "none"
+         Value           =   -1  'True
+      End
+      Begin PhotoDemon.pdRadioButton optNormalize 
+         Height          =   330
+         Index           =   1
+         Left            =   360
+         TabIndex        =   19
+         Top             =   1740
+         Width           =   6255
+         _ExtentX        =   11033
+         _ExtentY        =   582
+         Caption         =   "visible spectrum"
+      End
+      Begin PhotoDemon.pdRadioButton optNormalize 
+         Height          =   330
+         Index           =   2
+         Left            =   360
+         TabIndex        =   0
+         Top             =   2100
+         Width           =   6255
+         _ExtentX        =   11033
+         _ExtentY        =   582
+         Caption         =   "full spectrum"
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   3375
+      Index           =   2
+      Left            =   4800
+      ScaleHeight     =   225
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   457
+      TabIndex        =   8
+      Top             =   2040
+      Visible         =   0   'False
+      Width           =   6855
+      Begin PhotoDemon.pdSlider sltGamma 
+         Height          =   690
+         Index           =   1
+         Left            =   120
+         TabIndex        =   9
+         Top             =   0
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "gamma"
+         FontSizeCaption =   11
+         Min             =   1
+         Max             =   5
+         SigDigits       =   2
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
+      End
+      Begin PhotoDemon.pdSlider sltExposure 
+         Height          =   690
+         Index           =   0
+         Left            =   120
+         TabIndex        =   10
+         Top             =   960
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "exposure"
+         FontSizeCaption =   11
+         Min             =   -8
+         Max             =   8
+         SigDigits       =   2
+      End
    End
 End
 Attribute VB_Name = "dialog_ToneMapping"

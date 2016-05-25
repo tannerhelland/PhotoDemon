@@ -115,7 +115,13 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     End If
     
     'Store this file format inside the DIB
-    dstDIB.SetOriginalFormat fileFIF
+    Dim internalFIF As PHOTODEMON_IMAGE_FORMAT
+    internalFIF = fileFIF
+    Select Case internalFIF
+        Case PDIF_PBM, PDIF_PBMRAW, PDIF_PFM, PDIF_PGM, PDIF_PGMRAW, PDIF_PNM, PDIF_PPM, PDIF_PPMRAW
+            internalFIF = PDIF_PNM
+    End Select
+    dstDIB.SetOriginalFormat internalFIF
     
     
     '****************************************************************************
@@ -951,9 +957,9 @@ End Function
 'ALSO NOTE!  The reverseScanlines parameter will be applied to the underlying pdDIB object - plan accordingly!
 'ALSO NOTE!  This function does not free the outgoing FreeImage handle, by design.  Make sure to free it manually!
 'ALSO NOTE!  The function returns zero for failure state; please check the return value before trying to use it!
-Public Function GetFIHandleFromPDDib_NoCopy(ByRef srcDIB As pdDIB, Optional ByVal reverseScanlines As Boolean = False) As Long
+Public Function GetFIHandleFromPDDib_NoCopy(ByRef srcDIB As pdDIB, Optional ByVal ReverseScanlines As Boolean = False) As Long
     With srcDIB
-        GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .GetActualDIBBits, FIT_Bitmap, .GetDIBWidth, .GetDIBHeight, .GetDIBArrayWidth, .GetDIBColorDepth, , , , reverseScanlines)
+        GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .GetActualDIBBits, FIT_Bitmap, .GetDIBWidth, .GetDIBHeight, .GetDIBArrayWidth, .GetDIBColorDepth, , , , ReverseScanlines)
     End With
 End Function
 
