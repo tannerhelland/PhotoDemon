@@ -1516,7 +1516,11 @@ Public Function ExportPNM(ByRef srcPDImage As pdImage, ByRef dstFile As String, 
                 fif_Final = FIF_PFM
             Else
                 If (outputColorDepth = 1) Then
-                    If pnmUseASCII Then fif_Final = FIF_PBM Else fif_Final = FIF_PBMRAW
+                    'On 25/May/16 I discovered that FreeImage's ASCII encoding is broken for PBM files.  We now default to binary encoding
+                    ' until the bug is fixed.
+                    'If pnmUseASCII Then fif_Final = FIF_PBM Else fif_Final = FIF_PBMRAW
+                    fif_Final = FIF_PBMRAW
+                    FreeImage_Invert fi_DIB
                 ElseIf (outputColorDepth = 8) Then
                     If pnmUseASCII Then fif_Final = FIF_PGM Else fif_Final = FIF_PGMRAW
                 Else
