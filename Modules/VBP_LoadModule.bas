@@ -157,7 +157,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     If Not (targetImage Is Nothing) Then targetImage.originalFileFormat = FIF_UNKNOWN
     
     Dim srcFileExtension As String
-    srcFileExtension = UCase(GetExtension(srcFile))
+    srcFileExtension = UCase$(GetExtension(srcFile))
     
     Dim internalFormatID As PHOTODEMON_IMAGE_FORMAT
     internalFormatID = CheckForInternalFiles(srcFileExtension)

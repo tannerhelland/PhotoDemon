@@ -1035,9 +1035,16 @@ Public Function ApplyPostLoadICCHandling(ByRef targetDIB As pdDIB, Optional ByRe
             End If
         
             If colorManagementNeeded Then
-                If targetDIB.GetDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication False
-                targetDIB.ICCProfile.ApplyICCtoSelf targetDIB
-                If targetDIB.GetDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication True
+                If (targetDIB.GetDIBColorDepth = 32) Then targetDIB.SetAlphaPremultiplication False
+                
+                'LittleCMS is our preferred color management engine.  Use it whenever possible.
+                If g_LCMSEnabled Then
+                    LittleCMS.ApplyICCProfileToPDDIB targetDIB
+                Else
+                    targetDIB.ICCProfile.ApplyICCtoSelf targetDIB
+                End If
+                
+                If (targetDIB.GetDIBColorDepth = 32) Then targetDIB.SetAlphaPremultiplication True
                 ApplyPostLoadICCHandling = True
             End If
             

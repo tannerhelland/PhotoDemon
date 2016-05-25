@@ -1634,7 +1634,7 @@ Private Function GetXMLValue_SingleLine(ByRef srcLine As String) As String
     sPos = InStr(1, srcLine, ">", vbBinaryCompare)
     If (sPos > 0) Then
         ePos = InStrRev(srcLine, "<", , vbBinaryCompare) - 1
-        If (ePos > 0) Then
+        If (ePos > 0) And (ePos > sPos) Then
             GetXMLValue_SingleLine = Mid$(srcLine, sPos + 1, ePos - sPos)
         End If
     End If
