@@ -839,12 +839,12 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     
     'Figure out which background color to use.  This is normally determined by theme, but individual buttons also allow
     ' a custom .BackColor property (important if this instance lies atop a non-standard background, like a command bar).
-    Dim BackgroundColor As Long
-    If m_UseCustomBackgroundColor Then BackgroundColor = m_BackgroundColor Else BackgroundColor = m_Colors.RetrieveColor(PDDD_Background, Me.Enabled)
+    Dim finalBackColor As Long
+    If m_UseCustomBackgroundColor Then finalBackColor = m_BackgroundColor Else finalBackColor = m_Colors.RetrieveColor(PDDD_Background, Me.Enabled)
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long, bWidth As Long, bHeight As Long
-    bufferDC = ucSupport.GetBackBufferDC(True, BackgroundColor)
+    bufferDC = ucSupport.GetBackBufferDC(True, finalBackColor)
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
@@ -894,7 +894,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, GP_LC_Round
         
         'Finally, paint the caption, and restrict its length to the available dropdown space
-        If Me.ListIndex <> -1 Then
+        If (Me.ListIndex <> -1) Then
         
             Dim tmpFont As pdFont
             Set tmpFont = Font_Management.GetMatchingUIFont(Me.FontSize)

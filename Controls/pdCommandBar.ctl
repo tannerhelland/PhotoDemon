@@ -613,13 +613,9 @@ Private Sub ResetSettings()
         'How we reset a control is dependent on its type (obviously).
         Select Case controlType
         
-            'Custom PD numeric controls have exposed .Min, .Max, and .Value properties
+            'Custom PD numeric controls support a built-in RESET property
             Case "pdSlider", "pdSpinner"
-                If eControl.Min <= 0 Then
-                    eControl.Value = 0
-                Else
-                    eControl.Value = eControl.Min
-                End If
+                eControl.Reset
                 
             'Color pickers are turned white
             Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
@@ -631,7 +627,7 @@ Private Sub ResetSettings()
             
             'The first option button on the page is selected
             Case "pdRadioButton"
-                If Not optButtonHasBeenSet Then
+                If (Not optButtonHasBeenSet) Then
                     eControl.Value = True
                     optButtonHasBeenSet = True
                 End If
@@ -642,7 +638,7 @@ Private Sub ResetSettings()
             
             'Scroll bars obey the same rules as other numeric controls
             Case "HScrollBar", "VScrollBar"
-                If eControl.Min <= 0 Then eControl.Value = 0 Else eControl.Value = eControl.Min
+                If (eControl.Min <= 0) Then eControl.Value = 0 Else eControl.Value = eControl.Min
                 
             'List boxes and combo boxes are set to their first entry
             Case "ListBox", "ComboBox", "pdComboBox_Hatch", "pdDropDown"
