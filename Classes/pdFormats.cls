@@ -454,32 +454,32 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PHOTODEMON_IMAGE_FORMAT) A
             GetExtensionFromPDIF = "lbm"
         Case PDIF_MNG
             GetExtensionFromPDIF = "mng"
-        Case PDIF_PBM
-            GetExtensionFromPDIF = "pbm"
-        Case PDIF_PBMRAW
-            GetExtensionFromPDIF = "pbm"
+        'Case PDIF_PBM                      'NOTE: for simplicity, all PPM extensions are condensed to PNM
+        '    GetExtensionFromPDIF = "pbm"
+        'Case PDIF_PBMRAW
+        '    GetExtensionFromPDIF = "pbm"
         Case PDIF_PCD
             GetExtensionFromPDIF = "pcd"
         Case PDIF_PCX
             GetExtensionFromPDIF = "pcx"
         Case PDIF_PDI
             GetExtensionFromPDIF = "pdi"
-        Case PDIF_PFM
-            GetExtensionFromPDIF = "pfm"
-        Case PDIF_PGM
-            GetExtensionFromPDIF = "pgm"
-        Case PDIF_PGMRAW
-            GetExtensionFromPDIF = "pgm"
+        'Case PDIF_PFM
+        '    GetExtensionFromPDIF = "pfm"
+        'Case PDIF_PGM
+        '    GetExtensionFromPDIF = "pgm"
+        'Case PDIF_PGMRAW
+        '    GetExtensionFromPDIF = "pgm"
         Case PDIF_PICT
             GetExtensionFromPDIF = "pct"
         Case PDIF_PNG
             GetExtensionFromPDIF = "png"
-        Case PDIF_PNM
+        Case PDIF_PBM, PDIF_PBMRAW, PDIF_PFM, PDIF_PGM, PDIF_PGMRAW, PDIF_PNM, PDIF_PPM, PDIF_PPMRAW
             GetExtensionFromPDIF = "pnm"
-        Case PDIF_PPM
-            GetExtensionFromPDIF = "ppm"
-        Case PDIF_PPMRAW
-            GetExtensionFromPDIF = "ppm"
+        'Case PDIF_PPM
+        '    GetExtensionFromPDIF = "ppm"
+        'Case PDIF_PPMRAW
+        '    GetExtensionFromPDIF = "ppm"
         Case PDIF_PSD
             GetExtensionFromPDIF = "psd"
         Case PDIF_RAS
@@ -1069,7 +1069,7 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PHOTODEMON_IMAGE_FOR
         Case PDIF_PNG
             IsExportDialogSupported = True
         
-        Case PDIF_PNM
+        Case PDIF_PBM, PDIF_PGM, PDIF_PNM, PDIF_PPM
             IsExportDialogSupported = True
         
         Case PDIF_PSD
