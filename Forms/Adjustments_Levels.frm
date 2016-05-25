@@ -134,7 +134,6 @@ Begin VB.Form FormLevels
       Width           =   12870
       _ExtentX        =   22701
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -155,6 +154,7 @@ Begin VB.Form FormLevels
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
+      DefaultValue    =   0.5
       Min             =   0.01
       Max             =   0.99
       SigDigits       =   2
@@ -169,6 +169,7 @@ Begin VB.Form FormLevels
       Width           =   1200
       _ExtentX        =   2117
       _ExtentY        =   714
+      DefaultValue    =   255
       Min             =   2
       Max             =   255
       Value           =   255
@@ -193,6 +194,7 @@ Begin VB.Form FormLevels
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
+      DefaultValue    =   255
       Max             =   255
       Value           =   255
    End
@@ -331,7 +333,7 @@ Private Sub btsChannel_Click(ByVal buttonIndex As Long)
     'Draw the relevant histogram onto the histogram box
     On Error GoTo ignoreChannelRender
     picHistogram.Picture = LoadPicture("")
-    If Not hDIB(m_curChannel) Is Nothing Then hDIB(m_curChannel).alphaBlendToDC picHistogram.hDC
+    If Not hDIB(m_curChannel) Is Nothing Then hDIB(m_curChannel).AlphaBlendToDC picHistogram.hDC
     picHistogram.Picture = picHistogram.Image
     
     'Update the text boxes to match the values for the selected channel
@@ -349,12 +351,12 @@ Private Sub cmdAutoLevels_Click()
     
     'Retrieve the ideal level param string
     Dim pString As String
-    pString = getIdealLevelParamString(pdImages(g_CurrentImage).getActiveDIB)
+    pString = getIdealLevelParamString(pdImages(g_CurrentImage).GetActiveDIB)
     
     'Level value parsing is easily handled via PD's standard param string parser class
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.setParamString pString
+    cParams.SetParamString pString
     
     Dim i As Long
     For i = 0 To 19
@@ -378,20 +380,20 @@ Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     'Create a local array and point it at the source DIB's pixel data
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcDIB
+    PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'Color values
     Dim r As Long, g As Long, b As Long, l As Long
@@ -576,14 +578,14 @@ Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     Erase ImageData
     
     'Return our assembled data in param-string compatible format
-    getIdealLevelParamString = buildParams(RMin, 0.5, RMax, 0, 255, gMin, 0.5, gMax, 0, 255, bMin, 0.5, bMax, 0, 255, lMin, 0.5, lMax, 0, 255)
+    getIdealLevelParamString = BuildParams(RMin, 0.5, RMax, 0, 255, gMin, 0.5, gMax, 0, 255, bMin, 0.5, bMax, 0, 255, lMin, 0.5, lMax, 0, 255)
 
 End Function
 
 'Because the Levels dialog only uses one set of UI controls for all channels, we must manually write out preset data for each channel.
 ' This event will be raised whenever the command bar needs custom data from us.
 Private Sub cmdBar_AddCustomPresetData()
-    cmdBar.addPresetData "MultichannelLevelData", getLevelsParamString()
+    cmdBar.AddPresetData "MultichannelLevelData", getLevelsParamString()
 End Sub
 
 'OK button
@@ -627,7 +629,7 @@ Private Sub cmdBar_ReadCustomPresetData()
     
     'Retrieve a string containing all relevant layer information
     Dim tmpString As String
-    tmpString = cmdBar.retrievePresetData("MultichannelLevelData")
+    tmpString = cmdBar.RetrievePresetData("MultichannelLevelData")
     
     'Valid preset data was found
     If Len(tmpString) <> 0 Then
@@ -635,7 +637,7 @@ Private Sub cmdBar_ReadCustomPresetData()
         'Level value parsing will be handled via PD's standard param string parser class
         Dim cParams As pdParamString
         Set cParams = New pdParamString
-        cParams.setParamString tmpString
+        cParams.SetParamString tmpString
         
         Dim i As Long
         For i = 0 To 19
@@ -692,7 +694,7 @@ End Sub
 'Update all text box values to match the stored values of the current channel
 Private Sub updateTextBoxes()
 
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     m_DisableMaxMinLimits = True
     
     'Set max/min values of the input shadow/highlight boxes to their max possible values.  This will prevent the current limits
@@ -711,15 +713,15 @@ Private Sub updateTextBoxes()
     FixScrollBars
     
     'Reinstate automatic preview updates
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
 
 End Sub
 
 Private Sub cmdColorSelect_Click(Index As Integer)
 
-    If cmdBar.previewsAllowed Then
+    If cmdBar.PreviewsAllowed Then
     
-        cmdBar.markPreviewStatus False
+        cmdBar.MarkPreviewStatus False
         
         'Toggle the other command button (as only one can be active at any time)
         If Index = 0 Then
@@ -728,7 +730,7 @@ Private Sub cmdColorSelect_Click(Index As Integer)
             cmdColorSelect(0).Value = False
         End If
         
-        cmdBar.markPreviewStatus True
+        cmdBar.MarkPreviewStatus True
     
     End If
 
@@ -749,7 +751,7 @@ Private Sub cMouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstant
     If ((Button And pdLeftButton) <> 0) And (m_ActiveArrow >= 0) And (m_ActiveArrow <= 2) Then
     
         'Disable automatic preview updates
-        cmdBar.markPreviewStatus False
+        cmdBar.MarkPreviewStatus False
         
         Dim newTUDValue As Double
         
@@ -790,7 +792,7 @@ Private Sub cMouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstant
         End Select
         
         'Re-enable preview updates, and refresh the screen now
-        cmdBar.markPreviewStatus True
+        cmdBar.MarkPreviewStatus True
         UpdatePreview
         
     'Left mouse button is not down
@@ -798,9 +800,9 @@ Private Sub cMouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstant
     
         'See if the cursor is over a slider.  If it is, change the cursor to a hand.
         If isCursorOverArrow(x, True) >= 0 Then
-            cMouseEventsIn.setSystemCursor IDC_HAND
+            cMouseEventsIn.SetSystemCursor IDC_HAND
         Else
-            cMouseEventsIn.setSystemCursor IDC_ARROW
+            cMouseEventsIn.SetSystemCursor IDC_ARROW
         End If
         
     End If
@@ -826,7 +828,7 @@ Private Sub cMouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
     If ((Button And pdLeftButton) <> 0) And (m_ActiveArrow >= 3) And (m_ActiveArrow <= 4) Then
     
         'Disable automatic preview updates
-        cmdBar.markPreviewStatus False
+        cmdBar.MarkPreviewStatus False
         
         Dim newTUDValue As Double
         
@@ -864,7 +866,7 @@ Private Sub cMouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
         End Select
         
         'Re-enable preview updates, and refresh the screen now
-        cmdBar.markPreviewStatus True
+        cmdBar.MarkPreviewStatus True
         UpdatePreview
         
     'Left mouse button is not down
@@ -872,9 +874,9 @@ Private Sub cMouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
     
         'See if the cursor is over a slider.  If it is, change the cursor to a hand.
         If isCursorOverArrow(x, False) >= 0 Then
-            cMouseEventsOut.setSystemCursor IDC_HAND
+            cMouseEventsOut.SetSystemCursor IDC_HAND
         Else
-            cMouseEventsOut.setSystemCursor IDC_ARROW
+            cMouseEventsOut.SetSystemCursor IDC_ARROW
         End If
         
     End If
@@ -926,11 +928,11 @@ End Function
 'When the shadow or highlight color is changed by the user, update the Level parameters accordingly
 Private Sub csHighlight_ColorChanged()
 
-    If cmdBar.previewsAllowed Then
+    If cmdBar.PreviewsAllowed Then
     
         'Disable automatic preview updates until our calculations are done.  (If we don't do this, we get infinite recursion from
         ' the updatePreview function attempting to set our color to match the new RGB values.)
-        cmdBar.markPreviewStatus False
+        cmdBar.MarkPreviewStatus False
     
         Dim r As Long, g As Long, b As Long, l As Long
         r = ExtractR(csHighlight.Color)
@@ -954,7 +956,7 @@ Private Sub csHighlight_ColorChanged()
         tudLevels(2) = m_LevelValues(m_curChannel, 2)
         
         'Re-enable automatic preview updates
-        cmdBar.markPreviewStatus True
+        cmdBar.MarkPreviewStatus True
         
         'Redraw the preview
         UpdatePreview
@@ -965,9 +967,9 @@ End Sub
 
 Private Sub csShadow_ColorChanged()
 
-    If cmdBar.previewsAllowed Then
+    If cmdBar.PreviewsAllowed Then
     
-        cmdBar.markPreviewStatus False
+        cmdBar.MarkPreviewStatus False
     
         Dim r As Long, g As Long, b As Long, l As Long
         r = ExtractR(csShadow.Color)
@@ -990,7 +992,7 @@ Private Sub csShadow_ColorChanged()
         'Update the active text box to match
         tudLevels(0) = m_LevelValues(m_curChannel, 0)
         
-        cmdBar.markPreviewStatus True
+        cmdBar.MarkPreviewStatus True
         
         'Redraw the preview
         UpdatePreview
@@ -1016,7 +1018,7 @@ Private Sub Form_Activate()
     
     'Draw the default histogram onto the histogram box
     picHistogram.Picture = LoadPicture("")
-    If Not hDIB(m_curChannel) Is Nothing Then hDIB(m_curChannel).alphaBlendToDC picHistogram.hDC
+    If Not hDIB(m_curChannel) Is Nothing Then hDIB(m_curChannel).AlphaBlendToDC picHistogram.hDC
     picHistogram.Picture = picHistogram.Image
         
     'Load the arrow slider images from the resource file
@@ -1025,12 +1027,12 @@ Private Sub Form_Activate()
         Set m_Arrows(i) = New pdDIB
     Next i
     
-    loadResourceToDIB "LVL_ARROW_BLK", m_Arrows(0)
-    loadResourceToDIB "LVL_ARROW_GRY", m_Arrows(1)
-    loadResourceToDIB "LVL_ARROW_WHT", m_Arrows(2)
+    LoadResourceToDIB "LVL_ARROW_BLK", m_Arrows(0)
+    LoadResourceToDIB "LVL_ARROW_GRY", m_Arrows(1)
+    LoadResourceToDIB "LVL_ARROW_WHT", m_Arrows(2)
     
     'Store the arrow dimensions
-    m_ArrowWidth = m_Arrows(0).getDIBWidth
+    m_ArrowWidth = m_Arrows(0).GetDIBWidth
     m_ArrowHalfWidth = m_ArrowWidth / 2
         
     'Calculate persistent width and offset values for the arrow interaction zones.  These must extend past the left and
@@ -1042,7 +1044,7 @@ Private Sub Form_Activate()
     Drawing.DrawGradient picOutputGradient, RGB(0, 0, 0), RGB(255, 255, 255), True
     
     'Draw a preview image
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
 
 End Sub
@@ -1068,7 +1070,7 @@ End Sub
 Private Sub Form_Load()
 
     'Prevent automatic preview refreshes until we have finished initializing the dialog
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Populate the channel selector
     btsChannel.AddItem "red", 0
@@ -1084,8 +1086,8 @@ Private Sub Form_Load()
     'Prepare the custom input handlers
     Set cMouseEventsIn = New pdInputMouse
     Set cMouseEventsOut = New pdInputMouse
-    cMouseEventsIn.addInputTracker picInputArrows.hWnd, True, True, , True
-    cMouseEventsOut.addInputTracker picOutputArrows.hWnd, True, True, , True
+    cMouseEventsIn.AddInputTracker picInputArrows.hWnd, True, True, , True
+    cMouseEventsOut.AddInputTracker picOutputArrows.hWnd, True, True, , True
     
     'Add button images
     cmdColorSelect(0).AssignImage "EYE_DROPPER_GENERIC"
@@ -1112,7 +1114,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -1159,7 +1161,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     'Parse out individual level values into a master levels array
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.setParamString listOfLevels
+    cParams.SetParamString listOfLevels
     
     Dim levelValues(0 To 3, 0 To 4) As Double
     
@@ -1256,7 +1258,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -1267,7 +1269,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
 
 End Sub
 
@@ -1299,9 +1301,9 @@ End Sub
 
 Private Sub UpdatePreview()
     
-    If cmdBar.previewsAllowed And (Not m_Arrows(0) Is Nothing) Then
+    If cmdBar.PreviewsAllowed And (Not m_Arrows(0) Is Nothing) Then
         
-        cmdBar.markPreviewStatus False
+        cmdBar.MarkPreviewStatus False
         
         'Erase the picture boxes
         picInputArrows.Picture = LoadPicture("")
@@ -1317,11 +1319,11 @@ Private Sub UpdatePreview()
         m_ArrowOffsets(4) = (tudLevels(4).Value / 255) * m_DstArrowBoxWidth
         
         'Render the arrows onto their respective picture boxes
-        m_Arrows(0).alphaBlendToDC picInputArrows.hDC, 255, m_ArrowOffsets(0) - m_ArrowHalfWidth + m_DstArrowBoxOffset
-        m_Arrows(1).alphaBlendToDC picInputArrows.hDC, 255, m_ArrowOffsets(1) - m_ArrowHalfWidth + m_DstArrowBoxOffset
-        m_Arrows(2).alphaBlendToDC picInputArrows.hDC, 255, m_ArrowOffsets(2) - m_ArrowHalfWidth + m_DstArrowBoxOffset
-        m_Arrows(0).alphaBlendToDC picOutputArrows.hDC, 255, m_ArrowOffsets(3) - m_ArrowHalfWidth + m_DstArrowBoxOffset
-        m_Arrows(2).alphaBlendToDC picOutputArrows.hDC, 255, m_ArrowOffsets(4) - m_ArrowHalfWidth + m_DstArrowBoxOffset
+        m_Arrows(0).AlphaBlendToDC picInputArrows.hDC, 255, m_ArrowOffsets(0) - m_ArrowHalfWidth + m_DstArrowBoxOffset
+        m_Arrows(1).AlphaBlendToDC picInputArrows.hDC, 255, m_ArrowOffsets(1) - m_ArrowHalfWidth + m_DstArrowBoxOffset
+        m_Arrows(2).AlphaBlendToDC picInputArrows.hDC, 255, m_ArrowOffsets(2) - m_ArrowHalfWidth + m_DstArrowBoxOffset
+        m_Arrows(0).AlphaBlendToDC picOutputArrows.hDC, 255, m_ArrowOffsets(3) - m_ArrowHalfWidth + m_DstArrowBoxOffset
+        m_Arrows(2).AlphaBlendToDC picOutputArrows.hDC, 255, m_ArrowOffsets(4) - m_ArrowHalfWidth + m_DstArrowBoxOffset
         
         picInputArrows.Picture = picInputArrows.Image
         picInputArrows.Refresh
@@ -1357,7 +1359,7 @@ Private Sub UpdatePreview()
         
         csHighlight.Color = RGB(r, g, b)
         
-        cmdBar.markPreviewStatus True
+        cmdBar.MarkPreviewStatus True
         
         'Actually render the levels effect
         MapImageLevels getLevelsParamString(), True, pdFxPreview

@@ -63,6 +63,7 @@ Begin VB.Form FormComicBook
       Caption         =   "ink"
       Max             =   100
       Value           =   50
+      DefaultValue    =   50
    End
    Begin PhotoDemon.pdSlider sltColor 
       Height          =   705

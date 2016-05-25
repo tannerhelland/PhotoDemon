@@ -42,7 +42,6 @@ Begin VB.Form FormMezzotint
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -132,7 +131,7 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
     'Start by prepping a workingDIB instance
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic, , , True
+    PrepImageData dstSA, toPreview, dstPic, , , True
     
     'Previews require us to adjust the coarseness parameter to match the preview size
     If toPreview Then
@@ -152,7 +151,7 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
     
     'Randomness roughly corresponds to the strength of the "divots" used in the mezzotinting plate.  PD provides a graymap
     ' version of this, to which we simply supply the mRandom parameter (normalized from [0, 100] to [0, 255]).
-    Filters_ByteArray.addNoiseByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight, mRandom * 2.55
+    Filters_ByteArray.AddNoiseByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, mRandom * 2.55
     
     If Not toPreview Then SetProgBarVal 2
     
@@ -161,18 +160,18 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
         
         'Point and horizontal stroke mezzotinting blurs horizontally
         If (mType = 0) Or (mType = 1) Then
-            Filters_ByteArray.HorizontalBlur_ByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight, mSmoothness, mSmoothness
+            Filters_ByteArray.HorizontalBlur_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, mSmoothness, mSmoothness
         End If
         
         'Point and vertical stroke mezzotinting blurs vertically
         If (mType = 0) Or (mType = 2) Then
-            Filters_ByteArray.VerticalBlur_ByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight, mSmoothness, mSmoothness
+            Filters_ByteArray.VerticalBlur_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, mSmoothness, mSmoothness
         End If
         
         If Not toPreview Then SetProgBarVal 3
         
         'After blurring, we want to white-balance the graymap, so that everything isn't just a muddy gray.
-        Filters_ByteArray.ContrastCorrect_ByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight, 10
+        Filters_ByteArray.ContrastCorrect_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, 10
         
         If Not toPreview Then SetProgBarVal 4
     
@@ -186,11 +185,11 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
         
         'Coarse (monochrome, no dithering)
         Case 1
-            Filters_ByteArray.Dither_ByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight, 3, True
+            Filters_ByteArray.Dither_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, 3, True
          
         'Fine (monochrome, with dithering)
         Case 2
-            Filters_ByteArray.thresholdPlusDither_ByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight, 127, True
+            Filters_ByteArray.ThresholdPlusDither_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, 127, True
             
     End Select
         
@@ -198,16 +197,16 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
     
     'Our overlay is now complete.  We now need to convert it back into a DIB.
     Dim overlayDIB As pdDIB
-    DIB_Handler.createDIBFromGrayscaleMap overlayDIB, grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight
+    DIB_Handler.CreateDIBFromGrayscaleMap overlayDIB, grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
     
     If Not toPreview Then SetProgBarVal 6
     
     'We can save a lot of time by avoiding alpha handling.  Query the base image to see if we need to deal with alpha.
     Dim alphaIsRelevant As Boolean
-    alphaIsRelevant = Not DIB_Handler.isDIBAlphaBinary(workingDIB, False)
+    alphaIsRelevant = Not DIB_Handler.IsDIBAlphaBinary(workingDIB, False)
     
     If alphaIsRelevant Then
-        overlayDIB.copyAlphaFromExistingDIB workingDIB
+        overlayDIB.CopyAlphaFromExistingDIB workingDIB
         overlayDIB.SetAlphaPremultiplication True
     End If
     
@@ -219,9 +218,9 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
     
     'Fine stippling uses a totally different approach, but the results are (IMO) much more interesting than Photoshop's
     If mStipplingLevel = 2 Then
-        cCompositor.quickMergeTwoDibsOfEqualSize workingDIB, overlayDIB, BL_OVERLAY
+        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, overlayDIB, BL_OVERLAY
     Else
-        cCompositor.quickMergeTwoDibsOfEqualSize workingDIB, overlayDIB, BL_HARDMIX
+        cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, overlayDIB, BL_HARDMIX
     End If
     
     If Not toPreview Then SetProgBarVal 8
@@ -230,7 +229,7 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
     Set overlayDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic, True
+    FinalizeImageData toPreview, dstPic, True
 
 End Sub
 
@@ -244,7 +243,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Mezzotint", , buildParams(btsType.ListIndex, sltRandom.Value, sltSmoothness.Value, btsStippling.ListIndex), UNDO_LAYER
+    Process "Mezzotint", , BuildParams(btsType.ListIndex, sltRandom.Value, sltSmoothness.Value, btsStippling.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -264,7 +263,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -272,7 +271,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews while we initialize the dialog
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Populate the "type" button strip
     btsType.AddItem "dot", 0
@@ -293,7 +292,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyMezzotintEffect btsType.ListIndex, sltRandom.Value, sltSmoothness.Value, btsStippling.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyMezzotintEffect btsType.ListIndex, sltRandom.Value, sltSmoothness.Value, btsStippling.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

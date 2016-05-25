@@ -24,13 +24,14 @@ Begin VB.Form FormPencil
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdDropDown cboStyle 
-      Height          =   375
+      Height          =   735
       Left            =   6000
       TabIndex        =   4
-      Top             =   1680
+      Top             =   1440
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   661
+      Caption         =   "style"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -41,7 +42,6 @@ Begin VB.Form FormPencil
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -76,17 +76,6 @@ Begin VB.Form FormPencil
       Caption         =   "pressure"
       Min             =   -100
       Max             =   200
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   330
-      Left            =   6000
-      Top             =   1320
-      Width           =   5880
-      _ExtentX        =   10372
-      _ExtentY        =   582
-      Caption         =   "style"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormPencil"
@@ -147,13 +136,13 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'Create a copy of the image.  "Colored pencil" requires a blurred image copy as part of the effect, and we maintain
     ' that copy separate from the original (as the two must be blended as the final step of the filter).
     Dim blurDIB As pdDIB
     Set blurDIB = New pdDIB
-    blurDIB.createFromExistingDIB workingDIB
+    blurDIB.CreateFromExistingDIB workingDIB
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -187,7 +176,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         'Now that we have a gaussian DIB created in blurDIB, we can point arrays toward it and the source DIB
         Dim srcImageData() As Byte
         Dim srcSA As SAFEARRAY2D
-        prepSafeArray srcSA, blurDIB
+        PrepSafeArray srcSA, blurDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
         'These values will help us access locations in the array more quickly.
@@ -229,7 +218,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         Next y
             If Not toPreview Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal progBarOffset + x
                 End If
             End If
@@ -258,16 +247,16 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         'Normally we use the "color dodge" blend mode, but for "pastel" mode, we switch to linear dodge for a
         ' lighter, softer appearance
         If pencilStyle <> 2 Then
-            tmpLayerTop.setLayerBlendMode BL_COLORDODGE
+            tmpLayerTop.SetLayerBlendMode BL_COLORDODGE
         Else
-            tmpLayerTop.setLayerBlendMode BL_LINEARDODGE
+            tmpLayerTop.SetLayerBlendMode BL_LINEARDODGE
         End If
-        tmpLayerTop.setLayerOpacity 100
+        tmpLayerTop.SetLayerOpacity 100
         
-        cComposite.mergeLayers tmpLayerTop, tmpLayerBottom, True
+        cComposite.MergeLayers tmpLayerTop, tmpLayerBottom, True
         
         'Copy the finished DIB from the bottom layer back into workingDIB
-        workingDIB.createFromExistingDIB tmpLayerBottom.layerDIB
+        workingDIB.CreateFromExistingDIB tmpLayerBottom.layerDIB
         
         'Remove premultiplied alpha
         workingDIB.SetAlphaPremultiplication False
@@ -299,7 +288,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         End If
         
         'Point our byte array at workingDIB, so we can apply a final vibrance pass using the specified color intensity
-        prepSafeArray srcSA, workingDIB
+        PrepSafeArray srcSA, workingDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
         progBarOffset = finalY * 3 + finalX * 4
@@ -355,7 +344,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         Next y
             If Not toPreview Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal progBarOffset + x
                 End If
             End If
@@ -368,7 +357,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -377,7 +366,7 @@ Private Sub cboStyle_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Colored pencil", , buildParams(sltRadius, sltIntensity, cboStyle.ListIndex), UNDO_LAYER
+    Process "Colored pencil", , BuildParams(sltRadius, sltIntensity, cboStyle.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -394,7 +383,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
         
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -402,7 +391,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully loaded
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Populate the style drop-down
     cboStyle.Clear
@@ -429,7 +418,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxColoredPencil sltRadius, sltIntensity, cboStyle.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then fxColoredPencil sltRadius, sltIntensity, cboStyle.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

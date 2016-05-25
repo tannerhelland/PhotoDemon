@@ -32,7 +32,6 @@ Begin VB.Form FormColorTemp
       Width           =   12330
       _ExtentX        =   21749
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -71,6 +70,7 @@ Begin VB.Form FormColorTemp
       Max             =   15000
       SliderTrackStyle=   3
       Value           =   5500
+      DefaultValue    =   5500
    End
    Begin PhotoDemon.pdLabel lblCool 
       Height          =   435
@@ -149,7 +149,7 @@ Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal 
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -214,7 +214,7 @@ Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal 
     Next y
         If toPreview = False Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -225,12 +225,12 @@ Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal 
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Temperature", , buildParams(sltTemperature.Value, True, sltStrength.Value / 2), UNDO_LAYER
+    Process "Temperature", , BuildParams(sltTemperature.Value, True, sltStrength.Value / 2), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -345,7 +345,7 @@ Private Sub sltTemperature_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyTemperatureToImage sltTemperature.Value, True, sltStrength.Value / 2, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyTemperatureToImage sltTemperature.Value, True, sltStrength.Value / 2, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

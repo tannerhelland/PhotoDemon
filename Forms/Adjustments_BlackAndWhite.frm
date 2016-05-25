@@ -97,7 +97,6 @@ Begin VB.Form FormMonochrome
       Width           =   12150
       _ExtentX        =   21431
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -155,9 +154,9 @@ End Sub
 Private Sub chkAutoThreshold_Click()
     
     If CBool(chkAutoThreshold.Value) Then
-        cmdBar.markPreviewStatus False
+        cmdBar.MarkPreviewStatus False
         sltThreshold = calculateOptimalThreshold()
-        cmdBar.markPreviewStatus True
+        cmdBar.MarkPreviewStatus True
     End If
     
     sltThreshold.Enabled = Not CBool(chkAutoThreshold.Value)
@@ -168,7 +167,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Color to monochrome", , buildParams(sltThreshold, cboDither.ListIndex, colorPicker(0).Color, colorPicker(1).Color), UNDO_LAYER
+    Process "Color to monochrome", , BuildParams(sltThreshold, cboDither.ListIndex, colorPicker(0).Color, colorPicker(1).Color), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -204,7 +203,7 @@ End Sub
 
 Private Sub Form_Load()
     
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Populate the dither combobox
     cboDither.Clear
@@ -222,7 +221,7 @@ Private Sub Form_Load()
     cboDither.AddItem "Atkinson / Classic Macintosh", 11
     cboDither.ListIndex = 6
     
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     
 End Sub
 
@@ -237,7 +236,7 @@ Private Function calculateOptimalThreshold() As Long
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA
+    PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -284,7 +283,7 @@ Private Function calculateOptimalThreshold() As Long
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
-    workingDIB.eraseDIB
+    workingDIB.EraseDIB
     Set workingDIB = Nothing
             
     'Divide the number of pixels by two
@@ -316,7 +315,7 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -390,7 +389,7 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             Next y
                 If Not toPreview Then
                     If (x And progBarCheck) = 0 Then
-                        If userPressedESC() Then Exit For
+                        If UserPressedESC() Then Exit For
                         SetProgBarVal x
                     End If
                 End If
@@ -461,7 +460,7 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             Next y
                 If Not toPreview Then
                     If (x And progBarCheck) = 0 Then
-                        If userPressedESC() Then Exit For
+                        If UserPressedESC() Then Exit For
                         SetProgBarVal x
                     End If
                 End If
@@ -583,7 +582,7 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             Next y
                 If Not toPreview Then
                     If (x And progBarCheck) = 0 Then
-                        If userPressedESC() Then Exit For
+                        If UserPressedESC() Then Exit For
                         SetProgBarVal x
                     End If
                 End If
@@ -803,7 +802,7 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
         ' (This uses a lot of memory, but on modern systems it shouldn't be a problem.)
         Dim dErrors() As Double
         
-        ReDim dErrors(0 To workingDIB.getDIBWidth, 0 To workingDIB.getDIBHeight) As Double
+        ReDim dErrors(0 To workingDIB.GetDIBWidth, 0 To workingDIB.GetDIBHeight) As Double
         
         Dim quickX As Long, QuickY As Long
         
@@ -866,7 +865,7 @@ NextDitheredPixel:     Next j
         Next y
             If Not toPreview Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal x
                 End If
             End If
@@ -879,7 +878,7 @@ NextDitheredPixel:     Next j
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
 
 End Sub
 
@@ -889,7 +888,7 @@ Private Sub sltThreshold_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then masterBlackWhiteConversion sltThreshold, cboDither.ListIndex, colorPicker(0).Color, colorPicker(1).Color, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then masterBlackWhiteConversion sltThreshold, cboDither.ListIndex, colorPicker(0).Color, colorPicker(1).Color, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

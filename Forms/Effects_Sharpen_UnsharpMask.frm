@@ -32,7 +32,6 @@ Begin VB.Form FormUnsharpMask
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -81,7 +80,8 @@ Begin VB.Form FormUnsharpMask
       Min             =   0.1
       Max             =   200
       SigDigits       =   1
-      Value           =   5
+      Value           =   1
+      DefaultValue    =   1
    End
    Begin PhotoDemon.pdButtonStrip btsQuality 
       Height          =   1080
@@ -133,13 +133,13 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
             
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -196,7 +196,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         
         Dim srcImageData() As Byte
         Dim srcSA As SAFEARRAY2D
-        prepSafeArray srcSA, srcDIB
+        PrepSafeArray srcSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
         'These values will help us access locations in the array more quickly.
@@ -282,7 +282,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         Next y
             If Not toPreview Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal progBarCalculation + x
                 End If
             End If
@@ -291,7 +291,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         Erase srcImageData
         
-        srcDIB.eraseDIB
+        srcDIB.EraseDIB
         Set srcDIB = Nothing
         
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
@@ -300,7 +300,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
 End Sub
 
@@ -309,7 +309,7 @@ Private Sub btsQuality_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Unsharp mask", , buildParams(sltRadius, sltAmount, sltThreshold, btsQuality.ListIndex), UNDO_LAYER
+    Process "Unsharp mask", , BuildParams(sltRadius, sltAmount, sltThreshold, btsQuality.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -326,7 +326,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -334,7 +334,7 @@ End Sub
 Private Sub Form_Load()
     
     'Suspend previews until the dialog is fully loaded
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Populate the quality selector
     btsQuality.AddItem "good", 0
@@ -361,7 +361,7 @@ Private Sub sltThreshold_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then UnsharpMask sltRadius, sltAmount, sltThreshold, btsQuality.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then UnsharpMask sltRadius, sltAmount, sltThreshold, btsQuality.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

@@ -42,7 +42,6 @@ Begin VB.Form FormFiguredGlass
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltScale 
       Height          =   705
@@ -56,6 +55,7 @@ Begin VB.Form FormFiguredGlass
       Max             =   100
       SigDigits       =   1
       Value           =   10
+      DefaultValue    =   10
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -79,6 +79,7 @@ Begin VB.Form FormFiguredGlass
       Max             =   1
       SigDigits       =   2
       Value           =   0.5
+      DefaultValue    =   0.5
    End
    Begin PhotoDemon.pdSlider sltQuality 
       Height          =   705
@@ -156,7 +157,7 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -166,9 +167,9 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -347,7 +348,7 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -361,12 +362,12 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Figured glass", , buildParams(sltScale, sltTurbulence, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Figured glass", , BuildParams(sltScale, sltTurbulence, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -389,7 +390,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Create the preview
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
         
 End Sub
@@ -397,7 +398,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previews
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Calculate a random z offset for the noise function
     Rnd -1
@@ -432,7 +433,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then
+    If cmdBar.PreviewsAllowed Then
         FiguredGlassFX sltScale, sltTurbulence, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
     End If
 End Sub

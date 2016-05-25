@@ -32,7 +32,6 @@ Begin VB.Form FormPosterize
       Width           =   11970
       _ExtentX        =   21114
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -75,6 +74,7 @@ Begin VB.Form FormPosterize
       Min             =   2
       Max             =   64
       Value           =   6
+      DefaultValue    =   6
    End
    Begin PhotoDemon.pdSlider sltGreen 
       Height          =   705
@@ -88,6 +88,7 @@ Begin VB.Form FormPosterize
       Min             =   2
       Max             =   64
       Value           =   7
+      DefaultValue    =   6
    End
    Begin PhotoDemon.pdSlider sltBlue 
       Height          =   705
@@ -101,6 +102,7 @@ Begin VB.Form FormPosterize
       Min             =   2
       Max             =   64
       Value           =   6
+      DefaultValue    =   6
    End
 End
 Attribute VB_Name = "FormPosterize"
@@ -137,9 +139,9 @@ End Sub
 Private Sub cmdBar_OKClick()
     
     If CBool(chkDither) Then
-        Process "Posterize (dithered)", , buildParams(sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value)), UNDO_LAYER
+        Process "Posterize (dithered)", , BuildParams(sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value)), UNDO_LAYER
     Else
-        Process "Posterize", , buildParams(sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value)), UNDO_LAYER
+        Process "Posterize", , BuildParams(sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value)), UNDO_LAYER
     End If
     
 End Sub
@@ -173,7 +175,7 @@ End Sub
 
 Private Sub UpdatePreview()
     
-    If cmdBar.previewsAllowed Then
+    If cmdBar.PreviewsAllowed Then
         If CBool(chkDither) Then
             ReduceImageColors_BitRGB_ErrorDif sltRed, sltGreen, sltBlue, CBool(chkSmartColors.Value), True, pdFxPreview
         Else
@@ -192,7 +194,7 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -290,7 +292,7 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
     Next y
         If toPreview = False Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -348,7 +350,7 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -361,7 +363,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -494,7 +496,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
         
         If toPreview = False Then
             If (y And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal y
             End If
         End If
@@ -586,7 +588,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 

@@ -32,7 +32,6 @@ Begin VB.Form FormOilPainting
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -55,6 +54,7 @@ Begin VB.Form FormOilPainting
       Min             =   1
       Max             =   200
       Value           =   5
+      DefaultValue    =   5
    End
    Begin PhotoDemon.pdSlider sltPercent 
       Height          =   705
@@ -68,6 +68,7 @@ Begin VB.Form FormOilPainting
       Min             =   1
       Max             =   50
       Value           =   15
+      DefaultValue    =   15
    End
 End
 Attribute VB_Name = "FormOilPainting"
@@ -104,7 +105,7 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     'Parse out the parameter list
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    cParams.setParamString parameterList
+    cParams.SetParamString parameterList
     
     Dim mRadius As Long, mLevels As Double, kernelShape As PD_PIXEL_REGION_SHAPE
     mRadius = cParams.GetLong("radius", 1&)
@@ -116,20 +117,20 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent processed pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
@@ -142,8 +143,8 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
     
     'Just to be safe, make sure the radius isn't larger than the image itself
     If (finalY - initY) < (finalX - initX) Then
@@ -453,7 +454,7 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
         atBottom = Not atBottom
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -466,11 +467,11 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    srcDIB.eraseDIB
+    srcDIB.EraseDIB
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
 
 End Sub
 
@@ -489,7 +490,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -497,7 +498,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews while we initialize the dialog
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
 End Sub
 
@@ -514,7 +515,7 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyOilPaintingEffect GetLocalParamString(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyOilPaintingEffect GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -523,7 +524,7 @@ Private Sub pdFxPreview_ViewportChanged()
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = buildParamList("radius", sltRadius.Value, "levels", sltPercent.Value)
+    GetLocalParamString = BuildParamList("radius", sltRadius.Value, "levels", sltPercent.Value)
 End Function
 
 

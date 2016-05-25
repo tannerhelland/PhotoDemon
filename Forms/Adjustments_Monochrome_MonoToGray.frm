@@ -32,7 +32,6 @@ Begin VB.Form FormMonoToColor
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -55,6 +54,7 @@ Begin VB.Form FormMonoToColor
       Min             =   1
       Max             =   8
       Value           =   3
+      DefaultValue    =   3
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -125,7 +125,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -135,9 +135,9 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -379,7 +379,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
         atBottom = Not atBottom
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -393,13 +393,13 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
 
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Monochrome to grayscale", , buildParams(sltRadius.Value), UNDO_LAYER
+    Process "Monochrome to grayscale", , BuildParams(sltRadius.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -415,7 +415,7 @@ Private Sub Form_Activate()
     lblExplanation.Caption = g_Language.TranslateMessage("Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)")
     
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -423,7 +423,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews while we initialize the dialog
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
     iWidth = pdImages(g_CurrentImage).Width
@@ -436,7 +436,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ConvertMonoToColor sltRadius.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ConvertMonoToColor sltRadius.Value, True, pdFxPreview
 End Sub
 
 Private Sub sltRadius_Change()

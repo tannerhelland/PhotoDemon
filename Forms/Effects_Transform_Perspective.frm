@@ -33,7 +33,6 @@ Begin VB.Form FormPerspective
       Width           =   15135
       _ExtentX        =   26696
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin VB.PictureBox picDraw 
       Appearance      =   0  'Flat
@@ -63,7 +62,7 @@ Begin VB.Form FormPerspective
       Height          =   705
       Left            =   120
       TabIndex        =   2
-      Top             =   6840
+      Top             =   6960
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   1270
@@ -75,46 +74,24 @@ Begin VB.Form FormPerspective
       NotchValueCustom=   2
    End
    Begin PhotoDemon.pdDropDown cboEdges 
-      Height          =   375
-      Left            =   240
+      Height          =   735
+      Left            =   120
       TabIndex        =   4
-      Top             =   8160
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   120
-      Top             =   5880
-      Width           =   5685
-      _ExtentX        =   10028
-      _ExtentY        =   503
-      Caption         =   "transformation type"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   1
-      Left            =   120
       Top             =   7800
-      Width           =   5715
-      _ExtentX        =   10081
-      _ExtentY        =   503
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1296
       Caption         =   "if pixels lie outside the image..."
-      FontSize        =   12
-      ForeColor       =   4210752
    End
    Begin PhotoDemon.pdDropDown cboMapping 
-      Height          =   375
-      Left            =   240
+      Height          =   735
+      Left            =   120
       TabIndex        =   5
-      Top             =   6240
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
+      Top             =   6000
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1296
+      Caption         =   "transformation type"
    End
 End
 Attribute VB_Name = "FormPerspective"
@@ -195,7 +172,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -205,9 +182,9 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so transfer all relevant loop data here
@@ -225,7 +202,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     'Parse the incoming parameter string into individual (x, y) pairs
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(listOfModifiers) <> 0 Then cParams.setParamString listOfModifiers
+    If Len(listOfModifiers) <> 0 Then cParams.SetParamString listOfModifiers
     
     'See if the user wants a rect -> quad ("Normal" in GIMP) or quad -> rect ("Corrective" in GIMP) mapping
     Dim correctiveProjection As Boolean
@@ -530,7 +507,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -544,7 +521,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
 End Sub
 
@@ -565,7 +542,7 @@ Private Sub cmdBar_AddCustomPresetData()
         If i < 3 Then nodeString = nodeString & "|"
     Next i
     
-    cmdBar.addPresetData "NodeLocations", nodeString
+    cmdBar.AddPresetData "NodeLocations", nodeString
     
 End Sub
 
@@ -590,12 +567,12 @@ Private Sub cmdBar_ReadCustomPresetData()
     
     'Retrieve the string that contains the node coordinates
     Dim tmpString As String
-    tmpString = cmdBar.retrievePresetData("NodeLocations")
+    tmpString = cmdBar.RetrievePresetData("NodeLocations")
     
     'With the help of a paramString class, parse out individual coordinates into the cNodes array
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.setParamString Replace(tmpString, ",", "|")
+    cParams.SetParamString Replace(tmpString, ",", "|")
     
     Dim i As Long
     For i = 0 To 3
@@ -639,7 +616,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
         
     'Create the preview
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     redrawPreviewBox
     UpdatePreview
     
@@ -648,7 +625,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable all previews while we initialize the dialog
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
@@ -669,7 +646,7 @@ Private Sub Form_Load()
     End If
         
     'Determine the size of the preview image
-    convertAspectRatio iWidth, iHeight, pdFxPreview.getPreviewWidth, pdFxPreview.getPreviewHeight, m_previewWidth, m_previewHeight
+    ConvertAspectRatio iWidth, iHeight, pdFxPreview.GetPreviewWidth, pdFxPreview.GetPreviewHeight, m_previewWidth, m_previewHeight
     
     'Determine initial points for the draw area
     m_oPoints(0).pX = (picDraw.ScaleWidth - m_previewWidth) / 2
@@ -702,7 +679,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then PerspectiveImage getPerspectiveParamString, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then PerspectiveImage getPerspectiveParamString, True, pdFxPreview
 End Sub
 
 Private Sub redrawPreviewBox()
@@ -728,10 +705,10 @@ Private Sub redrawPreviewBox()
             End If
         Next i
     Else
-        If cmdBar.previewsAllowed Then
+        If cmdBar.PreviewsAllowed Then
             Dim tmpSA As SAFEARRAY2D
-            prepImageData tmpSA, True, pdFxPreview
-            StretchBlt picDraw.hDC, m_oPoints(0).pX, m_oPoints(0).pY, m_oPoints(1).pX - m_oPoints(0).pX, m_oPoints(2).pY - m_oPoints(0).pY, workingDIB.getDIBDC, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, vbSrcCopy
+            PrepImageData tmpSA, True, pdFxPreview
+            StretchBlt picDraw.hDC, m_oPoints(0).pX, m_oPoints(0).pY, m_oPoints(1).pX - m_oPoints(0).pX, m_oPoints(2).pY - m_oPoints(0).pY, workingDIB.GetDIBDC, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, vbSrcCopy
         End If
     End If
     

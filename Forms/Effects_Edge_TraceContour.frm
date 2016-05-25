@@ -32,7 +32,6 @@ Begin VB.Form FormContour
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdCheckBox chkBlackBackground 
       Height          =   375
@@ -75,6 +74,7 @@ Begin VB.Form FormContour
       Min             =   1
       Max             =   30
       Value           =   1
+      DefaultValue    =   1
    End
 End
 Attribute VB_Name = "FormContour"
@@ -114,13 +114,13 @@ Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boole
             
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
@@ -129,8 +129,8 @@ Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boole
     End If
     
     Dim finalX As Long, finalY As Long
-    finalX = workingDIB.getDIBWidth
-    finalY = workingDIB.getDIBHeight
+    finalX = workingDIB.GetDIBWidth
+    finalY = workingDIB.GetDIBHeight
         
     If useSmoothing Then
     
@@ -164,16 +164,16 @@ Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boole
         End If
     End If
     
-    srcDIB.eraseDIB
+    srcDIB.EraseDIB
     Set srcDIB = Nothing
         
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Trace contour", , buildParams(sltThickness, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value)), UNDO_LAYER
+    Process "Trace contour", , BuildParams(sltThickness, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -203,7 +203,7 @@ Private Sub sltThickness_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then TraceContour sltThickness, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then TraceContour sltThickness, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

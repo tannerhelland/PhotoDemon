@@ -32,7 +32,6 @@ Begin VB.Form FormSurfaceBlur
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -56,6 +55,7 @@ Begin VB.Form FormSurfaceBlur
       Max             =   200
       SigDigits       =   1
       Value           =   5
+      DefaultValue    =   5
    End
    Begin PhotoDemon.pdSlider sltThreshold 
       Height          =   705
@@ -68,6 +68,7 @@ Begin VB.Form FormSurfaceBlur
       Caption         =   "threshold"
       Max             =   255
       Value           =   50
+      DefaultValue    =   50
    End
    Begin PhotoDemon.pdButtonStrip btsQuality 
       Height          =   1080
@@ -135,13 +136,13 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim gaussDIB As pdDIB
     Set gaussDIB = New pdDIB
-    gaussDIB.createFromExistingDIB workingDIB
+    gaussDIB.CreateFromExistingDIB workingDIB
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -190,21 +191,21 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
         
         Dim srcDIB As pdDIB
         Set srcDIB = New pdDIB
-        srcDIB.createFromExistingDIB workingDIB
+        srcDIB.CreateFromExistingDIB workingDIB
         
         'Now that we have a gaussian DIB created in gaussDIB, we can point arrays toward it and the source DIB
         Dim dstImageData() As Byte
-        prepImageData dstSA, toPreview, dstPic
+        PrepImageData dstSA, toPreview, dstPic
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
         Dim srcImageData() As Byte
         Dim srcSA As SAFEARRAY2D
-        prepSafeArray srcSA, srcDIB
+        PrepSafeArray srcSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
             
         Dim GaussImageData() As Byte
         Dim gaussSA As SAFEARRAY2D
-        prepSafeArray gaussSA, gaussDIB
+        PrepSafeArray gaussSA, gaussDIB
         CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
                 
         'These values will help us access locations in the array more quickly.
@@ -268,7 +269,7 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
         Next y
             If Not toPreview Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal x + progBarCalculation
                 End If
             End If
@@ -278,7 +279,7 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
         CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
         Erase GaussImageData
         
-        gaussDIB.eraseDIB
+        gaussDIB.EraseDIB
         Set gaussDIB = Nothing
         
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -290,7 +291,7 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -303,7 +304,7 @@ Private Sub btsQuality_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Surface blur", , buildParams(sltRadius, sltThreshold, CBool(btsArea.ListIndex = 1), btsQuality.ListIndex), UNDO_LAYER
+    Process "Surface blur", , BuildParams(sltRadius, sltThreshold, CBool(btsArea.ListIndex = 1), btsQuality.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -320,7 +321,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
         
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -328,7 +329,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully loaded
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Apply button strip captions
     btsArea.AddItem "smooth areas", 0
@@ -360,7 +361,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then SurfaceBlurFilter sltRadius, sltThreshold, CBool(btsArea.ListIndex = 1), btsQuality.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then SurfaceBlurFilter sltRadius, sltThreshold, CBool(btsArea.ListIndex = 1), btsQuality.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

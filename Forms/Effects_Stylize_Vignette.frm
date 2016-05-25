@@ -47,7 +47,6 @@ Begin VB.Form FormVignette
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdRadioButton optShape 
       Height          =   360
@@ -94,7 +93,7 @@ Begin VB.Form FormVignette
       Caption         =   "radius"
       Min             =   1
       Max             =   100
-      Value           =   60
+      Value           =   50
       NotchPosition   =   2
       NotchValueCustom=   50
    End
@@ -109,7 +108,8 @@ Begin VB.Form FormVignette
       Caption         =   "softness"
       Min             =   1
       Max             =   100
-      Value           =   30
+      Value           =   1
+      DefaultValue    =   1
    End
    Begin PhotoDemon.pdSlider sltTransparency 
       Height          =   705
@@ -122,7 +122,8 @@ Begin VB.Form FormVignette
       Caption         =   "strength"
       Min             =   1
       Max             =   100
-      Value           =   80
+      Value           =   100
+      DefaultValue    =   100
    End
    Begin PhotoDemon.pdColorSelector colorPicker 
       Height          =   930
@@ -223,7 +224,7 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -359,7 +360,7 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -370,12 +371,12 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Vignetting", , buildParams(sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Vignetting", , BuildParams(sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -417,10 +418,10 @@ End Sub
 'The user can right-click the preview area to select a new center point
 Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
     
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -443,7 +444,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

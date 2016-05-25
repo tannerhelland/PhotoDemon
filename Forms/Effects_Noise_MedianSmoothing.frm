@@ -32,7 +32,6 @@ Begin VB.Form FormMedian
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -55,6 +54,7 @@ Begin VB.Form FormMedian
       Min             =   1
       Max             =   200
       Value           =   5
+      DefaultValue    =   1
    End
    Begin PhotoDemon.pdSlider sltPercent 
       Height          =   705
@@ -127,7 +127,7 @@ Public Sub ApplyMedianFilter(ByVal parameterList As String, Optional ByVal toPre
     'Parse out the parameter list
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    cParams.setParamString parameterList
+    cParams.SetParamString parameterList
     
     Dim mRadius As Long, mPercent As Double, kernelShape As PD_PIXEL_REGION_SHAPE
     mRadius = cParams.GetLong("radius", 1&)
@@ -146,7 +146,7 @@ Public Sub ApplyMedianFilter(ByVal parameterList As String, Optional ByVal toPre
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
@@ -158,15 +158,15 @@ Public Sub ApplyMedianFilter(ByVal parameterList As String, Optional ByVal toPre
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
     CreateMedianDIB mRadius, mPercent, kernelShape, srcDIB, workingDIB, toPreview
     
-    srcDIB.eraseDIB
+    srcDIB.EraseDIB
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
 
 End Sub
 
@@ -222,7 +222,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -230,7 +230,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews while we get everything initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Populate the kernel shape box with whatever shapes PD currently supports
     Interface.PopKernelShapeButtonStrip btsKernelShape, PDPRS_Circle
@@ -248,14 +248,14 @@ Public Sub showMedianDialog(ByVal initPercentage As Long)
         Me.Caption = g_Language.TranslateMessage("Erode (Minimum rank filter)")
         sltPercent.Value = 1
         sltPercent.Visible = False
-        cmdBar.setToolName "Erode"
+        cmdBar.SetToolName "Erode"
         curMode = MEDIAN_ERODE
         
     ElseIf initPercentage = 100 Then
         Me.Caption = g_Language.TranslateMessage("Dilate (Maximum rank filter)")
         sltPercent.Value = 100
         sltPercent.Visible = False
-        cmdBar.setToolName "Dilate"
+        cmdBar.SetToolName "Dilate"
         curMode = MEDIAN_DILATE
         
     Else
@@ -279,7 +279,7 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyMedianFilter GetLocalParamString(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyMedianFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

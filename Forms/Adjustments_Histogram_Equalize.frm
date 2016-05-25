@@ -36,6 +36,7 @@ Begin VB.Form FormEqualize
       Max             =   100
       Value           =   1
       GradientColorRight=   1703935
+      DefaultValue    =   1
    End
    Begin PhotoDemon.pdButtonStrip btsTarget 
       Height          =   1095
@@ -56,7 +57,6 @@ Begin VB.Form FormEqualize
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -118,7 +118,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     'Parse out the parameter list
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    cParams.setParamString parameterList
+    cParams.SetParamString parameterList
     
     Dim ehTarget As Long, ehMode As Long, ehRadius As Long, kernelShape As PD_PIXEL_REGION_SHAPE
     ehTarget = cParams.GetLong("target", 0&)
@@ -129,14 +129,14 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
     
     'Local histogram equalizing requires a second copy of the source image
     Dim srcDIB As pdDIB
     If ehMode <> 0 Then
         Set srcDIB = New pdDIB
-        srcDIB.createFromExistingDIB workingDIB
+        srcDIB.CreateFromExistingDIB workingDIB
     End If
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
@@ -324,7 +324,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
         Next x
             If Not toPreview Then
                 If (y And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal y + finalY
                 End If
             End If
@@ -465,7 +465,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                 'Update the progress bar every (progBarCheck) lines
                 If Not toPreview Then
                     If (x And progBarCheck) = 0 Then
-                        If userPressedESC() Then Exit For
+                        If UserPressedESC() Then Exit For
                         SetProgBarVal x
                     End If
                 End If
@@ -481,7 +481,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
             
         End If
         
-        srcDIB.eraseDIB
+        srcDIB.EraseDIB
     
     End If
     
@@ -490,7 +490,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -521,14 +521,14 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Request a preview
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
 
 Private Sub Form_Load()
     
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     btsTarget.AddItem "RGB", 0
     btsTarget.AddItem "luminance", 1
@@ -564,7 +564,7 @@ Private Sub UpdateRadiusVisibility()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then EqualizeHistogram GetLocalParamString(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then EqualizeHistogram GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Function GetLocalParamString() As String

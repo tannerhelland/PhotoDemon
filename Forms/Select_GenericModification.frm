@@ -47,6 +47,7 @@ Begin VB.Form FormSelectionDialogs
       Min             =   1
       Max             =   500
       Value           =   1
+      DefaultValue    =   1
    End
 End
 Attribute VB_Name = "FormSelectionDialogs"

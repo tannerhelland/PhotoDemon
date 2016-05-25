@@ -48,16 +48,16 @@ Public Function ConvertPixelToOtherUnit(ByVal curUnit As MeasurementUnit, ByVal 
     Select Case curUnit
     
         Case MU_PERCENT
-            If initPixelValue <> 0 Then ConvertPixelToOtherUnit = (srcPixelValue / initPixelValue) * 100
+            If (initPixelValue <> 0) Then ConvertPixelToOtherUnit = (srcPixelValue / initPixelValue) * 100
             
         Case MU_PIXELS
             ConvertPixelToOtherUnit = srcPixelValue
             
         Case MU_INCHES
-            If srcPixelResolution <> 0 Then ConvertPixelToOtherUnit = srcPixelValue / srcPixelResolution
+            If (srcPixelResolution <> 0) Then ConvertPixelToOtherUnit = srcPixelValue / srcPixelResolution
         
         Case MU_CENTIMETERS
-            If srcPixelResolution <> 0 Then ConvertPixelToOtherUnit = GetCMFromInches(srcPixelValue / srcPixelResolution)
+            If (srcPixelResolution <> 0) Then ConvertPixelToOtherUnit = GetCMFromInches(srcPixelValue / srcPixelResolution)
     
     End Select
 

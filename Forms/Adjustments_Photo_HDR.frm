@@ -32,7 +32,6 @@ Begin VB.Form FormHDR
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -55,6 +54,7 @@ Begin VB.Form FormHDR
       Min             =   1
       Max             =   100
       Value           =   50
+      DefaultValue    =   50
    End
    Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
@@ -69,6 +69,7 @@ Begin VB.Form FormHDR
       Max             =   100
       SigDigits       =   1
       Value           =   50
+      DefaultValue    =   50
    End
 End
 Attribute VB_Name = "FormHDR"
@@ -143,7 +144,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -153,9 +154,9 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -496,7 +497,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
         atBottom = Not atBottom
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -510,7 +511,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
 
 End Sub
 
@@ -523,13 +524,13 @@ Public Sub ApplyImitationHDR(ByVal fxQuality As Double, ByVal blendStrength As D
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -578,7 +579,7 @@ Public Sub ApplyImitationHDR(ByVal fxQuality As Double, ByVal blendStrength As D
         
         Dim srcImageData() As Byte
         Dim srcSA As SAFEARRAY2D
-        prepSafeArray srcSA, srcDIB
+        PrepSafeArray srcSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
         'These values will help us access locations in the array more quickly.
@@ -662,7 +663,7 @@ Public Sub ApplyImitationHDR(ByVal fxQuality As Double, ByVal blendStrength As D
         Next y
             If Not toPreview Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal progBarCalculation + x
                 End If
             End If
@@ -671,7 +672,7 @@ Public Sub ApplyImitationHDR(ByVal fxQuality As Double, ByVal blendStrength As D
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         Erase srcImageData
         
-        srcDIB.eraseDIB
+        srcDIB.EraseDIB
         Set srcDIB = Nothing
         
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
@@ -680,13 +681,13 @@ Public Sub ApplyImitationHDR(ByVal fxQuality As Double, ByVal blendStrength As D
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "HDR", , buildParams(sltRadius.Value, sltStrength.Value), UNDO_LAYER
+    Process "HDR", , BuildParams(sltRadius.Value, sltStrength.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -704,7 +705,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -712,7 +713,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previews while we initialize everything
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
 End Sub
 
@@ -725,7 +726,7 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyImitationHDR sltRadius.Value, sltStrength.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyImitationHDR sltRadius.Value, sltStrength.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

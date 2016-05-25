@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.176</langversion>
+<langversion>6.7.178</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -7576,47 +7576,6 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 
 <!-- END text for Adjustments_WhiteBalance.frm-->
 
-<!-- BEGIN text for Dialog_AlphaCutoff.frm (dialog_AlphaCutoff) -->
-
-<phrase>
-<original>Please choose a transparency threshold</original>
-<translation>Bitte einen Transparenz-Schwellenwert wählen</translation>
-</phrase>
-
-<phrase>
-<original>background color for compositing</original>
-<translation>Hintergrundfarbe für Compositing</translation>
-</phrase>
-
-<phrase>
-<original>transparency cut-off</original>
-<translation>Transparenz-Grenze</translation>
-</phrase>
-
-<phrase>
-<original>maximum transparency</original>
-<translation>Maximale Transparenz</translation>
-</phrase>
-
-<phrase>
-<original>no transparency</original>
-<translation>Keine Transparenz</translation>
-</phrase>
-
-<phrase>
-<original>This image has a complex alpha channel.  Before it can be saved as a paletted image (8bpp), the alpha channel must be simplified.</original>
-<translation>Dieses Bild hat einen komplexen Alphakanal. Bevor es als palettenbasiertes Bild (8bpp) gespeichert werden kann, muss der Alphakanal vereinfacht werden.</translation>
-</phrase>
-
-<phrase>
-<original>Waiting for user to specify alpha threshold</original>
-<translation>Warten auf Benutzereingabe, um Alpha-Schwellenwert zu spezifizieren</translation>
-</phrase>
-
-<!-- Dialog_AlphaCutoff.frm contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
-
-<!-- END text for Dialog_AlphaCutoff.frm-->
-
 <!-- BEGIN text for Dialog_AutosaveFound.frm (dialog_AutosaveWarning) -->
 
 <phrase>
@@ -9356,6 +9315,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>edge detection technique</original>
+<translation>Kantenerkennungsverfahren</translation>
+</phrase>
+
+<phrase>
 <original>horizontal</original>
 <translation>Horizontal</translation>
 </phrase>
@@ -9371,13 +9335,13 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>edge detection technique</original>
-<translation>Kantenerkennungsverfahren</translation>
+<original>Applying pass %1 of %2 for %3 filter</original>
+<translation>Durchlauf %1 von %2 für Filter %3 wird angewendet</translation>
 </phrase>
 
 <phrase>
-<original>Applying pass %1 of %2 for %3 filter</original>
-<translation>Durchlauf %1 von %2 für Filter %3 wird angewendet</translation>
+<original>Artistic contour edge detection</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9450,7 +9414,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Sobel</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 30 phrases. 10 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 32 phrases. 11 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -10537,6 +10501,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>no transparency</original>
+<translation>Keine Transparenz</translation>
+</phrase>
+
+<phrase>
+<original>maximum transparency</original>
+<translation>Maximale Transparenz</translation>
+</phrase>
+
+<phrase>
 <original>export PPM files using</original>
 <translation>PPM-Dateien exportieren unter Verwendung</translation>
 </phrase>
@@ -11219,7 +11193,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 <translation>Verarbeitet vor Abbruch. Letzte verarbeitete Bild war "%1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 264 phrases. 88 were duplicates of existing phrases, so only 176 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 264 phrases. 86 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13109,21 +13083,6 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei "
 </phrase>
 
 <phrase>
-<original>Reset layer angle</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Reset horizontal layer shear</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Reset vertical layer shear</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>size and position</original>
 <translation></translation>
 </phrase>
@@ -13149,26 +13108,11 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei "
 </phrase>
 
 <phrase>
-<original>Reset layer angle to zero</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Reset horizontal layer shear to zero</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Reset vertical layer shear to zero</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Nearest neighbor</original>
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 32 phrases. 7 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 26 phrases. 7 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_MoveSize.frm-->
 
@@ -13201,18 +13145,13 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei "
 <!-- BEGIN text for Toolpanel_Selections.frm (toolpanel_Selections) -->
 
 <phrase>
+<original>smoothing</original>
+<translation>Glättung</translation>
+</phrase>
+
+<phrase>
 <original>area</original>
 <translation>Bereich</translation>
-</phrase>
-
-<phrase>
-<original>tolerance</original>
-<translation>Toleranz</translation>
-</phrase>
-
-<phrase>
-<original>sampling area</original>
-<translation>Sampling-Bereich</translation>
 </phrase>
 
 <phrase>
@@ -13223,11 +13162,6 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei "
 <phrase>
 <original>size (w, h)</original>
 <translation>Größe (B, H)</translation>
-</phrase>
-
-<phrase>
-<original>smoothing</original>
-<translation>Glättung</translation>
 </phrase>
 
 <phrase>
@@ -13248,6 +13182,16 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei "
 <phrase>
 <original>stroke smoothing</original>
 <translation>Strichglättung</translation>
+</phrase>
+
+<phrase>
+<original>tolerance</original>
+<translation>Toleranz</translation>
+</phrase>
+
+<phrase>
+<original>sampling area</original>
+<translation>Sampling-Bereich</translation>
 </phrase>
 
 <phrase>
@@ -13448,31 +13392,6 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei "
 <!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>fill background</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>border style</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>background border</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>fill text</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>outline text</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>line wrap</original>
 <translation></translation>
 </phrase>
@@ -13519,6 +13438,31 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei "
 
 <phrase>
 <original>hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill background</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>border style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background border</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outline text</original>
 <translation></translation>
 </phrase>
 
@@ -15190,10 +15134,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2598</phrasecount>
+<phrasecount>2588</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4522 phrases. -->
-<!-- 1924 are duplicates, so only 2598 unique phrases have been written to file. -->
-<!-- These 2598 phrases contain approximately 13370 total words. -->
+<!-- As of this build, PhotoDemon contains 4511 phrases. -->
+<!-- 1923 are duplicates, so only 2588 unique phrases have been written to file. -->
+<!-- These 2588 phrases contain approximately 13305 total words. -->
 
 </pdData>

@@ -42,7 +42,6 @@ Begin VB.Form FormCrystallize
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5475
@@ -65,6 +64,7 @@ Begin VB.Form FormCrystallize
       Min             =   3
       Max             =   200
       Value           =   50
+      DefaultValue    =   50
    End
    Begin PhotoDemon.pdSlider sltTurbulence 
       Height          =   705
@@ -78,8 +78,7 @@ Begin VB.Form FormCrystallize
       Max             =   1
       SigDigits       =   2
       Value           =   0.5
-      NotchPosition   =   2
-      NotchValueCustom=   100
+      DefaultValue    =   0.5
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -161,7 +160,7 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -196,7 +195,7 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
     Set cVoronoi = New pdVoronoi
     
     'Pass all meaningful input parameters on to the Voronoi class
-    cVoronoi.initPoints cellSize, workingDIB.getDIBWidth, workingDIB.getDIBHeight
+    cVoronoi.initPoints cellSize, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
     cVoronoi.randomizePoints fxTurbulence, m_RndSeed
     cVoronoi.setDistanceMode distanceMethod
     cVoronoi.setShadingMode NO_SHADE
@@ -271,7 +270,7 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -350,7 +349,7 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal finalX + x
             End If
         End If
@@ -366,7 +365,7 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
 '    Next x
         
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -380,7 +379,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Crystallize", , buildParams(sltSize, sltTurbulence, cboColorSampling.ListIndex, cboDistance.ListIndex), UNDO_LAYER
+    Process "Crystallize", , BuildParams(sltSize, sltTurbulence, cboColorSampling.ListIndex, cboDistance.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -398,7 +397,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Request a preview
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -406,7 +405,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Provide with user with several color sampling options
     cboColorSampling.Clear
@@ -434,7 +433,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxCrystallize sltSize, sltTurbulence, cboColorSampling.ListIndex, cboDistance.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then fxCrystallize sltSize, sltTurbulence, cboColorSampling.ListIndex, cboDistance.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

@@ -32,7 +32,6 @@ Begin VB.Form FormReplaceColor
       Width           =   11820
       _ExtentX        =   20849
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -55,6 +54,7 @@ Begin VB.Form FormReplaceColor
       Caption         =   "replace threshold"
       Max             =   199
       Value           =   15
+      DefaultValue    =   15
    End
    Begin PhotoDemon.pdSlider sltBlend 
       Height          =   705
@@ -67,6 +67,7 @@ Begin VB.Form FormReplaceColor
       Caption         =   "edge blending"
       Max             =   200
       Value           =   15
+      DefaultValue    =   15
    End
    Begin PhotoDemon.pdColorSelector colorOld 
       Height          =   975
@@ -116,7 +117,7 @@ Option Explicit
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Replace color", , buildParams(colorOld.Color, colorNew.Color, sltErase.Value, sltBlend.Value), UNDO_LAYER
+    Process "Replace color", , BuildParams(colorOld.Color, colorNew.Color, sltErase.Value, sltBlend.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -162,10 +163,10 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
     'Call prepImageData, which will prepare a temporary copy of the image
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
         
     'Create a local array and point it at the pixel data we want to operate on
-    prepSafeArray tmpSA, workingDIB
+    PrepSafeArray tmpSA, workingDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -178,7 +179,7 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = workingDIB.getDIBColorDepth \ 8
+    qvDepth = workingDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -272,7 +273,7 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -283,7 +284,7 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -297,7 +298,7 @@ End Sub
 
 'Render a new preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ReplaceSelectedColor colorOld.Color, colorNew.Color, sltErase.Value, sltBlend.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ReplaceSelectedColor colorOld.Color, colorNew.Color, sltErase.Value, sltBlend.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

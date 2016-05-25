@@ -33,7 +33,6 @@ Begin VB.Form FormMosaic
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdCheckBox chkUnison 
       Height          =   330
@@ -66,6 +65,7 @@ Begin VB.Form FormMosaic
       Min             =   1
       Max             =   64
       Value           =   2
+      DefaultValue    =   2
    End
    Begin PhotoDemon.pdSlider sltHeight 
       Height          =   705
@@ -79,6 +79,7 @@ Begin VB.Form FormMosaic
       Min             =   1
       Max             =   64
       Value           =   2
+      DefaultValue    =   2
    End
    Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
@@ -128,13 +129,13 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     'Grab a copy of the relevant pixel data from PD's main image data handler
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic, , , True
+    PrepImageData dstSA, toPreview, dstPic, , , True
     
     'Make a note of the original image's size; we need this so we can restore the image to its original angle after
     ' the pixelation is complete.
     Dim origWidth As Long, origHeight As Long
-    origWidth = workingDIB.getDIBWidth
-    origHeight = workingDIB.getDIBHeight
+    origWidth = workingDIB.GetDIBWidth
+    origHeight = workingDIB.GetDIBHeight
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent already-mosaic'ed pixels from affecting the results of later pixels.)
@@ -147,9 +148,9 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     'If an angle has been specified, we need to pre-rotate the image to match.
     If blockAngle <> 0 Then
         GDI_Plus.GDIPlus_GetRotatedClampedDIB workingDIB, srcDIB, blockAngle
-        workingDIB.createFromExistingDIB srcDIB
+        workingDIB.CreateFromExistingDIB srcDIB
     Else
-        srcDIB.createFromExistingDIB workingDIB
+        srcDIB.CreateFromExistingDIB workingDIB
     End If
     
     'Only now can we safely point arrays at their DIBs, as the DIBs will not be recreated again.  Note that we reverse
@@ -157,11 +158,11 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     ' extra BitBlt after the operation is complete.
     
     If blockAngle = 0 Then
-        prepSafeArray dstSA, workingDIB
-        prepSafeArray srcSA, srcDIB
+        PrepSafeArray dstSA, workingDIB
+        PrepSafeArray srcSA, srcDIB
     Else
-        prepSafeArray dstSA, srcDIB
-        prepSafeArray srcSA, workingDIB
+        PrepSafeArray dstSA, srcDIB
+        PrepSafeArray srcSA, workingDIB
     End If
     
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
@@ -171,8 +172,8 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = workingDIB.getDIBWidth - 1
-    finalY = workingDIB.getDIBHeight - 1
+    finalX = workingDIB.GetDIBWidth - 1
+    finalY = workingDIB.GetDIBHeight - 1
     
     'If this is a preview, we need to adjust the mosaic values to match the size of the preview box
     If toPreview Then
@@ -189,8 +190,8 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     
     'Calculate how many mosaic tiles will fit on the current image's size
     Dim xLoop As Long, yLoop As Long
-    xLoop = initX + Int(workingDIB.getDIBWidth \ BlockSizeX) + 1
-    yLoop = initY + Int(workingDIB.getDIBHeight \ BlockSizeY) + 1
+    xLoop = initX + Int(workingDIB.GetDIBWidth \ BlockSizeX) + 1
+    yLoop = initY + Int(workingDIB.GetDIBHeight \ BlockSizeY) + 1
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -285,7 +286,7 @@ NextPixelatePixel3:
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -300,18 +301,18 @@ NextPixelatePixel3:
     
     'If rotation was applied, restore the image to its original orientation.
     If blockAngle <> 0 Then
-        workingDIB.createBlank origWidth, origHeight, srcDIB.getDIBColorDepth, 0, 0
+        workingDIB.CreateBlank origWidth, origHeight, srcDIB.GetDIBColorDepth, 0, 0
         GDI_Plus.GDIPlus_RotateDIBPlgStyle srcDIB, workingDIB, -blockAngle, True
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic, True
+    FinalizeImageData toPreview, dstPic, True
     
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Mosaic", , buildParams(sltWidth.Value, sltHeight.Value, sltAngle.Value), UNDO_LAYER
+    Process "Mosaic", , BuildParams(sltWidth.Value, sltHeight.Value, sltAngle.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -330,7 +331,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Request a preview
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -338,7 +339,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(g_CurrentImage).selectionActive Then
@@ -374,7 +375,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then MosaicFilter sltWidth.Value, sltHeight.Value, sltAngle.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then MosaicFilter sltWidth.Value, sltHeight.Value, sltAngle.Value, True, pdFxPreview
 End Sub
 
 Private Sub sltAngle_Change()

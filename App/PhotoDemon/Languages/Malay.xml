@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.175</langversion>
+<langversion>6.7.177</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -7585,47 +7585,6 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 
 <!-- END text for Adjustments_WhiteBalance.frm-->
 
-<!-- BEGIN text for Dialog_AlphaCutoff.frm (dialog_AlphaCutoff) -->
-
-<phrase>
-<original>Please choose a transparency threshold</original>
-<translation>Sila pilih ambang ketelusan</translation>
-</phrase>
-
-<phrase>
-<original>background color for compositing</original>
-<translation>warna latar belakang untuk penulisan</translation>
-</phrase>
-
-<phrase>
-<original>transparency cut-off</original>
-<translation>ketelusan potong</translation>
-</phrase>
-
-<phrase>
-<original>maximum transparency</original>
-<translation>ketelusan maksimum</translation>
-</phrase>
-
-<phrase>
-<original>no transparency</original>
-<translation>ada ketelusan</translation>
-</phrase>
-
-<phrase>
-<original>This image has a complex alpha channel.  Before it can be saved as a paletted image (8bpp), the alpha channel must be simplified.</original>
-<translation>Imej ini mempunyai saluran alpha kompleks. Sebelum ia boleh disimpan sebagai imej paletted (8bpp), saluran alfa mesti dipermudahkan.</translation>
-</phrase>
-
-<phrase>
-<original>Waiting for user to specify alpha threshold</original>
-<translation>Menunggu pengguna untuk menentukan ambang alpha</translation>
-</phrase>
-
-<!-- Dialog_AlphaCutoff.frm contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
-
-<!-- END text for Dialog_AlphaCutoff.frm-->
-
 <!-- BEGIN text for Dialog_AutosaveFound.frm (dialog_AutosaveWarning) -->
 
 <phrase>
@@ -9365,6 +9324,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
+<original>edge detection technique</original>
+<translation>teknik pengesanan pinggir</translation>
+</phrase>
+
+<phrase>
 <original>horizontal</original>
 <translation>mendatar</translation>
 </phrase>
@@ -9380,13 +9344,13 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>edge detection technique</original>
-<translation>teknik pengesanan pinggir</translation>
+<original>Applying pass %1 of %2 for %3 filter</original>
+<translation>Memohon pas %1 daripada %2 %untuk 3 penapis</translation>
 </phrase>
 
 <phrase>
-<original>Applying pass %1 of %2 for %3 filter</original>
-<translation>Memohon pas %1 daripada %2 %untuk 3 penapis</translation>
+<original>Artistic contour edge detection</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9459,7 +9423,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Cetak Timbul</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 30 phrases. 10 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 32 phrases. 11 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -10546,6 +10510,16 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
+<original>no transparency</original>
+<translation>ada ketelusan</translation>
+</phrase>
+
+<phrase>
+<original>maximum transparency</original>
+<translation>ketelusan maksimum</translation>
+</phrase>
+
+<phrase>
 <original>export PPM files using</original>
 <translation>mengeksport fail PPM menggunakan</translation>
 </phrase>
@@ -11228,7 +11202,7 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>diproses sebelum pembatalan. Last imej diproses adalah " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 264 phrases. 88 were duplicates of existing phrases, so only 176 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 264 phrases. 86 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13118,21 +13092,6 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 </phrase>
 
 <phrase>
-<original>Reset layer angle</original>
-<translation>sudut lapisan Reset</translation>
-</phrase>
-
-<phrase>
-<original>Reset horizontal layer shear</original>
-<translation>Tetapkan semula lapisan ricih mendatar</translation>
-</phrase>
-
-<phrase>
-<original>Reset vertical layer shear</original>
-<translation>Tetapkan semula lapisan ricih menegak</translation>
-</phrase>
-
-<phrase>
 <original>size and position</original>
 <translation>saiz dan kedudukan</translation>
 </phrase>
@@ -13158,26 +13117,11 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 </phrase>
 
 <phrase>
-<original>Reset layer angle to zero</original>
-<translation>Tetapkan semula sudut lapisan kepada sifar</translation>
-</phrase>
-
-<phrase>
-<original>Reset horizontal layer shear to zero</original>
-<translation>Tetapkan semula lapisan ricih mendatar kepada sifar</translation>
-</phrase>
-
-<phrase>
-<original>Reset vertical layer shear to zero</original>
-<translation>Tetapkan semula lapisan ricih menegak kepada sifar</translation>
-</phrase>
-
-<phrase>
 <original>Nearest neighbor</original>
 <translation>jiran terdekat</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 32 phrases. 7 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 26 phrases. 7 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_MoveSize.frm-->
 
@@ -13210,18 +13154,13 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <!-- BEGIN text for Toolpanel_Selections.frm (toolpanel_Selections) -->
 
 <phrase>
+<original>smoothing</original>
+<translation>pelicinan</translation>
+</phrase>
+
+<phrase>
 <original>area</original>
 <translation>kawasan</translation>
-</phrase>
-
-<phrase>
-<original>tolerance</original>
-<translation>toleransi</translation>
-</phrase>
-
-<phrase>
-<original>sampling area</original>
-<translation>kawasan persampelan</translation>
 </phrase>
 
 <phrase>
@@ -13232,11 +13171,6 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <phrase>
 <original>size (w, h)</original>
 <translation>saiz (w, h)</translation>
-</phrase>
-
-<phrase>
-<original>smoothing</original>
-<translation>pelicinan</translation>
 </phrase>
 
 <phrase>
@@ -13257,6 +13191,16 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <phrase>
 <original>stroke smoothing</original>
 <translation>strok pelicinan</translation>
+</phrase>
+
+<phrase>
+<original>tolerance</original>
+<translation>toleransi</translation>
+</phrase>
+
+<phrase>
+<original>sampling area</original>
+<translation>kawasan persampelan</translation>
 </phrase>
 
 <phrase>
@@ -13457,31 +13401,6 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>fill background</original>
-<translation>mengisi latar belakang</translation>
-</phrase>
-
-<phrase>
-<original>border style</original>
-<translation>gaya sempadan</translation>
-</phrase>
-
-<phrase>
-<original>background border</original>
-<translation>sempadan latar belakang</translation>
-</phrase>
-
-<phrase>
-<original>fill text</original>
-<translation>mengisi teks</translation>
-</phrase>
-
-<phrase>
-<original>outline text</original>
-<translation>teks garis</translation>
-</phrase>
-
-<phrase>
 <original>line wrap</original>
 <translation>balut baris</translation>
 </phrase>
@@ -13529,6 +13448,31 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <phrase>
 <original>hinting</original>
 <translation>mengisyaratkan</translation>
+</phrase>
+
+<phrase>
+<original>fill background</original>
+<translation>mengisi latar belakang</translation>
+</phrase>
+
+<phrase>
+<original>border style</original>
+<translation>gaya sempadan</translation>
+</phrase>
+
+<phrase>
+<original>background border</original>
+<translation>sempadan latar belakang</translation>
+</phrase>
+
+<phrase>
+<original>fill text</original>
+<translation>mengisi teks</translation>
+</phrase>
+
+<phrase>
+<original>outline text</original>
+<translation>teks garis</translation>
 </phrase>
 
 <phrase>
@@ -15199,10 +15143,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2598</phrasecount>
+<phrasecount>2588</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4522 phrases. -->
-<!-- 1924 are duplicates, so only 2598 unique phrases have been written to file. -->
-<!-- These 2598 phrases contain approximately 13370 total words. -->
+<!-- As of this build, PhotoDemon contains 4511 phrases. -->
+<!-- 1923 are duplicates, so only 2588 unique phrases have been written to file. -->
+<!-- These 2588 phrases contain approximately 13305 total words. -->
 
 </pdData>

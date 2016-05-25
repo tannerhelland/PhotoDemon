@@ -43,7 +43,6 @@ Begin VB.Form FormNoise
       Width           =   12120
       _ExtentX        =   21378
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -66,6 +65,7 @@ Begin VB.Form FormNoise
       Min             =   1
       Max             =   500
       Value           =   5
+      DefaultValue    =   5
    End
 End
 Attribute VB_Name = "FormNoise"
@@ -104,7 +104,7 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -179,7 +179,7 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -190,7 +190,7 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -200,7 +200,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Add RGB noise", , buildParams(sltNoise.Value, CBool(btsColor.ListIndex = 1)), UNDO_LAYER
+    Process "Add RGB noise", , BuildParams(sltNoise.Value, CBool(btsColor.ListIndex = 1)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -234,7 +234,7 @@ Private Sub sltNoise_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then AddNoise sltNoise.Value, CBool(btsColor.ListIndex = 1), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then AddNoise sltNoise.Value, CBool(btsColor.ListIndex = 1), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

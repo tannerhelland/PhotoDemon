@@ -54,7 +54,7 @@ Begin VB.Form FormGrayscale
       Caption         =   "number of gray shades"
       Min             =   2
       Max             =   256
-      Value           =   4
+      Value           =   256
       NotchPosition   =   2
       NotchValueCustom=   256
    End
@@ -245,7 +245,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Black and white", False, buildParams(cboMethod.ListIndex, getExtraGrayscaleParams(cboMethod.ListIndex), sltShades.Value, cboDithering.ListIndex), UNDO_LAYER
+    Process "Black and white", False, BuildParams(cboMethod.ListIndex, getExtraGrayscaleParams(cboMethod.ListIndex), sltShades.Value, cboDithering.ListIndex), UNDO_LAYER
 End Sub
 
 'Some grayscale functions require extra parameters.  Some do not.  Call this function to retrieve any extra parameters
@@ -304,8 +304,8 @@ Private Sub Form_Activate()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    setArrowCursor picChannel
-    setArrowCursor picDecompose
+    SetArrowCursor picChannel
+    SetArrowCursor picDecompose
     
     'Draw the initial preview
     cmdBar.MarkPreviewStatus True
@@ -339,13 +339,13 @@ Public Sub MasterGrayscaleFunction(Optional ByVal grayscaleMethod As Long, Optio
     If numOfShades < 255 Then
     
         If ditheringOptions > 0 Then
-            progBarMax = workingDIB.getDIBWidth + workingDIB.getDIBHeight
+            progBarMax = workingDIB.GetDIBWidth + workingDIB.GetDIBHeight
         Else
-            progBarMax = workingDIB.getDIBWidth * 2
+            progBarMax = workingDIB.GetDIBWidth * 2
         End If
     
     Else
-        progBarMax = workingDIB.getDIBWidth
+        progBarMax = workingDIB.GetDIBWidth
     End If
     
     Dim userCanceled As Long
@@ -389,10 +389,10 @@ Public Sub MasterGrayscaleFunction(Optional ByVal grayscaleMethod As Long, Optio
         Select Case ditheringOptions
         
             Case 0
-                fGrayscaleCustom numOfShades, workingDIB, toPreview, progBarMax, workingDIB.getDIBWidth
+                fGrayscaleCustom numOfShades, workingDIB, toPreview, progBarMax, workingDIB.GetDIBWidth
                 
             Case Else
-                fGrayscaleCustomDither numOfShades, ditheringOptions, workingDIB, toPreview, progBarMax, workingDIB.getDIBWidth
+                fGrayscaleCustomDither numOfShades, ditheringOptions, workingDIB, toPreview, progBarMax, workingDIB.GetDIBWidth
             
         End Select
         
@@ -416,13 +416,13 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -505,13 +505,13 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -767,7 +767,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
         'First, we need a dithering table the same size as the image.  We make it of Single type to prevent rounding errors.
         ' (This uses a lot of memory, but on modern systems it shouldn't be a problem.)
         Dim dErrors() As Single
-        ReDim dErrors(0 To workingDIB.getDIBWidth, 0 To workingDIB.getDIBHeight) As Single
+        ReDim dErrors(0 To workingDIB.GetDIBWidth, 0 To workingDIB.GetDIBHeight) As Single
         
         Dim i As Long, j As Long
         
@@ -868,13 +868,13 @@ Public Function MenuGrayscaleAverage(ByRef srcDIB As pdDIB, Optional ByVal suppr
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -946,13 +946,13 @@ Public Function MenuGrayscale(ByRef srcDIB As pdDIB, Optional ByVal suppressMess
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -1019,13 +1019,13 @@ Public Function MenuDesaturate(ByRef srcDIB As pdDIB, Optional ByVal suppressMes
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -1091,13 +1091,13 @@ Public Function MenuDecompose(ByVal maxOrMin As Long, ByRef srcDIB As pdDIB, Opt
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -1163,13 +1163,13 @@ Public Function MenuGrayscaleSingleChannel(ByVal cChannel As Long, ByRef srcDIB 
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.

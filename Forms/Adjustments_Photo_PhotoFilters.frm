@@ -31,7 +31,6 @@ Begin VB.Form FormPhotoFilters
       Width           =   255
       _ExtentX        =   450
       _ExtentY        =   7488
-      BackColor       =   0
       Max             =   100
       LargeChange     =   32
    End
@@ -44,7 +43,6 @@ Begin VB.Form FormPhotoFilters
       Width           =   14748
       _ExtentX        =   26009
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
@@ -85,6 +83,7 @@ Begin VB.Form FormPhotoFilters
       SliderTrackStyle=   2
       Value           =   30
       GradientColorLeft=   16777215
+      DefaultValue    =   30
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   330
@@ -191,7 +190,7 @@ Private Sub redrawFilterList()
     Dim scrollOffset As Long
     scrollOffset = vsFilter.Value
     
-    bufferDIB.createBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight
+    bufferDIB.CreateBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight
     
     Dim i As Long
     For i = 0 To numOfFilters - 1
@@ -199,7 +198,7 @@ Private Sub redrawFilterList()
     Next i
     
     'Copy the buffer to the main form
-    BitBlt picBuffer.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferDIB.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt picBuffer.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferDIB.GetDIBDC, 0, 0, vbSrcCopy
     picBuffer.Picture = picBuffer.Image
     picBuffer.Refresh
     
@@ -225,7 +224,7 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
         
             SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + FixDPI(BLOCKHEIGHT)
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
-            FillRect bufferDIB.getDIBDC, tmpRect, hBrush
+            FillRect bufferDIB.GetDIBDC, tmpRect, hBrush
             DeleteObject hBrush
             
             'Also, color the fonts with the matching highlighted text color (otherwise they won't be readable)
@@ -241,7 +240,7 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
         If (blockIndex <> curFilter) And (blockIndex = curFilterHover) Then
             SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + FixDPI(BLOCKHEIGHT)
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
-            FrameRect bufferDIB.getDIBDC, tmpRect, hBrush
+            FrameRect bufferDIB.GetDIBDC, tmpRect, hBrush
             DeleteObject hBrush
         End If
         
@@ -255,14 +254,14 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
         SetRect tmpRect, offsetX + FixDPI(4), offsetY + ((FixDPI(BLOCKHEIGHT) - colorHeight) \ 2), offsetX + FixDPI(4) + colorWidth, offsetY + ((FixDPI(BLOCKHEIGHT) - colorHeight) \ 2) + colorHeight
         
         hBrush = CreateSolidBrush(fArray(blockIndex).RGBColor)
-        FillRect bufferDIB.getDIBDC, tmpRect, hBrush
+        FillRect bufferDIB.GetDIBDC, tmpRect, hBrush
         DeleteObject hBrush
         hBrush = CreateSolidBrush(RGB(64, 64, 64))
-        FrameRect bufferDIB.getDIBDC, tmpRect, hBrush
+        FrameRect bufferDIB.GetDIBDC, tmpRect, hBrush
         DeleteObject hBrush
             
         'Render the Wratten ID and name fields
-        firstFont.AttachToDC bufferDIB.getDIBDC
+        firstFont.AttachToDC bufferDIB.GetDIBDC
         firstFont.FastRenderText colorWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4), drawString
         
         'Calculate the drop-down for the description line
@@ -272,7 +271,7 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
         'Below that, add the description text
         drawString = fArray(blockIndex).Description
         
-        secondFont.AttachToDC bufferDIB.getDIBDC
+        secondFont.AttachToDC bufferDIB.GetDIBDC
         secondFont.FastRenderText colorWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4) + mHeight, drawString
         secondFont.ReleaseFromDC
         
@@ -309,10 +308,10 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
     'Right and left arrows modify strength
     If (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then
         
-        cmdBar.markPreviewStatus False
+        cmdBar.MarkPreviewStatus False
         If (vkCode = VK_RIGHT) Then sltDensity.Value = sltDensity.Value + 10
         If (vkCode = VK_LEFT) Then sltDensity.Value = sltDensity.Value - 10
-        cmdBar.markPreviewStatus True
+        cmdBar.MarkPreviewStatus True
         
     End If
     
@@ -321,11 +320,11 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
 End Sub
 
 Private Sub cmdBar_AddCustomPresetData()
-    cmdBar.addPresetData "CurrentFilter", Str(curFilter)
+    cmdBar.AddPresetData "CurrentFilter", Str(curFilter)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Photo filter", , buildParams(fArray(curFilter).RGBColor, sltDensity.Value, True), UNDO_LAYER
+    Process "Photo filter", , BuildParams(fArray(curFilter).RGBColor, sltDensity.Value, True), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RandomizeClick()
@@ -337,7 +336,7 @@ Private Sub cmdBar_RandomizeClick()
 End Sub
 
 Private Sub cmdBar_ReadCustomPresetData()
-    curFilter = CLng(cmdBar.retrievePresetData("CurrentFilter"))
+    curFilter = CLng(cmdBar.RetrievePresetData("CurrentFilter"))
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -368,12 +367,12 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    cMouseEvents.setSystemCursor IDC_HAND
+    cMouseEvents.SetSystemCursor IDC_HAND
 End Sub
 
 'When the mouse leaves the filter box, remove any hovered entries and redraw
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    cMouseEvents.setSystemCursor IDC_DEFAULT
+    cMouseEvents.SetSystemCursor IDC_DEFAULT
     curFilterHover = -1
     redrawFilterList
 End Sub
@@ -424,7 +423,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Display the previewed effect in the neighboring window, then render the list of available filters
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -446,13 +445,13 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previews while we initialize everything
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
 
     'Enable mousewheel scrolling for the filter box
     Set cMouseEvents = New pdInputMouse
-    cMouseEvents.addInputTracker picBuffer.hWnd, True, True, , True
-    cMouseEvents.addInputTracker Me.hWnd
-    cMouseEvents.setSystemCursor IDC_HAND
+    cMouseEvents.AddInputTracker picBuffer.hWnd, True, True, , True
+    cMouseEvents.AddInputTracker Me.hWnd
+    cMouseEvents.SetSystemCursor IDC_HAND
     
     'Track a few keypresses to make list navigation easier
     Set cKeyEvents = New pdInputKeyboard
@@ -460,7 +459,7 @@ Private Sub Form_Load()
     
     'Create a background buffer the same size as the buffer picture box
     Set bufferDIB = New pdDIB
-    bufferDIB.createBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight
+    bufferDIB.CreateBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight
     
     'Initialize a few other variables now (for performance reasons)
     m_BufferWidth = picBuffer.ScaleWidth
@@ -585,7 +584,7 @@ Private Sub UpdatePreview()
     If sltDensity.GradientColorRight <> fArray(curFilter).RGBColor Then sltDensity.GradientColorRight = fArray(curFilter).RGBColor
     
     'Render the preview
-    If cmdBar.previewsAllowed Then ApplyPhotoFilter fArray(curFilter).RGBColor, sltDensity.Value, True, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyPhotoFilter fArray(curFilter).RGBColor, sltDensity.Value, True, True, pdFxPreview
     
 End Sub
 
@@ -599,7 +598,7 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -666,7 +665,7 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
     Next y
         If toPreview = False Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -677,7 +676,7 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 

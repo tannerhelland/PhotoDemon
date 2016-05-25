@@ -35,6 +35,7 @@ Begin VB.Form FormBlackLight
       Min             =   1
       SigDigits       =   2
       Value           =   2
+      DefaultValue    =   2
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -54,7 +55,6 @@ Begin VB.Form FormBlackLight
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
 End
 Attribute VB_Name = "FormBlackLight"
@@ -89,7 +89,7 @@ Public Sub fxBlackLight(Optional ByVal Weight As Double = 2#, Optional ByVal toP
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -149,7 +149,7 @@ Public Sub fxBlackLight(Optional ByVal Weight As Double = 2#, Optional ByVal toP
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -160,12 +160,12 @@ Public Sub fxBlackLight(Optional ByVal Weight As Double = 2#, Optional ByVal toP
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Black light", , buildParams(sltIntensity), UNDO_LAYER
+    Process "Black light", , BuildParams(sltIntensity), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -201,7 +201,7 @@ Private Sub sltIntensity_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxBlackLight sltIntensity, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then fxBlackLight sltIntensity, True, pdFxPreview
 End Sub
 
 

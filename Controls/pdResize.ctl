@@ -35,31 +35,31 @@ Begin VB.UserControl pdResize
    End
    Begin PhotoDemon.pdDropDown cmbResolution 
       Height          =   360
-      Left            =   3450
+      Left            =   3825
       TabIndex        =   6
       Top             =   1200
-      Width           =   4695
-      _ExtentX        =   8281
+      Width           =   4320
+      _ExtentX        =   7620
       _ExtentY        =   635
       FontSize        =   11
    End
    Begin PhotoDemon.pdDropDown cmbHeightUnit 
       Height          =   360
-      Left            =   3450
+      Left            =   3825
       TabIndex        =   3
       Top             =   600
-      Width           =   4050
-      _ExtentX        =   7144
+      Width           =   3675
+      _ExtentX        =   6482
       _ExtentY        =   635
       FontSize        =   11
    End
    Begin PhotoDemon.pdDropDown cmbWidthUnit 
       Height          =   360
-      Left            =   3450
+      Left            =   3825
       TabIndex        =   4
       Top             =   0
-      Width           =   4050
-      _ExtentX        =   7144
+      Width           =   3675
+      _ExtentX        =   6482
       _ExtentY        =   635
       FontSize        =   11
    End
@@ -68,9 +68,10 @@ Begin VB.UserControl pdResize
       Left            =   2130
       TabIndex        =   0
       Top             =   30
-      Width           =   1200
-      _ExtentX        =   2117
+      Width           =   1575
+      _ExtentX        =   2778
       _ExtentY        =   661
+      DefaultValue    =   1
       Min             =   1
       Max             =   32767
       Value           =   1
@@ -81,9 +82,10 @@ Begin VB.UserControl pdResize
       Left            =   2130
       TabIndex        =   1
       Top             =   630
-      Width           =   1200
-      _ExtentX        =   2117
+      Width           =   1575
+      _ExtentX        =   2778
       _ExtentY        =   661
+      DefaultValue    =   1
       Min             =   1
       Max             =   32767
       Value           =   1
@@ -94,9 +96,10 @@ Begin VB.UserControl pdResize
       Left            =   2130
       TabIndex        =   5
       Top             =   1230
-      Width           =   1200
-      _ExtentX        =   2117
+      Width           =   1575
+      _ExtentX        =   2778
       _ExtentY        =   661
+      DefaultValue    =   96
       Min             =   1
       Max             =   32767
       Value           =   1
@@ -198,10 +201,8 @@ Attribute VB_Exposed = False
 'Image Resize User Control
 'Copyright 2001-2016 by Tanner Helland
 'Created: 6/12/01 (original resize dialog), 24/Jan/14 (conversion to user control)
-'Last updated: 29/December/14
-'Last update: add a new property for disabling the percent option.  This is relevant in the New Image dialog,
-'              as there is no base size to use as a percent.  A number of functions throughout the control had
-'              to be updated to account for this new property.
+'Last updated: 24/May/16
+'Last update: implement .Reset functionality for the spinner controls
 '
 'Many tools in PD relate to resizing: image size, canvas size, (soon) layer size, content-aware rescaling,
 ' perhaps a more advanced autocrop tool, plus dedicated resize options in the batch converter...
@@ -378,7 +379,7 @@ Private Sub cmbResolution_Click()
         Case RU_PPI
         
             'If the user previously had PPCM selected, convert the resolution now
-            If m_previousUnitOfResolution = RU_PPCM Then
+            If (m_previousUnitOfResolution = RU_PPCM) Then
                 If tudResolution.IsValid(False) Then
                     tudResolution = GetCMFromInches(tudResolution)
                 Else
@@ -386,17 +387,21 @@ Private Sub cmbResolution_Click()
                 End If
             End If
             
+            If (m_initDPI <> 0) Then tudResolution.DefaultValue = m_initDPI Else tudResolution.DefaultValue = 96
+            
         'Current unit is PPCM
         Case RU_PPCM
         
             'If the user previously had PPI selected, convert the resolution now
-            If m_previousUnitOfResolution = RU_PPI Then
+            If (m_previousUnitOfResolution = RU_PPI) Then
                 If tudResolution.IsValid(False) Then
                     tudResolution = GetInchesFromCM(tudResolution)
                 Else
                     tudResolution = m_initDPI
                 End If
             End If
+            
+            If (m_initDPI <> 0) Then tudResolution.DefaultValue = GetInchesFromCM(m_initDPI) Else tudResolution.DefaultValue = GetInchesFromCM(96#)
     
     End Select
     
@@ -596,7 +601,9 @@ End Sub
 'Whenever the user switches to a new unit of measurement, we must convert all text box values (and possible limits and/or
 ' significant digits) to match.  Use this function to do so.
 Private Sub ConvertUnitsToNewValue(ByVal oldUnit As MeasurementUnit, ByVal newUnit As MeasurementUnit)
-
+    
+    If (Not g_IsProgramRunning) Then Exit Sub
+    
     'Start by retrieving the old values in pixel measurements
     Dim imgWidthPixels As Double, imgHeightPixels As Double
     
@@ -617,22 +624,30 @@ Private Sub ConvertUnitsToNewValue(ByVal oldUnit As MeasurementUnit, ByVal newUn
             tudWidth.SigDigits = 1
             tudWidth.Min = 0.1
             tudWidth.Max = 3200#
+            tudWidth.DefaultValue = 100#
+            tudHeight.DefaultValue = 100#
             
         Case MU_PIXELS
             tudWidth.SigDigits = 0
             tudWidth.Min = 1
             tudWidth.Max = 32760
-        
+            If (m_initWidth <> 0) Then tudWidth.DefaultValue = m_initWidth Else tudWidth.DefaultValue = g_Displays.GetDesktopWidth
+            If (m_initHeight <> 0) Then tudHeight.DefaultValue = m_initHeight Else tudHeight.DefaultValue = g_Displays.GetDesktopHeight
+            
         Case MU_INCHES
             tudWidth.SigDigits = 2
             tudWidth.Min = 0.01
             tudWidth.Max = 320#
+            If (m_initWidth <> 0) Then tudWidth.DefaultValue = ConvertPixelToOtherUnit(MU_INCHES, m_initWidth, GetResolutionAsPPI(), m_initWidth) Else tudWidth.DefaultValue = ConvertPixelToOtherUnit(MU_INCHES, g_Displays.GetDesktopWidth, GetResolutionAsPPI(), g_Displays.GetDesktopWidth)
+            If (m_initHeight <> 0) Then tudHeight.DefaultValue = ConvertPixelToOtherUnit(MU_INCHES, m_initHeight, GetResolutionAsPPI(), m_initHeight) Else tudHeight.DefaultValue = ConvertPixelToOtherUnit(MU_INCHES, g_Displays.GetDesktopHeight, GetResolutionAsPPI(), g_Displays.GetDesktopHeight)
         
         Case MU_CENTIMETERS
             tudWidth.SigDigits = 2
             tudWidth.Min = 0.01
             tudWidth.Max = 320#
-    
+            If (m_initWidth <> 0) Then tudWidth.DefaultValue = ConvertPixelToOtherUnit(MU_CENTIMETERS, m_initWidth, GetResolutionAsPPI(), m_initWidth) Else tudWidth.DefaultValue = ConvertPixelToOtherUnit(MU_CENTIMETERS, g_Displays.GetDesktopWidth, GetResolutionAsPPI(), g_Displays.GetDesktopWidth)
+            If (m_initHeight <> 0) Then tudHeight.DefaultValue = ConvertPixelToOtherUnit(MU_CENTIMETERS, m_initHeight, GetResolutionAsPPI(), m_initHeight) Else tudHeight.DefaultValue = ConvertPixelToOtherUnit(MU_CENTIMETERS, g_Displays.GetDesktopHeight, GetResolutionAsPPI(), g_Displays.GetDesktopHeight)
+        
     End Select
     
     'As the height and width boxes will always match, simply mirror the tudBox limits

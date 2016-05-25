@@ -89,6 +89,7 @@ Begin VB.Form dialog_ExportJP2
          Max             =   256
          Value           =   16
          NotchPosition   =   1
+         DefaultValue    =   16
       End
       Begin PhotoDemon.pdLabel lblBefore 
          Height          =   435

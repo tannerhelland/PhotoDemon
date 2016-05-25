@@ -32,7 +32,6 @@ Begin VB.Form FormKuwahara
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
@@ -45,7 +44,8 @@ Begin VB.Form FormKuwahara
       Caption         =   "radius"
       Min             =   1
       Max             =   20
-      Value           =   5
+      Value           =   1
+      DefaultValue    =   1
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -107,7 +107,7 @@ Public Sub Kuwahara(ByVal filterSize As Long, Optional ByVal toPreview As Boolea
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -279,7 +279,7 @@ Public Sub Kuwahara(ByVal filterSize As Long, Optional ByVal toPreview As Boolea
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -290,12 +290,12 @@ Public Sub Kuwahara(ByVal filterSize As Long, Optional ByVal toPreview As Boolea
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Kuwahara filter", , buildParams(sltRadius.Value), UNDO_LAYER
+    Process "Kuwahara filter", , BuildParams(sltRadius.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -321,7 +321,7 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then Kuwahara sltRadius.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Kuwahara sltRadius.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

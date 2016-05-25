@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1535</langversion>
+<langversion>6.8.1537</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -7573,47 +7573,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <!-- END text for Adjustments_WhiteBalance.frm-->
 
-<!-- BEGIN text for Dialog_AlphaCutoff.frm (dialog_AlphaCutoff) -->
-
-<phrase>
-<original>Please choose a transparency threshold</original>
-<translation>请选择一个透明度阈值</translation>
-</phrase>
-
-<phrase>
-<original>background color for compositing</original>
-<translation>合成的背景颜色</translation>
-</phrase>
-
-<phrase>
-<original>transparency cut-off</original>
-<translation>透明切断</translation>
-</phrase>
-
-<phrase>
-<original>maximum transparency</original>
-<translation>最大的透明度</translation>
-</phrase>
-
-<phrase>
-<original>no transparency</original>
-<translation>不透明\</translation>
-</phrase>
-
-<phrase>
-<original>This image has a complex alpha channel.  Before it can be saved as a paletted image (8bpp), the alpha channel must be simplified.</original>
-<translation>此图片有一个复杂的alpha通道。之前，它可以保存为一个调色板图像（8bpp），Alpha通道必须简化。</translation>
-</phrase>
-
-<phrase>
-<original>Waiting for user to specify alpha threshold</original>
-<translation>等待用户指定Alpha阈值</translation>
-</phrase>
-
-<!-- Dialog_AlphaCutoff.frm contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
-
-<!-- END text for Dialog_AlphaCutoff.frm-->
-
 <!-- BEGIN text for Dialog_AutosaveFound.frm (dialog_AutosaveWarning) -->
 
 <phrase>
@@ -9354,6 +9313,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>edge detection technique</original>
+<translation>边缘检测技术</translation>
+</phrase>
+
+<phrase>
 <original>horizontal</original>
 <translation>水平</translation>
 </phrase>
@@ -9369,13 +9333,13 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>edge detection technique</original>
-<translation>边缘检测技术</translation>
+<original>Applying pass %1 of %2 for %3 filter</original>
+<translation>应用的%2 合格%1 %3过滤器</translation>
 </phrase>
 
 <phrase>
-<original>Applying pass %1 of %2 for %3 filter</original>
-<translation>应用的%2 合格%1 %3过滤器</translation>
+<original>Artistic contour edge detection</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9448,7 +9412,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>索贝尔</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 30 phrases. 10 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 32 phrases. 11 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -10535,6 +10499,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>no transparency</original>
+<translation>不透明\</translation>
+</phrase>
+
+<phrase>
+<original>maximum transparency</original>
+<translation>最大的透明度</translation>
+</phrase>
+
+<phrase>
 <original>export PPM files using</original>
 <translation>使用导出PPM文件</translation>
 </phrase>
@@ -11216,7 +11190,7 @@ By default, transparency will be split down the middle, or you can specify a cus
 <translation>取消之前处理。最后处理的图像是 %1</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 264 phrases. 88 were duplicates of existing phrases, so only 176 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 264 phrases. 86 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13107,21 +13081,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>Reset layer angle</original>
-<translation>复位层角度</translation>
-</phrase>
-
-<phrase>
-<original>Reset horizontal layer shear</original>
-<translation>复位水平层剪切</translation>
-</phrase>
-
-<phrase>
-<original>Reset vertical layer shear</original>
-<translation>复位垂直层剪切</translation>
-</phrase>
-
-<phrase>
 <original>size and position</original>
 <translation>大小和位置</translation>
 </phrase>
@@ -13147,26 +13106,11 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>Reset layer angle to zero</original>
-<translation>复位层角度为零</translation>
-</phrase>
-
-<phrase>
-<original>Reset horizontal layer shear to zero</original>
-<translation>重置水平层剪切为零</translation>
-</phrase>
-
-<phrase>
-<original>Reset vertical layer shear to zero</original>
-<translation>重置垂直层剪切为零</translation>
-</phrase>
-
-<phrase>
 <original>Nearest neighbor</original>
 <translation>邻近</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 32 phrases. 7 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 26 phrases. 7 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_MoveSize.frm-->
 
@@ -13199,18 +13143,13 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <!-- BEGIN text for Toolpanel_Selections.frm (toolpanel_Selections) -->
 
 <phrase>
+<original>smoothing</original>
+<translation>平滑</translation>
+</phrase>
+
+<phrase>
 <original>area</original>
 <translation>选择范围</translation>
-</phrase>
-
-<phrase>
-<original>tolerance</original>
-<translation>公差：</translation>
-</phrase>
-
-<phrase>
-<original>sampling area</original>
-<translation>采样区：</translation>
 </phrase>
 
 <phrase>
@@ -13221,11 +13160,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <phrase>
 <original>size (w, h)</original>
 <translation>大小（w,h)</translation>
-</phrase>
-
-<phrase>
-<original>smoothing</original>
-<translation>平滑</translation>
 </phrase>
 
 <phrase>
@@ -13246,6 +13180,16 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <phrase>
 <original>stroke smoothing</original>
 <translation>行程平滑</translation>
+</phrase>
+
+<phrase>
+<original>tolerance</original>
+<translation>公差：</translation>
+</phrase>
+
+<phrase>
+<original>sampling area</original>
+<translation>采样区：</translation>
 </phrase>
 
 <phrase>
@@ -13446,31 +13390,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>fill background</original>
-<translation>填充背景</translation>
-</phrase>
-
-<phrase>
-<original>border style</original>
-<translation>边框样式</translation>
-</phrase>
-
-<phrase>
-<original>background border</original>
-<translation>背景边框</translation>
-</phrase>
-
-<phrase>
-<original>fill text</original>
-<translation>填写文本</translation>
-</phrase>
-
-<phrase>
-<original>outline text</original>
-<translation>大纲文本</translation>
-</phrase>
-
-<phrase>
 <original>line wrap</original>
 <translation>换行</translation>
 </phrase>
@@ -13518,6 +13437,31 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <phrase>
 <original>hinting</original>
 <translation>提示</translation>
+</phrase>
+
+<phrase>
+<original>fill background</original>
+<translation>填充背景</translation>
+</phrase>
+
+<phrase>
+<original>border style</original>
+<translation>边框样式</translation>
+</phrase>
+
+<phrase>
+<original>background border</original>
+<translation>背景边框</translation>
+</phrase>
+
+<phrase>
+<original>fill text</original>
+<translation>填写文本</translation>
+</phrase>
+
+<phrase>
+<original>outline text</original>
+<translation>大纲文本</translation>
 </phrase>
 
 <phrase>
@@ -15185,10 +15129,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2598</phrasecount>
+<phrasecount>2588</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4522 phrases. -->
-<!-- 1924 are duplicates, so only 2598 unique phrases have been written to file. -->
-<!-- These 2598 phrases contain approximately 13370 total words. -->
+<!-- As of this build, PhotoDemon contains 4511 phrases. -->
+<!-- 1923 are duplicates, so only 2588 unique phrases have been written to file. -->
+<!-- These 2588 phrases contain approximately 13305 total words. -->
 
 </pdData>

@@ -32,7 +32,6 @@ Begin VB.Form FormModernArt
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -56,6 +55,7 @@ Begin VB.Form FormModernArt
       Min             =   1
       Max             =   200
       Value           =   5
+      DefaultValue    =   5
    End
    Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
@@ -70,6 +70,7 @@ Begin VB.Form FormModernArt
       Min             =   1
       Max             =   200
       Value           =   5
+      DefaultValue    =   5
    End
    Begin PhotoDemon.pdButtonStrip btsKernelShape 
       Height          =   1095
@@ -120,7 +121,7 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
     'Parse out the parameter list
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    cParams.setParamString parameterList
+    cParams.SetParamString parameterList
     
     Dim hRadius As Double, vRadius As Double, kernelShape As PD_PIXEL_REGION_SHAPE
     hRadius = cParams.GetDouble("hRadius", 1#)
@@ -132,7 +133,7 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -142,7 +143,7 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
             
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -327,7 +328,7 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
             'Update the progress bar every (progBarCheck) lines
             If Not toPreview Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal x
                 End If
             End If
@@ -341,11 +342,11 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
         
         'Erase our temporary DIB
-        srcDIB.eraseDIB
+        srcDIB.EraseDIB
         Set srcDIB = Nothing
     
         'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-        finalizeImageData toPreview, dstPic
+        FinalizeImageData toPreview, dstPic
         
     End If
 
@@ -370,7 +371,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
         
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -378,7 +379,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previews while we initialize everything
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Populate the kernel shape box with whatever shapes PD currently supports
     Interface.PopKernelShapeButtonStrip btsKernelShape, PDPRS_Rectangle
@@ -390,7 +391,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyModernArt GetLocalParamString(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyModernArt GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

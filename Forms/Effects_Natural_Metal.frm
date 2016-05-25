@@ -32,7 +32,6 @@ Begin VB.Form FormMetal
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
@@ -46,6 +45,7 @@ Begin VB.Form FormMetal
       Max             =   200
       SigDigits       =   1
       Value           =   20
+      DefaultValue    =   20
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -128,7 +128,7 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'If this is a preview, we need to adjust the smoothness (kernel radius) to match the size of the preview box
     If toPreview Then steelSmoothness = steelSmoothness * curDIBValues.previewModifier
@@ -150,7 +150,7 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     DIB_Handler.GetDIBGrayscaleMap workingDIB, grayMap, True
     
     'If the user specified a non-zero smoothness, apply it now
-    If steelSmoothness > 0 Then Filters_ByteArray.GaussianBlur_IIR_ByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight, steelSmoothness, 3
+    If steelSmoothness > 0 Then Filters_ByteArray.GaussianBlur_IIR_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, steelSmoothness, 3
         
     'Re-normalize the data (this ends up not being necessary, but it could be exposed to the user in a future update)
     'Filters_ByteArray.normalizeByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight
@@ -237,7 +237,7 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If userPressedESC() Then Exit For
+            If UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
@@ -247,13 +247,13 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
             
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Metal", , buildParams(sltDetail, sltRadius, csShadow.Color, csHighlight.Color), UNDO_LAYER
+    Process "Metal", , BuildParams(sltDetail, sltRadius, csShadow.Color, csHighlight.Color), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -290,7 +290,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyMetalFilter sltDetail.Value, sltRadius.Value, csShadow.Color, csHighlight.Color, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyMetalFilter sltDetail.Value, sltRadius.Value, csShadow.Color, csHighlight.Color, True, pdFxPreview
 End Sub
 
 Private Sub sltDetail_Change()

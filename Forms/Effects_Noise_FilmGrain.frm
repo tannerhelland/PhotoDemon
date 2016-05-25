@@ -32,7 +32,6 @@ Begin VB.Form FormFilmGrain
       Width           =   12120
       _ExtentX        =   21378
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltNoise 
       Height          =   705
@@ -46,6 +45,7 @@ Begin VB.Form FormFilmGrain
       Min             =   1
       Max             =   50
       Value           =   10
+      DefaultValue    =   10
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -68,6 +68,7 @@ Begin VB.Form FormFilmGrain
       Max             =   25
       SigDigits       =   1
       Value           =   5
+      DefaultValue    =   5
    End
 End
 Attribute VB_Name = "FormFilmGrain"
@@ -106,13 +107,13 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'Create a separate source DIB. This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent adjusted pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
     'Create a DIB to hold the gaussian blur
     Dim gaussDIB As pdDIB
@@ -121,7 +122,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     'Create a DIB to hold the film grain
     Dim noiseDIB As pdDIB
     Set noiseDIB = New pdDIB
-    noiseDIB.createFromExistingDIB workingDIB
+    noiseDIB.CreateFromExistingDIB workingDIB
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -132,7 +133,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     
     'Point an array at the noise DIB
     Dim dstImageData() As Byte
-    prepSafeArray dstSA, noiseDIB
+    PrepSafeArray dstSA, noiseDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'These values will help us access locations in the array more quickly.
@@ -174,7 +175,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -195,34 +196,34 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
             If gSoftness = 0 Then gSoftness = 0.1
         End If
     
-        gaussDIB.createFromExistingDIB workingDIB
+        gaussDIB.CreateFromExistingDIB workingDIB
     
         'Blur the noise texture as required by the user
         CreateGaussianBlurDIB gSoftness, noiseDIB, gaussDIB, toPreview, finalY * 2 + finalX * 2, finalX
         
     Else
-        gaussDIB.createFromExistingDIB noiseDIB
+        gaussDIB.CreateFromExistingDIB noiseDIB
     End If
     
     'Delete the original noise DIB to conserve resources
-    noiseDIB.eraseDIB
+    noiseDIB.EraseDIB
     Set noiseDIB = Nothing
     
     If Not cancelCurrentAction Then
     
         'We now have a softened noise DIB. Next, create three arrays - one pointing at the original image data, one pointing at
         ' the noise data, and one pointing at the destination data.
-        prepImageData dstSA, toPreview, dstPic
+        PrepImageData dstSA, toPreview, dstPic
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
         Dim srcImageData() As Byte
         Dim srcSA As SAFEARRAY2D
-        prepSafeArray srcSA, srcDIB
+        PrepSafeArray srcSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
             
         Dim GaussImageData() As Byte
         Dim gaussSA As SAFEARRAY2D
-        prepSafeArray gaussSA, gaussDIB
+        PrepSafeArray gaussSA, gaussDIB
         CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
             
         If Not toPreview Then Message "Applying film grain to image..."
@@ -261,7 +262,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
         Next y
             If Not toPreview Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal finalX + x + finalY + finalY
                 End If
             End If
@@ -271,13 +272,13 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
         CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
         Erase GaussImageData
         
-        gaussDIB.eraseDIB
+        gaussDIB.EraseDIB
         Set gaussDIB = Nothing
         
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         Erase srcImageData
         
-        srcDIB.eraseDIB
+        srcDIB.EraseDIB
         Set srcDIB = Nothing
         
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
@@ -286,12 +287,12 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Add film grain", , buildParams(sltNoise.Value, sltRadius.Value), UNDO_LAYER
+    Process "Add film grain", , BuildParams(sltNoise.Value, sltRadius.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -334,7 +335,7 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then AddFilmGrain sltNoise, sltRadius, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then AddFilmGrain sltNoise, sltRadius, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

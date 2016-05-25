@@ -32,7 +32,6 @@ Begin VB.Form FormWhiteBalance
       Width           =   12120
       _ExtentX        =   21378
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -56,6 +55,7 @@ Begin VB.Form FormWhiteBalance
       Max             =   5
       SigDigits       =   2
       Value           =   0.05
+      DefaultValue    =   0.05
    End
 End
 Attribute VB_Name = "FormWhiteBalance"
@@ -90,7 +90,7 @@ Option Explicit
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "White balance", , buildParams(sltStrength), UNDO_LAYER
+    Process "White balance", , BuildParams(sltStrength), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -115,12 +115,12 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Double = 0.05, Optio
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     WhiteBalanceDIB percentIgnore, workingDIB, toPreview
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -133,7 +133,7 @@ Private Sub sltStrength_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then AutoWhiteBalance sltStrength, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then AutoWhiteBalance sltStrength, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

@@ -30,8 +30,8 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   0
       Top             =   5790
       Width           =   12075
-      _extentx        =   21299
-      _extenty        =   1323
+      _ExtentX        =   21299
+      _ExtentY        =   1323
    End
    Begin PhotoDemon.pdCheckBox chkSample 
       Height          =   330
@@ -39,9 +39,9 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   3
       Top             =   3840
       Width           =   5775
-      _extentx        =   10186
-      _extenty        =   582
-      caption         =   "sample image for true contrast (slower but more accurate)"
+      _ExtentX        =   10186
+      _ExtentY        =   582
+      Caption         =   "sample image for true contrast (slower but more accurate)"
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -49,8 +49,8 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   4
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.pdSlider sltBright 
       Height          =   705
@@ -58,12 +58,11 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   1
       Top             =   1680
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   1270
-      caption         =   "brightness"
-      min             =   -255
-      max             =   255
-      value           =   -10
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "brightness"
+      Min             =   -255
+      Max             =   255
    End
    Begin PhotoDemon.pdSlider sltContrast 
       Height          =   705
@@ -71,12 +70,11 @@ Begin VB.Form FormBrightnessContrast
       TabIndex        =   2
       Top             =   2760
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   1270
-      caption         =   "contrast"
-      min             =   -100
-      max             =   100
-      value           =   10
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "contrast"
+      Min             =   -100
+      Max             =   100
    End
 End
 Attribute VB_Name = "FormBrightnessContrast"
@@ -123,7 +121,7 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -286,13 +284,13 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
 
 End Sub
 
 'OK button.  Note that the command bar class handles validation, form hiding, and form unload for us.
 Private Sub cmdBar_OKClick()
-    Process "Brightness and contrast", , buildParams(sltBright, sltContrast, CBool(chkSample.Value)), UNDO_LAYER
+    Process "Brightness and contrast", , BuildParams(sltBright, sltContrast, CBool(chkSample.Value)), UNDO_LAYER
 End Sub
 
 'Sometimes the command bar will perform actions (like loading a preset) that require an updated preview.  This function
