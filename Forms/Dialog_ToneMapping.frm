@@ -525,23 +525,16 @@ End Sub
 
 'CANCEL button
 Private Sub cmdBar_CancelClick()
-    
     Message ""
-    
-    'Hide the dialog and return a value of "Cancel"
     userAnswer = vbCancel
     Me.Hide
-
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    
     Message "Proceeding with tone mapping..."
-    
     userAnswer = vbOK
     Me.Hide
-    
 End Sub
 
 Private Sub cmdBar_RandomizeClick()

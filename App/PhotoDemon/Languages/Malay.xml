@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.177</langversion>
+<langversion>6.7.178</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -1152,6 +1152,11 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 </phrase>
 
 <phrase>
+<original>File not found: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Unfortunately, the image '%1' could not be found.
 
 If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
@@ -1262,7 +1267,7 @@ Please mengesahkan bahawa imej ini (s) wujud, dan bahawa mereka menggunakan form
 <translation>Pertindihan imej yang lengkap.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 30 phrases. 11 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -8198,21 +8203,6 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 </phrase>
 
 <phrase>
-<original>normalize</original>
-<translation>menormalkan</translation>
-</phrase>
-
-<phrase>
-<original>visible spectrum</original>
-<translation>spektrum dilihat</translation>
-</phrase>
-
-<phrase>
-<original>full spectrum</original>
-<translation>spektrum penuh</translation>
-</phrase>
-
-<phrase>
 <original>intensity</original>
 <translation>keamatan</translation>
 </phrase>
@@ -8230,6 +8220,21 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <phrase>
 <original>white point</original>
 <translation>titik putih</translation>
+</phrase>
+
+<phrase>
+<original>normalize</original>
+<translation>menormalkan</translation>
+</phrase>
+
+<phrase>
+<original>visible spectrum</original>
+<translation>spektrum dilihat</translation>
+</phrase>
+
+<phrase>
+<original>full spectrum</original>
+<translation>spektrum penuh</translation>
 </phrase>
 
 <phrase>
@@ -15143,10 +15148,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2588</phrasecount>
+<phrasecount>2589</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4511 phrases. -->
-<!-- 1923 are duplicates, so only 2588 unique phrases have been written to file. -->
-<!-- These 2588 phrases contain approximately 13305 total words. -->
+<!-- As of this build, PhotoDemon contains 4512 phrases. -->
+<!-- 1923 are duplicates, so only 2589 unique phrases have been written to file. -->
+<!-- These 2589 phrases contain approximately 13308 total words. -->
 
 </pdData>

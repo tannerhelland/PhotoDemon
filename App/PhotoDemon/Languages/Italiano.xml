@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.177</langversion>
+<langversion>6.7.178</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -1152,6 +1152,11 @@ Per abilitare il supporto per i file PDI compressi, fare clic su Aiuto > Control
 </phrase>
 
 <phrase>
+<original>File not found: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Unfortunately, the image '%1' could not be found.
 
 If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
@@ -1254,7 +1259,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Duplicazione dell'immagine completa.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 30 phrases. 11 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -8187,21 +8192,6 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
-<original>normalize</original>
-<translation>normalizza</translation>
-</phrase>
-
-<phrase>
-<original>visible spectrum</original>
-<translation>spettro visibile</translation>
-</phrase>
-
-<phrase>
-<original>full spectrum</original>
-<translation>spettro completo</translation>
-</phrase>
-
-<phrase>
 <original>intensity</original>
 <translation>intensità</translation>
 </phrase>
@@ -8219,6 +8209,21 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <phrase>
 <original>white point</original>
 <translation>punto di bianco</translation>
+</phrase>
+
+<phrase>
+<original>normalize</original>
+<translation>normalizza</translation>
+</phrase>
+
+<phrase>
+<original>visible spectrum</original>
+<translation>spettro visibile</translation>
+</phrase>
+
+<phrase>
+<original>full spectrum</original>
+<translation>spettro completo</translation>
 </phrase>
 
 <phrase>
@@ -15132,10 +15137,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2588</phrasecount>
+<phrasecount>2589</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4511 phrases. -->
-<!-- 1923 are duplicates, so only 2588 unique phrases have been written to file. -->
-<!-- These 2588 phrases contain approximately 13305 total words. -->
+<!-- As of this build, PhotoDemon contains 4512 phrases. -->
+<!-- 1923 are duplicates, so only 2589 unique phrases have been written to file. -->
+<!-- These 2589 phrases contain approximately 13308 total words. -->
 
 </pdData>
