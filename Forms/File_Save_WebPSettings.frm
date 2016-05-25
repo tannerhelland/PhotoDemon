@@ -219,7 +219,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    cboSaveQuality.ListIndex = 1
+    cboSaveQuality.ListIndex = 0
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

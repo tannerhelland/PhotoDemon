@@ -285,7 +285,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    cboSaveQuality.ListIndex = 1
+    cboSaveQuality.ListIndex = 0
     mtdManager.Reset
 End Sub
 
