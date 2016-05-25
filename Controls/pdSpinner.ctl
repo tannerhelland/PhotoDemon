@@ -792,11 +792,11 @@ Private Sub RedrawBackBuffer()
     End If
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim backgroundColor As Long
-    backgroundColor = m_Colors.RetrieveColor(PDS_Background, Me.Enabled)
+    Dim finalBackColor As Long
+    finalBackColor = m_Colors.RetrieveColor(PDS_Background, Me.Enabled)
     
     Dim bufferDC As Long, bWidth As Long, bHeight As Long
-    bufferDC = ucSupport.GetBackBufferDC(True, backgroundColor)
+    bufferDC = ucSupport.GetBackBufferDC(True, finalBackColor)
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
@@ -869,49 +869,49 @@ Private Sub RedrawBackBuffer()
         End If
         
         'Paint button backgrounds and borders.  Note that the active button (if any) is drawn LAST, so that its chunky
-        ' hover border appears over the top of any neighboring UI elements.
+        ' hover border appears over the top of any neighboring UI elements.  (This is the reason for the ugly if/then blocks.)
         Dim upButtonBorderWidth As Single, downButtonBorderWidth As Single, resetButtonBorderWidth As Single
         If m_MouseOverUpButton Then upButtonBorderWidth = 2# Else upButtonBorderWidth = 1#
         If m_MouseOverDownButton Then downButtonBorderWidth = 2# Else downButtonBorderWidth = 1#
         If m_MouseOverResetButton Then resetButtonBorderWidth = 2# Else resetButtonBorderWidth = 1#
         
         If m_MouseOverUpButton Then
-            If (resetButtonBorderColor <> backgroundColor) Then
+            If (resetButtonBorderColor <> finalBackColor) Then
                 Drawing2D.QuickCreateSolidPen cPen, resetButtonBorderWidth, resetButtonBorderColor, , P2_LJ_Miter
                 m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_ResetRect
             End If
-            If (downButtonBorderColor <> backgroundColor) Then
+            If (downButtonBorderColor <> finalBackColor) Then
                 Drawing2D.QuickCreateSolidPen cPen, downButtonBorderWidth, downButtonBorderColor, , P2_LJ_Miter
                 m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_DownRect
             End If
-            If (upButtonBorderColor <> backgroundColor) Then
+            If (upButtonBorderColor <> finalBackColor) Then
                 Drawing2D.QuickCreateSolidPen cPen, upButtonBorderWidth, upButtonBorderColor, , P2_LJ_Miter
                 m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
             End If
         Else
             If m_MouseOverDownButton Then
-                If (resetButtonBorderColor <> backgroundColor) Then
+                If (resetButtonBorderColor <> finalBackColor) Then
                     Drawing2D.QuickCreateSolidPen cPen, resetButtonBorderWidth, resetButtonBorderColor, , P2_LJ_Miter
                     m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_ResetRect
                 End If
-                If (upButtonBorderColor <> backgroundColor) Then
+                If (upButtonBorderColor <> finalBackColor) Then
                     Drawing2D.QuickCreateSolidPen cPen, upButtonBorderWidth, upButtonBorderColor, , P2_LJ_Miter
                     m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
                 End If
-                If (downButtonBorderColor <> backgroundColor) Then
+                If (downButtonBorderColor <> finalBackColor) Then
                     Drawing2D.QuickCreateSolidPen cPen, downButtonBorderWidth, downButtonBorderColor, , P2_LJ_Miter
                     m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_DownRect
                 End If
             Else
-                If (upButtonBorderColor <> backgroundColor) Then
+                If (upButtonBorderColor <> finalBackColor) Then
                     Drawing2D.QuickCreateSolidPen cPen, upButtonBorderWidth, upButtonBorderColor, , P2_LJ_Miter
                     m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_UpRect
                 End If
-                If (downButtonBorderColor <> backgroundColor) Then
+                If (downButtonBorderColor <> finalBackColor) Then
                     Drawing2D.QuickCreateSolidPen cPen, downButtonBorderWidth, downButtonBorderColor, , P2_LJ_Miter
                     m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_DownRect
                 End If
-                If (resetButtonBorderColor <> backgroundColor) Then
+                If (resetButtonBorderColor <> finalBackColor) Then
                     Drawing2D.QuickCreateSolidPen cPen, resetButtonBorderWidth, resetButtonBorderColor, , P2_LJ_Miter
                     m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_ResetRect
                 End If

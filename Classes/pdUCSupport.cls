@@ -802,14 +802,14 @@ Private Sub m_WindowPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As L
     'If we are currently using "no backbuffer" mode, just paint our backcolor to the DC
     If m_NoBackBufferMode Then
     
-        Dim backgroundColor As Long
+        Dim finalBackColor As Long
         If m_BackColor = -1 Then
-            backgroundColor = m_Colors.RetrieveColor(UCS_Background)
+            finalBackColor = m_Colors.RetrieveColor(UCS_Background)
         Else
-            backgroundColor = m_BackColor
+            finalBackColor = m_BackColor
         End If
         
-        Drawing.FillRectToDC targetDC, winLeft - 1, winTop - 1, winWidth + 2, winHeight + 2, backgroundColor
+        Drawing.FillRectToDC targetDC, winLeft - 1, winTop - 1, winWidth + 2, winHeight + 2, finalBackColor
     
     'If backbuffering is active (as it is with most PD controls), copy the relevant portion of the buffer into place.
     Else

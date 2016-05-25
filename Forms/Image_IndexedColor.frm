@@ -324,8 +324,8 @@ Public Sub ReduceImageColors_Auto(ByVal toolParams As String, Optional ByVal toP
         Dim paletteSize As Long
         paletteSize = cParams.GetLong("IndexedColors_PaletteSize", 256)
         
-        Dim backgroundColor As Long
-        backgroundColor = cParams.GetLong("IndexedColors_BackgroundColor", vbWhite)
+        Dim finalBackColor As Long
+        finalBackColor = cParams.GetLong("IndexedColors_BackgroundColor", vbWhite)
         
         Dim outputAlphaMode As PD_ALPHA_STATUS
         If (StrComp(LCase$(cParams.GetString("IndexedColors_Alpha", "full")), "full", vbBinaryCompare) = 0) Then
@@ -341,7 +341,7 @@ Public Sub ReduceImageColors_Auto(ByVal toolParams As String, Optional ByVal toP
         
         'Convert our current DIB to a FreeImage-type DIB
         Dim fi_DIB8 As Long
-        fi_DIB8 = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 8, outputAlphaMode, PDAS_ComplicatedAlpha, alphaCutoff, backgroundColor, , paletteSize, , , quantMethod)
+        fi_DIB8 = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 8, outputAlphaMode, PDAS_ComplicatedAlpha, alphaCutoff, finalBackColor, , paletteSize, , , quantMethod)
         FreeImage_FlipVertically fi_DIB8
         
         'Convert that DIB to 32-bpp

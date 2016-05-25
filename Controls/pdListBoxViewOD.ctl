@@ -413,12 +413,12 @@ Private Sub RedrawBackBuffer()
     Dim enabledState As Boolean
     enabledState = Me.Enabled
     
-    Dim BackgroundColor As Long
-    BackgroundColor = m_Colors.RetrieveColor(PDLB_Background, enabledState)
+    Dim finalBackColor As Long
+    finalBackColor = m_Colors.RetrieveColor(PDLB_Background, enabledState)
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long, bWidth As Long, bHeight As Long
-    bufferDC = ucSupport.GetBackBufferDC(True, BackgroundColor)
+    bufferDC = ucSupport.GetBackBufferDC(True, finalBackColor)
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
@@ -533,8 +533,8 @@ Private Sub RedrawBackBuffer()
         
         GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ListRect, borderColor, , borderWidth, , GP_LJ_Miter
         
-        If Not listHasFocus Then
-            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, BackgroundColor, , , , GP_LJ_Miter
+        If (Not listHasFocus) Then
+            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, finalBackColor, , , , GP_LJ_Miter
         End If
         
     End If

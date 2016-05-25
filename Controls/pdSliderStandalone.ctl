@@ -651,8 +651,8 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     ' required, and we can shortcut the process by not redrawing the full slider on every update.
     
     'Start by retrieving the colors necessary to render various display elements
-    Dim backgroundColor As Long, trackColor As Long
-    backgroundColor = m_Colors.RetrieveColor(PDSS_Background, Me.Enabled, False, m_MouseOverSlider Or m_MouseOverSliderTrack)
+    Dim finalBackColor As Long, trackColor As Long
+    finalBackColor = m_Colors.RetrieveColor(PDSS_Background, Me.Enabled, False, m_MouseOverSlider Or m_MouseOverSliderTrack)
     trackColor = m_Colors.RetrieveColor(PDSS_TrackBack, Me.Enabled, False, m_MouseOverSlider Or m_MouseOverSliderTrack)
     
     Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
@@ -661,12 +661,12 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     m_SliderAreaWidth = ucSupport.GetBackBufferWidth
     m_SliderAreaHeight = ucSupport.GetBackBufferHeight
     If (m_SliderBackgroundDIB.GetDIBWidth <> m_SliderAreaWidth) Or (m_SliderBackgroundDIB.GetDIBHeight <> m_SliderAreaHeight) Then
-        m_SliderBackgroundDIB.CreateBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, backgroundColor, 255
+        m_SliderBackgroundDIB.CreateBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, finalBackColor, 255
         If g_IsProgramRunning Then Drawing2D.QuickCreateSurfaceFromDC cSurface, m_SliderBackgroundDIB.GetDIBDC, False
     Else
         If g_IsProgramRunning Then
             Drawing2D.QuickCreateSurfaceFromDC cSurface, m_SliderBackgroundDIB.GetDIBDC, False
-            Drawing2D.QuickCreateSolidBrush cBrush, backgroundColor
+            Drawing2D.QuickCreateSolidBrush cBrush, finalBackColor
             m_Painter.FillRectangleI cSurface, cBrush, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight
         End If
     End If
@@ -983,9 +983,9 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
     End If
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim backgroundColor As Long, bufferDC As Long
-    backgroundColor = m_Colors.RetrieveColor(PDSS_Background, Me.Enabled, m_MouseDown, m_MouseOverSlider Or m_MouseOverSliderTrack)
-    bufferDC = ucSupport.GetBackBufferDC(True, backgroundColor)
+    Dim finalBackColor As Long, bufferDC As Long
+    finalBackColor = m_Colors.RetrieveColor(PDSS_Background, Me.Enabled, m_MouseDown, m_MouseOverSlider Or m_MouseOverSliderTrack)
+    bufferDC = ucSupport.GetBackBufferDC(True, finalBackColor)
     
     'Copy the previously assembled track onto the back buffer.  (This is faster than AlphaBlending the result, especially because
     ' we don't need any blending.)
