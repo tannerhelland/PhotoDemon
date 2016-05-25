@@ -106,7 +106,7 @@ End Function
 Public Function ApplyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
 
     'Before doing anything else, make sure we actually have an ICC profile to apply!
-    If Not m_ICCDataExists Then
+    If (Not m_ICCDataExists) Then
         Message "ICC transform requested, but no data found.  Abandoning attempt."
         Exit Function
     End If
@@ -121,7 +121,7 @@ Public Function ApplyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
     srcProfile = LoadICCProfileFromMemory(VarPtr(m_ICCData(0)), UBound(m_ICCData) + 1)
     
     'If we successfully opened and validated our source profile, continue on to the next step!
-    If srcProfile <> 0 Then
+    If (srcProfile <> 0) Then
     
         'Now it is time to determine our destination profile.  Because PhotoDemon operates on DIBs that default
         ' to the sRGB space, that's the profile we want to use for transformation.
@@ -132,12 +132,12 @@ Public Function ApplyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
         
         'It's highly unlikely that a request for a standard ICC profile will fail, but just be safe, double-check the
         ' returned handle before continuing.
-        If dstProfile <> 0 Then
+        If (dstProfile <> 0) Then
             
             'Before proceeding, check to see if the source and destination profiles are identical.  Some dSLRs will embed
             ' sRGB transforms in their JPEGs, and applying another sRGB transform atop them is a waste of time and resources.
             ' Thanks to VB developer LaVolpe for this suggestion.
-            If Not Color_Management.AreColorProfilesEqual(srcProfile, dstProfile) Then
+            If (Not Color_Management.AreColorProfilesEqual(srcProfile, dstProfile)) Then
             
                 'We can now use our profile matrix to generate a transformation object, which we will use to directly modify
                 ' the DIB's RGB values.
@@ -145,7 +145,7 @@ Public Function ApplyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
                 iccTransformation = RequestProfileTransform(srcProfile, dstProfile, INTENT_PERCEPTUAL, GetSourceRenderIntent)
                 
                 'If the transformation was generated successfully, carry on!
-                If iccTransformation <> 0 Then
+                If (iccTransformation <> 0) Then
                     
                     'The only transformation function relevant to PD involves the use of BitmapBits, so we will provide
                     ' the API with direct access to our DIB bits.
@@ -164,6 +164,7 @@ Public Function ApplyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
                         
                         m_ICCProfileWasApplied = True
                         ApplyICCtoSelf = True
+                        
                     Else
                         Message "ICC profile could not be applied.  Image remains in original profile."
                     End If
@@ -209,7 +210,7 @@ Public Function LoadICCFromFreeImage(ByVal fi_Bitmap As Long) As Boolean
     #End If
     
     'Check to make sure the supplied FreeImage bitmap actually has ICC data
-    If FreeImage_GetICCProfileSize(fi_Bitmap) > 0 Then
+    If (FreeImage_GetICCProfileSize(fi_Bitmap) > 0) Then
     
         Dim fiProfileHeader As FIICCPROFILE
         fiProfileHeader = FreeImage_GetICCProfile(fi_Bitmap)

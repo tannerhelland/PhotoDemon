@@ -68,7 +68,6 @@ Public Function InitializeFreeImage() As Boolean
     #End If
     
 End Function
-
     
 'Load an image via FreeImage.  It is assumed that the source file has already been vetted for things like "does it exist?"
 Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing) As PD_OPERATION_OUTCOME
@@ -80,7 +79,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     '****************************************************************************
     
     'Double-check that FreeImage.dll was located at start-up
-    If Not g_ImageFormats.FreeImageEnabled Then
+    If (Not g_ImageFormats.FreeImageEnabled) Then
         LoadFreeImageV4 = PD_FAILURE_GENERIC
         Exit Function
     End If
@@ -100,10 +99,10 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     'For certain filetypes (CUT, MNG, PCD, TARGA and WBMP, according to the FreeImage documentation), the lack of a reliable
     ' header may prevent GetFileType from working.  As a result, double-check the file using its file extension.
-    If fileFIF = FIF_UNKNOWN Then fileFIF = FreeImage_GetFIFFromFilenameU(StrPtr(srcFilename))
+    If (fileFIF = FIF_UNKNOWN) Then fileFIF = FreeImage_GetFIFFromFilenameU(StrPtr(srcFilename))
     
     'By this point, if the file still doesn't show up in FreeImage's database, abandon the import attempt.
-    If Not FreeImage_FIFSupportsReading(fileFIF) Then
+    If (Not FreeImage_FIFSupportsReading(fileFIF)) Then
     
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "Filetype not supported by FreeImage.  Import abandoned."
@@ -210,7 +209,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     
     'FreeImage is crazy slow at loading RAW-format files, so custom flags are specified to speed up the process
-    If fileFIF = FIF_RAW Then
+    If (fileFIF = FIF_RAW) Then
         
         'If this is not a primary image, RAW format files can load just their thumbnail
         If (Not showMessages) Then fi_ImportFlags = fi_ImportFlags Or FILO_RAW_PREVIEW
@@ -219,7 +218,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         
     'For icons, we prefer a white background (default is black).
     ' NOTE: this check is now disabled, because it uses the AND mask incorrectly for mixed-format icons.  A better fix is
-    ' provided below - see the section starting with "If fileFIF = FIF_ICO Then..."
+    ' provided below - see the section starting with "If (fileFIF = FIF_ICO) Then..."
     'If fileFIF = FIF_ICO Then fi_ImportFlags = FILO_ICO_MAKEALPHA
     
     '****************************************************************************
@@ -228,8 +227,8 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     Dim fi_multi_hDIB As Long
     Dim needToCloseMulti As Boolean
+    needToCloseMulti = CBool(pageToLoad > 0)
     
-    If pageToLoad > 0 Then needToCloseMulti = True Else needToCloseMulti = False
     
     '****************************************************************************
     ' Load the image into a FreeImage container
@@ -250,9 +249,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         
         #If DEBUGMODE = 1 Then
             
-            If fileFIF = PDIF_GIF Then
+            If (fileFIF = PDIF_GIF) Then
                 pdDebug.LogAction "Importing frame # " & pageToLoad + 1 & " from animated GIF file..."
-            ElseIf fileFIF = FIF_ICO Then
+            ElseIf (fileFIF = FIF_ICO) Then
                 pdDebug.LogAction "Importing icon # " & pageToLoad + 1 & " from ICO file...", pageToLoad + 1
             Else
                 pdDebug.LogAction "Importing page # " & pageToLoad + 1 & " from multipage TIFF file...", pageToLoad + 1
@@ -260,9 +259,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             
         #End If
         
-        If fileFIF = PDIF_GIF Then
+        If (fileFIF = PDIF_GIF) Then
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(PDIF_GIF, srcFilename, , , , FILO_GIF_PLAYBACK)
-        ElseIf fileFIF = FIF_ICO Then
+        ElseIf (fileFIF = FIF_ICO) Then
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename, , , , 0)
         Else
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(PDIF_TIFF, srcFilename, , , , 0)
@@ -273,10 +272,10 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     End If
     
     'Store this original, untouched color depth now
-    If fi_hDIB <> 0 Then dstDIB.SetOriginalFreeImageColorDepth FreeImage_GetBPP(fi_hDIB)
+    If (fi_hDIB <> 0) Then dstDIB.SetOriginalFreeImageColorDepth FreeImage_GetBPP(fi_hDIB)
     
     'Icon files may use a simple mask for their alpha channel; in this case, re-load the icon with the FILO_ICO_MAKEALPHA flag
-    If fileFIF = FIF_ICO Then
+    If (fileFIF = FIF_ICO) Then
         
         'Check the bit-depth
         If FreeImage_GetBPP(fi_hDIB) < 32 Then
@@ -304,7 +303,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     End If
     
     'If an empty handle is returned, abandon the import attempt.
-    If fi_hDIB = 0 Then
+    If (fi_hDIB = 0) Then
     
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "Import via FreeImage failed (blank handle)."
@@ -329,12 +328,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' Retrieve any attached ICC profiles, and copy their contents into this DIB's ICC manager
     '****************************************************************************
     
-    If FreeImage_HasICCProfile(fi_hDIB) Then
-    
-        'This image has an attached profile.  Retrieve it and stick it inside the image.
-        dstDIB.ICCProfile.LoadICCFromFreeImage fi_hDIB
-        
-    End If
+    If FreeImage_HasICCProfile(fi_hDIB) Then dstDIB.ICCProfile.LoadICCFromFreeImage fi_hDIB
             
             
     '****************************************************************************
@@ -350,7 +344,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         
             'Normally, we can reassemble the .r/g/b values in the object, but paletted images work a bit differently - the
             ' palette index is stored in .rgbReserved.  Check for that, and if it's non-zero, retrieve the palette value instead.
-            If rQuad.alpha <> 0 Then
+            If (rQuad.alpha <> 0) Then
                 Dim fi_Palette() As Long
                 fi_Palette = FreeImage_GetPaletteExLong(fi_hDIB)
                 dstDIB.SetBackgroundColor fi_Palette(rQuad.alpha)
@@ -404,12 +398,23 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' If the image is high bit-depth (e.g. > 8 bits per channel), downsample it to a standard 24 or 32bpp image.
     '****************************************************************************
     
-    If fi_DataType <> FIT_Bitmap Then
+    If (fi_DataType <> FIT_Bitmap) Then
     
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "HDR image identified.  Raising tone-map dialog..."
         #End If
-    
+        
+        'We basically have two mechanisms for downsampling a high bit-depth image:
+        ' 1) Using an embedded ICC profile (the preferred mechanism)
+        ' 2) Using a generic tone-mapping algorithm to estimate conversion parameters
+        
+        'If the image does not contain an embedded ICC profile, we have no choice but to use (2)
+        
+        'TODO: LCMS integration
+        If (FreeImage_HasICCProfile(fi_hDIB) And dstDIB.ICCProfile.HasICCData) Then
+            Debug.Print "VALID LCMS CANDIDATE!"
+        End If
+        
         'Use the central tone-map handler to apply further tone-mapping
         Dim toneMappingOutcome As PD_OPERATION_OUTCOME
         toneMappingOutcome = RaiseToneMapDialog(fi_hDIB, new_hDIB)

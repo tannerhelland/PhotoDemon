@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.178</langversion>
+<langversion>6.7.179</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -14891,7 +14891,7 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- BEGIN text for Plugin_LittleCMS.bas -->
 
-<!-- Plugin_LittleCMS.bas contains 0 phrases. -->
+<!-- Plugin_LittleCMS.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for Plugin_LittleCMS.bas-->
 
@@ -15141,8 +15141,8 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <phrasecount>2589</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4512 phrases. -->
-<!-- 1923 are duplicates, so only 2589 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4513 phrases. -->
+<!-- 1924 are duplicates, so only 2589 unique phrases have been written to file. -->
 <!-- These 2589 phrases contain approximately 13308 total words. -->
 
 </pdData>
