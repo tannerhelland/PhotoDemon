@@ -95,7 +95,11 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         
     'We now have one last tedious check to perform: making sure the file actually exists!
     If (Not cFile.FileExist(srcFile)) Then
-        If (Not suspendWarnings) Then PDMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", srcFile
+        If handleUIDisabling Then Processor.MarkProgramBusyState False, True
+        If (Not suspendWarnings) Then
+            Message "File not found: %1", srcFile
+            PDMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", srcFile
+        End If
         LoadFileAsNewImage = False
         Exit Function
     End If

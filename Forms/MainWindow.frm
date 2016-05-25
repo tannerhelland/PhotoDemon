@@ -4005,7 +4005,7 @@ End Sub
 Public Sub mnuRecDocs_Click(Index As Integer)
     
     'Load the MRU path that correlates to this index.  (If one is not found, a null string is returned)
-    If Len(g_RecentFiles.getSpecificMRU(Index)) <> 0 Then
+    If (Len(g_RecentFiles.getSpecificMRU(Index)) <> 0) Then
         LoadFileAsNewImage g_RecentFiles.getSpecificMRU(Index)
         
         'If the image loaded successfully, activate it and bring it to the foreground
