@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.175</langversion>
+<langversion>6.7.177</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -7576,47 +7576,6 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <!-- END text for Adjustments_WhiteBalance.frm-->
 
-<!-- BEGIN text for Dialog_AlphaCutoff.frm (dialog_AlphaCutoff) -->
-
-<phrase>
-<original>Please choose a transparency threshold</original>
-<translation>Välj en tröskel öppenhet</translation>
-</phrase>
-
-<phrase>
-<original>background color for compositing</original>
-<translation>bakgrundsfärg för compositing</translation>
-</phrase>
-
-<phrase>
-<original>transparency cut-off</original>
-<translation>öppenhet cut-off</translation>
-</phrase>
-
-<phrase>
-<original>maximum transparency</original>
-<translation>maximal öppenhet</translation>
-</phrase>
-
-<phrase>
-<original>no transparency</original>
-<translation>ingen insyn</translation>
-</phrase>
-
-<phrase>
-<original>This image has a complex alpha channel.  Before it can be saved as a paletted image (8bpp), the alpha channel must be simplified.</original>
-<translation>Bilden har en komplex alfakanal. Innan det kan sparas som en palett bild (8bpp), måste alfakanalen förenklas.</translation>
-</phrase>
-
-<phrase>
-<original>Waiting for user to specify alpha threshold</original>
-<translation>Väntar på att användaren att ange alfatröskel</translation>
-</phrase>
-
-<!-- Dialog_AlphaCutoff.frm contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
-
-<!-- END text for Dialog_AlphaCutoff.frm-->
-
 <!-- BEGIN text for Dialog_AutosaveFound.frm (dialog_AutosaveWarning) -->
 
 <phrase>
@@ -9356,6 +9315,11 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
+<original>edge detection technique</original>
+<translation>kantdetekteringsteknik</translation>
+</phrase>
+
+<phrase>
 <original>horizontal</original>
 <translation>horisontell</translation>
 </phrase>
@@ -9371,13 +9335,13 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
-<original>edge detection technique</original>
-<translation>kantdetekteringsteknik</translation>
+<original>Applying pass %1 of %2 for %3 filter</original>
+<translation>Tillämpa pass %1 av %2 för %3 filter</translation>
 </phrase>
 
 <phrase>
-<original>Applying pass %1 of %2 for %3 filter</original>
-<translation>Tillämpa pass %1 av %2 för %3 filter</translation>
+<original>Artistic contour edge detection</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9450,7 +9414,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <translation>Sobel</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 30 phrases. 10 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Effects_Edge_EnhanceEdges.frm contains 32 phrases. 11 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_EnhanceEdges.frm-->
 
@@ -10537,6 +10501,16 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
+<original>no transparency</original>
+<translation>ingen insyn</translation>
+</phrase>
+
+<phrase>
+<original>maximum transparency</original>
+<translation>maximal öppenhet</translation>
+</phrase>
+
+<phrase>
 <original>export PPM files using</original>
 <translation>export PPM filer med</translation>
 </phrase>
@@ -11219,7 +11193,7 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 <translation>bearbetats före inställandet. Senast bearbetade bilden var " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 264 phrases. 88 were duplicates of existing phrases, so only 176 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 264 phrases. 86 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13109,21 +13083,6 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 </phrase>
 
 <phrase>
-<original>Reset layer angle</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Reset horizontal layer shear</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Reset vertical layer shear</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>size and position</original>
 <translation></translation>
 </phrase>
@@ -13149,26 +13108,11 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 </phrase>
 
 <phrase>
-<original>Reset layer angle to zero</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Reset horizontal layer shear to zero</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Reset vertical layer shear to zero</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Nearest neighbor</original>
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 32 phrases. 7 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 26 phrases. 7 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_MoveSize.frm-->
 
@@ -13201,18 +13145,13 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <!-- BEGIN text for Toolpanel_Selections.frm (toolpanel_Selections) -->
 
 <phrase>
+<original>smoothing</original>
+<translation>smoothing</translation>
+</phrase>
+
+<phrase>
 <original>area</original>
 <translation>område</translation>
-</phrase>
-
-<phrase>
-<original>tolerance</original>
-<translation>tolerans</translation>
-</phrase>
-
-<phrase>
-<original>sampling area</original>
-<translation>provtagningsområdet</translation>
 </phrase>
 
 <phrase>
@@ -13223,11 +13162,6 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <phrase>
 <original>size (w, h)</original>
 <translation>storlek (w, h)</translation>
-</phrase>
-
-<phrase>
-<original>smoothing</original>
-<translation>smoothing</translation>
 </phrase>
 
 <phrase>
@@ -13248,6 +13182,16 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <phrase>
 <original>stroke smoothing</original>
 <translation>stroke utjämning</translation>
+</phrase>
+
+<phrase>
+<original>tolerance</original>
+<translation>tolerans</translation>
+</phrase>
+
+<phrase>
+<original>sampling area</original>
+<translation>provtagningsområdet</translation>
 </phrase>
 
 <phrase>
@@ -13448,31 +13392,6 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>fill background</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>border style</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>background border</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>fill text</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>outline text</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>line wrap</original>
 <translation></translation>
 </phrase>
@@ -13519,6 +13438,31 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill background</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>border style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background border</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outline text</original>
 <translation></translation>
 </phrase>
 
@@ -15190,10 +15134,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2598</phrasecount>
+<phrasecount>2588</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4522 phrases. -->
-<!-- 1924 are duplicates, so only 2598 unique phrases have been written to file. -->
-<!-- These 2598 phrases contain approximately 13370 total words. -->
+<!-- As of this build, PhotoDemon contains 4511 phrases. -->
+<!-- 1923 are duplicates, so only 2588 unique phrases have been written to file. -->
+<!-- These 2588 phrases contain approximately 13305 total words. -->
 
 </pdData>

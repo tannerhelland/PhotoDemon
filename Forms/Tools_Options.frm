@@ -81,9 +81,10 @@ Begin VB.Form FormPreferences
          Left            =   3900
          TabIndex        =   5
          Top             =   3930
-         Width           =   1335
-         _ExtentX        =   2355
-         _ExtentY        =   661
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   609
+         DefaultValue    =   10
          Min             =   1
          Max             =   32
          Value           =   10
@@ -1716,7 +1717,7 @@ Private Sub LoadAllPreferences()
         'We can shortcut a bit of initialization here by populating all quality drop-downs with the same values.
         Dim i As Long
         
-        For i = 0 To cboPerformance.Ubound
+        For i = 0 To cboPerformance.UBound
             cboPerformance(i).Clear
             cboPerformance(i).AddItem " maximize quality", 0
             cboPerformance(i).AddItem " balance performance and quality", 1
@@ -2021,7 +2022,7 @@ Private Sub Form_Load()
     'Activate the last preferences panel that the user looked at
     Dim activePanel As Long
     activePanel = g_UserPreferences.GetPref_Long("Core", "Last Preferences Page", 0)
-    If activePanel > picContainer.Ubound Then activePanel = picContainer.Ubound
+    If activePanel > picContainer.UBound Then activePanel = picContainer.UBound
     picContainer(activePanel).Visible = True
     btsvCategory.ListIndex = activePanel
     
@@ -2031,7 +2032,7 @@ Private Sub Form_Load()
     'For some reason, the container picture boxes automatically acquire the pointer of children objects.
     ' Manually force those cursors to arrows to prevent this.
     For i = 0 To picContainer.Count - 1
-        setArrowCursor picContainer(i)
+        SetArrowCursor picContainer(i)
     Next i
     
     userInitiatedColorSelection = True

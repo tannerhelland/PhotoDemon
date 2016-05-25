@@ -24,6 +24,16 @@ Begin VB.Form FormMiscDistorts
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdListBox lstDistorts 
+      Height          =   3015
+      Left            =   6000
+      TabIndex        =   4
+      Top             =   120
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   5318
+      Caption         =   "distortions"
+   End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -33,24 +43,6 @@ Begin VB.Form FormMiscDistorts
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
-   End
-   Begin VB.ListBox lstDistorts 
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   2460
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   600
-      Width           =   5655
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -77,37 +69,14 @@ Begin VB.Form FormMiscDistorts
       NotchValueCustom=   2
    End
    Begin PhotoDemon.pdDropDown cboEdges 
-      Height          =   375
-      Left            =   6240
+      Height          =   855
+      Left            =   6000
       TabIndex        =   3
-      Top             =   4680
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   1
-      Left            =   6000
       Top             =   4320
-      Width           =   5850
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "if pixels lie outside the corrected area..."
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      Top             =   210
       Width           =   5895
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "distortions"
-      FontSize        =   12
-      ForeColor       =   4210752
+      _ExtentX        =   10398
+      _ExtentY        =   1508
+      Caption         =   "if pixels lie outside the corrected area..."
    End
 End
 Attribute VB_Name = "FormMiscDistorts"
@@ -147,7 +116,7 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -157,9 +126,9 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -407,7 +376,7 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -421,12 +390,12 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Miscellaneous distort", , buildParams(lstDistorts.List(lstDistorts.ListIndex), lstDistorts.ListIndex, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Miscellaneous distort", , BuildParams(lstDistorts.List(lstDistorts.ListIndex), lstDistorts.ListIndex, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -439,22 +408,17 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
-            
 End Sub
 
 Private Sub Form_Load()
     
     'Disable previews while we populate various dialog controls
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Populate a list of available distort operations
+    lstDistorts.SetAutomaticRedraws False
     lstDistorts.Clear
     lstDistorts.AddItem g_Language.TranslateMessage("emphasize center"), 0
     lstDistorts.AddItem g_Language.TranslateMessage("flatten corners"), 1
@@ -464,10 +428,15 @@ Private Sub Form_Load()
     lstDistorts.AddItem g_Language.TranslateMessage("ring"), 5
     lstDistorts.AddItem g_Language.TranslateMessage("twist edges"), 6
     lstDistorts.AddItem g_Language.TranslateMessage("wormhole"), 7
+    lstDistorts.ListIndex = 0
+    lstDistorts.SetAutomaticRedraws True, True
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
     PopDistortEdgeBox cboEdges, EDGE_WRAP
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
     
 End Sub
 
@@ -481,7 +450,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyMiscDistort "", lstDistorts.ListIndex, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyMiscDistort "", lstDistorts.ListIndex, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

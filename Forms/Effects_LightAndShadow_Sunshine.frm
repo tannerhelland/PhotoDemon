@@ -33,8 +33,9 @@ Begin VB.Form FormSunshine
       _ExtentY        =   1270
       Caption         =   "radius"
       Min             =   1
-      Max             =   200
-      Value           =   72
+      Max             =   500
+      Value           =   100
+      DefaultValue    =   100
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -59,6 +60,7 @@ Begin VB.Form FormSunshine
       Min             =   1
       Max             =   360
       Value           =   100
+      DefaultValue    =   100
    End
    Begin PhotoDemon.pdSlider sltXCenter 
       Height          =   405
@@ -97,7 +99,6 @@ Begin VB.Form FormSunshine
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdColorSelector cpShine 
       Height          =   975
@@ -234,7 +235,7 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -244,9 +245,9 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -347,7 +348,7 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -361,7 +362,7 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -395,7 +396,7 @@ End Function
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Sunshine", , buildParams(sltRadius.Value, sltRayCount.Value, cpShine.Color, sltVariance.Value, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Sunshine", , BuildParams(sltRadius.Value, sltRayCount.Value, cpShine.Color, sltVariance.Value, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -420,7 +421,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Display the previewed effect in the neighboring window
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -428,7 +429,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previewing until the form has been fully initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
 End Sub
 
@@ -437,10 +438,10 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
 End Sub
 
@@ -453,7 +454,7 @@ Private Sub sltRayCount_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then SunShine sltRadius.Value, sltRayCount.Value, cpShine.Color, sltVariance.Value, sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then SunShine sltRadius.Value, sltRayCount.Value, cpShine.Color, sltVariance.Value, sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

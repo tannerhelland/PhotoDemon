@@ -109,6 +109,7 @@ Begin VB.Form dialog_ExportJPEG
          Max             =   99
          Value           =   90
          NotchPosition   =   1
+         DefaultValue    =   90
       End
       Begin PhotoDemon.pdColorSelector clsBackground 
          Height          =   1095

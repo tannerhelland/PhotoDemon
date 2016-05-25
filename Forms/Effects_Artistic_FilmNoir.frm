@@ -35,6 +35,7 @@ Begin VB.Form FormFilmNoir
       Max             =   100
       SigDigits       =   1
       Value           =   50
+      DefaultValue    =   50
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -54,7 +55,6 @@ Begin VB.Form FormFilmNoir
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltContrast 
       Height          =   705
@@ -68,6 +68,7 @@ Begin VB.Form FormFilmNoir
       Max             =   100
       SigDigits       =   1
       Value           =   50
+      DefaultValue    =   50
    End
    Begin PhotoDemon.pdSlider sltHighlight 
       Height          =   705
@@ -81,6 +82,7 @@ Begin VB.Form FormFilmNoir
       Max             =   100
       SigDigits       =   1
       Value           =   50
+      DefaultValue    =   50
    End
    Begin PhotoDemon.pdSlider sltMidpoint 
       Height          =   705
@@ -94,6 +96,7 @@ Begin VB.Form FormFilmNoir
       Max             =   100
       SigDigits       =   1
       Value           =   50
+      DefaultValue    =   50
    End
    Begin PhotoDemon.pdSlider sltGrain 
       Height          =   705
@@ -141,7 +144,7 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
     'Parse out the parameter list
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    cParams.setParamString parameterList
+    cParams.SetParamString parameterList
     
     Dim shadowStrength As Double, contrastStrength As Double, luminancePoint As Double, highlightStrength As Double, artificialGrain As Double
     shadowStrength = cParams.GetDouble("shadow")
@@ -176,7 +179,7 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -244,7 +247,7 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -255,7 +258,7 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
 
 End Sub
 
@@ -294,7 +297,7 @@ Private Sub pdFxPreview_ViewportChanged()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxFilmNoir GetLocalParamString(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then fxFilmNoir GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltContrast_Change()
@@ -318,7 +321,7 @@ Private Sub sltShadow_Change()
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = buildParamList("shadow", sltShadow.Value, "contrast", sltContrast.Value, "midpoint", sltMidpoint.Value, "highlight", sltHighlight.Value, "grain", sltGrain.Value)
+    GetLocalParamString = BuildParamList("shadow", sltShadow.Value, "contrast", sltContrast.Value, "midpoint", sltMidpoint.Value, "highlight", sltHighlight.Value, "grain", sltGrain.Value)
 End Function
 
 

@@ -24,6 +24,16 @@ Begin VB.Form FormEdgeEnhance
    ScaleWidth      =   813
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdListBox lstEdgeOptions 
+      Height          =   2775
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   120
+      Width           =   5775
+      _extentx        =   10186
+      _extenty        =   4895
+      caption         =   "edge detection technique"
+   End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -31,70 +41,53 @@ Begin VB.Form FormEdgeEnhance
       TabIndex        =   0
       Top             =   5775
       Width           =   12195
-      _ExtentX        =   21511
-      _ExtentY        =   1323
-      BackColor       =   14802140
-   End
-   Begin VB.ListBox LstEdgeOptions 
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   2220
-      Left            =   6240
-      TabIndex        =   1
-      Top             =   480
-      Width           =   5655
+      _extentx        =   21511
+      _extenty        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.pdCheckBox chkDirection 
       Height          =   360
       Index           =   0
       Left            =   6240
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   3360
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   582
-      Caption         =   "horizontal"
+      _extentx        =   9922
+      _extenty        =   582
+      caption         =   "horizontal"
    End
    Begin PhotoDemon.pdCheckBox chkDirection 
       Height          =   360
       Index           =   1
       Left            =   6240
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   3840
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   582
-      Caption         =   "vertical"
+      _extentx        =   9922
+      _extenty        =   582
+      caption         =   "vertical"
    End
    Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   4560
       Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   1270
-      Caption         =   "strength"
-      Max             =   100
-      NotchPosition   =   2
-      NotchValueCustom=   50
+      _extentx        =   10610
+      _extenty        =   1270
+      caption         =   "strength"
+      max             =   100
+      value           =   50
+      notchposition   =   2
+      notchvaluecustom=   50
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -102,23 +95,11 @@ Begin VB.Form FormEdgeEnhance
       Left            =   6000
       Top             =   3000
       Width           =   5835
-      _ExtentX        =   10292
-      _ExtentY        =   503
-      Caption         =   "detection direction(s)"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      Top             =   120
-      Width           =   5880
-      _ExtentX        =   10372
-      _ExtentY        =   503
-      Caption         =   "edge detection technique"
-      FontSize        =   12
-      ForeColor       =   4210752
+      _extentx        =   10292
+      _extenty        =   503
+      caption         =   "detection direction(s)"
+      fontsize        =   12
+      forecolor       =   4210752
    End
 End
 Attribute VB_Name = "FormEdgeEnhance"
@@ -171,7 +152,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Enhance edges", , buildParams(LstEdgeOptions.ListIndex, getDirectionality(), sltStrength.Value), UNDO_LAYER
+    Process "Enhance edges", , BuildParams(lstEdgeOptions.ListIndex, getDirectionality(), sltStrength.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -179,14 +160,8 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Update the descriptions (this will also draw a preview of the selected edge-detection algorithm)
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 'Apply any supported edge detection filter to an image.  Directionality can be specified, but note that only some
@@ -204,7 +179,7 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
     Dim tmpParamString As String, convolutionMatrixString As String
     
     '1a) Generate a name for the requested filter
-    tmpParamString = getNameOfEdgeDetector(edgeDetectionType) & "|"
+    tmpParamString = GetNameOfEdgeDetector(edgeDetectionType) & "|"
     
     '1b) Add in the invert (black background) parameter
     tmpParamString = tmpParamString & "False" & "|"
@@ -227,24 +202,24 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
         numPassesRequired = 3
     End If
     
-    If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", "1", numPassesRequired, getNameOfEdgeDetector(edgeDetectionType)
+    If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", "1", numPassesRequired, GetNameOfEdgeDetector(edgeDetectionType)
     
     'Use PD's central image handler to populate the public workingDIB object.
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'Create a second DIB copy.  This will receive the edge-detection copy of the image.
     Dim edgeDIB As pdDIB
     Set edgeDIB = New pdDIB
-    edgeDIB.createFromExistingDIB workingDIB
+    edgeDIB.CreateFromExistingDIB workingDIB
     
     '3a) If the function is single-pass compatible (e.g. it does not require us to traverse the image multiple times, then
     '     blend the edge detection results), supply the compiled param string to PD's central convolution function and exit
     If (edgeDetectionType = PD_EDGE_ARTISTIC_CONTOUR) Then
-        CreateContourDIB True, workingDIB, edgeDIB, toPreview, workingDIB.getDIBWidth * numPassesRequired, 0
+        CreateContourDIB True, workingDIB, edgeDIB, toPreview, workingDIB.GetDIBWidth * numPassesRequired, 0
     
     Else
-        ConvolveDIB tmpParamString, workingDIB, edgeDIB, toPreview, workingDIB.getDIBWidth * numPassesRequired, 0
+        ConvolveDIB tmpParamString, workingDIB, edgeDIB, toPreview, workingDIB.GetDIBWidth * numPassesRequired, 0
     
     End If
     
@@ -259,26 +234,26 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
         'Create a second DIB copy.  This will receive the edge-detection copy of the image.
         Dim tmpEdgeDIB As pdDIB
         Set tmpEdgeDIB = New pdDIB
-        tmpEdgeDIB.createFromExistingDIB workingDIB
+        tmpEdgeDIB.CreateFromExistingDIB workingDIB
         
         'When two passes are required, the vertical direction is always applied first.  Thus we know we need to apply the
         ' horizontal direction next.  Generate a new param string for the horizontal direction.
-        If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", "2", numPassesRequired, getNameOfEdgeDetector(edgeDetectionType)
+        If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", "2", numPassesRequired, GetNameOfEdgeDetector(edgeDetectionType)
         
-        tmpParamString = getNameOfEdgeDetector(edgeDetectionType) & "|"
+        tmpParamString = GetNameOfEdgeDetector(edgeDetectionType) & "|"
         tmpParamString = tmpParamString & "False" & "|"
         convolutionMatrixString = getParamStringForEdgeDetector(edgeDetectionType, PD_EDGE_DIR_HORIZONTAL)
         tmpParamString = tmpParamString & convolutionMatrixString
                 
         'Use the central ConvolveDIB function to apply the new convolution to workingDIB
-        ConvolveDIB tmpParamString, workingDIB, tmpEdgeDIB, toPreview, workingDIB.getDIBWidth * numPassesRequired, workingDIB.getDIBWidth
+        ConvolveDIB tmpParamString, workingDIB, tmpEdgeDIB, toPreview, workingDIB.GetDIBWidth * numPassesRequired, workingDIB.GetDIBWidth
         
         'The compositor requires premultiplied alpha, so convert both top and bottom layers now
         edgeDIB.SetAlphaPremultiplication True
         tmpEdgeDIB.SetAlphaPremultiplication True
         
         'Use the pdCompositor class to blend the results of the second edge detection pass with the first pass.
-        cComposite.quickMergeTwoDibsOfEqualSize edgeDIB, tmpEdgeDIB, BL_SCREEN
+        cComposite.QuickMergeTwoDibsOfEqualSize edgeDIB, tmpEdgeDIB, BL_SCREEN
         
         'Remove premultiplication
         edgeDIB.SetAlphaPremultiplication False
@@ -290,7 +265,7 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
     
     'edgeDIB now contains a complete edge-detection copy of the image, using the supplied edge detector algorithm.
     ' We now need to selectively blend the results back onto the main image, at the strength requested.
-    If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", numPassesRequired, numPassesRequired, getNameOfEdgeDetector(edgeDetectionType)
+    If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", numPassesRequired, numPassesRequired, GetNameOfEdgeDetector(edgeDetectionType)
     
     'Apply premultiplication prior to compositing
     edgeDIB.SetAlphaPremultiplication True
@@ -305,44 +280,47 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
     tmpLayerTop.InitializeNewLayer PDL_IMAGE, , edgeDIB
     tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , workingDIB
     
-    tmpLayerTop.setLayerBlendMode BL_SCREEN
-    tmpLayerTop.setLayerOpacity enhanceStrength
+    tmpLayerTop.SetLayerBlendMode BL_SCREEN
+    tmpLayerTop.SetLayerOpacity enhanceStrength
     
-    cComposite.mergeLayers tmpLayerTop, tmpLayerBottom, True
+    cComposite.MergeLayers tmpLayerTop, tmpLayerBottom, True
     
     'Copy the finished DIB from the bottom layer back into workingDIB
-    workingDIB.createFromExistingDIB tmpLayerBottom.layerDIB
+    workingDIB.CreateFromExistingDIB tmpLayerBottom.layerDIB
     
     Set tmpLayerTop = Nothing
     Set tmpLayerBottom = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic, True
+    FinalizeImageData toPreview, dstPic, True
 
 End Sub
 
 'Return the naem of an edge detection type as a human-readable string
-Private Function getNameOfEdgeDetector(ByVal edgeDetectionType As PD_EDGE_DETECTION) As String
+Private Function GetNameOfEdgeDetector(ByVal edgeDetectionType As PD_EDGE_DETECTION) As String
 
     Select Case edgeDetectionType
-                
+        
+        Case PD_EDGE_ARTISTIC_CONTOUR
+            GetNameOfEdgeDetector = g_Language.TranslateMessage("Artistic contour edge detection")
+            
         Case PD_EDGE_HILITE
-            getNameOfEdgeDetector = g_Language.TranslateMessage("Hilite edge detection")
+            GetNameOfEdgeDetector = g_Language.TranslateMessage("Hilite edge detection")
             
         Case PD_EDGE_LAPLACIAN
-            getNameOfEdgeDetector = g_Language.TranslateMessage("Laplacian edge detection")
+            GetNameOfEdgeDetector = g_Language.TranslateMessage("Laplacian edge detection")
         
         Case PD_EDGE_PHOTODEMON
-            getNameOfEdgeDetector = g_Language.TranslateMessage("PhotoDemon edge detection")
+            GetNameOfEdgeDetector = g_Language.TranslateMessage("PhotoDemon edge detection")
             
         Case PD_EDGE_PREWITT
-            getNameOfEdgeDetector = g_Language.TranslateMessage("Prewitt edge detection")
+            GetNameOfEdgeDetector = g_Language.TranslateMessage("Prewitt edge detection")
         
         Case PD_EDGE_ROBERTS
-            getNameOfEdgeDetector = g_Language.TranslateMessage("Roberts cross edge detection")
+            GetNameOfEdgeDetector = g_Language.TranslateMessage("Roberts cross edge detection")
             
         Case PD_EDGE_SOBEL
-            getNameOfEdgeDetector = g_Language.TranslateMessage("Sobel edge detection")
+            GetNameOfEdgeDetector = g_Language.TranslateMessage("Sobel edge detection")
             
     End Select
 
@@ -555,39 +533,43 @@ Public Sub FilterSmoothContour(Optional ByVal blackBackground As Boolean = False
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
     CreateContourDIB blackBackground, srcDIB, workingDIB, toPreview
     
-    srcDIB.eraseDIB
+    srcDIB.EraseDIB
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
 Private Sub Form_Load()
     
     'Suspend previews until the list box has been populated
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Generate a list box with all the currently implemented edge detection algorithms
-    LstEdgeOptions.AddItem "Artistic contour", 0
-    LstEdgeOptions.AddItem "Hilite", 1
-    LstEdgeOptions.AddItem "Laplacian", 2
-    LstEdgeOptions.AddItem "PhotoDemon", 3
-    LstEdgeOptions.AddItem "Prewitt", 4
-    LstEdgeOptions.AddItem "Roberts cross", 5
-    LstEdgeOptions.AddItem "Sobel", 6
+    lstEdgeOptions.SetAutomaticRedraws False
+    lstEdgeOptions.AddItem "Artistic contour", 0
+    lstEdgeOptions.AddItem "Hilite", 1
+    lstEdgeOptions.AddItem "Laplacian", 2
+    lstEdgeOptions.AddItem "PhotoDemon", 3
+    lstEdgeOptions.AddItem "Prewitt", 4
+    lstEdgeOptions.AddItem "Roberts cross", 5
+    lstEdgeOptions.AddItem "Sobel", 6
+    lstEdgeOptions.ListIndex = 0
+    lstEdgeOptions.SetAutomaticRedraws True, True
     
-    LstEdgeOptions.ListIndex = 0
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
     
 End Sub
 
@@ -597,11 +579,11 @@ End Sub
 
 Private Sub LstEdgeOptions_Click()
     
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Directionality is only supported by some transforms, so de/activate the directionality check boxes to match the
     ' capabilities of the selected transform
-    Select Case LstEdgeOptions.ListIndex
+    Select Case lstEdgeOptions.ListIndex
     
         Case PD_EDGE_ARTISTIC_CONTOUR
             changeCheckboxActivation False
@@ -626,7 +608,7 @@ Private Sub LstEdgeOptions_Click()
     
     End Select
     
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -669,8 +651,8 @@ End Function
 'Update the live preview of the selected edge detection options
 Private Sub UpdatePreview()
     
-    If cmdBar.previewsAllowed Then
-        ApplyEdgeEnhancement LstEdgeOptions.ListIndex, getDirectionality(), sltStrength.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then
+        ApplyEdgeEnhancement lstEdgeOptions.ListIndex, getDirectionality(), sltStrength.Value, True, pdFxPreview
     End If
     
 End Sub

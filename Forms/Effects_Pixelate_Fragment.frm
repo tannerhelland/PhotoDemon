@@ -33,7 +33,6 @@ Begin VB.Form FormFragment
       Width           =   11895
       _ExtentX        =   20981
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -57,6 +56,7 @@ Begin VB.Form FormFragment
       Max             =   200
       SigDigits       =   1
       Value           =   8
+      DefaultValue    =   8
    End
    Begin PhotoDemon.pdSlider sltFragments 
       Height          =   705
@@ -70,6 +70,7 @@ Begin VB.Form FormFragment
       Min             =   1
       Max             =   25
       Value           =   4
+      DefaultValue    =   4
    End
    Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
@@ -180,7 +181,7 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array. This will contain the a copy of the current image, and we will use it as our source reference
@@ -190,9 +191,9 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -306,7 +307,7 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -320,7 +321,7 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
 End Sub
 
@@ -329,7 +330,7 @@ Private Sub cboEdges_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Fragment", , buildParams(sltFragments.Value, sltDistance.Value, sltAngle.Value, CLng(cboEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
+    Process "Fragment", , BuildParams(sltFragments.Value, sltDistance.Value, sltAngle.Value, CLng(cboEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -350,7 +351,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
         
     'Create the preview
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -358,7 +359,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previews until the dialog has been fully initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
@@ -371,7 +372,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then Fragment sltFragments, sltDistance, sltAngle, CLng(cboEdges.ListIndex), OptInterpolate(0).Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Fragment sltFragments, sltDistance, sltAngle, CLng(cboEdges.ListIndex), OptInterpolate(0).Value, True, pdFxPreview
 End Sub
 
 Private Sub pdFxPreview_ViewportChanged()

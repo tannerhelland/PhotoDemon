@@ -33,7 +33,6 @@ Begin VB.Form FormWaves
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -57,6 +56,7 @@ Begin VB.Form FormWaves
       Min             =   1
       Max             =   50
       Value           =   30
+      DefaultValue    =   30
    End
    Begin PhotoDemon.pdSlider sltWavelengthY 
       Height          =   705
@@ -70,6 +70,7 @@ Begin VB.Form FormWaves
       Min             =   1
       Max             =   50
       Value           =   1
+      DefaultValue    =   1
    End
    Begin PhotoDemon.pdSlider sltAmplitudeX 
       Height          =   705
@@ -82,6 +83,7 @@ Begin VB.Form FormWaves
       Caption         =   "horizontal strength (amplitude)"
       Max             =   200
       Value           =   20
+      DefaultValue    =   20
    End
    Begin PhotoDemon.pdSlider sltAmplitudeY 
       Height          =   705
@@ -171,7 +173,7 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -181,9 +183,9 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -345,7 +347,7 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -359,13 +361,13 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
             
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Waves", , buildParams(sltWavelengthX, sltAmplitudeX, sltWavelengthY, sltAmplitudeY, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Waves", , BuildParams(sltWavelengthX, sltAmplitudeX, sltWavelengthY, sltAmplitudeY, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -383,7 +385,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Create the preview
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -391,7 +393,7 @@ End Sub
 Private Sub Form_Load()
 
     'Suppress previews until the dialog is fully initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
@@ -425,7 +427,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then WaveImage sltWavelengthX, sltAmplitudeX, sltWavelengthY, sltAmplitudeY, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then WaveImage sltWavelengthX, sltAmplitudeX, sltWavelengthY, sltAmplitudeY, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

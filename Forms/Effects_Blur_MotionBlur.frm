@@ -42,7 +42,6 @@ Begin VB.Form FormMotionBlur
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -87,6 +86,7 @@ Begin VB.Form FormMotionBlur
       Min             =   1
       Max             =   500
       Value           =   5
+      DefaultValue    =   5
    End
 End
 Attribute VB_Name = "FormMotionBlur"
@@ -123,7 +123,7 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     
     'Call prepImageData, which will initialize a workingDIB object for us (with all selection tool masks applied)
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic, , , True
+    PrepImageData dstSA, toPreview, dstPic, , , True
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
@@ -132,8 +132,8 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     End If
     
     Dim finalX As Long, finalY As Long
-    finalX = workingDIB.getDIBWidth
-    finalY = workingDIB.getDIBHeight
+    finalX = workingDIB.GetDIBWidth
+    finalY = workingDIB.GetDIBHeight
     
     'Create a second DIB, which will receive the results of this one
     Dim rotateDIB As pdDIB
@@ -156,7 +156,7 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
         Case 0
             Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
-            tmpDIB.createFromExistingDIB rotateDIB
+            tmpDIB.CreateFromExistingDIB rotateDIB
             blurSuccess = CreateHorizontalBlurDIB(bDistance, rightRadius, tmpDIB, rotateDIB, toPreview)
             Set tmpDIB = Nothing
         
@@ -178,11 +178,11 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     End If
     
     'Release our temporary rotation DIB
-    rotateDIB.eraseDIB
+    rotateDIB.EraseDIB
     Set rotateDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic, True
+    FinalizeImageData toPreview, dstPic, True
     
 End Sub
 
@@ -195,7 +195,7 @@ Private Sub chkSymmetry_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Motion blur", , buildParams(sltAngle, sltDistance, CBool(chkSymmetry), btsStyle.ListIndex), UNDO_LAYER
+    Process "Motion blur", , BuildParams(sltAngle, sltDistance, CBool(chkSymmetry), btsStyle.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -208,7 +208,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -216,7 +216,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the form is fully initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     btsStyle.AddItem "constant", 0
     btsStyle.AddItem "gaussian", 1
@@ -230,7 +230,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then MotionBlurFilter sltAngle, sltDistance, CBool(chkSymmetry), btsStyle.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then MotionBlurFilter sltAngle, sltDistance, CBool(chkSymmetry), btsStyle.ListIndex, True, pdFxPreview
 End Sub
 
 Private Sub sltAngle_Change()

@@ -42,7 +42,6 @@ Begin VB.Form FormRadialBlur
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -67,6 +66,7 @@ Begin VB.Form FormRadialBlur
       Max             =   360
       SigDigits       =   1
       Value           =   1
+      DefaultValue    =   1
    End
    Begin PhotoDemon.pdCheckBox chkSymmetry 
       Height          =   300
@@ -116,13 +116,13 @@ Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As 
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array. This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
     'By dividing blur radius by 360 (its maximum value), we can use it as a fractional amount to determine the strength of our horizontal blur.
     Dim actualBlurSize As Long
@@ -130,12 +130,12 @@ Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As 
     If actualBlurSize < 1 Then actualBlurSize = 1
     
     Dim finalX As Long, finalY As Long
-    finalX = workingDIB.getDIBWidth
-    finalY = workingDIB.getDIBHeight
+    finalX = workingDIB.GetDIBWidth
+    finalY = workingDIB.GetDIBHeight
     
     'Because this function actually wraps three functions, calculating the progress bar maximum is a bit convoluted
     Dim newProgBarMax As Long
-    newProgBarMax = finalX * 2 + (workingDIB.getDIBWidth + actualBlurSize * 2)
+    newProgBarMax = finalX * 2 + (workingDIB.GetDIBWidth + actualBlurSize * 2)
     
     'Start by converting the image to polar coordinates, using a specific set of actions to maximize quality
     If CreatePolarCoordDIB(1, 100, EDGE_CLAMP, useBilinear, srcDIB, workingDIB, toPreview, newProgBarMax) Then
@@ -152,8 +152,8 @@ Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As 
         
         'Start by calculating the temporary image's size and offset
         Dim srcWidth As Long, srcHeight As Long
-        srcWidth = workingDIB.getDIBWidth
-        srcHeight = workingDIB.getDIBHeight
+        srcWidth = workingDIB.GetDIBWidth
+        srcHeight = workingDIB.GetDIBHeight
         
         Dim dstWidth As Long
         dstWidth = srcWidth + actualBlurSize * 2
@@ -164,17 +164,17 @@ Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As 
         'Create a temporary DIB to hold the blurred image
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
-        tmpDIB.createBlank dstWidth, srcHeight, workingDIB.getDIBColorDepth
+        tmpDIB.CreateBlank dstWidth, srcHeight, workingDIB.GetDIBColorDepth
         
         'Bitblt the original image onto the center of the temporary canvas
-        BitBlt tmpDIB.getDIBDC, dstX, 0, srcWidth, srcHeight, workingDIB.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt tmpDIB.GetDIBDC, dstX, 0, srcWidth, srcHeight, workingDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Apply two more blts - each of these will mirror an edge section of the source image
-        BitBlt tmpDIB.getDIBDC, 0, 0, dstX, srcHeight, workingDIB.getDIBDC, srcWidth - dstX, 0, vbSrcCopy
-        BitBlt tmpDIB.getDIBDC, dstX + srcWidth, 0, dstX, srcHeight, workingDIB.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt tmpDIB.GetDIBDC, 0, 0, dstX, srcHeight, workingDIB.GetDIBDC, srcWidth - dstX, 0, vbSrcCopy
+        BitBlt tmpDIB.GetDIBDC, dstX + srcWidth, 0, dstX, srcHeight, workingDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Change the srcDIB to be the same size as this working DIB, so it can receive the fully blurred image
-        srcDIB.createBlank tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, workingDIB.getDIBColorDepth
+        srcDIB.CreateBlank tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, workingDIB.GetDIBColorDepth
     
         'Now we can apply the box blur to the temporary DIB, using the blur radius supplied by the user
         Dim leftRadius As Long
@@ -183,14 +183,14 @@ Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As 
         If CreateHorizontalBlurDIB(leftRadius, actualBlurSize, tmpDIB, srcDIB, toPreview, newProgBarMax, finalX) Then
         
             'Copy the blurred results of the source DIB back into the temporary DIB
-            tmpDIB.createFromExistingDIB srcDIB
+            tmpDIB.CreateFromExistingDIB srcDIB
             
             'Resize the source DIB to match the original image
-            srcDIB.createBlank workingDIB.getDIBWidth, workingDIB.getDIBHeight, workingDIB.getDIBColorDepth
+            srcDIB.CreateBlank workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, workingDIB.GetDIBColorDepth
             
             'Copy the correct chunk of the temporary DIB into the source DIB
-            BitBlt srcDIB.getDIBDC, 0, 0, srcWidth, srcHeight, tmpDIB.getDIBDC, dstX, 0, vbSrcCopy
-            tmpDIB.eraseDIB
+            BitBlt srcDIB.GetDIBDC, 0, 0, srcWidth, srcHeight, tmpDIB.GetDIBDC, dstX, 0, vbSrcCopy
+            tmpDIB.EraseDIB
             
             'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
             CreatePolarCoordDIB 0, 100, EDGE_CLAMP, useBilinear, srcDIB, workingDIB, toPreview, newProgBarMax, finalX + dstWidth
@@ -201,11 +201,11 @@ Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As 
         
     End If
     
-    srcDIB.eraseDIB
+    srcDIB.EraseDIB
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -218,7 +218,7 @@ Private Sub chkSymmetry_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Radial blur", , buildParams(sltRadius, CBool(chkSymmetry), CBool(btsRender.ListIndex = 1)), UNDO_LAYER
+    Process "Radial blur", , BuildParams(sltRadius, CBool(chkSymmetry), CBool(btsRender.ListIndex = 1)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -231,7 +231,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -239,7 +239,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the form is fully initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     btsRender.AddItem "speed", 0
     btsRender.AddItem "accuracy", 1
@@ -257,7 +257,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then RadialBlurFilter sltRadius, CBool(chkSymmetry), CBool(btsRender.ListIndex = 1), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then RadialBlurFilter sltRadius, CBool(chkSymmetry), CBool(btsRender.ListIndex = 1), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

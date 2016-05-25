@@ -42,7 +42,6 @@ Begin VB.Form FormChromaBlur
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -66,6 +65,7 @@ Begin VB.Form FormChromaBlur
       Max             =   200
       SigDigits       =   1
       Value           =   5
+      DefaultValue    =   5
    End
 End
 Attribute VB_Name = "FormChromaBlur"
@@ -104,17 +104,17 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, which we need to retrieve luminance
     ' values when merging the blurred color data with the original luminance data.
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
     Dim gaussDIB As pdDIB
     Set gaussDIB = New pdDIB
-    gaussDIB.createFromExistingDIB workingDIB
+    gaussDIB.CreateFromExistingDIB workingDIB
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -161,17 +161,17 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
             
         'Point arrays at three images: the source and gauss DIBs, and the final destination DIB
         Dim dstImageData() As Byte
-        prepImageData dstSA, toPreview, dstPic
+        PrepImageData dstSA, toPreview, dstPic
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
         Dim srcImageData() As Byte
         Dim srcSA As SAFEARRAY2D
-        prepSafeArray srcSA, srcDIB
+        PrepSafeArray srcSA, srcDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
             
         Dim GaussImageData() As Byte
         Dim gaussSA As SAFEARRAY2D
-        prepSafeArray gaussSA, gaussDIB
+        PrepSafeArray gaussSA, gaussDIB
         CopyMemory ByVal VarPtrArray(GaussImageData()), VarPtr(gaussSA), 4
                 
         'These values will help us access locations in the array more quickly.
@@ -224,7 +224,7 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
         Next y
             If Not toPreview Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal x + calcProgBarOffset
                 End If
             End If
@@ -234,7 +234,7 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
         CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4
         Erase GaussImageData
         
-        gaussDIB.eraseDIB
+        gaussDIB.EraseDIB
         Set gaussDIB = Nothing
         
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -246,7 +246,7 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -255,7 +255,7 @@ Private Sub btsQuality_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Chroma blur", , buildParams(sltRadius, btsQuality.ListIndex), UNDO_LAYER
+    Process "Chroma blur", , BuildParams(sltRadius, btsQuality.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -277,7 +277,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -285,7 +285,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully loaded
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
 End Sub
 
@@ -299,7 +299,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ChromaBlurFilter sltRadius, btsQuality.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ChromaBlurFilter sltRadius, btsQuality.ListIndex, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

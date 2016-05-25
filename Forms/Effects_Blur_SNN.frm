@@ -41,7 +41,6 @@ Begin VB.Form FormSNN
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
@@ -54,6 +53,7 @@ Begin VB.Form FormSNN
       Caption         =   "strength"
       Max             =   100
       Value           =   50
+      DefaultValue    =   50
    End
    Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
@@ -66,6 +66,7 @@ Begin VB.Form FormSNN
       Caption         =   "radius"
       Min             =   1
       Value           =   1
+      DefaultValue    =   1
    End
 End
 Attribute VB_Name = "FormSNN"
@@ -115,7 +116,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     'Parse out the parameter list
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    cParams.setParamString parameterList
+    cParams.SetParamString parameterList
     
     Dim snnRadius As Long
     snnRadius = cParams.GetLong("radius", 1&)
@@ -133,18 +134,18 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     'Create a local array and point it at the destination pixel data
     Dim dstImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
     
     'Create a second copy of the target DIB.
     ' (This is necessary to prevent processed pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here.
@@ -333,7 +334,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     Next x
         If Not toPreview Then
             If (y And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal progBarOffset + y
             End If
         End If
@@ -346,10 +347,10 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     Erase srcImageData
     
-    srcDIB.eraseDIB
+    srcDIB.EraseDIB
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
 
 End Sub
 
@@ -376,7 +377,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -384,7 +385,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews while we initialize the dialog
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
 End Sub
 
@@ -398,7 +399,7 @@ Private Sub pdFxPreview_ViewportChanged()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then Me.ApplySymmetricNearestNeighbor GetLocalParamString(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.ApplySymmetricNearestNeighbor GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltRadius_Change()
@@ -410,7 +411,7 @@ Private Sub sltStrength_Change()
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = buildParamList("radius", sltRadius.Value, "strength", sltStrength.Value)
+    GetLocalParamString = BuildParamList("radius", sltRadius.Value, "strength", sltStrength.Value)
 End Function
 
 

@@ -32,7 +32,6 @@ Begin VB.Form FormDiffuse
       Width           =   12210
       _ExtentX        =   21537
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltX 
       Height          =   705
@@ -44,6 +43,7 @@ Begin VB.Form FormDiffuse
       _ExtentY        =   1270
       Caption         =   "horizontal strength"
       Value           =   1
+      DefaultValue    =   1
    End
    Begin PhotoDemon.pdCheckBox chkWrap 
       Height          =   330
@@ -74,6 +74,7 @@ Begin VB.Form FormDiffuse
       _ExtentY        =   1270
       Caption         =   "vertical strength"
       Value           =   1
+      DefaultValue    =   1
    End
 End
 Attribute VB_Name = "FormDiffuse"
@@ -107,7 +108,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Diffuse", , buildParams(sltX.Value, sltY.Value, CBool(chkWrap.Value)), UNDO_LAYER
+    Process "Diffuse", , BuildParams(sltX.Value, sltY.Value, CBool(chkWrap.Value)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -120,7 +121,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Re-enable previews and request an initial render
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -128,7 +129,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previews until everything is loaded
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(g_CurrentImage).selectionActive Then
@@ -160,7 +161,7 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -170,9 +171,9 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -250,7 +251,7 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     Next y
         If toPreview = False Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -264,7 +265,7 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
      
 End Sub
 
@@ -273,7 +274,7 @@ Private Sub sltX_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then DiffuseCustom sltX.Value, sltY.Value, CBool(chkWrap.Value), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then DiffuseCustom sltX.Value, sltY.Value, CBool(chkWrap.Value), True, pdFxPreview
 End Sub
 
 Private Sub sltY_Change()

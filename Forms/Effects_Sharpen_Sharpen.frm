@@ -32,7 +32,6 @@ Begin VB.Form FormSharpen
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
@@ -46,6 +45,7 @@ Begin VB.Form FormSharpen
       Min             =   0.1
       SigDigits       =   1
       Value           =   0.1
+      DefaultValue    =   0.1
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -113,7 +113,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Sharpen", , buildParams(sltStrength), UNDO_LAYER
+    Process "Sharpen", , BuildParams(sltStrength), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -126,7 +126,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -134,7 +134,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the dialog is completely ready
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
 End Sub
 
@@ -143,7 +143,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplySharpenFilter sltStrength.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplySharpenFilter sltStrength.Value, True, pdFxPreview
 End Sub
 
 Private Sub sltStrength_Change()

@@ -182,21 +182,6 @@ Public Function PromptWebPSettings(ByRef srcImage As pdImage, ByRef dstFormatPar
     
 End Function
 
-'Present a dialog box to ask the user for an alpha-cutoff value.  This is used when reducing a complex (32bpp)
-' alpha channel to a simple (8bpp) one.
-Public Function PromptAlphaCutoff(ByRef srcDIB As pdDIB) As VbMsgBoxResult
-
-    Load dialog_AlphaCutoff
-    dialog_AlphaCutoff.refDIB = srcDIB
-    dialog_AlphaCutoff.ShowDialog
-
-    PromptAlphaCutoff = dialog_AlphaCutoff.DialogResult
-    
-    Unload dialog_AlphaCutoff
-    Set dialog_AlphaCutoff = Nothing
-
-End Function
-
 'If the user is running in the IDE, warn them of the consequences of doing so
 Public Function DisplayIDEWarning() As VbMsgBoxResult
 

@@ -123,6 +123,7 @@ Begin VB.Form dialog_OutlineSettings
       Value           =   10
       NotchPosition   =   1
       NotchValueCustom=   100
+      DefaultValue    =   10
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315

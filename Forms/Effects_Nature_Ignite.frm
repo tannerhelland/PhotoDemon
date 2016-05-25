@@ -56,7 +56,6 @@ Begin VB.Form FormIgnite
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
@@ -70,6 +69,7 @@ Begin VB.Form FormIgnite
       Min             =   1
       Max             =   500
       Value           =   50
+      DefaultValue    =   50
    End
    Begin PhotoDemon.pdSlider sltOpacity 
       Height          =   705
@@ -83,6 +83,7 @@ Begin VB.Form FormIgnite
       Min             =   1
       Max             =   100
       Value           =   50
+      DefaultValue    =   50
    End
 End
 Attribute VB_Name = "FormIgnite"
@@ -124,25 +125,25 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     
     'Radius needs to be adjusted during previews, to accurately reflect how the final image will appear
     If toPreview Then
         fxRadius = fxRadius * curDIBValues.previewModifier
         If fxRadius < 1 Then fxRadius = 1
     Else
-        SetProgBarMax workingDIB.getDIBWidth * 3
+        SetProgBarMax workingDIB.GetDIBWidth * 3
     End If
     
     'First things first: start by analyzing image edges and generating a white-on-black contour map
     Dim edgeDIB As pdDIB
     Set edgeDIB = New pdDIB
-    edgeDIB.createFromExistingDIB workingDIB
-    Filters_Layers.CreateContourDIB True, workingDIB, edgeDIB, toPreview, workingDIB.getDIBWidth * 3, 0
+    edgeDIB.CreateFromExistingDIB workingDIB
+    Filters_Layers.CreateContourDIB True, workingDIB, edgeDIB, toPreview, workingDIB.GetDIBWidth * 3, 0
     
     'Next, we're going to do two things: blurring the flame upward, while also applying some decay
     ' to the flame.
-    prepSafeArray tmpSA, edgeDIB
+    PrepSafeArray tmpSA, edgeDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -225,7 +226,7 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal finalX + x
             End If
         End If
@@ -258,7 +259,7 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal finalX * 2 + x
             End If
         End If
@@ -285,25 +286,25 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     tmpLayerTop.InitializeNewLayer PDL_IMAGE, , edgeDIB
     tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , workingDIB
     
-    tmpLayerTop.setLayerBlendMode BL_SCREEN
-    tmpLayerTop.setLayerOpacity fxOpacity
+    tmpLayerTop.SetLayerBlendMode BL_SCREEN
+    tmpLayerTop.SetLayerOpacity fxOpacity
     
-    cComposite.mergeLayers tmpLayerTop, tmpLayerBottom, True
+    cComposite.MergeLayers tmpLayerTop, tmpLayerBottom, True
     
     'Copy the finished DIB from the bottom layer back into workingDIB
-    workingDIB.createFromExistingDIB tmpLayerBottom.layerDIB
+    workingDIB.CreateFromExistingDIB tmpLayerBottom.layerDIB
     
     Set edgeDIB = Nothing
     Set tmpLayerTop = Nothing
     Set tmpLayerBottom = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic, True
+    FinalizeImageData toPreview, dstPic, True
 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Ignite", , buildParams(sltIntensity, sltRadius, sltOpacity), UNDO_LAYER
+    Process "Ignite", , BuildParams(sltIntensity, sltRadius, sltOpacity), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -341,7 +342,7 @@ Private Sub sltIntensity_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxBurn sltIntensity, sltRadius, sltOpacity, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then fxBurn sltIntensity, sltRadius, sltOpacity, True, pdFxPreview
 End Sub
 
 Private Sub sltOpacity_Change()

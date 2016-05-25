@@ -42,7 +42,6 @@ Begin VB.Form FormPortraitGlow
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -65,6 +64,7 @@ Begin VB.Form FormPortraitGlow
       Min             =   1
       Max             =   100
       Value           =   5
+      DefaultValue    =   5
    End
    Begin PhotoDemon.pdSlider sltBoost 
       Height          =   705
@@ -88,6 +88,7 @@ Begin VB.Form FormPortraitGlow
       Caption         =   "strength"
       Max             =   100
       Value           =   100
+      DefaultValue    =   100
    End
 End
 Attribute VB_Name = "FormPortraitGlow"
@@ -118,7 +119,7 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
     'Parse out the parameter list
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    cParams.setParamString parameterList
+    cParams.SetParamString parameterList
     
     Dim glowRadius As Double, glowBoost As Double, glowOpacity As Double, glowStyle As Long
     glowRadius = cParams.GetDouble("radius", 1#)
@@ -133,13 +134,13 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'Create a copy of the image.  "Portrait glow" requires a blurred image copy as part of the effect, and we maintain
     ' that copy separate from the original (as the two must be blended as the final step of the filter).
     Dim blurDIB As pdDIB
     Set blurDIB = New pdDIB
-    blurDIB.createFromExistingDIB workingDIB
+    blurDIB.CreateFromExistingDIB workingDIB
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -206,15 +207,15 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
                 dstBlendMode = BL_SOFTLIGHT
         End Select
         
-        cComposite.quickMergeTwoDibsOfEqualSize workingDIB, blurDIB, dstBlendMode, glowOpacity
+        cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, blurDIB, dstBlendMode, glowOpacity
         
         'Release our temporary DIB
-        blurDIB.eraseDIB
+        blurDIB.EraseDIB
         
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic, True
+    FinalizeImageData toPreview, dstPic, True
     
 End Sub
 
@@ -241,7 +242,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
         
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -249,7 +250,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully loaded
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     btsStyle.AddItem "classic", 0
     btsStyle.AddItem "modern", 1
@@ -279,7 +280,7 @@ Private Sub sltStrength_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then Me.ApplyPortraitGlow GetLocalParamString, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.ApplyPortraitGlow GetLocalParamString, True, pdFxPreview
 End Sub
 
 Private Function GetLocalParamString() As String

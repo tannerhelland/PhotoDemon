@@ -33,7 +33,6 @@ Begin VB.Form FormColorHalftone
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -70,6 +69,7 @@ Begin VB.Form FormColorHalftone
       Max             =   50
       SigDigits       =   1
       Value           =   5
+      DefaultValue    =   5
    End
    Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
@@ -149,13 +149,13 @@ Public Sub ColorHalftoneFilter(ByVal pxRadius As Double, ByVal cyanAngle As Doub
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent converted pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
     'Modify the radius value for previews
     If toPreview Then pxRadius = pxRadius * curDIBValues.previewModifier
@@ -164,17 +164,17 @@ Public Sub ColorHalftoneFilter(ByVal pxRadius As Double, ByVal cyanAngle As Doub
     'Use the external function to apply the actual effect
     Filters_Stylize.CreateColorHalftoneDIB pxRadius, cyanAngle, magentaAngle, yellowAngle, dotDensity, srcDIB, workingDIB, toPreview
     
-    srcDIB.eraseDIB
+    srcDIB.EraseDIB
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
     
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Color halftone", , buildParams(sltRadius.Value, sltAngle(0).Value, sltAngle(1).Value, sltAngle(2).Value, sltDensity.Value), UNDO_LAYER
+    Process "Color halftone", , BuildParams(sltRadius.Value, sltAngle(0).Value, sltAngle(1).Value, sltAngle(2).Value, sltDensity.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -195,7 +195,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Request a preview
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
         
 End Sub
@@ -203,7 +203,7 @@ End Sub
 Private Sub Form_Load()
 
     'Suspend previews while we initialize controls
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
         
 End Sub
 
@@ -213,7 +213,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ColorHalftoneFilter sltRadius.Value, sltAngle(0).Value, sltAngle(1).Value, sltAngle(2).Value, sltDensity.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ColorHalftoneFilter sltRadius.Value, sltAngle(0).Value, sltAngle(1).Value, sltAngle(2).Value, sltDensity.Value, True, pdFxPreview
 End Sub
 
 Private Sub pdFxPreview_ViewportChanged()

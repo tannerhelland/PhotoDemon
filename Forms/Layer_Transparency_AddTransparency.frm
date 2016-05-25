@@ -32,7 +32,6 @@ Begin VB.Form FormTransparency_Basic
       Width           =   11820
       _ExtentX        =   20849
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdRadioButton optAlpha 
       Height          =   375
@@ -89,6 +88,7 @@ Begin VB.Form FormTransparency_Basic
       Min             =   1
       Max             =   254
       Value           =   127
+      DefaultValue    =   127
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -128,7 +128,7 @@ Option Explicit
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Add alpha channel", , buildParams(getRelevantAlpha()), UNDO_LAYER
+    Process "Add alpha channel", , BuildParams(getRelevantAlpha()), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -164,13 +164,13 @@ Public Sub simpleConvert32bpp(Optional ByVal convertConstant As Long = 255, Opti
     
     'Call prepImageData, which will prepare a temporary copy of the image
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA, toPreview, dstPic, , , True
+    PrepImageData tmpSA, toPreview, dstPic, , , True
     
     'Pretty simple - ask pdDIB to apply a constant alpha channel to the image, and we're done!
-    workingDIB.convertTo32bpp convertConstant
+    workingDIB.ConvertTo32bpp convertConstant
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic, True
+    FinalizeImageData toPreview, dstPic, True
     
 End Sub
 
@@ -198,7 +198,7 @@ End Function
 
 'Render a new preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then simpleConvert32bpp getRelevantAlpha(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then simpleConvert32bpp getRelevantAlpha(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

@@ -32,7 +32,6 @@ Begin VB.Form FormBilateral
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
@@ -46,6 +45,7 @@ Begin VB.Form FormBilateral
       Min             =   3
       Max             =   25
       Value           =   9
+      DefaultValue    =   9
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -69,6 +69,7 @@ Begin VB.Form FormBilateral
       Max             =   100
       SigDigits       =   1
       Value           =   10
+      DefaultValue    =   10
    End
    Begin PhotoDemon.pdSlider sltSpatialPower 
       Height          =   705
@@ -83,6 +84,7 @@ Begin VB.Form FormBilateral
       Min             =   1
       SigDigits       =   2
       Value           =   2
+      DefaultValue    =   2
    End
    Begin PhotoDemon.pdSlider sltColorFactor 
       Height          =   705
@@ -97,6 +99,7 @@ Begin VB.Form FormBilateral
       Max             =   100
       SigDigits       =   1
       Value           =   50
+      DefaultValue    =   50
    End
    Begin PhotoDemon.pdSlider sltColorPower 
       Height          =   705
@@ -110,6 +113,7 @@ Begin VB.Form FormBilateral
       Min             =   1
       SigDigits       =   2
       Value           =   2
+      DefaultValue    =   2
    End
    Begin PhotoDemon.pdCheckBox chkSeparable 
       Height          =   330
@@ -219,7 +223,7 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array. This will contain the a copy of the current image, and we will use it as our source reference
@@ -237,7 +241,7 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     Set srcDIB = New pdDIB
     padDIBClampedPixels kernelRadius, kernelRadius, workingDIB, srcDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -355,7 +359,7 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -369,7 +373,7 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -384,7 +388,7 @@ Public Sub BilateralSmoothingSeparable(ByVal kernelRadius As Long, ByVal spatial
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'If this is a preview, we need to adjust the kernal
     If toPreview Then kernelRadius = kernelRadius * curDIBValues.previewModifier
@@ -395,7 +399,7 @@ Public Sub BilateralSmoothingSeparable(ByVal kernelRadius As Long, ByVal spatial
     createBilateralDIB workingDIB, kernelRadius, spatialFactor, spatialPower, colorFactor, colorPower, toPreview
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -404,7 +408,7 @@ Private Sub chkSeparable_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Bilateral smoothing", , buildParams(sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value, CBool(chkSeparable)), UNDO_LAYER
+    Process "Bilateral smoothing", , BuildParams(sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value, CBool(chkSeparable)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -459,7 +463,7 @@ End Sub
 
 Private Sub UpdatePreview()
 
-    If cmdBar.previewsAllowed Then
+    If cmdBar.PreviewsAllowed Then
     
         If CBool(chkSeparable) Then
             BilateralSmoothingSeparable sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value, True, pdFxPreview

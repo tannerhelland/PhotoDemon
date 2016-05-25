@@ -33,7 +33,6 @@ Begin VB.Form FormRipple
       Width           =   12135
       _ExtentX        =   21405
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -144,6 +143,7 @@ Begin VB.Form FormRipple
          Caption         =   "height of ripples (amplitude)"
          Max             =   100
          Value           =   80
+         DefaultValue    =   80
       End
       Begin PhotoDemon.pdSlider sltWavelength 
          Height          =   705
@@ -157,6 +157,7 @@ Begin VB.Form FormRipple
          Min             =   1
          Max             =   200
          Value           =   16
+         DefaultValue    =   16
       End
       Begin PhotoDemon.pdSlider sltQuality 
          Height          =   705
@@ -278,7 +279,7 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -288,9 +289,9 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -489,7 +490,7 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -503,13 +504,13 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Ripple", , buildParams(sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter), UNDO_LAYER
+    Process "Ripple", , BuildParams(sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -532,7 +533,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
         
     'Create the preview
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -540,7 +541,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previewing until the form has been fully initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
@@ -580,7 +581,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then RippleImage sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then RippleImage sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -591,10 +592,10 @@ End Sub
 'The user can right-click the preview area to select a new center point
 Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
     
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
 
 End Sub

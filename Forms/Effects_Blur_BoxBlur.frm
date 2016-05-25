@@ -35,6 +35,7 @@ Begin VB.Form FormBoxBlur
       Min             =   1
       Max             =   500
       Value           =   2
+      DefaultValue    =   2
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -67,6 +68,7 @@ Begin VB.Form FormBoxBlur
       Min             =   1
       Max             =   500
       Value           =   2
+      DefaultValue    =   2
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -77,7 +79,6 @@ Begin VB.Form FormBoxBlur
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
 End
 Attribute VB_Name = "FormBoxBlur"
@@ -119,13 +120,13 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic, , , True
+    PrepImageData dstSA, toPreview, dstPic, , , True
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
         
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
@@ -136,19 +137,19 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
     End If
     
     'Apply the box blur in two steps: a fast horizontal blur, then a fast vertical blur
-    CreateHorizontalBlurDIB hRadius, hRadius, workingDIB, srcDIB, toPreview, workingDIB.getDIBWidth + workingDIB.getDIBHeight
-    CreateVerticalBlurDIB vRadius, vRadius, srcDIB, workingDIB, toPreview, workingDIB.getDIBWidth + workingDIB.getDIBHeight, workingDIB.getDIBWidth
+    CreateHorizontalBlurDIB hRadius, hRadius, workingDIB, srcDIB, toPreview, workingDIB.GetDIBWidth + workingDIB.GetDIBHeight
+    CreateVerticalBlurDIB vRadius, vRadius, srcDIB, workingDIB, toPreview, workingDIB.GetDIBWidth + workingDIB.GetDIBHeight, workingDIB.GetDIBWidth
     
-    srcDIB.eraseDIB
+    srcDIB.EraseDIB
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic, True
+    FinalizeImageData toPreview, dstPic, True
 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Box blur", , buildParams(sltWidth, sltHeight), UNDO_LAYER
+    Process "Box blur", , BuildParams(sltWidth, sltHeight), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -186,7 +187,7 @@ Private Sub syncScrollBars(ByVal srcHorizontal As Boolean)
     
 End Sub
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then BoxBlurFilter sltWidth, sltHeight, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then BoxBlurFilter sltWidth, sltHeight, True, pdFxPreview
 End Sub
 
 Private Sub sltHeight_Change()

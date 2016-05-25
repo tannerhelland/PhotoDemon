@@ -32,7 +32,6 @@ Begin VB.Form FormCustomFilter
       Width           =   12735
       _ExtentX        =   22463
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSpinner tudF 
       Height          =   345
@@ -218,6 +217,7 @@ Begin VB.Form FormCustomFilter
       Width           =   1215
       _ExtentX        =   2143
       _ExtentY        =   661
+      DefaultValue    =   1
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
@@ -387,6 +387,7 @@ Begin VB.Form FormCustomFilter
       Width           =   1455
       _ExtentX        =   2566
       _ExtentY        =   661
+      DefaultValue    =   1
       Min             =   1
       Max             =   1000
       SigDigits       =   1
@@ -474,18 +475,13 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub cmdBar_ResetClick()
-    'Set the center text box to 1 after a reset
-    tudF(12).Value = 1
-End Sub
-
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     
     'Allow previews now
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     
     'Render a preview
     UpdatePreview
@@ -494,7 +490,7 @@ End Sub
 
 Private Sub Form_Load()
     'Disable previews while we initialize everything
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -504,10 +500,10 @@ End Sub
 'When the filter is changed, update the preview to match
 Private Sub UpdatePreview()
 
-    If cmdBar.previewsAllowed Then
+    If cmdBar.PreviewsAllowed Then
         
         'Disable additional previews (as we will be changing text box values)
-        cmdBar.markPreviewStatus False
+        cmdBar.MarkPreviewStatus False
 
         'If normalization has been requested, apply it before updating the preview
         tudDivisor.Enabled = Not CBool(chkNormalize)
@@ -542,7 +538,7 @@ Private Sub UpdatePreview()
         ApplyConvolutionFilter getFilterParamString, True, pdFxPreview
     
         'Reenable previews
-        cmdBar.markPreviewStatus True
+        cmdBar.MarkPreviewStatus True
         
     End If
     

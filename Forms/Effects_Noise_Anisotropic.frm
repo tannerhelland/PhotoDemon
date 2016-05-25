@@ -45,6 +45,7 @@ Begin VB.Form FormAnisotropic
       Min             =   1
       Max             =   100
       Value           =   50
+      DefaultValue    =   50
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -64,7 +65,6 @@ Begin VB.Form FormAnisotropic
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
@@ -77,6 +77,7 @@ Begin VB.Form FormAnisotropic
       Caption         =   "strength"
       Max             =   100
       Value           =   50
+      DefaultValue    =   50
    End
    Begin PhotoDemon.pdSlider sltIterations 
       Height          =   705
@@ -90,6 +91,7 @@ Begin VB.Form FormAnisotropic
       Min             =   1
       Max             =   16
       Value           =   1
+      DefaultValue    =   1
    End
    Begin PhotoDemon.pdButtonStrip btsEmphasis 
       Height          =   975
@@ -146,7 +148,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     'Parse out the parameter list
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    cParams.setParamString parameterList
+    cParams.SetParamString parameterList
     
     Dim adDirection As Long, adIterations As Long, adOption As Long
     adDirection = cParams.GetLong("direction", 0&)
@@ -203,18 +205,18 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     'Create a local array and point it at the destination pixel data
     Dim dstImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
     
     'Create a second copy of the target DIB.
     ' (This is necessary to prevent processed pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here.
@@ -454,14 +456,14 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
         Next y
             If Not toPreview Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal progBarOffset + x
                 End If
             End If
         Next x
         
         'On each iteration, we must copy over the new bits to the source image
-        If i < adIterations Then BitBlt srcDIB.getDIBDC, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, workingDIB.getDIBDC, 0, 0, vbSrcCopy
+        If i < adIterations Then BitBlt srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, workingDIB.GetDIBDC, 0, 0, vbSrcCopy
         If Not toPreview Then progBarOffset = finalX * i
         
     Next i
@@ -473,10 +475,10 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     Erase srcImageData
     
-    srcDIB.eraseDIB
+    srcDIB.EraseDIB
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
 
 End Sub
 
@@ -509,7 +511,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -517,7 +519,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews while we initialize the dialog
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     btsDirection.AddItem "4-way cardinal", 0
     btsDirection.AddItem "4-way ordinal", 1
@@ -540,7 +542,7 @@ Private Sub pdFxPreview_ViewportChanged()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then Me.ApplyAnisotropicDiffusion GetLocalParamString(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.ApplyAnisotropicDiffusion GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltFlow_Change()

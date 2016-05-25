@@ -33,7 +33,6 @@ Begin VB.Form FormLensCorrect
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -57,6 +56,7 @@ Begin VB.Form FormLensCorrect
       Max             =   20
       SigDigits       =   2
       Value           =   3
+      DefaultValue    =   3
    End
    Begin PhotoDemon.pdSlider sltZoom 
       Height          =   705
@@ -73,6 +73,7 @@ Begin VB.Form FormLensCorrect
       Value           =   1.5
       NotchPosition   =   2
       NotchValueCustom=   1
+      DefaultValue    =   1.5
    End
    Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
@@ -167,7 +168,7 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -177,9 +178,9 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -371,7 +372,7 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -385,12 +386,12 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Correct lens distortion", , buildParams(sltStrength, sltZoom, sltRadius, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Correct lens distortion", , BuildParams(sltStrength, sltZoom, sltRadius, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -411,7 +412,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
             
 End Sub
@@ -419,7 +420,7 @@ End Sub
 Private Sub Form_Load()
 
     'Disable previews until all controls have been initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
 
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
@@ -449,7 +450,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyLensCorrection sltStrength, sltZoom, sltRadius, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyLensCorrection sltStrength, sltZoom, sltRadius, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

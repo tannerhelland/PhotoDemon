@@ -32,7 +32,6 @@ Begin VB.Form FormGaussianBlur
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
@@ -47,6 +46,7 @@ Begin VB.Form FormGaussianBlur
       Max             =   500
       SigDigits       =   1
       Value           =   5
+      DefaultValue    =   5
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -114,13 +114,13 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuali
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic, , , True
+    PrepImageData dstSA, toPreview, dstPic, , , True
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
         
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
@@ -148,11 +148,11 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuali
         
     End Select
     
-    srcDIB.eraseDIB
+    srcDIB.EraseDIB
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic, True
+    FinalizeImageData toPreview, dstPic, True
             
 End Sub
 
@@ -162,7 +162,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Gaussian blur", , buildParams(sltRadius, btsQuality.ListIndex), UNDO_LAYER
+    Process "Gaussian blur", , BuildParams(sltRadius, btsQuality.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -198,7 +198,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then GaussianBlurFilter sltRadius.Value, btsQuality.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then GaussianBlurFilter sltRadius.Value, btsQuality.ListIndex, True, pdFxPreview
 End Sub
 
 Private Sub sltRadius_Change()

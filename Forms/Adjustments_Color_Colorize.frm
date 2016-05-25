@@ -32,7 +32,6 @@ Begin VB.Form FormColorize
       Width           =   12345
       _ExtentX        =   21775
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdCheckBox chkSaturation 
       Height          =   330
@@ -66,6 +65,7 @@ Begin VB.Form FormColorize
       SliderTrackStyle=   4
       Value           =   180
       NotchPosition   =   1
+      DefaultValue    =   180
    End
 End
 Attribute VB_Name = "FormColorize"
@@ -91,7 +91,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cmdBar_OKClick()
-    Process "Colorize", , buildParams(sltHue.Value, CBool(chkSaturation.Value)), UNDO_LAYER
+    Process "Colorize", , BuildParams(sltHue.Value, CBool(chkSaturation.Value)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -116,7 +116,7 @@ Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturati
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -168,7 +168,7 @@ Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturati
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -179,7 +179,7 @@ Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturati
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -200,7 +200,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ColorizeImage sltHue.Value, CBool(chkSaturation.Value), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ColorizeImage sltHue.Value, CBool(chkSaturation.Value), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
