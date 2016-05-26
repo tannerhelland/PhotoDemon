@@ -9,6 +9,7 @@ Begin VB.Form toolbar_Toolbox
    ClientTop       =   -75
    ClientWidth     =   2115
    ControlBox      =   0   'False
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25

@@ -7,6 +7,7 @@ Begin VB.Form toolpanel_NDFX
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   16650
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -16,6 +17,7 @@ Begin VB.Form toolpanel_NDFX
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False

@@ -7,6 +7,7 @@ Begin VB.Form toolpanel_FancyText
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   18435
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -16,6 +17,7 @@ Begin VB.Form toolpanel_FancyText
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -28,7 +30,9 @@ Begin VB.Form toolpanel_FancyText
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
       ForeColor       =   &H80000008&
+      HasDC           =   0   'False
       Height          =   1335
       Left            =   0
       ScaleHeight     =   89
@@ -97,6 +101,8 @@ Begin VB.Form toolpanel_FancyText
    Begin VB.PictureBox picCategory 
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
+      HasDC           =   0   'False
       Height          =   1500
       Index           =   1
       Left            =   8520
@@ -259,6 +265,8 @@ Begin VB.Form toolpanel_FancyText
    Begin VB.PictureBox picCategory 
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
+      HasDC           =   0   'False
       Height          =   1500
       Index           =   0
       Left            =   8520
@@ -280,6 +288,8 @@ Begin VB.Form toolpanel_FancyText
       Begin VB.PictureBox picCharCategory 
          BackColor       =   &H80000005&
          BorderStyle     =   0  'None
+         DrawStyle       =   5  'Transparent
+         HasDC           =   0   'False
          Height          =   1500
          Index           =   1
          Left            =   1920
@@ -446,6 +456,8 @@ Begin VB.Form toolpanel_FancyText
       Begin VB.PictureBox picCharCategory 
          BackColor       =   &H80000005&
          BorderStyle     =   0  'None
+         DrawStyle       =   5  'Transparent
+         HasDC           =   0   'False
          Height          =   1500
          Index           =   0
          Left            =   1920
@@ -595,6 +607,8 @@ Begin VB.Form toolpanel_FancyText
    Begin VB.PictureBox picCategory 
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
+      HasDC           =   0   'False
       Height          =   1500
       Index           =   3
       Left            =   8520
@@ -609,6 +623,8 @@ Begin VB.Form toolpanel_FancyText
    Begin VB.PictureBox picCategory 
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
+      HasDC           =   0   'False
       Height          =   1500
       Index           =   2
       Left            =   8520
@@ -631,6 +647,8 @@ Begin VB.Form toolpanel_FancyText
       Begin VB.PictureBox picAppearanceCategory 
          BackColor       =   &H80000005&
          BorderStyle     =   0  'None
+         DrawStyle       =   5  'Transparent
+         HasDC           =   0   'False
          Height          =   1500
          Index           =   1
          Left            =   1920
@@ -711,6 +729,8 @@ Begin VB.Form toolpanel_FancyText
       Begin VB.PictureBox picAppearanceCategory 
          BackColor       =   &H80000005&
          BorderStyle     =   0  'None
+         DrawStyle       =   5  'Transparent
+         HasDC           =   0   'False
          Height          =   1500
          Index           =   0
          Left            =   1920

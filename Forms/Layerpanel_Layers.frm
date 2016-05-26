@@ -7,6 +7,7 @@ Begin VB.Form layerpanel_Layers
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3885
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,6 +17,7 @@ Begin VB.Form layerpanel_Layers
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    ScaleHeight     =   485
    ScaleMode       =   3  'Pixel
@@ -54,7 +56,9 @@ Begin VB.Form layerpanel_Layers
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
       ForeColor       =   &H80000008&
+      HasDC           =   0   'False
       Height          =   525
       Left            =   0
       ScaleHeight     =   35

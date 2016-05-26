@@ -8,6 +8,7 @@ Begin VB.Form toolbar_Layers
    ClientLeft      =   0
    ClientTop       =   -75
    ClientWidth     =   3735
+   DrawStyle       =   5  'Transparent
    FillStyle       =   0  'Solid
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -31,6 +32,7 @@ Begin VB.Form toolbar_Layers
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
       ForeColor       =   &H80000008&
       HasDC           =   0   'False
       Height          =   735
@@ -47,6 +49,7 @@ Begin VB.Form toolbar_Layers
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
       ForeColor       =   &H80000008&
       HasDC           =   0   'False
       Height          =   735
@@ -74,6 +77,7 @@ Begin VB.Form toolbar_Layers
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
       ForeColor       =   &H80000008&
       HasDC           =   0   'False
       Height          =   735
