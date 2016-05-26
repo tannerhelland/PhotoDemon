@@ -58,7 +58,7 @@ Public Function GetPngQuantVersion() As String
 End Function
 
 'Use pngquant to optimize a PNG file.  By default, a "wait for processing to finish" mechanism is used.
-Public Function ApplyPNGQuantToFile_Synchronous(ByVal dstFilename As String, Optional ByVal qualityLevel As Long = 80, Optional ByVal optimizeLevel As Long = 3, Optional ByVal useDithering As Boolean = True) As Boolean
+Public Function ApplyPNGQuantToFile_Synchronous(ByVal dstFilename As String, Optional ByVal qualityLevel As Long = 80, Optional ByVal optimizeLevel As Long = 3, Optional ByVal useDithering As Boolean = True, Optional ByVal displayConsoleWindow As Boolean = True) As Boolean
     
     ApplyPNGQuantToFile_Synchronous = False
     
@@ -106,8 +106,12 @@ Public Function ApplyPNGQuantToFile_Synchronous(ByVal dstFilename As String, Opt
         DoEvents
         
         Dim shellCheck As Boolean
-        shellCheck = ShellAndWait(shellPath, vbMinimizedNoFocus)
-    
+        If displayConsoleWindow Then
+            shellCheck = ShellAndWait(shellPath, vbMinimizedNoFocus)
+        Else
+            shellCheck = ShellAndWait(shellPath, vbHide)
+        End If
+        
         'If the shell was successful and the image was created successfully, overwrite the original 32bpp save
         ' (from FreeImage) with the newly optimized one (from OptiPNG)
         If shellCheck Then
