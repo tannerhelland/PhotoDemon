@@ -7,6 +7,7 @@ Begin VB.UserControl pdImageStrip
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   4800
+   DrawStyle       =   5  'Transparent
    HasDC           =   0   'False
    OLEDropMode     =   1  'Manual
    ScaleHeight     =   240

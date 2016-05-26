@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.121</langversion>
+<langversion>6.6.122</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -153,7 +153,27 @@
 <translation>Profil ICC terbenam tidak sah. CMYK mengubah tidak dapat dilakukan.</translation>
 </phrase>
 
-<!-- VBP_ColorManagement.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<phrase>
+<original>ICC profile could not be applied.  Image remains in original profile.</original>
+<translation>Profil ICC tidak boleh digunakan. Imej kekal dalam profil asal.</translation>
+</phrase>
+
+<phrase>
+<original>Both ICC profiles loaded successfully, but transformation could not be created.</original>
+<translation>Kedua-dua profil ICC dimuatkan berjaya, tetapi perubahan tidak dapat dibuat.</translation>
+</phrase>
+
+<phrase>
+<original>Could not obtain standard sRGB color profile.  Color management has been disabled for this image.</original>
+<translation>Tidak dapat mendapatkan sRGB profil warna standard. Pengurusan warna telah dimatikan untuk imej ini.</translation>
+</phrase>
+
+<phrase>
+<original>Embedded ICC profile is invalid.  Color management has been disabled for this image.</original>
+<translation>Profil ICC terbenam tidak sah. Pengurusan warna telah dimatikan untuk imej ini.</translation>
+</phrase>
+
+<!-- VBP_ColorManagement.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
 
 <!-- END text for VBP_ColorManagement.bas-->
 
@@ -2639,32 +2659,7 @@ Please masukkan nilai berangka.</translation>
 
 <!-- BEGIN text for pdICCProfile.cls -->
 
-<phrase>
-<original>ICC transform requested, but no data found.  Abandoning attempt.</original>
-<translation>ICC mengubah diminta, tetapi tiada data dijumpai. Percubaan meninggalkan.</translation>
-</phrase>
-
-<phrase>
-<original>ICC profile could not be applied.  Image remains in original profile.</original>
-<translation>Profil ICC tidak boleh digunakan. Imej kekal dalam profil asal.</translation>
-</phrase>
-
-<phrase>
-<original>Both ICC profiles loaded successfully, but transformation could not be created.</original>
-<translation>Kedua-dua profil ICC dimuatkan berjaya, tetapi perubahan tidak dapat dibuat.</translation>
-</phrase>
-
-<phrase>
-<original>Could not obtain standard sRGB color profile.  Color management has been disabled for this image.</original>
-<translation>Tidak dapat mendapatkan sRGB profil warna standard. Pengurusan warna telah dimatikan untuk imej ini.</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profile is invalid.  Color management has been disabled for this image.</original>
-<translation>Profil ICC terbenam tidak sah. Pengurusan warna telah dimatikan untuk imej ini.</translation>
-</phrase>
-
-<!-- pdICCProfile.cls contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- pdICCProfile.cls contains 0 phrases. -->
 
 <!-- END text for pdICCProfile.cls-->
 
@@ -14896,7 +14891,12 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- BEGIN text for Plugin_LittleCMS.bas -->
 
-<!-- Plugin_LittleCMS.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+<phrase>
+<original>ICC transform requested, but no data found.  Abandoning attempt.</original>
+<translation>ICC mengubah diminta, tetapi tiada data dijumpai. Percubaan meninggalkan.</translation>
+</phrase>
+
+<!-- Plugin_LittleCMS.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for Plugin_LittleCMS.bas-->
 
@@ -15142,12 +15142,24 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Layer_Flatten.frm-->
 
+<!-- BEGIN text for pdLCMSProfile.cls -->
+
+<!-- pdLCMSProfile.cls contains 0 phrases. -->
+
+<!-- END text for pdLCMSProfile.cls-->
+
+<!-- BEGIN text for pdLCMSTransform.cls -->
+
+<!-- pdLCMSTransform.cls contains 0 phrases. -->
+
+<!-- END text for pdLCMSTransform.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2589</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4513 phrases. -->
-<!-- 1924 are duplicates, so only 2589 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4512 phrases. -->
+<!-- 1923 are duplicates, so only 2589 unique phrases have been written to file. -->
 <!-- These 2589 phrases contain approximately 13308 total words. -->
 
 </pdData>

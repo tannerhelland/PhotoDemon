@@ -654,7 +654,7 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
         
         'Inside the designer, I really don't care about painting accurate controls.  It's a waste of time, energy, and code
         ' to cover this case, so simply trace the control outline to provide a bit of orientation, then exit.
-        If Not g_IsProgramRunning Then
+        If (Not g_IsProgramRunning) Then
         
             Dim tmpRect As RECT
             With tmpRect
@@ -797,7 +797,7 @@ End Sub
 Private Sub m_WindowPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
     
     Dim targetDC As Long
-    If m_hDC <> 0 Then targetDC = m_hDC Else targetDC = m_WindowPainter.GetPaintStructDC
+    If (m_hDC <> 0) Then targetDC = m_hDC Else targetDC = m_WindowPainter.GetPaintStructDC
     
     'If we are currently using "no backbuffer" mode, just paint our backcolor to the DC
     If m_NoBackBufferMode Then
@@ -814,6 +814,7 @@ Private Sub m_WindowPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As L
     'If backbuffering is active (as it is with most PD controls), copy the relevant portion of the buffer into place.
     Else
         BitBlt targetDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.GetDIBDC, winLeft, winTop, vbSrcCopy
+        m_BackBuffer.FreeFromDC
     End If
     
 End Sub
@@ -1005,7 +1006,7 @@ Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
             If (Not m_CustomCaptionPaintingActive) Then SyncBackBufferSize True
             
             Dim targetDC As Long
-            If m_hDC <> 0 Then targetDC = m_hDC Else targetDC = m_WindowPainter.GetPaintStructDC
+            If (m_hDC <> 0) Then targetDC = m_hDC Else targetDC = m_WindowPainter.GetPaintStructDC
             BitBlt targetDC, 0, 0, m_Width, m_Height, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
             
         End If

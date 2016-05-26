@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.179</langversion>
+<langversion>6.7.180</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -153,7 +153,27 @@
 <translation>Perfil ICC incorporado é inválido. CMYK transformar não pôde ser executada.</translation>
 </phrase>
 
-<!-- VBP_ColorManagement.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<phrase>
+<original>ICC profile could not be applied.  Image remains in original profile.</original>
+<translation>Perfil ICC não puderam ser aplicados. Imagem permanece no perfil original.</translation>
+</phrase>
+
+<phrase>
+<original>Both ICC profiles loaded successfully, but transformation could not be created.</original>
+<translation>Ambos os perfis ICC carregado com êxito, mas a transformação não pode ser criado.</translation>
+</phrase>
+
+<phrase>
+<original>Could not obtain standard sRGB color profile.  Color management has been disabled for this image.</original>
+<translation>Não foi possível obter perfil de cor sRGB padrão. O gerenciamento de cores foi desativado para esta imagem.</translation>
+</phrase>
+
+<phrase>
+<original>Embedded ICC profile is invalid.  Color management has been disabled for this image.</original>
+<translation>Perfil ICC incorporado é inválido. O gerenciamento de cores foi desativado para esta imagem.</translation>
+</phrase>
+
+<!-- VBP_ColorManagement.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
 
 <!-- END text for VBP_ColorManagement.bas-->
 
@@ -2648,32 +2668,7 @@ Please válidos inserir um valor numérico.</translation>
 
 <!-- BEGIN text for pdICCProfile.cls -->
 
-<phrase>
-<original>ICC transform requested, but no data found.  Abandoning attempt.</original>
-<translation>ICC transformar solicitado, mas não foram encontrados dados. Abandonar tentativa.</translation>
-</phrase>
-
-<phrase>
-<original>ICC profile could not be applied.  Image remains in original profile.</original>
-<translation>Perfil ICC não puderam ser aplicados. Imagem permanece no perfil original.</translation>
-</phrase>
-
-<phrase>
-<original>Both ICC profiles loaded successfully, but transformation could not be created.</original>
-<translation>Ambos os perfis ICC carregado com êxito, mas a transformação não pode ser criado.</translation>
-</phrase>
-
-<phrase>
-<original>Could not obtain standard sRGB color profile.  Color management has been disabled for this image.</original>
-<translation>Não foi possível obter perfil de cor sRGB padrão. O gerenciamento de cores foi desativado para esta imagem.</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profile is invalid.  Color management has been disabled for this image.</original>
-<translation>Perfil ICC incorporado é inválido. O gerenciamento de cores foi desativado para esta imagem.</translation>
-</phrase>
-
-<!-- pdICCProfile.cls contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- pdICCProfile.cls contains 0 phrases. -->
 
 <!-- END text for pdICCProfile.cls-->
 
@@ -14900,7 +14895,12 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- BEGIN text for Plugin_LittleCMS.bas -->
 
-<!-- Plugin_LittleCMS.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+<phrase>
+<original>ICC transform requested, but no data found.  Abandoning attempt.</original>
+<translation>ICC transformar solicitado, mas não foram encontrados dados. Abandonar tentativa.</translation>
+</phrase>
+
+<!-- Plugin_LittleCMS.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for Plugin_LittleCMS.bas-->
 
@@ -15146,12 +15146,24 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- END text for Layer_Flatten.frm-->
 
+<!-- BEGIN text for pdLCMSProfile.cls -->
+
+<!-- pdLCMSProfile.cls contains 0 phrases. -->
+
+<!-- END text for pdLCMSProfile.cls-->
+
+<!-- BEGIN text for pdLCMSTransform.cls -->
+
+<!-- pdLCMSTransform.cls contains 0 phrases. -->
+
+<!-- END text for pdLCMSTransform.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2589</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4513 phrases. -->
-<!-- 1924 are duplicates, so only 2589 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4512 phrases. -->
+<!-- 1923 are duplicates, so only 2589 unique phrases have been written to file. -->
 <!-- These 2589 phrases contain approximately 13308 total words. -->
 
 </pdData>
