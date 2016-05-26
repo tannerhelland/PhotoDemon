@@ -74,14 +74,14 @@ Public Const LCS_WINDOWS_COLOR_SPACE As Long = &H57696E20
 ' full gamut is viewable). These intents are declared as public so that external functions can request whichever
 ' render intent they desire for a given application.
 Public Enum RenderingIntents
-    INTENT_PERCEPTUAL = 0&
-    INTENT_RELATIVECOLORIMETRIC = 1&
-    INTENT_SATURATION = 2&
-    INTENT_ABSOLUTECOLORIMETRIC = 3&
+    RI_INTENT_PERCEPTUAL = 0&
+    RI_INTENT_RELATIVECOLORIMETRIC = 1&
+    RI_INTENT_SATURATION = 2&
+    RI_INTENT_ABSOLUTECOLORIMETRIC = 3&
 End Enum
 
 #If False Then
-    Const INTENT_PERCEPTUAL As Long = 0&, INTENT_RELATIVECOLORIMETRIC As Long = 1&, INTENT_SATURATION As Long = 2&, INTENT_ABSOLUTECOLORIMETRIC As Long = 3&
+    Const RI_INTENT_PERCEPTUAL = 0&, RI_INTENT_RELATIVECOLORIMETRIC = 1&, RI_INTENT_SATURATION = 2&, RI_INTENT_ABSOLUTECOLORIMETRIC = 3&
 #End If
 
 'Windows provides different qualities for profile transformations (proof, normal, best).  As we only use two-component
@@ -471,10 +471,10 @@ Public Function ApplyColorTransformToDIB(ByVal srcTransform As Long, ByRef dstDI
         'NOTE: note that I use BM_RGBTRIPLETS below, despite pdDIB DIBs most definitely being in BGR order.  This is an
         '       undocumented bug with Windows' color management engine!
         Dim bitDepthIdentifier As Long
-        If .getDIBColorDepth = 24 Then bitDepthIdentifier = BM_RGBTRIPLETS Else bitDepthIdentifier = BM_xRGBQUADS
+        If .GetDIBColorDepth = 24 Then bitDepthIdentifier = BM_RGBTRIPLETS Else bitDepthIdentifier = BM_xRGBQUADS
                 
         'TranslateBitmapBits handles the actual transformation for us.
-        transformCheck = TranslateBitmapBits(srcTransform, .getActualDIBBits, bitDepthIdentifier, .getDIBWidth, .getDIBHeight, .getDIBArrayWidth, .getActualDIBBits, bitDepthIdentifier, .getDIBArrayWidth, ByVal 0&, 0&)
+        transformCheck = TranslateBitmapBits(srcTransform, .GetActualDIBBits, bitDepthIdentifier, .GetDIBWidth, .GetDIBHeight, .GetDIBArrayWidth, .GetActualDIBBits, bitDepthIdentifier, .GetDIBArrayWidth, ByVal 0&, 0&)
         
     End With
     
@@ -503,7 +503,7 @@ Public Function ApplyColorTransformToTwoDIBs(ByVal srcTransform As Long, ByRef s
     Dim transformCheck As Long
     
     'TranslateBitmapBits handles the actual transformation for us.
-    transformCheck = TranslateBitmapBits(srcTransform, srcDIB.getActualDIBBits, srcFormat, srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBArrayWidth, dstDIB.getActualDIBBits, dstFormat, dstDIB.getDIBArrayWidth, ByVal 0&, 0&)
+    transformCheck = TranslateBitmapBits(srcTransform, srcDIB.GetActualDIBBits, srcFormat, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBArrayWidth, dstDIB.GetActualDIBBits, dstFormat, dstDIB.GetDIBArrayWidth, ByVal 0&, 0&)
     
     If transformCheck = 0 Then
         ApplyColorTransformToTwoDIBs = False
@@ -826,20 +826,20 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
         'Create a local array and point it at the pixel data we want to operate on
         Dim ImageData() As Byte
         Dim tmpSA As SAFEARRAY2D
-        prepSafeArray tmpSA, srcDIB
+        PrepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
             
         'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
         Dim initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
         initY = 0
-        finalX = srcDIB.getDIBWidth - 1
-        finalY = srcDIB.getDIBHeight - 1
+        finalX = srcDIB.GetDIBWidth - 1
+        finalY = srcDIB.GetDIBHeight - 1
                 
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
         Dim QuickVal As Long, qvDepth As Long
-        qvDepth = srcDIB.getDIBColorDepth \ 8
+        qvDepth = srcDIB.GetDIBColorDepth \ 8
         
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
