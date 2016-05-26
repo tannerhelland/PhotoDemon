@@ -231,23 +231,23 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
     
     'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
     ' (We also check for these != 0 to verify that an image was successfully loaded.)
-    m_ButtonWidth = srcDIB.getDIBWidth
-    m_ButtonHeight = srcDIB.getDIBHeight
+    m_ButtonWidth = srcDIB.GetDIBWidth
+    m_ButtonHeight = srcDIB.GetDIBHeight
     
     If (m_ButtonWidth <> 0) And (m_ButtonHeight <> 0) Then
     
         'Unpremultiply the source image
         Dim initAlphaState As Boolean
-        initAlphaState = srcDIB.getAlphaPremultiplication
+        initAlphaState = srcDIB.GetAlphaPremultiplication
         If initAlphaState Then srcDIB.SetAlphaPremultiplication False
         
         'Create our vertical sprite-sheet DIB, and mark it as having premultiplied alpha
         If (m_ButtonImages Is Nothing) Then Set m_ButtonImages = New pdDIB
-        m_ButtonImages.createBlank m_ButtonWidth, m_ButtonHeight * 3, srcDIB.getDIBColorDepth, 0, 0
-        m_ButtonImages.setInitialAlphaPremultiplicationState False
+        m_ButtonImages.CreateBlank m_ButtonWidth, m_ButtonHeight * 3, srcDIB.GetDIBColorDepth, 0, 0
+        m_ButtonImages.SetInitialAlphaPremultiplicationState False
         
         'Copy the normal DIB into place at the top of the sheet
-        BitBlt m_ButtonImages.getDIBDC, 0, 0, m_ButtonWidth, m_ButtonHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt m_ButtonImages.GetDIBDC, 0, 0, m_ButtonWidth, m_ButtonHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'A separate function will automatically generate "glowy hovered" and "grayscale disabled" versions for us
         GenerateVariantButtonImages customGlowWhenHovered, scalePixelsWhenDisabled
@@ -292,7 +292,7 @@ Private Sub GenerateVariantButtonImages(Optional ByVal hoverGlowAmount As Long =
     'Grab direct access to the spritesheet's bytes
     Dim srcPixels() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, m_ButtonImages
+    PrepSafeArray tmpSA, m_ButtonImages
     CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(tmpSA), 4
     
     Dim initY As Long, finalY As Long, offsetY As Long
@@ -359,11 +359,11 @@ Public Sub AssignImage_Pressed(Optional ByVal resName As String = "", Optional B
     
     'Start by making a copy of the source DIB
     Set btImage_Pressed = New pdDIB
-    btImage_Pressed.createFromExistingDIB srcDIB
+    btImage_Pressed.CreateFromExistingDIB srcDIB
     
     'Also create a "glowy" hovered version of the DIB for hover state
     Set btImageHover_Pressed = New pdDIB
-    btImageHover_Pressed.createFromExistingDIB btImage_Pressed
+    btImageHover_Pressed.CreateFromExistingDIB btImage_Pressed
     If customGlowWhenHovered = 0 Then
         ScaleDIBRGBValues btImageHover_Pressed, UC_HOVER_BRIGHTNESS, True
     Else
@@ -643,20 +643,24 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
             If Me.Enabled Then
                 If Value And (Not (btImage_Pressed Is Nothing)) Then
                     If ucSupport.IsMouseInside Then
-                        btImageHover_Pressed.alphaBlendToDC bufferDC, 255, btImageCoords.x, btImageCoords.y
+                        btImageHover_Pressed.AlphaBlendToDC bufferDC, 255, btImageCoords.x, btImageCoords.y
                     Else
-                        btImage_Pressed.alphaBlendToDC bufferDC, 255, btImageCoords.x, btImageCoords.y
+                        btImage_Pressed.AlphaBlendToDC bufferDC, 255, btImageCoords.x, btImageCoords.y
                     End If
                 Else
                     If ucSupport.IsMouseInside Then
-                        m_ButtonImages.alphaBlendToDCEx bufferDC, btImageCoords.x, btImageCoords.y, m_ButtonWidth, m_ButtonHeight, 0, m_ButtonHeight, m_ButtonWidth, m_ButtonHeight
+                        m_ButtonImages.AlphaBlendToDCEx bufferDC, btImageCoords.x, btImageCoords.y, m_ButtonWidth, m_ButtonHeight, 0, m_ButtonHeight, m_ButtonWidth, m_ButtonHeight
                     Else
-                        m_ButtonImages.alphaBlendToDCEx bufferDC, btImageCoords.x, btImageCoords.y, m_ButtonWidth, m_ButtonHeight, 0, 0, m_ButtonWidth, m_ButtonHeight
+                        m_ButtonImages.AlphaBlendToDCEx bufferDC, btImageCoords.x, btImageCoords.y, m_ButtonWidth, m_ButtonHeight, 0, 0, m_ButtonWidth, m_ButtonHeight
                     End If
                 End If
             Else
-                m_ButtonImages.alphaBlendToDCEx bufferDC, btImageCoords.x, btImageCoords.y, m_ButtonWidth, m_ButtonHeight, 0, m_ButtonHeight * 2, m_ButtonWidth, m_ButtonHeight
+                m_ButtonImages.AlphaBlendToDCEx bufferDC, btImageCoords.x, btImageCoords.y, m_ButtonWidth, m_ButtonHeight, 0, m_ButtonHeight * 2, m_ButtonWidth, m_ButtonHeight
             End If
+            
+            'Release the button image DC, as it's no longer required.  (It will auto-generate a new DC the next
+            ' time we need to render it to the underlying button.)
+            m_ButtonImages.FreeFromDC
             
         End If
         
