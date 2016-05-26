@@ -476,7 +476,7 @@ Public Function CanvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean 
     'Start with a few failsafe checks
     
     'Make sure an image is loaded and active
-    If g_OpenImageCount > 0 Then
+    If (g_OpenImageCount > 0) Then
     
         'Make sure the main form has not been disabled by a modal dialog
         If FormMain.Enabled Then
@@ -484,13 +484,11 @@ Public Function CanvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean 
             'Finally, make sure another process hasn't locked the active canvas.  Note that the caller can disable this behavior
             ' if they don't need it.
             If alsoCheckBusyState Then
-                
-                If (Not Processor.IsProgramBusy) And (Not GetToolBusyState) Then
+                If (Not Processor.IsProgramBusy) And (Not Tool_Support.GetToolBusyState) Then
                     CanvasToolsAllowed = True
                 Else
                     CanvasToolsAllowed = False
                 End If
-            
             Else
                 CanvasToolsAllowed = True
             End If

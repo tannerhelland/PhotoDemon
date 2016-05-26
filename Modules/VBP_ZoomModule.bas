@@ -76,19 +76,21 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
         FormMain.mainCanvas(0).SetScrollVisibility PD_BOTH, True
     End If
 
-    'Make sure the canvas is valid
+    'Apply a few failsafe checks to make sure all required rendering objects exist
     If (dstCanvas Is Nothing) Then Exit Sub
-    
-    'If the image associated with this form is inactive, ignore this request
     If (srcImage Is Nothing) Then Exit Sub
     If (Not srcImage.IsActive) Then Exit Sub
     
     'Because AutoRedraw can cause the form's DC to change without warning, we must re-apply color management settings any time
     ' we redraw the screen.  I do not like this any more than you do, but we risk losing our DC's settings otherwise.
+    
     If (Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB)) Or (m_TargetDC <> dstCanvas.hDC) Then
         m_TargetDC = dstCanvas.hDC
-        AssignDefaultColorProfileToObject dstCanvas.hWnd, m_TargetDC
-        TurnOnColorManagementForDC m_TargetDC
+        
+        'TODO 7.0: migrate all color management tasks to LittleCMS
+        'AssignDefaultColorProfileToObject dstCanvas.hWnd, m_TargetDC
+        'TurnOnColorManagementForDC m_TargetDC
+
     End If
     
     'Flip the front buffer to the screen
