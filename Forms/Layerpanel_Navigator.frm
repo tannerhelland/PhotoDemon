@@ -7,6 +7,7 @@ Begin VB.Form layerpanel_Navigator
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   4560
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,6 +17,7 @@ Begin VB.Form layerpanel_Navigator
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    ScaleHeight     =   201
    ScaleMode       =   3  'Pixel

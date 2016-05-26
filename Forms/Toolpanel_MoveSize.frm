@@ -7,6 +7,7 @@ Begin VB.Form toolpanel_MoveSize
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   16650
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -16,6 +17,7 @@ Begin VB.Form toolpanel_MoveSize
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -37,7 +39,9 @@ Begin VB.Form toolpanel_MoveSize
       Appearance      =   0  'Flat
       BackColor       =   &H00FFFFFF&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
       ForeColor       =   &H80000008&
+      HasDC           =   0   'False
       Height          =   1455
       Index           =   0
       Left            =   2520
@@ -155,7 +159,9 @@ Begin VB.Form toolpanel_MoveSize
       Appearance      =   0  'Flat
       BackColor       =   &H00FFFFFF&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
       ForeColor       =   &H80000008&
+      HasDC           =   0   'False
       Height          =   1455
       Index           =   1
       Left            =   2520
@@ -230,7 +236,9 @@ Begin VB.Form toolpanel_MoveSize
       Appearance      =   0  'Flat
       BackColor       =   &H00FFFFFF&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
       ForeColor       =   &H80000008&
+      HasDC           =   0   'False
       Height          =   1455
       Index           =   2
       Left            =   2520

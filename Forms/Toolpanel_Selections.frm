@@ -7,6 +7,7 @@ Begin VB.Form toolpanel_Selections
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   16650
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -16,6 +17,7 @@ Begin VB.Form toolpanel_Selections
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -71,7 +73,9 @@ Begin VB.Form toolpanel_Selections
       Appearance      =   0  'Flat
       BackColor       =   &H00FFFFFF&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
       ForeColor       =   &H80000008&
+      HasDC           =   0   'False
       Height          =   1470
       Index           =   0
       Left            =   5340
@@ -196,7 +200,9 @@ Begin VB.Form toolpanel_Selections
       Appearance      =   0  'Flat
       BackColor       =   &H00FFFFFF&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
       ForeColor       =   &H80000008&
+      HasDC           =   0   'False
       Height          =   1470
       Index           =   1
       Left            =   5340
@@ -308,7 +314,9 @@ Begin VB.Form toolpanel_Selections
       Appearance      =   0  'Flat
       BackColor       =   &H00FFFFFF&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
       ForeColor       =   &H80000008&
+      HasDC           =   0   'False
       Height          =   1470
       Index           =   2
       Left            =   5340
@@ -434,7 +442,9 @@ Begin VB.Form toolpanel_Selections
       Appearance      =   0  'Flat
       BackColor       =   &H00FFFFFF&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
       ForeColor       =   &H80000008&
+      HasDC           =   0   'False
       Height          =   1470
       Index           =   3
       Left            =   5340
@@ -490,7 +500,9 @@ Begin VB.Form toolpanel_Selections
       Appearance      =   0  'Flat
       BackColor       =   &H00FFFFFF&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
       ForeColor       =   &H80000008&
+      HasDC           =   0   'False
       Height          =   1470
       Index           =   4
       Left            =   5340
@@ -547,7 +559,9 @@ Begin VB.Form toolpanel_Selections
       Appearance      =   0  'Flat
       BackColor       =   &H00FFFFFF&
       BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
       ForeColor       =   &H80000008&
+      HasDC           =   0   'False
       Height          =   1470
       Index           =   5
       Left            =   5340
