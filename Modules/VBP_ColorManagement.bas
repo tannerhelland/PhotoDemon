@@ -1,4 +1,4 @@
-Attribute VB_Name = "Color_Management"
+Attribute VB_Name = "ColorManagement"
 '***************************************************************************
 'PhotoDemon ICC (International Color Consortium) Profile Support Module
 'Copyright 2013-2016 by Tanner Helland
@@ -117,7 +117,7 @@ Private Declare Function GetStandardColorSpaceProfile Lib "mscms" Alias "GetStan
 Private Declare Function CreateMultiProfileTransform Lib "mscms" (ByRef pProfile As Any, ByVal nProfiles As Long, ByRef pIntents As Long, ByVal nIntents As Long, ByVal dwFlags As Long, ByVal indexPreferredCMM As Long) As Long
 Private Declare Function DeleteColorTransform Lib "mscms" (ByVal hTransform As Long) As Long
 Private Declare Function TranslateBitmapBits Lib "mscms" (ByVal hTransform As Long, ByVal srcBitsPointer As Long, ByVal pBmInput As Long, ByVal dWidth As Long, ByVal dHeight As Long, ByVal dwInputStride As Long, ByVal dstBitsPointer As Long, ByVal pBmOutput As Long, ByVal dwOutputStride As Long, ByRef pfnCallback As Long, ByVal ulCallbackData As Long) As Long
-Private Declare Function GetColorDirectory Lib "mscms" Alias "GetColorDirectoryA" (ByVal pMachineName As Long, ByVal pBuffer As Long, ByRef pdwSize As Long) As Long
+Private Declare Function GetColorDirectory Lib "mscms" Alias "GetColorDirectoryW" (ByVal pMachineName As Long, ByVal ptrToBuffer As Long, ByRef pdwSize As Long) As Long
 Private Declare Function GetColorProfileHeader Lib "mscms" (ByVal pProfileHandle As Long, ByVal pHeaderBufferPointer As Long) As Long
 
 'Windows handles color management on a per-DC basis.  Use SetICMMode and these constants to activate/deactivate or query a DC.
@@ -135,12 +135,12 @@ End Enum
 #End If
 
 'Retrieves the filename of the color management file associated with a given DC
-Private Declare Function GetICMProfile Lib "gdi32" Alias "GetICMProfileA" (ByVal hDC As Long, ByRef lpcbName As Long, ByRef BufferPtr As Long) As Long
-Private Declare Function SetICMProfile Lib "gdi32" Alias "SetICMProfileA" (ByVal hDC As Long, ByVal lpFileName As String) As Long
+Private Declare Function GetICMProfile Lib "gdi32" Alias "GetICMProfileW" (ByVal hDC As Long, ByRef lpcbName As Long, ByVal ptrToBuffer As Long) As Long
+Private Declare Function SetICMProfile Lib "gdi32" Alias "SetICMProfileW" (ByVal hDC As Long, ByVal ptrToFileName As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 
 'When PD is first loaded, the system's current color management file will be cached in this variable
-Private currentSystemColorProfile As String
+Private m_currentSystemColorProfile As String
 Public g_IsSystemColorProfileSRGB As Boolean
 
 Private Const MAX_PATH As Long = 260
@@ -161,26 +161,19 @@ End Sub
 Public Function GetSystemColorFolder() As String
 
     'Prepare a blank string to receive the profile path
-    Dim filenameLength As Long
-    filenameLength = MAX_PATH
+    Dim bufferSize As Long
+    bufferSize = MAX_PATH
     
     Dim tmpPathString As String
-    tmpPathString = ""
-    
-    Dim tmpPathBuffer() As Byte
-    ReDim tmpPathBuffer(0 To filenameLength - 1) As Byte
+    tmpPathString = String$(bufferSize, 0&)
     
     'Use the GetColorDirectory function to request the location of the system color folder
-    If GetColorDirectory(0&, ByVal VarPtr(tmpPathBuffer(0)), filenameLength) = 0 Then
+    If GetColorDirectory(0&, StrPtr(tmpPathString), bufferSize) = 0 Then
         GetSystemColorFolder = ""
     Else
-    
-        'Convert the returned byte array into a string
-        tmpPathString = StrConv(tmpPathBuffer, vbUnicode)
-        tmpPathString = TrimNull(tmpPathString)
-                
-        GetSystemColorFolder = tmpPathString
-        
+        Dim cUnicode As pdUnicode
+        Set cUnicode = New pdUnicode
+        GetSystemColorFolder = cUnicode.TrimNull(tmpPathString)
     End If
 
 End Function
@@ -191,14 +184,14 @@ Public Sub AssignDefaultColorProfileToObject(ByVal objectHWnd As Long, ByVal obj
     
     'If the current user setting is "use system color profile", our job is easy.
     If g_UseSystemColorProfile Then
-        SetICMProfile objectHDC, currentSystemColorProfile
+        SetICMProfile objectHDC, StrPtr(m_currentSystemColorProfile)
     Else
         
         'Use the form's containing monitor to retrieve a matching profile from the preferences file
         If Len(currentColorProfile) <> 0 Then
-            SetICMProfile objectHDC, currentColorProfile
+            SetICMProfile objectHDC, StrPtr(currentColorProfile)
         Else
-            SetICMProfile objectHDC, currentSystemColorProfile
+            SetICMProfile objectHDC, StrPtr(m_currentSystemColorProfile)
         End If
         
     End If
@@ -207,38 +200,38 @@ Public Sub AssignDefaultColorProfileToObject(ByVal objectHWnd As Long, ByVal obj
     ' that the function is working), use something similar to the code below.
     'Dim TEST_ICM As String
     'TEST_ICM = "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\jpegs\ICC\WhackedRGB.icc"
-    'SetICMProfile targetDC, TEST_ICM
+    'SetICMProfile targetDC, StrPtr(TEST_ICM)
     
 End Sub
 
 'When PD is first loaded, this function will be called, which caches the current color management file in use by the system
 Public Sub CacheCurrentSystemColorProfile()
     
-    currentSystemColorProfile = GetDefaultICCProfile()
+    m_currentSystemColorProfile = GetDefaultICCProfilePath()
     
     'As part of this step, we will also temporarily load the default system ICC profile, and check to see if it's sRGB.
     ' If it is, we can skip color management entirely, as all images are processed in sRGB.
     
     'Obtain a handle to the default system profile
     Dim sysProfileHandle As Long
-    sysProfileHandle = LoadICCProfileFromFile(currentSystemColorProfile)
+    sysProfileHandle = ColorManagement.LoadICCProfileFromFile_WindowsCMS(m_currentSystemColorProfile)
     
-    If sysProfileHandle <> 0 Then
+    If (sysProfileHandle <> 0) Then
     
         'Obtain a handle to a stock sRGB profile.
         Dim srgbProfileHandle As Long
-        srgbProfileHandle = LoadStandardICCProfile(LCS_sRGB)
+        srgbProfileHandle = ColorManagement.LoadStandardICCProfile_WindowsCMS(LCS_sRGB)
         
         'Compare the two profiles
-        If AreColorProfilesEqual(sysProfileHandle, srgbProfileHandle) Then
+        If ColorManagement.AreColorProfilesEqual_WindowsCMS(sysProfileHandle, srgbProfileHandle) Then
             g_IsSystemColorProfileSRGB = True
         Else
             g_IsSystemColorProfileSRGB = False
         End If
         
         'Release our profile handles
-        ReleaseICCProfile sysProfileHandle
-        ReleaseICCProfile srgbProfileHandle
+        ColorManagement.ReleaseICCProfile_WindowsCMS sysProfileHandle
+        ColorManagement.ReleaseICCProfile_WindowsCMS srgbProfileHandle
         
     Else
         
@@ -250,30 +243,27 @@ Public Sub CacheCurrentSystemColorProfile()
 End Sub
 
 'Returns the path to the default color mangement profile file (ICC or WCS) currently in use by the system.
-Public Function GetDefaultICCProfile() As String
+Public Function GetDefaultICCProfilePath() As String
 
     'Prepare a blank string to receive the profile path
     Dim filenameLength As Long
     filenameLength = MAX_PATH
     
     Dim tmpPathString As String
-    tmpPathString = ""
-    
-    Dim tmpPathBuffer() As Byte
-    ReDim tmpPathBuffer(0 To filenameLength - 1) As Byte
+    tmpPathString = String$(MAX_PATH, 0&)
     
     'Using the desktop DC as our reference, request the filename of the currently in-use ICM profile (which should be the system default)
-    If GetICMProfile(GetDC(0), filenameLength, ByVal VarPtr(tmpPathBuffer(0))) = 0 Then
-        GetDefaultICCProfile = ""
+    If GetICMProfile(GetDC(0), filenameLength, StrPtr(tmpPathString)) = 0 Then
+        GetDefaultICCProfilePath = ""
     Else
-    
-        'Convert the returned byte array into a string
-        Dim i As Long
-        For i = 0 To filenameLength - 1
-            tmpPathString = tmpPathString & Chr(tmpPathBuffer(i))
-        Next i
-                
-        GetDefaultICCProfile = tmpPathString
+        
+        Dim cUnicode As pdUnicode
+        Set cUnicode = New pdUnicode
+        GetDefaultICCProfilePath = cUnicode.TrimNull(tmpPathString)
+        
+        Debug.Print "******"
+        Debug.Print GetDefaultICCProfilePath
+        Debug.Print "******"
         
     End If
     
@@ -291,7 +281,7 @@ End Sub
 
 'Given a valid iccProfileArray (such as one stored in a pdICCProfile class), convert it to an internal Windows color profile
 ' handle, validate it, and return the result.  Returns a non-zero handle if successful.
-Public Function LoadICCProfileFromMemory(ByVal profileArrayPointer As Long, ByVal profileArraySize As Long) As Long
+Public Function LoadICCProfileFromMemory_WindowsCMS(ByVal profileArrayPointer As Long, ByVal profileArraySize As Long) As Long
 
     'Start by preparing an ICC_PROFILE header to use with the color management APIs
     Dim srcProfileHeader As ICC_PROFILE
@@ -300,16 +290,16 @@ Public Function LoadICCProfileFromMemory(ByVal profileArrayPointer As Long, ByVa
     srcProfileHeader.cbDataSize = profileArraySize
     
     'Use that header to open a reference to an internal Windows color profile (which is required by all ICC-related API)
-    LoadICCProfileFromMemory = OpenColorProfile(srcProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
+    LoadICCProfileFromMemory_WindowsCMS = OpenColorProfile(srcProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
     
-    If LoadICCProfileFromMemory <> 0 Then
+    If (LoadICCProfileFromMemory_WindowsCMS <> 0) Then
     
         'Validate the profile's XML as well; it is possible for a profile to be ill-formed, which means we cannot use it.
         Dim tmpCheck As Long
-        If IsColorProfileValid(LoadICCProfileFromMemory, tmpCheck) = 0 Then
+        If IsColorProfileValid(LoadICCProfileFromMemory_WindowsCMS, tmpCheck) = 0 Then
             Debug.Print "Color profile loaded succesfully, but XML failed to validate."
-            CloseColorProfile LoadICCProfileFromMemory
-            LoadICCProfileFromMemory = 0
+            CloseColorProfile LoadICCProfileFromMemory_WindowsCMS
+            LoadICCProfileFromMemory_WindowsCMS = 0
         End If
         
     Else
@@ -320,7 +310,7 @@ End Function
 
 'Given a valid ICC profile path, convert it to an internal Windows color profile handle, validate it,
 ' and return the result.  Returns a non-zero handle if successful.
-Public Function LoadICCProfileFromFile(ByVal profilePath As String) As Long
+Public Function LoadICCProfileFromFile_WindowsCMS(ByVal profilePath As String) As Long
 
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -331,12 +321,12 @@ Public Function LoadICCProfileFromFile(ByVal profilePath As String) As Long
     If cFile.FileExist(profilePath) Then
         
         If Not cFile.LoadFileAsByteArray(profilePath, tmpProfileArray) Then
-            LoadICCProfileFromFile = 0
+            LoadICCProfileFromFile_WindowsCMS = 0
             Exit Function
         End If
         
     Else
-        LoadICCProfileFromFile = 0
+        LoadICCProfileFromFile_WindowsCMS = 0
         Exit Function
     End If
 
@@ -347,16 +337,16 @@ Public Function LoadICCProfileFromFile(ByVal profilePath As String) As Long
     srcProfileHeader.cbDataSize = UBound(tmpProfileArray) + 1
     
     'Use that header to open a reference to an internal Windows color profile (which is required by all ICC-related API)
-    LoadICCProfileFromFile = OpenColorProfile(srcProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
+    LoadICCProfileFromFile_WindowsCMS = OpenColorProfile(srcProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
     
-    If LoadICCProfileFromFile <> 0 Then
+    If (LoadICCProfileFromFile_WindowsCMS <> 0) Then
     
         'Validate the profile's XML as well; it is possible for a profile to be ill-formed, which means we cannot use it.
         Dim tmpCheck As Long
-        If IsColorProfileValid(LoadICCProfileFromFile, tmpCheck) = 0 Then
+        If IsColorProfileValid(LoadICCProfileFromFile_WindowsCMS, tmpCheck) = 0 Then
             Debug.Print "Color profile loaded succesfully, but XML failed to validate."
-            CloseColorProfile LoadICCProfileFromFile
-            LoadICCProfileFromFile = 0
+            CloseColorProfile LoadICCProfileFromFile_WindowsCMS
+            LoadICCProfileFromFile_WindowsCMS = 0
         End If
         
     Else
@@ -368,7 +358,7 @@ End Function
 'Request a standard ICC profile from the OS.  Windows only provides two standard color profiles: sRGB (LCS_sRGB), and whatever
 ' the system default currently is (LCS_WINDOWS_COLOR_SPACE).  While probably not necessary, this function also validates the
 ' requested profile, just to be safe.
-Public Function LoadStandardICCProfile(ByVal profileID As Long) As Long
+Public Function LoadStandardICCProfile_WindowsCMS(ByVal profileID As Long) As Long
 
     'Start by preparing a header for the destination ICC profile
     Dim dstProfileHeader As ICC_PROFILE
@@ -387,18 +377,18 @@ Public Function LoadStandardICCProfile(ByVal profileID As Long) As Long
     GetStandardColorSpaceProfile vbNullString, profileID, dstProfileHeader.pProfileData, dstProfileHeader.cbDataSize
         
     'With a fully populated header, it is finally time to open an internal Windows version of the data!
-    LoadStandardICCProfile = OpenColorProfile(dstProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
+    LoadStandardICCProfile_WindowsCMS = OpenColorProfile(dstProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
     
     'It is highly unlikely (maybe even impossible?) for the system to return an invalid standard profile, but just to be
     ' safe, validate the XML.
-    If LoadStandardICCProfile <> 0 Then
+    If (LoadStandardICCProfile_WindowsCMS <> 0) Then
     
         'Validate the profile's XML as well; it is possible for a profile to be ill-formed, which means we cannot use it.
         Dim tmpCheck As Long
-        If IsColorProfileValid(LoadStandardICCProfile, tmpCheck) = 0 Then
+        If IsColorProfileValid(LoadStandardICCProfile_WindowsCMS, tmpCheck) = 0 Then
             Debug.Print "Standard color profile loaded succesfully, but XML failed to validate."
-            CloseColorProfile LoadStandardICCProfile
-            LoadStandardICCProfile = 0
+            CloseColorProfile LoadStandardICCProfile_WindowsCMS
+            LoadStandardICCProfile_WindowsCMS = 0
         End If
         
     Else
@@ -409,12 +399,12 @@ End Function
 
 'This function is just a thin wrapper to CloseColorProfile; however, using it allows us to keep various color-management
 ' DLLs nicely encapsulated within this module.
-Public Sub ReleaseICCProfile(ByVal profileHandle As Long)
+Public Sub ReleaseICCProfile_WindowsCMS(ByVal profileHandle As Long)
     CloseColorProfile profileHandle
 End Sub
 
 'Given a source profile, destination profile, and rendering intent, return a compatible transformation handle.
-Public Function RequestProfileTransform(ByVal srcProfile As Long, ByVal dstProfile As Long, ByVal preferredIntent As RenderingIntents, Optional ByVal useEmbeddedIntent As Long = -1) As Long
+Public Function RequestProfileTransform_WindowsCMS(ByVal srcProfile As Long, ByVal dstProfile As Long, ByVal preferredIntent As RenderingIntents, Optional ByVal useEmbeddedIntent As Long = -1) As Long
 
     'Next we need to prepare two matrices to supply to CreateMultiProfileTransform: one for ICC profiles themselves,
     ' and one for desired render intents.
@@ -447,9 +437,9 @@ Public Function RequestProfileTransform(ByVal srcProfile As Long, ByVal dstProfi
     ' Note: the quality of the transform will affect the speed of the resulting transformation.  Windows supports 3 quality levels
     '       on the range [1, 3].  We map our internal g_ColorPerformance preference on the range [0, 2] to that range, and use it
     '       to transparently adjust the quality of the transform.
-    RequestProfileTransform = CreateMultiProfileTransform(ByVal VarPtr(profileMatrix(0)), 2&, ByVal VarPtr(intentMatrix(0)), 2&, (2 - g_ColorPerformance) + 1, INDEX_DONT_CARE)
+    RequestProfileTransform_WindowsCMS = CreateMultiProfileTransform(ByVal VarPtr(profileMatrix(0)), 2&, ByVal VarPtr(intentMatrix(0)), 2&, (2 - g_ColorPerformance) + 1, INDEX_DONT_CARE)
     
-    If RequestProfileTransform = 0 Then
+    If (RequestProfileTransform_WindowsCMS = 0) Then
         Debug.Print "Requested color transformation could not be generated (Error #" & Err.LastDllError & ")."
     End If
     
@@ -457,12 +447,12 @@ End Function
 
 'This function is just a thin wrapper to DeleteColorTransform; however, using it allows us to keep various color-management
 ' DLLs nicely encapsulated within this module.
-Public Sub ReleaseColorTransform(ByVal transformHandle As Long)
+Public Sub ReleaseColorTransform_WindowsCMS(ByVal transformHandle As Long)
     DeleteColorTransform transformHandle
 End Sub
 
 'Given a color transformation and a DIB, apply one to the other!  Returns TRUE if successful.
-Public Function ApplyColorTransformToDIB(ByVal srcTransform As Long, ByRef dstDIB As pdDIB) As Boolean
+Public Function ApplyColorTransformToDIB_WindowsCMS(ByVal srcTransform As Long, ByRef dstDIB As pdDIB) As Boolean
 
     Dim transformCheck As Long
     
@@ -479,84 +469,84 @@ Public Function ApplyColorTransformToDIB(ByVal srcTransform As Long, ByRef dstDI
     End With
     
     If transformCheck = 0 Then
-        ApplyColorTransformToDIB = False
+        ApplyColorTransformToDIB_WindowsCMS = False
         
         'Error #2021 is ERROR_COLORSPACE_MISMATCH: "The specified transform does not match the bitmap's color space."
         ' This is a known error when the source image was in CMYK format, because FreeImage (or GDI+) will have
         ' automatically converted the image to RGB at load-time.  Because the ICC profile is CMYK-specific, Windows will
         ' not be able to apply it to the image, as it is no longer in CMYK format!
-        If CLng(Err.LastDllError) = 2021 Then
+        If (CLng(Err.LastDllError) = 2021) Then
             Debug.Print "Note: sRGB conversion already occurred."
         Else
             Debug.Print "ICC profile could not be applied.  Image remains in original profile. (Error #" & Err.LastDllError & ")."
         End If
         
     Else
-        ApplyColorTransformToDIB = True
+        ApplyColorTransformToDIB_WindowsCMS = True
     End If
 
 End Function
 
 'Given a color transformation and two DIBs, fill one DIB with a transformed copy of the other!  Returns TRUE if successful.
-Public Function ApplyColorTransformToTwoDIBs(ByVal srcTransform As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal srcFormat As Long, ByVal dstFormat As Long) As Boolean
+Public Function ApplyColorTransformToTwoDIBs_WindowsCMS(ByVal srcTransform As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal srcFormat As Long, ByVal dstFormat As Long) As Boolean
 
     Dim transformCheck As Long
     
     'TranslateBitmapBits handles the actual transformation for us.
     transformCheck = TranslateBitmapBits(srcTransform, srcDIB.GetActualDIBBits, srcFormat, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBArrayWidth, dstDIB.GetActualDIBBits, dstFormat, dstDIB.GetDIBArrayWidth, ByVal 0&, 0&)
     
-    If transformCheck = 0 Then
-        ApplyColorTransformToTwoDIBs = False
+    If (transformCheck = 0) Then
+        ApplyColorTransformToTwoDIBs_WindowsCMS = False
         
         'Error #2021 is ERROR_COLORSPACE_MISMATCH: "The specified transform does not match the bitmap's color space."
         ' This is a known error when the source image was in CMYK format, because FreeImage (or GDI+) will have
         ' automatically converted the image to RGB at load-time.  Because the ICC profile is CMYK-specific, Windows will
         ' not be able to apply it to the image, as it is no longer in CMYK format!
-        If CLng(Err.LastDllError) = 2021 Then
+        If (CLng(Err.LastDllError) = 2021) Then
             Debug.Print "ICC profile could not be applied, because requested color spaces did not match supplied profile spaces."
         Else
             Debug.Print "ICC profile could not be applied.  Image remains in original profile. (Error #" & Err.LastDllError & ")."
         End If
         
     Else
-        ApplyColorTransformToTwoDIBs = True
+        ApplyColorTransformToTwoDIBs_WindowsCMS = True
     End If
 
 End Function
 
 'Apply a CMYK transform between a 32bpp CMYK DIB and a 24bpp sRGB DIB.
-Public Function ApplyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccProfileSize As Long, ByRef srcCMYKDIB As pdDIB, ByRef dstRGBDIB As pdDIB, Optional ByVal customSourceIntent As Long = -1) As Boolean
+Public Function ApplyCMYKTransform_WindowsCMS(ByVal iccProfilePointer As Long, ByVal iccProfileSize As Long, ByRef srcCMYKDIB As pdDIB, ByRef dstRGBDIB As pdDIB, Optional ByVal customSourceIntent As Long = -1) As Boolean
 
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Using embedded ICC profile to convert image from CMYK to sRGB color space..."
     #End If
     
-    'Use the Color_Management module to convert the raw ICC profile into an internal Windows profile handle.  Note that
+    'Use the ColorManagement module to convert the raw ICC profile into an internal Windows profile handle.  Note that
     ' this function will also validate the profile for us.
     Dim srcProfile As Long
-    srcProfile = LoadICCProfileFromMemory(iccProfilePointer, iccProfileSize)
+    srcProfile = ColorManagement.LoadICCProfileFromMemory_WindowsCMS(iccProfilePointer, iccProfileSize)
     
     'If we successfully opened and validated our source profile, continue on to the next step!
-    If srcProfile <> 0 Then
+    If (srcProfile <> 0) Then
     
         'Now it is time to determine our destination profile.  Because PhotoDemon operates on DIBs that default
         ' to the sRGB space, that's the profile we want to use for transformation.
             
-        'Use the Color_Management module to request a standard sRGB profile.
+        'Use the ColorManagement module to request a standard sRGB profile.
         Dim dstProfile As Long
-        dstProfile = LoadStandardICCProfile(LCS_sRGB)
+        dstProfile = ColorManagement.LoadStandardICCProfile_WindowsCMS(LCS_sRGB)
         
         'It's highly unlikely that a request for a standard ICC profile will fail, but just be safe, double-check the
         ' returned handle before continuing.
-        If dstProfile <> 0 Then
+        If (dstProfile <> 0) Then
             
             'We can now use our profile matrix to generate a transformation object, which we will use to directly modify
             ' the DIB's RGB values.
             Dim iccTransformation As Long
-            iccTransformation = RequestProfileTransform(srcProfile, dstProfile, INTENT_PERCEPTUAL, customSourceIntent)
+            iccTransformation = ColorManagement.RequestProfileTransform_WindowsCMS(srcProfile, dstProfile, INTENT_PERCEPTUAL, customSourceIntent)
             
             'If the transformation was generated successfully, carry on!
-            If iccTransformation <> 0 Then
+            If (iccTransformation <> 0) Then
                 
                 'The only transformation function relevant to PD involves the use of BitmapBits, so we will provide
                 ' the API with direct access to our DIB bits.
@@ -567,7 +557,7 @@ Public Function ApplyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccPro
                 'Note that a color format must be explicitly specified - we vary this contingent on the parent image's
                 ' color depth.
                 Dim transformCheck As Boolean
-                transformCheck = ApplyColorTransformToTwoDIBs(iccTransformation, srcCMYKDIB, dstRGBDIB, BM_KYMCQUADS, BM_RGBTRIPLETS)
+                transformCheck = ColorManagement.ApplyColorTransformToTwoDIBs_WindowsCMS(iccTransformation, srcCMYKDIB, dstRGBDIB, BM_KYMCQUADS, BM_RGBTRIPLETS)
                 
                 'If the transform was successful, pat ourselves on the back.
                 If transformCheck Then
@@ -576,32 +566,32 @@ Public Function ApplyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccPro
                         pdDebug.LogAction "CMYK to sRGB transformation successful."
                     #End If
                     
-                    ApplyCMYKTransform = True
+                    ApplyCMYKTransform_WindowsCMS = True
                     
                 Else
                     Message "sRGB transform could not be applied.  Image remains in CMYK format."
                 End If
                 
                 'Release our transformation
-                ReleaseColorTransform iccTransformation
+                ColorManagement.ReleaseColorTransform_WindowsCMS iccTransformation
                                 
             Else
                 Message "Both ICC profiles loaded successfully, but CMYK transformation could not be created."
-                ApplyCMYKTransform = False
+                ApplyCMYKTransform_WindowsCMS = False
             End If
         
-            ReleaseICCProfile dstProfile
+            ColorManagement.ReleaseICCProfile_WindowsCMS dstProfile
         
         Else
             Message "Could not obtain standard sRGB color profile.  CMYK transform abandoned."
-            ApplyCMYKTransform = False
+            ApplyCMYKTransform_WindowsCMS = False
         End If
         
-        ReleaseICCProfile srcProfile
+        ColorManagement.ReleaseICCProfile_WindowsCMS srcProfile
     
     Else
         Message "Embedded ICC profile is invalid.  CMYK transform could not be performed."
-        ApplyCMYKTransform = False
+        ApplyCMYKTransform_WindowsCMS = False
     End If
 
 End Function
@@ -641,7 +631,7 @@ Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
 End Sub
 
 'Compare two ICC profiles to determine equality.  Thank you to VB developer LaVolpe for this suggestion and original implementation.
-Public Function AreColorProfilesEqual(ByVal profileHandle1 As Long, ByVal profileHandle2 As Long) As Boolean
+Public Function AreColorProfilesEqual_WindowsCMS(ByVal profileHandle1 As Long, ByVal profileHandle2 As Long) As Boolean
 
     Dim profilesEqual As Boolean
     profilesEqual = True
@@ -663,7 +653,105 @@ Public Function AreColorProfilesEqual(ByVal profileHandle1 As Long, ByVal profil
         End If
     End If
     
-    AreColorProfilesEqual = profilesEqual
+    AreColorProfilesEqual_WindowsCMS = profilesEqual
+    
+End Function
+
+'If an ICC profile is attached to a pdDIB object, apply said color profile to that pdDIB object.
+Public Function ApplyICCtoPDDib_WindowsCMS(ByRef targetDIB As pdDIB) As Boolean
+    
+    ApplyICCtoPDDib_WindowsCMS = False
+    
+    'Before doing anything else, apply some failsafe checks
+    If (targetDIB Is Nothing) Then Exit Function
+    If (Not targetDIB.ICCProfile.HasICCData) Then Exit Function
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Using Windows ICM to convert pdDIB to current RGB working space..."
+    #End If
+    
+    'Use the ColorManagement module to convert the raw ICC profile into an internal Windows profile handle.  Note that
+    ' this function will also validate the profile for us.
+    Dim srcProfile As Long
+    srcProfile = ColorManagement.LoadICCProfileFromMemory_WindowsCMS(targetDIB.ICCProfile.GetICCDataPointer, targetDIB.ICCProfile.GetICCDataSize)
+    
+    'If we successfully opened and validated our source profile, continue on to the next step!
+    If (srcProfile <> 0) Then
+    
+        'Now it is time to determine our destination profile.  Because PhotoDemon operates on DIBs that default
+        ' to the sRGB space, that's the profile we want to use for transformation.
+            
+        'Use the ColorManagement module to request a standard sRGB profile.
+        Dim dstProfile As Long
+        dstProfile = ColorManagement.LoadStandardICCProfile_WindowsCMS(LCS_sRGB)
+        
+        'It's highly unlikely that a request for a standard ICC profile will fail, but just be safe, double-check the
+        ' returned handle before continuing.
+        If (dstProfile <> 0) Then
+            
+            'Before proceeding, check to see if the source and destination profiles are identical.  Some dSLRs will embed
+            ' sRGB transforms in their JPEGs, and applying another sRGB transform atop them is a waste of time and resources.
+            ' Thanks to VB developer LaVolpe for this suggestion.
+            If (Not ColorManagement.AreColorProfilesEqual_WindowsCMS(srcProfile, dstProfile)) Then
+            
+                'We can now use our profile matrix to generate a transformation object, which we will use to directly modify
+                ' the DIB's RGB values.
+                Dim iccTransformation As Long
+                iccTransformation = ColorManagement.RequestProfileTransform_WindowsCMS(srcProfile, dstProfile, INTENT_PERCEPTUAL, targetDIB.ICCProfile.GetSourceRenderIntent)
+                
+                'If the transformation was generated successfully, carry on!
+                If (iccTransformation <> 0) Then
+                    
+                    'The only transformation function relevant to PD involves the use of BitmapBits, so we will provide
+                    ' the API with direct access to our DIB bits.
+                    
+                    'Note that a color format must be explicitly specified - we vary this contingent on the parent image's
+                    ' color depth.
+                    Dim transformCheck As Boolean
+                    transformCheck = ColorManagement.ApplyColorTransformToDIB_WindowsCMS(iccTransformation, targetDIB)
+                    
+                    'If the transform was successful, pat ourselves on the back.
+                    If transformCheck Then
+                    
+                        #If DEBUGMODE = 1 Then
+                            pdDebug.LogAction "ICC profile transformation successful.  Image is now sRGB."
+                        #End If
+                        
+                        ApplyICCtoPDDib_WindowsCMS = True
+                        targetDIB.ICCProfile.MarkSuccessfulProfileApplication
+                        
+                    Else
+                        Message "ICC profile could not be applied.  Image remains in original profile."
+                    End If
+                    
+                    'Release our transformation
+                    ColorManagement.ReleaseColorTransform_WindowsCMS iccTransformation
+                                    
+                Else
+                    Message "Both ICC profiles loaded successfully, but transformation could not be created."
+                    ApplyICCtoPDDib_WindowsCMS = False
+                End If
+                
+            Else
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "ICC transform is not required, because source and destination profiles are identical."
+                #End If
+                ApplyICCtoPDDib_WindowsCMS = True
+            End If
+        
+            ColorManagement.ReleaseICCProfile_WindowsCMS dstProfile
+        
+        Else
+            Message "Could not obtain standard sRGB color profile.  Color management has been disabled for this image."
+            ApplyICCtoPDDib_WindowsCMS = False
+        End If
+        
+        ColorManagement.ReleaseICCProfile_WindowsCMS srcProfile
+    
+    Else
+        Message "Embedded ICC profile is invalid.  Color management has been disabled for this image."
+        ApplyICCtoPDDib_WindowsCMS = False
+    End If
     
 End Function
 
