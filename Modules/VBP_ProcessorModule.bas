@@ -640,7 +640,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Quick-fix tools
         Case "Make quick-fixes permanent"
-            Tool_Support.makeQuickFixesPermanent
+            Tool_Support.MakeQuickFixesPermanent
         
         
         'IMAGE MENU FUNCTIONS
@@ -2019,7 +2019,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     If (MacroStatus <> MacroBATCH) Then FormMain.Enabled = True
     
     'Restore focus to whichever control had it previously
-    If m_FocusHWnd <> 0 Then g_WindowManager.SetFocusAPI m_FocusHWnd
+    If (m_FocusHWnd <> 0) Then g_WindowManager.SetFocusAPI m_FocusHWnd
     
     'If an update is available, and we haven't displayed a notification yet, do so now
     If g_ShowUpdateNotification Then Update_Support.DisplayUpdateNotification
@@ -2194,7 +2194,7 @@ End Sub
 Public Sub flagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVal textSettingValue As Variant)
     
     'Ignore all requests if no images are loaded
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     
     'See if the new setting value differs.  If it does, we need to update the Undo/Redo chain and the Macro recorder list
     ' (if they're currently being recorded, obviously)
@@ -2238,10 +2238,10 @@ End Sub
 Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional ShowDialog As Boolean = False, Optional processParameters As String = "", Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByVal targetLayerID As Long = -1)
 
     'Mark the software processor as busy, but only if we're not showing a dialog.
-    If Not ShowDialog Then m_Processing = True
+    If (Not ShowDialog) Then m_Processing = True
     
     'If no layer is specified, assume we're operating on the currently active layer
-    If targetLayerID = -1 Then targetLayerID = pdImages(g_CurrentImage).GetActiveLayerID
+    If (targetLayerID = -1) Then targetLayerID = pdImages(g_CurrentImage).GetActiveLayerID
     
     'If the macro recorder is running and this action is marked as recordable, store it in our running stack of processor calls
     If (MacroStatus = MacroSTART) And recordAction Then
@@ -2300,6 +2300,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional ShowDialog 
     ' as well as the image tab-bar.
     If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
         Interface.NotifyImageChanged g_CurrentImage, targetLayerID
+        ChangeAppIcons pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
     End If
     
     'Generally, we assume that actions want us to create Undo data for them.  However, there are a few known exceptions:

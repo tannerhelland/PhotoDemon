@@ -1936,7 +1936,7 @@ Public Sub DisplayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef
     If Drawing.ConvertCanvasCoordsToImageCoords(srcCanvas, srcImage, x1, y1, copyX, copyY) Then
         
         'If an image is open, relay the new coordinates to the relevant canvas; it will handle the actual drawing internally
-        If g_OpenImageCount > 0 Then srcCanvas.DisplayCanvasCoordinates copyX, copyY
+        If (g_OpenImageCount > 0) Then srcCanvas.DisplayCanvasCoordinates copyX, copyY
         
     End If
     
