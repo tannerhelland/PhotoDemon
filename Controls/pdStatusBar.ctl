@@ -7,6 +7,7 @@ Begin VB.UserControl pdStatusBar
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   11940
+   DrawStyle       =   5  'Transparent
    HasDC           =   0   'False
    ScaleHeight     =   23
    ScaleMode       =   3  'Pixel

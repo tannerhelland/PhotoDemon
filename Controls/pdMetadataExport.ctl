@@ -6,6 +6,7 @@ Begin VB.UserControl pdMetadataExport
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   5250
+   DrawStyle       =   5  'Transparent
    HasDC           =   0   'False
    ScaleHeight     =   310
    ScaleMode       =   3  'Pixel
