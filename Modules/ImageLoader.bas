@@ -1052,7 +1052,9 @@ Public Function ApplyPostLoadICCHandling(ByRef targetDIB As pdDIB, Optional ByRe
                 End If
                 
                 #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Note: color management of the incoming image took " & CStr(Timer - startTime) & " ms"
+                    Dim engineUsed As String
+                    If g_LCMSEnabled Then engineUsed = "LittleCMS" Else engineUsed = "Windows ICM"
+                    pdDebug.LogAction "Note: color management of the imported image took " & CStr(Timer - startTime) & " ms using " & engineUsed
                 #End If
                 
                 If (targetDIB.GetDIBColorDepth = 32) Then targetDIB.SetAlphaPremultiplication True
