@@ -29,7 +29,7 @@ Option Explicit
 
 'LCMS allows you to define custom pixel formatters, but they also provide a large collection of pre-formatted values.
 ' We prefer to use these whenever possible.
-Private Enum LCMS_PIXEL_FORMAT
+Public Enum LCMS_PIXEL_FORMAT
     TYPE_GRAY_8 = &H30009
     TYPE_GRAY_8_REV = &H32009
     TYPE_GRAY_16 = &H3000A
@@ -195,7 +195,7 @@ Private Enum LCMS_PIXEL_FORMAT
 End Enum
 
 'LCMS supports more intents than the default ICC spec does
-Private Enum LCMS_RENDERING_INTENT
+Public Enum LCMS_RENDERING_INTENT
     INTENT_PERCEPTUAL = 0
     INTENT_RELATIVE_COLORIMETRIC = 1
     INTENT_SATURATION = 2
@@ -209,7 +209,7 @@ Private Enum LCMS_RENDERING_INTENT
 End Enum
 
 'When creating transforms, additional flags can be used to modify the transform process
-Private Enum LCMS_TRANSFORM_FLAGS
+Public Enum LCMS_TRANSFORM_FLAGS
     'Flags
     cmsFLAGS_NOCACHE = &H40&                       ' Inhibit 1-pixel cache
     cmsFLAGS_NOOPTIMIZE = &H100&                   ' Inhibit optimizations
@@ -303,11 +303,11 @@ Public Function GetLCMSVersion() As String
     
 End Function
 
-Private Function CreateTwoProfileTransform(ByVal hInputProfile As Long, ByVal hOutputProfile As Long, Optional ByVal hInputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal hOutputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = 0) As Long
-    CreateTwoProfileTransform = cmsCreateTransform(hInputProfile, hInputFormat, hOutputProfile, hOutputFormat, trnsRenderingIntent, trnsFlags)
+Public Function LCMS_CreateTwoProfileTransform(ByVal hInputProfile As Long, ByVal hOutputProfile As Long, Optional ByVal hInputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal hOutputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = 0) As Long
+    LCMS_CreateTwoProfileTransform = cmsCreateTransform(hInputProfile, hInputFormat, hOutputProfile, hOutputFormat, trnsRenderingIntent, trnsFlags)
 End Function
 
-Private Function CreateTwoProfileTransformForDIB(ByVal hInputProfile As Long, ByVal hOutputProfile As Long, ByRef srcDIB As pdDIB, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = 0) As Long
+Public Function LCMS_CreateInPlaceTransformForDIB(ByVal hInputProfile As Long, ByVal hOutputProfile As Long, ByRef srcDIB As pdDIB, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = 0) As Long
     
     Dim pxFormat As LCMS_PIXEL_FORMAT
     If (srcDIB.GetDIBColorDepth = 32) Then
@@ -316,63 +316,69 @@ Private Function CreateTwoProfileTransformForDIB(ByVal hInputProfile As Long, By
         pxFormat = TYPE_BGR_8
     End If
     
-    CreateTwoProfileTransformForDIB = cmsCreateTransform(hInputProfile, pxFormat, hOutputProfile, pxFormat, trnsRenderingIntent, trnsFlags)
+    LCMS_CreateInPlaceTransformForDIB = cmsCreateTransform(hInputProfile, pxFormat, hOutputProfile, pxFormat, trnsRenderingIntent, trnsFlags)
     
 End Function
 
-Private Function DeleteTransform(ByRef hTransform As Long) As Boolean
+Public Function LCMS_DeleteTransform(ByRef hTransform As Long) As Boolean
     cmsDeleteTransform hTransform
     hTransform = 0
-    DeleteTransform = True
+    LCMS_DeleteTransform = True
 End Function
 
-Private Function GetProfileRenderingIntent(ByVal hProfile As Long) As LCMS_RENDERING_INTENT
-    GetProfileRenderingIntent = cmsGetHeaderRenderingIntent(hProfile)
+Public Function LCMS_GetProfileRenderingIntent(ByVal hProfile As Long) As LCMS_RENDERING_INTENT
+    LCMS_GetProfileRenderingIntent = cmsGetHeaderRenderingIntent(hProfile)
 End Function
 
-'On success, returns a non-zero handle
-Private Function LoadProfileFromMemory(ByVal ptrToProfile As Long, ByVal sizeOfProfileInBytes As Long) As Long
-    LoadProfileFromMemory = cmsOpenProfileFromMem(ptrToProfile, sizeOfProfileInBytes)
+Public Function LCMS_LoadProfileFromMemory(ByVal ptrToProfile As Long, ByVal sizeOfProfileInBytes As Long) As Long
+    LCMS_LoadProfileFromMemory = cmsOpenProfileFromMem(ptrToProfile, sizeOfProfileInBytes)
 End Function
 
-Private Function LoadStockSRGBProfile() As Long
-    LoadStockSRGBProfile = cmsCreate_sRGBProfile()
+Public Function LCMS_LoadStockSRGBProfile() As Long
+    LCMS_LoadStockSRGBProfile = cmsCreate_sRGBProfile()
 End Function
 
-Private Function CloseProfileHandle(ByRef srcHandle As Long) As Boolean
-    CloseProfileHandle = CBool(cmsCloseProfile(srcHandle) <> 0)
-    If CloseProfileHandle Then srcHandle = 0
+Public Function LCMS_CloseProfileHandle(ByRef srcHandle As Long) As Boolean
+    LCMS_CloseProfileHandle = CBool(cmsCloseProfile(srcHandle) <> 0)
+    If LCMS_CloseProfileHandle Then srcHandle = 0
 End Function
 
-Private Function ApplyTransformToDIB(ByRef srcDIB As pdDIB, ByVal hTransform As Long) As Boolean
-
-    '32-bpp DIBs can be applied in one fell swoop, since there are no scanline padding issues
-    If (srcDIB.GetDIBColorDepth = 32) Then
+Public Function LCMS_ApplyTransformToDIB(ByRef srcDIB As pdDIB, ByVal hTransform As Long) As Boolean
     
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Applying ICC transform to 32-bpp DIB..."
-        #End If
+    If (Not (srcDIB Is Nothing)) And (hTransform <> 0) Then
         
-        cmsDoTransform hTransform, srcDIB.GetActualDIBBits, srcDIB.GetActualDIBBits, srcDIB.GetDIBWidth * srcDIB.GetDIBHeight
-    Else
+        '32-bpp DIBs can be applied in one fell swoop, since there are no scanline padding issues
+        If (srcDIB.GetDIBColorDepth = 32) Then
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Applying ICC transform to 24-bpp DIB..."
-        #End If
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Applying ICC transform to 32-bpp DIB..."
+            #End If
+            
+            cmsDoTransform hTransform, srcDIB.GetActualDIBBits, srcDIB.GetActualDIBBits, srcDIB.GetDIBWidth * srcDIB.GetDIBHeight
         
-        Dim i As Long, iWidth As Long, iScanWidth As Long, iScanStart As Long
-        iWidth = srcDIB.GetDIBWidth
-        iScanStart = srcDIB.GetActualDIBBits
-        iScanWidth = srcDIB.GetDIBArrayWidth
+        '24-bpp DIBs may have scanline padding issues.  We must process them one line at a time.
+        Else
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Applying ICC transform to 24-bpp DIB..."
+            #End If
+            
+            Dim i As Long, iWidth As Long, iScanWidth As Long, iScanStart As Long
+            iWidth = srcDIB.GetDIBWidth
+            iScanStart = srcDIB.GetActualDIBBits
+            iScanWidth = srcDIB.GetDIBArrayWidth
+            
+            For i = 0 To srcDIB.GetDIBHeight - 1
+                cmsDoTransform hTransform, iScanStart + i * iScanWidth, iScanStart + i * iScanWidth, iWidth
+            Next i
         
-        For i = 0 To srcDIB.GetDIBHeight - 1
-            cmsDoTransform hTransform, iScanStart + i * iScanWidth, iScanStart + i * iScanWidth, iWidth
-        Next i
-    
+        End If
+        
+        'The "cmsDoTransform" function has no return, so we assume success if passed a valid DIB and transform
+        LCMS_ApplyTransformToDIB = True
+        
     End If
-    
-    ApplyTransformToDIB = True
-    
+        
 End Function
 
 'Given a target DIB with a valid .ICCProfile object, apply said profile to said DIB.
@@ -384,7 +390,7 @@ Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB) As Boolean
     
     If (targetDIB Is Nothing) Then
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB was passed a null dib object."
+            pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB was passed a null pdDIB."
         #End If
         Exit Function
     End If
@@ -399,78 +405,68 @@ Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB) As Boolean
         pdDebug.LogAction "Using embedded ICC profile to convert image to sRGB space for editing..."
     #End If
     
-    'Start by retrieving an LCMS-compatible handle to the in-memory copy of our ICC profile
-    Dim hSrcProfile As Long
-    hSrcProfile = LoadProfileFromMemory(targetDIB.ICCProfile.GetICCDataPointer, targetDIB.ICCProfile.GetICCDataSize)
+    'Start by creating two LCMS profile handles:
+    ' 1) a source profile (the in-memory copy of the ICC profile associated with this DIB)
+    ' 2) a destination profile (the current PhotoDemon working space)
+    Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile
+    Set srcProfile = New pdLCMSProfile
+    Set dstProfile = New pdLCMSProfile
     
-    If (hSrcProfile <> 0) Then
+    If srcProfile.CreateFromPDDib(targetDIB) Then
         
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Source profile handle created successfully..."
-        #End If
-        
-        'Create a destination profile handle.  (At present, this is always sRGB.)
-        Dim hDstProfile As Long
-        hDstProfile = LoadStockSRGBProfile()
-        
-        If (hDstProfile <> 0) Then
+        If dstProfile.CreateSRGBProfile() Then
             
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Destination profile handle created successfully..."
-            #End If
-            
-            'Determine rendering intent.  (For now, we always default to PERCEPTUAL, but I've left the code line
-            ' below that uses the embedded rendering intent, if any.)
+            'DISCLAIMER! Until rendering intent has a dedicated preference, PD defaults to perceptual render intent.
+            ' This provides better results on most images, it correctly preserves gamut, and it is the standard
+            ' behavior for PostScript workflows.  See http://fieryforums.efi.com/showthread.php/835-Rendering-Intent-Control-for-Embedded-Profiles
+            ' Also see: https://developer.mozilla.org/en-US/docs/ICC_color_correction_in_Firefox)
+            '
+            'For future reference, I've left the code below for retrieving rendering intent from the source profile
             Dim targetRenderingIntent As LCMS_RENDERING_INTENT
             targetRenderingIntent = INTENT_PERCEPTUAL
-            'targetRenderingIntent = GetProfileRenderingIntent(hSrcProfile)
+            'targetRenderingIntent = srcProfile.GetRenderingIntent
             
             'Create a transform that uses the target DIB as both the source and destination
-            Dim hTransform As Long
-            hTransform = CreateTwoProfileTransformForDIB(hSrcProfile, hDstProfile, targetDIB, targetRenderingIntent, 0&)
-            
-            If (hTransform <> 0) Then
+            Dim cTransform As pdLCMSTransform
+            Set cTransform = New pdLCMSTransform
+            If cTransform.CreateInPlaceTransformForDIB(targetDIB, srcProfile, dstProfile, targetRenderingIntent) Then
                 
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Two-profile transform created successfully..."
-                #End If
+                'LittleCMS 2.0 allows us to free our source profiles immediately after a transform is created.
+                ' (Note that we don't *need* to do this, nor does this code leak if we don't manually free both
+                '  profiles, but as we're about to do an energy- and memory-intensive operation, it doesn't
+                '  hurt to free the profiles now.)
+                Set srcProfile = Nothing: Set dstProfile = Nothing
                 
-                'We now have everything we need to transform the DIB!  Fire away.
-                ApplyTransformToDIB targetDIB, hTransform
+                If cTransform.ApplyTransformToPDDib(targetDIB) Then
                 
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "ICC profile transformation successful.  Image is now sRGB."
-                #End If
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "ICC profile transformation successful.  Image now lives in the current RGB working space."
+                    #End If
+                    
+                    targetDIB.ICCProfile.MarkSuccessfulProfileApplication
+                    ApplyICCProfileToPDDIB = True
+                    
+                End If
                 
-                targetDIB.ICCProfile.MarkSuccessfulProfileApplication
-                ApplyICCProfileToPDDIB = True
+                'Note that we could free the transform here, but it's unnecessary.  (The pdLCMSTransform class
+                ' is self-freeing upon destruction.)
                 
-                'Always remember to free the finished transform!
-                DeleteTransform hTransform
-            
             Else
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB failed to create a valid transformation handle!"
                 #End If
             End If
         
-            'Before exiting, we must always close any open profile handles
-            CloseProfileHandle hDstProfile
-        
         Else
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB failed to create a valid handle for the destination profile!"
+                pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDib failed to create a valid destination profile handle."
             #End If
         End If
     
-        'Before exiting, we must always close any open profile handles
-        CloseProfileHandle hSrcProfile
-        
     Else
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB failed to create a valid handle for the source profile!"
+            pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDib failed to create a valid source profile handle."
         #End If
-        Exit Function
     End If
     
 End Function
