@@ -932,7 +932,7 @@ Private Sub cmdUpdateLossyPreview_Click()
             oldFileSize = cFile.FileLenW(tmpFilename)
             
             'Next, request optimization from pngquant
-            If Plugin_PNGQuant.ApplyPNGQuantToFile_Synchronous(tmpFilename, sltTargetQuality.Value, 11 - sltLossyPerformance.Value, CBool(chkOptimizeDither.Value)) Then
+            If Plugin_PNGQuant.ApplyPNGQuantToFile_Synchronous(tmpFilename, sltTargetQuality.Value, 11 - sltLossyPerformance.Value, CBool(chkOptimizeDither.Value), False) Then
                 
                 Dim newFileSize As Long
                 newFileSize = cFile.FileLenW(tmpFilename)
