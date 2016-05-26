@@ -1035,17 +1035,29 @@ Public Function ApplyPostLoadICCHandling(ByRef targetDIB As pdDIB, Optional ByRe
             End If
         
             If colorManagementNeeded Then
+                
                 If (targetDIB.GetDIBColorDepth = 32) Then targetDIB.SetAlphaPremultiplication False
+                
+                'During debug mode, color-management performance is an item of interest
+                #If DEBUGMODE = 1 Then
+                    Dim startTime As Double
+                    startTime = Timer
+                #End If
                 
                 'LittleCMS is our preferred color management engine.  Use it whenever possible.
                 If g_LCMSEnabled Then
                     LittleCMS.ApplyICCProfileToPDDIB targetDIB
                 Else
-                    targetDIB.ICCProfile.ApplyICCtoSelf targetDIB
+                    ColorManagement.ApplyICCtoPDDib_WindowsCMS targetDIB
                 End If
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Note: color management of the incoming image took " & CStr(Timer - startTime) & " ms"
+                #End If
                 
                 If (targetDIB.GetDIBColorDepth = 32) Then targetDIB.SetAlphaPremultiplication True
                 ApplyPostLoadICCHandling = True
+                
             End If
             
         End If

@@ -2131,7 +2131,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             GdipBitmapUnlockBits hImage, copyBitmapData
                         
             'Apply the transformation using the dedicated CMYK transform handler
-            If ApplyCMYKTransform(dstDIB.ICCProfile.GetICCDataPointer, dstDIB.ICCProfile.GetICCDataSize, tmpCMYKDIB, dstDIB, dstDIB.ICCProfile.GetSourceRenderIntent) Then
+            If ColorManagement.ApplyCMYKTransform_WindowsCMS(dstDIB.ICCProfile.GetICCDataPointer, dstDIB.ICCProfile.GetICCDataSize, tmpCMYKDIB, dstDIB, dstDIB.ICCProfile.GetSourceRenderIntent) Then
             
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "Copying newly transformed sRGB data..."

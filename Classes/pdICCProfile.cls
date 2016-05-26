@@ -32,7 +32,7 @@ Attribute VB_Exposed = False
 'Note that this class retains a copy of the ICC Profile itself, which is typically a ~1-5k byte array.  In the future
 ' I may add support for attaching a new profile to an image, or for exporting a profile to file.
 '
-'Also note that this class interacts heavily with the Color_Management module.
+'Also note that this class interacts heavily with the ColorManagement module.
 '
 'This class would not be possible without this excellent test code from pro VB coder LaVolpe:
 ' http://www.vbforums.com/showthread.php?666143-RESOLVED-ICC-%28Color-Profiles%29
@@ -100,104 +100,6 @@ End Function
 
 Public Function GetICCDataSize() As Long
     GetICCDataSize = UBound(m_ICCData) + 1
-End Function
-
-'If an ICC profile is present, apply it to this DIB.
-Public Function ApplyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
-
-    'Before doing anything else, make sure we actually have an ICC profile to apply!
-    If (Not m_ICCDataExists) Then
-        Message "ICC transform requested, but no data found.  Abandoning attempt."
-        Exit Function
-    End If
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Using embedded ICC profile to convert image to sRGB space for editing..."
-    #End If
-    
-    'Use the Color_Management module to convert the raw ICC profile into an internal Windows profile handle.  Note that
-    ' this function will also validate the profile for us.
-    Dim srcProfile As Long
-    srcProfile = LoadICCProfileFromMemory(VarPtr(m_ICCData(0)), UBound(m_ICCData) + 1)
-    
-    'If we successfully opened and validated our source profile, continue on to the next step!
-    If (srcProfile <> 0) Then
-    
-        'Now it is time to determine our destination profile.  Because PhotoDemon operates on DIBs that default
-        ' to the sRGB space, that's the profile we want to use for transformation.
-            
-        'Use the Color_Management module to request a standard sRGB profile.
-        Dim dstProfile As Long
-        dstProfile = LoadStandardICCProfile(LCS_sRGB)
-        
-        'It's highly unlikely that a request for a standard ICC profile will fail, but just be safe, double-check the
-        ' returned handle before continuing.
-        If (dstProfile <> 0) Then
-            
-            'Before proceeding, check to see if the source and destination profiles are identical.  Some dSLRs will embed
-            ' sRGB transforms in their JPEGs, and applying another sRGB transform atop them is a waste of time and resources.
-            ' Thanks to VB developer LaVolpe for this suggestion.
-            If (Not Color_Management.AreColorProfilesEqual(srcProfile, dstProfile)) Then
-            
-                'We can now use our profile matrix to generate a transformation object, which we will use to directly modify
-                ' the DIB's RGB values.
-                Dim iccTransformation As Long
-                iccTransformation = RequestProfileTransform(srcProfile, dstProfile, INTENT_PERCEPTUAL, GetSourceRenderIntent)
-                
-                'If the transformation was generated successfully, carry on!
-                If (iccTransformation <> 0) Then
-                    
-                    'The only transformation function relevant to PD involves the use of BitmapBits, so we will provide
-                    ' the API with direct access to our DIB bits.
-                    
-                    'Note that a color format must be explicitly specified - we vary this contingent on the parent image's
-                    ' color depth.
-                    Dim transformCheck As Boolean
-                    transformCheck = ApplyColorTransformToDIB(iccTransformation, copyOfThisInstance)
-                    
-                    'If the transform was successful, pat ourselves on the back.
-                    If transformCheck Then
-                    
-                        #If DEBUGMODE = 1 Then
-                            pdDebug.LogAction "ICC profile transformation successful.  Image is now sRGB."
-                        #End If
-                        
-                        m_ICCProfileWasApplied = True
-                        ApplyICCtoSelf = True
-                        
-                    Else
-                        Message "ICC profile could not be applied.  Image remains in original profile."
-                    End If
-                    
-                    'Release our transformation
-                    ReleaseColorTransform iccTransformation
-                                    
-                Else
-                    Message "Both ICC profiles loaded successfully, but transformation could not be created."
-                    ApplyICCtoSelf = False
-                End If
-                
-            Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "ICC transform is not required, because source and destination profiles are identical."
-                #End If
-                ApplyICCtoSelf = True
-            End If
-        
-            ReleaseICCProfile dstProfile
-        
-        Else
-            Message "Could not obtain standard sRGB color profile.  Color management has been disabled for this image."
-            ApplyICCtoSelf = False
-        End If
-        
-        ReleaseICCProfile srcProfile
-    
-    Else
-        Message "Embedded ICC profile is invalid.  Color management has been disabled for this image."
-        ApplyICCtoSelf = False
-    End If
-    
 End Function
 
 'At load-time, while a FreeImage handle is still active, use this function to extract an ICC profile from an image.

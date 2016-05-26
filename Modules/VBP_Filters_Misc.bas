@@ -977,7 +977,7 @@ Public Sub MenuTest()
     PDMsgBox "This menu item only appears in the Visual Basic IDE." & vbCrLf & vbCrLf & "You can use the MenuTest() sub in the Filters_Miscellaneous module to test your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.", vbInformation + vbOKOnly + vbApplicationModal, " PhotoDemon Pro Tip"
     
     'Apply fake color correction, as a test
-    'Color_Management.convertRGBUsingCustomEndpoints pdImages(g_CurrentImage).getActiveDIB, 0.15, 0.06, 0.3, 0.6, 0.64, 0.33, 0.3127, 0.329
+    'ColorManagement.convertRGBUsingCustomEndpoints pdImages(g_CurrentImage).getActiveDIB, 0.15, 0.06, 0.3, 0.6, 0.64, 0.33, 0.3127, 0.329
     
     'Create a LUT class for testing
     Dim cLut As pdFilterLUT

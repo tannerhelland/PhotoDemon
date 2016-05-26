@@ -280,7 +280,7 @@ Public Sub ContinueLoadingProgram()
     g_Displays.RefreshDisplays
     
     'While here, also cache various display-related settings; this is faster than constantly retrieving them via APIs
-    Color_Management.CacheCurrentSystemColorProfile
+    ColorManagement.CacheCurrentSystemColorProfile
     Interface.CacheSystemDPI g_Displays.GetWindowsDPI
     
     

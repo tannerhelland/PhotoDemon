@@ -1419,7 +1419,7 @@ Private Sub cmdBarMini_OKClick()
             g_UserPreferences.SetPref_Boolean "Transparency", "Use System Color Profile", optColorManagement(0)
             g_UseSystemColorProfile = optColorManagement(0)
             CacheCurrentSystemColorProfile
-            Color_Management.CheckParentMonitor False, True
+            ColorManagement.CheckParentMonitor False, True
         'END use system color profile
 
         'START alpha checkerboard colors

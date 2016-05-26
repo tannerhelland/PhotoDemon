@@ -636,7 +636,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         tmpRGBDIB.CreateBlank tmpCMYKDIB.GetDIBWidth, tmpCMYKDIB.GetDIBHeight, 24
         
         'Apply the transformation using the dedicated CMYK transform handler
-        If Color_Management.ApplyCMYKTransform(dstDIB.ICCProfile.GetICCDataPointer, dstDIB.ICCProfile.GetICCDataSize, tmpCMYKDIB, tmpRGBDIB, dstDIB.ICCProfile.GetSourceRenderIntent) Then
+        If ColorManagement.ApplyCMYKTransform_WindowsCMS(dstDIB.ICCProfile.GetICCDataPointer, dstDIB.ICCProfile.GetICCDataSize, tmpCMYKDIB, tmpRGBDIB, dstDIB.ICCProfile.GetSourceRenderIntent) Then
         
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Copying newly transformed sRGB data..."
