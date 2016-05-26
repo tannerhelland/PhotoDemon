@@ -971,6 +971,7 @@ Public Function GetDIBDC() As Long
         If (m_dibHandle <> 0) Then
             m_dibDC = Drawing.GetMemoryDC()
             m_dibHandleOriginal = SelectObject(m_dibDC, m_dibHandle)
+            GetDIBDC = m_dibDC
         Else
             GetDIBDC = 0
         End If
@@ -2360,14 +2361,16 @@ End Sub
 Public Sub AlphaBlendToDC(ByVal dstDC As Long, Optional ByVal customAlpha As Long = 255, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
     
     Dim bfParams As Long
+    If (newWidth = 0) Then newWidth = m_dibWidth
+    If (newHeight = 0) Then newHeight = m_dibHeight
     
-    If m_DibColorDepth = 32 Then
+    If (m_DibColorDepth = 32) Then
         
         'Use the image's current alpha channel, and blend it with the supplied customAlpha value
         bfParams = customAlpha * &H10000 Or &H1000000
         
         'Also, raise a warning if premultiplication is not set
-        If Not m_IsAlphaPremultiplied Then
+        If (Not m_IsAlphaPremultiplied) Then
             Debug.Print "WARNING!  Premultiplied alpha state unmarked, but alphaBlendToDC being called (" & m_dibWidth & ", " & m_dibHeight & ")!"
         End If
     
@@ -2376,7 +2379,7 @@ Public Sub AlphaBlendToDC(ByVal dstDC As Long, Optional ByVal customAlpha As Lon
         bfParams = (customAlpha * &H10000)
     End If
         
-    AlphaBlend dstDC, dstX, dstY, IIf(newWidth = 0, m_dibWidth, newWidth), IIf(newHeight = 0, m_dibHeight, newHeight), Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, bfParams
+    AlphaBlend dstDC, dstX, dstY, newWidth, newHeight, Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, bfParams
     
 End Sub
 
@@ -2385,13 +2388,13 @@ Public Sub AlphaBlendToDCEx(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY 
     
     Dim bfParams As Long
     
-    If m_DibColorDepth = 32 Then
+    If (m_DibColorDepth = 32) Then
     
         'Use the image's current alpha channel, and blend it with the supplied customAlpha value
         bfParams = customAlpha * &H10000 Or &H1000000
         
         'Raise a warning if premultiplication is not set
-        If Not m_IsAlphaPremultiplied Then
+        If (Not m_IsAlphaPremultiplied) Then
             Debug.Print "WARNING!  Premultiplied alpha state unmarked, but alphaBlendToDCEx being called (" & m_dibWidth & ", " & m_dibHeight & ")!"
         End If
     
