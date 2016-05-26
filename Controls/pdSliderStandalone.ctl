@@ -701,6 +701,7 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
             Case GradientTwoPoint, GradientThreePoint, HueSpectrum360
                 If (m_GradientDIB Is Nothing) Then CreateGradientTrack
                 m_GradientDIB.AlphaBlendToDC m_SliderBackgroundDIB.GetDIBDC, 255, GetTrackLeft - (m_TrackDiameter \ 2), 0
+                m_GradientDIB.FreeFromDC
             
             'In the future, we may support fully owner-drawn sliders, but this is not currently implemented.
             Case CustomOwnerDrawn
@@ -990,6 +991,7 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
     'Copy the previously assembled track onto the back buffer.  (This is faster than AlphaBlending the result, especially because
     ' we don't need any blending.)
     BitBlt bufferDC, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight, m_SliderBackgroundDIB.GetDIBDC, 0, 0, vbSrcCopy
+    m_SliderBackgroundDIB.FreeFromDC
     
     If (Me.Enabled And g_IsProgramRunning) Then
         

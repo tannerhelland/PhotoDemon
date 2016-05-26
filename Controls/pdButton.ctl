@@ -371,7 +371,7 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
         m_ImageHeight = srcDIB.GetDIBHeight
         
         'Create a vertical sprite-sheet DIB, and mark it as having premultiplied alpha
-        If m_Images Is Nothing Then Set m_Images = New pdDIB
+        If (m_Images Is Nothing) Then Set m_Images = New pdDIB
         m_Images.CreateBlank m_ImageWidth, m_ImageHeight * 3, srcDIB.GetDIBColorDepth, 0, 0
         m_Images.SetInitialAlphaPremultiplicationState True
         
@@ -624,6 +624,7 @@ Private Sub RedrawBackBuffer()
         End If
         
         m_Images.AlphaBlendToDCEx bufferDC, btImageCoords.x, btImageCoords.y, m_ImageWidth, m_ImageHeight, 0, pxOffset, m_ImageWidth, m_ImageHeight
+        m_Images.FreeFromDC
         
     End If
     

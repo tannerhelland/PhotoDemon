@@ -529,7 +529,7 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As 
     m_Buttons(itemIndex).btImageHeight = srcDIB.GetDIBHeight
     
     'Create a vertical sprite-sheet DIB, and mark it as having premultiplied alpha
-    If m_Buttons(itemIndex).btImages Is Nothing Then Set m_Buttons(itemIndex).btImages = New pdDIB
+    If (m_Buttons(itemIndex).btImages Is Nothing) Then Set m_Buttons(itemIndex).btImages = New pdDIB
     
     With m_Buttons(itemIndex)
         .btImages.CreateBlank .btImageWidth, .btImageHeight * 3, srcDIB.GetDIBColorDepth, 0, 0
@@ -740,7 +740,7 @@ Private Sub UpdateControlLayout()
             strWidth = tmpFont.GetWidthOfString(m_Buttons(i).btCaptionTranslated)
             
             'If the string is too long for its containing button, activate word wrap and measure again
-            If strWidth > buttonWidth Then
+            If (strWidth > buttonWidth) Then
                 
                 strWidth = buttonWidth
                 strHeight = tmpFont.GetHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth)
@@ -779,7 +779,7 @@ Private Sub UpdateControlLayout()
                 
                 'Image...
                 Else
-                    If strWidth < buttonWidth Then
+                    If (strWidth < buttonWidth) Then
                         .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImageWidth + FixDPI(IMG_TEXT_PADDING)
                     Else
                         .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImageWidth + FixDPI(IMG_TEXT_PADDING) * 2
@@ -798,7 +798,7 @@ Private Sub UpdateControlLayout()
                 'X-positioning is dependent on the presence of a caption.  If a caption exists, it gets placement preference.
                 If Len(.btCaptionTranslated) <> 0 Then
                 
-                    If strWidth < buttonWidth Then
+                    If (strWidth < buttonWidth) Then
                         .btImageCoords.x = .btBounds.Left + ((.btCaptionRect.Right - .btCaptionRect.Left) - strWidth) \ 2
                     Else
                         .btImageCoords.x = .btBounds.Left + FixDPI(IMG_TEXT_PADDING)
@@ -989,6 +989,7 @@ Private Sub RedrawBackBuffer()
                     End If
                     
                     .btImages.AlphaBlendToDCEx bufferDC, .btImageCoords.x, .btImageCoords.y, .btImageWidth, .btImageHeight, 0, pxOffset, .btImageWidth, .btImageHeight
+                    .btImages.FreeFromDC
                     
                 End If
                 

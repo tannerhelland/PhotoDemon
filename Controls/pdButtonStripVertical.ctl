@@ -509,7 +509,7 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As 
     m_Buttons(itemIndex).btImageHeight = srcDIB.GetDIBHeight
     
     'Create a vertical sprite-sheet DIB, and mark it as having premultiplied alpha
-    If m_Buttons(itemIndex).btImages Is Nothing Then Set m_Buttons(itemIndex).btImages = New pdDIB
+    If (m_Buttons(itemIndex).btImages Is Nothing) Then Set m_Buttons(itemIndex).btImages = New pdDIB
     
     With m_Buttons(itemIndex)
         .btImages.CreateBlank .btImageWidth, .btImageHeight * 3, srcDIB.GetDIBColorDepth, 0, 0
@@ -920,6 +920,7 @@ Private Sub RedrawBackBuffer()
                     End If
                     
                     .btImages.AlphaBlendToDCEx bufferDC, .btImageCoords.x, .btImageCoords.y, .btImageWidth, .btImageHeight, 0, pxOffset, .btImageWidth, .btImageHeight
+                    .btImages.FreeFromDC
                     
                 End If
                 
