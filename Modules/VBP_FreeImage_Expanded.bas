@@ -177,7 +177,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         tmpFIHandle = FreeImage_LoadUInt(fileFIF, StrPtr(srcFilename), fi_ImportFlags Or additionalFlags)
         
         'Check the file's color type
-        If FreeImage_GetColorType(tmpFIHandle) = FIC_CMYK Then
+        If (FreeImage_GetColorType(tmpFIHandle) = FIC_CMYK) Then
         
             'File is CMYK.  Check for an ICC profile.
             If FreeImage_HasICCProfile(tmpFIHandle) Then
@@ -278,7 +278,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     If (fileFIF = FIF_ICO) Then
         
         'Check the bit-depth
-        If FreeImage_GetBPP(fi_hDIB) < 32 Then
+        If (FreeImage_GetBPP(fi_hDIB) < 32) Then
         
             'If this is the first frame of the icon, unload it and try again
             If (pageToLoad <= 0) Then
@@ -325,7 +325,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     
     '****************************************************************************
-    ' Retrieve any attached ICC profiles, and copy their contents into this DIB's ICC manager
+    ' Retrieve any attached ICC profiles, and attach their contents to the target DIB
     '****************************************************************************
     
     If FreeImage_HasICCProfile(fi_hDIB) Then dstDIB.ICCProfile.LoadICCFromFreeImage fi_hDIB
@@ -399,69 +399,88 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     '****************************************************************************
     
     If (fi_DataType <> FIT_Bitmap) Then
-    
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "HDR image identified.  Raising tone-map dialog..."
-        #End If
         
         'We basically have two mechanisms for downsampling a high bit-depth image:
         ' 1) Using an embedded ICC profile (the preferred mechanism)
         ' 2) Using a generic tone-mapping algorithm to estimate conversion parameters
         
         'If the image does not contain an embedded ICC profile, we have no choice but to use (2)
+        Dim toneMappingRequired As Boolean: toneMappingRequired = True
         
-        'TODO: LCMS integration
+        'Before doing anything else, look for a valid ICC profile
         If (FreeImage_HasICCProfile(fi_hDIB) And dstDIB.ICCProfile.HasICCData) Then
-            Debug.Print "VALID LCMS CANDIDATE!"
+                    
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "HDR image identified.  ICC profile is present; attempting to convert now..."
+            #End If
+            
+            new_hDIB = GenerateICCCorrectedFIDIB(fi_hDIB, dstDIB)
+            If (new_hDIB <> 0) Then
+                toneMappingRequired = False
+                FreeImage_Unload fi_hDIB
+                fi_hDIB = new_hDIB
+                fi_BPP = FreeImage_GetBPP(fi_hDIB)
+                isCMYK = False
+            End If
+        
+        'No valid ICC profile was found, so we have no choice but to use tone-mapping
         End If
         
-        'Use the central tone-map handler to apply further tone-mapping
-        Dim toneMappingOutcome As PD_OPERATION_OUTCOME
-        toneMappingOutcome = RaiseToneMapDialog(fi_hDIB, new_hDIB)
+        If toneMappingRequired Then
         
-        'A non-zero return signifies a successful tone-map operation.  Unload our old handle, and proceed with the new handle
-        If (toneMappingOutcome = PD_SUCCESS) And (new_hDIB <> 0) Then
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "HDR image identified.  Raising tone-map dialog..."
+            #End If
+        
+            'Use the central tone-map handler to apply further tone-mapping
+            Dim toneMappingOutcome As PD_OPERATION_OUTCOME
+            toneMappingOutcome = RaiseToneMapDialog(fi_hDIB, new_hDIB)
             
-            'Add a note to the target image that tone-mapping was forcibly applied to the incoming data
-            If Not (targetImage Is Nothing) Then
-                targetImage.imgStorage.AddEntry "Tone-mapping", True
-            End If
-            
-            'Immediately unload the original image copy (which is probably enormous, on account of its bit-depth)
-            If pageToLoad <= 0 Then
-                If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
-            Else
-                If (fi_hDIB <> new_hDIB) Then
-                    needToCloseMulti = False
-                    FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-                    FreeImage_CloseMultiBitmap fi_multi_hDIB
+            'A non-zero return signifies a successful tone-map operation.  Unload our old handle, and proceed with the new handle
+            If (toneMappingOutcome = PD_SUCCESS) And (new_hDIB <> 0) Then
+                
+                'Add a note to the target image that tone-mapping was forcibly applied to the incoming data
+                If Not (targetImage Is Nothing) Then
+                    targetImage.imgStorage.AddEntry "Tone-mapping", True
                 End If
-            End If
+                
+                'Immediately unload the original image copy (which is probably enormous, on account of its bit-depth)
+                If (pageToLoad <= 0) Then
+                    If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
+                Else
+                    If (fi_hDIB <> new_hDIB) Then
+                        needToCloseMulti = False
+                        FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+                        FreeImage_CloseMultiBitmap fi_multi_hDIB
+                    End If
+                End If
+                
+                'Replace the primary FI_DIB handle with the new one, then carry on with loading
+                fi_hDIB = new_hDIB
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Tone mapping complete."
+                #End If
             
-            'Replace the primary FI_DIB handle with the new one, then carry on with loading
-            fi_hDIB = new_hDIB
-            
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Tone mapping complete."
-            #End If
-        
-        'The tone-mapper will return 0 if it failed.  If this happens, we cannot proceed with loading.
-        Else
-        
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Tone-mapping canceled due to user request or error.  Abandoning image import."
-            #End If
-            
-            If fi_hDIB <> 0 Then FreeImage_Unload fi_hDIB
-            
-            If toneMappingOutcome <> PD_SUCCESS Then
-                LoadFreeImageV4 = toneMappingOutcome
+            'The tone-mapper will return 0 if it failed.  If this happens, we cannot proceed with loading.
             Else
-                LoadFreeImageV4 = PD_FAILURE_GENERIC
+            
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Tone-mapping canceled due to user request or error.  Abandoning image import."
+                #End If
+                
+                If (fi_hDIB <> 0) Then FreeImage_Unload fi_hDIB
+                
+                If (toneMappingOutcome <> PD_SUCCESS) Then
+                    LoadFreeImageV4 = toneMappingOutcome
+                Else
+                    LoadFreeImageV4 = PD_FAILURE_GENERIC
+                End If
+                
+                Exit Function
+            
             End If
             
-            Exit Function
-        
         End If
     
     End If
@@ -479,14 +498,14 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     '****************************************************************************
     
     'Similarly, check for low-bit-depth images
-    If fi_BPP < 24 Then
+    If (fi_BPP < 24) Then
         
         'Next, check to see if this is actually a high-bit-depth grayscale image masquerading as a low-bit-depth RGB image
         Dim fi_imageType As FREE_IMAGE_TYPE
         fi_imageType = FreeImage_GetImageType(fi_hDIB)
         
         'If it is such a grayscale image, it requires a unique conversion operation
-        If fi_imageType = FIT_UINT16 Then
+        If (fi_imageType = FIT_UINT16) Then
             
             'Again, check for the user's preference on tone-mapping
             If g_UserPreferences.GetPref_Boolean("Loading", "HDR Tone Mapping", True) Then
@@ -554,7 +573,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
                 End If
                 
                 'Unload the original source
-                If pageToLoad <= 0 Then
+                If (pageToLoad <= 0) Then
                     If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
                     If (new_hDIB <> fi_hDIB) Then
@@ -571,6 +590,23 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             
         Else
         
+            'If the image is grayscale, and it has an ICC profile, we need to apply that prior to continuing.
+            ' (Grayscale images have grayscale ICC profiles which the default ICC profile handler can't address.)
+            If (fi_BPP = 8) And (FreeImage_GetColorType(fi_hDIB) = FIC_MINISBLACK) And (FreeImage_HasICCProfile(fi_hDIB)) Then
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "8bpp image with ICC profile identified.  Attempting to convert now..."
+                #End If
+                
+                new_hDIB = GenerateICCCorrectedFIDIB(fi_hDIB, dstDIB)
+                If (new_hDIB <> 0) Then
+                    FreeImage_Unload fi_hDIB
+                    fi_hDIB = new_hDIB
+                    fi_BPP = FreeImage_GetBPP(fi_hDIB)
+                End If
+                
+            End If
+        
             'Conversion to higher bit depths is contingent on the presence of an alpha channel
             fi_hasTransparency = FreeImage_IsTransparent(fi_hDIB)
         
@@ -578,7 +614,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             If fi_hasTransparency Then
                 new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
                 
-                If pageToLoad <= 0 Then
+                If (pageToLoad <= 0) Then
                     If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
                     If (new_hDIB <> fi_hDIB) Then
@@ -677,7 +713,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     specialClipboardHandlingRequired = False
     
-    If fi_BPP = 32 Then
+    If (fi_BPP = 32) Then
         
         'If the clipboard is active, this image came from a Paste operation.  It may require extra alpha heuristics.
         If g_Clipboard.IsClipboardOpen Then
@@ -688,7 +724,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             
             'If the clipboard image was originally placed on the clipboard as a DDB, a whole variety of driver-specific
             ' issues may be present.
-            If tmpClipboardInfo.pdci_OriginalFormat = CF_BITMAP Then
+            If (tmpClipboardInfo.pdci_OriginalFormat = CF_BITMAP) Then
             
                 'Well, this sucks.  The original owner of this clipboard data (maybe even Windows itself, in the case
                 ' of PrtScrn) placed an image on the clipboard in the ancient CF_BITMAP format, which is a DDB with
@@ -891,6 +927,216 @@ isMultiImage_Error:
 
 End Function
 
+'Given a source FreeImage handle, and a destination pdDIB that contains a valid ICC profile, create a new, ICC-corrected version of the
+' source FI DIB.  This is primarily used when an incoming image is high bit-depth, as normal bit-depths already receive comprehensive
+' ICC handling inside the main image import function.
+'
+'IMPORTANT NOTE: the source handle *will not be freed*, even if the transformation is successful.  The caller must do this manually.
+'
+'TODO 7.0: the next LittleCMS release will provide a COPY_ALPHA flag, which is needed here.  At present, alpha is lost during conversions.
+'          I don't want to write custom code for this, so I'm content waiting until LittleCMS implements this directly.
+Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef srcDIB As pdDIB) As Long
+    
+    'Retrieve the source image's bit-depth and data type.
+    Dim fi_BPP As Long
+    fi_BPP = FreeImage_GetBPP(srcFIHandle)
+    
+    Dim fi_DataType As FREE_IMAGE_TYPE
+    fi_DataType = FreeImage_GetImageType(srcFIHandle)
+        
+    Dim isGrayscale As Boolean
+    Select Case fi_DataType
+    
+        Case FIT_DOUBLE, FIT_FLOAT, FIT_INT16, FIT_UINT16, FIT_INT32, FIT_UINT32
+            isGrayscale = True
+            
+        Case Else
+            isGrayscale = False
+    
+    End Select
+    
+    'Check for 8-bpp grayscale images now
+    If (Not isGrayscale) Then
+        If (fi_BPP = 8) And (FreeImage_GetColorType(srcFIHandle) = FIC_MINISBLACK) Then isGrayscale = True
+    End If
+        
+    'Also, check for transparency in the source image.
+    Dim hasTransparency As Boolean, transparentEntries As Long
+    hasTransparency = FreeImage_IsTransparent(srcFIHandle)
+    If (Not hasTransparency) Then
+        transparentEntries = FreeImage_GetTransparencyCount(srcFIHandle)
+        If (transparentEntries > 0) Then hasTransparency = True
+    End If
+    
+    'Allocate a destination FI DIB object in default BGRA order
+    Dim targetBitDepth As Long
+    If hasTransparency Then
+        targetBitDepth = 32
+    Else
+        If isGrayscale Then targetBitDepth = 8 Else targetBitDepth = 24
+    End If
+    
+    Dim newFIDib As Long
+    newFIDib = FreeImage_Allocate(FreeImage_GetWidth(srcFIHandle), FreeImage_GetHeight(srcFIHandle), targetBitDepth)
+    
+    'We now want to use LittleCMS to perform an immediate ICC correction.
+    
+    'Start by creating two LCMS profile handles:
+    ' 1) a source profile (the in-memory copy of the ICC profile associated with this DIB)
+    ' 2) a destination profile (the current PhotoDemon working space)
+    Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile
+    Set srcProfile = New pdLCMSProfile
+    Set dstProfile = New pdLCMSProfile
+    
+    If srcProfile.CreateFromPDDib(srcDIB) Then
+        
+        Dim dstProfileSuccess As Long
+        If isGrayscale Then
+            dstProfileSuccess = dstProfile.CreateGenericGrayscaleProfile
+        Else
+            dstProfileSuccess = dstProfile.CreateSRGBProfile
+        End If
+        
+        If dstProfileSuccess Then
+            
+            'DISCLAIMER! Until rendering intent has a dedicated preference, PD defaults to perceptual render intent.
+            ' This provides better results on most images, it correctly preserves gamut, and it is the standard
+            ' behavior for PostScript workflows.  See http://fieryforums.efi.com/showthread.php/835-Rendering-Intent-Control-for-Embedded-Profiles
+            ' Also see: https://developer.mozilla.org/en-US/docs/ICC_color_correction_in_Firefox)
+            '
+            'For future reference, I've left the code below for retrieving rendering intent from the source profile
+            Dim targetRenderingIntent As LCMS_RENDERING_INTENT
+            targetRenderingIntent = INTENT_PERCEPTUAL
+            'targetRenderingIntent = srcProfile.GetRenderingIntent
+            
+            'Now, we need to create a transform between the two bit-depths.  This involves mapping the FreeImage bit-depth constants
+            ' to compatible LCMS ones.
+            Dim srcPixelFormat As LCMS_PIXEL_FORMAT, dstPixelFormat As LCMS_PIXEL_FORMAT
+            
+            'FreeImage does not natively support grayscale+alpha images.  These will be implicitly mapped to RGBA, so we only
+            ' need to check grayscale formats if hasTransparency = FALSE.
+            Dim transformImpossible As Boolean: transformImpossible = False
+            
+            If hasTransparency Then
+                dstPixelFormat = TYPE_BGRA_8
+                
+                If (fi_DataType = FIT_RGBA16) Then
+                    srcPixelFormat = TYPE_BGRA_16
+                    
+                'The only other possibility is RGBAF; LittleCMS supports this format, but we'd have to construct our own macro
+                ' to define it.  Just skip it at present.
+                Else
+                    transformImpossible = True
+                End If
+                
+            Else
+            
+                If isGrayscale Then
+                    dstPixelFormat = TYPE_GRAY_8
+                    
+                    If (fi_DataType = FIT_DOUBLE) Then
+                        srcPixelFormat = TYPE_GRAY_DBL
+                    ElseIf (fi_DataType = FIT_FLOAT) Then
+                        srcPixelFormat = TYPE_GRAY_FLT
+                    ElseIf (fi_DataType = FIT_INT16) Then
+                        srcPixelFormat = TYPE_GRAY_16
+                    ElseIf (fi_DataType = FIT_UINT16) Then
+                        srcPixelFormat = TYPE_GRAY_16
+                    ElseIf (fi_DataType = FIT_INT32) Then
+                        transformImpossible = True
+                    ElseIf (fi_DataType = FIT_UINT32) Then
+                        transformImpossible = True
+                    Else
+                        srcPixelFormat = TYPE_GRAY_8
+                    End If
+                    
+                Else
+                
+                    dstPixelFormat = TYPE_BGR_8
+                    
+                    'Check for high bit-depth CMYK here
+                    If (FreeImage_GetColorType(srcFIHandle) = FIC_CMYK) Then
+                        If (fi_DataType = FIT_RGBA16) Then
+                            srcPixelFormat = TYPE_CMYK_16
+                        Else
+                            transformImpossible = True
+                        End If
+                    Else
+                    
+                        If (fi_DataType = FIT_RGB16) Then
+                            If (FreeImage_GetRedMask(srcFIHandle) > FreeImage_GetBlueMask(srcFIHandle)) Then
+                                srcPixelFormat = TYPE_BGR_16
+                            Else
+                                srcPixelFormat = TYPE_RGB_16
+                            End If
+                            
+                        'The only other possibility is RGBF; LittleCMS supports this format, but we'd have to construct our own macro
+                        ' to define it.  Just skip it at present.
+                        Else
+                            transformImpossible = True
+                        End If
+                        
+                    End If
+                    
+                End If
+            End If
+            
+            'Some color spaces may not be supported; that's okay - we'll use tone-mapping to handle them.
+            If (Not transformImpossible) Then
+                
+                'Create a transform that uses the target DIB as both the source and destination
+                Dim cTransform As pdLCMSTransform
+                Set cTransform = New pdLCMSTransform
+                If cTransform.CreateTwoProfileTransform(srcProfile, dstProfile, srcPixelFormat, dstPixelFormat, targetRenderingIntent) Then
+                    
+                    'LittleCMS 2.0 allows us to free our source profiles immediately after a transform is created.
+                    ' (Note that we don't *need* to do this, nor does this code leak if we don't manually free both
+                    '  profiles, but as we're about to do an energy- and memory-intensive operation, it doesn't
+                    '  hurt to free the profiles now.)
+                    Set srcProfile = Nothing: Set dstProfile = Nothing
+                    
+                    If cTransform.ApplyTransformToArbitraryMemory(FreeImage_GetScanline(srcFIHandle, 0), FreeImage_GetScanline(newFIDib, 0), FreeImage_GetPitch(srcFIHandle), FreeImage_GetPitch(newFIDib), FreeImage_GetHeight(srcFIHandle), FreeImage_GetWidth(srcFIHandle)) Then
+                    
+                        #If DEBUGMODE = 1 Then
+                            pdDebug.LogAction "ICC profile transformation successful.  New FreeImage handle now lives in the current RGB working space."
+                        #End If
+                        
+                        srcDIB.ICCProfile.MarkSuccessfulProfileApplication
+                        GenerateICCCorrectedFIDIB = newFIDib
+                        
+                    End If
+                    
+                    'Note that we could free the transform here, but it's unnecessary.  (The pdLCMSTransform class
+                    ' is self-freeing upon destruction.)
+                    
+                Else
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB failed to create a valid transformation handle!"
+                    #End If
+                End If
+            
+            'Impossible transformations return a null handle
+            Else
+                GenerateICCCorrectedFIDIB = 0
+            End If
+        
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDib failed to create a valid destination profile handle."
+            #End If
+        End If
+    
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDib failed to create a valid source profile handle."
+        #End If
+    End If
+    
+    'If the transformation failed, free our temporarily allocated FreeImage DIB
+    If (GenerateICCCorrectedFIDIB = 0) And (newFIDib <> 0) Then FreeImage_Unload newFIDib
+
+End Function
+
 'Given a FreeImage handle, return a 24 or 32bpp pdDIB object, as relevant.  Note that this function does not modify premultiplication
 ' status of 32bpp images.  The caller is responsible for applying that (as necessary).
 '
@@ -1085,7 +1331,7 @@ Public Function ApplyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
     Dim hasTransparency As Boolean, transparentEntries As Long
     hasTransparency = FreeImage_IsTransparent(fi_Handle)
     transparentEntries = FreeImage_GetTransparencyCount(fi_Handle)
-    If transparentEntries > 0 Then hasTransparency = True
+    If (transparentEntries > 0) Then hasTransparency = True
     
     Dim newHandle As Long, rgbfHandle As Long
     
