@@ -51,6 +51,12 @@ Public Function CreateFromPDDib(ByRef srcDIB As pdDIB) As Boolean
     
 End Function
 
+Public Function CreateGenericGrayscaleProfile() As Boolean
+    If (m_ProfileHandle <> 0) Then ReleaseProfile
+    m_ProfileHandle = LittleCMS.LCMS_LoadStockGrayProfile()
+    CreateGenericGrayscaleProfile = CBool(m_ProfileHandle <> 0)
+End Function
+
 Public Function CreateSRGBProfile() As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
     m_ProfileHandle = LittleCMS.LCMS_LoadStockSRGBProfile()

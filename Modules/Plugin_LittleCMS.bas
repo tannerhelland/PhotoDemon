@@ -27,6 +27,19 @@ Attribute VB_Name = "LittleCMS"
 
 Option Explicit
 
+Public Type LCMS_cmsCIEXYZ
+    x As Double
+    y As Double
+    z As Double
+End Type
+
+Public Type LCMS_cmsCIExyY
+    x As Double
+    y As Double
+    YY As Double
+End Type
+
+
 'LCMS allows you to define custom pixel formatters, but they also provide a large collection of pre-formatted values.
 ' We prefer to use these whenever possible.
 Public Enum LCMS_PIXEL_FORMAT
@@ -237,13 +250,22 @@ End Enum
 'Return the current library version as a Long, e.g. "2.7" is returned as "2070"
 Private Declare Function cmsGetEncodedCMMversion Lib "lcms2.dll" () As Long
 
+'Error logger registration
+Private Declare Sub cmsSetLogErrorHandler Lib "lcms2.dll" (ByVal ptrToCmsLogErrorHandlerFunction As Long)
+
 'Profile create/release functions
 Private Declare Function cmsCloseProfile Lib "lcms2.dll" (ByVal srcProfile As Long) As Long
+Private Declare Function cmsCreateGrayProfile Lib "lcms2.dll" (ByRef whitePoint As LCMS_cmsCIExyY, ByVal sourceToneCurve As Long) As Long
 Private Declare Function cmsCreate_sRGBProfile Lib "lcms2.dll" () As Long
 Private Declare Function cmsOpenProfileFromMem Lib "lcms2.dll" (ByVal ptrProfile As Long, ByVal profileSizeInBytes As Long) As Long
 
 'Profile information functions
 Private Declare Function cmsGetHeaderRenderingIntent Lib "lcms2.dll" (ByVal hProfile As Long) As LCMS_RENDERING_INTENT
+
+'Tone curve creation/destruction
+Private Declare Function cmsBuildParametricToneCurve Lib "lcms2.dll" (ByVal ContextID As Long, ByVal tcType As Long, ByVal ptrToFirstParam As Long) As Long
+Private Declare Function cmsBuildGamma Lib "lcms2.dll" (ByVal ContextID As Long, ByVal cmsFloat64Number As Double) As Long
+Private Declare Sub cmsFreeToneCurve Lib "lcms2.dll" (ByVal srcToneCurve As Long)
 
 'Transform functions
 Private Declare Function cmsCreateTransform Lib "lcms2.dll" (ByVal hInputProfile As Long, ByVal hInputFormat As LCMS_PIXEL_FORMAT, ByVal hOutputProfile As Long, ByVal hOutputFormat As LCMS_PIXEL_FORMAT, ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT, ByVal trnsFlags As LCMS_TRANSFORM_FLAGS) As Long
@@ -266,6 +288,13 @@ Public Function InitializeLCMS() As Boolean
     InitializeLCMS = CBool(m_LCMSHandle <> 0)
     
     #If DEBUGMODE = 1 Then
+        
+        'Set up an error logger.  Note that this WILL CRASH THAT PROGRAM after a log due to StdCall behavior.  As such,
+        ' it's only good for retrieving a single error (before everything goes to shit).
+        'If InitializeLCMS Then
+        '    cmsSetLogErrorHandler AddressOf cmsErrorHandler
+        'End If
+        
         If (Not InitializeLCMS) Then
             pdDebug.LogAction "WARNING!  LoadLibrary failed to load LittleCMS.  Last DLL error: " & Err.LastDllError
             pdDebug.LogAction "(FYI, the attempted path was: " & lcmsPath & ")"
@@ -334,6 +363,20 @@ Public Function LCMS_LoadProfileFromMemory(ByVal ptrToProfile As Long, ByVal siz
     LCMS_LoadProfileFromMemory = cmsOpenProfileFromMem(ptrToProfile, sizeOfProfileInBytes)
 End Function
 
+Public Function LCMS_LoadStockGrayProfile() As Long
+    Dim whitePoint As LCMS_cmsCIExyY
+    With whitePoint
+        .x = 0.3127
+        .y = 0.329
+        .YY = 1#
+    End With
+    
+    Dim tmpToneCurve As Long
+    tmpToneCurve = LCMS_GetBasicToneCurve(1#)
+    LCMS_LoadStockGrayProfile = cmsCreateGrayProfile(whitePoint, tmpToneCurve)
+    LittleCMS.LCMS_FreeToneCurve tmpToneCurve
+End Function
+
 Public Function LCMS_LoadStockSRGBProfile() As Long
     LCMS_LoadStockSRGBProfile = cmsCreate_sRGBProfile()
 End Function
@@ -341,6 +384,16 @@ End Function
 Public Function LCMS_CloseProfileHandle(ByRef srcHandle As Long) As Boolean
     LCMS_CloseProfileHandle = CBool(cmsCloseProfile(srcHandle) <> 0)
     If LCMS_CloseProfileHandle Then srcHandle = 0
+End Function
+
+Private Function LCMS_GetBasicToneCurve(Optional ByVal srcGamma As Double = 1#) As Long
+    LCMS_GetBasicToneCurve = cmsBuildGamma(0&, srcGamma)
+End Function
+
+Public Function LCMS_FreeToneCurve(ByRef hCurve As Long) As Boolean
+    cmsFreeToneCurve hCurve
+    hCurve = 0
+    LCMS_FreeToneCurve = True
 End Function
 
 Public Function LCMS_ApplyTransformToDIB(ByRef srcDIB As pdDIB, ByVal hTransform As Long) As Boolean
@@ -380,6 +433,10 @@ Public Function LCMS_ApplyTransformToDIB(ByRef srcDIB As pdDIB, ByVal hTransform
     End If
         
 End Function
+
+Public Sub LCMS_TransformArbitraryMemory(ByVal srcPointer As Long, ByVal dstPointer As Long, ByVal WidthInPixels As Long, ByVal hTransform As Long)
+    cmsDoTransform hTransform, srcPointer, dstPointer, WidthInPixels
+End Sub
 
 'Given a target DIB with a valid .ICCProfile object, apply said profile to said DIB.
 ' (NOTE!  If the source image is 32-bpp, with premultiplied alpha, you need to unpremultiply alpha prior to
@@ -469,4 +526,10 @@ Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB) As Boolean
         #End If
     End If
     
+End Function
+
+Private Function cmsErrorHandler(ByVal ContextID As Long, ByVal cmsError As Long, ByVal ptrToText As Long) As Long
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  LittleCMS returned the following error: #" & cmsError
+    #End If
 End Function

@@ -31,6 +31,19 @@ Option Explicit
 'Once an LCMS transformation has been successfully created, this value will be non-zero
 Private m_TransformHandle As Long
 
+Public Function ApplyTransformToArbitraryMemory(ByVal srcPointer As Long, ByVal dstPointer As Long, ByVal srcScanlineWidth As Long, ByVal dstScanlineWidth As Long, ByVal numScanlines As Long, ByVal scanlineWidthPixels As Long) As Boolean
+    If (m_TransformHandle <> 0) Then
+        
+        Dim i As Long
+        For i = 0 To numScanlines - 1
+            LittleCMS.LCMS_TransformArbitraryMemory srcPointer + i * srcScanlineWidth, dstPointer + i * dstScanlineWidth, scanlineWidthPixels, m_TransformHandle
+        Next i
+        
+        ApplyTransformToArbitraryMemory = True
+        
+    End If
+End Function
+
 Friend Function ApplyTransformToPDDib(ByRef targetDIB As pdDIB) As Boolean
     If (Not (targetDIB Is Nothing)) And (m_TransformHandle <> 0) Then
         ApplyTransformToPDDib = LittleCMS.LCMS_ApplyTransformToDIB(targetDIB, m_TransformHandle)

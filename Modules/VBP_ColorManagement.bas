@@ -256,15 +256,9 @@ Public Function GetDefaultICCProfilePath() As String
     If GetICMProfile(GetDC(0), filenameLength, StrPtr(tmpPathString)) = 0 Then
         GetDefaultICCProfilePath = ""
     Else
-        
         Dim cUnicode As pdUnicode
         Set cUnicode = New pdUnicode
         GetDefaultICCProfilePath = cUnicode.TrimNull(tmpPathString)
-        
-        Debug.Print "******"
-        Debug.Print GetDefaultICCProfilePath
-        Debug.Print "******"
-        
     End If
     
 End Function
