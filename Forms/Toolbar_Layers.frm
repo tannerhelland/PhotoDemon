@@ -8,6 +8,7 @@ Begin VB.Form toolbar_Layers
    ClientLeft      =   0
    ClientTop       =   -75
    ClientWidth     =   3735
+   ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent
    FillStyle       =   0  'Solid
    BeginProperty Font 
@@ -292,13 +293,17 @@ Private Sub ReflowInterface()
         'If the title bar state is TRUE, open its corresponding panel.
         If ttlPanel(i).Value Then
             
-            'Move the panel into position.  For all panels except the layers panel, height is hard-coded at design-time.
-            If i < m_numOfPanels - 1 Then
-                picContainer(i).Move xOffset * 2, yOffset, xWidth - xOffset, m_defaultPanelHeight(i)
-                
-            'The layers panel is unique, because it shrinks to fit all available space.
-            Else
-                picContainer(i).Move xOffset * 2, yOffset, xWidth - xOffset, Me.ScaleHeight - yOffset
+            If Me.Visible Then
+            
+                'Move the panel into position.  For all panels except the layers panel, height is hard-coded at design-time.
+                If i < (m_numOfPanels - 1) Then
+                    picContainer(i).Move xOffset * 2, yOffset, xWidth - xOffset, m_defaultPanelHeight(i)
+                    
+                'The layers panel is unique, because it shrinks to fit all available space.
+                Else
+                    picContainer(i).Move xOffset * 2, yOffset, xWidth - xOffset, Me.ScaleHeight - yOffset
+                End If
+            
             End If
             
             'Show the panel, and add its height to the running offset calculation

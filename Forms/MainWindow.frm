@@ -1759,7 +1759,7 @@ End Sub
 Public Sub UpdateMainLayout()
 
     'If the main form has been minimized, don't refresh anything
-    If FormMain.WindowState = vbMinimized Then Exit Sub
+    If (FormMain.WindowState = vbMinimized) Then Exit Sub
     
     'As of 7.0, a new, lightweight toolbox manager can calculate idealized window positions for us.
     Dim mainRect As winRect, canvasRect As winRect
@@ -1776,6 +1776,9 @@ Public Sub UpdateMainLayout()
     With canvasRect
         FormMain.mainCanvas(0).SetPositionAndSize .x1, .y1, .x2 - .x1, .y2 - .y1
     End With
+    
+    'If all three toolboxes are hidden, Windows may try to hide the main window as well.  Reset focus manually.
+    If Toolboxes.AreAllToolboxesHidden Then g_WindowManager.SetFocusAPI FormMain.hWnd
     
 End Sub
 
@@ -2248,7 +2251,7 @@ Private Sub MnuWindowToolbox_Click(Index As Integer)
         
         'Changes to button size (small, normal, large)
         Case 4, 5, 6
-            toolbar_Toolbox.updateButtonSize Index - 4
+            toolbar_Toolbox.UpdateButtonSize Index - 4
             
     End Select
     

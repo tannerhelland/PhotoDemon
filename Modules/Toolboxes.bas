@@ -101,6 +101,19 @@ Public Function GetToolboxVisibilityPreference(ByVal toolID As PD_Toolbox) As Bo
     GetToolboxVisibilityPreference = m_Toolboxes(toolID).IsVisiblePreference
 End Function
 
+Public Function GetToolboxVisibility(ByVal toolID As PD_Toolbox) As Boolean
+    GetToolboxVisibility = m_Toolboxes(toolID).IsVisibleNow
+End Function
+
+Public Function AreAllToolboxesHidden() As Boolean
+    Dim atLeastOneBoxVisible As Boolean: atLeastOneBoxVisible = False
+    Dim i As PD_Toolbox
+    For i = [_First] To [_Last]
+        atLeastOneBoxVisible = atLeastOneBoxVisible Or Toolboxes.GetToolboxVisibility(i)
+    Next i
+    AreAllToolboxesHidden = (Not atLeastOneBoxVisible)
+End Function
+
 'All hard-coded toolbox values should be handled in this sub - NOWHERE else!  (Otherwise, code maintenance becomes very unpleasant.)
 Private Sub FillDefaultToolboxValues()
     
@@ -148,9 +161,8 @@ End Function
 Public Sub CalculateNewToolboxRects(ByRef mainFormClientRect As winRect, ByRef dstCanvasRect As winRect)
 
     'It sounds weird, but we actually calculate the bottom toolbox's rect first, since it gets positioning preference.
-    With m_Toolboxes(PDT_BottomToolbox)
-        If .IsVisibleNow Then
-        
+    If m_Toolboxes(PDT_BottomToolbox).IsVisibleNow Then
+        With m_Toolboxes(PDT_BottomToolbox)
             .toolRect.x1 = mainFormClientRect.x1
             .toolRect.x2 = mainFormClientRect.x2
             .toolRect.y2 = mainFormClientRect.y2
@@ -158,31 +170,30 @@ Public Sub CalculateNewToolboxRects(ByRef mainFormClientRect As winRect, ByRef d
             
             'As each toolbar is positioned, we update the client rect we received to reflect the new positions.
             mainFormClientRect.y2 = .toolRect.y1
-            
-        End If
-    End With
+        End With
+    End If
     
     'Left and right toolboxes use basically identical code, and their size algorithms should be self-explanatory.  The key thing
     ' to remember is that the *bottom* of these toolbars is determined by the *top* of the bottom toolbar.
-    With m_Toolboxes(PDT_LeftToolbox)
-        If .IsVisibleNow Then
+    If m_Toolboxes(PDT_LeftToolbox).IsVisibleNow Then
+        With m_Toolboxes(PDT_LeftToolbox)
             .toolRect.x1 = mainFormClientRect.x1
             .toolRect.x2 = .toolRect.x1 + .ConstrainingSize
             .toolRect.y1 = mainFormClientRect.y1
             .toolRect.y2 = mainFormClientRect.y2
             mainFormClientRect.x1 = .toolRect.x2
-        End If
-    End With
+        End With
+    End If
     
-    With m_Toolboxes(PDT_RightToolbox)
-        If .IsVisibleNow Then
+    If m_Toolboxes(PDT_RightToolbox).IsVisibleNow Then
+        With m_Toolboxes(PDT_RightToolbox)
             .toolRect.x1 = mainFormClientRect.x2 - .ConstrainingSize
             .toolRect.x2 = mainFormClientRect.x2
             .toolRect.y1 = mainFormClientRect.y1
             .toolRect.y2 = mainFormClientRect.y2
             mainFormClientRect.x2 = .toolRect.x1
-        End If
-    End With
+        End With
+    End If
     
     'Add 1-pixel's worth of padding to all affected sides of the canvas rect (e.g. the top can stay where it is,
     ' as there is no neighboring toolbox).
@@ -230,8 +241,8 @@ End Sub
 ' This function will return the actual size used, which may be different if the passed size is too large or too small.
 Public Function SetConstrainingSize(ByVal toolID As PD_Toolbox, ByVal newSize As Long) As Long
     With m_Toolboxes(toolID)
-        If newSize < .MinSize Then newSize = .MinSize
-        If newSize > .MaxSize Then newSize = .MaxSize
+        If (newSize < .MinSize) Then newSize = .MinSize
+        If (newSize > .MaxSize) Then newSize = .MaxSize
         .ConstrainingSize = newSize
         SetConstrainingSize = newSize
     End With
@@ -271,25 +282,22 @@ Public Sub ToggleToolboxVisibility(ByVal whichToolbar As PD_Toolbox, Optional By
     Select Case whichToolbar
     
         Case PDT_LeftToolbox
-            FormMain.MnuWindowToolbox(0).Checked = Not FormMain.MnuWindowToolbox(0).Checked
-            SetToolboxVisibilityPreference PDT_LeftToolbox, FormMain.MnuWindowToolbox(0).Checked
+            FormMain.MnuWindowToolbox(0).Checked = CBool(Not m_Toolboxes(whichToolbar).IsVisiblePreference)
+            SetToolboxVisibilityPreference whichToolbar, CBool(Not m_Toolboxes(whichToolbar).IsVisiblePreference)
             
         Case PDT_BottomToolbox
-            FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
-            SetToolboxVisibilityPreference PDT_BottomToolbox, FormMain.MnuWindowToolbox(1).Checked
+            FormMain.MnuWindow(1).Checked = CBool(Not m_Toolboxes(whichToolbar).IsVisiblePreference)
+            SetToolboxVisibilityPreference PDT_BottomToolbox, CBool(Not m_Toolboxes(whichToolbar).IsVisiblePreference)
             
             'Because this toolbox's visibility is also tied to the current tool, we wrap a different function.  This function
             ' will show/hide the toolbox as necessary.
             toolbar_Toolbox.ResetToolButtonStates
             
         Case PDT_RightToolbox
-            FormMain.MnuWindow(2).Checked = Not FormMain.MnuWindow(2).Checked
-            SetToolboxVisibilityPreference PDT_RightToolbox, FormMain.MnuWindowToolbox(2).Checked
+            FormMain.MnuWindow(2).Checked = CBool(Not m_Toolboxes(whichToolbar).IsVisiblePreference)
+            SetToolboxVisibilityPreference PDT_RightToolbox, CBool(Not m_Toolboxes(whichToolbar).IsVisiblePreference)
             
     End Select
-    
-    'NEW SYSTEM: the below line can stay, but we need to remove the "loaded images" check.  Even if no images are loaded,
-    ' we need to reset the canvas area.
     
     'Redraw the primary image viewport, as the available client area may have changed.
     If (Not suppressRedraws) Then FormMain.UpdateMainLayout

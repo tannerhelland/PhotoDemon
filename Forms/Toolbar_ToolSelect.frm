@@ -616,7 +616,7 @@ Private Sub ReflowToolboxLayout()
     
     'If category labels are displayed, make them visible now
     For i = 0 To ttlCategories.UBound
-        If ttlCategories(i).Visible <> m_ShowCategoryLabels Then ttlCategories(i).Visible = m_ShowCategoryLabels
+        ttlCategories(i).Visible = m_ShowCategoryLabels
     Next i
     
     'File group.  We position this label manually, and it serves as the reference for all subsequent labels.
@@ -651,7 +651,7 @@ Private Sub ReflowToolboxLayout()
     ReflowButtonSet 5, True, PAINT_BASICBRUSH, PAINT_BASICBRUSH, hOffset, vOffset
         
     'Macro recording message
-    If vOffset < cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height Then
+    If (vOffset < cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height) Then
         vOffset = cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height + m_buttonMarginBottom
     End If
     
@@ -983,9 +983,9 @@ End Sub
 ' stream of buttons.  When enabled, buttons are sorted by category.
 Public Sub ToggleToolCategoryLabels()
     
-    FormMain.MnuWindowToolbox(2).Checked = Not FormMain.MnuWindowToolbox(2).Checked
-    g_UserPreferences.SetPref_Boolean "Core", "Show Toolbox Category Labels", CBool(FormMain.MnuWindowToolbox(2).Checked)
-    m_ShowCategoryLabels = CBool(FormMain.MnuWindowToolbox(2).Checked)
+    m_ShowCategoryLabels = CBool(Not m_ShowCategoryLabels)
+    FormMain.MnuWindowToolbox(2).Checked = m_ShowCategoryLabels
+    g_UserPreferences.SetPref_Boolean "Core", "Show Toolbox Category Labels", m_ShowCategoryLabels
     
     'Reflow the interface
     ReflowToolboxLayout
@@ -993,7 +993,7 @@ Public Sub ToggleToolCategoryLabels()
 End Sub
 
 'Used to change the display size of toolbox buttons.  newSize is expected on the range [0, 2] for small, medium, large
-Public Sub updateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw As Boolean = False)
+Public Sub UpdateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw As Boolean = False)
     
     'Export the updated size to file
     If Not suppressRedraw Then g_UserPreferences.SetPref_Long "Core", "Toolbox Button Size", newSize
