@@ -1253,7 +1253,31 @@ Private Sub chkAnonymizeMetadata_Click()
 End Sub
 
 Private Sub cmdBarMini_OKClick()
-
+    
+    'Start by auto-validating any controls that accept user input
+    Dim validateCheck As Boolean
+    validateCheck = True
+    
+    Dim eControl As Object
+    For Each eControl In FormPreferences.Controls
+        
+        'Obviously, we can only validate our own custom objects that have built-in auto-validate functions.
+        If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSpinner) Or (TypeOf eControl Is pdResize) Then
+            
+            'Finally, ask the control to validate itself
+            If (Not eControl.IsValid) Then
+                validateCheck = False
+                Exit For
+            End If
+            
+        End If
+    Next eControl
+    
+    If (Not validateCheck) Then
+        cmdBarMini.DoNotUnloadForm
+        Exit Sub
+    End If
+    
     Message "Saving preferences..."
     Me.Visible = False
     
@@ -1490,7 +1514,7 @@ Private Sub cmdBarMini_OKClick()
     FormMain.Enabled = True
     
     Message "Preferences updated."
-    
+        
 End Sub
 
 'Allow the user to select a new color profile for the attached monitor.  Because this text box is re-used for multiple
