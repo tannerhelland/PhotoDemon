@@ -409,7 +409,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         
         'Before doing anything else, look for a valid ICC profile
         If (FreeImage_HasICCProfile(fi_hDIB) And dstDIB.ICCProfile.HasICCData) Then
-                    
+            
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "HDR image identified.  ICC profile is present; attempting to convert now..."
             #End If
@@ -420,6 +420,8 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
                 FreeImage_Unload fi_hDIB
                 fi_hDIB = new_hDIB
                 fi_BPP = FreeImage_GetBPP(fi_hDIB)
+                
+                '64-bpp CMYK images will have already been processed by this point, so reset the CMYK tracker manually
                 isCMYK = False
             End If
         
@@ -483,6 +485,50 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             
         End If
     
+    End If
+    
+    
+    '****************************************************************************
+    ' Perform a special check for CMYK images.  These are reported as 32-bpp, and they require additional handling.
+    '****************************************************************************
+    
+    isCMYK = (FreeImage_GetColorType(fi_hDIB) = FIC_CMYK) And (Not dstDIB.ICCProfile.HasProfileBeenApplied)
+    If isCMYK Then
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "32-bpp CMYK image detected.  Preparing transform into RGB space..."
+        #End If
+        
+        'Proper CMYK conversions require an ICC profile.  If an ICC profile is missing, this image is pointless, but we'll try to
+        ' load it anyway.
+        Dim cmykConversionSuccessful As Boolean
+        If dstDIB.ICCProfile.HasICCData Then
+        
+            new_hDIB = ConvertCMYKFiDIBToRGB(fi_hDIB, dstDIB)
+            If (new_hDIB <> 0) Then
+                FreeImage_Unload fi_hDIB
+                fi_hDIB = new_hDIB
+                fi_BPP = FreeImage_GetBPP(fi_hDIB)
+                cmykConversionSuccessful = True
+            End If
+        
+        End If
+        
+        'If CMYK conversion failed, re-load the image and use FreeImage to apply the CMYK -> RGB transform.
+        If (Not cmykConversionSuccessful) Then
+        
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion..."
+            #End If
+        
+            FreeImage_Unload fi_hDIB
+            fi_hDIB = FreeImage_LoadUInt(fileFIF, StrPtr(srcFilename), FILO_JPEG_ACCURATE Or FILO_JPEG_EXIFROTATE)
+            fi_BPP = FreeImage_GetBPP(fi_hDIB)
+        
+        End If
+        
+        isCMYK = False
+        
     End If
     
     
@@ -650,60 +696,6 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     
     '****************************************************************************
-    ' Perform a special check for CMYK images.  They require additional handling.
-    '****************************************************************************
-    
-    If isCMYK Then
-    
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "CMYK image detected.  Preparing transform into RGB space..."
-        #End If
-        
-        'Copy the CMYK data into a 32bpp DIB.  (Note that we could pass the FreeImage DIB copy directly into the function, but the resulting
-        ' image would be top-down instead of bottom-up.  It's easier to just use our own PD-specific DIB object.)
-        Dim tmpCMYKDIB As pdDIB
-        Set tmpCMYKDIB = New pdDIB
-        tmpCMYKDIB.CreateBlank FreeImage_GetWidth(fi_hDIB), FreeImage_GetHeight(fi_hDIB), 32
-        SetDIBitsToDevice tmpCMYKDIB.GetDIBDC, 0, 0, tmpCMYKDIB.GetDIBWidth, tmpCMYKDIB.GetDIBHeight, 0, 0, 0, tmpCMYKDIB.GetDIBHeight, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
-        
-        'Prepare a blank 24bpp DIB to receive the transformed sRGB data
-        Dim tmpRGBDIB As pdDIB
-        Set tmpRGBDIB = New pdDIB
-        tmpRGBDIB.CreateBlank tmpCMYKDIB.GetDIBWidth, tmpCMYKDIB.GetDIBHeight, 24
-        
-        'Apply the transformation using the dedicated CMYK transform handler
-        If ColorManagement.ApplyCMYKTransform_WindowsCMS(dstDIB.ICCProfile.GetICCDataPointer, dstDIB.ICCProfile.GetICCDataSize, tmpCMYKDIB, tmpRGBDIB, dstDIB.ICCProfile.GetSourceRenderIntent) Then
-        
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Copying newly transformed sRGB data..."
-            #End If
-        
-            'The transform was successful.  Copy the new sRGB data back into the FreeImage object, so the load process can continue.
-            FreeImage_Unload fi_hDIB
-            fi_hDIB = FreeImage_CreateFromDC(tmpRGBDIB.GetDIBDC)
-            fi_BPP = FreeImage_GetBPP(fi_hDIB)
-            dstDIB.ICCProfile.MarkSuccessfulProfileApplication
-            
-        'Something went horribly wrong.  Re-load the image and use FreeImage to apply the CMYK -> RGB transform.
-        Else
-        
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion..."
-            #End If
-        
-            FreeImage_Unload fi_hDIB
-            fi_hDIB = FreeImage_LoadUInt(fileFIF, StrPtr(srcFilename), FILO_JPEG_ACCURATE Or FILO_JPEG_EXIFROTATE)
-            fi_BPP = FreeImage_GetBPP(fi_hDIB)
-        
-        End If
-        
-        Set tmpCMYKDIB = Nothing
-        Set tmpRGBDIB = Nothing
-    
-    End If
-    
-    
-    '****************************************************************************
     ' PD's new rendering engine requires pre-multiplied alpha values.  Apply premultiplication now - but ONLY if
     ' the image did not come from the clipboard.  (Clipboard images requires special treatment.)
     '****************************************************************************
@@ -784,7 +776,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     End If
     
     'Make sure the blank DIB creation worked
-    If Not creationSuccess Then
+    If (Not creationSuccess) Then
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "Import via FreeImage failed (couldn't create DIB)."
@@ -866,7 +858,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
 FreeImageV4_AdvancedError:
 
     'Release the FreeImage DIB if available
-    If fi_hDIB <> 0 Then FreeImage_UnloadEx fi_hDIB
+    If (fi_hDIB <> 0) Then FreeImage_UnloadEx fi_hDIB
     
     'Display a relevant error message
     If showMessages Then Message "Import via FreeImage failed (Err # %1)", Err.Number
@@ -1111,7 +1103,7 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef srcD
                     
                 Else
                     #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDIB failed to create a valid transformation handle!"
+                        pdDebug.LogAction "WARNING!  Plugin_FreeImage.GenerateICCCorrectedFIDIB failed to create a valid transformation handle!"
                     #End If
                 End If
             
@@ -1122,18 +1114,110 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef srcD
         
         Else
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDib failed to create a valid destination profile handle."
+                pdDebug.LogAction "WARNING!  Plugin_FreeImage.GenerateICCCorrectedFIDIB failed to create a valid destination profile handle."
             #End If
         End If
     
     Else
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  LittleCMS.ApplyICCProfileToPDDib failed to create a valid source profile handle."
+            pdDebug.LogAction "WARNING!  Plugin_FreeImage.GenerateICCCorrectedFIDIB failed to create a valid source profile handle."
         #End If
     End If
     
     'If the transformation failed, free our temporarily allocated FreeImage DIB
     If (GenerateICCCorrectedFIDIB = 0) And (newFIDib <> 0) Then FreeImage_Unload newFIDib
+
+End Function
+
+'Given a source FreeImage handle in CMYK format, and a destination pdDIB that contains a valid ICC profile, create a new, ICC-corrected
+' version of the source FI DIB in RGB format.
+'
+'IMPORTANT NOTE: the source handle *will not be freed*, even if the transformation is successful.  The caller must do this manually.
+Private Function ConvertCMYKFiDIBToRGB(ByVal srcFIHandle As Long, ByRef srcDIB As pdDIB) As Long
+    
+    'As a failsafe, confirm that the incoming image is CMYK format
+    If (FreeImage_GetColorType(srcFIHandle) = FIC_CMYK) And (FreeImage_GetBPP(srcFIHandle) = 32) Then
+    
+        'Allocate a destination FI DIB object in default BGR order
+        Dim newFIDib As Long
+        newFIDib = FreeImage_Allocate(FreeImage_GetWidth(srcFIHandle), FreeImage_GetHeight(srcFIHandle), 24)
+        
+        'We now want to use LittleCMS to perform an immediate ICC correction.
+        
+        'Start by creating two LCMS profile handles:
+        ' 1) a source profile (the in-memory copy of the ICC profile associated with this DIB)
+        ' 2) a destination profile (the current PhotoDemon working space)
+        Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile
+        Set srcProfile = New pdLCMSProfile
+        Set dstProfile = New pdLCMSProfile
+        
+        If srcProfile.CreateFromPDDib(srcDIB) Then
+            
+            If dstProfile.CreateSRGBProfile Then
+                
+                'DISCLAIMER! Until rendering intent has a dedicated preference, PD defaults to perceptual render intent.
+                ' This provides better results on most images, it correctly preserves gamut, and it is the standard
+                ' behavior for PostScript workflows.  See http://fieryforums.efi.com/showthread.php/835-Rendering-Intent-Control-for-Embedded-Profiles
+                ' Also see: https://developer.mozilla.org/en-US/docs/ICC_color_correction_in_Firefox)
+                '
+                'For future reference, I've left the code below for retrieving rendering intent from the source profile
+                Dim targetRenderingIntent As LCMS_RENDERING_INTENT
+                targetRenderingIntent = INTENT_PERCEPTUAL
+                'targetRenderingIntent = srcProfile.GetRenderingIntent
+                
+                'Now, we need to create a transform between the two bit-depths.  This involves mapping the FreeImage bit-depth constants
+                ' to compatible LCMS ones.
+                Dim srcPixelFormat As LCMS_PIXEL_FORMAT, dstPixelFormat As LCMS_PIXEL_FORMAT
+                srcPixelFormat = TYPE_CMYK_8
+                dstPixelFormat = TYPE_BGR_8
+                
+                'Create a transform that uses the target DIB as both the source and destination
+                Dim cTransform As pdLCMSTransform
+                Set cTransform = New pdLCMSTransform
+                If cTransform.CreateTwoProfileTransform(srcProfile, dstProfile, srcPixelFormat, dstPixelFormat, targetRenderingIntent) Then
+                    
+                    'LittleCMS 2.0 allows us to free our source profiles immediately after a transform is created.
+                    ' (Note that we don't *need* to do this, nor does this code leak if we don't manually free both
+                    '  profiles, but as we're about to do an energy- and memory-intensive operation, it doesn't
+                    '  hurt to free the profiles now.)
+                    Set srcProfile = Nothing: Set dstProfile = Nothing
+                    
+                    If cTransform.ApplyTransformToArbitraryMemory(FreeImage_GetScanline(srcFIHandle, 0), FreeImage_GetScanline(newFIDib, 0), FreeImage_GetPitch(srcFIHandle), FreeImage_GetPitch(newFIDib), FreeImage_GetHeight(srcFIHandle), FreeImage_GetWidth(srcFIHandle)) Then
+                    
+                        #If DEBUGMODE = 1 Then
+                            pdDebug.LogAction "ICC profile transformation successful.  New FreeImage handle now lives in the current RGB working space."
+                        #End If
+                        
+                        srcDIB.ICCProfile.MarkSuccessfulProfileApplication
+                        ConvertCMYKFiDIBToRGB = newFIDib
+                        
+                    End If
+                
+                'Note that we could free the transform here, but it's unnecessary.  (The pdLCMSTransform class
+                ' is self-freeing upon destruction.)
+                
+                Else
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "WARNING!  Plugin_FreeImage.ConvertCMYKFiDIBToRGB failed to create a valid transformation handle!"
+                    #End If
+                End If
+                
+            Else
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING!  Plugin_FreeImage.ConvertCMYKFiDIBToRGB failed to create a valid destination profile handle."
+                #End If
+            End If
+        
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  Plugin_FreeImage.ConvertCMYKFiDIBToRGB failed to create a valid source profile handle."
+            #End If
+        End If
+        
+        'If the transformation failed, free our temporarily allocated FreeImage DIB
+        If (ConvertCMYKFiDIBToRGB = 0) And (newFIDib <> 0) Then FreeImage_Unload newFIDib
+        
+    End If
 
 End Function
 
