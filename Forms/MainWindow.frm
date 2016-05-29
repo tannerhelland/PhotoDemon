@@ -2902,7 +2902,7 @@ Private Sub Form_Unload(Cancel As Integer)
     Set g_Clipboard = Nothing
     
     'Most core plugins are released as a final step, but ExifTool only matters when images are loaded, and we know
-    ' no images are loaded by this point.  Because it also takes a moment to shut down, trigger it first.
+    ' no images are loaded by this point.  Because it takes some time to shut down, trigger it prematurely.
     If g_ExifToolEnabled Then
         ExifTool.TerminateExifTool
         #If DEBUGMODE = 1 Then
@@ -2963,12 +2963,11 @@ Private Sub Form_Unload(Cancel As Integer)
     
     ReleaseWin7Features
     
-    'Tool panels are forms that we manually embed inside other forms
+    'Tool panels are forms that we manually embed inside other forms.  Manually unload them now.
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Unloading tool panels..."
     #End If
-        
-    'Manually unload all tool panels
+    
     g_WindowManager.DeactivateToolPanel True, toolpanel_MoveSize.hWnd
     Unload toolpanel_MoveSize
     Set toolpanel_MoveSize = Nothing

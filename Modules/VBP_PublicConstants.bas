@@ -71,9 +71,7 @@ Public Const DOUBLE_MAX As Double = 1.79769313486231E+308
 'Maximum width (in pixels) for custom-built tooltips
 Public Const PD_MAX_TOOLTIP_WIDTH As Long = 400
 
-'Constants used for pulling up an API browse-for-folder box
-Public Const BIF_RETURNONLYFSDIRS = 1
-Public Const BFFM_INITIALIZED = 1
+'Standard API constants
 Public Const MAX_PATH_LEN = 260
 
 'When a UC with an image is hovered, we typically reflect this via some kind of "glow" state.  This constant controls

@@ -1991,11 +1991,9 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     
     End If
     
-    'From this point onward, we're only going to be finalizing UI updates.  Some of these udpates will not trigger
+    'From this point onward, we're only going to be finalizing UI updates.  Some of these updates will not trigger
     ' if the central processor is active (by design, to avoid excessive redraws), so to ensure that they trigger *now*,
     ' we mark the processor as "idle".
-    
-    'Mark the processor as ready
     m_Processing = False
     
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
