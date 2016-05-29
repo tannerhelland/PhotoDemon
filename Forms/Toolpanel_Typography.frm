@@ -1844,7 +1844,7 @@ End Sub
 ' some type (e.g. basic text), an option will be displayed to convert the layer.
 Public Sub UpdateAgainstCurrentLayer()
     
-    If g_OpenImageCount > 0 Then
+    If (g_OpenImageCount > 0) Then
     
         If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then
         

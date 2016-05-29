@@ -293,17 +293,15 @@ Private Sub ReflowInterface()
         'If the title bar state is TRUE, open its corresponding panel.
         If ttlPanel(i).Value Then
             
-            If Me.Visible Then
-            
-                'Move the panel into position.  For all panels except the layers panel, height is hard-coded at design-time.
+            'Move the panel into position.  For all panels except the layers panel, height is hard-coded at design-time.
+            If (xWidth - xOffset > 0) Then
                 If i < (m_numOfPanels - 1) Then
                     picContainer(i).Move xOffset * 2, yOffset, xWidth - xOffset, m_defaultPanelHeight(i)
                     
                 'The layers panel is unique, because it shrinks to fit all available space.
                 Else
-                    picContainer(i).Move xOffset * 2, yOffset, xWidth - xOffset, Me.ScaleHeight - yOffset
+                    If (Me.ScaleHeight - yOffset > 0) Then picContainer(i).Move xOffset * 2, yOffset, xWidth - xOffset, Me.ScaleHeight - yOffset
                 End If
-            
             End If
             
             'Show the panel, and add its height to the running offset calculation

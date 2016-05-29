@@ -56,6 +56,10 @@ Private m_ProcessingTime As Double
 ' Tracking nested states also helps us avoid repeating unnecessary synchronization tasks.
 Private m_NestedProcessingCount As Long
 
+'Most UI control functions will check this central processor prior to redrawing their contents.  This is a nice
+' optimization, as excessive redraws will be stacked into a single redraw after the processor finishes its work.
+Private m_AllowInterfaceOverrides As Boolean
+
 'Prior to initiating a (potentially) lengthy process, PD notes the window with keyboard input, then forcibly locks down input.
 ' After the action completes, keyboard focus is restored to its proper place.
 Private m_FocusHWnd As Long
@@ -407,7 +411,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     
     'If this action requires us to create an Undo entry, do so now.  (We can also use this identifier to initiate a few
     ' other, related actions.)
-    If createUndo <> UNDO_NOTHING Then
+    If (createUndo <> UNDO_NOTHING) Then
         
         'Temporarily disable drag-and-drop operations for the main form while external actions are processing
         g_AllowDragAndDrop = False
@@ -1987,6 +1991,13 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     
     End If
     
+    'From this point onward, we're only going to be finalizing UI updates.  Some of these udpates will not trigger
+    ' if the central processor is active (by design, to avoid excessive redraws), so to ensure that they trigger *now*,
+    ' we mark the processor as "idle".
+    
+    'Mark the processor as ready
+    m_Processing = False
+    
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo <> UNDO_NOTHING) Then
         
@@ -2001,18 +2012,21 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     ' sync is required.  Run some tests to see if we can skip this step.
     Else
         
-        'If a dialog was raised via PD's ShowDialog function, we may be able to skip a UI sync
-        If ShowDialog Then
-        
-            'If the raised dialog was canceled, skip a UI sync entirely
-            If Not (Interface.GetLastShowDialogResult = vbCancel) Then SyncInterfaceToCurrentImage
-        
-        'If no dialog was shown, a resync is required as we can't guarantee that the image state is unchanged
-        Else
-        
-            SyncInterfaceToCurrentImage
-        End If
+        If (MacroStatus <> MacroBATCH) Then
             
+            'If a dialog was raised via PD's ShowDialog function, we may be able to skip a UI sync
+            If ShowDialog Then
+            
+                'If the raised dialog was canceled, skip a UI sync entirely
+                If Not (Interface.GetLastShowDialogResult = vbCancel) Then SyncInterfaceToCurrentImage
+            
+            'If no dialog was shown, a resync is required as we can't guarantee that the image state is unchanged
+            Else
+                SyncInterfaceToCurrentImage
+            End If
+            
+        End If
+        
     End If
     
     'Unlock the main form
@@ -2031,9 +2045,6 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     'Every time this sub is exited, decrement the process counter.  When this value reaches zero, we know we are about to exit
     ' the outermost processor request.
     m_NestedProcessingCount = m_NestedProcessingCount - 1
-    
-    'Mark the processor as ready
-    m_Processing = False
     
     Exit Sub
 
