@@ -265,7 +265,7 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     WriteUndoDataToXML GenerateUndoHeaderFilename()
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    'debugUndo "new Undo entry created"
+    'DebugUndo "new Undo entry created"
     
 End Sub
 
@@ -359,7 +359,7 @@ Public Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
     If GetUndoTool > -1 Then toolbar_Toolbox.SelectNewTool GetUndoTool
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    'debugUndo "Undo pointer moved by request to a specific location"
+    'DebugUndo "Undo pointer moved by request to a specific location"
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
@@ -563,7 +563,7 @@ Public Sub RestoreUndoData()
     End If
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    'debugUndo "user clicked Undo"
+    'DebugUndo "user clicked Undo"
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
@@ -712,7 +712,7 @@ Public Sub RestoreRedoData()
     LoadUndo GenerateUndoFilename(undoNum - 1), GetUndoProcessType, GetUndoProcessType, undoStack(undoNum - 1).undoLayerID
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    'debugUndo "user clicked Redo"
+    'DebugUndo "user clicked Redo"
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.

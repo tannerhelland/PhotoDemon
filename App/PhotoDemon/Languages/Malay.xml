@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.180</langversion>
+<langversion>6.7.181</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -13989,6 +13989,71 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>Click here to reset all options</original>
+<translation>Klik di sini untuk menetapkan semula semua pilihan</translation>
+</phrase>
+
+<phrase>
+<original>hardware acceleration report</original>
+<translation>perkakasan laporan pecutan</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>penggunaan memori akan dipaparkan di sini</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>diagnostik memori</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>Fail sementara lokasi</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>mula semula</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(penafian penduduk di jangka masa)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>bahasa kemas kini fail secara bebas</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>secara automatik menyemak kemas kini</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>plugin kemas kini bebas</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>membolehkan kemas kini daripada trek ini</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>pilihan kemas kini</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>memberitahu saya apabila kemas kini bersedia</translation>
+</phrase>
+
+<phrase>
 <original>use high-resolution input tracking</original>
 <translation>menggunakan Penjejakan input resolusi tinggi</translation>
 </phrase>
@@ -14211,71 +14276,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>viewport</original>
 <translation>viewport</translation>
-</phrase>
-
-<phrase>
-<original>Click here to reset all options</original>
-<translation>Klik di sini untuk menetapkan semula semua pilihan</translation>
-</phrase>
-
-<phrase>
-<original>hardware acceleration report</original>
-<translation>perkakasan laporan pecutan</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>penggunaan memori akan dipaparkan di sini</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>diagnostik memori</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>Fail sementara lokasi</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>mula semula</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(penafian penduduk di jangka masa)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>bahasa kemas kini fail secara bebas</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>secara automatik menyemak kemas kini</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>plugin kemas kini bebas</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>membolehkan kemas kini daripada trek ini</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>pilihan kemas kini</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>memberitahu saya apabila kemas kini bersedia</translation>
 </phrase>
 
 <phrase>
@@ -14732,11 +14732,16 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 </phrase>
 
 <phrase>
-<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If no new folder is provided, PhotoDemon will use the system's default temp location.</original>
-<translation>AMARAN: folder ini adalah tidak sah (akses dilarang). Sila berikan folder yang sah. Jika tiada folder baru disediakan, PhotoDemon akan menggunakan lokasi temp lalai sistem.</translation>
+<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
+<translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 181 phrases. 32 were duplicates of existing phrases, so only 149 new phrases were written to file. -->
+<phrase>
+<original>This new temporary folder location will not take effect until you restart the program.</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_Options.frm contains 183 phrases. 33 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15158,12 +15163,24 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for pdLCMSTransform.cls-->
 
+<!-- BEGIN text for cUnicodeBrowseFolders.cls -->
+
+<!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
+
+<!-- END text for cUnicodeBrowseFolders.cls-->
+
+<!-- BEGIN text for IFileDialog.cls -->
+
+<!-- IFileDialog.cls contains 0 phrases. -->
+
+<!-- END text for IFileDialog.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2589</phrasecount>
+<phrasecount>2590</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4512 phrases. -->
-<!-- 1923 are duplicates, so only 2589 unique phrases have been written to file. -->
-<!-- These 2589 phrases contain approximately 13308 total words. -->
+<!-- As of this build, PhotoDemon contains 4514 phrases. -->
+<!-- 1924 are duplicates, so only 2590 unique phrases have been written to file. -->
+<!-- These 2590 phrases contain approximately 13323 total words. -->
 
 </pdData>

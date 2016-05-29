@@ -497,7 +497,7 @@ Public Sub ContinueLoadingProgram()
     
     'The primary toolbox has some options of its own.  Load them now.
     FormMain.MnuWindowToolbox(2).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
-    toolbar_Toolbox.updateButtonSize g_UserPreferences.GetPref_Long("Core", "Toolbox Button Size", 1), True
+    toolbar_Toolbox.UpdateButtonSize g_UserPreferences.GetPref_Long("Core", "Toolbox Button Size", 1), True
     
     
     
@@ -646,10 +646,8 @@ End Sub
 Public Sub FinalShutdown()
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "FinalShutdown() reached.  Forcibly unloading FormMain..."
+        pdDebug.LogAction "FinalShutdown() reached."
     #End If
-    
-    Set FormMain = Nothing
     
     g_IsProgramRunning = False
     
@@ -709,6 +707,9 @@ Public Sub FinalShutdown()
             pdDebug.LogAction "GDI+ released"
         #End If
     End If
+    
+    'NOTE: in the future, any final user-preference actions could be handled here, as g_UserPreferences is still alive.
+    Set g_UserPreferences = Nothing
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Everything we can physically unload has been forcibly unloaded.  Releasing final library reference..."

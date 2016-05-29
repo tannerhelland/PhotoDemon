@@ -3,8 +3,9 @@ Attribute VB_Name = "FileSystem"
 'Miscellaneous Functions Related to File and Folder Interactions
 'Copyright 2001-2016 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 02/February/15
-'Last update: add small helper functions for reading/writing arrays to file
+'Last updated: 28/May/16
+'Last update: update the BrowseForFolder function to use the new IFileDialog interfaces on Vista+.  Note that this
+'             introduces several new dependencies for this module.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -137,33 +138,70 @@ Public Function IncrementFilename(ByRef dstDirectory As String, ByRef fName As S
 
 End Function
 
-'Straight from MSDN - generate a "browse for folder" dialog
-Public Function BrowseForFolder(ByVal srcHwnd As Long) As String
+'Generate a "browse for folder" dialog.  Vista+ users get a fancy new interface; XP users get the shitty old interface.
+' Many thanks to vbForums user "LaVolpe", who wrote both the interfaces used here.  For implementation details and
+' links to the original, unmodified classes, please read the header comments in the referenced classes.
+Public Function BrowseForFolder(ByVal srcHwnd As Long, Optional ByVal initFolder As String = vbNullString, Optional ByVal dialogTitleText As String = vbNullString) As String
     
-    Dim objShell As Shell
-    Dim objFolder As Folder
-    Dim returnString As String
+    If (Len(dialogTitleText) = 0) Then dialogTitleText = g_Language.TranslateMessage("Please select a folder")
+    
+    Dim cSysInfo As pdSystemInfo
+    Set cSysInfo = New pdSystemInfo
+    
+    'Vista+ users get the fancy new "browse for folder" interface
+    If cSysInfo.IsOSVistaOrLater Then
+    
+        Dim cBrowseNew As cFileDialogVista
+        Set cBrowseNew = New cFileDialogVista
         
-    Set objShell = New Shell
-    Set objFolder = objShell.BrowseForFolder(srcHwnd, g_Language.TranslateMessage("Please select a folder:"), 0)
+        With cBrowseNew
+            .propFlags = FOS__BrowseFoldersDefaults
+            If (Len(initFolder) <> 0) Then .propStartupFolder_Set initFolder, ppType_AsString
             
-    If (Not objFolder Is Nothing) Then returnString = objFolder.Items.Item.Path Else returnString = ""
+            'For reasons I don't understand, a strange magic number is used to report cancellation; see the
+            ' function documentation for additional details.
+            If (.DialogShow(srcHwnd, FDLG_BROWSEFOLDERS, dialogTitleText) <> -2147023673) Then
+                BrowseForFolder = .IShellItem_GetDisplayName(ObjPtr(.ResultsItem(1)), SIGDN_FILESYSPATH, False)
+            Else
+                BrowseForFolder = vbNullString
+            End If
+        End With
+        
+    'XP users get the crappy old browse interface.
+    Else
+        
+        Dim cBrowse As cUnicodeBrowseFolders
+        Set cBrowse = New cUnicodeBrowseFolders
+        
+        With cBrowse
+        
+            If (Len(initFolder) <> 0) Then .InitialDirectory = initFolder
+            .DialogTitle = dialogTitleText
+            .Flags = BIF_RETURNONLYFSDIRS Or BIF_NEWDIALOGSTYLE
+                
+            If .ShowBrowseForFolder(srcHwnd) Then
+                BrowseForFolder = cBrowse.SelectedFolder
+            Else
+                BrowseForFolder = vbNullString
+            End If
+            
+        End With
+        
+    End If
     
-    Set objFolder = Nothing
-    Set objShell = Nothing
-    
-    BrowseForFolder = returnString
+    'PD folder functions enforce a trailing slash, to simplify subsequent concatenations
+    If (Len(BrowseForFolder) <> 0) Then
+        Dim cFSO As pdFSO
+        Set cFSO = New pdFSO
+        BrowseForFolder = cFSO.EnforcePathSlash(BrowseForFolder)
+    End If
     
 End Function
 
 'Open a string as a hyperlink in the user's default browser
 Public Sub OpenURL(ByVal targetURL As String)
-    
-    Dim targetAction As String
-    targetAction = "Open"
-    
+    Dim targetAction As String: targetAction = "Open"
     ShellExecute FormMain.hWnd, StrPtr(targetAction), StrPtr(targetURL), 0&, 0&, SW_SHOWNORMAL
-    
 End Sub
 
 'Execute another program (in PhotoDemon's case, a plugin), then wait for it to finish running.
