@@ -316,7 +316,7 @@ Private m_PreviousTooltip As String
 ' re-ordered, etc.)
 Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
     
-    If refreshThumbnailCache Then cacheLayerThumbnails
+    If refreshThumbnailCache Then CacheLayerThumbnails
     
     'Sync opacity, blend mode, and other controls to the currently active layer
     m_DisableRedraws = True
@@ -977,13 +977,13 @@ Private Sub Form_Load()
     End With
     
     'Load various interface images from the resource
-    initializeUIDib img_EyeOpen, "EYE_OPEN"
-    initializeUIDib img_EyeClosed, "EYE_CLOSE"
-    initializeUIDib img_Duplicate, "DUPL_LAYER"
-    initializeUIDib img_MergeUp, "MERGE_UP"
-    initializeUIDib img_MergeDown, "MERGE_DOWN"
-    initializeUIDib img_MergeUpDisabled, "MERGE_UP"
-    initializeUIDib img_MergeDownDisabled, "MERGE_DOWN"
+    InitializeUIDib img_EyeOpen, "EYE_OPEN"
+    InitializeUIDib img_EyeClosed, "EYE_CLOSE"
+    InitializeUIDib img_Duplicate, "DUPL_LAYER"
+    InitializeUIDib img_MergeUp, "MERGE_UP"
+    InitializeUIDib img_MergeDown, "MERGE_DOWN"
+    InitializeUIDib img_MergeUpDisabled, "MERGE_UP"
+    InitializeUIDib img_MergeDownDisabled, "MERGE_DOWN"
     
     'If a UI image can be disabled, make a grayscale copy of it in advance
     Filters_Layers.GrayscaleDIB img_MergeUpDisabled, True
@@ -1017,7 +1017,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 End Sub
 
 'Load a UI image from the resource section and into a DIB
-Private Sub initializeUIDib(ByRef dstDIB As pdDIB, ByRef resString As String)
+Private Sub InitializeUIDib(ByRef dstDIB As pdDIB, ByRef resString As String)
     
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
@@ -1058,13 +1058,13 @@ End Sub
 
 'Cache all current layer thumbnails.  This is required for things like the user switching to a new image, which requires
 ' us to wipe the current layer cache and start anew.
-Private Sub cacheLayerThumbnails()
+Private Sub CacheLayerThumbnails()
 
     'Do not attempt to cache thumbnails if there are no open images
     If (Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0) Then
     
         'Make sure the active image has at least one layer.  (This should always be true, but better safe than sorry.)
-        If pdImages(g_CurrentImage).GetNumOfLayers > 0 Then
+        If (pdImages(g_CurrentImage).GetNumOfLayers > 0) Then
     
             'Retrieve the number of layers in the current image and prepare the thumbnail cache
             numOfThumbnails = pdImages(g_CurrentImage).GetNumOfLayers
@@ -1095,13 +1095,13 @@ Private Sub cacheLayerThumbnails()
     End If
     
     'See if the vertical scroll bar needs to be displayed
-    updateLayerScrollbarVisibility
+    UpdateLayerScrollbarVisibility
                 
 End Sub
 
 'When an action occurs that potentially affects the visibility of the vertical scroll bar (such as resizing the form
 ' vertically, or adding a new layer to the image), call this function to update the scroll bar visibility as necessary.
-Private Sub updateLayerScrollbarVisibility()
+Private Sub UpdateLayerScrollbarVisibility()
 
     'Determine if the vertical scrollbar needs to be visible or not (because there are so many layers that they overflow the box)
     Dim maxLayerBoxSize As Long
@@ -1414,15 +1414,11 @@ Private Sub sltLayerOpacity_Change()
     ' to prevent cylical redraws.
     If m_DisableRedraws Then Exit Sub
 
-    If g_OpenImageCount > 0 Then
-    
-        If Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing Then
-        
+    If (g_OpenImageCount > 0) Then
+        If Not (pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
             pdImages(g_CurrentImage).GetActiveLayer.SetLayerOpacity sltLayerOpacity.Value
             Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-        
         End If
-    
     End If
 
 End Sub
@@ -1519,11 +1515,11 @@ Private Sub ReflowInterface()
     
     'Start by moving the button box to the bottom of the available area
     sizeCheck = Me.ScaleHeight - picLayerButtons.Height - FixDPI(7)
-    If sizeCheck > 0 Then picLayerButtons.Top = sizeCheck Else Exit Sub
+    If (sizeCheck > 0) Then picLayerButtons.Top = sizeCheck Else Exit Sub
     
     'Next, stretch the layer box to fill the available space
     sizeCheck = (picLayerButtons.Top - picLayers.Top) - FixDPI(7)
-    If sizeCheck > 0 Then picLayers.Height = (picLayerButtons.Top - picLayers.Top) - FixDPI(7) Else Exit Sub
+    If (sizeCheck > 0) Then picLayers.Height = sizeCheck Else Exit Sub
     
     'Make the toolbar the same height as the layer box
     vsLayer.SetHeight picLayers.Height
@@ -1542,7 +1538,7 @@ Private Sub ReflowInterface()
     
     'Resize the layer box and associated scrollbar
     vsLayer.SetLeft Me.ScaleWidth - vsLayer.GetWidth - FixDPI(7)
-    updateLayerScrollbarVisibility
+    UpdateLayerScrollbarVisibility
     
     'Reflow the bottom button box; this is inevitably more complicated, owing to the spacing requirements of the buttons
     picLayerButtons.Left = picLayers.Left

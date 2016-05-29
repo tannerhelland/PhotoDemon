@@ -257,7 +257,7 @@ Public Sub SyncInterfaceToCurrentImage()
             SetUIGroupState PDUI_Selections, False
             SetUIGroupState PDUI_SelectionTransforms, False
         End If
-            
+        
         'Finally, synchronize various tool settings.  I've optimized this so that only the settings relative to the current tool
         ' are updated; others will be modified if/when the active tool is changed.
         Tool_Support.SyncToolOptionsUIToCurrentLayer
@@ -421,7 +421,7 @@ Private Sub SyncUI_CurrentImageSettings()
     ChangeAppIcons pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
     
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
-    If pdImages(g_CurrentImage).Width <> 0 Then
+    If (pdImages(g_CurrentImage).Width <> 0) Then
         g_AllowViewportRendering = False
         FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = pdImages(g_CurrentImage).currentZoomValue
         g_AllowViewportRendering = True

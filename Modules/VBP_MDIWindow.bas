@@ -192,7 +192,7 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
     End If
     
     'If no images are open, take additional steps to free memory
-    If g_OpenImageCount = 0 Then
+    If (g_OpenImageCount = 0) Then
         
         'Unload the backbuffer of the primary canvas
         Viewport_Engine.eraseViewportBuffers

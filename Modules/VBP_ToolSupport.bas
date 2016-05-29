@@ -471,7 +471,7 @@ End Sub
 
 'Are on-canvas tools currently allowed?  This master function will evaluate all relevant program states for allowing on-canvas
 ' tool operations (e.g. "no open images", "main form locked").
-Public Function CanvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean = True) As Boolean
+Public Function CanvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean = True, Optional ByVal checkMainWindowEnabled As Boolean = True) As Boolean
 
     'Start with a few failsafe checks
     
@@ -479,7 +479,7 @@ Public Function CanvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean 
     If (g_OpenImageCount > 0) Then
     
         'Make sure the main form has not been disabled by a modal dialog
-        If FormMain.Enabled Then
+        If FormMain.Enabled Or (Not checkMainWindowEnabled) Then
             
             'Finally, make sure another process hasn't locked the active canvas.  Note that the caller can disable this behavior
             ' if they don't need it.
@@ -507,12 +507,12 @@ End Function
 Public Sub SyncToolOptionsUIToCurrentLayer()
     
     'Before doing anything else, make sure canvas tool operations are allowed
-    If Not CanvasToolsAllowed(False) Then
+    If (Not CanvasToolsAllowed(False, False)) Then
         
         'Some panels may redraw their contents if no images are loaded
-        If g_CurrentTool = VECTOR_TEXT Then
+        If (g_CurrentTool = VECTOR_TEXT) Then
             toolpanel_Text.UpdateAgainstCurrentLayer
-        ElseIf g_CurrentTool = VECTOR_FANCYTEXT Then
+        ElseIf (g_CurrentTool = VECTOR_FANCYTEXT) Then
             toolpanel_FancyText.UpdateAgainstCurrentLayer
         End If
         
