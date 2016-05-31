@@ -622,7 +622,7 @@ Private Declare Function GdipGetImageHorizontalResolution Lib "gdiplus" (ByVal h
 Private Declare Function GdipGetImageVerticalResolution Lib "gdiplus" (ByVal hImage As Long, ByRef vResolution As Single) As Long
 
 'OleCreatePictureIndirect is used to convert GDI+ images to VB's preferred StdPicture
-Private Declare Function OleCreatePictureIndirect Lib "olepro32" (lpPictDesc As PictDesc, riid As Any, ByVal fPictureOwnsHandle As Long, iPic As IPicture) As Long
+Private Declare Function OleCreatePictureIndirect Lib "olepro32" (lpPictDesc As PictDesc, rIID As Any, ByVal fPictureOwnsHandle As Long, iPic As IPicture) As Long
 
 'CLSIDFromString is used to convert a mimetype into a CLSID required by the GDI+ image encoder
 Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpszProgID As Long, ByRef pclsid As clsid) As Long
@@ -889,7 +889,7 @@ Private Sub GetGdipBitmapHandleFromDIB(ByRef tBitmap As Long, ByRef srcDIB As pd
     If srcDIB.GetDIBColorDepth = 32 Then
         
         'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
-        GdipCreateBitmapFromScan0 srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBWidth * 4, PixelFormat32bppPARGB, ByVal srcDIB.GetActualDIBBits, tBitmap
+        GdipCreateBitmapFromScan0 srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBWidth * 4, PixelFormat32bppPARGB, ByVal srcDIB.GetDIBPointer, tBitmap
         
     Else
     
@@ -902,7 +902,7 @@ Private Sub GetGdipBitmapHandleFromDIB(ByRef tBitmap As Long, ByRef srcDIB As pd
             .Width = srcDIB.GetDIBWidth
             .Height = -srcDIB.GetDIBHeight
         End With
-        GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.GetActualDIBBits, tBitmap
+        GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.GetDIBPointer, tBitmap
         
     End If
 
@@ -1799,7 +1799,7 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
         .Height = -srcDIB.GetDIBHeight
     End With
     
-    GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.GetActualDIBBits, srcBitmap
+    GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.GetDIBPointer, srcBitmap
     
     'Next, recreate the destination DIB as 32bpp
     dstDIB.CreateBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 32, , 255
@@ -1864,7 +1864,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     End If
     
     'Look for an ICC profile by asking GDI+ to return the ICC profile property's size
-    Dim profileSize As Long, hasProfile As Boolean
+    Dim profileSize As Long, HasProfile As Boolean
     
     'NOTE! the passed profileSize value must always be zeroed before using GdipGetPropertyItemSize, because the function will not update
     ' the variable's value if no tag is found.  Seems like an asinine oversight, but oh well.
@@ -1874,13 +1874,13 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     'If the returned size is > 0, this image contains an ICC profile!  Retrieve it now.
     If profileSize > 0 Then
     
-        hasProfile = True
+        HasProfile = True
     
         Dim iccProfileBuffer() As Byte
         ReDim iccProfileBuffer(0 To profileSize - 1) As Byte
         GdipGetPropertyItem hImage, PropertyTagICCProfile, profileSize, ByVal VarPtr(iccProfileBuffer(0))
         
-        dstDIB.ICCProfile.LoadICCFromGDIPlus profileSize - 16, VarPtr(iccProfileBuffer(0)) + 16
+        dstDIB.ICCProfile.LoadICCFromPtr profileSize - 16, VarPtr(iccProfileBuffer(0)) + 16
         
         Erase iccProfileBuffer
         
@@ -2083,7 +2083,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             .Height = imgHeight
             .PixelFormat = PixelFormat32bppPARGB
             .Stride = dstDIB.GetDIBArrayWidth
-            .Scan0 = dstDIB.GetActualDIBBits
+            .Scan0 = dstDIB.GetDIBPointer
         End With
         
         'Next, prepare a clipping rect
@@ -2102,7 +2102,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
         'CMYK is handled separately from regular RGB data, as we want to perform an ICC profile conversion as well.
         ' Note that if a CMYK profile is not present, we allow GDI+ to convert the image to RGB for us.
-        If (isCMYK And hasProfile) Then
+        If (isCMYK And HasProfile) Then
         
             'Create a blank 32bpp DIB, which will hold the CMYK data
             Dim tmpCMYKDIB As pdDIB
@@ -2115,7 +2115,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 .Height = imgHeight
                 .PixelFormat = PixelFormat32bppCMYK
                 .Stride = tmpCMYKDIB.GetDIBArrayWidth
-                .Scan0 = tmpCMYKDIB.GetActualDIBBits
+                .Scan0 = tmpCMYKDIB.GetDIBPointer
             End With
             
             'Next, prepare a clipping rect
@@ -2239,10 +2239,10 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     If tmpDIB.GetDIBColorDepth = 32 Then
         
         'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
-        GDIPlusReturn = GdipCreateBitmapFromScan0(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBWidth * 4, PixelFormat32bppARGB, ByVal tmpDIB.GetActualDIBBits, hImage)
+        GDIPlusReturn = GdipCreateBitmapFromScan0(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBWidth * 4, PixelFormat32bppARGB, ByVal tmpDIB.GetDIBPointer, hImage)
     
     Else
-        GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpDIB.GetActualDIBBits, hImage)
+        GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpDIB.GetDIBPointer, hImage)
     End If
     
     If (GDIPlusReturn <> 0) Then

@@ -206,10 +206,10 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetDIBPointer
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetDIBPointer
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
@@ -624,10 +624,10 @@ Private Sub ApplyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetDIBPointer
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetDIBPointer
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
@@ -756,10 +756,10 @@ Private Sub ApplyBlendMode_Difference(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetDIBPointer
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetDIBPointer
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
@@ -888,10 +888,10 @@ Private Sub ApplyBlendMode_Lighten(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetDIBPointer
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetDIBPointer
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
@@ -1020,10 +1020,10 @@ Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetDIBPointer
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetDIBPointer
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
@@ -1152,10 +1152,10 @@ Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetDIBPointer
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetDIBPointer
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
@@ -1287,10 +1287,10 @@ Private Sub ApplyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetDIBPointer
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetDIBPointer
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
@@ -1419,10 +1419,10 @@ Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetDIBPointer
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetDIBPointer
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
@@ -1551,10 +1551,10 @@ Private Sub ApplyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetDIBPointer
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetDIBPointer
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
@@ -1683,10 +1683,10 @@ Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetActualDIBBits
+    bottomScanlineSize = bottomDIB.GetDIBArrayWidth:  bottomDIBPointer = bottomDIB.GetDIBPointer
     
     Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetActualDIBBits
+    topScanlineSize = topDIB.GetDIBArrayWidth:  topDIBPointer = topDIB.GetDIBPointer
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
@@ -1801,7 +1801,7 @@ Private Sub PrepInternalSafeArray1D(ByRef dstSafeArray As SAFEARRAY1D, ByRef src
         .cDims = 1
         .lBound = 0
         .cElements = srcDIB.GetDIBArrayWidth
-        .pvData = srcDIB.GetActualDIBBits
+        .pvData = srcDIB.GetDIBPointer
     End With
     
 End Sub

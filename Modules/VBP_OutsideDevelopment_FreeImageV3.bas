@@ -194,7 +194,7 @@ End Type
 
 Private Declare Function OleCreatePictureIndirect Lib "oleaut32.dll" ( _
     ByRef lpPictDesc As PictDesc, _
-    ByRef riid As Guid, _
+    ByRef rIID As Guid, _
     ByVal fOwn As Long, _
     ByRef lplpvObj As IPicture) As Long
     
@@ -818,7 +818,7 @@ End Enum
 
 Public Enum FREE_IMAGE_TYPE
    FIT_UNKNOWN = 0           ' unknown type
-   FIT_Bitmap = 1            ' standard image           : 1-, 4-, 8-, 16-, 24-, 32-bit
+   FIT_BITMAP = 1            ' standard image           : 1-, 4-, 8-, 16-, 24-, 32-bit
    FIT_UINT16 = 2            ' array of unsigned short  : unsigned 16-bit
    FIT_INT16 = 3             ' array of short           : signed 16-bit
    FIT_UINT32 = 4            ' array of unsigned long   : unsigned 32-bit
@@ -833,7 +833,7 @@ Public Enum FREE_IMAGE_TYPE
 End Enum
 #If False Then
    Const FIT_UNKNOWN = 0
-   Const FIT_Bitmap = 1
+   Const FIT_BITMAP = 1
    Const FIT_UINT16 = 2
    Const FIT_INT16 = 3
    Const FIT_UINT32 = 4
@@ -1628,7 +1628,7 @@ Public Declare Function FreeImage_ColorQuantize Lib "FreeImage.dll" Alias "_Free
 Public Declare Function FreeImage_ColorQuantizeExInt Lib "FreeImage.dll" Alias "_FreeImage_ColorQuantizeEx@20" ( _
            ByVal Bitmap As Long, _
   Optional ByVal QuantizeMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT, _
-  Optional ByVal PaletteSize As Long = 256, _
+  Optional ByVal paletteSize As Long = 256, _
   Optional ByVal ReserveSize As Long = 0, _
   Optional ByVal ReservePalettePtr As Long = 0) As Long
 
@@ -3968,7 +3968,7 @@ End Function
 Public Function FreeImage_ColorQuantizeEx(ByVal Bitmap As Long, _
                                  Optional ByVal QuantizeMethod As FREE_IMAGE_QUANTIZE = FIQ_WUQUANT, _
                                  Optional ByVal UnloadSource As Boolean, _
-                                 Optional ByVal PaletteSize As Long = 256, _
+                                 Optional ByVal paletteSize As Long = 256, _
                                  Optional ByVal ReserveSize As Long, _
                                  Optional ByRef ReservePalette As Variant = Null) As Long
   
@@ -4022,15 +4022,15 @@ Dim lElementSize As Long
       End If
       
       ' adjust PaletteSize
-      If (PaletteSize < 2) Then
-         PaletteSize = 2
-      ElseIf (PaletteSize > 256) Then
-         PaletteSize = 256
+      If (paletteSize < 2) Then
+         paletteSize = 2
+      ElseIf (paletteSize > 256) Then
+         paletteSize = 256
       End If
       
       lpPalette = pGetMemoryBlockPtrFromVariant(ReservePalette, lBlockSize, lElementSize)
       FreeImage_ColorQuantizeEx = FreeImage_ColorQuantizeExInt(Bitmap, QuantizeMethod, _
-            PaletteSize, ReserveSize, lpPalette)
+            paletteSize, ReserveSize, lpPalette)
       
       If (UnloadSource) Then
          Call FreeImage_Unload(Bitmap)
@@ -5090,7 +5090,7 @@ Dim strExtension As String
       End If
       If (Format <> FIF_UNKNOWN) Then
          If ((FreeImage_FIFSupportsWriting(Format)) And _
-             (FreeImage_FIFSupportsExportType(Format, FIT_Bitmap))) Then
+             (FreeImage_FIFSupportsExportType(Format, FIT_BITMAP))) Then
             
             If (Not FreeImage_IsFilenameValidForFIF(Format, FileName)) Then
                'Edit by Tanner: don't prevent me from writing whatever file extensions I damn well please!  ;)

@@ -231,7 +231,7 @@ Public Sub ContinueLoadingProgram()
     
     'While here, also initialize the image format handler (as plugins and other load functions interact with it)
     Set g_ImageFormats = New pdFormats
-    
+    ImageImporter.ResetImageImportPreferenceCache
     
     
     '*************************************************************************************************************************************

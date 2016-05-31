@@ -357,7 +357,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 
                 'Load the next page into the temporary DIB
                 targetDIB.ResetDIB 0
-                loadSuccessful = LoadFreeImageV4(srcFile, targetDIB, pageTracker)
+                loadSuccessful = FI_LoadImage_V5(srcFile, targetDIB, pageTracker)
                 
                 'If the load was successful, copy the DIB into place
                 If loadSuccessful Then
@@ -564,7 +564,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         'TMP files are internal PD temp files generated from a wide variety of use-cases (Clipboard is one example).  These are
         ' typically in BMP format, but this is not contractual.  A standard cascade of load functions is used.
         Case "TMP"
-            If g_ImageFormats.FreeImageEnabled Then loadSuccessful = CBool(LoadFreeImageV4(imagePath, targetDIB, , False) = PD_SUCCESS)
+            If g_ImageFormats.FreeImageEnabled Then loadSuccessful = CBool(FI_LoadImage_V5(imagePath, targetDIB, , False) = PD_SUCCESS)
             If g_ImageFormats.GDIPlusEnabled And (Not loadSuccessful) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB)
             If (Not loadSuccessful) Then loadSuccessful = LoadVBImage(imagePath, targetDIB)
             If (Not loadSuccessful) Then loadSuccessful = LoadRawImageBuffer(imagePath, targetDIB, tmpPDImage)
@@ -580,7 +580,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             
             'If FreeImage is available, use it to try and load the image.
             If g_ImageFormats.FreeImageEnabled Then
-                freeImageReturn = LoadFreeImageV4(imagePath, targetDIB, 0, False)
+                freeImageReturn = FI_LoadImage_V5(imagePath, targetDIB, 0, False)
                 loadSuccessful = CBool(freeImageReturn = PD_SUCCESS)
             End If
                 
