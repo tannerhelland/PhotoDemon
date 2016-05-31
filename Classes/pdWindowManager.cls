@@ -61,6 +61,7 @@ Private Const WM_NCACTIVATE As Long = &H86
 Private Const WM_GETMINMAXINFO As Long = &H24
 Private Const WM_CANCELMODE As Long = &H1F
 Private Const WM_ENABLE As Long = &HA
+Private Const WM_NCLBUTTONDBLCLK As Long = &HA3&
 
 'Subclassed messages for detecting when PD is losing focus to another app, or regaining it from another app
 Private Const WA_INACTIVE      As Long = 0
@@ -764,7 +765,7 @@ Public Sub RegisterMainForm(ByRef parentForm As Form)
     'Subclass the main window
     cSubclass.ssc_Subclass mainWindowHwnd, , , Me
     cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_SIZE
-    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE, WM_SIZING, WM_MOVING
+    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE, WM_SIZING, WM_MOVING, WM_NCLBUTTONDBLCLK
     cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE_AFTER, WM_SYSCOMMAND
     
     'Look for previous location data in the window location file.  If said data exists, load it and move the window to that location.
@@ -1067,6 +1068,13 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     End If
                 
                 End If
+            
+            'DWM causes titlebar double-clicks (which normally result in a maximize action) to "pass through"
+            ' to the child window post-resize.  This results in all kinds of weird mouse behavior, so we cheat
+            ' and disable this behavior.
+            Case WM_NCLBUTTONDBLCLK
+                bHandled = True
+                lReturn = 0
                         
         End Select
     
