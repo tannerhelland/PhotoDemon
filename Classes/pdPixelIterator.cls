@@ -136,7 +136,7 @@ Friend Function InitializeIterator(ByRef targetDIB As pdDIB, ByVal xRadius As Lo
     m_YBSize = m_YBTop + m_YBBottom + 1
     
     'Retrieve other relevant DIB properties
-    m_DibPointer = targetDIB.GetActualDIBBits
+    m_DibPointer = targetDIB.GetDIBPointer
     m_dibHeight = targetDIB.GetDIBHeight
     m_DibStride = targetDIB.GetDIBArrayWidth
     m_DibColorDepth = targetDIB.GetDIBColorDepth

@@ -31,13 +31,19 @@ Option Explicit
 'Once an LCMS transformation has been successfully created, this value will be non-zero
 Private m_TransformHandle As Long
 
-Public Function ApplyTransformToArbitraryMemory(ByVal srcPointer As Long, ByVal dstPointer As Long, ByVal srcScanlineWidth As Long, ByVal dstScanlineWidth As Long, ByVal numScanlines As Long, ByVal scanlineWidthPixels As Long) As Boolean
+Public Function ApplyTransformToArbitraryMemory(ByVal srcPointer As Long, ByVal dstPointer As Long, ByVal srcScanlineWidth As Long, ByVal dstScanlineWidth As Long, ByVal numScanlines As Long, ByVal scanlineWidthPixels As Long, Optional ByVal reverseScanlines As Boolean = False) As Boolean
     If (m_TransformHandle <> 0) Then
         
         Dim i As Long
-        For i = 0 To numScanlines - 1
-            LittleCMS.LCMS_TransformArbitraryMemory srcPointer + i * srcScanlineWidth, dstPointer + i * dstScanlineWidth, scanlineWidthPixels, m_TransformHandle
-        Next i
+        If reverseScanlines Then
+            For i = 0 To numScanlines - 1
+                LittleCMS.LCMS_TransformArbitraryMemory srcPointer + i * srcScanlineWidth, dstPointer + ((numScanlines - 1) - i) * dstScanlineWidth, scanlineWidthPixels, m_TransformHandle
+            Next i
+        Else
+            For i = 0 To numScanlines - 1
+                LittleCMS.LCMS_TransformArbitraryMemory srcPointer + i * srcScanlineWidth, dstPointer + i * dstScanlineWidth, scanlineWidthPixels, m_TransformHandle
+            Next i
+        End If
         
         ApplyTransformToArbitraryMemory = True
         
@@ -50,13 +56,13 @@ Friend Function ApplyTransformToPDDib(ByRef targetDIB As pdDIB) As Boolean
     End If
 End Function
 
-Friend Function CreateTwoProfileTransform(ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As pdLCMSProfile, Optional ByVal hInputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal hOutputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = 0) As Boolean
+Friend Function CreateTwoProfileTransform(ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As pdLCMSProfile, Optional ByVal hInputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal hOutputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = cmsFLAGS_COPY_ALPHA) As Boolean
     If (m_TransformHandle <> 0) Then ReleaseTransform
     m_TransformHandle = LittleCMS.LCMS_CreateTwoProfileTransform(srcProfile.GetHandle, dstProfile.GetHandle, hInputFormat, hOutputFormat, trnsRenderingIntent, trnsFlags)
     CreateTwoProfileTransform = CBool(m_TransformHandle <> 0)
 End Function
 
-Friend Function CreateInPlaceTransformForDIB(ByRef srcDIB As pdDIB, ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As pdLCMSProfile, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = 0) As Boolean
+Friend Function CreateInPlaceTransformForDIB(ByRef srcDIB As pdDIB, ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As pdLCMSProfile, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = cmsFLAGS_COPY_ALPHA) As Boolean
     If (m_TransformHandle <> 0) Then ReleaseTransform
     If (Not (srcDIB Is Nothing)) And (Not (srcProfile Is Nothing)) And (Not (dstProfile Is Nothing)) Then
         m_TransformHandle = LittleCMS.LCMS_CreateInPlaceTransformForDIB(srcProfile.GetHandle, dstProfile.GetHandle, srcDIB, trnsRenderingIntent, trnsFlags)

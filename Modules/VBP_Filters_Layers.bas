@@ -1481,9 +1481,9 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
     Dim scanlineSize As Long
     scanlineSize = srcDIB.GetDIBArrayWidth
     Dim origDIBPointer As Long
-    origDIBPointer = srcDIB.GetActualDIBBits
+    origDIBPointer = srcDIB.GetDIBPointer
     Dim dstDIBPointer As Long
-    dstDIBPointer = gaussDIB.GetActualDIBBits
+    dstDIBPointer = gaussDIB.GetDIBPointer
     
     Dim tmpImageData() As Byte
     Dim tmpSA As SAFEARRAY1D
@@ -1609,7 +1609,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
         Exit Function
     End If
     
-    dstDIBPointer = dstDIB.GetActualDIBBits
+    dstDIBPointer = dstDIB.GetDIBPointer
     tmpDstSA.pvData = dstDIBPointer
     
     'The source array now contains a horizontally convolved image.  We now need to convolve it vertically.

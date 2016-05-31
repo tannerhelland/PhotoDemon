@@ -18,6 +18,24 @@ Attribute VB_Name = "ImageImporter"
 
 Option Explicit
 
+Private m_JpegObeyEXIFOrientation As PD_BOOL
+
+'Some user preferences control how image importing behaves.  Because these preferences are accessed frequently, we cache them
+' locally improve performance.  External functions should use our wrappers instead of accessing the preferences directly.
+' Also, changes to these preferences obviously require a re-cache; use the reset function, below, for that.
+Public Sub ResetImageImportPreferenceCache()
+    m_JpegObeyEXIFOrientation = PD_BOOL_UNKNOWN
+End Sub
+
+Public Function GetImportPref_JPEGOrientation() As Boolean
+    
+    If (m_JpegObeyEXIFOrientation = PD_BOOL_UNKNOWN) Then
+        If g_UserPreferences.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then m_JpegObeyEXIFOrientation = PD_BOOL_TRUE Else m_JpegObeyEXIFOrientation = PD_BOOL_FALSE
+    End If
+    
+    GetImportPref_JPEGOrientation = CBool(m_JpegObeyEXIFOrientation = PD_BOOL_TRUE)
+    
+End Function
 
 'PDI loading.  "PhotoDemon Image" files are the only format PD supports for saving layered images.  PDI to PhotoDemon is like
 ' PSD to PhotoShop, or XCF to Gimp.
@@ -871,7 +889,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         ' TODO: preferences or prompt for how to handle such files??
         numOfPages = Plugin_FreeImage.IsMultiImage(srcFile)
         imageHasMultiplePages = (numOfPages > 1)
-        freeImage_Return = LoadFreeImageV4(srcFile, dstDIB)
+        freeImage_Return = FI_LoadImage_V5(srcFile, dstDIB)
         CascadeLoadGenericImage = CBool(freeImage_Return = PD_SUCCESS)
         
         'FreeImage worked!  Copy any relevant information from the DIB to the parent pdImage object (such as file format),

@@ -15,29 +15,21 @@ Attribute VB_Exposed = False
 'PhotoDemon ICC (International Color Consortium) Profile Manager
 'Copyright 2013-2016 by Tanner Helland
 'Created: 05/November/13
-'Last updated: 31/January/14
-'Last update: retrieve the rendering intent from embedded ICC profiles, and use that for the first stage of color
-'              transforms (if available).
+'Last updated: 31/May/16
+'Last update: clean-up to better integrate the new LittleCMS color management engine
 '
-'ICC profiles can be embedded in certain types of images (JPEG, PNG, and TIFF at the time of this writing).  These
-' profiles can be used to convert an image to its true color space, taking into account any pecularities of the
-' device that captured the image (typically a camera), and the device now being used to display the image
-' (typically a monitor).
+'Most image formats support the notion of embedded ICC profiles.  ICC profiles can be used to convert an image
+' to its "purest" color representation, taking into account any pecularities of the device that captured the
+' image (typically a camera), and the device now being used to display the image (typically a monitor).
 '
 'ICC profile handling is broken into two parts: extracting the profile from an image, then applying that profile
-' to the image.  The extraction step is currently handled via FreeImage or GDI+, while the application step is handled
-' by Windows.  In the future I may look at adding ExifTool as a possibly mechanism for extracting the profile, as it
-' provides better support for esoteric formats than FreeImage.
+' to the image.  The extraction step is currently handled via FreeImage or GDI+, while the application step is
+' handled by LittleCMS (with a fallback to the built-in Windows ICM if we absolutely have to).  In the future I
+' may look at adding ExifTool as a possibly mechanism for extracting the profile, as it provides better support
+' for esoteric formats (e.g. GIF, which can technically store ICC profiles, but you never see these in the wild).
 '
-'Note that this class retains a copy of the ICC Profile itself, which is typically a ~1-5k byte array.  In the future
-' I may add support for attaching a new profile to an image, or for exporting a profile to file.
-'
-'Also note that this class interacts heavily with the ColorManagement module.
-'
-'This class would not be possible without this excellent test code from pro VB coder LaVolpe:
-' http://www.vbforums.com/showthread.php?666143-RESOLVED-ICC-%28Color-Profiles%29
-' Note that LaVolpe's code contains a number of errors, so if you're looking to build your own ICC implementation,
-' I suggest basing it off my implementation instead.
+'Note that this class retains a copy of the ICC profile itself, which is typically a ~1-5k byte array.  When a
+' pdDIB class is copied, the attached ICC profile (if any) should also be copied.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -46,7 +38,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Once we have converted the image to the sRGB working space, this will be set to TRUE.
+'If the attached DIB has been forcibly converted to a neutral working space using this profile, this value will
+' be set to TRUE.  Make sure to check this if you need to determine "attached" status vs "converted" status.
 Private m_ICCProfileWasApplied As Boolean
 
 'If we are able to successfully load an ICC profile for this image, this will be set to TRUE.
@@ -102,57 +95,13 @@ Public Function GetICCDataSize() As Long
     GetICCDataSize = UBound(m_ICCData) + 1
 End Function
 
-'At load-time, while a FreeImage handle is still active, use this function to extract an ICC profile from an image.
-' This function assumes you have already checked to make sure the image contains an ICC profile (see the
-' Plugin_FreeImage_Expanded module for details).
-Public Function LoadICCFromFreeImage(ByVal fi_Bitmap As Long) As Boolean
+Public Function LoadICCFromPtr(ByVal profileSize As Long, ByVal ptrToProfile As Long) As Boolean
 
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Image contains ICC profile.  Copying profile now..."
     #End If
     
-    'Check to make sure the supplied FreeImage bitmap actually has ICC data
-    If (FreeImage_GetICCProfileSize(fi_Bitmap) > 0) Then
-    
-        Dim fiProfileHeader As FIICCPROFILE
-        fiProfileHeader = FreeImage_GetICCProfile(fi_Bitmap)
-        
-        'Use the SIZE value from the header to prepare a VB array to receive the profile data
-        ReDim m_ICCData(0 To fiProfileHeader.Size - 1) As Byte
-        
-        'Extract the ICC data into the array
-        CopyMemory ByVal VarPtr(m_ICCData(0)), ByVal fiProfileHeader.Data, fiProfileHeader.Size
-        
-        'The complete ICC profile will now be inside the m_ICCData array.
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "ICC profile copied successfully."
-        #End If
-            
-        m_ICCDataExists = True
-        LoadICCFromFreeImage = True
-        
-    Else
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "ICC profile could not be copied (unknown error)."
-        #End If
-        
-        LoadICCFromFreeImage = False
-        
-    End If
-    
-End Function
-
-Public Function LoadICCFromGDIPlus(ByVal profileSize As Long, ByVal ptrToProfile As Long) As Boolean
-
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Image contains ICC profile.  Copying profile now..."
-    #End If
-    
-    'Use the SIZE parameter to prepare a VB array to receive the profile data
     ReDim m_ICCData(0 To profileSize - 1) As Byte
-    
-    'Extract the ICC data using the supplied pointer
     CopyMemory ByVal VarPtr(m_ICCData(0)), ByVal ptrToProfile, profileSize
         
     'The complete ICC profile will now be inside the m_ICCData array.
@@ -161,7 +110,7 @@ Public Function LoadICCFromGDIPlus(ByVal profileSize As Long, ByVal ptrToProfile
     #End If
     
     m_ICCDataExists = True
-    LoadICCFromGDIPlus = True
+    LoadICCFromPtr = True
 
 End Function
 

@@ -646,9 +646,9 @@ End Sub
 ' checker code uses this to see if the mouse cursor is currently within the bounds of the selection area.
 Public Function getGdipRegionForSelection() As Long
     If sShape = sPolygon Then
-        getGdipRegionForSelection = GDI_Plus.getGDIPlusRegionFromPoints(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), FillModeWinding, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE))
+        getGdipRegionForSelection = GDI_Plus.GetGDIPlusRegionFromPoints(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), FillModeWinding, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE))
     Else
-        getGdipRegionForSelection = GDI_Plus.getGDIPlusRegionFromPoints(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), FillModeWinding, True, getSelectionProperty_Double(SP_SMOOTH_STROKE))
+        getGdipRegionForSelection = GDI_Plus.GetGDIPlusRegionFromPoints(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), FillModeWinding, True, getSelectionProperty_Double(SP_SMOOTH_STROKE))
     End If
 End Function
 
@@ -663,9 +663,9 @@ Public Sub fillBoundsUsingGDIPlus()
     Dim boundRect As RECTF
     
     If sShape = sPolygon Then
-        boundRect = GDI_Plus.getGDIPlusUnionFromPointsAndImage(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), containingPDImage, FillModeWinding, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE))
+        boundRect = GDI_Plus.GetGDIPlusUnionFromPointsAndImage(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), containingPDImage, FillModeWinding, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE))
     Else
-        boundRect = GDI_Plus.getGDIPlusUnionFromPointsAndImage(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), containingPDImage, FillModeWinding, True, getSelectionProperty_Double(SP_SMOOTH_STROKE))
+        boundRect = GDI_Plus.GetGDIPlusUnionFromPointsAndImage(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), containingPDImage, FillModeWinding, True, getSelectionProperty_Double(SP_SMOOTH_STROKE))
     End If
     
     'The returned boundaries encompass the intersection of our containing image, and the selection region.
@@ -2423,7 +2423,7 @@ Private Sub prepDIBSafeArray(ByRef srcDIB As pdDIB, ByRef tmpSA As SAFEARRAY2D)
         .Bounds(0).cElements = srcDIB.GetDIBHeight
         .Bounds(1).lBound = 0
         .Bounds(1).cElements = srcDIB.GetDIBArrayWidth
-        .pvData = srcDIB.GetActualDIBBits
+        .pvData = srcDIB.GetDIBPointer
     End With
 End Sub
 

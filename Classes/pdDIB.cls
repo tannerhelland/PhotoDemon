@@ -984,8 +984,14 @@ Public Function GetDIBHandle() As Long
 End Function
 
 'Return a pointer to this DIB's pixel data (no header)
-Public Function GetActualDIBBits() As Long
-    GetActualDIBBits = m_dibBits
+Public Function GetDIBPointer() As Long
+    GetDIBPointer = m_dibBits
+End Function
+
+'Return a pointer to an individual scanline.  For performance reasons, this function does not perform bounds checking -
+' so use it carefully!
+Public Function GetDIBScanline(ByVal targetScanline As Long) As Long
+    GetDIBScanline = m_dibBits + (targetScanline * m_dibArrayWidth)
 End Function
 
 'Return a pointer to this DIB's header
@@ -1293,7 +1299,7 @@ Public Function CreateBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     If (colorDepth <> 32) And (colorDepth <> 24) Then colorDepth = 24
         
     'The back color may or may not be a system color, so translate it just in case
-    If (BackColor <> vbWhite) Then BackColor = TranslateColor(BackColor)
+    If (BackColor <> vbWhite) And (BackColor <> vbBlack) Then BackColor = TranslateColor(BackColor)
     
     'Force the DIB to have a size of at least 1x1
     If (iWidth <= 0) Then iWidth = 1
@@ -2034,7 +2040,7 @@ Private Sub PrepExternalSafeArray(ByRef srcDIB As pdDIB, ByRef dstSafeArray As S
         .Bounds(0).cElements = srcDIB.GetDIBHeight
         .Bounds(1).lBound = 0
         .Bounds(1).cElements = srcDIB.GetDIBArrayWidth
-        .pvData = srcDIB.GetActualDIBBits
+        .pvData = srcDIB.GetDIBPointer
     End With
 End Sub
 
@@ -2059,7 +2065,7 @@ Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     ' 1D array, which we reset between scanlines.
     Dim scanlineSize As Long, dibPointer As Long
     scanlineSize = Me.GetDIBArrayWidth
-    dibPointer = Me.GetActualDIBBits
+    dibPointer = Me.GetDIBPointer
     
     Dim dibPixels() As Byte, dibSA As SAFEARRAY1D
     PrepInternalSafeArray1D dibSA
@@ -2148,7 +2154,7 @@ Public Sub ReverseScanlines(Optional ByVal updateTopDownTracker As Boolean = Tru
     ' 1D array, which we reset between scanlines.
     Dim scanlineSize As Long, dibPointer As Long
     scanlineSize = Me.GetDIBArrayWidth
-    dibPointer = Me.GetActualDIBBits
+    dibPointer = Me.GetDIBPointer
     
     Dim tmpScanLine() As Byte
     ReDim tmpScanLine(0 To scanlineSize - 1) As Byte
@@ -2261,7 +2267,7 @@ Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
     ' 1D array, which we reset between scanlines.
     Dim scanlineSize As Long, dibPointer As Long
     scanlineSize = Me.GetDIBArrayWidth
-    dibPointer = Me.GetActualDIBBits
+    dibPointer = Me.GetDIBPointer
     
     Dim dibPixels() As Byte, dibSA As SAFEARRAY1D
     PrepInternalSafeArray1D dibSA

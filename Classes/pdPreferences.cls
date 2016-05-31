@@ -568,7 +568,7 @@ Private Sub CreateNewPreferencesFile()
 End Sub
 
 'Get a Boolean-type value from the preferences file.  (A default value must be supplied; this is used if no such value exists.)
-Public Function GetPref_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal defaultValue As Boolean) As Boolean
+Public Function GetPref_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal prefDefaultValue As Boolean) As Boolean
 
     'Request the value (as a string)
     Dim tmpString As String
@@ -578,9 +578,9 @@ Public Function GetPref_Boolean(ByRef preferenceSection As String, ByRef prefere
     If Len(tmpString) = 0 Then
         
         'To prevent future blank results, write out a default value
-        Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Trim$(Str(defaultValue))
-        SetPref_Boolean preferenceSection, preferenceName, defaultValue
-        GetPref_Boolean = defaultValue
+        'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Trim$(Str(prefDefaultValue))
+        SetPref_Boolean preferenceSection, preferenceName, prefDefaultValue
+        GetPref_Boolean = prefDefaultValue
             
     'If the requested value DOES exist, convert it to boolean type and return it
     Else
@@ -607,7 +607,7 @@ Public Sub SetPref_Boolean(ByRef preferenceSection As String, ByRef preferenceNa
 End Sub
 
 'Get a Long-type value from the preference file.  (A default value must be supplied; this is used if no such value exists.)
-Public Function GetPref_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal defaultValue As Long) As Long
+Public Function GetPref_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal prefDefaultValue As Long) As Long
 
     'Get the value (as a string) from the INI file
     Dim tmpString As String
@@ -617,9 +617,9 @@ Public Function GetPref_Long(ByRef preferenceSection As String, ByRef preference
     If Len(tmpString) = 0 Then
     
         'To prevent future blank results, write out a default value
-        Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Trim$(Str(defaultValue))
-        SetPref_Long preferenceSection, preferenceName, defaultValue
-        GetPref_Long = defaultValue
+        'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Trim$(Str(prefDefaultValue ))
+        SetPref_Long preferenceSection, preferenceName, prefDefaultValue
+        GetPref_Long = prefDefaultValue
     
     'If the requested value DOES exist, convert it to Long type and return it
     Else
@@ -634,7 +634,7 @@ Public Sub SetPref_Long(ByRef preferenceSection As String, ByRef preferenceName 
 End Sub
 
 'Get a String-type value from the preferences file.  (A default value must be supplied; this is used if no such value exists.)
-Public Function GetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal defaultValue As String) As String
+Public Function GetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal prefDefaultValue As String) As String
 
     'Get the requested value from the preferences file
     Dim tmpString As String
@@ -644,9 +644,9 @@ Public Function GetPref_String(ByRef preferenceSection As String, ByRef preferen
     If Len(tmpString) = 0 Then
         
         'To prevent future blank results, write out a default value
-        Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & defaultValue
-        SetPref_String preferenceSection, preferenceName, defaultValue
-        GetPref_String = defaultValue
+        'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & prefDefaultValue
+        SetPref_String preferenceSection, preferenceName, prefDefaultValue
+        GetPref_String = prefDefaultValue
     
     'If the requested value DOES exist, convert it to Long type and return it
     Else
@@ -676,7 +676,7 @@ Private Function GetPreference(ByRef strSectionHeader As String, ByRef strVariab
     strVariableName = Replace$(strVariableName, " ", "")
     
     'Create an XML object and load the XML settings file
-    If Not m_BatchModeActive Then
+    If (Not m_BatchModeActive) Then
         Set xmlEngine = New pdXML
         xmlEngine.LoadXMLFile PreferencesPath
     End If

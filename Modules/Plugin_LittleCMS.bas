@@ -236,15 +236,16 @@ Public Enum LCMS_TRANSFORM_FLAGS
     cmsFLAGS_HIGHRESPRECALC = &H400&               ' Use more memory to give better accurancy
     cmsFLAGS_LOWRESPRECALC = &H800&                ' Use less memory to minimize resouces
     ' For devicelink creation
-    cmsFLAGS_8BITS_DEVICELINK = &H8&              ' Create 8 bits devicelinks
-    cmsFLAGS_GUESSDEVICECLASS = &H20&             ' Guess device class (for transform2devicelink)
-    cmsFLAGS_KEEP_SEQUENCE = &H80&                ' Keep profile sequence for devicelink creation
+    cmsFLAGS_8BITS_DEVICELINK = &H8&               ' Create 8 bits devicelinks
+    cmsFLAGS_GUESSDEVICECLASS = &H20&              ' Guess device class (for transform2devicelink)
+    cmsFLAGS_KEEP_SEQUENCE = &H80&                 ' Keep profile sequence for devicelink creation
     ' Specific to a particular optimizations
     cmsFLAGS_FORCE_CLUT = &H2&                     ' Force CLUT optimization
     cmsFLAGS_CLUT_POST_LINEARIZATION = &H1&        ' create postlinearization tables if possible
     cmsFLAGS_CLUT_PRE_LINEARIZATION = &H10&        ' create prelinearization tables if possible
     ' CRD special
     cmsFLAGS_NODEFAULTRESOURCEDEF = &H1000000
+    cmsFLAGS_COPY_ALPHA = &H4000000                ' alpha channels are copied on cmsDoTransform()
 End Enum
 
 'Return the current library version as a Long, e.g. "2.7" is returned as "2070"
@@ -332,11 +333,11 @@ Public Function GetLCMSVersion() As String
     
 End Function
 
-Public Function LCMS_CreateTwoProfileTransform(ByVal hInputProfile As Long, ByVal hOutputProfile As Long, Optional ByVal hInputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal hOutputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = 0) As Long
+Public Function LCMS_CreateTwoProfileTransform(ByVal hInputProfile As Long, ByVal hOutputProfile As Long, Optional ByVal hInputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal hOutputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = cmsFLAGS_COPY_ALPHA) As Long
     LCMS_CreateTwoProfileTransform = cmsCreateTransform(hInputProfile, hInputFormat, hOutputProfile, hOutputFormat, trnsRenderingIntent, trnsFlags)
 End Function
 
-Public Function LCMS_CreateInPlaceTransformForDIB(ByVal hInputProfile As Long, ByVal hOutputProfile As Long, ByRef srcDIB As pdDIB, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = 0) As Long
+Public Function LCMS_CreateInPlaceTransformForDIB(ByVal hInputProfile As Long, ByVal hOutputProfile As Long, ByRef srcDIB As pdDIB, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = cmsFLAGS_COPY_ALPHA) As Long
     
     Dim pxFormat As LCMS_PIXEL_FORMAT
     If (srcDIB.GetDIBColorDepth = 32) Then
@@ -407,7 +408,7 @@ Public Function LCMS_ApplyTransformToDIB(ByRef srcDIB As pdDIB, ByVal hTransform
                 pdDebug.LogAction "Applying ICC transform to 32-bpp DIB..."
             #End If
             
-            cmsDoTransform hTransform, srcDIB.GetActualDIBBits, srcDIB.GetActualDIBBits, srcDIB.GetDIBWidth * srcDIB.GetDIBHeight
+            cmsDoTransform hTransform, srcDIB.GetDIBPointer, srcDIB.GetDIBPointer, srcDIB.GetDIBWidth * srcDIB.GetDIBHeight
         
         '24-bpp DIBs may have scanline padding issues.  We must process them one line at a time.
         Else
@@ -418,7 +419,7 @@ Public Function LCMS_ApplyTransformToDIB(ByRef srcDIB As pdDIB, ByVal hTransform
             
             Dim i As Long, iWidth As Long, iScanWidth As Long, iScanStart As Long
             iWidth = srcDIB.GetDIBWidth
-            iScanStart = srcDIB.GetActualDIBBits
+            iScanStart = srcDIB.GetDIBPointer
             iScanWidth = srcDIB.GetDIBArrayWidth
             
             For i = 0 To srcDIB.GetDIBHeight - 1

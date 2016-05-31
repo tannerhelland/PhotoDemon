@@ -110,7 +110,7 @@ Public Sub PrepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcDIB As pdDIB)
         .Bounds(0).cElements = srcDIB.GetDIBHeight
         .Bounds(1).lBound = 0
         .Bounds(1).cElements = srcDIB.GetDIBArrayWidth
-        .pvData = srcDIB.GetActualDIBBits
+        .pvData = srcDIB.GetDIBPointer
     End With
     
 End Sub
@@ -243,7 +243,7 @@ Public Sub PreviewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As p
     PrepSafeArray tmpSA, workingDIB
     
     'If desired, the statement below can be used to verify that the function created a working DIB at the proper dimensions
-    'Debug.Print "previewNonStandardImage worked: " & workingDIB.getDIBHeight & ", " & workingDIB.getDIBWidth & " (" & workingDIB.getDIBArrayWidth & ")" & ", " & workingDIB.getActualDIBBits
+    'Debug.Print "previewNonStandardImage worked: " & workingDIB.getDIBHeight & ", " & workingDIB.getDIBWidth & " (" & workingDIB.getDIBArrayWidth & ")" & ", " & workingDIB.GetDIBPointer
 
 End Sub
 
@@ -548,7 +548,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     End If
     
     'If desired, the statement below can be used to verify that the function created a working DIB at the proper dimensions
-    'Debug.Print "prepImageData worked: " & workingDIB.getDIBHeight & ", " & workingDIB.getDIBWidth & " (" & workingDIB.getDIBArrayWidth & ")" & ", " & workingDIB.getActualDIBBits
+    'Debug.Print "prepImageData worked: " & workingDIB.getDIBHeight & ", " & workingDIB.getDIBWidth & " (" & workingDIB.getDIBArrayWidth & ")" & ", " & workingDIB.GetDIBPointer
 
 End Sub
 
