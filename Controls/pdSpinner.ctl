@@ -64,6 +64,7 @@ Option Explicit
 ' makes it ideal for things like syncing time-consuming UI elements.
 Public Event Change()
 Public Event FinalChange()
+Public Event ResetClick()
 Public Event Resize()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
@@ -352,7 +353,10 @@ Public Sub SetHeight(ByVal newHeight As Long)
 End Sub
 
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    If Math_Functions.IsPointInRectF(x, y, m_ResetRect) Then Me.Reset
+    If Math_Functions.IsPointInRectF(x, y, m_ResetRect) Then
+        Me.Reset
+        RaiseEvent ResetClick
+    End If
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()

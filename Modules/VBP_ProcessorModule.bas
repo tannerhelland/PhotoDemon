@@ -353,7 +353,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                 Case "Rotate image 90 counter-clockwise", "Rotate 90 counter-clockwise", "Arbitrary image rotation", "Arbitrary rotation"
                     removeSelectionInAdvance = True
                     
-                Case "Flip image vertically", "Flip vertically", "Flip image horizontally", "Flip horizontally", "Tile"
+                Case "Flip image vertically", "Flip vertically", "Flip image horizontally", "Flip horizontally"
                     removeSelectionInAdvance = True
                     
                 Case Else
@@ -741,13 +741,9 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         Case "Isometric conversion"
             'FilterIsometric
             
+        'NOTE: Image > Tile was removed in v7.0
         Case "Tile"
-            If ShowDialog Then
-                ShowPDDialog vbModal, FormTile
-            Else
-                FormTile.GenerateTile cParams.GetByte(1), cParams.GetLong(2), cParams.GetLong(3)
-            End If
-        
+            
         
         'Other miscellaneous image-only items
         Case "Count image colors"

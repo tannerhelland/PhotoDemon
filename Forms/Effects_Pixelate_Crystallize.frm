@@ -63,8 +63,8 @@ Begin VB.Form FormCrystallize
       Caption         =   "cell size"
       Min             =   3
       Max             =   200
-      Value           =   50
-      DefaultValue    =   50
+      Value           =   20
+      DefaultValue    =   20
    End
    Begin PhotoDemon.pdSlider sltTurbulence 
       Height          =   705
@@ -384,11 +384,6 @@ End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
-End Sub
-
-Private Sub cmdBar_ResetClick()
-    sltSize.Value = 20
-    sltTurbulence.Value = 0.5
 End Sub
 
 Private Sub Form_Activate()

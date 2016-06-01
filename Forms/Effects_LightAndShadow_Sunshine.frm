@@ -404,10 +404,6 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    sltXCenter.Value = 0.1
-    sltYCenter.Value = 0.1
-    sltRadius.Value = 72
-    sltRayCount.Value = 100
     cpShine.Color = RGB(255, 255, 60)
 End Sub
 

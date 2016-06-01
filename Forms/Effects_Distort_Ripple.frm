@@ -156,8 +156,8 @@ Begin VB.Form FormRipple
          Caption         =   "length of ripples (wavelength)"
          Min             =   1
          Max             =   200
-         Value           =   16
-         DefaultValue    =   16
+         Value           =   40
+         DefaultValue    =   40
       End
       Begin PhotoDemon.pdSlider sltQuality 
          Height          =   705
@@ -518,12 +518,6 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    sltXCenter.Value = 0.5
-    sltYCenter.Value = 0.5
-    sltWavelength.Value = 40
-    sltAmplitude.Value = 80
-    sltRadius.Value = 100
-    sltQuality.Value = 2
     cboEdges.ListIndex = EDGE_REFLECT
 End Sub
 

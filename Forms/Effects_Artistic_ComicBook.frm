@@ -75,6 +75,8 @@ Begin VB.Form FormComicBook
       _ExtentY        =   1270
       Caption         =   "brush size"
       Max             =   50
+      Value           =   5
+      DefaultValue    =   5
    End
 End
 Attribute VB_Name = "FormComicBook"
@@ -206,11 +208,6 @@ End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
-End Sub
-
-Private Sub cmdBar_ResetClick()
-    sltInk.Value = 50
-    sltColor.Value = 5
 End Sub
 
 Private Sub Form_Activate()

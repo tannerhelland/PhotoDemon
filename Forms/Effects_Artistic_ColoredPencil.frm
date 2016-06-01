@@ -63,7 +63,8 @@ Begin VB.Form FormPencil
       Caption         =   "tip radius"
       Min             =   1
       Max             =   100
-      Value           =   5
+      Value           =   3
+      DefaultValue    =   3
    End
    Begin PhotoDemon.pdSlider sltIntensity 
       Height          =   705
@@ -371,10 +372,6 @@ End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
-End Sub
-
-Private Sub cmdBar_ResetClick()
-    sltRadius.Value = 3
 End Sub
 
 Private Sub Form_Activate()

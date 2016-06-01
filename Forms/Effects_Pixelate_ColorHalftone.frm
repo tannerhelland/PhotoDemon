@@ -83,6 +83,7 @@ Begin VB.Form FormColorHalftone
       Caption         =   "magenta angle"
       Max             =   360
       SigDigits       =   1
+      DefaultValue    =   33.3
    End
    Begin PhotoDemon.pdSlider sltAngle 
       Height          =   705
@@ -96,6 +97,7 @@ Begin VB.Form FormColorHalftone
       Caption         =   "yellow angle"
       Max             =   360
       SigDigits       =   1
+      DefaultValue    =   66.7
    End
    Begin PhotoDemon.pdSlider sltDensity 
       Height          =   705
@@ -179,14 +181,6 @@ End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
-End Sub
-
-Private Sub cmdBar_ResetClick()
-    sltRadius.Value = 5
-    sltAngle(0).Value = 0
-    sltAngle(1).Value = 33
-    sltAngle(2).Value = 67
-    sltDensity.Value = 100
 End Sub
 
 Private Sub Form_Activate()

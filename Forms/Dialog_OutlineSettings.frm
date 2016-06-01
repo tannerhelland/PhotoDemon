@@ -120,10 +120,10 @@ Begin VB.Form dialog_OutlineSettings
       Min             =   1
       Max             =   100
       SigDigits       =   1
-      Value           =   10
+      Value           =   1
       NotchPosition   =   1
       NotchValueCustom=   100
-      DefaultValue    =   10
+      DefaultValue    =   1
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
@@ -171,7 +171,7 @@ Begin VB.Form dialog_OutlineSettings
       SigDigits       =   1
       Value           =   10
       NotchPosition   =   2
-      NotchValueCustom=   10
+      NotchValueCustom=   3
    End
 End
 Attribute VB_Name = "dialog_OutlineSettings"
