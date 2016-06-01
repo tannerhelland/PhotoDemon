@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.123</langversion>
+<langversion>6.6.124</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -4546,11 +4546,6 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 </phrase>
 
 <phrase>
-<original>Tile</original>
-<translation>Tile</translation>
-</phrase>
-
-<phrase>
 <original>Metadata</original>
 <translation>metadata</translation>
 </phrase>
@@ -6182,7 +6177,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 563 phrases. 187 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 561 phrases. 186 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12482,62 +12477,6 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 
 <!-- END text for Image_Straighten.frm-->
 
-<!-- BEGIN text for Image_Tile.frm (FormTile) -->
-
-<phrase>
-<original>Tile Image</original>
-<translation>Tile Image</translation>
-</phrase>
-
-<phrase>
-<original>Note: this operation will flatten the image before tiling it.</original>
-<translation>Nota: operasi ini akan meleperkan imej sebelum jubin itu.</translation>
-</phrase>
-
-<phrase>
-<original>render tiled image using</original>
-<translation>menyebabkan imej berjubin menggunakan</translation>
-</phrase>
-
-<phrase>
-<original>tiles</original>
-<translation>jubin</translation>
-</phrase>
-
-<phrase>
-<original>Rendering tiled image</original>
-<translation>Memberi imej berjubin</translation>
-</phrase>
-
-<phrase>
-<original>Tiled image</original>
-<translation>imej berjubin</translation>
-</phrase>
-
-<phrase>
-<original>current screen size</original>
-<translation>saiz skrin semasa</translation>
-</phrase>
-
-<phrase>
-<original>custom image size (in pixels)</original>
-<translation>saiz imej adat (dalam piksel)</translation>
-</phrase>
-
-<phrase>
-<original>specific number of tiles</original>
-<translation>bilangan tertentu jubin</translation>
-</phrase>
-
-<phrase>
-<original>the new image will be %1 %3 wide by %2 %3 tall</original>
-<translation>imej baru akan %1 %3 lebar %2 %3 tinggi</translation>
-</phrase>
-
-<!-- Image_Tile.frm contains 35 phrases. 25 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
-
-<!-- END text for Image_Tile.frm-->
-
 <!-- BEGIN text for Layer_Add_RasterLayer.frm (FormNewLayer) -->
 
 <phrase>
@@ -15173,10 +15112,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2590</phrasecount>
+<phrasecount>2579</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1924 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13323 total words. -->
+<!-- As of this build, PhotoDemon contains 4477 phrases. -->
+<!-- 1898 are duplicates, so only 2579 unique phrases have been written to file. -->
+<!-- These 2579 phrases contain approximately 13280 total words. -->
 
 </pdData>

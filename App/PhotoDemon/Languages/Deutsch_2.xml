@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.182</langversion>
+<langversion>6.7.183</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4541,11 +4541,6 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
-<original>Tile</original>
-<translation>Kacheln</translation>
-</phrase>
-
-<phrase>
 <original>Metadata</original>
 <translation>Metadaten</translation>
 </phrase>
@@ -6177,7 +6172,7 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 563 phrases. 187 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 561 phrases. 186 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12477,62 +12472,6 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei "
 
 <!-- END text for Image_Straighten.frm-->
 
-<!-- BEGIN text for Image_Tile.frm (FormTile) -->
-
-<phrase>
-<original>Tile Image</original>
-<translation>Bild kacheln</translation>
-</phrase>
-
-<phrase>
-<original>Note: this operation will flatten the image before tiling it.</original>
-<translation>Hinweis: Diese Operation wird das Bild vereinen, bevor es gekachelt wird.</translation>
-</phrase>
-
-<phrase>
-<original>render tiled image using</original>
-<translation>Gekacheltes Bild rendern unter Verwendung</translation>
-</phrase>
-
-<phrase>
-<original>tiles</original>
-<translation>Kacheln</translation>
-</phrase>
-
-<phrase>
-<original>Rendering tiled image</original>
-<translation>Gekacheltes Bild wird gerendert</translation>
-</phrase>
-
-<phrase>
-<original>Tiled image</original>
-<translation>Gekacheltes Bild</translation>
-</phrase>
-
-<phrase>
-<original>current screen size</original>
-<translation>Aktuelle Bildschirmgröße</translation>
-</phrase>
-
-<phrase>
-<original>custom image size (in pixels)</original>
-<translation>Benutzerdefinierte Bildgröße (in Pixel)</translation>
-</phrase>
-
-<phrase>
-<original>specific number of tiles</original>
-<translation>Spezifische Anzahl der Kacheln</translation>
-</phrase>
-
-<phrase>
-<original>the new image will be %1 %3 wide by %2 %3 tall</original>
-<translation>Das neue Bild wird %1 %3 breit x %2 %3 hoch sein.</translation>
-</phrase>
-
-<!-- Image_Tile.frm contains 35 phrases. 25 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
-
-<!-- END text for Image_Tile.frm-->
-
 <!-- BEGIN text for Layer_Add_RasterLayer.frm (FormNewLayer) -->
 
 <phrase>
@@ -15168,10 +15107,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2590</phrasecount>
+<phrasecount>2579</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1924 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13323 total words. -->
+<!-- As of this build, PhotoDemon contains 4477 phrases. -->
+<!-- 1898 are duplicates, so only 2579 unique phrases have been written to file. -->
+<!-- These 2579 phrases contain approximately 13280 total words. -->
 
 </pdData>

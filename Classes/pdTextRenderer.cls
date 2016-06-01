@@ -738,7 +738,7 @@ Friend Function GetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
             GetGenericTextProperty = m_FontUnderline
         
         Case ptp_FontStrikeout
-            GetGenericTextProperty = m_FontUnderline
+            GetGenericTextProperty = m_FontStrikeout
         
         Case ptp_HorizontalAlignment
             GetGenericTextProperty = m_HorizontalAlignment

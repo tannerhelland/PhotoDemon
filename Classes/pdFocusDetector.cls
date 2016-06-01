@@ -80,7 +80,7 @@ Public Sub startFocusTracking(ByVal srcHwnd As Long)
     If (m_hWnd <> 0) Then
         Set cSubclass = New cSelfSubHookCallback
         cSubclass.ssc_Subclass m_hWnd, , , Me
-        cSubclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_NCACTIVATE, WM_SETFOCUS, WM_KILLFOCUS
+        cSubclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_NCACTIVATE, WM_KILLFOCUS, WM_SETFOCUS
     End If
     
 End Sub
@@ -93,11 +93,8 @@ End Function
 'If an outside function received a mouse or keyboard event but the control does *not* have focus, they can call this function
 ' to force an immedate GotFocus event.  (Windows will process hooks prior to focus messages, so some of PD's controls may raise
 ' input events prior to receiving focus events; this function gives us a way to work around that.)
-Public Sub setFocusManually()
-    If Not m_HasFocus Then
-        m_HasFocus = True
-        RaiseEvent GotFocusReliable
-    End If
+Public Sub SetFocusManually()
+    If (Not m_HasFocus) Then g_WindowManager.SetFocusAPI m_hWnd
 End Sub
 
 Private Function GetHiWord(ByVal lParam As Long) As Integer

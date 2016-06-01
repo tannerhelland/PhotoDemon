@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.181</langversion>
+<langversion>6.7.182</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -4539,11 +4539,6 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>Tile</original>
-<translation>Piastrella</translation>
-</phrase>
-
-<phrase>
 <original>Metadata</original>
 <translation>Metadati</translation>
 </phrase>
@@ -6175,7 +6170,7 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <translation>Rimuovi il canale alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 563 phrases. 187 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 561 phrases. 186 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12475,62 +12470,6 @@ Per attivare il supporto per questa funzionalità, per favore copia il file Free
 
 <!-- END text for Image_Straighten.frm-->
 
-<!-- BEGIN text for Image_Tile.frm (FormTile) -->
-
-<phrase>
-<original>Tile Image</original>
-<translation>Piastrella l'immagine</translation>
-</phrase>
-
-<phrase>
-<original>Note: this operation will flatten the image before tiling it.</original>
-<translation>Nota: questa operazione appiattisce l'immagine prima di piastrellarla.</translation>
-</phrase>
-
-<phrase>
-<original>render tiled image using</original>
-<translation>rendi un'immagine piastrellata utilizzando</translation>
-</phrase>
-
-<phrase>
-<original>tiles</original>
-<translation>piastrelle</translation>
-</phrase>
-
-<phrase>
-<original>Rendering tiled image</original>
-<translation>Restituzione dell'immagine piastrellata</translation>
-</phrase>
-
-<phrase>
-<original>Tiled image</original>
-<translation>Immagine piastrellata</translation>
-</phrase>
-
-<phrase>
-<original>current screen size</original>
-<translation>dimensione corrente dello schermo</translation>
-</phrase>
-
-<phrase>
-<original>custom image size (in pixels)</original>
-<translation>dimensione personalizzata dello schermo (in pixel)</translation>
-</phrase>
-
-<phrase>
-<original>specific number of tiles</original>
-<translation>specifica il numero di piastrelle</translation>
-</phrase>
-
-<phrase>
-<original>the new image will be %1 %3 wide by %2 %3 tall</original>
-<translation>l'imaggine finale sarà %1 %3 di larghezza per %2 %3 di altezza.</translation>
-</phrase>
-
-<!-- Image_Tile.frm contains 35 phrases. 25 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
-
-<!-- END text for Image_Tile.frm-->
-
 <!-- BEGIN text for Layer_Add_RasterLayer.frm (FormNewLayer) -->
 
 <phrase>
@@ -15166,10 +15105,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2590</phrasecount>
+<phrasecount>2579</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1924 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13323 total words. -->
+<!-- As of this build, PhotoDemon contains 4477 phrases. -->
+<!-- 1898 are duplicates, so only 2579 unique phrases have been written to file. -->
+<!-- These 2579 phrases contain approximately 13280 total words. -->
 
 </pdData>

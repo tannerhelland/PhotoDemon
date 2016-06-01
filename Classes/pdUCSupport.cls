@@ -715,7 +715,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
     m_MouseButtonState = m_MouseButtonState Or Button
     
     'Ensure that a focus event has been raised, if it wasn't already
-    If Not m_FocusDetector.HasFocus Then m_FocusDetector.setFocusManually
+    If (Not m_FocusDetector.HasFocus) Then m_FocusDetector.SetFocusManually
     RaiseEvent MouseDownCustom(Button, Shift, x, y)
     
 End Sub

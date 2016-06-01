@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.181</langversion>
+<langversion>6.7.182</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -4550,11 +4550,6 @@ or os menus File> Open e File> Import.</translation>
 </phrase>
 
 <phrase>
-<original>Tile</original>
-<translation>telha</translation>
-</phrase>
-
-<phrase>
 <original>Metadata</original>
 <translation>Metadados</translation>
 </phrase>
@@ -6186,7 +6181,7 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 <translation>Remover canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 563 phrases. 187 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 561 phrases. 186 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12486,62 +12481,6 @@ To ativar o suporte para esse recurso, copie o arquivo FreeImage.dll para o plug
 
 <!-- END text for Image_Straighten.frm-->
 
-<!-- BEGIN text for Image_Tile.frm (FormTile) -->
-
-<phrase>
-<original>Tile Image</original>
-<translation>Tile imagem</translation>
-</phrase>
-
-<phrase>
-<original>Note: this operation will flatten the image before tiling it.</original>
-<translation>Nota: esta operação vai achatar a imagem antes de telha-lo.</translation>
-</phrase>
-
-<phrase>
-<original>render tiled image using</original>
-<translation>rende azulejos usando</translation>
-</phrase>
-
-<phrase>
-<original>tiles</original>
-<translation>azulejos</translation>
-</phrase>
-
-<phrase>
-<original>Rendering tiled image</original>
-<translation>Renderização de imagem em mosaico</translation>
-</phrase>
-
-<phrase>
-<original>Tiled image</original>
-<translation>imagem em Azulejo</translation>
-</phrase>
-
-<phrase>
-<original>current screen size</original>
-<translation>tamanho da tela atual</translation>
-</phrase>
-
-<phrase>
-<original>custom image size (in pixels)</original>
-<translation>personalizado tamanho da imagem (em pixels)</translation>
-</phrase>
-
-<phrase>
-<original>specific number of tiles</original>
-<translation>número específico de telhas</translation>
-</phrase>
-
-<phrase>
-<original>the new image will be %1 %3 wide by %2 %3 tall</original>
-<translation>a nova imagem será %1 %3 %de largura por %2 %3 de altura</translation>
-</phrase>
-
-<!-- Image_Tile.frm contains 35 phrases. 25 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
-
-<!-- END text for Image_Tile.frm-->
-
 <!-- BEGIN text for Layer_Add_RasterLayer.frm (FormNewLayer) -->
 
 <phrase>
@@ -15177,10 +15116,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2590</phrasecount>
+<phrasecount>2579</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1924 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13323 total words. -->
+<!-- As of this build, PhotoDemon contains 4477 phrases. -->
+<!-- 1898 are duplicates, so only 2579 unique phrases have been written to file. -->
+<!-- These 2579 phrases contain approximately 13280 total words. -->
 
 </pdData>
