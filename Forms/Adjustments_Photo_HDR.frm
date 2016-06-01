@@ -53,8 +53,8 @@ Begin VB.Form FormHDR
       Caption         =   "quality"
       Min             =   1
       Max             =   100
-      Value           =   50
-      DefaultValue    =   50
+      Value           =   5
+      DefaultValue    =   5
    End
    Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
@@ -68,8 +68,8 @@ Begin VB.Form FormHDR
       Min             =   1
       Max             =   100
       SigDigits       =   1
-      Value           =   50
-      DefaultValue    =   50
+      Value           =   20
+      DefaultValue    =   20
    End
 End
 Attribute VB_Name = "FormHDR"
@@ -692,11 +692,6 @@ End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
-End Sub
-
-Private Sub cmdBar_ResetClick()
-    sltRadius = 5
-    sltStrength = 20
 End Sub
 
 Private Sub Form_Activate()

@@ -81,6 +81,7 @@ Begin VB.Form FormLensFlare
          Value           =   0.5
          NotchPosition   =   2
          NotchValueCustom=   0.5
+         DefaultValue    =   0.75
       End
       Begin PhotoDemon.pdSlider sltYCenter 
          Height          =   405
@@ -95,6 +96,7 @@ Begin VB.Form FormLensFlare
          Value           =   0.5
          NotchPosition   =   2
          NotchValueCustom=   0.5
+         DefaultValue    =   0.25
       End
       Begin PhotoDemon.pdSlider sltIntensity 
          Height          =   705
@@ -749,19 +751,6 @@ End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
-End Sub
-
-Private Sub cmdBar_ResetClick()
-    
-    sltXCenter.Value = 0.75
-    sltYCenter.Value = 0.25
-    
-    sltIntensity(0).Value = 1
-    sltIntensity(1).Value = 1
-    sltIntensity(2).Value = 1
-    
-    sltRadius.Value = 100
-    
 End Sub
 
 Private Sub Form_Activate()

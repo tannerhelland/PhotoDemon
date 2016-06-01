@@ -87,9 +87,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This object provides a single raised event:
-' - Change (which triggers when the slider or spinner values are modified by any mechanism)
+'This object provides a single Change event which triggers when the slider or spinner values are modified by any mechanism
 Public Event Change()
+Public Event ResetClick()
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
@@ -347,6 +347,10 @@ End Sub
 Private Sub pdssPrimary_LostFocusAPI()
     m_ControlFocusCount = m_ControlFocusCount - 1
     EvaluateFocusCount True
+End Sub
+
+Private Sub tudPrimary_ResetClick()
+    RaiseEvent ResetClick
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()

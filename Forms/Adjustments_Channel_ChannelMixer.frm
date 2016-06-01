@@ -116,7 +116,6 @@ Begin VB.Form FormChannelMixer
       Width           =   12150
       _ExtentX        =   21431
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdButtonStrip btsChannel 
       Height          =   960
@@ -199,22 +198,27 @@ Private Enum InputChannel
     ConstantInput = 3
 End Enum
 
+#If False Then
+    Private Const RedOutput = 0, GreenOutput = 1, BlueOutput = 2, GrayOutput = 3
+    Private Const RedInput = 0, GreenInput = 1, BlueInput = 2, ConstantInput = 3
+#End If
+
 'Because all channels can be modified independently, we need to store the settings of each channel.
 ' First dim: output channel (red/green/blue/gray)
 ' Second dim: input channel (red/green/blue/constant value)
-Dim curSliderValues(0 To 3, 0 To 3) As Long
+Private m_curSliderValues(0 To 3, 0 To 3) As Long
 
-Dim forbidUpdate As Boolean
+Private m_forbidUpdate As Boolean
 
 Private Sub btsChannel_Click(ByVal buttonIndex As Long)
 
     'Populate the sliders with any previously saved values
-    forbidUpdate = True
-    sltRed.Value = curSliderValues(btsChannel.ListIndex, RedInput)
-    sltGreen.Value = curSliderValues(btsChannel.ListIndex, GreenInput)
-    sltBlue.Value = curSliderValues(btsChannel.ListIndex, BlueInput)
-    sltConstant.Value = curSliderValues(btsChannel.ListIndex, ConstantInput)
-    forbidUpdate = False
+    m_forbidUpdate = True
+    sltRed.Value = m_curSliderValues(btsChannel.ListIndex, RedInput)
+    sltGreen.Value = m_curSliderValues(btsChannel.ListIndex, GreenInput)
+    sltBlue.Value = m_curSliderValues(btsChannel.ListIndex, BlueInput)
+    sltConstant.Value = m_curSliderValues(btsChannel.ListIndex, ConstantInput)
+    m_forbidUpdate = False
     
     UpdatePreview
 
@@ -233,12 +237,12 @@ Private Sub chkMonochrome_Click()
         btsChannel.Enabled = False
         
         'Populate the sliders with any previously saved values
-        forbidUpdate = True
-        sltRed.Value = curSliderValues(GrayOutput, RedInput)
-        sltGreen.Value = curSliderValues(GrayOutput, GreenInput)
-        sltBlue.Value = curSliderValues(GrayOutput, BlueInput)
-        sltConstant.Value = curSliderValues(GrayOutput, ConstantInput)
-        forbidUpdate = False
+        m_forbidUpdate = True
+        sltRed.Value = m_curSliderValues(GrayOutput, RedInput)
+        sltGreen.Value = m_curSliderValues(GrayOutput, GreenInput)
+        sltBlue.Value = m_curSliderValues(GrayOutput, BlueInput)
+        sltConstant.Value = m_curSliderValues(GrayOutput, ConstantInput)
+        m_forbidUpdate = False
                 
     Else
     
@@ -246,12 +250,12 @@ Private Sub chkMonochrome_Click()
         btsChannel.Enabled = True
         
         'Populate the sliders with any previously saved values
-        forbidUpdate = True
-        sltRed.Value = curSliderValues(btsChannel.ListIndex, RedInput)
-        sltGreen.Value = curSliderValues(btsChannel.ListIndex, GreenInput)
-        sltBlue.Value = curSliderValues(btsChannel.ListIndex, BlueInput)
-        sltConstant.Value = curSliderValues(btsChannel.ListIndex, ConstantInput)
-        forbidUpdate = False
+        m_forbidUpdate = True
+        sltRed.Value = m_curSliderValues(btsChannel.ListIndex, RedInput)
+        sltGreen.Value = m_curSliderValues(btsChannel.ListIndex, GreenInput)
+        sltBlue.Value = m_curSliderValues(btsChannel.ListIndex, BlueInput)
+        sltConstant.Value = m_curSliderValues(btsChannel.ListIndex, ConstantInput)
+        m_forbidUpdate = False
         
     End If
     
@@ -270,7 +274,7 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     ' parse out individual values before continuing.
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.setParamString channelMixerParams
+    cParams.SetParamString channelMixerParams
     
     Dim channelModifiers(0 To 3, 0 To 3) As Double
     Dim x As Long, y As Long
@@ -296,7 +300,7 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -377,7 +381,7 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -388,7 +392,7 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -396,14 +400,14 @@ Private Sub cmdBar_AddCustomPresetData()
 
     'Because this control encompasses a bunch of "invisible" settings, e.g. channel values for channels other
     ' than the selected one, we must write out the ENTIRE CHANNEL ARRAY to the preset file
-    cmdBar.addPresetData "channelArray", createChannelParamString
+    cmdBar.AddPresetData "channelArray", CreateChannelParamString
 
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    updateStoredValues
-    Process "Channel mixer", , createChannelParamString(), UNDO_LAYER
+    UpdateStoredValues
+    Process "Channel mixer", , CreateChannelParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RandomizeClick()
@@ -413,14 +417,14 @@ Private Sub cmdBar_RandomizeClick()
     For x = 0 To 3
         For y = 0 To 3
             If x < 3 Then
-                curSliderValues(x, y) = -200 + Int(Rnd * 401)
+                m_curSliderValues(x, y) = -200 + Int(Rnd * 401)
             Else
-                curSliderValues(x, y) = -255 + Int(Rnd * 511)
+                m_curSliderValues(x, y) = -255 + Int(Rnd * 511)
             End If
         Next y
     Next x
     
-    updateStoredValues
+    UpdateStoredValues
     
 End Sub
 
@@ -429,41 +433,41 @@ Private Sub cmdBar_ReadCustomPresetData()
     'Because this control encompasses a bunch of "invisible" settings, e.g. channel values for channels other
     ' than the selected one, we must read out a custom preset string that contains the ENTIRE CHANNEL ARRAY
     Dim tmpParamString As String
-    tmpParamString = cmdBar.retrievePresetData("channelArray")
+    tmpParamString = cmdBar.RetrievePresetData("channelArray")
     
     'We can now parse that string to retrieve the values for each individual channel
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.setParamString tmpParamString
+    cParams.SetParamString tmpParamString
     
     Dim x As Long, y As Long
     For x = 0 To 3
         For y = 0 To 3
-            curSliderValues(x, y) = cParams.GetLong((x * 4) + y + 1)
+            m_curSliderValues(x, y) = cParams.GetLong((x * 4) + y + 1)
         Next y
     Next x
     
     'Sync the on-screen controls with whatever slider values are relevant
-    forbidUpdate = True
+    m_forbidUpdate = True
     If Not CBool(chkMonochrome) Then
         btsChannel.Enabled = True
-        sltRed.Value = curSliderValues(btsChannel.ListIndex, RedInput)
-        sltGreen.Value = curSliderValues(btsChannel.ListIndex, GreenInput)
-        sltBlue.Value = curSliderValues(btsChannel.ListIndex, BlueInput)
-        sltConstant.Value = curSliderValues(btsChannel.ListIndex, ConstantInput)
+        sltRed.Value = m_curSliderValues(btsChannel.ListIndex, RedInput)
+        sltGreen.Value = m_curSliderValues(btsChannel.ListIndex, GreenInput)
+        sltBlue.Value = m_curSliderValues(btsChannel.ListIndex, BlueInput)
+        sltConstant.Value = m_curSliderValues(btsChannel.ListIndex, ConstantInput)
     Else
         btsChannel.Enabled = False
-        sltRed.Value = curSliderValues(GrayOutput, RedInput)
-        sltGreen.Value = curSliderValues(GrayOutput, GreenInput)
-        sltBlue.Value = curSliderValues(GrayOutput, BlueInput)
-        sltConstant.Value = curSliderValues(GrayOutput, ConstantInput)
+        sltRed.Value = m_curSliderValues(GrayOutput, RedInput)
+        sltGreen.Value = m_curSliderValues(GrayOutput, GreenInput)
+        sltBlue.Value = m_curSliderValues(GrayOutput, BlueInput)
+        sltConstant.Value = m_curSliderValues(GrayOutput, ConstantInput)
     End If
-    forbidUpdate = False
+    m_forbidUpdate = False
 
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updateStoredValues
+    UpdateStoredValues
     UpdatePreview
 End Sub
 
@@ -478,30 +482,30 @@ Private Sub cmdBar_ResetClick()
         Select Case i
         
             Case RedOutput
-                curSliderValues(RedOutput, RedInput) = 100
-                curSliderValues(RedOutput, GreenInput) = 0
-                curSliderValues(RedOutput, BlueInput) = 0
-                curSliderValues(RedOutput, ConstantInput) = 0
+                m_curSliderValues(RedOutput, RedInput) = 100
+                m_curSliderValues(RedOutput, GreenInput) = 0
+                m_curSliderValues(RedOutput, BlueInput) = 0
+                m_curSliderValues(RedOutput, ConstantInput) = 0
             
             Case GreenOutput
-                curSliderValues(GreenOutput, RedInput) = 0
-                curSliderValues(GreenOutput, GreenInput) = 100
-                curSliderValues(GreenOutput, BlueInput) = 0
-                curSliderValues(GreenOutput, ConstantInput) = 0
+                m_curSliderValues(GreenOutput, RedInput) = 0
+                m_curSliderValues(GreenOutput, GreenInput) = 100
+                m_curSliderValues(GreenOutput, BlueInput) = 0
+                m_curSliderValues(GreenOutput, ConstantInput) = 0
             
             Case BlueOutput
-                curSliderValues(BlueOutput, RedInput) = 0
-                curSliderValues(BlueOutput, GreenInput) = 0
-                curSliderValues(BlueOutput, BlueInput) = 100
-                curSliderValues(BlueOutput, ConstantInput) = 0
+                m_curSliderValues(BlueOutput, RedInput) = 0
+                m_curSliderValues(BlueOutput, GreenInput) = 0
+                m_curSliderValues(BlueOutput, BlueInput) = 100
+                m_curSliderValues(BlueOutput, ConstantInput) = 0
                 
             'I'm not sure the best preset values to suggest for gray; for now, I'm defaulting to the ITU standard
             ' conversion formula - that should provide a good starting point for user modifications.
             Case GrayOutput
-                curSliderValues(GrayOutput, RedInput) = 21
-                curSliderValues(GrayOutput, GreenInput) = 72
-                curSliderValues(GrayOutput, BlueInput) = 7
-                curSliderValues(GrayOutput, ConstantInput) = 0
+                m_curSliderValues(GrayOutput, RedInput) = 21
+                m_curSliderValues(GrayOutput, GreenInput) = 72
+                m_curSliderValues(GrayOutput, BlueInput) = 7
+                m_curSliderValues(GrayOutput, ConstantInput) = 0
         
         End Select
     
@@ -557,58 +561,82 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltBlue_Change()
-    If Not forbidUpdate Then
-        updateStoredValues
+    If Not m_forbidUpdate Then
+        UpdateStoredValues
         UpdatePreview
     End If
 End Sub
 
+Private Sub sltBlue_ResetClick()
+    If CBool(chkMonochrome) Then
+        sltBlue.Value = 7
+    Else
+        If (btsChannel.ListIndex = BlueOutput) Then sltBlue.Value = 100 Else sltBlue.Value = 0
+    End If
+End Sub
+
 Private Sub sltConstant_Change()
-    If Not forbidUpdate Then
-        updateStoredValues
+    If Not m_forbidUpdate Then
+        UpdateStoredValues
         UpdatePreview
     End If
 End Sub
 
 Private Sub sltGreen_Change()
-    If Not forbidUpdate Then
-        updateStoredValues
+    If Not m_forbidUpdate Then
+        UpdateStoredValues
         UpdatePreview
+    End If
+End Sub
+
+Private Sub sltGreen_ResetClick()
+    If CBool(chkMonochrome) Then
+        sltGreen.Value = 72
+    Else
+        If (btsChannel.ListIndex = GreenOutput) Then sltGreen.Value = 100 Else sltGreen.Value = 0
     End If
 End Sub
 
 Private Sub sltRed_Change()
-    If Not forbidUpdate Then
-        updateStoredValues
+    If Not m_forbidUpdate Then
+        UpdateStoredValues
         UpdatePreview
     End If
 End Sub
 
+Private Sub sltRed_ResetClick()
+    If CBool(chkMonochrome) Then
+        sltRed.Value = 21
+    Else
+        If (btsChannel.ListIndex = RedOutput) Then sltRed.Value = 100 Else sltRed.Value = 0
+    End If
+End Sub
+
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyChannelMixer createChannelParamString(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyChannelMixer CreateChannelParamString(), True, pdFxPreview
 End Sub
 
 'Because the user can change multiple channels at once, we need to store all current channel values in memory.
-Private Sub updateStoredValues()
+Private Sub UpdateStoredValues()
 
     'Store values according to the current combo box or monochrome setting
     If CBool(chkMonochrome) Then
-        curSliderValues(GrayOutput, RedInput) = sltRed.Value
-        curSliderValues(GrayOutput, GreenInput) = sltGreen.Value
-        curSliderValues(GrayOutput, BlueInput) = sltBlue.Value
-        curSliderValues(GrayOutput, ConstantInput) = sltConstant.Value
+        m_curSliderValues(GrayOutput, RedInput) = sltRed.Value
+        m_curSliderValues(GrayOutput, GreenInput) = sltGreen.Value
+        m_curSliderValues(GrayOutput, BlueInput) = sltBlue.Value
+        m_curSliderValues(GrayOutput, ConstantInput) = sltConstant.Value
     Else
-        curSliderValues(btsChannel.ListIndex, RedInput) = sltRed.Value
-        curSliderValues(btsChannel.ListIndex, GreenInput) = sltGreen.Value
-        curSliderValues(btsChannel.ListIndex, BlueInput) = sltBlue.Value
-        curSliderValues(btsChannel.ListIndex, ConstantInput) = sltConstant.Value
+        m_curSliderValues(btsChannel.ListIndex, RedInput) = sltRed.Value
+        m_curSliderValues(btsChannel.ListIndex, GreenInput) = sltGreen.Value
+        m_curSliderValues(btsChannel.ListIndex, BlueInput) = sltBlue.Value
+        m_curSliderValues(btsChannel.ListIndex, ConstantInput) = sltConstant.Value
     End If
 
 End Sub
 
 'Because this tool has a complex set of input values, we need to condense them all into a single string.
 ' This function handles the creation of that string for both previews and full-image applications.
-Private Function createChannelParamString() As String
+Private Function CreateChannelParamString() As String
 
     Dim paramString As String
     paramString = ""
@@ -617,7 +645,7 @@ Private Function createChannelParamString() As String
     Dim i As Long, j As Long
     For i = 0 To 3
         For j = 0 To 3
-            paramString = paramString & Trim$(Str(curSliderValues(i, j))) & "|"
+            paramString = paramString & Trim$(Str(m_curSliderValues(i, j))) & "|"
         Next j
     Next i
     
@@ -627,7 +655,7 @@ Private Function createChannelParamString() As String
     'Finally, add the preserve luminance checkbox value
     paramString = paramString & Trim$(Str(CBool(chkLuminance)))
     
-    createChannelParamString = paramString
+    CreateChannelParamString = paramString
 
 End Function
 
@@ -635,11 +663,4 @@ End Function
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-
-
-
-
-
-
-
 

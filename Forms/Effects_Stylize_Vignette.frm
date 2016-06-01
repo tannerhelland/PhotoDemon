@@ -384,11 +384,6 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    sltXCenter.Value = 0.5
-    sltYCenter.Value = 0.5
-    sltRadius.Value = 60
-    sltFeathering.Value = 30
-    sltTransparency.Value = 80
     colorPicker.Color = RGB(0, 0, 0)
 End Sub
 

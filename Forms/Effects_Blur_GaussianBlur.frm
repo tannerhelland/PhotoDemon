@@ -45,8 +45,8 @@ Begin VB.Form FormGaussianBlur
       Min             =   0.1
       Max             =   500
       SigDigits       =   1
-      Value           =   5
-      DefaultValue    =   5
+      Value           =   1
+      DefaultValue    =   1
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -169,10 +169,6 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub cmdBar_ResetClick()
-    sltRadius.Value = 1
-End Sub
-
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
@@ -209,10 +205,5 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-
-
-
-
-
 
 

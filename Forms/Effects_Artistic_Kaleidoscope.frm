@@ -133,9 +133,8 @@ Begin VB.Form FormKaleidoscope
          Caption         =   "number of mirrors"
          Min             =   1
          Max             =   16
-         Value           =   8
-         NotchPosition   =   2
-         NotchValueCustom=   8
+         Value           =   6
+         DefaultValue    =   6
       End
       Begin PhotoDemon.pdSlider sltAngle 
          Height          =   705
@@ -379,13 +378,6 @@ End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
-End Sub
-
-Private Sub cmdBar_ResetClick()
-    sltXCenter.Value = 0.5
-    sltYCenter.Value = 0.5
-    sltMirrors.Value = 3
-    sltRadius.Value = 100
 End Sub
 
 Private Sub Form_Activate()

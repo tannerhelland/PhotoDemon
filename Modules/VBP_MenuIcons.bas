@@ -243,12 +243,11 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'addMenuIcon "ISOMETRIC", 3, 12     'Isometric      'NOTE: isometric was removed in v6.4.
     AddMenuIcon "REDUCECOLORS", 3, 16  'Indexed color (Reduce Colors)
     If g_ImageFormats.FreeImageEnabled Then FormMain.MnuImage(16).Enabled = True Else FormMain.MnuImage(16).Enabled = False
-    AddMenuIcon "TILE", 3, 17          'Tile
-    AddMenuIcon "METADATA", 3, 19      'Metadata (top-level)
+    AddMenuIcon "METADATA", 3, 18      'Metadata (top-level)
         '--> Metadata sub-menu
-        AddMenuIcon "BROWSEMD", 3, 19, 0     'Browse metadata
-        AddMenuIcon "COUNTCOLORS", 3, 19, 2  'Count Colors
-        AddMenuIcon "MAPPHOTO", 3, 19, 3     'Map photo location
+        AddMenuIcon "BROWSEMD", 3, 18, 0     'Browse metadata
+        AddMenuIcon "COUNTCOLORS", 3, 18, 2  'Count Colors
+        AddMenuIcon "MAPPHOTO", 3, 18, 3     'Map photo location
     
     'Layer menu
     AddMenuIcon "ADDLAYER", 4, 0        'Add layer (top-level)

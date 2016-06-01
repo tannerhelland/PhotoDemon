@@ -391,16 +391,12 @@ Begin VB.Form FormMain
          Index           =   16
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Tile..."
+         Caption         =   "-"
          Index           =   17
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
-         Index           =   18
-      End
-      Begin VB.Menu MnuImage 
          Caption         =   "Metadata"
-         Index           =   19
+         Index           =   18
          Begin VB.Menu MnuMetadata 
             Caption         =   "Edit metadata..."
             Index           =   0
@@ -3750,15 +3746,11 @@ Private Sub MnuImage_Click(Index As Integer)
         Case 16
             Process "Reduce colors", True
         
-        'Tile
-        Case 17
-            Process "Tile", True
-            
         '<separator>
-        Case 18
+        Case 17
         
         'Metadata top-level
-        Case 19
+        Case 18
     
     End Select
 

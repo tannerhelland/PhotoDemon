@@ -44,8 +44,8 @@ Begin VB.Form FormBilateral
       Caption         =   "radius"
       Min             =   3
       Max             =   25
-      Value           =   9
-      DefaultValue    =   9
+      Value           =   3
+      DefaultValue    =   3
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -98,8 +98,8 @@ Begin VB.Form FormBilateral
       Min             =   1
       Max             =   100
       SigDigits       =   1
-      Value           =   50
-      DefaultValue    =   50
+      Value           =   10
+      DefaultValue    =   10
    End
    Begin PhotoDemon.pdSlider sltColorPower 
       Height          =   705
@@ -413,14 +413,6 @@ End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
-End Sub
-
-Private Sub cmdBar_ResetClick()
-    sltRadius.Value = 9
-    sltSpatialFactor.Value = 10
-    sltColorFactor.Value = 10
-    sltSpatialPower.Value = 2
-    sltColorPower.Value = 2
 End Sub
 
 Private Sub Form_Activate()
