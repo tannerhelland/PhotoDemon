@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.181</langversion>
+<langversion>6.7.182</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -4540,11 +4540,6 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 </phrase>
 
 <phrase>
-<original>Tile</original>
-<translation>Tuiles</translation>
-</phrase>
-
-<phrase>
 <original>Metadata</original>
 <translation>Métadonnées</translation>
 </phrase>
@@ -6176,7 +6171,7 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 <translation>Retirer canal alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 563 phrases. 187 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 561 phrases. 186 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12476,62 +12471,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <!-- END text for Image_Straighten.frm-->
 
-<!-- BEGIN text for Image_Tile.frm (FormTile) -->
-
-<phrase>
-<original>Tile Image</original>
-<translation>Carrelage image</translation>
-</phrase>
-
-<phrase>
-<original>Note: this operation will flatten the image before tiling it.</original>
-<translation>Remarque: cette opération va aplatir l'image avant de carreler il.</translation>
-</phrase>
-
-<phrase>
-<original>render tiled image using</original>
-<translation>Créer une image en mosaïque à l'aide</translation>
-</phrase>
-
-<phrase>
-<original>tiles</original>
-<translation>tuiles</translation>
-</phrase>
-
-<phrase>
-<original>Rendering tiled image</original>
-<translation>Rendu image en mosaïque</translation>
-</phrase>
-
-<phrase>
-<original>Tiled image</original>
-<translation>Image en mosaïque</translation>
-</phrase>
-
-<phrase>
-<original>current screen size</original>
-<translation>Taille de l'écran</translation>
-</phrase>
-
-<phrase>
-<original>custom image size (in pixels)</original>
-<translation>Taille de l'image personnalisée (en pixels)</translation>
-</phrase>
-
-<phrase>
-<original>specific number of tiles</original>
-<translation>Certain nombre de tuiles</translation>
-</phrase>
-
-<phrase>
-<original>the new image will be %1 %3 wide by %2 %3 tall</original>
-<translation>l'image finale sera %1 %3 de large par %2 %3 de hauteur.</translation>
-</phrase>
-
-<!-- Image_Tile.frm contains 35 phrases. 25 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
-
-<!-- END text for Image_Tile.frm-->
-
 <!-- BEGIN text for Layer_Add_RasterLayer.frm (FormNewLayer) -->
 
 <phrase>
@@ -15168,10 +15107,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2590</phrasecount>
+<phrasecount>2579</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1924 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13323 total words. -->
+<!-- As of this build, PhotoDemon contains 4477 phrases. -->
+<!-- 1898 are duplicates, so only 2579 unique phrases have been written to file. -->
+<!-- These 2579 phrases contain approximately 13280 total words. -->
 
 </pdData>

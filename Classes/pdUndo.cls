@@ -64,10 +64,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Undo/Redo currently works as a stack, and entries can only be traversed sequentially.  In the future, I plan to
-' rework this to allow the program to "jump" to any Undo entry arbitrarily (e.g. as part of an Undo History browser).
-' To that end, I am implementing Undo/Redo tracking in a more comprehensive way than may seem necessary for the
-' current stack-only implementation.
+'If you need to debug Undo/Redo data, set this to TRUE.  It will cause the current Undo stack's contents to be printed to the
+' debug window whenever the stack changes.
+Private Const UNDO_DEBUG_MODE As Boolean = True
 
 'In the Undo/Redo stack, which entry is this image currently on?
 Private undoNum As Long
@@ -265,7 +264,7 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     WriteUndoDataToXML GenerateUndoHeaderFilename()
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    'DebugUndo "new Undo entry created"
+    If UNDO_DEBUG_MODE Then DebugUndo "new Undo entry created"
     
 End Sub
 
@@ -359,7 +358,7 @@ Public Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
     If GetUndoTool > -1 Then toolbar_Toolbox.SelectNewTool GetUndoTool
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    'DebugUndo "Undo pointer moved by request to a specific location"
+    If UNDO_DEBUG_MODE Then DebugUndo "Undo pointer moved by request to a specific location"
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
@@ -563,7 +562,7 @@ Public Sub RestoreUndoData()
     End If
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    'DebugUndo "user clicked Undo"
+    If UNDO_DEBUG_MODE Then DebugUndo "user clicked Undo"
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
@@ -712,7 +711,7 @@ Public Sub RestoreRedoData()
     LoadUndo GenerateUndoFilename(undoNum - 1), GetUndoProcessType, GetUndoProcessType, undoStack(undoNum - 1).undoLayerID
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    'DebugUndo "user clicked Redo"
+    If UNDO_DEBUG_MODE Then DebugUndo "user clicked Redo"
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
@@ -817,8 +816,8 @@ End Function
 'Generate a unique Undo/Redo file name, including full temp path.
 Private Function GenerateUndoFilename(ByVal uIndex As Long) As String
     
-    'As a failsafe, all Undo/Redo files are erased when this class is unloaded.  The clearUndos function requires this
-    ' function to generate Undo filnames.  If our parent class was terminated properly, it will have already erased
+    'As a failsafe, all Undo/Redo files are erased when this class is unloaded.  The ClearUndos function requires this
+    ' function to generate Undo filenames.  If our parent class was terminated properly, it will have already erased
     ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
     ' parent reference in advance.
     If Not (parentPDImage Is Nothing) Then

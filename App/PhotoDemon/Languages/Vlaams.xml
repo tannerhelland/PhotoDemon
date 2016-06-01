@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.181</langversion>
+<langversion>6.7.182</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -4540,11 +4540,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>Tile</original>
-<translation>Tegels</translation>
-</phrase>
-
-<phrase>
 <original>Metadata</original>
 <translation>Metadata</translation>
 </phrase>
@@ -6176,7 +6171,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 563 phrases. 187 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 561 phrases. 186 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12476,62 +12471,6 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <!-- END text for Image_Straighten.frm-->
 
-<!-- BEGIN text for Image_Tile.frm (FormTile) -->
-
-<phrase>
-<original>Tile Image</original>
-<translation>Tegel afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Note: this operation will flatten the image before tiling it.</original>
-<translation>Opmerking: deze handeling zal de afbeelding afvlakken voordat ze betegeld wordt.</translation>
-</phrase>
-
-<phrase>
-<original>render tiled image using</original>
-<translation>translateer betegelde afbeelding met behulp van</translation>
-</phrase>
-
-<phrase>
-<original>tiles</original>
-<translation>tegels</translation>
-</phrase>
-
-<phrase>
-<original>Rendering tiled image</original>
-<translation>Translateren betegelde afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Tiled image</original>
-<translation>Betegelde afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>current screen size</original>
-<translation>huidige schermgrootte</translation>
-</phrase>
-
-<phrase>
-<original>custom image size (in pixels)</original>
-<translation>aangepaste afbeeldinggrootte (in pixels)</translation>
-</phrase>
-
-<phrase>
-<original>specific number of tiles</original>
-<translation>bepaald aantal tegels</translation>
-</phrase>
-
-<phrase>
-<original>the new image will be %1 %3 wide by %2 %3 tall</original>
-<translation>de uiteindelijke afbeelding zal %1 %3 breed en %2 %3 hoog zijn.</translation>
-</phrase>
-
-<!-- Image_Tile.frm contains 35 phrases. 25 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
-
-<!-- END text for Image_Tile.frm-->
-
 <!-- BEGIN text for Layer_Add_RasterLayer.frm (FormNewLayer) -->
 
 <phrase>
@@ -15167,10 +15106,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2590</phrasecount>
+<phrasecount>2579</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1924 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13323 total words. -->
+<!-- As of this build, PhotoDemon contains 4477 phrases. -->
+<!-- 1898 are duplicates, so only 2579 unique phrases have been written to file. -->
+<!-- These 2579 phrases contain approximately 13280 total words. -->
 
 </pdData>

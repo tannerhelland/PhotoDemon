@@ -440,7 +440,7 @@ Private Sub cmdFile_Click(Index As Integer)
         
         Case FILE_UNDO
             Process "Undo", , , UNDO_NOTHING
-        
+            
         Case FILE_FADE
             Process "Fade", True
         

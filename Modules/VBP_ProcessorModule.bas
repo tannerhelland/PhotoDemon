@@ -2146,7 +2146,7 @@ End Sub
 
 'When a control tied to a non-destructive layer effect receives focus, it should call this function with its current value (translated
 ' as appropriate).  This function will make a note of that value, which can easily be compared when the control loses focus.
-Public Sub flagInitialNDFXState_Generic(ByVal layerSettingID As PDLAYER_GENERIC_PROPERTY, ByVal layerSettingValue As Variant, ByVal targetLayerID As Long)
+Public Sub FlagInitialNDFXState_Generic(ByVal layerSettingID As PDLAYER_GENERIC_PROPERTY, ByVal layerSettingValue As Variant, ByVal targetLayerID As Long)
     
     'Debug messages can be helpful with this function
     'Debug.Print "ENTRANCE -- LayerSettingID: " & layerSettingID & ", LayerSettingValue: " & layerSettingValue
@@ -2162,7 +2162,7 @@ End Sub
 'When a control tied to a non-destructive layer effect loses focus, it should call this function with its current value (translated
 ' as appropriate).  This function will compare the value against its previously stored value, and if the two do not match, this function
 ' will add an Undo entry and notify the macro recorder (if active).
-Public Sub flagFinalNDFXState_Generic(ByVal layerSettingID As PDLAYER_GENERIC_PROPERTY, ByVal layerSettingValue As Variant)
+Public Sub FlagFinalNDFXState_Generic(ByVal layerSettingID As PDLAYER_GENERIC_PROPERTY, ByVal layerSettingValue As Variant)
     
     'Debug messages can be helpful with this function
     'Debug.Print "EXIT -- LayerSettingID: " & layerSettingID & ", LayerSettingValue: " & layerSettingValue
@@ -2183,20 +2183,20 @@ End Sub
 
 'When a control tied to a non-destructive text effect receives focus, it should call this function with its current value (translated
 ' as appropriate).  This function will make a note of that value, which can easily be compared when the control loses focus.
-Public Sub flagInitialNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVal textSettingValue As Variant, ByVal targetLayerID As Long)
+Public Sub FlagInitialNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVal textSettingValue As Variant, ByVal targetLayerID As Long)
     
     'This function is easy; just store the values we are passed
     prevTextSetting(textSettingID) = textSettingValue
     
     'As a failsafe against layer changes occurring simultaneous with focus changes, also make a note of the current layer.
-    If prevTextLayerID <> targetLayerID Then prevTextLayerID = targetLayerID
+    If (prevTextLayerID <> targetLayerID) Then prevTextLayerID = targetLayerID
     
 End Sub
 
 'When a control tied to a non-destructive text effect loses focus, it should call this function with its current value (translated
 ' as appropriate).  This function will compare the value against its previously stored value, and if the two do not match, this
 ' function will add an Undo entry and notify the macro recorder (if active).
-Public Sub flagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVal textSettingValue As Variant)
+Public Sub FlagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVal textSettingValue As Variant)
     
     'Ignore all requests if no images are loaded
     If (g_OpenImageCount = 0) Then Exit Sub
@@ -2213,7 +2213,7 @@ Public Sub flagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVa
 End Sub
 
 'Same as above, but for actual non-destructive image processing effects
-Public Sub flagInitialNDFXState_NDFX(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE_FX, ByVal ndfxSettingValue As Variant, ByVal targetLayerID As Long)
+Public Sub FlagInitialNDFXState_NDFX(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE_FX, ByVal ndfxSettingValue As Variant, ByVal targetLayerID As Long)
     
     'This function is easy; just store the values we are passed
     prevNDFXSetting(ndfxSettingID) = ndfxSettingValue
@@ -2223,7 +2223,7 @@ Public Sub flagInitialNDFXState_NDFX(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE
     
 End Sub
 
-Public Sub flagFinalNDFXState_NDFX(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE_FX, ByVal ndfxSettingValue As Variant)
+Public Sub FlagFinalNDFXState_NDFX(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE_FX, ByVal ndfxSettingValue As Variant)
     
     'Ignore all requests if no images are loaded
     If g_OpenImageCount = 0 Then Exit Sub

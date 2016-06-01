@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1541</langversion>
+<langversion>6.8.1542</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -4540,11 +4540,6 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Tile</original>
-<translation>平铺</translation>
-</phrase>
-
-<phrase>
 <original>Metadata</original>
 <translation>元数据</translation>
 </phrase>
@@ -6174,7 +6169,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 563 phrases. 187 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 561 phrases. 186 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12475,62 +12470,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <!-- END text for Image_Straighten.frm-->
 
-<!-- BEGIN text for Image_Tile.frm (FormTile) -->
-
-<phrase>
-<original>Tile Image</original>
-<translation>平铺图像</translation>
-</phrase>
-
-<phrase>
-<original>Note: this operation will flatten the image before tiling it.</original>
-<translation>注意：此操作将拼合图像拼接它之前。</translation>
-</phrase>
-
-<phrase>
-<original>render tiled image using</original>
-<translation>渲染使用平铺图像</translation>
-</phrase>
-
-<phrase>
-<original>tiles</original>
-<translation>磁贴</translation>
-</phrase>
-
-<phrase>
-<original>Rendering tiled image</original>
-<translation>渲染拼接图像</translation>
-</phrase>
-
-<phrase>
-<original>Tiled image</original>
-<translation>拼接图像</translation>
-</phrase>
-
-<phrase>
-<original>current screen size</original>
-<translation>当前屏幕尺寸</translation>
-</phrase>
-
-<phrase>
-<original>custom image size (in pixels)</original>
-<translation>自定义图像大小（以像素为单位）</translation>
-</phrase>
-
-<phrase>
-<original>specific number of tiles</original>
-<translation>磁贴具体数量</translation>
-</phrase>
-
-<phrase>
-<original>the new image will be %1 %3 wide by %2 %3 tall</original>
-<translation>新的图像将是 %1 %3 宽 %2 %3</translation>
-</phrase>
-
-<!-- Image_Tile.frm contains 35 phrases. 25 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
-
-<!-- END text for Image_Tile.frm-->
-
 <!-- BEGIN text for Layer_Add_RasterLayer.frm (FormNewLayer) -->
 
 <phrase>
@@ -15163,10 +15102,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2590</phrasecount>
+<phrasecount>2579</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1924 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13323 total words. -->
+<!-- As of this build, PhotoDemon contains 4477 phrases. -->
+<!-- 1898 are duplicates, so only 2579 unique phrases have been written to file. -->
+<!-- These 2579 phrases contain approximately 13280 total words. -->
 
 </pdData>

@@ -469,11 +469,11 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
         
         'Sticky toggle allows the button to operate as a checkbox
         If m_StickyToggle Then
-            Value = Not Value
+            Value = CBool(Not Value)
         
         'Non-sticky toggle modes will always cause the button to be TRUE on a MouseDown event
         Else
-            If (Not Value) Then Value = True
+            Value = True
         End If
         
         RedrawBackBuffer True
@@ -507,13 +507,13 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
-    RedrawBackBuffer
     RaiseEvent GotFocusAPI
+    RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
-    RedrawBackBuffer
     RaiseEvent LostFocusAPI
+    RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)

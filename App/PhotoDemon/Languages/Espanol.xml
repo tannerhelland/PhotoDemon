@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.184</langversion>
+<langversion>6.7.185</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -4541,11 +4541,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>Tile</original>
-<translation>azulejo</translation>
-</phrase>
-
-<phrase>
 <original>Metadata</original>
 <translation>metadatos</translation>
 </phrase>
@@ -6177,7 +6172,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 563 phrases. 187 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 561 phrases. 186 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12477,62 +12472,6 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 
 <!-- END text for Image_Straighten.frm-->
 
-<!-- BEGIN text for Image_Tile.frm (FormTile) -->
-
-<phrase>
-<original>Tile Image</original>
-<translation>Tile Imagen</translation>
-</phrase>
-
-<phrase>
-<original>Note: this operation will flatten the image before tiling it.</original>
-<translation>Nota: esta operación va a acoplar la imagen antes de hacer mosaico.</translation>
-</phrase>
-
-<phrase>
-<original>render tiled image using</original>
-<translation>de procesamiento de imagen de mosaico utilizando</translation>
-</phrase>
-
-<phrase>
-<original>tiles</original>
-<translation>azulejos</translation>
-</phrase>
-
-<phrase>
-<original>Rendering tiled image</original>
-<translation>Imagen de procesamiento de azulejos</translation>
-</phrase>
-
-<phrase>
-<original>Tiled image</original>
-<translation>imagen baldosa</translation>
-</phrase>
-
-<phrase>
-<original>current screen size</original>
-<translation>tamaño de la pantalla actual</translation>
-</phrase>
-
-<phrase>
-<original>custom image size (in pixels)</original>
-<translation>personalizado tamaño de la imagen (en píxeles)</translation>
-</phrase>
-
-<phrase>
-<original>specific number of tiles</original>
-<translation>número específico de azulejos</translation>
-</phrase>
-
-<phrase>
-<original>the new image will be %1 %3 wide by %2 %3 tall</original>
-<translation>la nueva imagen será %1 %3 de ancho por %2 %3 de altura</translation>
-</phrase>
-
-<!-- Image_Tile.frm contains 35 phrases. 25 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
-
-<!-- END text for Image_Tile.frm-->
-
 <!-- BEGIN text for Layer_Add_RasterLayer.frm (FormNewLayer) -->
 
 <phrase>
@@ -15168,10 +15107,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2590</phrasecount>
+<phrasecount>2579</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4514 phrases. -->
-<!-- 1924 are duplicates, so only 2590 unique phrases have been written to file. -->
-<!-- These 2590 phrases contain approximately 13323 total words. -->
+<!-- As of this build, PhotoDemon contains 4477 phrases. -->
+<!-- 1898 are duplicates, so only 2579 unique phrases have been written to file. -->
+<!-- These 2579 phrases contain approximately 13280 total words. -->
 
 </pdData>

@@ -361,26 +361,26 @@ End Sub
 Private Sub btnFontStyles_GotFocusAPI(Index As Integer)
     
     'Non-destructive effects are obviously not tracked if no images are loaded
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     
     'Set Undo/Redo markers for whichever button was toggled
     Select Case Index
     
         'Bold
         Case 0
-            Processor.flagInitialNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
             
         'Italic
         Case 1
-            Processor.flagInitialNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
         
         'Underline
         Case 2
-            Processor.flagInitialNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
         
         'Strikeout
         Case 3
-            Processor.flagInitialNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
     
     End Select
     
@@ -388,24 +388,26 @@ End Sub
 
 Private Sub btnFontStyles_LostFocusAPI(Index As Integer)
     
+    If (g_OpenImageCount = 0) Then Exit Sub
+    
     'Evaluate Undo/Redo markers for whichever button was toggled
     Select Case Index
     
         'Bold
         Case 0
-            If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value
+            If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value
             
         'Italic
         Case 1
-            If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value
+            If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value
         
         'Underline
         Case 2
-            If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value
+            If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value
         
         'Strikeout
         Case 3
-            If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value
+            If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value
     
     End Select
     
@@ -433,11 +435,11 @@ End Sub
 
 Private Sub btsHAlignment_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub btsHAlignment_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
 End Sub
 
 Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
@@ -462,11 +464,11 @@ End Sub
 
 Private Sub btsVAlignment_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub btsVAlignment_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex
 End Sub
 
 Private Sub cboTextFontFace_Click()
@@ -491,11 +493,11 @@ End Sub
 
 Private Sub cboTextFontFace_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex), pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex), pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboTextFontFace_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
 End Sub
 
 Private Sub cboTextRenderingHint_Click()
@@ -530,11 +532,11 @@ End Sub
 
 Private Sub cboTextRenderingHint_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboTextRenderingHint_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
 End Sub
 
 Private Sub csTextFontColor_ColorChanged()
@@ -559,11 +561,11 @@ End Sub
 
 Private Sub csTextFontColor_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_FontColor, csTextFontColor.Color, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_FontColor, csTextFontColor.Color, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub csTextFontColor_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontColor, csTextFontColor.Color
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontColor, csTextFontColor.Color
 End Sub
 
 Private Sub Form_Load()
@@ -670,11 +672,11 @@ End Sub
 
 Private Sub sltTextClarity_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_TextContrast, sltTextClarity.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_TextContrast, sltTextClarity.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltTextClarity_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_TextContrast, sltTextClarity.Value
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_TextContrast, sltTextClarity.Value
 End Sub
 
 Private Sub tudTextFontSize_Change()
@@ -699,11 +701,11 @@ End Sub
 
 Private Sub tudTextFontSize_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_FontSize, tudTextFontSize.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_FontSize, tudTextFontSize.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub tudTextFontSize_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontSize, tudTextFontSize.Value
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontSize, tudTextFontSize.Value
 End Sub
 
 Private Sub txtTextTool_Change()
@@ -728,11 +730,11 @@ End Sub
 
 Private Sub txtTextTool_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_Text, txtTextTool.Text, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_Text, txtTextTool.Text, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub txtTextTool_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_Text, txtTextTool.Text
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_Text, txtTextTool.Text
 End Sub
 
 
@@ -785,7 +787,6 @@ Public Sub UpdateAgainstCurrentLayer()
 
 End Sub
 
-
 'Updating against the current theme accomplishes a number of things:
 ' 1) All user-drawn controls are redrawn according to the current g_Themer settings.
 ' 2) All tooltips and captions are translated according to the current language.
@@ -799,8 +800,4 @@ Public Sub UpdateAgainstCurrentTheme()
     ApplyThemeAndTranslations Me
 
 End Sub
-
-
-
-
 
