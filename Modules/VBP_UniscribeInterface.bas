@@ -3,8 +3,9 @@ Attribute VB_Name = "Uniscribe_Interface"
 'Uniscribe API Types
 'Copyright 2015-2016 by Tanner Helland
 'Created: 14/May/15
-'Last updated: 19/May/15
-'Last update: refactor the module to only keep types here; functions were split into the new pdUniscribe class.
+'Last updated: 01/June/16
+'Last update: construct a new dynamic cache when retrieving script properties; this greatly improves performance for
+'             the font dropdowns, as they need script info to generate idealized font previews
 '
 'Relevant MSDN page for all things Uniscribe:
 ' https://msdn.microsoft.com/en-us/library/windows/desktop/dd374091%28v=vs.85%29.aspx
@@ -22,7 +23,6 @@ Attribute VB_Name = "Uniscribe_Interface"
 
 Option Explicit
 
-'ENUMs
 Public Enum GCPCLASS
     GCPCLASS_LATIN = 1
     GCPCLASS_ARABIC = 2
@@ -97,7 +97,7 @@ End Enum
 
 Public Enum SCRIPT_IS_COMPLEX_FLAGS
     SIC_COMPLEX = 1      ' Treat complex script letters as complex
-    SIC_ASCIIDIGIT = 2   ' Treat digits U+0030 through U+0039 as copmplex
+    SIC_ASCIIDIGIT = 2   ' Treat digits U+0030 through U+0039 as complex
     SIC_NEUTRAL = 4      ' Treat neutrals as complex
 End Enum
 
@@ -260,6 +260,13 @@ Private m_ScriptCachesAreReady As Boolean
 Private m_ScriptTags() As Long
 Private Const OPENTYPE_MAX_NUM_SCRIPT_TAGS As Long = 114
 
+'Retrieving supported scripts is a time- and energy-intensive process.  We can alleviate a lot of the bottlenecks by
+' caching supported scripts after they've been retrieved.
+Private Const INITIAL_SCRIPT_CACHE_SIZE As Long = 16
+Private m_ScriptFontNames() As String
+Private m_ScriptCache() As PD_FONT_PROPERTY
+Private m_NumOfScripts As Long
+
 'While not technically Uniscribe-specific, this class wraps some other Unicode bits as a convenience
 Public Enum PD_STRING_REMAP
     PDRS_NONE = 0
@@ -287,17 +294,37 @@ End Enum
 ' will be marked with SCRIPT_UNKNOWN.
 '
 'Returns: value >=0 identifying how many scripts are supported.  Also, dstFontProperty will be filled accordingly.
-Public Function getScriptsSupportedByFont(ByVal srcFontName As String, ByRef dstFontProperty As PD_FONT_PROPERTY) As Long
+Public Function GetScriptsSupportedByFont(ByVal srcFontName As String, ByRef dstFontProperty As PD_FONT_PROPERTY) As Long
     
     If g_IsVistaOrLater Then
-    
+        
+        Dim i As Long
+        
+        'Before manually retrieving script information, see if the properties for this font have already been retrieved.
+        If (m_NumOfScripts > 0) Then
+            
+            For i = 0 To m_NumOfScripts - 1
+                If (StrComp(srcFontName, m_ScriptFontNames(i), vbBinaryCompare) = 0) Then
+                    dstFontProperty = m_ScriptCache(i)
+                    GetScriptsSupportedByFont = dstFontProperty.numSupportedScripts
+                    Exit Function
+                End If
+            Next i
+            
+        Else
+            If (Not VB_Hacks.IsArrayInitialized(m_ScriptFontNames)) Then
+                ReDim m_ScriptFontNames(0 To INITIAL_SCRIPT_CACHE_SIZE - 1) As String
+                ReDim m_ScriptCache(0 To INITIAL_SCRIPT_CACHE_SIZE - 1) As PD_FONT_PROPERTY
+            End If
+        End If
+        
         'Create a dummy font handle matching the current name
         Dim tmpFont As Long, tmpDC As Long
         If Font_Management.QuickCreateFontAndDC(srcFontName, tmpFont, tmpDC) Then
             
             'As of May 2015, OpenType only supports 114 tags, so a font can't return more values than this!
             ' (We actually size it to 114 + 1, just in case Uniscribe gets picky about having a little extra breathing room.)
-            If Not m_ScriptCachesAreReady Then
+            If (Not m_ScriptCachesAreReady) Then
                 ReDim m_ScriptTags(0 To OPENTYPE_MAX_NUM_SCRIPT_TAGS) As Long
                 m_ScriptCachesAreReady = True
             Else
@@ -307,7 +334,6 @@ Public Function getScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
             'Unfortunately, the nature of this function means it's impossible to take advantage of Uniscribe's internal
             ' caching mechanisms.  As such, we basically have to submit a bunch of blank cache structs.
             Dim tmpCache As SCRIPT_CACHE
-            
             Dim numTagsReceived As Long
             
             'Retrieve a list of supported scripts
@@ -315,21 +341,25 @@ Public Function getScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
             unsReturn = ScriptGetFontScriptTags(tmpDC, VarPtr(tmpCache), 0&, OPENTYPE_MAX_NUM_SCRIPT_TAGS, VarPtr(m_ScriptTags(0)), VarPtr(numTagsReceived))
             
             'Success!  Copy a list of relevant parameters into the destination font property object
-            If unsReturn = S_OK Then
+            If (unsReturn = S_OK) Then
                 
                 'Resize the target array as necessary
-                If numTagsReceived > 0 Then
+                If (numTagsReceived > 0) Then
                     
                     'Mark supported scripts as KNOWN
                     dstFontProperty.ScriptsKnown = True
                     
                     'Copy all tags into the destination object
                     dstFontProperty.numSupportedScripts = numTagsReceived
-                    ReDim dstFontProperty.SupportedScripts(0 To numTagsReceived - 1) As Long
-                    CopyMemoryStrict VarPtr(dstFontProperty.SupportedScripts(0)), VarPtr(m_ScriptTags(0)), numTagsReceived * 4
+                    
+                    'NOTE: if you want, you can also preserve the full list of supported scripts.  PD doesn't do this at present,
+                    ' because it greatly increases the copying time required for structs (as the list of potential scripts is
+                    ' 100+ items).  To use this capability, you must also go into the Font_Management module and uncomment
+                    ' the .SupportedScripts array inside the PD_FONT_PROPERTY definition.
+                    'ReDim dstFontProperty.SupportedScripts(0 To numTagsReceived - 1) As Long
+                    'CopyMemoryStrict VarPtr(dstFontProperty.SupportedScripts(0)), VarPtr(m_ScriptTags(0)), numTagsReceived * 4
                     
                     'Mark a few known tags in advance, as it's helpful to have immediate access to these.
-                    Dim i As Long
                     For i = 0 To numTagsReceived - 1
                         
                         Select Case m_ScriptTags(i)
@@ -357,7 +387,7 @@ Public Function getScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
                     Next i
                     
                     'Return the number of script tags received for this object
-                    getScriptsSupportedByFont = numTagsReceived
+                    GetScriptsSupportedByFont = numTagsReceived
                     
                     'Alternatively, if you're curious, you can dump a list of supported script names to the debug window
                     'If srcFontName = "Cambria Math" Then
@@ -391,12 +421,20 @@ Public Function getScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
             
             'Also, let Uniscribe know we're done with our copy of their cache
             ScriptFreeCache tmpCache
+            
+            'Even in failure, we want to cache this script so that we don't have to test it again in the future.
+            If (m_NumOfScripts > UBound(m_ScriptFontNames)) Then
+                ReDim Preserve m_ScriptFontNames(0 To m_NumOfScripts * 2 - 1) As String
+                ReDim Preserve m_ScriptCache(0 To m_NumOfScripts * 2 - 1) As PD_FONT_PROPERTY
+            End If
+            
+            m_ScriptFontNames(m_NumOfScripts) = srcFontName
+            m_ScriptCache(m_NumOfScripts) = dstFontProperty
+            m_NumOfScripts = m_NumOfScripts + 1
         
         Else
-            getScriptsSupportedByFont = 0
+            GetScriptsSupportedByFont = 0
         End If
-        
-    Else
         
     End If
     
