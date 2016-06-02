@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.182</langversion>
+<langversion>6.7.183</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -125,12 +125,6 @@
 
 <!-- END text for VBP_AutosaveHandler.bas-->
 
-<!-- BEGIN text for VBP_ColorFunctions.bas -->
-
-<!-- VBP_ColorFunctions.bas contains 0 phrases. -->
-
-<!-- END text for VBP_ColorFunctions.bas-->
-
 <!-- BEGIN text for VBP_ColorManagement.bas -->
 
 <phrase>
@@ -177,6 +171,12 @@
 
 <!-- END text for VBP_ColorManagement.bas-->
 
+<!-- BEGIN text for VBP_ColorFunctions.bas -->
+
+<!-- VBP_ColorFunctions.bas contains 0 phrases. -->
+
+<!-- END text for VBP_ColorFunctions.bas-->
+
 <!-- BEGIN text for VBP_DIBHandler.bas -->
 
 <!-- VBP_DIBHandler.bas contains 0 phrases. -->
@@ -194,6 +194,78 @@
 <!-- VBP_DrawModule.bas contains 0 phrases. -->
 
 <!-- END text for VBP_DrawModule.bas-->
+
+<!-- BEGIN text for Drawing2D.bas -->
+
+<!-- Drawing2D.bas contains 0 phrases. -->
+
+<!-- END text for Drawing2D.bas-->
+
+<!-- BEGIN text for VBP_ExifToolInterface.bas -->
+
+<phrase>
+<original>ExifTool could not be started.  Metadata unavailable for this session.</original>
+<translation>ExifTool não pôde ser iniciado. Metadados indisponíveis para esta sessão.</translation>
+</phrase>
+
+<phrase>
+<original>Please wait while the tag database is created</original>
+<translation>Por favor, aguarde enquanto o banco de dados de tag é criado</translation>
+</phrase>
+
+<phrase>
+<original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
+<translation>O banco de dados tag lida com detalhes técnicos dos 20.000 tags de metadados suportados por PhotoDemon. Criando a base de dados leva 10 a 15 segundos, e ele apenas necessita de ser criada uma vez, quando o editor de metadados é usado pela primeira vez.</translation>
+</phrase>
+
+<phrase>
+<original>No metadata available.</original>
+<translation>Sem metadados disponíveis.</translation>
+</phrase>
+
+<phrase>
+<original>This image does not contain any metadata.</original>
+<translation>Esta imagem não contém quaisquer metadados.</translation>
+</phrase>
+
+<phrase>
+<original>No metadata available</original>
+<translation>Sem metadados disponíveis</translation>
+</phrase>
+
+<phrase>
+<original>This file format does not support metadata.  Metadata processing skipped.</original>
+<translation>Este formato de arquivo não suporta metadados. Processamento de metadados ignorado.</translation>
+</phrase>
+
+<phrase>
+<original>ExifTool initiated successfully.  Ready to process metadata.</original>
+<translation>ExifTool iniciada com êxito. Pronto para processar metadados.</translation>
+</phrase>
+
+<phrase>
+<original>WARNING! ExifTool Input/Output pipes could not be created.</original>
+<translation>ATENÇÃO! ExifTool tubulações de entrada/saída não pôde ser criado.</translation>
+</phrase>
+
+<phrase>
+<original>WARNING! ExifTool.exe could not be started.</original>
+<translation>ATENÇÃO! ExifTool.exe não pôde ser iniciado.</translation>
+</phrase>
+
+<phrase>
+<original>Failed to start plugin service (couldn't create pipe).</original>
+<translation>Falha ao iniciar o serviço de plugin (não pôde criar pipe).</translation>
+</phrase>
+
+<phrase>
+<original>Failed to start plugin service (couldn't create process: %1).</original>
+<translation>Falha ao iniciar o serviço de plugin (não conseguiu criar processo: %1).</translation>
+</phrase>
+
+<!-- VBP_ExifToolInterface.bas contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+
+<!-- END text for VBP_ExifToolInterface.bas-->
 
 <!-- BEGIN text for VBP_FastDrawing.bas -->
 
@@ -1164,6 +1236,17 @@ To ativar o suporte para arquivos compactados PDI, clique em Ajuda> Verificar at
 
 <!-- END text for VBP_LayerHandler.bas-->
 
+<!-- BEGIN text for Plugin_LittleCMS.bas -->
+
+<phrase>
+<original>ICC transform requested, but no data found.  Abandoning attempt.</original>
+<translation>ICC transformar solicitado, mas não foram encontrados dados. Abandonar tentativa.</translation>
+</phrase>
+
+<!-- Plugin_LittleCMS.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
+<!-- END text for Plugin_LittleCMS.bas-->
+
 <!-- BEGIN text for VBP_LoadModule.bas -->
 
 <phrase>
@@ -1426,88 +1509,6 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 
 <!-- END text for VBP_OutsideDevelopment_FreeImageV3.bas-->
 
-<!-- BEGIN text for VBP_ExifToolInterface.bas -->
-
-<phrase>
-<original>ExifTool could not be started.  Metadata unavailable for this session.</original>
-<translation>ExifTool não pôde ser iniciado. Metadados indisponíveis para esta sessão.</translation>
-</phrase>
-
-<phrase>
-<original>Please wait while the tag database is created</original>
-<translation>Por favor, aguarde enquanto o banco de dados de tag é criado</translation>
-</phrase>
-
-<phrase>
-<original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
-<translation>O banco de dados tag lida com detalhes técnicos dos 20.000 tags de metadados suportados por PhotoDemon. Criando a base de dados leva 10 a 15 segundos, e ele apenas necessita de ser criada uma vez, quando o editor de metadados é usado pela primeira vez.</translation>
-</phrase>
-
-<phrase>
-<original>No metadata available.</original>
-<translation>Sem metadados disponíveis.</translation>
-</phrase>
-
-<phrase>
-<original>This image does not contain any metadata.</original>
-<translation>Esta imagem não contém quaisquer metadados.</translation>
-</phrase>
-
-<phrase>
-<original>No metadata available</original>
-<translation>Sem metadados disponíveis</translation>
-</phrase>
-
-<phrase>
-<original>This file format does not support metadata.  Metadata processing skipped.</original>
-<translation>Este formato de arquivo não suporta metadados. Processamento de metadados ignorado.</translation>
-</phrase>
-
-<phrase>
-<original>ExifTool initiated successfully.  Ready to process metadata.</original>
-<translation>ExifTool iniciada com êxito. Pronto para processar metadados.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING! ExifTool Input/Output pipes could not be created.</original>
-<translation>ATENÇÃO! ExifTool tubulações de entrada/saída não pôde ser criado.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING! ExifTool.exe could not be started.</original>
-<translation>ATENÇÃO! ExifTool.exe não pôde ser iniciado.</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create pipe).</original>
-<translation>Falha ao iniciar o serviço de plugin (não pôde criar pipe).</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create process: %1).</original>
-<translation>Falha ao iniciar o serviço de plugin (não conseguiu criar processo: %1).</translation>
-</phrase>
-
-<!-- VBP_ExifToolInterface.bas contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
-
-<!-- END text for VBP_ExifToolInterface.bas-->
-
-<!-- BEGIN text for VBP_FreeImage_Expanded.bas -->
-
-<phrase>
-<original>Import via FreeImage failed (Err # %1)</original>
-<translation>Importação via FreeImage falhou (Err # %1)</translation>
-</phrase>
-
-<phrase>
-<original>Applying tone-mapping</original>
-<translation>Aplicando de mapeamento de tom</translation>
-</phrase>
-
-<!-- VBP_FreeImage_Expanded.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
-
-<!-- END text for VBP_FreeImage_Expanded.bas-->
-
 <!-- BEGIN text for Plugin_Management.bas -->
 
 <phrase>
@@ -1543,27 +1544,6 @@ In versão 6.0, PhotoDemon arquivos de macro foram redesenhados para suportar no
 <!-- Plugin_Management.bas contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Plugin_Management.bas-->
-
-<!-- BEGIN text for VBP_pngnqInterface.bas -->
-
-<phrase>
-<original>Using pngquant to optimize the PNG file.  This may take a moment</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>pngquant optimization successful!</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
-<translation></translation>
-</phrase>
-
-<!-- VBP_pngnqInterface.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
-
-<!-- END text for VBP_pngnqInterface.bas-->
 
 <!-- BEGIN text for VBP_ScannerInterface.bas -->
 
@@ -1668,6 +1648,59 @@ To habilitar o suporte do scanner, por favor, copie o arquivo EZTW32.dll (dispon
 <!-- VBP_ScannerInterface.bas contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_ScannerInterface.bas-->
+
+<!-- BEGIN text for VBP_FreeImage_Expanded.bas -->
+
+<phrase>
+<original>Import via FreeImage failed (Err # %1)</original>
+<translation>Importação via FreeImage falhou (Err # %1)</translation>
+</phrase>
+
+<phrase>
+<original>Applying tone-mapping</original>
+<translation>Aplicando de mapeamento de tom</translation>
+</phrase>
+
+<!-- VBP_FreeImage_Expanded.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+
+<!-- END text for VBP_FreeImage_Expanded.bas-->
+
+<!-- BEGIN text for Plugin_OptiPNG.bas -->
+
+<phrase>
+<original>Using OptiPNG to optimize the PNG file.  This may take a moment</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>OptiPNG optimization successful!</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_OptiPNG.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+
+<!-- END text for Plugin_OptiPNG.bas-->
+
+<!-- BEGIN text for VBP_pngnqInterface.bas -->
+
+<phrase>
+<original>Using pngquant to optimize the PNG file.  This may take a moment</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pngquant optimization successful!</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_pngnqInterface.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+
+<!-- END text for VBP_pngnqInterface.bas-->
 
 <!-- BEGIN text for VBP_CompressionUtility.bas -->
 
@@ -2323,6 +2356,12 @@ Please válidos inserir um valor numérico.</translation>
 
 <!-- END text for VBP_MiscValidation.bas-->
 
+<!-- BEGIN text for Toolboxes.bas -->
+
+<!-- Toolboxes.bas contains 0 phrases. -->
+
+<!-- END text for Toolboxes.bas-->
+
 <!-- BEGIN text for VBP_ToolSupport.bas -->
 
 <phrase>
@@ -2343,12 +2382,6 @@ Please válidos inserir um valor numérico.</translation>
 <!-- VBP_ToolSupport.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolSupport.bas-->
-
-<!-- BEGIN text for Toolboxes.bas -->
-
-<!-- Toolboxes.bas contains 0 phrases. -->
-
-<!-- END text for Toolboxes.bas-->
 
 <!-- BEGIN text for VBP_UniscribeInterface.bas -->
 
@@ -2405,6 +2438,12 @@ Please válidos inserir um valor numérico.</translation>
 
 <!-- END text for VBP_ZoomModule.bas-->
 
+<!-- BEGIN text for IFileDialog.cls -->
+
+<!-- IFileDialog.cls contains 0 phrases. -->
+
+<!-- END text for IFileDialog.cls-->
+
 <!-- BEGIN text for cPerlin3D.cls -->
 
 <!-- cPerlin3D.cls contains 0 phrases. -->
@@ -2422,6 +2461,12 @@ Please válidos inserir um valor numérico.</translation>
 <!-- cSHA256.cls contains 0 phrases. -->
 
 <!-- END text for cSHA256.cls-->
+
+<!-- BEGIN text for cUnicodeBrowseFolders.cls -->
+
+<!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
+
+<!-- END text for cUnicodeBrowseFolders.cls-->
 
 <!-- BEGIN text for cBasicBuffer.cls -->
 
@@ -2446,6 +2491,30 @@ Please válidos inserir um valor numérico.</translation>
 <!-- IMRUList.cls contains 0 phrases. -->
 
 <!-- END text for IMRUList.cls-->
+
+<!-- BEGIN text for pdGraphicsBrush.cls -->
+
+<!-- pdGraphicsBrush.cls contains 0 phrases. -->
+
+<!-- END text for pdGraphicsBrush.cls-->
+
+<!-- BEGIN text for pd2DPainter.cls -->
+
+<!-- pd2DPainter.cls contains 0 phrases. -->
+
+<!-- END text for pd2DPainter.cls-->
+
+<!-- BEGIN text for pdGraphicsPen.cls -->
+
+<!-- pdGraphicsPen.cls contains 0 phrases. -->
+
+<!-- END text for pdGraphicsPen.cls-->
+
+<!-- BEGIN text for pdSurface2D.cls -->
+
+<!-- pdSurface2D.cls contains 0 phrases. -->
+
+<!-- END text for pdSurface2D.cls-->
 
 <!-- BEGIN text for pdCaption.cls -->
 
@@ -2642,12 +2711,6 @@ Please válidos inserir um valor numérico.</translation>
 
 <!-- END text for pdGradient.cls-->
 
-<!-- BEGIN text for pdGraphicsBrush.cls -->
-
-<!-- pdGraphicsBrush.cls contains 0 phrases. -->
-
-<!-- END text for pdGraphicsBrush.cls-->
-
 <!-- BEGIN text for pdGraphicsMatrix.cls -->
 
 <!-- pdGraphicsMatrix.cls contains 0 phrases. -->
@@ -2659,12 +2722,6 @@ Please válidos inserir um valor numérico.</translation>
 <!-- pdGraphicsPath.cls contains 0 phrases. -->
 
 <!-- END text for pdGraphicsPath.cls-->
-
-<!-- BEGIN text for pdGraphicsPen.cls -->
-
-<!-- pdGraphicsPen.cls contains 0 phrases. -->
-
-<!-- END text for pdGraphicsPen.cls-->
 
 <!-- BEGIN text for pdICCProfile.cls -->
 
@@ -2716,6 +2773,18 @@ Please válidos inserir um valor numérico.</translation>
 <!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdLayer.cls-->
+
+<!-- BEGIN text for pdLCMSProfile.cls -->
+
+<!-- pdLCMSProfile.cls contains 0 phrases. -->
+
+<!-- END text for pdLCMSProfile.cls-->
+
+<!-- BEGIN text for pdLCMSTransform.cls -->
+
+<!-- pdLCMSTransform.cls contains 0 phrases. -->
+
+<!-- END text for pdLCMSTransform.cls-->
 
 <!-- BEGIN text for pdListSupport.cls -->
 
@@ -3824,12 +3893,6 @@ or os menus File> Open e File> Import.</translation>
 
 <!-- END text for pdCommandBarMini.ctl-->
 
-<!-- BEGIN text for pdComboBox_Font.ctl -->
-
-<!-- pdComboBox_Font.ctl contains 0 phrases. -->
-
-<!-- END text for pdComboBox_Font.ctl-->
-
 <!-- BEGIN text for pdComboBox_Hatch.ctl -->
 
 <!-- pdComboBox_Hatch.ctl contains 0 phrases. -->
@@ -3847,6 +3910,12 @@ or os menus File> Open e File> Import.</translation>
 <!-- pdDropDown.ctl contains 0 phrases. -->
 
 <!-- END text for pdDropDown.ctl-->
+
+<!-- BEGIN text for pdDropDownFont.ctl -->
+
+<!-- pdDropDownFont.ctl contains 0 phrases. -->
+
+<!-- END text for pdDropDownFont.ctl-->
 
 <!-- BEGIN text for pdFxPreview.ctl -->
 
@@ -11818,6 +11887,239 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 
 <!-- END text for File_Save_JXRSettings.frm-->
 
+<!-- BEGIN text for File_Save_Pixmap.frm (dialog_ExportPixmap) -->
+
+<phrase>
+<original>Pixmap Export Options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>change file extension to match color model</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>floating-point</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>binary</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ASCII</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for File_Save_Pixmap.frm-->
+
+<!-- BEGIN text for File_Save_PNG.frm (dialog_ExportPNG) -->
+
+<phrase>
+<original>PNG export options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>click to generate a new preview image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>lossy optimization options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use dithering to improve quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>target quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>apply lossy optimizations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>optimization level</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fast, larger file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>lossless optimization options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation>alfa cut-off</translation>
+</phrase>
+
+<phrase>
+<original>palette size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparency</original>
+<translation>transparência</translation>
+</phrase>
+
+<phrase>
+<original>transparent color (right-click image to select)</original>
+<translation>cor transparente (clique na imagem com o botão direito para selecionar)</translation>
+</phrase>
+
+<phrase>
+<original>use interlacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>compression level</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>embed background color in file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>file size optimization</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>standard PNG</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>web-optimized PNG</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>basic (default)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>moderate</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>indexed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>full</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>binary (by cut-off)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>binary (by color)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>please wait while a new preview image is created</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>These lossy optimization settings reduced file size by %1.</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_PNG.frm contains 59 phrases. 31 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+
+<!-- END text for File_Save_PNG.frm-->
+
+<!-- BEGIN text for File_Save_TIFF.frm (dialog_ExportTIFF) -->
+
+<phrase>
+<original>TIFF export options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color compression</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>monochrome compression</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>page format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>single page (composited image)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>multipage (one page per layer)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ZIP</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>CCITT Fax 4</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>CCITT Fax 3</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_TIFF.frm contains 41 phrases. 32 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for File_Save_TIFF.frm-->
+
 <!-- BEGIN text for File_Save_WebPSettings.frm (dialog_ExportWebP) -->
 
 <phrase>
@@ -11945,23 +12247,8 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <!-- BEGIN text for Image_IndexedColor.frm (FormReduceColors) -->
 
 <phrase>
-<original>palette size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>quantization method</original>
 <translation>método de quantização</translation>
-</phrase>
-
-<phrase>
-<original>transparency</original>
-<translation>transparência</translation>
-</phrase>
-
-<phrase>
-<original>alpha cut-off</original>
-<translation>alfa cut-off</translation>
 </phrase>
 
 <phrase>
@@ -11972,16 +12259,6 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <phrase>
 <original>NeuQuant neural network</original>
 <translation>Rede neural NeuQuant</translation>
-</phrase>
-
-<phrase>
-<original>full</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>binary</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -12018,7 +12295,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 To ativar o suporte para esse recurso, copie o arquivo FreeImage.dll para o plug-in do diretório e recarregar o programa.</translation>
 </phrase>
 
-<!-- Image_IndexedColor.frm contains 21 phrases. 7 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Image_IndexedColor.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Image_IndexedColor.frm-->
 
@@ -12516,6 +12793,27 @@ To ativar o suporte para esse recurso, copie o arquivo FreeImage.dll para o plug
 <!-- Layer_Add_RasterLayer.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Layer_Add_RasterLayer.frm-->
+
+<!-- BEGIN text for Layer_Flatten.frm (FormLayerFlatten) -->
+
+<phrase>
+<original>flatten behavior</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>keep transparency</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>remove transparency</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Layer_Flatten.frm-->
 
 <!-- BEGIN text for Layer_Transparency_AddTransparency.frm (FormTransparency_Basic) -->
 
@@ -13340,23 +13638,8 @@ To ativar o suporte para esse recurso, copie o arquivo FreeImage.dll para o plug
 <!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>line wrap</original>
-<translation>quebra automática de linha</translation>
-</phrase>
-
-<phrase>
-<original>h. padding</original>
-<translation>h. preenchimento</translation>
-</phrase>
-
-<phrase>
-<original>v. padding</original>
-<translation>v. estofamento</translation>
-</phrase>
-
-<phrase>
-<original>line spacing</original>
-<translation>espaçamento entre linhas</translation>
+<original>hinting</original>
+<translation>insinuando</translation>
 </phrase>
 
 <phrase>
@@ -13385,11 +13668,6 @@ To ativar o suporte para esse recurso, copie o arquivo FreeImage.dll para o plug
 </phrase>
 
 <phrase>
-<original>hinting</original>
-<translation>insinuando</translation>
-</phrase>
-
-<phrase>
 <original>fill background</original>
 <translation>encher fundo</translation>
 </phrase>
@@ -13412,6 +13690,26 @@ To ativar o suporte para esse recurso, copie o arquivo FreeImage.dll para o plug
 <phrase>
 <original>outline text</original>
 <translation>texto do esboço</translation>
+</phrase>
+
+<phrase>
+<original>line wrap</original>
+<translation>quebra automática de linha</translation>
+</phrase>
+
+<phrase>
+<original>h. padding</original>
+<translation>h. preenchimento</translation>
+</phrase>
+
+<phrase>
+<original>v. padding</original>
+<translation>v. estofamento</translation>
+</phrase>
+
+<phrase>
+<original>line spacing</original>
+<translation>espaçamento entre linhas</translation>
 </phrase>
 
 <phrase>
@@ -14803,11 +15101,6 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 </phrase>
 
 <phrase>
-<original>transparent color (right-click image to select)</original>
-<translation>cor transparente (clique na imagem com o botão direito para selecionar)</translation>
-</phrase>
-
-<phrase>
 <original>by cut-off</original>
 <translation>por cut-off</translation>
 </phrase>
@@ -14817,302 +15110,9 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 <translation>por cor</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 18 phrases. 14 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 18 phrases. 15 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
-
-<!-- BEGIN text for Plugin_OptiPNG.bas -->
-
-<phrase>
-<original>Using OptiPNG to optimize the PNG file.  This may take a moment</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>OptiPNG optimization successful!</original>
-<translation></translation>
-</phrase>
-
-<!-- Plugin_OptiPNG.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
-
-<!-- END text for Plugin_OptiPNG.bas-->
-
-<!-- BEGIN text for Plugin_LittleCMS.bas -->
-
-<phrase>
-<original>ICC transform requested, but no data found.  Abandoning attempt.</original>
-<translation>ICC transformar solicitado, mas não foram encontrados dados. Abandonar tentativa.</translation>
-</phrase>
-
-<!-- Plugin_LittleCMS.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
-
-<!-- END text for Plugin_LittleCMS.bas-->
-
-<!-- BEGIN text for File_Save_PNG.frm (dialog_ExportPNG) -->
-
-<phrase>
-<original>PNG export options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>click to generate a new preview image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>lossy optimization options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use dithering to improve quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>target quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>apply lossy optimizations</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>optimization level</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>fast, larger file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>lossless optimization options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use interlacing</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>compression level</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>embed background color in file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>file size optimization</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>standard PNG</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>web-optimized PNG</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>basic (default)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>moderate</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>indexed</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>binary (by cut-off)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>binary (by color)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>please wait while a new preview image is created</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>These lossy optimization settings reduced file size by %1.</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_PNG.frm contains 59 phrases. 36 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
-
-<!-- END text for File_Save_PNG.frm-->
-
-<!-- BEGIN text for File_Save_TIFF.frm (dialog_ExportTIFF) -->
-
-<phrase>
-<original>TIFF export options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color compression</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>monochrome compression</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>page format</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>single page (composited image)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>multipage (one page per layer)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>ZIP</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>CCITT Fax 4</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>CCITT Fax 3</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_TIFF.frm contains 41 phrases. 32 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for File_Save_TIFF.frm-->
-
-<!-- BEGIN text for File_Save_Pixmap.frm (dialog_ExportPixmap) -->
-
-<phrase>
-<original>Pixmap Export Options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>change file extension to match color model</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>format</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>floating-point</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>ASCII</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_Pixmap.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for File_Save_Pixmap.frm-->
-
-<!-- BEGIN text for Drawing2D.bas -->
-
-<!-- Drawing2D.bas contains 0 phrases. -->
-
-<!-- END text for Drawing2D.bas-->
-
-<!-- BEGIN text for pdSurface2D.cls -->
-
-<!-- pdSurface2D.cls contains 0 phrases. -->
-
-<!-- END text for pdSurface2D.cls-->
-
-<!-- BEGIN text for pd2DPainter.cls -->
-
-<!-- pd2DPainter.cls contains 0 phrases. -->
-
-<!-- END text for pd2DPainter.cls-->
-
-<!-- BEGIN text for Layer_Flatten.frm (FormLayerFlatten) -->
-
-<phrase>
-<original>flatten behavior</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>keep transparency</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>remove transparency</original>
-<translation></translation>
-</phrase>
-
-<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for Layer_Flatten.frm-->
-
-<!-- BEGIN text for pdLCMSProfile.cls -->
-
-<!-- pdLCMSProfile.cls contains 0 phrases. -->
-
-<!-- END text for pdLCMSProfile.cls-->
-
-<!-- BEGIN text for pdLCMSTransform.cls -->
-
-<!-- pdLCMSTransform.cls contains 0 phrases. -->
-
-<!-- END text for pdLCMSTransform.cls-->
-
-<!-- BEGIN text for cUnicodeBrowseFolders.cls -->
-
-<!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
-
-<!-- END text for cUnicodeBrowseFolders.cls-->
-
-<!-- BEGIN text for IFileDialog.cls -->
-
-<!-- IFileDialog.cls contains 0 phrases. -->
-
-<!-- END text for IFileDialog.cls-->
 
 <!-- Automatic text extraction complete. -->
 

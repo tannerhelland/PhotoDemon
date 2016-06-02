@@ -38,7 +38,7 @@ Begin VB.Form toolpanel_Text
       ScaleHeight     =   89
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   97
-      TabIndex        =   12
+      TabIndex        =   11
       Top             =   0
       Visible         =   0   'False
       Width           =   1455
@@ -65,15 +65,6 @@ Begin VB.Form toolpanel_Text
          Caption         =   "yes"
          Layout          =   1
       End
-   End
-   Begin PhotoDemon.pdComboBox_Font cboTextFontFace 
-      Height          =   375
-      Left            =   7680
-      TabIndex        =   11
-      Top             =   60
-      Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   661
    End
    Begin PhotoDemon.pdButtonStrip btsHAlignment 
       Height          =   435
@@ -290,6 +281,15 @@ Begin VB.Form toolpanel_Text
       _ExtentX        =   2566
       _ExtentY        =   767
       ColorScheme     =   1
+   End
+   Begin PhotoDemon.pdDropDownFont cboTextFontFace 
+      Height          =   375
+      Left            =   7680
+      TabIndex        =   12
+      Top             =   60
+      Width           =   2430
+      _ExtentX        =   4286
+      _ExtentY        =   661
    End
 End
 Attribute VB_Name = "toolpanel_Text"
@@ -575,13 +575,8 @@ Private Sub Form_Load()
     
     'Generate a list of fonts
     If g_IsProgramRunning Then
-        
-        'Initialize the font list
-        cboTextFontFace.initializeFontList
-        
-        'Set the system font as the default
-        cboTextFontFace.setListIndexByString g_InterfaceFont, vbBinaryCompare
-        
+        cboTextFontFace.InitializeFontList
+        cboTextFontFace.ListIndex = cboTextFontFace.ListIndexByString(g_InterfaceFont, vbBinaryCompare)
     End If
     
     cboTextRenderingHint.Clear

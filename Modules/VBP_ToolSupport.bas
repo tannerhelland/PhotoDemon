@@ -582,7 +582,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                 
                 With toolpanel_Text
                     .txtTextTool.Text = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_Text)
-                    .cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontFace)
+                    .cboTextFontFace.ListIndex = .cboTextFontFace.ListIndexByString(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontFace), vbTextCompare)
                     .tudTextFontSize.Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
                     .csTextFontColor.Color = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontColor)
                     .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_TextAntialiasing)
@@ -602,7 +602,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                 
                 With toolpanel_FancyText
                     .txtTextTool.Text = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_Text)
-                    .cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontFace)
+                    .cboTextFontFace.ListIndex = .cboTextFontFace.ListIndexByString(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontFace), vbTextCompare)
                     .tudTextFontSize.Value = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_FontSize)
                     .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_TextAntialiasing)
                     .chkHinting.Value = IIf(pdImages(g_CurrentImage).GetActiveLayer.GetTextLayerProperty(ptp_TextHinting), vbChecked, vbUnchecked)

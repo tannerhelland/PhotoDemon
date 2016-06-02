@@ -432,20 +432,20 @@ Public Function ListIndexByString(ByRef srcString As String, Optional ByVal comp
     
     ListIndexByString = -1
     
-    If m_NumOfItems > 0 Then
+    If (m_NumOfItems > 0) Then
         
         Dim newIndex As Long
         newIndex = -1
         
         Dim i As Long
         For i = 0 To m_NumOfItems - 1
-            If StrComp(srcString, m_Items(i).textEn, compareMode) = 0 Then
+            If (StrComp(srcString, m_Items(i).textEn, compareMode) = 0) Then
                 newIndex = i
                 Exit For
             End If
         Next i
         
-        If (newIndex >= 0) And (newIndex <> m_ListIndex) Then ListIndexByString = newIndex
+        If (newIndex >= 0) Then ListIndexByString = newIndex
         
     End If
     

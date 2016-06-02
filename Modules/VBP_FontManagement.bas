@@ -303,8 +303,11 @@ Public Type PD_FONT_PROPERTY
     Supports_Hebrew As Boolean
     Supports_Latin As Boolean
     Supports_Thai As Boolean
-    numSupportedScripts As Byte
-    SupportedScripts() As Long
+    numSupportedScripts As Integer
+    
+    'At present, this item is unused.  See the Uniscribe_Interface.GetScriptsSupportedByFont() function for more details.
+    'SupportedScripts() As Long
+    
 End Type
 
 Public g_PDFontProperties() As PD_FONT_PROPERTY
@@ -422,13 +425,13 @@ Public Function BuildFontCaches() As Long
     
     'Because the font cache(s) will potentially be accessed by tons of external functions, it pays to sort them just once,
     ' at initialization time.
-    m_PDFontCache.trimStack
+    m_PDFontCache.TrimStack
     m_PDFontCache.SortAlphabetically True
     
     'TESTING ONLY!  Curious about the list of fonts?  Use this line to write it out to the immediate window
     'm_PDFontCache.DEBUG_dumpResultsToImmediateWindow
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "FYI - number of fonts found on this PC: " & m_PDFontCache.getNumOfStrings
+        pdDebug.LogAction "FYI - number of fonts found on this PC: " & m_PDFontCache.GetNumOfStrings
     #End If
     
     'We have one other piece of initialization to do here.  Prep the program UI font cache that outside functions can use for
@@ -479,7 +482,7 @@ Private Function GetAllAvailableFonts() As Boolean
     Drawing.FreeMemoryDC tmpDC
     
     'If at least one font was found, return TRUE
-    GetAllAvailableFonts = CBool(m_PDFontCache.getNumOfStrings > 0)
+    GetAllAvailableFonts = CBool(m_PDFontCache.GetNumOfStrings > 0)
 
 End Function
 
@@ -530,10 +533,10 @@ End Function
 Public Sub BuildFontCacheProperties()
     
     'Make sure the font cache exists
-    If m_PDFontCache.getNumOfStrings > 0 Then
+    If (m_PDFontCache.GetNumOfStrings > 0) Then
         
         'Sync the font property cache size to the font cache size
-        ReDim g_PDFontProperties(0 To m_PDFontCache.getNumOfStrings - 1) As PD_FONT_PROPERTY
+        ReDim g_PDFontProperties(0 To m_PDFontCache.GetNumOfStrings - 1) As PD_FONT_PROPERTY
         
         Dim i As Long
         

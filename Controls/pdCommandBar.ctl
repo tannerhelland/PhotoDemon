@@ -411,7 +411,7 @@ Private Sub RandomizeSettings()
                 eControl.ListIndex = Int(Rnd * eControl.ListCount)
                 
             'List boxes and combo boxes are assigned a random ListIndex
-            Case "ListBox", "ComboBox", "pdComboBox_Font", "pdComboBox_Hatch", "pdDropDown"
+            Case "ListBox", "ComboBox", "pdComboBox_Hatch", "pdDropDown", "pdDropDownFont"
             
                 'Make sure the combo box is not the preset box on this control!
                 If (eControl.hWnd <> cboPreset.hWnd) Then
@@ -649,8 +649,8 @@ Private Sub ResetSettings()
                 End If
                 
             'PD's font combo box is reset to the current system font
-            Case "pdComboBox_Font"
-                eControl.setListIndexByString g_InterfaceFont
+            Case "pdDropDownFont"
+                eControl.ListIndex = eControl.ListIndexByString(g_InterfaceFont)
             
             'Text boxes are set to 0
             Case "TextBox", "pdTextBox"
@@ -892,7 +892,7 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
                 controlValue = Str(eControl.Value)
             
             'Listboxes and Combo Boxes return a .ListIndex property
-            Case "ListBox", "ComboBox", "pdComboBox_Font", "pdComboBox_Hatch", "pdDropDown"
+            Case "ListBox", "ComboBox", "pdComboBox_Hatch", "pdDropDown", "pdDropDownFont"
             
                 'Note that we don't store presets for the preset combo box itself!
                 If (eControl.hWnd <> cboPreset.hWnd) Then controlValue = Str(eControl.ListIndex)
@@ -1083,7 +1083,7 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
                         eControl.Value = CLng(controlValue)
                     
                     'List boxes, combo boxes, and pdComboBox all use a Long-type .ListIndex property
-                    Case "ListBox", "ComboBox", "pdComboBox_Font", "pdComboBox_Hatch", "pdDropDown"
+                    Case "ListBox", "ComboBox", "pdComboBox_Hatch", "pdDropDown", "pdDropDownFont"
                     
                         'Validate range before setting
                         If CLng(controlValue) < eControl.ListCount Then

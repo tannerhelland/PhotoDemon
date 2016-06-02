@@ -38,7 +38,7 @@ Begin VB.Form toolpanel_FancyText
       ScaleHeight     =   89
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   97
-      TabIndex        =   43
+      TabIndex        =   42
       Top             =   840
       Visible         =   0   'False
       Width           =   1455
@@ -97,6 +97,550 @@ Begin VB.Form toolpanel_FancyText
       Alignment       =   1
       Caption         =   "text:"
       ForeColor       =   0
+   End
+   Begin VB.PictureBox picCategory 
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
+      HasDC           =   0   'False
+      Height          =   1500
+      Index           =   0
+      Left            =   8520
+      ScaleHeight     =   100
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   729
+      TabIndex        =   2
+      Top             =   0
+      Width           =   10935
+      Begin PhotoDemon.pdButtonStripVertical btsCharCategory 
+         Height          =   1380
+         Left            =   0
+         TabIndex        =   18
+         Top             =   30
+         Width           =   1815
+         _ExtentX        =   3201
+         _ExtentY        =   2434
+      End
+      Begin VB.PictureBox picCharCategory 
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         DrawStyle       =   5  'Transparent
+         HasDC           =   0   'False
+         Height          =   1500
+         Index           =   0
+         Left            =   1920
+         ScaleHeight     =   100
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   729
+         TabIndex        =   19
+         Top             =   60
+         Visible         =   0   'False
+         Width           =   10935
+         Begin PhotoDemon.pdDropDownFont cboTextFontFace 
+            Height          =   375
+            Left            =   1320
+            TabIndex        =   43
+            Top             =   0
+            Width           =   2415
+            _ExtentX        =   4260
+            _ExtentY        =   661
+         End
+         Begin PhotoDemon.pdSpinner tudTextFontSize 
+            Height          =   345
+            Left            =   1320
+            TabIndex        =   20
+            Top             =   450
+            Width           =   2415
+            _ExtentX        =   4260
+            _ExtentY        =   609
+            DefaultValue    =   16
+            Min             =   1
+            Max             =   1000
+            Value           =   16
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   3
+            Left            =   0
+            Top             =   60
+            Width           =   1125
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "font face:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   4
+            Left            =   0
+            Top             =   510
+            Width           =   1125
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "font size:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   2
+            Left            =   0
+            Top             =   960
+            Width           =   1125
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "font style:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+            Height          =   435
+            Index           =   1
+            Left            =   1800
+            TabIndex        =   21
+            Top             =   870
+            Width           =   450
+            _ExtentX        =   794
+            _ExtentY        =   767
+            StickyToggle    =   -1  'True
+         End
+         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+            Height          =   435
+            Index           =   2
+            Left            =   2280
+            TabIndex        =   22
+            Top             =   870
+            Width           =   450
+            _ExtentX        =   794
+            _ExtentY        =   767
+            StickyToggle    =   -1  'True
+         End
+         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+            Height          =   435
+            Index           =   3
+            Left            =   2760
+            TabIndex        =   23
+            Top             =   870
+            Width           =   450
+            _ExtentX        =   794
+            _ExtentY        =   767
+            StickyToggle    =   -1  'True
+         End
+         Begin PhotoDemon.pdCheckBox chkHinting 
+            Height          =   330
+            Left            =   4200
+            TabIndex        =   24
+            Top             =   450
+            Width           =   3615
+            _ExtentX        =   6376
+            _ExtentY        =   582
+            Caption         =   "hinting"
+            Value           =   0
+         End
+         Begin PhotoDemon.pdDropDown cboTextRenderingHint 
+            Height          =   375
+            Left            =   5400
+            TabIndex        =   25
+            Top             =   0
+            Width           =   2415
+            _ExtentX        =   4260
+            _ExtentY        =   635
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   5
+            Left            =   3840
+            Top             =   60
+            Width           =   1365
+            _ExtentX        =   2408
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "antialiasing:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+            Height          =   435
+            Index           =   0
+            Left            =   1320
+            TabIndex        =   26
+            Top             =   870
+            Width           =   450
+            _ExtentX        =   794
+            _ExtentY        =   767
+            StickyToggle    =   -1  'True
+         End
+      End
+      Begin VB.PictureBox picCharCategory 
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         DrawStyle       =   5  'Transparent
+         HasDC           =   0   'False
+         Height          =   1500
+         Index           =   1
+         Left            =   1920
+         ScaleHeight     =   100
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   729
+         TabIndex        =   27
+         Top             =   60
+         Visible         =   0   'False
+         Width           =   10935
+         Begin PhotoDemon.pdSpinner tudJitter 
+            Height          =   345
+            Index           =   0
+            Left            =   5280
+            TabIndex        =   32
+            Top             =   0
+            Width           =   1215
+            _ExtentX        =   1720
+            _ExtentY        =   609
+            Max             =   100
+            SigDigits       =   1
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   26
+            Left            =   0
+            Top             =   60
+            Width           =   1125
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "remap:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdDropDown cboCharCase 
+            Height          =   375
+            Left            =   1320
+            TabIndex        =   28
+            Top             =   0
+            Width           =   2595
+            _ExtentX        =   4577
+            _ExtentY        =   661
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   30
+            Left            =   0
+            Top             =   540
+            Width           =   1125
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "spacing:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdSlider sltCharSpacing 
+            CausesValidation=   0   'False
+            Height          =   405
+            Left            =   1200
+            TabIndex        =   29
+            Top             =   420
+            Width           =   2760
+            _ExtentX        =   4868
+            _ExtentY        =   873
+            Min             =   -1
+            Max             =   1
+            SigDigits       =   3
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   31
+            Left            =   0
+            Top             =   1020
+            Width           =   1125
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "orientation:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdSlider sltCharOrientation 
+            CausesValidation=   0   'False
+            Height          =   405
+            Left            =   1200
+            TabIndex        =   30
+            Top             =   900
+            Width           =   2760
+            _ExtentX        =   4868
+            _ExtentY        =   873
+            Min             =   -360
+            Max             =   360
+            SigDigits       =   1
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   32
+            Left            =   3960
+            Top             =   60
+            Width           =   1125
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "jitter:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   33
+            Left            =   4125
+            Top             =   1020
+            Width           =   960
+            _ExtentX        =   1693
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "mirror:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdDropDown cboCharMirror 
+            Height          =   375
+            Left            =   5280
+            TabIndex        =   31
+            Top             =   945
+            Width           =   2595
+            _ExtentX        =   4577
+            _ExtentY        =   661
+         End
+         Begin PhotoDemon.pdSpinner tudJitter 
+            Height          =   345
+            Index           =   1
+            Left            =   6675
+            TabIndex        =   33
+            Top             =   0
+            Width           =   1215
+            _ExtentX        =   2143
+            _ExtentY        =   609
+            Max             =   100
+            SigDigits       =   1
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   34
+            Left            =   3960
+            Top             =   540
+            Width           =   1125
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "inflation:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdSlider sltCharInflation 
+            CausesValidation=   0   'False
+            Height          =   405
+            Left            =   5160
+            TabIndex        =   34
+            Top             =   420
+            Width           =   2760
+            _ExtentX        =   4868
+            _ExtentY        =   873
+            Max             =   20
+            SigDigits       =   1
+         End
+      End
+   End
+   Begin VB.PictureBox picCategory 
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
+      HasDC           =   0   'False
+      Height          =   1500
+      Index           =   3
+      Left            =   8520
+      ScaleHeight     =   100
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   729
+      TabIndex        =   7
+      Top             =   0
+      Visible         =   0   'False
+      Width           =   10935
+   End
+   Begin VB.PictureBox picCategory 
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
+      HasDC           =   0   'False
+      Height          =   1500
+      Index           =   2
+      Left            =   8520
+      ScaleHeight     =   100
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   729
+      TabIndex        =   6
+      Top             =   0
+      Visible         =   0   'False
+      Width           =   10935
+      Begin PhotoDemon.pdButtonStripVertical btsAppearanceCategory 
+         Height          =   1380
+         Left            =   0
+         TabIndex        =   9
+         Top             =   30
+         Width           =   1815
+         _ExtentX        =   3201
+         _ExtentY        =   2434
+      End
+      Begin VB.PictureBox picAppearanceCategory 
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         DrawStyle       =   5  'Transparent
+         HasDC           =   0   'False
+         Height          =   1500
+         Index           =   1
+         Left            =   1920
+         ScaleHeight     =   100
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   729
+         TabIndex        =   11
+         Top             =   0
+         Visible         =   0   'False
+         Width           =   10935
+         Begin PhotoDemon.pdPenSelector psTextBackground 
+            Height          =   855
+            Left            =   4680
+            TabIndex        =   39
+            Top             =   480
+            Width           =   2055
+            _ExtentX        =   3625
+            _ExtentY        =   1508
+         End
+         Begin PhotoDemon.pdBrushSelector bsTextBackground 
+            Height          =   855
+            Left            =   1200
+            TabIndex        =   37
+            Top             =   480
+            Width           =   2055
+            _ExtentX        =   3625
+            _ExtentY        =   1508
+         End
+         Begin PhotoDemon.pdCheckBox chkBackground 
+            Height          =   330
+            Left            =   120
+            TabIndex        =   12
+            Top             =   60
+            Width           =   3240
+            _ExtentX        =   4445
+            _ExtentY        =   582
+            Caption         =   "fill background"
+            Value           =   0
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   720
+            Index           =   15
+            Left            =   0
+            Top             =   480
+            Width           =   1095
+            _ExtentX        =   1931
+            _ExtentY        =   1270
+            Alignment       =   1
+            Caption         =   "fill style:"
+            ForeColor       =   0
+            Layout          =   1
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   720
+            Index           =   28
+            Left            =   3360
+            Top             =   480
+            Width           =   1215
+            _ExtentX        =   2143
+            _ExtentY        =   1270
+            Alignment       =   1
+            Caption         =   "border style:"
+            ForeColor       =   0
+            Layout          =   1
+         End
+         Begin PhotoDemon.pdCheckBox chkBackgroundBorder 
+            Height          =   330
+            Left            =   3480
+            TabIndex        =   38
+            Top             =   60
+            Width           =   3240
+            _ExtentX        =   4445
+            _ExtentY        =   582
+            Caption         =   "background border"
+            Value           =   0
+         End
+      End
+      Begin VB.PictureBox picAppearanceCategory 
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         DrawStyle       =   5  'Transparent
+         HasDC           =   0   'False
+         Height          =   1500
+         Index           =   0
+         Left            =   1920
+         ScaleHeight     =   100
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   729
+         TabIndex        =   10
+         Top             =   0
+         Visible         =   0   'False
+         Width           =   10935
+         Begin PhotoDemon.pdPenSelector psText 
+            Height          =   855
+            Left            =   4680
+            TabIndex        =   41
+            Top             =   480
+            Width           =   2055
+            _ExtentX        =   3625
+            _ExtentY        =   1508
+         End
+         Begin PhotoDemon.pdBrushSelector bsText 
+            Height          =   855
+            Left            =   1200
+            TabIndex        =   36
+            Top             =   480
+            Width           =   2055
+            _ExtentX        =   3625
+            _ExtentY        =   1508
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   855
+            Index           =   6
+            Left            =   0
+            Top             =   480
+            Width           =   1095
+            _ExtentX        =   1931
+            _ExtentY        =   1508
+            Alignment       =   1
+            Caption         =   "fill style:"
+            Layout          =   1
+         End
+         Begin PhotoDemon.pdCheckBox chkFillText 
+            Height          =   330
+            Left            =   120
+            TabIndex        =   35
+            Top             =   60
+            Width           =   3255
+            _ExtentX        =   5741
+            _ExtentY        =   582
+            Caption         =   "fill text"
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   855
+            Index           =   7
+            Left            =   3360
+            Top             =   480
+            Width           =   1215
+            _ExtentX        =   2143
+            _ExtentY        =   1508
+            Alignment       =   1
+            Caption         =   "outline style:"
+            Layout          =   1
+         End
+         Begin PhotoDemon.pdCheckBox chkOutlineText 
+            Height          =   330
+            Left            =   3480
+            TabIndex        =   40
+            Top             =   60
+            Width           =   3255
+            _ExtentX        =   5741
+            _ExtentY        =   582
+            Caption         =   "outline text"
+            Value           =   0
+         End
+      End
    End
    Begin VB.PictureBox picCategory 
       BackColor       =   &H80000005&
@@ -262,550 +806,6 @@ Begin VB.Form toolpanel_FancyText
          ForeColor       =   0
       End
    End
-   Begin VB.PictureBox picCategory 
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      HasDC           =   0   'False
-      Height          =   1500
-      Index           =   0
-      Left            =   8520
-      ScaleHeight     =   100
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   729
-      TabIndex        =   2
-      Top             =   0
-      Width           =   10935
-      Begin PhotoDemon.pdButtonStripVertical btsCharCategory 
-         Height          =   1380
-         Left            =   0
-         TabIndex        =   18
-         Top             =   30
-         Width           =   1815
-         _ExtentX        =   3201
-         _ExtentY        =   2434
-      End
-      Begin VB.PictureBox picCharCategory 
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         DrawStyle       =   5  'Transparent
-         HasDC           =   0   'False
-         Height          =   1500
-         Index           =   1
-         Left            =   1920
-         ScaleHeight     =   100
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   729
-         TabIndex        =   28
-         Top             =   60
-         Visible         =   0   'False
-         Width           =   10935
-         Begin PhotoDemon.pdSpinner tudJitter 
-            Height          =   345
-            Index           =   0
-            Left            =   5280
-            TabIndex        =   33
-            Top             =   0
-            Width           =   1215
-            _ExtentX        =   1720
-            _ExtentY        =   609
-            Max             =   100
-            SigDigits       =   1
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   26
-            Left            =   0
-            Top             =   60
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "remap:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdDropDown cboCharCase 
-            Height          =   375
-            Left            =   1320
-            TabIndex        =   29
-            Top             =   0
-            Width           =   2595
-            _ExtentX        =   4577
-            _ExtentY        =   661
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   30
-            Left            =   0
-            Top             =   540
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "spacing:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdSlider sltCharSpacing 
-            CausesValidation=   0   'False
-            Height          =   405
-            Left            =   1200
-            TabIndex        =   30
-            Top             =   420
-            Width           =   2760
-            _ExtentX        =   4868
-            _ExtentY        =   873
-            Min             =   -1
-            Max             =   1
-            SigDigits       =   3
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   31
-            Left            =   0
-            Top             =   1020
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "orientation:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdSlider sltCharOrientation 
-            CausesValidation=   0   'False
-            Height          =   405
-            Left            =   1200
-            TabIndex        =   31
-            Top             =   900
-            Width           =   2760
-            _ExtentX        =   4868
-            _ExtentY        =   873
-            Min             =   -360
-            Max             =   360
-            SigDigits       =   1
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   32
-            Left            =   3960
-            Top             =   60
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "jitter:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   33
-            Left            =   4125
-            Top             =   1020
-            Width           =   960
-            _ExtentX        =   1693
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "mirror:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdDropDown cboCharMirror 
-            Height          =   375
-            Left            =   5280
-            TabIndex        =   32
-            Top             =   945
-            Width           =   2595
-            _ExtentX        =   4577
-            _ExtentY        =   661
-         End
-         Begin PhotoDemon.pdSpinner tudJitter 
-            Height          =   345
-            Index           =   1
-            Left            =   6675
-            TabIndex        =   34
-            Top             =   0
-            Width           =   1215
-            _ExtentX        =   2143
-            _ExtentY        =   609
-            Max             =   100
-            SigDigits       =   1
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   34
-            Left            =   3960
-            Top             =   540
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "inflation:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdSlider sltCharInflation 
-            CausesValidation=   0   'False
-            Height          =   405
-            Left            =   5160
-            TabIndex        =   35
-            Top             =   420
-            Width           =   2760
-            _ExtentX        =   4868
-            _ExtentY        =   873
-            Max             =   20
-            SigDigits       =   1
-         End
-      End
-      Begin VB.PictureBox picCharCategory 
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         DrawStyle       =   5  'Transparent
-         HasDC           =   0   'False
-         Height          =   1500
-         Index           =   0
-         Left            =   1920
-         ScaleHeight     =   100
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   729
-         TabIndex        =   19
-         Top             =   60
-         Visible         =   0   'False
-         Width           =   10935
-         Begin PhotoDemon.pdSpinner tudTextFontSize 
-            Height          =   345
-            Left            =   1320
-            TabIndex        =   20
-            Top             =   450
-            Width           =   2415
-            _ExtentX        =   4260
-            _ExtentY        =   609
-            DefaultValue    =   16
-            Min             =   1
-            Max             =   1000
-            Value           =   16
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   3
-            Left            =   0
-            Top             =   60
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "font face:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   4
-            Left            =   0
-            Top             =   510
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "font size:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   2
-            Left            =   0
-            Top             =   960
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "font style:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-            Height          =   435
-            Index           =   1
-            Left            =   1800
-            TabIndex        =   21
-            Top             =   870
-            Width           =   450
-            _ExtentX        =   794
-            _ExtentY        =   767
-            StickyToggle    =   -1  'True
-         End
-         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-            Height          =   435
-            Index           =   2
-            Left            =   2280
-            TabIndex        =   22
-            Top             =   870
-            Width           =   450
-            _ExtentX        =   794
-            _ExtentY        =   767
-            StickyToggle    =   -1  'True
-         End
-         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-            Height          =   435
-            Index           =   3
-            Left            =   2760
-            TabIndex        =   23
-            Top             =   870
-            Width           =   450
-            _ExtentX        =   794
-            _ExtentY        =   767
-            StickyToggle    =   -1  'True
-         End
-         Begin PhotoDemon.pdCheckBox chkHinting 
-            Height          =   330
-            Left            =   4200
-            TabIndex        =   24
-            Top             =   450
-            Width           =   3615
-            _ExtentX        =   6376
-            _ExtentY        =   582
-            Caption         =   "hinting"
-            Value           =   0
-         End
-         Begin PhotoDemon.pdDropDown cboTextRenderingHint 
-            Height          =   375
-            Left            =   5400
-            TabIndex        =   25
-            Top             =   0
-            Width           =   2415
-            _ExtentX        =   4260
-            _ExtentY        =   635
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   5
-            Left            =   3840
-            Top             =   60
-            Width           =   1365
-            _ExtentX        =   2408
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "antialiasing:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdComboBox_Font cboTextFontFace 
-            Height          =   375
-            Left            =   1320
-            TabIndex        =   26
-            Top             =   0
-            Width           =   2415
-            _ExtentX        =   4260
-            _ExtentY        =   661
-         End
-         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-            Height          =   435
-            Index           =   0
-            Left            =   1320
-            TabIndex        =   27
-            Top             =   870
-            Width           =   450
-            _ExtentX        =   794
-            _ExtentY        =   767
-            StickyToggle    =   -1  'True
-         End
-      End
-   End
-   Begin VB.PictureBox picCategory 
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      HasDC           =   0   'False
-      Height          =   1500
-      Index           =   3
-      Left            =   8520
-      ScaleHeight     =   100
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   729
-      TabIndex        =   7
-      Top             =   0
-      Visible         =   0   'False
-      Width           =   10935
-   End
-   Begin VB.PictureBox picCategory 
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      HasDC           =   0   'False
-      Height          =   1500
-      Index           =   2
-      Left            =   8520
-      ScaleHeight     =   100
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   729
-      TabIndex        =   6
-      Top             =   0
-      Visible         =   0   'False
-      Width           =   10935
-      Begin PhotoDemon.pdButtonStripVertical btsAppearanceCategory 
-         Height          =   1380
-         Left            =   0
-         TabIndex        =   9
-         Top             =   30
-         Width           =   1815
-         _ExtentX        =   3201
-         _ExtentY        =   2434
-      End
-      Begin VB.PictureBox picAppearanceCategory 
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         DrawStyle       =   5  'Transparent
-         HasDC           =   0   'False
-         Height          =   1500
-         Index           =   1
-         Left            =   1920
-         ScaleHeight     =   100
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   729
-         TabIndex        =   11
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   10935
-         Begin PhotoDemon.pdPenSelector psTextBackground 
-            Height          =   855
-            Left            =   4680
-            TabIndex        =   40
-            Top             =   480
-            Width           =   2055
-            _ExtentX        =   3625
-            _ExtentY        =   1508
-         End
-         Begin PhotoDemon.pdBrushSelector bsTextBackground 
-            Height          =   855
-            Left            =   1200
-            TabIndex        =   38
-            Top             =   480
-            Width           =   2055
-            _ExtentX        =   3625
-            _ExtentY        =   1508
-         End
-         Begin PhotoDemon.pdCheckBox chkBackground 
-            Height          =   330
-            Left            =   120
-            TabIndex        =   12
-            Top             =   60
-            Width           =   3240
-            _ExtentX        =   4445
-            _ExtentY        =   582
-            Caption         =   "fill background"
-            Value           =   0
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   720
-            Index           =   15
-            Left            =   0
-            Top             =   480
-            Width           =   1095
-            _ExtentX        =   1931
-            _ExtentY        =   1270
-            Alignment       =   1
-            Caption         =   "fill style:"
-            ForeColor       =   0
-            Layout          =   1
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   720
-            Index           =   28
-            Left            =   3360
-            Top             =   480
-            Width           =   1215
-            _ExtentX        =   2143
-            _ExtentY        =   1270
-            Alignment       =   1
-            Caption         =   "border style:"
-            ForeColor       =   0
-            Layout          =   1
-         End
-         Begin PhotoDemon.pdCheckBox chkBackgroundBorder 
-            Height          =   330
-            Left            =   3480
-            TabIndex        =   39
-            Top             =   60
-            Width           =   3240
-            _ExtentX        =   4445
-            _ExtentY        =   582
-            Caption         =   "background border"
-            Value           =   0
-         End
-      End
-      Begin VB.PictureBox picAppearanceCategory 
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         DrawStyle       =   5  'Transparent
-         HasDC           =   0   'False
-         Height          =   1500
-         Index           =   0
-         Left            =   1920
-         ScaleHeight     =   100
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   729
-         TabIndex        =   10
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   10935
-         Begin PhotoDemon.pdPenSelector psText 
-            Height          =   855
-            Left            =   4680
-            TabIndex        =   42
-            Top             =   480
-            Width           =   2055
-            _ExtentX        =   3625
-            _ExtentY        =   1508
-         End
-         Begin PhotoDemon.pdBrushSelector bsText 
-            Height          =   855
-            Left            =   1200
-            TabIndex        =   37
-            Top             =   480
-            Width           =   2055
-            _ExtentX        =   3625
-            _ExtentY        =   1508
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   855
-            Index           =   6
-            Left            =   0
-            Top             =   480
-            Width           =   1095
-            _ExtentX        =   1931
-            _ExtentY        =   1508
-            Alignment       =   1
-            Caption         =   "fill style:"
-            Layout          =   1
-         End
-         Begin PhotoDemon.pdCheckBox chkFillText 
-            Height          =   330
-            Left            =   120
-            TabIndex        =   36
-            Top             =   60
-            Width           =   3255
-            _ExtentX        =   5741
-            _ExtentY        =   582
-            Caption         =   "fill text"
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   855
-            Index           =   7
-            Left            =   3360
-            Top             =   480
-            Width           =   1215
-            _ExtentX        =   2143
-            _ExtentY        =   1508
-            Alignment       =   1
-            Caption         =   "outline style:"
-            Layout          =   1
-         End
-         Begin PhotoDemon.pdCheckBox chkOutlineText 
-            Height          =   330
-            Left            =   3480
-            TabIndex        =   41
-            Top             =   60
-            Width           =   3255
-            _ExtentX        =   5741
-            _ExtentY        =   582
-            Caption         =   "outline text"
-            Value           =   0
-         End
-      End
-   End
 End
 Attribute VB_Name = "toolpanel_FancyText"
 Attribute VB_GlobalNameSpace = False
@@ -857,11 +857,11 @@ End Sub
 
 Private Sub bsText_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_FillBrush, bsText.Brush, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_FillBrush, bsText.Brush, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub bsText_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FillBrush, bsText.Brush
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FillBrush, bsText.Brush
 End Sub
 
 Private Sub bsTextBackground_BrushChanged()
@@ -886,11 +886,11 @@ End Sub
 
 Private Sub bsTextBackground_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub bsTextBackground_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush
 End Sub
 
 Private Sub btnFontStyles_Click(Index As Integer)
@@ -941,19 +941,19 @@ Private Sub btnFontStyles_GotFocusAPI(Index As Integer)
     
         'Bold
         Case 0
-            Processor.flagInitialNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
             
         'Italic
         Case 1
-            Processor.flagInitialNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
         
         'Underline
         Case 2
-            Processor.flagInitialNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
         
         'Strikeout
         Case 3
-            Processor.flagInitialNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
     
     End Select
     
@@ -966,19 +966,19 @@ Private Sub btnFontStyles_LostFocusAPI(Index As Integer)
     
         'Bold
         Case 0
-            If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value
+            If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value
             
         'Italic
         Case 1
-            If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value
+            If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value
         
         'Underline
         Case 2
-            If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value
+            If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value
         
         'Strikeout
         Case 3
-            If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value
+            If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value
     
     End Select
     
@@ -1036,11 +1036,11 @@ End Sub
 
 Private Sub btsHAlignment_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub btsHAlignment_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
 End Sub
 
 Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
@@ -1065,11 +1065,11 @@ End Sub
 
 Private Sub btsVAlignment_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub btsVAlignment_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex
 End Sub
 
 Private Sub cboCharCase_Click()
@@ -1094,11 +1094,11 @@ End Sub
 
 Private Sub cboCharCase_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboCharCase_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex
 End Sub
 
 Private Sub cboCharMirror_Click()
@@ -1123,11 +1123,11 @@ End Sub
 
 Private Sub cboCharMirror_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboCharMirror_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex
 End Sub
 
 Private Sub cboTextFontFace_Click()
@@ -1152,11 +1152,11 @@ End Sub
 
 Private Sub cboTextFontFace_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex), pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex), pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboTextFontFace_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
 End Sub
 
 Private Sub cboTextRenderingHint_Click()
@@ -1181,11 +1181,11 @@ End Sub
 
 Private Sub cboTextRenderingHint_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboTextRenderingHint_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
 End Sub
 
 Private Sub cboWordWrap_Click()
@@ -1210,11 +1210,11 @@ End Sub
 
 Private Sub cboWordWrap_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboWordWrap_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex
 End Sub
 
 Private Sub chkBackground_Click()
@@ -1239,11 +1239,11 @@ End Sub
 
 Private Sub chkBackground_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_BackgroundActive, CBool(chkBackground.Value), pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_BackgroundActive, CBool(chkBackground.Value), pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkBackground_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_BackgroundActive, CBool(chkBackground.Value)
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackgroundActive, CBool(chkBackground.Value)
 End Sub
 
 Private Sub chkBackgroundBorder_Click()
@@ -1268,11 +1268,11 @@ End Sub
 
 Private Sub chkBackgroundBorder_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_BackBorderActive, CBool(chkBackgroundBorder.Value), pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_BackBorderActive, CBool(chkBackgroundBorder.Value), pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkBackgroundBorder_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_BackBorderActive, CBool(chkBackgroundBorder.Value)
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackBorderActive, CBool(chkBackgroundBorder.Value)
 End Sub
 
 Private Sub chkFillText_Click()
@@ -1297,11 +1297,11 @@ End Sub
 
 Private Sub chkFillText_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_FillActive, chkFillText.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_FillActive, chkFillText.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkFillText_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FillActive, chkFillText.Value
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FillActive, chkFillText.Value
 End Sub
 
 Private Sub chkHinting_Click()
@@ -1326,11 +1326,11 @@ End Sub
 
 Private Sub chkHinting_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value), pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value), pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkHinting_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value)
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value)
 End Sub
 
 Private Sub chkOutlineText_Click()
@@ -1355,11 +1355,11 @@ End Sub
 
 Private Sub chkOutlineText_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_OutlineActive, chkOutlineText.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_OutlineActive, chkOutlineText.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkOutlineText_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_OutlineActive, chkOutlineText.Value
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_OutlineActive, chkOutlineText.Value
 End Sub
 
 Private Sub Form_Load()
@@ -1368,11 +1368,9 @@ Private Sub Form_Load()
     If g_IsProgramRunning Then
         
         'Initialize the font list
-        cboTextFontFace.initializeFontList
+        cboTextFontFace.InitializeFontList
+        cboTextFontFace.ListIndex = cboTextFontFace.ListIndexByString(g_InterfaceFont, vbBinaryCompare)
         
-        'Set the system font as the default
-        cboTextFontFace.setListIndexByString g_InterfaceFont, vbBinaryCompare
-    
         'Draw the primary category selector
         btsCategory.AddItem "character", 0
         btsCategory.AddItem "paragraph", 1
@@ -1521,11 +1519,11 @@ End Sub
 
 Private Sub psText_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_OutlinePen, psText.Pen, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_OutlinePen, psText.Pen, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub psText_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_OutlinePen, psText.Pen
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_OutlinePen, psText.Pen
 End Sub
 
 Private Sub psTextBackground_PenChanged()
@@ -1550,11 +1548,11 @@ End Sub
 
 Private Sub psTextBackground_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub psTextBackground_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen
 End Sub
 
 Private Sub sltCharInflation_Change()
@@ -1579,11 +1577,11 @@ End Sub
 
 Private Sub sltCharInflation_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_CharInflation, sltCharInflation.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_CharInflation, sltCharInflation.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltCharInflation_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_CharInflation, sltCharInflation.Value
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharInflation, sltCharInflation.Value
 End Sub
 
 Private Sub sltCharOrientation_Change()
@@ -1608,11 +1606,11 @@ End Sub
 
 Private Sub sltCharOrientation_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltCharOrientation_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value
 End Sub
 
 Private Sub sltCharSpacing_Change()
@@ -1637,11 +1635,11 @@ End Sub
 
 Private Sub sltCharSpacing_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltCharSpacing_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value
 End Sub
 
 Private Sub tudJitter_Change(Index As Integer)
@@ -1666,11 +1664,11 @@ End Sub
 
 Private Sub tudJitter_GotFocusAPI(Index As Integer)
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub tudJitter_LostFocusAPI(Index As Integer)
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value
 End Sub
 
 Private Sub tudLineSpacing_Change()
@@ -1695,11 +1693,11 @@ End Sub
 
 Private Sub tudLineSpacing_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_LineSpacing, tudLineSpacing.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_LineSpacing, tudLineSpacing.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub tudLineSpacing_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_LineSpacing, tudLineSpacing.Value
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_LineSpacing, tudLineSpacing.Value
 End Sub
 
 Private Sub tudMargin_Change(Index As Integer)
@@ -1743,16 +1741,16 @@ Private Sub tudMargin_GotFocusAPI(Index As Integer)
     Select Case Index
     
         Case 0
-            Processor.flagInitialNDFXState_Text ptp_MarginLeft, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_MarginLeft, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
         
         Case 1
-            Processor.flagInitialNDFXState_Text ptp_MarginRight, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_MarginRight, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
         
         Case 2
-            Processor.flagInitialNDFXState_Text ptp_MarginTop, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_MarginTop, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
         
         Case 3
-            Processor.flagInitialNDFXState_Text ptp_MarginBottom, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+            Processor.FlagInitialNDFXState_Text ptp_MarginBottom, tudMargin(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
         
     End Select
     
@@ -1765,16 +1763,16 @@ Private Sub tudMargin_LostFocusAPI(Index As Integer)
         Select Case Index
         
             Case 0
-                Processor.flagFinalNDFXState_Text ptp_MarginLeft, tudMargin(Index).Value
+                Processor.FlagFinalNDFXState_Text ptp_MarginLeft, tudMargin(Index).Value
             
             Case 1
-                Processor.flagFinalNDFXState_Text ptp_MarginRight, tudMargin(Index).Value
+                Processor.FlagFinalNDFXState_Text ptp_MarginRight, tudMargin(Index).Value
             
             Case 2
-                Processor.flagFinalNDFXState_Text ptp_MarginTop, tudMargin(Index).Value
+                Processor.FlagFinalNDFXState_Text ptp_MarginTop, tudMargin(Index).Value
             
             Case 3
-                Processor.flagFinalNDFXState_Text ptp_MarginBottom, tudMargin(Index).Value
+                Processor.FlagFinalNDFXState_Text ptp_MarginBottom, tudMargin(Index).Value
         
         End Select
         
@@ -1804,11 +1802,11 @@ End Sub
 
 Private Sub tudTextFontSize_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_FontSize, tudTextFontSize.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_FontSize, tudTextFontSize.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub tudTextFontSize_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontSize, tudTextFontSize.Value
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontSize, tudTextFontSize.Value
 End Sub
 
 Private Sub txtTextTool_Change()
@@ -1833,11 +1831,11 @@ End Sub
 
 Private Sub txtTextTool_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_Text, txtTextTool.Text, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Text ptp_Text, txtTextTool.Text, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub txtTextTool_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_Text, txtTextTool.Text
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_Text, txtTextTool.Text
 End Sub
 
 'Outside functions can forcibly request an update against the current layer.  If the current layer is a non-typography text layer of

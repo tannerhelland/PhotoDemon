@@ -499,7 +499,7 @@ Private Sub RedrawBackBuffer()
                 '...then interject an event, so our parent can draw the remainder of this object
                 If listHasFocus Then
                     tmpRect.Left = tmpRect.Left - 1
-                    tmpRect.Width = tmpRect.Width + 2
+                    tmpRect.Width = tmpRect.Width + 1
                 End If
                 RaiseEvent DrawListEntry(bufferDC, i, tmpListItem.textEn, itemIsSelected, itemIsHovered, VarPtr(tmpRect))
                 

@@ -966,8 +966,8 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     
     'Retrieve and cache the hWnd; we need access to this even if the form is unloaded, so we can properly deregister it
     ' with the window manager.
-    Dim dialogHwnd As Long
-    dialogHwnd = dialogForm.hWnd
+    Dim DialogHWND As Long
+    DialogHWND = dialogForm.hWnd
     
     'Get the rect of the main form, which we will use to calculate a center position
     Dim ownerRect As winRect
@@ -980,7 +980,7 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     
     'Get the rect of the child dialog
     Dim dialogRect As winRect
-    GetWindowRect dialogHwnd, dialogRect
+    GetWindowRect DialogHWND, dialogRect
     
     'Determine an upper-left point for the dialog based on its size
     Dim newLeft As Long, newTop As Long
@@ -993,18 +993,18 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     If newTop + (dialogRect.y2 - dialogRect.y1) > g_Displays.GetDesktopBottom Then newTop = g_Displays.GetDesktopBottom - (dialogRect.y2 - dialogRect.y1)
     
     'Move the dialog into place, but do not repaint it (that will be handled in a moment by the .Show event)
-    MoveWindow dialogHwnd, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
+    MoveWindow DialogHWND, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
     
     'Mirror the current run-time window icons to the dialog; this allows the icons to appear in places like Alt+Tab
     ' on older OSes, even though a toolbox window has focus.
-    Interface.FixPopupWindow dialogHwnd, True
+    Interface.FixPopupWindow DialogHWND, True
     
     'Use VB to actually display the dialog.  Note that the sub will pause here until the form is closed.
     dialogForm.Show dialogModality, FormMain
     
     'Now that the dialog has finished, we must replace the windows icons with its original ones - otherwise, VB will mistakenly
     ' unload our custom icons with the window!
-    Interface.FixPopupWindow dialogHwnd, False
+    Interface.FixPopupWindow DialogHWND, False
     
     'Release our reference to this dialog
     If isSecondaryDialog Then
@@ -1381,20 +1381,20 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
             isPDControl = True
         ElseIf (TypeOf eControl Is pdListBoxOD) Or (TypeOf eControl Is pdListBoxViewOD) Then
             isPDControl = True
-        ElseIf (TypeOf eControl Is pdDropDown) Then
+        ElseIf (TypeOf eControl Is pdDropDown) Or (TypeOf eControl Is pdDropDownFont) Then
             isPDControl = True
         End If
         
         'Combo boxes are hopelessly broken in their current incarnation.  They will shortly be rewritten, so please ignore
         ' their problematic behavior at present.
-        If (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then isPDControl = True
+        If (TypeOf eControl Is pdComboBox_Hatch) Then isPDControl = True
         
         'Disabled controls will ignore any function calls, so we must manually enable disabled controls prior to theming them
         If isPDControl Then
             isControlEnabled = eControl.Enabled
-            If Not isControlEnabled Then eControl.Enabled = True
+            If (Not isControlEnabled) Then eControl.Enabled = True
             eControl.UpdateAgainstCurrentTheme
-            If Not isControlEnabled Then eControl.Enabled = False
+            If (Not isControlEnabled) Then eControl.Enabled = False
         End If
         
         'While we're here, forcibly remove TabStops from each picture box.  They should never receive focus, but I often forget
