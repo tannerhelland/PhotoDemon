@@ -416,7 +416,10 @@ Private Sub btsShape_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub chkDistributeEvenly_Click()
-    If (Not m_SuspendUI) Then RedrawEverything
+    If (Not m_SuspendUI) Then
+        RedrawEverything
+        SyncUIToActiveNode
+    End If
 End Sub
 
 Private Sub cmdBar_AddCustomPresetData()
@@ -531,12 +534,12 @@ Private Sub Form_Load()
         
         inactiveArrowFill.SetBrushProperty P2_BrushMode, 0
         inactiveArrowFill.SetBrushProperty P2_BrushOpacity, 100
-        inactiveArrowFill.SetBrushProperty P2_BrushColor, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
+        inactiveArrowFill.SetBrushProperty P2_BrushColor, g_Themer.GetGenericUIColor(UI_Background)
         inactiveArrowFill.CreateBrush
         
         activeArrowFill.SetBrushProperty P2_BrushMode, 0
         activeArrowFill.SetBrushProperty P2_BrushOpacity, 100
-        activeArrowFill.SetBrushProperty P2_BrushColor, g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
+        activeArrowFill.SetBrushProperty P2_BrushColor, g_Themer.GetGenericUIColor(UI_AccentLight)
         activeArrowFill.CreateBrush
         
         Set inactiveOutlinePen = New pd2DPen
@@ -545,15 +548,15 @@ Private Sub Form_Load()
         inactiveOutlinePen.SetPenProperty P2_PenStyle, GP_DS_Solid
         inactiveOutlinePen.SetPenProperty P2_PenOpacity, 100
         inactiveOutlinePen.SetPenProperty P2_PenWidth, 1#
-        inactiveOutlinePen.SetPenProperty P2_PenLineJoin, GP_LJ_Round
-        inactiveOutlinePen.SetPenProperty P2_PenColor, g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
+        inactiveOutlinePen.SetPenProperty P2_PenLineJoin, GP_LJ_Miter
+        inactiveOutlinePen.SetPenProperty P2_PenColor, g_Themer.GetGenericUIColor(UI_GrayDark)
         inactiveOutlinePen.CreatePen
         
         activeOutlinePen.SetPenProperty P2_PenStyle, GP_DS_Solid
         activeOutlinePen.SetPenProperty P2_PenOpacity, 100
         activeOutlinePen.SetPenProperty P2_PenWidth, 1#
-        activeOutlinePen.SetPenProperty P2_PenLineJoin, GP_LJ_Round
-        activeOutlinePen.SetPenProperty P2_PenColor, g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+        activeOutlinePen.SetPenProperty P2_PenLineJoin, GP_LJ_Miter
+        activeOutlinePen.SetPenProperty P2_PenColor, g_Themer.GetGenericUIColor(UI_Accent)
         activeOutlinePen.CreatePen
                 
         'Draw the initial set of interactive gradient nodes
@@ -760,7 +763,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
     tmpPoint = GetPointAtPosition(x, y)
     
     'If this is an existing point, we will either (LMB) mark it as the active point, or (RMB) remove it
-    If tmpPoint >= 0 Then
+    If (tmpPoint >= 0) Then
         
         If (Button And pdLeftButton) <> 0 Then
             m_CurPoint = tmpPoint
@@ -826,7 +829,10 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     If (Button And pdLeftButton) <> 0 Then
     
         'The left mouse button is down.  Assign the new position to the active node.
-        If m_CurPoint >= 0 Then m_GradientPoints(m_CurPoint).pdgp_Position = ConvertPixelCoordsToNodeCoords(x)
+        If (m_CurPoint >= 0) Then
+            If CBool(chkDistributeEvenly.Value) Then chkDistributeEvenly.Value = vbUnchecked
+            m_GradientPoints(m_CurPoint).pdgp_Position = ConvertPixelCoordsToNodeCoords(x)
+        End If
         
         'Redraw the gradient interaction nodes and the gradient itself
         SyncUIToActiveNode
@@ -872,7 +878,7 @@ Private Function GetPointAtPosition(ByVal x As Long, y As Long) As Long
     Next i
     
     'The nearest point (if any) will now be in minIndex.  If it falls below the valid threshold for clicks, accept it.
-    If minDistance < (GRADIENT_NODE_WIDTH / 2) / CDbl(picPreview.ScaleWidth) Then
+    If minDistance < (GRADIENT_NODE_WIDTH / 2) / CDbl(picNodePreview.ScaleWidth) Then
         GetPointAtPosition = minIndex
     Else
         GetPointAtPosition = -1
@@ -885,8 +891,8 @@ Private Function ConvertPixelCoordsToNodeCoords(ByVal x As Long) As Single
     
     'Start by converting the current x-position into the range [0, 1]
     Dim uiMin As Single, uiMax As Single, uiRange As Single
-    uiMin = picPreview.Left + 1
-    uiMax = picPreview.Left + picPreview.ScaleWidth
+    uiMin = picNodePreview.Left + 1
+    uiMax = picNodePreview.Left + picNodePreview.ScaleWidth
     uiRange = uiMax - uiMin
     
     ConvertPixelCoordsToNodeCoords = (CSng(x) - uiMin) / uiRange
@@ -971,8 +977,8 @@ Private Sub DrawGradientNodes()
         
         'Finally, some generic scale factors to simplify the process of positioning nodes (who store their positions on the range [0, 1])
         Dim hOffset As Single, hScaleFactor As Single
-        hOffset = picPreview.Left + 1
-        hScaleFactor = picPreview.ScaleWidth
+        hOffset = (picNodePreview.Left - picInteract.Left) + 1
+        hScaleFactor = (picNodePreview.ScaleWidth - 1)
         
         '...and pen/fill objects for the actual rendering
         Dim blockFill As pd2DBrush
