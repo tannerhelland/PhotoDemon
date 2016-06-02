@@ -254,7 +254,7 @@ Private Sub Form_Load()
     'Populate the "window is minimized" warning
     lblMinimizedWarning.Caption = g_Language.TranslateMessage("This program is currently minimized.  Restore it to normal size for best results.")
     If Not (g_Themer Is Nothing) Then
-        lblMinimizedWarning.ForeColor = g_Themer.GetThemeColor(PDTC_CANCEL_RED)
+        lblMinimizedWarning.ForeColor = g_Themer.GetGenericUIColor(UI_ErrorRed)
     Else
         lblMinimizedWarning.ForeColor = RGB(232, 24, 20)
     End If

@@ -1817,11 +1817,11 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
         Case PDRUID_CHANNEL_RED, PDRUID_CHANNEL_GREEN, PDRUID_CHANNEL_BLUE
             
             If dibType = PDRUID_CHANNEL_RED Then
-                paintColor = g_Themer.GetThemeColor(PDTC_CHANNEL_RED)
+                paintColor = g_Themer.GetGenericUIColor(UI_ChannelRed)
             ElseIf dibType = PDRUID_CHANNEL_GREEN Then
-                paintColor = g_Themer.GetThemeColor(PDTC_CHANNEL_GREEN)
+                paintColor = g_Themer.GetGenericUIColor(UI_ChannelGreen)
             ElseIf dibType = PDRUID_CHANNEL_BLUE Then
-                paintColor = g_Themer.GetThemeColor(PDTC_CHANNEL_BLUE)
+                paintColor = g_Themer.GetGenericUIColor(UI_ChannelBlue)
             End If
             
             'Draw a colored circle just within the bounds of the DIB
@@ -1834,9 +1834,9 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
             Dim circleSize As Long
             circleSize = (dibSize - dibPadding) * 0.55
             
-            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.GetThemeColor(PDTC_CHANNEL_BLUE), True, 210
-            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.GetThemeColor(PDTC_CHANNEL_GREEN), True, 210
-            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, g_Themer.GetThemeColor(PDTC_CHANNEL_RED), True, 210
+            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.GetGenericUIColor(UI_ChannelBlue), True, 210
+            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.GetGenericUIColor(UI_ChannelGreen), True, 210
+            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, g_Themer.GetGenericUIColor(UI_ChannelRed), True, 210
     
     End Select
     

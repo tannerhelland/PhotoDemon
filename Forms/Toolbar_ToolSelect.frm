@@ -1113,7 +1113,7 @@ Public Sub UpdateAgainstCurrentTheme()
     
     'The right separator line is colored according to the current shadow accent color
     If Not g_Themer Is Nothing Then
-        lnRightSeparator.borderColor = g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
+        lnRightSeparator.borderColor = g_Themer.GetGenericUIColor(UI_GrayDark)
     Else
         lnRightSeparator.borderColor = vbHighlight
     End If

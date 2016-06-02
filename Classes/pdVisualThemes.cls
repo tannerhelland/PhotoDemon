@@ -15,10 +15,14 @@ Attribute VB_Exposed = False
 'PhotoDemon Visual Theming class
 'Copyright 2013-2016 by Tanner Helland
 'Created: 23/October/13
-'Last updated: 22/January/16
-'Last update: implement all the little XML bits that make custom theming files possible
+'Last updated: 02/June/16
+'Last update: finally purge all the old hard-coded theme color functions
 '
-'There isn't much here yet, but stay tuned - more is coming!
+'As of release 7.0, PhotoDemon supports the notion of "visual themes".  These themes are XML files that modify
+' the program's appearance.
+'
+'To ensure that all UI elements are themed correctly, colors are never hard-coded.  Instead, they are retrieved
+' from this class via one of several means (typically, control-specific color caches or universal color caches).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -26,66 +30,6 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
-
-
-'***************************************************************************
-'FYI FEB 2015:
-' A bunch of the declarations in this class will be disappearing in the coming weeks.  PD's new XML theme format
-' is coming along nicely, and most of PD's custom controls have already been migrated to the new system.
-' As such, please ignore the dust until this class reaches its final form.
-'***************************************************************************
-
-'I have no idea what colors will actually be used in the final theme format; these are just placeholders for now,
-' to enable centralized coloration of a few UCs.  The end goal is to provide the smallest possible subset of colors
-' necessary to render PD's various UI elements.
-Private Const NUM_THEME_COLORS As Long = 23
-
-Public Enum PD_THEME_COLOR
-    
-    'Accent color variations
-    PDTC_ACCENT_DEFAULT
-    PDTC_ACCENT_HIGHLIGHT
-    PDTC_ACCENT_ULTRALIGHT
-    PDTC_ACCENT_SHADOW
-    
-    'Non-interactive variations (used to render control outlines, etc)
-    PDTC_GRAY_DEFAULT
-    PDTC_GRAY_HIGHLIGHT
-    PDTC_GRAY_ULTRALIGHT
-    PDTC_GRAY_SHADOW
-    
-    'Background variations
-    PDTC_BACKGROUND_DEFAULT
-    PDTC_BACKGROUND_CANVAS
-    PDTC_BACKGROUND_COMMANDBAR
-    
-    'Text variations
-    PDTC_TEXT_DEFAULT
-    PDTC_TEXT_EDITBOX
-    PDTC_TEXT_HYPERLINK
-    PDTC_TEXT_TITLE
-    PDTC_TEXT_INVERT
-    
-    'Misc requirements
-    PDTC_DISABLED
-    PDTC_OK_GREEN
-    PDTC_CANCEL_RED
-    PDTC_FOCUS_RECT
-    
-    PDTC_CHANNEL_RED
-    PDTC_CHANNEL_GREEN
-    PDTC_CHANNEL_BLUE
-    
-End Enum
-
-#If False Then
-    Private Const PDTC_ACCENT_DEFAULT = 0, PDTC_ACCENT_HIGHLIGHT = 0, PDTC_ACCENT_ULTRALIGHT = 0, PDTC_ACCENT_SHADOW = 0
-    Private Const PDTC_GRAY_DEFAULT = 0, PDTC_GRAY_HIGHLIGHT = 0, PDTC_GRAY_ULTRALIGHT = 0, PDTC_GRAY_SHADOW = 0
-    Private Const PDTC_BACKGROUND_DEFAULT = 0, PDTC_BACKGROUND_CANVAS = 0, PDTC_BACKGROUND_COMMANDBAR = 0
-    Private Const PDTC_TEXT_DEFAULT = 0, PDTC_TEXT_EDITBOX = 0, PDTC_TEXT_HYPERLINK = 0, PDTC_TEXT_TITLE = 0, PDTC_TEXT_INVERT = 0
-    Private Const PDTC_DISABLED = 0, PDTC_OK_GREEN = 0, PDTC_CANCEL_RED = 0, PDTC_FOCUS_RECT = 0
-    Private Const PDTC_CHANNEL_RED = 0, PDTC_CHANNEL_GREEN = 0, PDTC_CHANNEL_BLUE = 0
-#End If
 
 'As a broad advisement, themes are classified as:
 ' - THEME_LIGHT (dark accents and text on light backgrounds)
@@ -105,10 +49,6 @@ End Enum
 
 Private curThemeContrast As PD_THEME_CONTRAST
 
-'When a theme is loaded, this class will cache the relevant color values inside this structure.  That makes retrieval
-' extremely fast and easy.  Also, it makes it possible to create themes at run-time with minimal effort.
-Private curThemeColors() As Long
-
 'XML object for parsing theme files.
 Private m_XML As pdXML
 
@@ -123,51 +63,42 @@ Private Const DEFAULT_COLOR_CACHE_SIZE As Long = 16
 ' to cache them here, so one-off functions don't need to deal with messy color maintenance.
 Public Enum PD_UI_COLOR_LIST
     [_First] = 0
-    UI_CanvasElement = 0
-    UI_LineEdge = 1
-    UI_LineCenter = 2
-    UI_ErrorRed = 3
-    UI_TextReadOnly = 4
-    UI_TextClickableSelected = 5
-    UI_TextClickableUnselected = 6
-    [_Last] = 6
-    [_Count] = 7
+    UI_Accent = 0
+    UI_AccentDark = 1
+    UI_AccentLight = 2
+    UI_AccentSemiDark = 3
+    UI_AccentSemiLight = 4
+    UI_AccentUltraDark = 5
+    UI_AccentUltraLight = 6
+    UI_Background = 7
+    UI_CanvasElement = 8
+    UI_ErrorRed = 9
+    UI_GrayDefault = 10
+    UI_GrayDisabled = 11
+    UI_GrayDark = 12
+    UI_GrayLight = 13
+    UI_GrayNeutral = 14
+    UI_GrayUltraLight = 15
+    UI_LineEdge = 16
+    UI_LineCenter = 17
+    UI_TextReadOnly = 18
+    UI_TextClickableSelected = 19
+    UI_TextClickableUnselected = 20
+    UI_ChannelRed = 21
+    UI_ChannelGreen = 22
+    UI_ChannelBlue = 23
+    [_Last] = 23
+    [_Count] = 24
 End Enum
 
 #If False Then
-    Private Const UI_CanvasElement = 0, UI_LineEdge = 1, UI_LineCenter = 2, UI_ErrorRed = 3, UI_TextReadOnly = 4, UI_TextClickableSelected = 5, UI_TextClickableUnselected = 6
+    Private Const UI_Accent = 0, UI_AccentDark = 1, UI_AccentLight = 2, UI_AccentSemiDark = 3, UI_AccentSemiLight = 4, UI_AccentUltraDark = 5, UI_AccentUltraLight = 6, UI_Background = 7, UI_CanvasElement = 8, UI_ErrorRed = 9
+    Private Const UI_GrayDefault = 10, UI_GrayDisabled = 11, UI_GrayDark = 12, UI_GrayLight = 13, UI_GrayNeutral = 14, UI_GrayUltraLight = 15, UI_LineEdge = 16, UI_LineCenter = 17, UI_TextReadOnly = 18, UI_TextClickableSelected = 19
+    Private Const UI_TextClickableUnselected = 20, UI_ChannelRed = 21, UI_ChannelGreen = 22, UI_ChannelBlue = 23
 #End If
 
 'Color retrieval and storage of program-wide UI colors is handled by a dedicated class
 Private m_UniversalColors As pdThemeColors
-
-'Despite an identical name, this function does *not* use the Win32 API to retrieve a color from the system theme.
-' Instead, it retrieves a color from PD's current theme color cache.
-Friend Function GetThemeColor(ByVal colorType As PD_THEME_COLOR) As Long
-    
-    'Returning a theme color is fairly trivial.  Start by seeing if the requested color is available.
-    GetThemeColor = curThemeColors(colorType)
-    
-    'If the retrieved value is -1, that means that the current theme does not contain a value for this color.
-    ' Return PD's default value for this color.
-    If GetThemeColor = -1 Then
-    
-        'Default to the relevant PD default theme value.
-        GetThemeColor = GetDefaultPDColor(colorType)
-        
-    End If
-        
-End Function
-
-'Reset the theme color cache to all -1 values.
-Private Sub ResetThemeCache()
-
-    Dim i As Long
-    For i = 0 To NUM_THEME_COLORS - 1
-        curThemeColors(i) = -1
-    Next i
-
-End Sub
 
 'Fill the curThemeColors array with PD's default color scheme
 Public Sub LoadDefaultPDTheme()
@@ -198,15 +129,6 @@ Public Sub LoadDefaultPDTheme()
     
     'Theme colors are loaded on-demand, so we have no further work to do here
     
-    'OLD CODE FOLLOWS:
-    
-    
-    'Loop through the curThemeColors array, filling each entry with the PD default
-    Dim i As Long
-    For i = 0 To NUM_THEME_COLORS - 1
-        curThemeColors(i) = GetDefaultPDColor(i)
-    Next i
-
 End Sub
 
 'Load a given theme file.  Note that the filename SHOULD NOT INCLUDE THE FULL PATH - just the filename.  PD will
@@ -318,127 +240,6 @@ Public Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
         
     End If
     
-End Function
-
-'Retrieve a default PD theme color.  These values are hard-coded, and will be superceded by any values supplied
-' by a user-selected theme.
-Private Function GetDefaultPDColor(ByVal colorType As PD_THEME_COLOR) As Long
-
-    'LIGHT THEME DEFAULTS
-    If curThemeContrast = THEME_LIGHT Then
-    
-        'FOR REFERENCE: here are some of the colors currently in use in PD, prior to fully implementing theming:
-
-        ' Most label controls: #404040 | RGB(64, 64, 64)
-        ' Slider track border: #B1BAC2 | RGB(177, 186, 194)
-        ' Slider fill and knob: #3CAFE6 | RGB(60, 175, 230)
-        ' Radio button border: #7e8c92 | RGB(126, 140, 146)
-        ' Radio button fill (if selected): #3296dc | RGB(50, 150, 220)
-        ' Green for "valid input": #00c0000 | RGB(0, 192, 0)
-        ' Red for "bad input": #c000000 | RGB(192, 0, 0)
-        ' Hyperlink blue: #3170c0 | RGB(49, 112, 192)
-        
-        'FOR REFERENCE: this is a list of theme colors being used *in the present build*:
-        
-        ' Radio button UC:
-            ' PDTC_BACKGROUND_DEFAULT (background)
-            
-            ' PDTC_ACCENT_NONINTERACTIVE, PDTCV_NORMAL (radio border, enabled)
-            ' PDTC_ACCENT_INTERACTIVE, PDTCV_NORMAL (radio fill, enabled)
-            ' PDTC_ACCENT_INTERACTIVE, PDTCV_DISABLED (radio fill + border, disabled)
-            
-            ' PDTC_TEXT_DEFAULT, PDTCV_HIGHLIGHT (text, mouse_over)
-            ' PDTC_TEXT_DEFAULT, PDTCV_NORMAL (text, not mouse_over)
-            ' PDTC_TEXT_DEFAULT, PDTCV_DISABLED (text, disabled)
-        
-        Select Case colorType
-        
-            'Accent color variations
-            
-            'Accent lines, etc
-            Case PDTC_ACCENT_DEFAULT
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("3296dc")
-            
-            'Slider track, large contiguous blocks of color
-            Case PDTC_ACCENT_HIGHLIGHT
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("#3cafe6")
-            
-            'Background on toolbox images (which can't afford to be as dark as the usual highlight value)
-            Case PDTC_ACCENT_ULTRALIGHT
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("d2f0fa")
-            
-            'Small or heavily aliased items (e.g. check box check, radio button dot)
-            Case PDTC_ACCENT_SHADOW
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("#3270dc")
-            
-            
-            'Non-interactive variations (used to render control outlines, etc)
-            Case PDTC_GRAY_DEFAULT
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("#929292")
-                
-            Case PDTC_GRAY_HIGHLIGHT
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("#bababa")
-            
-            Case PDTC_GRAY_ULTRALIGHT
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("#e2e2e2")
-            
-            Case PDTC_GRAY_SHADOW
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("#5b5b5b")
-            
-            'Background variations
-            Case PDTC_BACKGROUND_DEFAULT
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("#ffffff")
-                
-            Case PDTC_BACKGROUND_CANVAS
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("#a0a0a0")
-                
-            Case PDTC_BACKGROUND_COMMANDBAR
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("#dcdce1")
-            
-            'Text variations
-            Case PDTC_TEXT_DEFAULT
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("#404040")
-                
-            Case PDTC_TEXT_EDITBOX
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("#202020")
-                
-            Case PDTC_TEXT_HYPERLINK
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("#3170c0")
-                
-            Case PDTC_TEXT_TITLE
-            
-            Case PDTC_TEXT_INVERT
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("#ffffff")
-            
-            'Misc colors
-            Case PDTC_DISABLED
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("#b1bac2")
-            
-            Case PDTC_OK_GREEN
-            Case PDTC_CANCEL_RED
-                GetDefaultPDColor = Colors.GetRGBLongFromHex("#e81828")
-            
-            Case PDTC_FOCUS_RECT
-            
-            Case PDTC_CHANNEL_RED
-                    GetDefaultPDColor = Colors.GetRGBLongFromHex("#dc2824")
-                    
-            Case PDTC_CHANNEL_GREEN
-                    GetDefaultPDColor = Colors.GetRGBLongFromHex("#3ccf31")
-                    
-            Case PDTC_CHANNEL_BLUE
-                    GetDefaultPDColor = Colors.GetRGBLongFromHex("#317bcf")
-            
-        End Select
-    
-    'DARK THEME DEFAULTS
-    ElseIf curThemeContrast = THEME_DARK Then
-    
-    'HIGH CONTRAST DEFAULTS
-    Else
-    
-    End If
-
 End Function
 
 'Call this function to verify that an object exists inside the current theme file.  If it doesn't, you should not
@@ -579,13 +380,30 @@ Private Sub CacheUniversalColors()
     m_UniversalColors.InitializeColorList "UIElements", colorCount
     
     With m_UniversalColors
+        .LoadThemeColor UI_Accent, "UniversalAccent", IDE_BLUE
+        .LoadThemeColor UI_AccentDark, "UniversalAccentDark", IDE_BLUE
+        .LoadThemeColor UI_AccentSemiDark, "UniversalAccentSemidark", IDE_BLUE
+        .LoadThemeColor UI_AccentUltraDark, "UniversalAccentUltradark", IDE_BLUE
+        .LoadThemeColor UI_AccentLight, "UniversalAccentLight", IDE_BLUE
+        .LoadThemeColor UI_AccentSemiLight, "UniversalAccentSemilight", IDE_BLUE
+        .LoadThemeColor UI_AccentUltraLight, "UniversalAccentUltralight", IDE_BLUE
+        .LoadThemeColor UI_Background, "UniversalBackground", IDE_WHITE
         .LoadThemeColor UI_CanvasElement, "UniversalCanvasElement", IDE_GRAY
+        .LoadThemeColor UI_ErrorRed, "UniversalErrorRed", RGB(255, 0, 0)
+        .LoadThemeColor UI_GrayDefault, "UniversalGrayDefault", IDE_GRAY
+        .LoadThemeColor UI_GrayDisabled, "UniversalGrayDisabled", IDE_GRAY
+        .LoadThemeColor UI_GrayDark, "UniversalGrayDark", IDE_GRAY
+        .LoadThemeColor UI_GrayLight, "UniversalGrayLight", IDE_GRAY
+        .LoadThemeColor UI_GrayNeutral, "UniversalGrayNeutral", IDE_GRAY
+        .LoadThemeColor UI_GrayUltraLight, "UniversalGrayUltralight", IDE_GRAY
         .LoadThemeColor UI_LineEdge, "UniversalLineEdge", IDE_BLUE
         .LoadThemeColor UI_LineCenter, "UniversalLineCenter", IDE_GRAY
-        .LoadThemeColor UI_ErrorRed, "UniversalErrorRed", RGB(255, 0, 0)
         .LoadThemeColor UI_TextReadOnly, "UniversalTextReadOnly", IDE_BLACK
         .LoadThemeColor UI_TextClickableSelected, "UniversalTextClickableSelected", IDE_WHITE
         .LoadThemeColor UI_TextClickableUnselected, "UniversalTextClickableUnselected", IDE_GRAY
+        .LoadThemeColor UI_ChannelRed, "UniversalChannelRed", RGB(255, 0, 0)
+        .LoadThemeColor UI_ChannelGreen, "UniversalChannelGreen", RGB(0, 255, 0)
+        .LoadThemeColor UI_ChannelBlue, "UniversalChannelBlue", RGB(0, 0, 255)
     End With
     
 End Sub
@@ -597,18 +415,6 @@ Friend Function GetGenericUIColor(ByVal colorID As PD_UI_COLOR_LIST, Optional By
 End Function
 
 Private Sub Class_Initialize()
-    
     Set m_XML = New pdXML
     Set m_UniversalColors = New pdThemeColors
-    
-    'OLD CODE FOLLOWS
-    
-    'Prepare our color cache
-    ReDim curThemeColors(0 To NUM_THEME_COLORS - 1) As Long
-    
-    'Reset the color cache.  This is important, because 0 is a valid color, so we can't use it to indicate a
-    ' missing theme entry.  Instead, we use -1 to represent a missing entry.  The color retrieval function
-    ' will automatically cascade to the nearest relevant value if an entry can't be found.
-    ResetThemeCache
-    
 End Sub
