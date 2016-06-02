@@ -194,6 +194,32 @@
 				<DropArrow-hover>AccentDefault</DropArrow-hover>
 			</PDDropDown>
 			
+			<PDDropDownFont>
+				<Background></Background>
+				<ComboBorder>GrayDefault</ComboBorder>
+				<ComboBorder-hover>AccentDefault</ComboBorder-hover>
+				<ComboBorder-active>AccentDark</ComboBorder-active>
+				<ComboBorder-disabled>GrayDefault</ComboBorder-disabled>
+				<ComboFill>BackgroundDefault</ComboFill>
+				<ComboFill-active>AccentDefault</ComboFill-active>
+				<ComboFill-disabled>GrayLight</ComboFill-disabled>
+				<Caption>TextDark</Caption>
+				<Caption-disabled>TextDark</Caption-disabled>
+				<Caption-hover>TextDefault</Caption-hover>
+				<DropArrow>GrayDefault</DropArrow>
+				<DropArrow-disabled>GrayDark</DropArrow-disabled>
+				<DropArrow-active>TextInvert</DropArrow-active>
+				<DropArrow-hover>AccentDefault</DropArrow-hover>
+				<ListCaption>TextDark</ListCaption>
+				<ListCaption-disabled>TextDark</ListCaption-disabled>
+				<ListCaption-active>TextInvert</ListCaption-active>
+				<ListCaption-hover>TextHyperlink</ListCaption-hover>
+				<ListBorder>BackgroundDefault</ListBorder>
+				<ListBorder-hover>AccentDefault</ListBorder-hover>
+				<ListBorder-active>AccentDark</ListBorder-active>
+				<ListBorder-disabled>BackgroundDefault</ListBorder-disabled>
+			</PDDropDownFont>
+			
 			<PDEditBox>
 				<Background>BackgroundDefault</Background>
 				<Background-disabled>GrayLight</Background-disabled>

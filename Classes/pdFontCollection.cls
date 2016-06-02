@@ -47,7 +47,9 @@ Public Enum FONT_CACHE_MODE
 End Enum
 Private m_CurrentCacheMode As FONT_CACHE_MODE
 
-'Size of the font collection.  This is the maximum number of fonts this class is allowed to cache.
+'Size of the font collection.  This is the maximum number of fonts this class is allowed to cache.  For scrollable
+' UI elements with variable font faces (e.g. font dropdowns), this should be at least 3x the size of the dropped list;
+' that gives us some breathing room to re-cache fonts during mousewheel events.
 Private Const DEFAULT_CACHE_SIZE As Long = 24
 Private m_CacheSize As Long
 
@@ -74,7 +76,7 @@ Public Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Singl
     'If this font already exists in our collection, don't recreate it; instead, return its current index.
     ' IMPORTANT NOTE: the matching criteria used by DoesFontExist defaults to fontname matches only.
     '                  Call SetCacheMode() if you want to match fonts by alternate criteria.
-    If fontIndex >= 0 Then
+    If (fontIndex >= 0) Then
         AddFontToCache = fontIndex
         
     Else
@@ -99,7 +101,7 @@ Public Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Singl
         m_FontCollection(m_FontPointer).CreateFontObject
         
         'If extended font caching is active, retrieve those values now
-        If m_ExtendedPropertiesActive Then Uniscribe_Interface.getScriptsSupportedByFont fontName, m_ExtendedProperties(m_FontPointer)
+        If m_ExtendedPropertiesActive Then Uniscribe_Interface.GetScriptsSupportedByFont fontName, m_ExtendedProperties(m_FontPointer)
         
         'Return this index
         AddFontToCache = m_FontPointer
@@ -213,16 +215,12 @@ End Function
 'IMPORTANT NOTE!  This function does *not* bound check the passed fontIndex, for performance reasons.  It is impossible to pass
 ' an invalid value if you use the results of AddFontToCache, above, so please do not modify that value after it's been returned.
 Friend Function GetFontPropertiesByPosition(ByVal fontIndex As Long, ByRef dstProperties As PD_FONT_PROPERTY) As Boolean
-    
     If m_ExtendedPropertiesActive Then
-        
         dstProperties = m_ExtendedProperties(fontIndex)
         GetFontPropertiesByPosition = True
-        
     Else
         GetFontPropertiesByPosition = False
     End If
-    
 End Function
 
 'Manually reset the cache
@@ -268,7 +266,7 @@ Public Function SetExtendedPropertyCaching(ByVal newSetting As Boolean) As Boole
         Dim i As Long
         For i = 0 To UBound(m_FontCollection)
             If Not m_FontCollection(i) Is Nothing Then
-                Uniscribe_Interface.getScriptsSupportedByFont m_FontCollection(i).GetFontFace, m_ExtendedProperties(i)
+                Uniscribe_Interface.GetScriptsSupportedByFont m_FontCollection(i).GetFontFace, m_ExtendedProperties(i)
             End If
         Next i
         

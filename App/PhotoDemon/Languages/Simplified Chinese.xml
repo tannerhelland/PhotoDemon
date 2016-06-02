@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1542</langversion>
+<langversion>6.8.1543</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -125,12 +125,6 @@
 
 <!-- END text for VBP_AutosaveHandler.bas-->
 
-<!-- BEGIN text for VBP_ColorFunctions.bas -->
-
-<!-- VBP_ColorFunctions.bas contains 0 phrases. -->
-
-<!-- END text for VBP_ColorFunctions.bas-->
-
 <!-- BEGIN text for VBP_ColorManagement.bas -->
 
 <phrase>
@@ -177,6 +171,12 @@
 
 <!-- END text for VBP_ColorManagement.bas-->
 
+<!-- BEGIN text for VBP_ColorFunctions.bas -->
+
+<!-- VBP_ColorFunctions.bas contains 0 phrases. -->
+
+<!-- END text for VBP_ColorFunctions.bas-->
+
 <!-- BEGIN text for VBP_DIBHandler.bas -->
 
 <!-- VBP_DIBHandler.bas contains 0 phrases. -->
@@ -194,6 +194,78 @@
 <!-- VBP_DrawModule.bas contains 0 phrases. -->
 
 <!-- END text for VBP_DrawModule.bas-->
+
+<!-- BEGIN text for Drawing2D.bas -->
+
+<!-- Drawing2D.bas contains 0 phrases. -->
+
+<!-- END text for Drawing2D.bas-->
+
+<!-- BEGIN text for VBP_ExifToolInterface.bas -->
+
+<phrase>
+<original>ExifTool could not be started.  Metadata unavailable for this session.</original>
+<translation>ExifTool无法启动。元数据不可用。</translation>
+</phrase>
+
+<phrase>
+<original>Please wait while the tag database is created</original>
+<translation>请稍候，正在创建标签数据库</translation>
+</phrase>
+
+<phrase>
+<original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
+<translation>标签数据库处理20000+元数据标签支持的PhotoDemon技术细节。创建数据库需要10到15秒，当元数据编辑器第一次使用时，它只需要创建一次。</translation>
+</phrase>
+
+<phrase>
+<original>No metadata available.</original>
+<translation>没有可用的元数据。</translation>
+</phrase>
+
+<phrase>
+<original>This image does not contain any metadata.</original>
+<translation>该映像不包含任何元数据。</translation>
+</phrase>
+
+<phrase>
+<original>No metadata available</original>
+<translation>没有可用的元数据</translation>
+</phrase>
+
+<phrase>
+<original>This file format does not support metadata.  Metadata processing skipped.</original>
+<translation>该文件格式不支持的元数据。元数据处理跳过。</translation>
+</phrase>
+
+<phrase>
+<original>ExifTool initiated successfully.  Ready to process metadata.</original>
+<translation>ExifTool成功启动。准备处理的元数据。</translation>
+</phrase>
+
+<phrase>
+<original>WARNING! ExifTool Input/Output pipes could not be created.</original>
+<translation>警告！无法创建ExifTool输入/输出管道。</translation>
+</phrase>
+
+<phrase>
+<original>WARNING! ExifTool.exe could not be started.</original>
+<translation>警告！ExifTool.exe无法启动。</translation>
+</phrase>
+
+<phrase>
+<original>Failed to start plugin service (couldn't create pipe).</original>
+<translation>无法启动插件服务（无法创建管道）。</translation>
+</phrase>
+
+<phrase>
+<original>Failed to start plugin service (couldn't create process: %1).</original>
+<translation>无法启动插件服务（无法创建过程：%1）。</translation>
+</phrase>
+
+<!-- VBP_ExifToolInterface.bas contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+
+<!-- END text for VBP_ExifToolInterface.bas-->
 
 <!-- BEGIN text for VBP_FastDrawing.bas -->
 
@@ -1163,6 +1235,17 @@ To enable support for compressed PDI files, click Help > Check for Updates, and 
 
 <!-- END text for VBP_LayerHandler.bas-->
 
+<!-- BEGIN text for Plugin_LittleCMS.bas -->
+
+<phrase>
+<original>ICC transform requested, but no data found.  Abandoning attempt.</original>
+<translation>ICC变换请求，但没有发现数据。放弃尝试。</translation>
+</phrase>
+
+<!-- Plugin_LittleCMS.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
+<!-- END text for Plugin_LittleCMS.bas-->
+
 <!-- BEGIN text for VBP_LoadModule.bas -->
 
 <phrase>
@@ -1418,88 +1501,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <!-- END text for VBP_OutsideDevelopment_FreeImageV3.bas-->
 
-<!-- BEGIN text for VBP_ExifToolInterface.bas -->
-
-<phrase>
-<original>ExifTool could not be started.  Metadata unavailable for this session.</original>
-<translation>ExifTool无法启动。元数据不可用。</translation>
-</phrase>
-
-<phrase>
-<original>Please wait while the tag database is created</original>
-<translation>请稍候，正在创建标签数据库</translation>
-</phrase>
-
-<phrase>
-<original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
-<translation>标签数据库处理20000+元数据标签支持的PhotoDemon技术细节。创建数据库需要10到15秒，当元数据编辑器第一次使用时，它只需要创建一次。</translation>
-</phrase>
-
-<phrase>
-<original>No metadata available.</original>
-<translation>没有可用的元数据。</translation>
-</phrase>
-
-<phrase>
-<original>This image does not contain any metadata.</original>
-<translation>该映像不包含任何元数据。</translation>
-</phrase>
-
-<phrase>
-<original>No metadata available</original>
-<translation>没有可用的元数据</translation>
-</phrase>
-
-<phrase>
-<original>This file format does not support metadata.  Metadata processing skipped.</original>
-<translation>该文件格式不支持的元数据。元数据处理跳过。</translation>
-</phrase>
-
-<phrase>
-<original>ExifTool initiated successfully.  Ready to process metadata.</original>
-<translation>ExifTool成功启动。准备处理的元数据。</translation>
-</phrase>
-
-<phrase>
-<original>WARNING! ExifTool Input/Output pipes could not be created.</original>
-<translation>警告！无法创建ExifTool输入/输出管道。</translation>
-</phrase>
-
-<phrase>
-<original>WARNING! ExifTool.exe could not be started.</original>
-<translation>警告！ExifTool.exe无法启动。</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create pipe).</original>
-<translation>无法启动插件服务（无法创建管道）。</translation>
-</phrase>
-
-<phrase>
-<original>Failed to start plugin service (couldn't create process: %1).</original>
-<translation>无法启动插件服务（无法创建过程：%1）。</translation>
-</phrase>
-
-<!-- VBP_ExifToolInterface.bas contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
-
-<!-- END text for VBP_ExifToolInterface.bas-->
-
-<!-- BEGIN text for VBP_FreeImage_Expanded.bas -->
-
-<phrase>
-<original>Import via FreeImage failed (Err # %1)</original>
-<translation>通过FreeImage导入失败（ERR＃%1）</translation>
-</phrase>
-
-<phrase>
-<original>Applying tone-mapping</original>
-<translation>应用色调映射</translation>
-</phrase>
-
-<!-- VBP_FreeImage_Expanded.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
-
-<!-- END text for VBP_FreeImage_Expanded.bas-->
-
 <!-- BEGIN text for Plugin_Management.bas -->
 
 <phrase>
@@ -1535,27 +1536,6 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <!-- Plugin_Management.bas contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Plugin_Management.bas-->
-
-<!-- BEGIN text for VBP_pngnqInterface.bas -->
-
-<phrase>
-<original>Using pngquant to optimize the PNG file.  This may take a moment</original>
-<translation>使用pngquant优化PNG文件。这可能需要一些时间</translation>
-</phrase>
-
-<phrase>
-<original>pngquant optimization successful!</original>
-<translation>pngquant优化成功！</translation>
-</phrase>
-
-<phrase>
-<original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
-<translation>pngquant无法写入文件，默认32bpp图像已经保存。</translation>
-</phrase>
-
-<!-- VBP_pngnqInterface.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
-
-<!-- END text for VBP_pngnqInterface.bas-->
 
 <!-- BEGIN text for VBP_ScannerInterface.bas -->
 
@@ -1660,6 +1640,59 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <!-- VBP_ScannerInterface.bas contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_ScannerInterface.bas-->
+
+<!-- BEGIN text for VBP_FreeImage_Expanded.bas -->
+
+<phrase>
+<original>Import via FreeImage failed (Err # %1)</original>
+<translation>通过FreeImage导入失败（ERR＃%1）</translation>
+</phrase>
+
+<phrase>
+<original>Applying tone-mapping</original>
+<translation>应用色调映射</translation>
+</phrase>
+
+<!-- VBP_FreeImage_Expanded.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+
+<!-- END text for VBP_FreeImage_Expanded.bas-->
+
+<!-- BEGIN text for Plugin_OptiPNG.bas -->
+
+<phrase>
+<original>Using OptiPNG to optimize the PNG file.  This may take a moment</original>
+<translation>通过使用OptiPNG优化PNG文件。这可能需要一些时间</translation>
+</phrase>
+
+<phrase>
+<original>OptiPNG optimization successful!</original>
+<translation>使用OptiPNG优化成功！</translation>
+</phrase>
+
+<!-- Plugin_OptiPNG.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+
+<!-- END text for Plugin_OptiPNG.bas-->
+
+<!-- BEGIN text for VBP_pngnqInterface.bas -->
+
+<phrase>
+<original>Using pngquant to optimize the PNG file.  This may take a moment</original>
+<translation>使用pngquant优化PNG文件。这可能需要一些时间</translation>
+</phrase>
+
+<phrase>
+<original>pngquant optimization successful!</original>
+<translation>pngquant优化成功！</translation>
+</phrase>
+
+<phrase>
+<original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
+<translation>pngquant无法写入文件，默认32bpp图像已经保存。</translation>
+</phrase>
+
+<!-- VBP_pngnqInterface.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+
+<!-- END text for VBP_pngnqInterface.bas-->
 
 <!-- BEGIN text for VBP_CompressionUtility.bas -->
 
@@ -2314,6 +2347,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for VBP_MiscValidation.bas-->
 
+<!-- BEGIN text for Toolboxes.bas -->
+
+<!-- Toolboxes.bas contains 0 phrases. -->
+
+<!-- END text for Toolboxes.bas-->
+
 <!-- BEGIN text for VBP_ToolSupport.bas -->
 
 <phrase>
@@ -2334,12 +2373,6 @@ Please enter a numeric value.</original>
 <!-- VBP_ToolSupport.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolSupport.bas-->
-
-<!-- BEGIN text for Toolboxes.bas -->
-
-<!-- Toolboxes.bas contains 0 phrases. -->
-
-<!-- END text for Toolboxes.bas-->
 
 <!-- BEGIN text for VBP_UniscribeInterface.bas -->
 
@@ -2396,6 +2429,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for VBP_ZoomModule.bas-->
 
+<!-- BEGIN text for IFileDialog.cls -->
+
+<!-- IFileDialog.cls contains 0 phrases. -->
+
+<!-- END text for IFileDialog.cls-->
+
 <!-- BEGIN text for cPerlin3D.cls -->
 
 <!-- cPerlin3D.cls contains 0 phrases. -->
@@ -2413,6 +2452,12 @@ Please enter a numeric value.</original>
 <!-- cSHA256.cls contains 0 phrases. -->
 
 <!-- END text for cSHA256.cls-->
+
+<!-- BEGIN text for cUnicodeBrowseFolders.cls -->
+
+<!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
+
+<!-- END text for cUnicodeBrowseFolders.cls-->
 
 <!-- BEGIN text for cBasicBuffer.cls -->
 
@@ -2437,6 +2482,30 @@ Please enter a numeric value.</original>
 <!-- IMRUList.cls contains 0 phrases. -->
 
 <!-- END text for IMRUList.cls-->
+
+<!-- BEGIN text for pdGraphicsBrush.cls -->
+
+<!-- pdGraphicsBrush.cls contains 0 phrases. -->
+
+<!-- END text for pdGraphicsBrush.cls-->
+
+<!-- BEGIN text for pd2DPainter.cls -->
+
+<!-- pd2DPainter.cls contains 0 phrases. -->
+
+<!-- END text for pd2DPainter.cls-->
+
+<!-- BEGIN text for pdGraphicsPen.cls -->
+
+<!-- pdGraphicsPen.cls contains 0 phrases. -->
+
+<!-- END text for pdGraphicsPen.cls-->
+
+<!-- BEGIN text for pdSurface2D.cls -->
+
+<!-- pdSurface2D.cls contains 0 phrases. -->
+
+<!-- END text for pdSurface2D.cls-->
 
 <!-- BEGIN text for pdCaption.cls -->
 
@@ -2633,12 +2702,6 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdGradient.cls-->
 
-<!-- BEGIN text for pdGraphicsBrush.cls -->
-
-<!-- pdGraphicsBrush.cls contains 0 phrases. -->
-
-<!-- END text for pdGraphicsBrush.cls-->
-
 <!-- BEGIN text for pdGraphicsMatrix.cls -->
 
 <!-- pdGraphicsMatrix.cls contains 0 phrases. -->
@@ -2650,12 +2713,6 @@ Please enter a numeric value.</original>
 <!-- pdGraphicsPath.cls contains 0 phrases. -->
 
 <!-- END text for pdGraphicsPath.cls-->
-
-<!-- BEGIN text for pdGraphicsPen.cls -->
-
-<!-- pdGraphicsPen.cls contains 0 phrases. -->
-
-<!-- END text for pdGraphicsPen.cls-->
 
 <!-- BEGIN text for pdICCProfile.cls -->
 
@@ -2707,6 +2764,18 @@ Please enter a numeric value.</original>
 <!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdLayer.cls-->
+
+<!-- BEGIN text for pdLCMSProfile.cls -->
+
+<!-- pdLCMSProfile.cls contains 0 phrases. -->
+
+<!-- END text for pdLCMSProfile.cls-->
+
+<!-- BEGIN text for pdLCMSTransform.cls -->
+
+<!-- pdLCMSTransform.cls contains 0 phrases. -->
+
+<!-- END text for pdLCMSTransform.cls-->
 
 <!-- BEGIN text for pdListSupport.cls -->
 
@@ -3814,12 +3883,6 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdCommandBarMini.ctl-->
 
-<!-- BEGIN text for pdComboBox_Font.ctl -->
-
-<!-- pdComboBox_Font.ctl contains 0 phrases. -->
-
-<!-- END text for pdComboBox_Font.ctl-->
-
 <!-- BEGIN text for pdComboBox_Hatch.ctl -->
 
 <!-- pdComboBox_Hatch.ctl contains 0 phrases. -->
@@ -3837,6 +3900,12 @@ or the File > Open and File > Import menus.</original>
 <!-- pdDropDown.ctl contains 0 phrases. -->
 
 <!-- END text for pdDropDown.ctl-->
+
+<!-- BEGIN text for pdDropDownFont.ctl -->
+
+<!-- pdDropDownFont.ctl contains 0 phrases. -->
+
+<!-- END text for pdDropDownFont.ctl-->
 
 <!-- BEGIN text for pdFxPreview.ctl -->
 
@@ -11804,6 +11873,239 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <!-- END text for File_Save_JXRSettings.frm-->
 
+<!-- BEGIN text for File_Save_Pixmap.frm (dialog_ExportPixmap) -->
+
+<phrase>
+<original>Pixmap Export Options</original>
+<translation>位图导出选项</translation>
+</phrase>
+
+<phrase>
+<original>change file extension to match color model</original>
+<translation>改变文件扩展名来匹配颜色模型</translation>
+</phrase>
+
+<phrase>
+<original>format</original>
+<translation>格式</translation>
+</phrase>
+
+<phrase>
+<original>floating-point</original>
+<translation>浮点</translation>
+</phrase>
+
+<phrase>
+<original>binary</original>
+<translation>二进制</translation>
+</phrase>
+
+<phrase>
+<original>ASCII</original>
+<translation>ASCII</translation>
+</phrase>
+
+<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for File_Save_Pixmap.frm-->
+
+<!-- BEGIN text for File_Save_PNG.frm (dialog_ExportPNG) -->
+
+<phrase>
+<original>PNG export options</original>
+<translation>PNG导出选项</translation>
+</phrase>
+
+<phrase>
+<original>click to generate a new preview image</original>
+<translation>单击以生成新的预览图像</translation>
+</phrase>
+
+<phrase>
+<original>lossy optimization options</original>
+<translation>有损优化选项</translation>
+</phrase>
+
+<phrase>
+<original>use dithering to improve quality</original>
+<translation>使用抖动提高质量</translation>
+</phrase>
+
+<phrase>
+<original>target quality</original>
+<translation>目标质量</translation>
+</phrase>
+
+<phrase>
+<original>apply lossy optimizations</original>
+<translation>适用于有损优化</translation>
+</phrase>
+
+<phrase>
+<original>optimization level</original>
+<translation>优化级别</translation>
+</phrase>
+
+<phrase>
+<original>fast, larger file</original>
+<translation>快速，更大的文件</translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation>慢，较小的文件</translation>
+</phrase>
+
+<phrase>
+<original>lossless optimization options</original>
+<translation>无损优化选项</translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation>阿尔法截止</translation>
+</phrase>
+
+<phrase>
+<original>palette size</original>
+<translation>调色板大小</translation>
+</phrase>
+
+<phrase>
+<original>transparency</original>
+<translation>透明度</translation>
+</phrase>
+
+<phrase>
+<original>transparent color (right-click image to select)</original>
+<translation>透明颜色（右键选择图像）</translation>
+</phrase>
+
+<phrase>
+<original>use interlacing</original>
+<translation>使用交错</translation>
+</phrase>
+
+<phrase>
+<original>compression level</original>
+<translation>压缩级别</translation>
+</phrase>
+
+<phrase>
+<original>embed background color in file</original>
+<translation>文件中的背景颜色</translation>
+</phrase>
+
+<phrase>
+<original>file size optimization</original>
+<translation>文件大小优化</translation>
+</phrase>
+
+<phrase>
+<original>standard PNG</original>
+<translation>标准PNG</translation>
+</phrase>
+
+<phrase>
+<original>web-optimized PNG</original>
+<translation>网站优化PNG</translation>
+</phrase>
+
+<phrase>
+<original>basic (default)</original>
+<translation>基本（默认）</translation>
+</phrase>
+
+<phrase>
+<original>moderate</original>
+<translation>中等</translation>
+</phrase>
+
+<phrase>
+<original>indexed</original>
+<translation>索引</translation>
+</phrase>
+
+<phrase>
+<original>full</original>
+<translation>全部</translation>
+</phrase>
+
+<phrase>
+<original>binary (by cut-off)</original>
+<translation>二进制（截断）</translation>
+</phrase>
+
+<phrase>
+<original>binary (by color)</original>
+<translation>二进制（按颜色）</translation>
+</phrase>
+
+<phrase>
+<original>please wait while a new preview image is created</original>
+<translation>请稍候正在创建一个新的预览图像</translation>
+</phrase>
+
+<phrase>
+<original>These lossy optimization settings reduced file size by %1.</original>
+<translation>这些有损优化设置减少了 %1 的文件大小。</translation>
+</phrase>
+
+<!-- File_Save_PNG.frm contains 59 phrases. 31 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+
+<!-- END text for File_Save_PNG.frm-->
+
+<!-- BEGIN text for File_Save_TIFF.frm (dialog_ExportTIFF) -->
+
+<phrase>
+<original>TIFF export options</original>
+<translation>TIFF导出选项</translation>
+</phrase>
+
+<phrase>
+<original>color compression</original>
+<translation>色彩压缩</translation>
+</phrase>
+
+<phrase>
+<original>monochrome compression</original>
+<translation>单色压缩</translation>
+</phrase>
+
+<phrase>
+<original>page format</original>
+<translation>页面格式</translation>
+</phrase>
+
+<phrase>
+<original>single page (composited image)</original>
+<translation>单页（合成图像）</translation>
+</phrase>
+
+<phrase>
+<original>multipage (one page per layer)</original>
+<translation>多页面（每层一个页面）</translation>
+</phrase>
+
+<phrase>
+<original>ZIP</original>
+<translation>ZIP</translation>
+</phrase>
+
+<phrase>
+<original>CCITT Fax 4</original>
+<translation>CCITT Fax 4</translation>
+</phrase>
+
+<phrase>
+<original>CCITT Fax 3</original>
+<translation>CCITT Fax 3</translation>
+</phrase>
+
+<!-- File_Save_TIFF.frm contains 41 phrases. 32 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for File_Save_TIFF.frm-->
+
 <!-- BEGIN text for File_Save_WebPSettings.frm (dialog_ExportWebP) -->
 
 <phrase>
@@ -11931,23 +12233,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <!-- BEGIN text for Image_IndexedColor.frm (FormReduceColors) -->
 
 <phrase>
-<original>palette size</original>
-<translation>调色板大小</translation>
-</phrase>
-
-<phrase>
 <original>quantization method</original>
 <translation>量化方法</translation>
-</phrase>
-
-<phrase>
-<original>transparency</original>
-<translation>透明度</translation>
-</phrase>
-
-<phrase>
-<original>alpha cut-off</original>
-<translation>阿尔法截止</translation>
 </phrase>
 
 <phrase>
@@ -11958,16 +12245,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <phrase>
 <original>NeuQuant neural network</original>
 <translation>NeuQuant neural network</translation>
-</phrase>
-
-<phrase>
-<original>full</original>
-<translation>全部</translation>
-</phrase>
-
-<phrase>
-<original>binary</original>
-<translation>二进制</translation>
 </phrase>
 
 <phrase>
@@ -12004,7 +12281,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 请复制freeimage.dll文件到插件目录和加载程序。</translation>
 </phrase>
 
-<!-- Image_IndexedColor.frm contains 21 phrases. 7 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Image_IndexedColor.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Image_IndexedColor.frm-->
 
@@ -12505,6 +12782,27 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <!-- Layer_Add_RasterLayer.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Layer_Add_RasterLayer.frm-->
+
+<!-- BEGIN text for Layer_Flatten.frm (FormLayerFlatten) -->
+
+<phrase>
+<original>flatten behavior</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>keep transparency</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>remove transparency</original>
+<translation></translation>
+</phrase>
+
+<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Layer_Flatten.frm-->
 
 <!-- BEGIN text for Layer_Transparency_AddTransparency.frm (FormTransparency_Basic) -->
 
@@ -13329,23 +13627,8 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>line wrap</original>
-<translation>换行</translation>
-</phrase>
-
-<phrase>
-<original>h. padding</original>
-<translation>水平填充</translation>
-</phrase>
-
-<phrase>
-<original>v. padding</original>
-<translation>垂直填充</translation>
-</phrase>
-
-<phrase>
-<original>line spacing</original>
-<translation>行间距</translation>
+<original>hinting</original>
+<translation>提示</translation>
 </phrase>
 
 <phrase>
@@ -13374,11 +13657,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>hinting</original>
-<translation>提示</translation>
-</phrase>
-
-<phrase>
 <original>fill background</original>
 <translation>填充背景</translation>
 </phrase>
@@ -13401,6 +13679,26 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <phrase>
 <original>outline text</original>
 <translation>大纲文本</translation>
+</phrase>
+
+<phrase>
+<original>line wrap</original>
+<translation>换行</translation>
+</phrase>
+
+<phrase>
+<original>h. padding</original>
+<translation>水平填充</translation>
+</phrase>
+
+<phrase>
+<original>v. padding</original>
+<translation>垂直填充</translation>
+</phrase>
+
+<phrase>
+<original>line spacing</original>
+<translation>行间距</translation>
 </phrase>
 
 <phrase>
@@ -14789,11 +15087,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
-<original>transparent color (right-click image to select)</original>
-<translation>透明颜色（右键选择图像）</translation>
-</phrase>
-
-<phrase>
 <original>by cut-off</original>
 <translation>通过切断</translation>
 </phrase>
@@ -14803,302 +15096,9 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>通过颜色</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 18 phrases. 14 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 18 phrases. 15 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
-
-<!-- BEGIN text for Plugin_OptiPNG.bas -->
-
-<phrase>
-<original>Using OptiPNG to optimize the PNG file.  This may take a moment</original>
-<translation>通过使用OptiPNG优化PNG文件。这可能需要一些时间</translation>
-</phrase>
-
-<phrase>
-<original>OptiPNG optimization successful!</original>
-<translation>使用OptiPNG优化成功！</translation>
-</phrase>
-
-<!-- Plugin_OptiPNG.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
-
-<!-- END text for Plugin_OptiPNG.bas-->
-
-<!-- BEGIN text for Plugin_LittleCMS.bas -->
-
-<phrase>
-<original>ICC transform requested, but no data found.  Abandoning attempt.</original>
-<translation>ICC变换请求，但没有发现数据。放弃尝试。</translation>
-</phrase>
-
-<!-- Plugin_LittleCMS.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
-
-<!-- END text for Plugin_LittleCMS.bas-->
-
-<!-- BEGIN text for File_Save_PNG.frm (dialog_ExportPNG) -->
-
-<phrase>
-<original>PNG export options</original>
-<translation>PNG导出选项</translation>
-</phrase>
-
-<phrase>
-<original>click to generate a new preview image</original>
-<translation>单击以生成新的预览图像</translation>
-</phrase>
-
-<phrase>
-<original>lossy optimization options</original>
-<translation>有损优化选项</translation>
-</phrase>
-
-<phrase>
-<original>use dithering to improve quality</original>
-<translation>使用抖动提高质量</translation>
-</phrase>
-
-<phrase>
-<original>target quality</original>
-<translation>目标质量</translation>
-</phrase>
-
-<phrase>
-<original>apply lossy optimizations</original>
-<translation>适用于有损优化</translation>
-</phrase>
-
-<phrase>
-<original>optimization level</original>
-<translation>优化级别</translation>
-</phrase>
-
-<phrase>
-<original>fast, larger file</original>
-<translation>快速，更大的文件</translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation>慢，较小的文件</translation>
-</phrase>
-
-<phrase>
-<original>lossless optimization options</original>
-<translation>无损优化选项</translation>
-</phrase>
-
-<phrase>
-<original>use interlacing</original>
-<translation>使用交错</translation>
-</phrase>
-
-<phrase>
-<original>compression level</original>
-<translation>压缩级别</translation>
-</phrase>
-
-<phrase>
-<original>embed background color in file</original>
-<translation>文件中的背景颜色</translation>
-</phrase>
-
-<phrase>
-<original>file size optimization</original>
-<translation>文件大小优化</translation>
-</phrase>
-
-<phrase>
-<original>standard PNG</original>
-<translation>标准PNG</translation>
-</phrase>
-
-<phrase>
-<original>web-optimized PNG</original>
-<translation>网站优化PNG</translation>
-</phrase>
-
-<phrase>
-<original>basic (default)</original>
-<translation>基本（默认）</translation>
-</phrase>
-
-<phrase>
-<original>moderate</original>
-<translation>中等</translation>
-</phrase>
-
-<phrase>
-<original>indexed</original>
-<translation>索引</translation>
-</phrase>
-
-<phrase>
-<original>binary (by cut-off)</original>
-<translation>二进制（截断）</translation>
-</phrase>
-
-<phrase>
-<original>binary (by color)</original>
-<translation>二进制（按颜色）</translation>
-</phrase>
-
-<phrase>
-<original>please wait while a new preview image is created</original>
-<translation>请稍候正在创建一个新的预览图像</translation>
-</phrase>
-
-<phrase>
-<original>These lossy optimization settings reduced file size by %1.</original>
-<translation>这些有损优化设置减少了 %1 的文件大小。</translation>
-</phrase>
-
-<!-- File_Save_PNG.frm contains 59 phrases. 36 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
-
-<!-- END text for File_Save_PNG.frm-->
-
-<!-- BEGIN text for File_Save_TIFF.frm (dialog_ExportTIFF) -->
-
-<phrase>
-<original>TIFF export options</original>
-<translation>TIFF导出选项</translation>
-</phrase>
-
-<phrase>
-<original>color compression</original>
-<translation>色彩压缩</translation>
-</phrase>
-
-<phrase>
-<original>monochrome compression</original>
-<translation>单色压缩</translation>
-</phrase>
-
-<phrase>
-<original>page format</original>
-<translation>页面格式</translation>
-</phrase>
-
-<phrase>
-<original>single page (composited image)</original>
-<translation>单页（合成图像）</translation>
-</phrase>
-
-<phrase>
-<original>multipage (one page per layer)</original>
-<translation>多页面（每层一个页面）</translation>
-</phrase>
-
-<phrase>
-<original>ZIP</original>
-<translation>ZIP</translation>
-</phrase>
-
-<phrase>
-<original>CCITT Fax 4</original>
-<translation>CCITT Fax 4</translation>
-</phrase>
-
-<phrase>
-<original>CCITT Fax 3</original>
-<translation>CCITT Fax 3</translation>
-</phrase>
-
-<!-- File_Save_TIFF.frm contains 41 phrases. 32 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for File_Save_TIFF.frm-->
-
-<!-- BEGIN text for File_Save_Pixmap.frm (dialog_ExportPixmap) -->
-
-<phrase>
-<original>Pixmap Export Options</original>
-<translation>位图导出选项</translation>
-</phrase>
-
-<phrase>
-<original>change file extension to match color model</original>
-<translation>改变文件扩展名来匹配颜色模型</translation>
-</phrase>
-
-<phrase>
-<original>format</original>
-<translation>格式</translation>
-</phrase>
-
-<phrase>
-<original>floating-point</original>
-<translation>浮点</translation>
-</phrase>
-
-<phrase>
-<original>ASCII</original>
-<translation>ASCII</translation>
-</phrase>
-
-<!-- File_Save_Pixmap.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for File_Save_Pixmap.frm-->
-
-<!-- BEGIN text for Drawing2D.bas -->
-
-<!-- Drawing2D.bas contains 0 phrases. -->
-
-<!-- END text for Drawing2D.bas-->
-
-<!-- BEGIN text for pdSurface2D.cls -->
-
-<!-- pdSurface2D.cls contains 0 phrases. -->
-
-<!-- END text for pdSurface2D.cls-->
-
-<!-- BEGIN text for pd2DPainter.cls -->
-
-<!-- pd2DPainter.cls contains 0 phrases. -->
-
-<!-- END text for pd2DPainter.cls-->
-
-<!-- BEGIN text for Layer_Flatten.frm (FormLayerFlatten) -->
-
-<phrase>
-<original>flatten behavior</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>keep transparency</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>remove transparency</original>
-<translation></translation>
-</phrase>
-
-<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for Layer_Flatten.frm-->
-
-<!-- BEGIN text for pdLCMSProfile.cls -->
-
-<!-- pdLCMSProfile.cls contains 0 phrases. -->
-
-<!-- END text for pdLCMSProfile.cls-->
-
-<!-- BEGIN text for pdLCMSTransform.cls -->
-
-<!-- pdLCMSTransform.cls contains 0 phrases. -->
-
-<!-- END text for pdLCMSTransform.cls-->
-
-<!-- BEGIN text for cUnicodeBrowseFolders.cls -->
-
-<!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
-
-<!-- END text for cUnicodeBrowseFolders.cls-->
-
-<!-- BEGIN text for IFileDialog.cls -->
-
-<!-- IFileDialog.cls contains 0 phrases. -->
-
-<!-- END text for IFileDialog.cls-->
 
 <!-- Automatic text extraction complete. -->
 

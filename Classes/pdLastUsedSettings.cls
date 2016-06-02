@@ -66,7 +66,7 @@ Public Function LoadAllControlValues() As Boolean
     'Start by looking for a preset file for this form
     If (xmlEngine Is Nothing) Then Set xmlEngine = New pdXML
     parentToolName = Replace$(parentForm.Name, "Form", "", , , vbTextCompare)
-    parentToolPath = g_UserPreferences.getPresetPath & parentToolName & ".xml"
+    parentToolPath = g_UserPreferences.GetPresetPath & parentToolName & ".xml"
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -121,7 +121,7 @@ Private Sub FillXMLSettings(Optional ByVal presetName As String = "last-used set
     xmlSafePresetName = xmlEngine.getXMLSafeTagName(presetName)
     
     'Start by looking for this preset name in the file.  If it does not exist, create a new section for it.
-    If Not xmlEngine.doesTagExist("presetEntry", "id", xmlSafePresetName) Then
+    If Not xmlEngine.DoesTagExist("presetEntry", "id", xmlSafePresetName) Then
     
         xmlEngine.writeTagWithAttribute "presetEntry", "id", xmlSafePresetName, "", True
         xmlEngine.writeTag "fullPresetName", presetName
@@ -170,7 +170,7 @@ Private Sub FillXMLSettings(Optional ByVal presetName As String = "last-used set
             Case "HScrollBar", "VScrollBar"
                 controlValue = Str(eControl.Value)
                 
-            Case "ListBox", "ComboBox", "pdComboBox_Font", "pdComboBox_Hatch", "pdDropDown"
+            Case "ListBox", "ComboBox", "pdDropDown", "pdDropDownFont", "pdComboBox_Hatch"
             
                 'Make sure the combo box is not the preset box on this control!
                 controlValue = Str(eControl.ListIndex)
@@ -185,7 +185,7 @@ Private Sub FillXMLSettings(Optional ByVal presetName As String = "last-used set
             'PhotoDemon's new resize control is a special case.  Because it uses multiple properties (despite being
             ' a single control), we must combine its various values into a single string.
             Case "pdResize"
-                controlValue = buildParams(eControl.imgWidth, eControl.imgHeight, eControl.LockAspectRatio, eControl.unitOfMeasurement, eControl.imgDPI, eControl.UnitOfResolution)
+                controlValue = BuildParams(eControl.imgWidth, eControl.imgHeight, eControl.LockAspectRatio, eControl.UnitOfMeasurement, eControl.imgDPI, eControl.UnitOfResolution)
         
         End Select
         
@@ -318,7 +318,7 @@ Private Function ReadXMLSettings(Optional ByVal presetName As String = "last-use
                 Case "HScrollBar", "VScrollBar"
                     eControl.Value = CLng(controlValue)
                     
-                Case "ListBox", "ComboBox", "pdComboBox_Font", "pdComboBox_Hatch", "pdDropDown"
+                Case "ListBox", "ComboBox", "pdComboBox_Hatch", "pdDropDown", "pdDropDownFont"
                     If CLng(controlValue) < eControl.ListCount Then
                         If CLng(controlValue) > 0 Then eControl.ListIndex = CLng(controlValue) Else eControl.ListIndex = 0
                     Else
@@ -338,14 +338,14 @@ Private Function ReadXMLSettings(Optional ByVal presetName As String = "last-use
                     
                     Dim cParam As pdParamString
                     Set cParam = New pdParamString
-                    cParam.setParamString controlValue
+                    cParam.SetParamString controlValue
                     
                     'Kind of funny, but we must always set the lockAspectRatio to FALSE in order to apply a new size
                     ' to the image.  (If we don't do this, the new sizes will be clamped to the current image's
                     ' aspect ratio!)
                     eControl.LockAspectRatio = False
                     
-                    eControl.unitOfMeasurement = cParam.GetLong(4, MU_PIXELS)
+                    eControl.UnitOfMeasurement = cParam.GetLong(4, MU_PIXELS)
                     eControl.UnitOfResolution = cParam.GetLong(6, RU_PPI)
                     
                     eControl.imgDPI = cParam.GetLong(5, 96)
