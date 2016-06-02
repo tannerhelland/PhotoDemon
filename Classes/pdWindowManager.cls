@@ -211,10 +211,11 @@ Private Const SM_CYSIZEFRAME As Long = 33
 
 'API calls for window positioning and tracking
 Private Declare Function ClientToScreen Lib "user32" (ByVal hndWindow As Long, ByRef lpPoint As POINTAPI) As Long
-Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, ByRef scrPoint As POINTAPI) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
-Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
+Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, ByRef scrPoint As POINTAPI) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
 
 'APIs for getting/setting Unicode window captions
@@ -224,18 +225,18 @@ Private Const WM_GETTEXTLENGTH = &HE
 Private Const WM_SETTEXT = &HC
 
 'APIs for changing window style
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
-Private Declare Function GetParent Lib "user32" (ByVal targetHwnd As Long) As Long
-Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
-Private Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long) As Long
-Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
-Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
 Private Declare Function AnimateWindow Lib "user32" (ByVal targetHwnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
+Private Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long) As Long
 Private Declare Function GetFocus Lib "user32" () As Long
-Private Declare Function SetFocus Lib "user32" (ByVal targetHwnd As Long) As Long
+Private Declare Function GetParent Lib "user32" (ByVal targetHwnd As Long) As Long
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
 Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByVal lprcUpdateRectPtr As Long, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
+Private Declare Function SetFocus Lib "user32" (ByVal targetHwnd As Long) As Long
+Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
 
 'RedrawWindow API constants
 Private Const RDW_INVALIDATE As Long = &H1
@@ -336,6 +337,10 @@ Private m_tmpMinMax As MINMAXINFO
 Public Sub SetWindowCaptionW(ByRef targetHwnd As Long, ByRef newCaption As String)
     DefWindowProcW targetHwnd, WM_SETTEXT, 0&, ByVal StrPtr(newCaption)
 End Sub
+
+Public Function GetVisibilityByHWnd(ByVal srcHwnd As Long) As Boolean
+    GetVisibilityByHWnd = CBool(IsWindowVisible(srcHwnd) <> 0)
+End Function
 
 Public Sub SetVisibilityByHWnd(ByVal srcHwnd As Long, ByVal visibilityState As Boolean, Optional ByVal activateWindowToo As Boolean = False)
     If visibilityState Then
