@@ -1097,7 +1097,7 @@ Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cx As Single,
     GDIPlusDrawCircleToDC dstDC, cx, cy, cRadius, RGB(0, 0, 0), cTransparency, 3, True
     
     Dim topColor As Long
-    If useHighlightColor Then topColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
+    If useHighlightColor Then topColor = g_Themer.GetGenericUIColor(UI_AccentLight) Else topColor = RGB(255, 255, 255)
     GDIPlusDrawCircleToDC dstDC, cx, cy, cRadius, topColor, 220, 1, True
     
 End Function
@@ -1109,7 +1109,7 @@ Public Function GDIPlusDrawCanvasSquare(ByVal dstDC As Long, ByVal cx As Single,
     GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cx - cRadius, cy - cRadius, cx + cRadius, cy + cRadius, RGB(0, 0, 0), cTransparency, 3, True, GP_LC_Round, True
     
     Dim topColor As Long
-    If useHighlightColor Then topColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
+    If useHighlightColor Then topColor = g_Themer.GetGenericUIColor(UI_AccentLight) Else topColor = RGB(255, 255, 255)
     GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cx - cRadius, cy - cRadius, cx + cRadius, cy + cRadius, topColor, 220, 1.6, True, GP_LC_Round, True
     
 End Function
@@ -1120,7 +1120,7 @@ Public Function GDIPlusDrawCanvasLine(ByVal dstDC As Long, ByVal x1 As Single, B
     GDI_Plus.GDIPlusDrawLineToDC dstDC, x1, y1, x2, y2, RGB(0, 0, 0), cTransparency, 3, True, GP_LC_Square, True
     
     Dim topColor As Long
-    If useHighlightColor Then topColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
+    If useHighlightColor Then topColor = g_Themer.GetGenericUIColor(UI_AccentLight) Else topColor = RGB(255, 255, 255)
     GDI_Plus.GDIPlusDrawLineToDC dstDC, x1, y1, x2, y2, topColor, 220, 1.6, True, GP_LC_Round, True
     
 End Function
@@ -1137,7 +1137,7 @@ Public Function GDIPlusDrawCanvasArc(ByVal dstDC As Long, ByVal centerX As Singl
     GDIPlusDrawArcCircular dstDC, centerX, centerY, arcRadius, startAngle, sweepAngle, RGB(0, 0, 0), cTransparency, 3, True
     
     Dim topColor As Long
-    If useHighlightColor Then topColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
+    If useHighlightColor Then topColor = g_Themer.GetGenericUIColor(UI_AccentLight) Else topColor = RGB(255, 255, 255)
     GDIPlusDrawArcCircular dstDC, centerX, centerY, arcRadius, startAngle, sweepAngle, topColor, 220, 1, True
     
 End Function

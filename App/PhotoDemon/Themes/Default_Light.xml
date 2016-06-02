@@ -16,15 +16,19 @@
 			<DefinitionFile>Colors_Blue.xml</DefinitionFile>
 			<AccentDefault>Accent5</AccentDefault>
 			<AccentDark>Accent7</AccentDark>
+			<AccentSemidark>Accent6</AccentSemidark>
 			<AccentUltradark>Accent9</AccentUltradark>
-			<AccentSemilight>Accent4</AccentSemilight>
 			<AccentLight>Accent3</AccentLight>
+			<AccentSemilight>Accent4</AccentSemilight>
 			<AccentUltralight>Accent1</AccentUltralight>
 			<BackgroundDefault>#ffffff</BackgroundDefault>
 			<BackgroundCanvas>#a0a0a0</BackgroundCanvas>
 			<BackgroundCommandBar>#dcdce1</BackgroundCommandBar>
 			<Black>#000000</Black>
 			<CanvasColor>#a0a0a0</CanvasColor>
+			<ChannelRed>#dc2824</ChannelRed>
+			<ChannelGreen>#3ccf31</ChannelGreen>
+			<ChannelBlue>#317bcf</ChannelBlue>
 			<ErrorRed>#dc2824</ErrorRed>
 			<GrayDefault>#929292</GrayDefault>
 			<GrayDisabled>#b1bac2</GrayDisabled>
@@ -489,8 +493,25 @@
 			</PDToolButton>
 			
 			<UIElements>
+				<UniversalAccent>AccentDefault</UniversalAccent>
+				<UniversalAccentDark>AccentDark</UniversalAccentDark>
+				<UniversalAccentSemidark>AccentSemidark</UniversalAccentSemidark>
+				<UniversalAccentUltradark>AccentUltradark</UniversalAccentUltradark>
+				<UniversalAccentLight>AccentLight</UniversalAccentLight>
+				<UniversalAccentSemilight>AccentSemilight</UniversalAccentSemilight>
+				<UniversalAccentUltralight>AccentUltralight</UniversalAccentUltralight>
+				<UniversalBackground>BackgroundDefault</UniversalBackground>
 				<UniversalCanvasElement>CanvasColor</UniversalCanvasElement>
+				<UniversalChannelRed>ChannelRed</UniversalChannelRed>
+				<UniversalChannelGreen>ChannelGreen</UniversalChannelGreen>
+				<UniversalChannelBlue>ChannelBlue</UniversalChannelBlue>
 				<UniversalErrorRed>ErrorRed</UniversalErrorRed>
+				<UniversalGrayDefault>GrayDefault</UniversalGrayDefault>
+				<UniversalGrayDisabled>GrayDisabled</UniversalGrayDisabled>
+				<UniversalGrayDark>GrayDark</UniversalGrayDark>
+				<UniversalGrayLight>GrayLight</UniversalGrayLight>
+				<UniversalGrayNeutral>GrayNeutral</UniversalGrayNeutral>
+				<UniversalGrayUltralight>GrayUltralight</UniversalGrayUltralight>
 				<UniversalLineEdge>Black</UniversalLineEdge>
 				<UniversalLineCenter>White</UniversalLineCenter>
 				<UniversalLineCenter-hover>AccentDefault</UniversalLineCenter-hover>

@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1543</langversion>
+<langversion>6.8.1544</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -3882,12 +3882,6 @@ or the File > Open and File > Import menus.</original>
 <!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for pdCommandBarMini.ctl-->
-
-<!-- BEGIN text for pdComboBox_Hatch.ctl -->
-
-<!-- pdComboBox_Hatch.ctl contains 0 phrases. -->
-
-<!-- END text for pdComboBox_Hatch.ctl-->
 
 <!-- BEGIN text for pdDownload.ctl -->
 
@@ -7914,13 +7908,8 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>gradient fill settings</original>
-<translation>渐变填充设置</translation>
-</phrase>
-
-<phrase>
-<original>gradient</original>
-<translation>渐变</translation>
+<original>pattern</original>
+<translation>模式</translation>
 </phrase>
 
 <phrase>
@@ -7929,18 +7918,8 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>pattern</original>
-<translation>模式</translation>
-</phrase>
-
-<phrase>
-<original>pattern color and opacity</original>
-<translation>图案颜色和不透明度</translation>
-</phrase>
-
-<phrase>
-<original>background color and opacity</original>
-<translation>背景颜色和不透明度</translation>
+<original>pattern color</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7959,11 +7938,21 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
+<original>gradient fill settings</original>
+<translation>渐变填充设置</translation>
+</phrase>
+
+<phrase>
+<original>gradient</original>
+<translation>渐变</translation>
+</phrase>
+
+<phrase>
 <original>solid</original>
 <translation>实心</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 17 phrases. 2 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 17 phrases. 3 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -15102,10 +15091,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2579</phrasecount>
+<phrasecount>2578</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4477 phrases. -->
-<!-- 1898 are duplicates, so only 2579 unique phrases have been written to file. -->
-<!-- These 2579 phrases contain approximately 13280 total words. -->
+<!-- 1899 are duplicates, so only 2578 unique phrases have been written to file. -->
+<!-- These 2578 phrases contain approximately 13274 total words. -->
 
 </pdData>

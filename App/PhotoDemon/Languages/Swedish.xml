@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.183</langversion>
+<langversion>6.7.184</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -3883,12 +3883,6 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for pdCommandBarMini.ctl-->
-
-<!-- BEGIN text for pdComboBox_Hatch.ctl -->
-
-<!-- pdComboBox_Hatch.ctl contains 0 phrases. -->
-
-<!-- END text for pdComboBox_Hatch.ctl-->
 
 <!-- BEGIN text for pdDownload.ctl -->
 
@@ -7917,12 +7911,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 </phrase>
 
 <phrase>
-<original>gradient fill settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>gradient</original>
+<original>pattern</original>
 <translation></translation>
 </phrase>
 
@@ -7932,17 +7921,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 </phrase>
 
 <phrase>
-<original>pattern</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>pattern color and opacity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>background color and opacity</original>
+<original>pattern color</original>
 <translation></translation>
 </phrase>
 
@@ -7962,11 +7941,21 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 </phrase>
 
 <phrase>
+<original>gradient fill settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>solid</original>
 <translation></translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 17 phrases. 2 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 17 phrases. 3 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -15107,10 +15096,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2579</phrasecount>
+<phrasecount>2578</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4477 phrases. -->
-<!-- 1898 are duplicates, so only 2579 unique phrases have been written to file. -->
-<!-- These 2579 phrases contain approximately 13280 total words. -->
+<!-- 1899 are duplicates, so only 2578 unique phrases have been written to file. -->
+<!-- These 2578 phrases contain approximately 13274 total words. -->
 
 </pdData>

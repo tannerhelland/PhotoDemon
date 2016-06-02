@@ -611,17 +611,23 @@ Public Sub StrokePath_UIStyle(ByVal dstDC As Long, Optional ByVal useHighlightCo
 End Sub
 
 'Stroke the current path, using a bare pen handle for the rendering.
-Public Sub StrokePath_BarePen(ByRef srcPen As Long, ByVal dstDC As Long, Optional ByVal useAA As Boolean = True, Optional ByVal ptrToClippingRectF As Long = 0)
+Public Sub StrokePath_BarePen(ByRef srcPen As Long, ByVal dstDC As Long, Optional ByVal useAA As Boolean = True, Optional ByVal ptrToClippingRectF As Long = 0, Optional ByVal useHQOffsets As Boolean = False)
     
     'Obtain a GDI+ handle to the image
     Dim hGraphics As Long
     GdipCreateFromHDC dstDC, hGraphics
     
-    'Activate AA
+    'Activate AA and pixel offset mode
     If useAA Then
         GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias
     Else
         GdipSetSmoothingMode hGraphics, SmoothingModeNone
+    End If
+    
+    If useHQOffsets Then
+        GdipSetPixelOffsetMode hGraphics, GP_POM_HighQuality
+    Else
+        GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
     End If
     
     'If clipping is needed, apply it now
@@ -640,7 +646,7 @@ Public Sub StrokePath_BarePen(ByRef srcPen As Long, ByVal dstDC As Long, Optiona
 End Sub
 
 'Fill the current path, using a bare brush handle for the rendering.
-Public Sub FillPathToDIB_BareBrush(ByVal srcBrush As Long, Optional ByRef dstDIB As pdDIB = Nothing, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useAA As Boolean = True, Optional ByVal customRenderingOriginX As Long = 0, Optional ByVal customRenderingOriginY As Long = 0)
+Public Sub FillPathToDIB_BareBrush(ByVal srcBrush As Long, Optional ByRef dstDIB As pdDIB = Nothing, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useAA As Boolean = True, Optional ByVal customRenderingOriginX As Long = 0, Optional ByVal customRenderingOriginY As Long = 0, Optional ByVal useHQOffsets As Boolean = False)
     
     'Obtain a GDI+ handle to the image
     Dim hGraphics As Long
@@ -651,11 +657,17 @@ Public Sub FillPathToDIB_BareBrush(ByVal srcBrush As Long, Optional ByRef dstDIB
         GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
     End If
     
-    'Activate AA
+    'Activate AA and pixel offsets
     If useAA Then
         GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias
     Else
         GdipSetSmoothingMode hGraphics, SmoothingModeNone
+    End If
+    
+    If useHQOffsets Then
+        GdipSetPixelOffsetMode hGraphics, GP_POM_Half
+    Else
+        GdipSetPixelOffsetMode hGraphics, GP_POM_None
     End If
     
     'Set rendering origin
