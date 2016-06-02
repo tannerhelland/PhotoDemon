@@ -292,6 +292,7 @@ Private Declare Function GdipGetPenMiterLimit Lib "gdiplus" (ByVal hPen As Long,
 Private Declare Function GdipGetPenMode Lib "gdiplus" (ByVal hPen As Long, ByRef dstPenMode As GP_PenAlignment) As GP_Result
 Private Declare Function GdipGetPenWidth Lib "gdiplus" (ByVal hPen As Long, ByRef dstWidth As Single) As GP_Result
 Private Declare Function GdipGetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstMode As GP_PixelOffsetMode) As GP_Result
+Private Declare Function GdipGetRenderingOrigin Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstX As Long, ByRef dstY As Long) As GP_Result
 Private Declare Function GdipGetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstMode As GP_SmoothingMode) As GP_Result
 Private Declare Function GdipGetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByRef dstColor As Long) As GP_Result
 
@@ -306,6 +307,7 @@ Private Declare Function GdipSetPenMode Lib "gdiplus" (ByVal hPen As Long, ByVal
 Private Declare Function GdipSetPenStartCap Lib "gdiplus" (ByVal hPen As Long, ByVal startCap As GP_LineCap) As GP_Result
 Private Declare Function GdipSetPenWidth Lib "gdiplus" (ByVal hPen As Long, ByVal penWidth As Single) As GP_Result
 Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_PixelOffsetMode) As GP_Result
+Private Declare Function GdipSetRenderingOrigin Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Long, ByVal y As Long) As GP_Result
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_SmoothingMode) As GP_Result
 Private Declare Function GdipSetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByVal newColor As Long) As GP_Result
 
@@ -3389,17 +3391,25 @@ Public Function GetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID
     If (hGraphics <> 0) Then
         
         Dim gResult As GP_Result
-        Dim tmpLong As Long
+        Dim tmpLong1 As Long, tmpLong2 As Long
         
         Select Case propID
             
             Case P2_SurfaceAntialiasing
-                gResult = GdipGetSmoothingMode(hGraphics, tmpLong)
-                GetGDIPlusGraphicsProperty = tmpLong
+                gResult = GdipGetSmoothingMode(hGraphics, tmpLong1)
+                GetGDIPlusGraphicsProperty = tmpLong1
                 
             Case P2_SurfacePixelOffset
-                gResult = GdipGetPixelOffsetMode(hGraphics, tmpLong)
-                GetGDIPlusGraphicsProperty = tmpLong
+                gResult = GdipGetPixelOffsetMode(hGraphics, tmpLong1)
+                GetGDIPlusGraphicsProperty = tmpLong1
+                
+            Case P2_SurfaceRenderingOriginX
+                gResult = GdipGetRenderingOrigin(hGraphics, tmpLong1, tmpLong2)
+                GetGDIPlusGraphicsProperty = tmpLong1
+            
+            Case P2_SurfaceRenderingOriginY
+                gResult = GdipGetRenderingOrigin(hGraphics, tmpLong1, tmpLong2)
+                GetGDIPlusGraphicsProperty = tmpLong2
                 
         End Select
         
@@ -3424,6 +3434,12 @@ Public Function SetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID
                 
             Case P2_SurfacePixelOffset
                 SetGDIPlusGraphicsProperty = CBool(GdipSetPixelOffsetMode(hGraphics, CLng(newSetting)) = GP_OK)
+            
+            Case P2_SurfaceRenderingOriginX
+                SetGDIPlusGraphicsProperty = CBool(GdipSetRenderingOrigin(hGraphics, CLng(newSetting), GetGDIPlusGraphicsProperty(hGraphics, P2_SurfaceRenderingOriginY)) = GP_OK)
+            
+            Case P2_SurfaceRenderingOriginY
+                SetGDIPlusGraphicsProperty = CBool(GdipSetRenderingOrigin(hGraphics, GetGDIPlusGraphicsProperty(hGraphics, P2_SurfaceRenderingOriginX), CLng(newSetting)) = GP_OK)
             
         End Select
     

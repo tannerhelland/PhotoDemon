@@ -231,6 +231,23 @@
 				<Text-disabled>GrayDefault</Text-disabled>
 			</PDEditBox>
 			
+			<PDFillPatterns>
+				<Background>BackgroundDefault</Background>
+				<Background-active>AccentDefault</Background-active>
+				<Caption>TextDefault</Caption>
+				<Caption-disabled>GrayDisabled</Caption-disabled>
+				<Caption-active>TextInvert</Caption-active>
+				<Caption-hover>TextHyperlink</Caption-hover>
+				<HatchBorder>GrayDefault</HatchBorder>
+				<HatchBorder-active>AccentDark</HatchBorder-active>
+				<HatchBorder-disabled>GrayDisabled</HatchBorder-disabled>
+				<HatchBorder-hover>AccentDefault</HatchBorder-hover>
+				<ItemBorder>BackgroundDefault</ItemBorder>
+				<ItemBorder-active>AccentDark</ItemBorder-active>
+				<ItemBorder-disabled>GrayDisabled</ItemBorder-disabled>
+				<ItemBorder-hover>AccentDefault</ItemBorder-hover>
+			</PDFillPatterns>
+			
 			<PDFXPreview>
 				<Background>BackgroundDefault</Background>
 			</PDFXPreview>
