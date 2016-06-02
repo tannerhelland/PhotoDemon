@@ -46,11 +46,11 @@ Begin VB.Form dialog_FillSettings
       TabIndex        =   1
       Top             =   7155
       Width           =   12270
-      _ExtentX        =   21643
-      _ExtentY        =   1323
-      AutoloadLastPreset=   -1  'True
-      DontAutoUnloadParent=   -1  'True
-      DontResetAutomatically=   -1  'True
+      _extentx        =   21643
+      _extenty        =   1323
+      autoloadlastpreset=   -1  'True
+      dontautounloadparent=   -1  'True
+      dontresetautomatically=   -1  'True
    End
    Begin PhotoDemon.pdButtonStrip btsStyle 
       Height          =   1050
@@ -58,10 +58,10 @@ Begin VB.Form dialog_FillSettings
       TabIndex        =   0
       Top             =   1140
       Width           =   12015
-      _ExtentX        =   21193
-      _ExtentY        =   1852
-      Caption         =   "fill style"
-      FontSize        =   12
+      _extentx        =   21193
+      _extenty        =   1852
+      caption         =   "fill style"
+      fontsize        =   12
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
@@ -69,10 +69,10 @@ Begin VB.Form dialog_FillSettings
       Left            =   120
       Top             =   120
       Width           =   9375
-      _ExtentX        =   16536
-      _ExtentY        =   556
-      Caption         =   "preview"
-      FontSize        =   12
+      _extentx        =   16536
+      _extenty        =   556
+      caption         =   "preview"
+      fontsize        =   12
    End
    Begin PhotoDemon.pdSlider sltFillOpacity 
       CausesValidation=   0   'False
@@ -81,13 +81,13 @@ Begin VB.Form dialog_FillSettings
       TabIndex        =   8
       Top             =   3000
       Width           =   6060
-      _ExtentX        =   10689
-      _ExtentY        =   1270
-      Caption         =   "fill opacity"
-      Max             =   100
-      Value           =   100
-      NotchPosition   =   2
-      NotchValueCustom=   100
+      _extentx        =   10689
+      _extenty        =   1270
+      caption         =   "fill opacity"
+      max             =   100
+      value           =   100
+      notchposition   =   2
+      notchvaluecustom=   100
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
@@ -95,57 +95,10 @@ Begin VB.Form dialog_FillSettings
       Left            =   6120
       Top             =   2400
       Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   556
-      Caption         =   "common settings"
-      FontSize        =   12
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4935
-      Index           =   2
-      Left            =   120
-      ScaleHeight     =   329
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   385
-      TabIndex        =   5
-      Top             =   2400
-      Width           =   5775
-      Begin PhotoDemon.pdGradientSelector gsPrimary 
-         Height          =   1335
-         Left            =   120
-         TabIndex        =   14
-         Top             =   1080
-         Width           =   5655
-         _ExtentX        =   9975
-         _ExtentY        =   2355
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   3
-         Left            =   0
-         Top             =   0
-         Width           =   9375
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "gradient fill settings"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   7
-         Left            =   0
-         Top             =   600
-         Width           =   5565
-         _ExtentX        =   9816
-         _ExtentY        =   503
-         Caption         =   "gradient"
-         FontSize        =   12
-         ForeColor       =   0
-      End
+      _extentx        =   10610
+      _extenty        =   556
+      caption         =   "common settings"
+      fontsize        =   12
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -161,14 +114,15 @@ Begin VB.Form dialog_FillSettings
       TabIndex        =   4
       Top             =   2400
       Width           =   5775
-      Begin PhotoDemon.pdComboBox_Hatch cboFillPattern 
-         Height          =   450
-         Left            =   120
-         TabIndex        =   13
-         Top             =   960
-         Width           =   5535
-         _ExtentX        =   9763
-         _ExtentY        =   794
+      Begin PhotoDemon.pdListBoxOD lstFillPattern 
+         Height          =   2535
+         Left            =   0
+         TabIndex        =   14
+         Top             =   480
+         Width           =   5655
+         _extentx        =   9975
+         _extenty        =   4471
+         caption         =   "pattern"
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
@@ -176,45 +130,33 @@ Begin VB.Form dialog_FillSettings
          Left            =   0
          Top             =   0
          Width           =   5655
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "pattern fill settings"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   6
-         Left            =   0
-         Top             =   525
-         Width           =   5565
-         _ExtentX        =   9816
-         _ExtentY        =   503
-         Caption         =   "pattern"
-         FontSize        =   12
-         ForeColor       =   0
+         _extentx        =   16536
+         _extenty        =   556
+         caption         =   "pattern fill settings"
+         fontsize        =   12
       End
       Begin PhotoDemon.pdColorSelector csPattern 
          Height          =   855
          Index           =   0
          Left            =   0
          TabIndex        =   9
-         Top             =   1560
-         Width           =   5655
-         _ExtentX        =   9975
-         _ExtentY        =   1508
-         Caption         =   "pattern color and opacity"
+         Top             =   3120
+         Width           =   2775
+         _extentx        =   9975
+         _extenty        =   1508
+         caption         =   "pattern color"
       End
       Begin PhotoDemon.pdColorSelector csPattern 
          Height          =   855
          Index           =   1
-         Left            =   0
+         Left            =   2880
          TabIndex        =   10
          Top             =   3120
-         Width           =   5655
-         _ExtentX        =   9975
-         _ExtentY        =   1508
-         Caption         =   "background color and opacity"
-         curColor        =   0
+         Width           =   2775
+         _extentx        =   9975
+         _extenty        =   1508
+         curcolor        =   0
+         caption         =   "background color"
       End
       Begin PhotoDemon.pdSlider sltPatternOpacity 
          CausesValidation=   0   'False
@@ -222,29 +164,29 @@ Begin VB.Form dialog_FillSettings
          Index           =   0
          Left            =   0
          TabIndex        =   11
-         Top             =   2520
-         Width           =   5700
-         _ExtentX        =   10054
-         _ExtentY        =   873
-         Max             =   100
-         Value           =   100
-         NotchPosition   =   2
-         NotchValueCustom=   100
+         Top             =   4080
+         Width           =   2820
+         _extentx        =   10054
+         _extenty        =   873
+         max             =   100
+         value           =   100
+         notchposition   =   2
+         notchvaluecustom=   100
       End
       Begin PhotoDemon.pdSlider sltPatternOpacity 
          CausesValidation=   0   'False
          Height          =   405
          Index           =   1
-         Left            =   0
+         Left            =   2880
          TabIndex        =   12
          Top             =   4080
-         Width           =   5700
-         _ExtentX        =   10054
-         _ExtentY        =   873
-         Max             =   100
-         Value           =   100
-         NotchPosition   =   2
-         NotchValueCustom=   100
+         Width           =   2820
+         _extentx        =   10054
+         _extenty        =   873
+         max             =   100
+         value           =   100
+         notchposition   =   2
+         notchvaluecustom=   100
       End
    End
    Begin VB.PictureBox picContainer 
@@ -267,10 +209,10 @@ Begin VB.Form dialog_FillSettings
          Left            =   0
          Top             =   0
          Width           =   9375
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "solid fill settings"
-         FontSize        =   12
+         _extentx        =   16536
+         _extenty        =   556
+         caption         =   "solid fill settings"
+         fontsize        =   12
       End
       Begin PhotoDemon.pdColorSelector csFillColor 
          Height          =   1560
@@ -278,10 +220,10 @@ Begin VB.Form dialog_FillSettings
          TabIndex        =   7
          Top             =   600
          Width           =   5655
-         _ExtentX        =   9975
-         _ExtentY        =   2752
-         Caption         =   "color"
-         curColor        =   0
+         _extentx        =   9975
+         _extenty        =   2752
+         curcolor        =   0
+         caption         =   "color"
       End
    End
    Begin VB.PictureBox picContainer 
@@ -304,10 +246,57 @@ Begin VB.Form dialog_FillSettings
          Left            =   0
          Top             =   0
          Width           =   9375
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "texture fill settings"
-         FontSize        =   12
+         _extentx        =   16536
+         _extenty        =   556
+         caption         =   "texture fill settings"
+         fontsize        =   12
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4935
+      Index           =   2
+      Left            =   120
+      ScaleHeight     =   329
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   385
+      TabIndex        =   5
+      Top             =   2400
+      Width           =   5775
+      Begin PhotoDemon.pdGradientSelector gsPrimary 
+         Height          =   1335
+         Left            =   120
+         TabIndex        =   13
+         Top             =   1080
+         Width           =   5655
+         _extentx        =   9975
+         _extenty        =   2355
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   3
+         Left            =   0
+         Top             =   0
+         Width           =   9375
+         _extentx        =   16536
+         _extenty        =   556
+         caption         =   "gradient fill settings"
+         fontsize        =   12
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   7
+         Left            =   0
+         Top             =   600
+         Width           =   5565
+         _extentx        =   9816
+         _extenty        =   503
+         caption         =   "gradient"
+         fontsize        =   12
+         forecolor       =   0
       End
    End
 End
@@ -358,6 +347,35 @@ Private m_PreviewDIB As pdDIB
 
 'To prevent recursive setting changes, this value can be set to TRUE to prevent live preview updates
 Private m_SuspendRedraws As Boolean
+
+'Hatch count is constant, regardless of OS
+Private Const NUM_OF_HATCHES As Long = 53
+
+'2D painting support classes
+Private m_Painter As pd2DPainter
+
+'When the form first loads, we find the longest hatch index number (longest in *pixels*).  We do this so that we
+' can align all hatch previews identically.
+Private m_LargestWidth As Single
+
+'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum PD_FILL_PATTERN
+    [_First] = 0
+    PDFP_Background = 0
+    PDFP_Caption = 1
+    PDFP_ItemBorder = 2
+    PDFP_HatchBorder = 3
+    [_Last] = 3
+    [_Count] = 4
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -423,10 +441,6 @@ Private Sub btsStyle_Click(ByVal buttonIndex As Long)
     
 End Sub
 
-Private Sub cboFillPattern_Click()
-    UpdatePreview
-End Sub
-
 'CANCEL BUTTON
 Private Sub cmdBar_CancelClick()
     userAnswer = vbCancel
@@ -475,6 +489,12 @@ Private Sub Form_Load()
     
     m_SuspendRedraws = True
     
+    'Prep the color manager and load default colors
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As PD_FILL_PATTERN: colorCount = [_Count]
+    m_Colors.InitializeColorList "PDFillPatterns", colorCount
+    UpdateColorList
+    
     'Populate the main style button strip
     btsStyle.AddItem "solid", 0
     btsStyle.AddItem "pattern", 1
@@ -483,9 +503,30 @@ Private Sub Form_Load()
     btsStyle.ListIndex = 0
     btsStyle_Click 0
     
-    'Hatch patterns take care of themselves
-    cboFillPattern.initializeHatchList
-    cboFillPattern.ListIndex = 0
+    'The hatch preview box is owner-drawn, so calculate some additional metrics now
+    Drawing2D.QuickCreatePainter m_Painter
+    
+    Dim tmpFont As pdFont
+    Set tmpFont = Font_Management.GetMatchingUIFont(10#)
+    
+    Dim tmpWidth As Long
+    m_LargestWidth = 0
+    
+    lstFillPattern.ListItemHeight = FixDPI(24)
+    lstFillPattern.SetAutomaticRedraws False
+    lstFillPattern.Clear
+    
+    Dim i As Long
+    For i = 0 To NUM_OF_HATCHES - 1
+        lstFillPattern.AddItem CStr(i), i
+        tmpWidth = tmpFont.GetWidthOfString(CStr(i))
+        If (tmpWidth > m_LargestWidth) Then m_LargestWidth = tmpWidth
+    Next i
+    
+    lstFillPattern.SetAutomaticRedraws True, True
+    
+    'Numbers will also have a trailing dash, so add that width now
+    m_LargestWidth = m_LargestWidth + tmpFont.GetWidthOfString(" - ")
     
     If g_IsProgramRunning Then
         If (m_Filler Is Nothing) Then Set m_Filler = New pd2DBrush
@@ -507,7 +548,7 @@ Private Sub UpdateFillObject()
         .SetBrushProperty P2_BrushMode, btsStyle.ListIndex
         .SetBrushProperty P2_BrushColor, csFillColor.Color
         .SetBrushProperty P2_BrushOpacity, sltFillOpacity.Value
-        .SetBrushProperty P2_BrushPatternStyle, cboFillPattern.ListIndex
+        .SetBrushProperty P2_BrushPatternStyle, lstFillPattern.ListIndex
         .SetBrushProperty P2_BrushPattern1Color, csPattern(0).Color
         .SetBrushProperty P2_BrushPattern1Opacity, sltPatternOpacity(0).Value
         .SetBrushProperty P2_BrushPattern2Color, csPattern(1).Color
@@ -566,6 +607,78 @@ Private Sub gsPrimary_GradientChanged()
     UpdatePreview
 End Sub
 
+Private Sub lstFillPattern_Click()
+    UpdatePreview
+End Sub
+
+Private Sub lstFillPattern_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
+    
+    Dim tmpRectF As RECTF
+    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    
+    Dim itemBackColor As Long, itemTextColor As Long, itemBorderColor As Long, hatchBorderColor As Long
+    itemBackColor = m_Colors.RetrieveColor(PDFP_Background, Me.Enabled, itemIsSelected, itemIsHovered)
+    itemTextColor = m_Colors.RetrieveColor(PDFP_Caption, Me.Enabled, itemIsSelected, itemIsHovered)
+    itemBorderColor = m_Colors.RetrieveColor(PDFP_ItemBorder, Me.Enabled, itemIsSelected, itemIsHovered)
+    hatchBorderColor = m_Colors.RetrieveColor(PDFP_HatchBorder, Me.Enabled, itemIsSelected, itemIsHovered)
+    
+    'Fill the background first
+    Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, False
+    Drawing2D.QuickCreateSolidBrush cBrush, itemBackColor
+    Drawing2D.QuickCreateSolidPen cPen, 1, itemBorderColor, , P2_LJ_Miter
+    
+    If (Not (m_Painter Is Nothing)) Then
+        
+        m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
+        
+        'Next, fill the border
+        m_Painter.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
+        
+        'Next, draw the caption
+        Dim tmpFont As pdFont
+        Set tmpFont = Font_Management.GetMatchingUIFont(10#)
+        
+        Dim tmpString As String
+        tmpString = CStr(itemIndex + 1) & " - "
+        
+        tmpFont.SetFontColor itemTextColor
+        tmpFont.AttachToDC bufferDC
+        tmpFont.SetTextAlignment vbLeftJustify
+        tmpFont.FastRenderTextWithClipping tmpRectF.Left + FixDPI(4), tmpRectF.Top, tmpRectF.Width, tmpRectF.Height, tmpString, False, True, False
+        tmpFont.ReleaseFromDC
+        Set tmpFont = Nothing
+        
+        'Finally, draw the hatch
+        Dim hatchRect As RECTF
+        
+        With hatchRect
+            .Left = tmpRectF.Left + FixDPI(4) + m_LargestWidth
+            .Top = tmpRectF.Top + 2#
+            .Height = tmpRectF.Height - 4#
+            .Width = (tmpRectF.Left + tmpRectF.Width) - (hatchRect.Left) - FixDPI(4)
+        End With
+        
+        cBrush.ReleaseBrush
+        cBrush.SetBrushMode P2_BM_Pattern
+        cBrush.SetBrushPatternStyle itemIndex
+        cBrush.SetBrushPattern1Color vbBlack
+        cBrush.SetBrushPattern1Opacity 100
+        cBrush.SetBrushPattern2Color vbWhite
+        cBrush.SetBrushPattern2Opacity 100
+        cBrush.CreateBrush
+        
+        cSurface.SetSurfaceRenderingOriginX hatchRect.Left
+        cSurface.SetSurfaceRenderingOriginY hatchRect.Top
+        m_Painter.FillRectangleF_FromRectF cSurface, cBrush, hatchRect
+        
+        cPen.SetPenColor hatchBorderColor
+        m_Painter.DrawRectangleF_FromRectF cSurface, cPen, hatchRect
+    
+    End If
+    
+End Sub
+
 Private Sub sltFillOpacity_Change()
     UpdatePreview
 End Sub
@@ -585,7 +698,7 @@ Private Sub SyncControlsToFillObject()
         csFillColor.Color = .GetBrushProperty(P2_BrushColor)
         sltFillOpacity.Value = .GetBrushProperty(P2_BrushOpacity)
         
-        cboFillPattern.ListIndex = .GetBrushProperty(P2_BrushPatternStyle)
+        lstFillPattern.ListIndex = .GetBrushProperty(P2_BrushPatternStyle)
         csPattern(0).Color = .GetBrushProperty(P2_BrushPattern1Color)
         csPattern(1).Color = .GetBrushProperty(P2_BrushPattern2Color)
         sltPatternOpacity(0).Value = .GetBrushProperty(P2_BrushPattern1Opacity)
@@ -599,3 +712,13 @@ Private Sub SyncControlsToFillObject()
     
 End Sub
 
+'Before the hatch list box does any painting, we need to retrieve relevant colors from PD's primary theming class.
+' Note that this step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    With m_Colors
+        .LoadThemeColor PDFP_Background, "Background", IDE_WHITE
+        .LoadThemeColor PDFP_Caption, "Caption", IDE_GRAY
+        .LoadThemeColor PDFP_ItemBorder, "ItemBorder", IDE_WHITE
+        .LoadThemeColor PDFP_HatchBorder, "HatchBorder", IDE_GRAY
+    End With
+End Sub

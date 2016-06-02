@@ -64,6 +64,7 @@ Public Enum PD_2D_BRUSH_SETTINGS
     'Note that individual gradient values cannot be set/read.  Gradients are only supported as a complete gradient
     ' XML packet, as supplied by the pdGradient class.
     P2_BrushGradientXML = 8
+    
     [_P2_NumOfBrushSettings] = 9
 End Enum
 
@@ -75,11 +76,13 @@ End Enum
 Public Enum PD_2D_SURFACE_SETTINGS
     P2_SurfaceAntialiasing = 0
     P2_SurfacePixelOffset = 1
-    [_P2_NumOfSurfaceSettings] = 2
+    P2_SurfaceRenderingOriginX = 2
+    P2_SurfaceRenderingOriginY = 3
+    [_P2_NumOfSurfaceSettings] = 4
 End Enum
 
 #If False Then
-    Private Const P2_SurfaceAntialiasing = 0, P2_SurfacePixelOffset = 1, P2_NumOfSurfaceSettings = 2
+    Private Const P2_SurfaceAntialiasing = 0, P2_SurfacePixelOffset = 1, P2_SurfaceRenderingOriginX = 2, P2_SurfaceRenderingOriginY = 3, P2_NumOfSurfaceSettings = 4
 #End If
 
 'The whole point of Drawing2D is to avoid backend-specific parameters.  As such, we necessarily wrap a number of

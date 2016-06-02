@@ -1385,10 +1385,6 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
             isPDControl = True
         End If
         
-        'Combo boxes are hopelessly broken in their current incarnation.  They will shortly be rewritten, so please ignore
-        ' their problematic behavior at present.
-        If (TypeOf eControl Is pdComboBox_Hatch) Then isPDControl = True
-        
         'Disabled controls will ignore any function calls, so we must manually enable disabled controls prior to theming them
         If isPDControl Then
             isControlEnabled = eControl.Enabled

@@ -41,6 +41,7 @@ Private m_DebugMode As Boolean
 'Surface settings that support get/set operations
 Private m_SurfaceAntialiasing As PD_2D_Antialiasing
 Private m_SurfacePixelOffset As PD_2D_PixelOffset
+Private m_SurfaceRenderingOriginX As Single, m_SurfaceRenderingOriginY As Single
 
 'Get/set individual settings.  Note that these just wrap the generic Get/SetPenProperty functions, below.
 Public Function GetSurfaceAntialiasing() As PD_2D_Antialiasing
@@ -51,12 +52,28 @@ Public Function GetSurfacePixelOffset() As PD_2D_PixelOffset
     GetSurfacePixelOffset = Me.GetSurfaceProperty(P2_SurfacePixelOffset)
 End Function
 
+Public Function GetSurfaceRenderingOriginX() As Single
+    GetSurfaceRenderingOriginX = Me.GetSurfaceProperty(P2_SurfaceRenderingOriginX)
+End Function
+
+Public Function GetSurfaceRenderingOriginY() As Single
+    GetSurfaceRenderingOriginY = Me.GetSurfaceProperty(P2_SurfaceRenderingOriginY)
+End Function
+
 Public Sub SetSurfaceAntialiasing(ByVal newSetting As PD_2D_Antialiasing)
     Me.SetSurfaceProperty P2_SurfaceAntialiasing, newSetting
 End Sub
 
 Public Sub SetSurfacePixelOffset(ByVal newSetting As PD_2D_PixelOffset)
     Me.SetSurfaceProperty P2_SurfacePixelOffset, newSetting
+End Sub
+
+Public Sub SetSurfaceRenderingOriginX(ByVal newSetting As Single)
+    Me.SetSurfaceProperty P2_SurfaceRenderingOriginX, newSetting
+End Sub
+
+Public Sub SetSurfaceRenderingOriginY(ByVal newSetting As Single)
+    Me.SetSurfaceProperty P2_SurfaceRenderingOriginY, newSetting
 End Sub
 
 'Get/set individual settings by enum type
@@ -69,6 +86,12 @@ Public Function GetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS) As Va
         
         Case P2_SurfacePixelOffset
             GetSurfaceProperty = m_SurfacePixelOffset
+            
+        Case P2_SurfaceRenderingOriginX
+            GetSurfaceProperty = m_SurfaceRenderingOriginX
+        
+        Case P2_SurfaceRenderingOriginY
+            GetSurfaceProperty = m_SurfaceRenderingOriginY
     
     End Select
 
@@ -83,6 +106,12 @@ Public Sub SetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS, ByVal newS
         
         Case P2_SurfacePixelOffset
             m_SurfacePixelOffset = CLng(newSetting)
+            
+        Case P2_SurfaceRenderingOriginX
+            m_SurfaceRenderingOriginX = CSng(newSetting)
+        
+        Case P2_SurfaceRenderingOriginY
+            m_SurfaceRenderingOriginY = CSng(newSetting)
             
     End Select
     
@@ -192,6 +221,12 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_SURFACE_SETTINGS)
                         Else
                             GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, propID, GP_POM_None
                         End If
+                    
+                    Case P2_SurfaceRenderingOriginX
+                        GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, propID, m_SurfaceRenderingOriginX
+                        
+                    Case P2_SurfaceRenderingOriginY
+                        GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, propID, m_SurfaceRenderingOriginY
                         
                 End Select
                 
@@ -207,6 +242,8 @@ End Sub
 Public Sub ResetAllProperties()
     Me.SetSurfaceProperty P2_SurfaceAntialiasing, P2_AA_None
     Me.SetSurfaceProperty P2_SurfacePixelOffset, P2_PO_Normal
+    Me.SetSurfaceProperty P2_SurfaceRenderingOriginX, 0#
+    Me.SetSurfaceProperty P2_SurfaceRenderingOriginY, 0#
 End Sub
 
 'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
