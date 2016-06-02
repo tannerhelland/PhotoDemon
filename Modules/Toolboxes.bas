@@ -226,6 +226,11 @@ Public Sub PositionToolbox(ByVal toolID As PD_Toolbox, ByVal toolboxHWnd As Long
             
         End If
         
+        'Prior to making any visibility changes, we need to make note of the currently focused item.  If we don't,
+        ' Windows may inadvertently redirect focus somewhere bizarre.
+        Dim focusHWnd As Long
+        focusHWnd = g_WindowManager.GetFocusAPI()
+        
         If .IsVisibleNow Then
             MoveWindow toolboxHWnd, .toolRect.x1, .toolRect.y1, .toolRect.x2 - .toolRect.x1, .toolRect.y2 - .toolRect.y1, 1&
             ShowWindow toolboxHWnd, SW_SHOWNA
@@ -233,6 +238,10 @@ Public Sub PositionToolbox(ByVal toolID As PD_Toolbox, ByVal toolboxHWnd As Long
             ShowWindow toolboxHWnd, SW_HIDE
             MoveWindow toolboxHWnd, .toolRect.x1, .toolRect.y1, .toolRect.x2 - .toolRect.x1, .toolRect.y2 - .toolRect.y1, 0&
         End If
+        
+        'Restore focus to its original window (but only if it's visible; otherwise, the main form gets focus)
+        If g_WindowManager.GetVisibilityByHWnd(focusHWnd) Then g_WindowManager.SetFocusAPI focusHWnd Else g_WindowManager.SetFocusAPI FormMain.hWnd
+        
     End With
     
 End Sub
