@@ -29,7 +29,7 @@ Begin VB.Form toolpanel_MoveSize
    Begin PhotoDemon.pdButtonStripVertical btsMoveOptions 
       Height          =   1320
       Left            =   120
-      TabIndex        =   14
+      TabIndex        =   13
       Top             =   60
       Width           =   2295
       _ExtentX        =   4048
@@ -133,17 +133,6 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentY        =   1005
          AutoToggle      =   -1  'True
       End
-      Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
-         Height          =   570
-         Index           =   1
-         Left            =   9240
-         TabIndex        =   8
-         Top             =   420
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   1005
-         AutoToggle      =   -1  'True
-      End
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   12
@@ -168,13 +157,13 @@ Begin VB.Form toolpanel_MoveSize
       ScaleHeight     =   97
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   937
-      TabIndex        =   13
+      TabIndex        =   12
       Top             =   0
       Width           =   14055
       Begin PhotoDemon.pdSlider sltLayerAngle 
          Height          =   765
          Left            =   120
-         TabIndex        =   15
+         TabIndex        =   14
          Top             =   60
          Width           =   4950
          _ExtentX        =   7223
@@ -188,7 +177,7 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdSlider sltLayerShearX 
          Height          =   765
          Left            =   5400
-         TabIndex        =   17
+         TabIndex        =   16
          Top             =   60
          Width           =   4950
          _ExtentX        =   7223
@@ -202,7 +191,7 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdButtonToolbox cmdLayerAffinePermanent 
          Height          =   570
          Left            =   10800
-         TabIndex        =   18
+         TabIndex        =   17
          Top             =   360
          Width           =   660
          _ExtentX        =   1164
@@ -212,7 +201,7 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdSlider sltLayerShearY 
          Height          =   405
          Left            =   5400
-         TabIndex        =   19
+         TabIndex        =   18
          Top             =   840
          Width           =   4950
          _ExtentX        =   7223
@@ -245,7 +234,7 @@ Begin VB.Form toolpanel_MoveSize
       ScaleHeight     =   97
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   937
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   0
       Width           =   14055
       Begin PhotoDemon.pdLabel lblOptions 
@@ -261,7 +250,7 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdCheckBox chkAutoActivateLayer 
          Height          =   330
          Left            =   240
-         TabIndex        =   10
+         TabIndex        =   9
          Top             =   360
          Width           =   5250
          _ExtentX        =   9260
@@ -271,7 +260,7 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdCheckBox chkIgnoreTransparent 
          Height          =   330
          Left            =   240
-         TabIndex        =   11
+         TabIndex        =   10
          Top             =   720
          Width           =   5250
          _ExtentX        =   9260
@@ -281,7 +270,7 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdCheckBox chkLayerBorder 
          Height          =   330
          Left            =   5760
-         TabIndex        =   12
+         TabIndex        =   11
          Top             =   360
          Width           =   5250
          _ExtentX        =   9260
@@ -311,7 +300,7 @@ Begin VB.Form toolpanel_MoveSize
       Begin PhotoDemon.pdCheckBox chkRotateNode 
          Height          =   330
          Left            =   5760
-         TabIndex        =   16
+         TabIndex        =   15
          Top             =   1080
          Width           =   5250
          _ExtentX        =   9260
@@ -377,6 +366,15 @@ Private Sub cboLayerResizeQuality_Click()
     
 End Sub
 
+Private Sub cboLayerResizeQuality_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.FlagInitialNDFXState_Generic pgp_ResizeQuality, cboLayerResizeQuality.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+End Sub
+
+Private Sub cboLayerResizeQuality_LostFocusAPI()
+    Processor.FlagFinalNDFXState_Generic pgp_ResizeQuality, cboLayerResizeQuality.ListIndex
+End Sub
+
 Private Sub chkAutoActivateLayer_Click()
     If CBool(chkAutoActivateLayer) Then
         If Not chkIgnoreTransparent.Enabled Then chkIgnoreTransparent.Enabled = True
@@ -407,12 +405,8 @@ Private Sub cmdLayerMove_Click(Index As Integer)
     
     Select Case Index
     
-        'Reset layer to original size
-        Case 0
-            Process "Reset layer size", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
-        
         'Make non-destructive resize permanent
-        Case 1
+        Case 0
             Process "Make layer changes permanent", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
     
     End Select
@@ -429,10 +423,8 @@ Private Sub Form_Load()
     btsMoveOptions_Click 0
     
     'Several reset/apply buttons on this form use identical images (and nearly identical tooltips)
-    cmdLayerMove(0).AssignImage "CMDBAR_RESET", , 50
-    cmdLayerMove(1).AssignImage "TO_APPLY", , 50
-    cmdLayerMove(0).AssignTooltip "Reset layer to original size"
-    cmdLayerMove(1).AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
+    cmdLayerMove(0).AssignImage "TO_APPLY", , 50
+    cmdLayerMove(0).AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
     
     cmdLayerAffinePermanent.AssignImage "TO_APPLY", , 50
     cmdLayerAffinePermanent.AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
@@ -483,17 +475,17 @@ Private Sub sltLayerAngle_Change()
         
     'Also, activate the "make transforms permanent" button(s) as necessary
     If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
-    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     
 End Sub
 
 Private Sub sltLayerAngle_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Generic pgp_Angle, sltLayerAngle.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Generic pgp_Angle, sltLayerAngle.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltLayerAngle_LostFocusAPI()
-    Processor.flagFinalNDFXState_Generic pgp_Angle, sltLayerAngle.Value
+    Processor.FlagFinalNDFXState_Generic pgp_Angle, sltLayerAngle.Value
 End Sub
 
 Private Sub sltLayerShearX_Change()
@@ -516,17 +508,17 @@ Private Sub sltLayerShearX_Change()
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
-    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     
 End Sub
 
 Private Sub sltLayerShearX_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Generic pgp_ShearX, sltLayerShearX.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Generic pgp_ShearX, sltLayerShearX.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltLayerShearX_LostFocusAPI()
-    Processor.flagFinalNDFXState_Generic pgp_ShearX, sltLayerShearX.Value
+    Processor.FlagFinalNDFXState_Generic pgp_ShearX, sltLayerShearX.Value
 End Sub
 
 Private Sub sltLayerShearY_Change()
@@ -549,17 +541,17 @@ Private Sub sltLayerShearY_Change()
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
-    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     
 End Sub
 
 Private Sub sltLayerShearY_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Generic pgp_ShearY, sltLayerShearY.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Generic pgp_ShearY, sltLayerShearY.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltLayerShearY_LostFocusAPI()
-    Processor.flagFinalNDFXState_Generic pgp_ShearY, sltLayerShearY.Value
+    Processor.FlagFinalNDFXState_Generic pgp_ShearY, sltLayerShearY.Value
 End Sub
 
 Private Sub tudLayerMove_Change(Index As Integer)
@@ -599,7 +591,7 @@ Private Sub tudLayerMove_Change(Index As Integer)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
-    If cmdLayerMove(1).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
 
 End Sub
 
@@ -622,6 +614,31 @@ Private Sub tudLayerMove_FinalChange(Index As Integer)
     
 End Sub
 
+Private Sub tudLayerMove_GotFocusAPI(Index As Integer)
+    If (g_OpenImageCount = 0) Then Exit Sub
+    If (Index = 0) Then
+        Processor.FlagInitialNDFXState_Generic pgp_OffsetX, tudLayerMove(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+    ElseIf (Index = 1) Then
+        Processor.FlagInitialNDFXState_Generic pgp_OffsetY, tudLayerMove(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+    ElseIf (Index = 2) Then
+        Processor.FlagInitialNDFXState_Generic pgp_CanvasXModifier, tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False), pdImages(g_CurrentImage).GetActiveLayerID
+    ElseIf (Index = 3) Then
+        Processor.FlagInitialNDFXState_Generic pgp_CanvasYModifier, tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False), pdImages(g_CurrentImage).GetActiveLayerID
+    End If
+End Sub
+
+Private Sub tudLayerMove_LostFocusAPI(Index As Integer)
+    If (Index = 0) Then
+        Processor.FlagFinalNDFXState_Generic pgp_OffsetX, tudLayerMove(Index).Value
+    ElseIf (Index = 1) Then
+        Processor.FlagFinalNDFXState_Generic pgp_OffsetY, tudLayerMove(Index).Value
+    ElseIf (Index = 2) Then
+        Processor.FlagFinalNDFXState_Generic pgp_CanvasXModifier, tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)
+    ElseIf (Index = 3) Then
+        Processor.FlagFinalNDFXState_Generic pgp_CanvasYModifier, tudLayerMove(Index).Value / pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
+    End If
+End Sub
+
 'Updating against the current theme accomplishes a number of things:
 ' 1) All user-drawn controls are redrawn according to the current g_Themer settings.
 ' 2) All tooltips and captions are translated according to the current language.
@@ -629,14 +646,5 @@ End Sub
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
-
-    'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
-    ' any common controls that may still exist in the program.)
     ApplyThemeAndTranslations Me
-
 End Sub
-
-
-
-
-

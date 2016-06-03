@@ -365,12 +365,8 @@ Private Sub SyncUI_CurrentLayerSettings()
     End If
     
     'If non-destructive resizing is active, the "reset layer size" menu (and corresponding Move Tool button) must be enabled.
-    If FormMain.MnuLayerSize(0).Enabled <> nonDestructiveResizeActive Then
-        FormMain.MnuLayerSize(0).Enabled = nonDestructiveResizeActive
-        toolpanel_MoveSize.cmdLayerMove(0).Enabled = nonDestructiveResizeActive
-    End If
-    
-    toolpanel_MoveSize.cmdLayerMove(1).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If FormMain.MnuLayerSize(0).Enabled <> nonDestructiveResizeActive Then FormMain.MnuLayerSize(0).Enabled = nonDestructiveResizeActive
+    toolpanel_MoveSize.cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     
     'Similar logic is used for other non-destructive affine transforms
     toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
@@ -499,7 +495,6 @@ Private Sub SetUIMode_NoImages()
     
     'Disable various layer-related toolbox options as well
     toolpanel_MoveSize.cmdLayerMove(0).Enabled = False
-    toolpanel_MoveSize.cmdLayerMove(1).Enabled = False
     toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = False
         
     'Multiple edit menu items must also be disabled
