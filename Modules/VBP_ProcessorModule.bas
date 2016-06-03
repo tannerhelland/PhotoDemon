@@ -2285,13 +2285,13 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional ShowDialog 
     Select Case processID
     
         Case "Modify layer"
-            processID = processID & " " & getNameOfGenericAction(cParams.GetLong(1))
+            processID = processID & " " & GetNameOfGenericAction(cParams.GetLong(1))
         
         Case "Modify text layer"
-            processID = processID & " " & getNameOfTextAction(cParams.GetLong(1))
+            processID = processID & " " & GetNameOfTextAction(cParams.GetLong(1))
             
         Case "Non-destructive effect"
-            processID = processID & " (" & getNameOfNDFXAction(cParams.GetLong(1)) & ")"
+            processID = processID & " (" & GetNameOfNDFXAction(cParams.GetLong(1)) & ")"
         
         Case Else
             Debug.Print "WARNING!  Unknown processID submitted to MiniProcess_NDFXOnly().  Fix it!"
@@ -2336,118 +2336,118 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional ShowDialog 
     
 End Sub
 
-Private Function getNameOfGenericAction(ByVal genericSettingID As PDLAYER_GENERIC_PROPERTY) As String
+Private Function GetNameOfGenericAction(ByVal genericSettingID As PDLAYER_GENERIC_PROPERTY) As String
     
     Select Case genericSettingID
         
         Case pgp_Name
-            getNameOfGenericAction = g_Language.TranslateMessage("name")
+            GetNameOfGenericAction = g_Language.TranslateMessage("name")
         
         Case pgp_GroupID
-            getNameOfGenericAction = g_Language.TranslateMessage("group")
+            GetNameOfGenericAction = g_Language.TranslateMessage("group")
         
         Case pgp_Opacity
-            getNameOfGenericAction = g_Language.TranslateMessage("opacity")
+            GetNameOfGenericAction = g_Language.TranslateMessage("opacity")
         
         Case pgp_BlendMode
-            getNameOfGenericAction = g_Language.TranslateMessage("blend mode")
+            GetNameOfGenericAction = g_Language.TranslateMessage("blend mode")
         
         Case pgp_OffsetX
-            getNameOfGenericAction = g_Language.TranslateMessage("X offset")
+            GetNameOfGenericAction = g_Language.TranslateMessage("X offset")
         
         Case pgp_OffsetY
-            getNameOfGenericAction = g_Language.TranslateMessage("Y offset")
+            GetNameOfGenericAction = g_Language.TranslateMessage("Y offset")
         
         Case pgp_CanvasXModifier
-            getNameOfGenericAction = g_Language.TranslateMessage("width")
+            GetNameOfGenericAction = g_Language.TranslateMessage("width")
         
         Case pgp_CanvasYModifier
-            getNameOfGenericAction = g_Language.TranslateMessage("height")
+            GetNameOfGenericAction = g_Language.TranslateMessage("height")
         
         Case pgp_Angle
-            getNameOfGenericAction = g_Language.TranslateMessage("angle")
+            GetNameOfGenericAction = g_Language.TranslateMessage("angle")
         
         Case pgp_Visibility
-            getNameOfGenericAction = g_Language.TranslateMessage("visibility")
+            GetNameOfGenericAction = g_Language.TranslateMessage("visibility")
         
         Case pgp_NonDestructiveFXActive
-            getNameOfGenericAction = g_Language.TranslateMessage("non-destructive effect")
+            GetNameOfGenericAction = g_Language.TranslateMessage("non-destructive effect")
         
         Case pgp_ResizeQuality
-            getNameOfGenericAction = g_Language.TranslateMessage("resize quality")
+            GetNameOfGenericAction = g_Language.TranslateMessage("resize quality")
         
     End Select
     
 End Function
 
-Private Function getNameOfTextAction(ByVal textSettingID As PD_TEXT_PROPERTY) As String
+Private Function GetNameOfTextAction(ByVal textSettingID As PD_TEXT_PROPERTY) As String
     
     Select Case textSettingID
         
         Case ptp_Text
-            getNameOfTextAction = g_Language.TranslateMessage("text")
+            GetNameOfTextAction = g_Language.TranslateMessage("text")
         
         Case ptp_FontColor
-            getNameOfTextAction = g_Language.TranslateMessage("font (color)")
+            GetNameOfTextAction = g_Language.TranslateMessage("font (color)")
         
         Case ptp_FontFace
-            getNameOfTextAction = g_Language.TranslateMessage("font (face)")
+            GetNameOfTextAction = g_Language.TranslateMessage("font (face)")
         
         Case ptp_FontSize
-            getNameOfTextAction = g_Language.TranslateMessage("font (size)")
+            GetNameOfTextAction = g_Language.TranslateMessage("font (size)")
         
         Case ptp_FontSizeUnit
-            getNameOfTextAction = g_Language.TranslateMessage("font (size unit)")
+            GetNameOfTextAction = g_Language.TranslateMessage("font (size unit)")
         
         Case ptp_FontBold
-            getNameOfTextAction = g_Language.TranslateMessage("style (bold)")
+            GetNameOfTextAction = g_Language.TranslateMessage("style (bold)")
         
         Case ptp_FontItalic
-            getNameOfTextAction = g_Language.TranslateMessage("style (italic)")
+            GetNameOfTextAction = g_Language.TranslateMessage("style (italic)")
         
         Case ptp_FontUnderline
-            getNameOfTextAction = g_Language.TranslateMessage("style (underline)")
+            GetNameOfTextAction = g_Language.TranslateMessage("style (underline)")
         
         Case ptp_FontStrikeout
-            getNameOfTextAction = g_Language.TranslateMessage("style (strikeout)")
+            GetNameOfTextAction = g_Language.TranslateMessage("style (strikeout)")
         
         Case ptp_HorizontalAlignment
-            getNameOfTextAction = g_Language.TranslateMessage("horizontal alignment")
+            GetNameOfTextAction = g_Language.TranslateMessage("horizontal alignment")
         
         Case ptp_VerticalAlignment
-            getNameOfTextAction = g_Language.TranslateMessage("vertical alignment")
+            GetNameOfTextAction = g_Language.TranslateMessage("vertical alignment")
         
         Case ptp_TextAntialiasing
-            getNameOfTextAction = g_Language.TranslateMessage("antialiasing")
+            GetNameOfTextAction = g_Language.TranslateMessage("antialiasing")
         
         Case ptp_TextContrast
-            getNameOfTextAction = g_Language.TranslateMessage("antialiasing clarity")
+            GetNameOfTextAction = g_Language.TranslateMessage("antialiasing clarity")
     
     End Select
     
 End Function
 
-Private Function getNameOfNDFXAction(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE_FX) As String
+Private Function GetNameOfNDFXAction(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE_FX) As String
     
     Select Case ndfxSettingID
         
         Case NDFX_EXPOSURE
-            getNameOfNDFXAction = g_Language.TranslateMessage("exposure")
+            GetNameOfNDFXAction = g_Language.TranslateMessage("exposure")
         
         Case NDFX_CONTRAST
-            getNameOfNDFXAction = g_Language.TranslateMessage("contrast")
+            GetNameOfNDFXAction = g_Language.TranslateMessage("contrast")
             
         Case NDFX_CLARITY
-            getNameOfNDFXAction = g_Language.TranslateMessage("clarity")
+            GetNameOfNDFXAction = g_Language.TranslateMessage("clarity")
             
         Case NDFX_VIBRANCE
-            getNameOfNDFXAction = g_Language.TranslateMessage("vibrance")
+            GetNameOfNDFXAction = g_Language.TranslateMessage("vibrance")
             
         Case NDFX_TEMPERATURE
-            getNameOfNDFXAction = g_Language.TranslateMessage("temperature")
+            GetNameOfNDFXAction = g_Language.TranslateMessage("temperature")
             
         Case NDFX_TINT
-            getNameOfNDFXAction = g_Language.TranslateMessage("tint")
+            GetNameOfNDFXAction = g_Language.TranslateMessage("tint")
         
     End Select
     

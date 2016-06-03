@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1544</langversion>
+<langversion>6.8.1545</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -13322,11 +13322,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>Reset layer to original size</original>
-<translation>重置层为原始大小</translation>
-</phrase>
-
-<phrase>
 <original>Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
 <translation>使当前图层变换（大小，角度和剪切）永久性的。这个动作是从来没有必需的，但如果视渲染是呆滞，它可以提高性能。</translation>
 </phrase>
@@ -13336,7 +13331,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>邻近</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 26 phrases. 7 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 24 phrases. 6 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_MoveSize.frm-->
 
@@ -15091,10 +15086,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2578</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4477 phrases. -->
-<!-- 1899 are duplicates, so only 2578 unique phrases have been written to file. -->
-<!-- These 2578 phrases contain approximately 13274 total words. -->
+<!-- As of this build, PhotoDemon contains 4475 phrases. -->
+<!-- 1898 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 13269 total words. -->
 
 </pdData>
