@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.184</langversion>
+<langversion>6.7.185</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -13323,11 +13323,6 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 </phrase>
 
 <phrase>
-<original>Reset layer to original size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
 <translation></translation>
 </phrase>
@@ -13337,7 +13332,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 26 phrases. 7 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 24 phrases. 6 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_MoveSize.frm-->
 
@@ -15095,10 +15090,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2578</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4477 phrases. -->
-<!-- 1899 are duplicates, so only 2578 unique phrases have been written to file. -->
-<!-- These 2578 phrases contain approximately 13274 total words. -->
+<!-- As of this build, PhotoDemon contains 4475 phrases. -->
+<!-- 1898 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 13269 total words. -->
 
 </pdData>
