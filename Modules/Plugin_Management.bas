@@ -537,10 +537,6 @@ Private Sub FinalizePluginInitialization(ByVal pluginEnumID As CORE_PLUGINS, ByV
                 #End If
             End If
             
-            'Also, at present, the arbitrary rotation option wraps FreeImage's internal rotate functions.  I've been too lazy to
-            ' add fallbacks for this, but I may revisit in a future release.
-            FormMain.MnuRotate(3).Visible = pluginState
-            
         Case Else
         
     End Select

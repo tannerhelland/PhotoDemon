@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.185</langversion>
+<langversion>6.7.186</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -11920,6 +11920,56 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
+<original>fast, larger file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use interlacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>compression level</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>embed background color in file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>lossless file size optimization (OptiPNG)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation>alpha potong</translation>
+</phrase>
+
+<phrase>
+<original>palette size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparency</original>
+<translation>ketelusan</translation>
+</phrase>
+
+<phrase>
+<original>transparent color (right-click image to select)</original>
+<translation>warna telus (klik kanan gambar untuk pilih)</translation>
+</phrase>
+
+<phrase>
 <original>click to generate a new preview image</original>
 <translation></translation>
 </phrase>
@@ -11950,57 +12000,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>fast, larger file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>lossless optimization options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>alpha cut-off</original>
-<translation>alpha potong</translation>
-</phrase>
-
-<phrase>
-<original>palette size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>transparency</original>
-<translation>ketelusan</translation>
-</phrase>
-
-<phrase>
-<original>transparent color (right-click image to select)</original>
-<translation>warna telus (klik kanan gambar untuk pilih)</translation>
-</phrase>
-
-<phrase>
-<original>use interlacing</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>compression level</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>embed background color in file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>file size optimization</original>
 <translation></translation>
 </phrase>
 
@@ -12673,18 +12673,8 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 </phrase>
 
 <phrase>
-<original>adjust size to fit rotated image</original>
-<translation>melaraskan saiz imej untuk muat berputar</translation>
-</phrase>
-
-<phrase>
-<original>keep image at its present size</original>
-<translation>menyimpan imej pada saiz sekarang</translation>
-</phrase>
-
-<phrase>
-<original>rotated image size</original>
-<translation>saiz imej berputar</translation>
+<original>border regions</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12698,18 +12688,33 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 </phrase>
 
 <phrase>
-<original>Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled.</original>
-<translation>Putaran sewenang-wenangnya memerlukan plugin FreeImage, yang tidak dapat dikesan. Putaran dibatalkan.</translation>
+<original>keep current</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.</original>
-<translation>Yang FreeImage plugin diperlukan untuk putaran imej. Sila pergi ke Tools -> Options -> Maklumat Terbaru dan membenarkan PhotoDemon turun plugin teras. Kemudian memulakan semula program.</translation>
+<original>enlarge to fit</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>FreeImage plugin missing</original>
-<translation>Plugin FreeImage hilang</translation>
+<original>nearest-neighbor</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>bilinear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>bicubic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill with color</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12722,7 +12727,7 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <translation>lapisan putar</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 19 phrases. 8 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -12743,7 +12748,22 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <translation>Meluruskan lengkap.</translation>
 </phrase>
 
-<!-- Image_Straighten.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled.</original>
+<translation>Putaran sewenang-wenangnya memerlukan plugin FreeImage, yang tidak dapat dikesan. Putaran dibatalkan.</translation>
+</phrase>
+
+<phrase>
+<original>The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.</original>
+<translation>Yang FreeImage plugin diperlukan untuk putaran imej. Sila pergi ke Tools -> Options -> Maklumat Terbaru dan membenarkan PhotoDemon turun plugin teras. Kemudian memulakan semula program.</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage plugin missing</original>
+<translation>Plugin FreeImage hilang</translation>
+</phrase>
+
+<!-- Image_Straighten.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Image_Straighten.frm-->
 
@@ -15100,10 +15120,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2581</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4475 phrases. -->
-<!-- 1898 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 13269 total words. -->
+<!-- As of this build, PhotoDemon contains 4477 phrases. -->
+<!-- 1896 are duplicates, so only 2581 unique phrases have been written to file. -->
+<!-- These 2581 phrases contain approximately 13269 total words. -->
 
 </pdData>

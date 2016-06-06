@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1545</langversion>
+<langversion>6.8.1546</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -11906,6 +11906,56 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
+<original>fast, larger file</original>
+<translation>快速，更大的文件</translation>
+</phrase>
+
+<phrase>
+<original>use interlacing</original>
+<translation>使用交错</translation>
+</phrase>
+
+<phrase>
+<original>compression level</original>
+<translation>压缩级别</translation>
+</phrase>
+
+<phrase>
+<original>embed background color in file</original>
+<translation>文件中的背景颜色</translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation>慢，较小的文件</translation>
+</phrase>
+
+<phrase>
+<original>lossless file size optimization (OptiPNG)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation>阿尔法截止</translation>
+</phrase>
+
+<phrase>
+<original>palette size</original>
+<translation>调色板大小</translation>
+</phrase>
+
+<phrase>
+<original>transparency</original>
+<translation>透明度</translation>
+</phrase>
+
+<phrase>
+<original>transparent color (right-click image to select)</original>
+<translation>透明颜色（右键选择图像）</translation>
+</phrase>
+
+<phrase>
 <original>click to generate a new preview image</original>
 <translation>单击以生成新的预览图像</translation>
 </phrase>
@@ -11936,58 +11986,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>fast, larger file</original>
-<translation>快速，更大的文件</translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation>慢，较小的文件</translation>
-</phrase>
-
-<phrase>
 <original>lossless optimization options</original>
 <translation>无损优化选项</translation>
-</phrase>
-
-<phrase>
-<original>alpha cut-off</original>
-<translation>阿尔法截止</translation>
-</phrase>
-
-<phrase>
-<original>palette size</original>
-<translation>调色板大小</translation>
-</phrase>
-
-<phrase>
-<original>transparency</original>
-<translation>透明度</translation>
-</phrase>
-
-<phrase>
-<original>transparent color (right-click image to select)</original>
-<translation>透明颜色（右键选择图像）</translation>
-</phrase>
-
-<phrase>
-<original>use interlacing</original>
-<translation>使用交错</translation>
-</phrase>
-
-<phrase>
-<original>compression level</original>
-<translation>压缩级别</translation>
-</phrase>
-
-<phrase>
-<original>embed background color in file</original>
-<translation>文件中的背景颜色</translation>
-</phrase>
-
-<phrase>
-<original>file size optimization</original>
-<translation>文件大小优化</translation>
 </phrase>
 
 <phrase>
@@ -12662,18 +12662,8 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>adjust size to fit rotated image</original>
-<translation>调整大小以适应旋转图像</translation>
-</phrase>
-
-<phrase>
-<original>keep image at its present size</original>
-<translation>保持图像大小</translation>
-</phrase>
-
-<phrase>
-<original>rotated image size</original>
-<translation>旋转图像大小</translation>
+<original>border regions</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12687,18 +12677,33 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled.</original>
-<translation>任意旋转需要FreeImage的插件，它无法找到。旋转取消。</translation>
+<original>keep current</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.</original>
-<translation>该FreeImage的插件所需的图像旋转。请进入工具 - >选项 - >更新，并允许PhotoDemon下载核心插件。然后重新启动该程序。</translation>
+<original>enlarge to fit</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>FreeImage plugin missing</original>
-<translation>未发现FreeImage的插件</translation>
+<original>nearest-neighbor</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>bilinear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>bicubic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill with color</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12711,7 +12716,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>旋转层</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 19 phrases. 8 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -12732,7 +12737,22 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>拉伸完成。</translation>
 </phrase>
 
-<!-- Image_Straighten.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled.</original>
+<translation>任意旋转需要FreeImage的插件，它无法找到。旋转取消。</translation>
+</phrase>
+
+<phrase>
+<original>The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.</original>
+<translation>该FreeImage的插件所需的图像旋转。请进入工具 - >选项 - >更新，并允许PhotoDemon下载核心插件。然后重新启动该程序。</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage plugin missing</original>
+<translation>未发现FreeImage的插件</translation>
+</phrase>
+
+<!-- Image_Straighten.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Image_Straighten.frm-->
 
@@ -15086,10 +15106,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2581</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4475 phrases. -->
-<!-- 1898 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 13269 total words. -->
+<!-- As of this build, PhotoDemon contains 4477 phrases. -->
+<!-- 1896 are duplicates, so only 2581 unique phrases have been written to file. -->
+<!-- These 2581 phrases contain approximately 13269 total words. -->
 
 </pdData>

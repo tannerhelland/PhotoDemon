@@ -32,7 +32,6 @@ Begin VB.Form FormConvert24bpp
       Width           =   11820
       _ExtentX        =   20849
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -80,7 +79,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cmdBar_OKClick()
-    Process "Remove alpha channel", , buildParams(colorPicker.Color), UNDO_LAYER
+    Process "Remove alpha channel", , BuildParams(colorPicker.Color), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -112,11 +111,11 @@ End Sub
 
 'Render a new preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then
+    If cmdBar.PreviewsAllowed Then
         Dim tmpSA As SAFEARRAY2D
-        prepImageData tmpSA, True, pdFxPreview
-        workingDIB.convertTo24bpp colorPicker.Color
-        finalizeImageData True, pdFxPreview
+        PrepImageData tmpSA, True, pdFxPreview
+        workingDIB.ConvertTo24bpp colorPicker.Color
+        FinalizeImageData True, pdFxPreview
     End If
 End Sub
 
@@ -124,8 +123,4 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-
-
-
-
 
