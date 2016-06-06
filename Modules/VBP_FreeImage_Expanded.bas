@@ -2414,7 +2414,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
     
     'Create a FreeImage handle that points to our source image
     If tmpDIBRequired Then
-        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(m_ExportPreviewDIB, True)
+        fi_DIB = FreeImage_CreateFromDC(m_ExportPreviewDIB.GetDIBDC)
     Else
         fi_DIB = FreeImage_CreateFromDC(srcDIB.GetDIBDC)
     End If
