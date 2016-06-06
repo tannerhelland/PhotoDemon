@@ -582,7 +582,7 @@ Public Function findClosestPointInFloatArray(ByVal targetX As Double, ByVal targ
 End Function
 
 'Given a rectangle (as defined by width and height, not position), calculate the bounding rect required by a rotation of that rectangle.
-Public Sub findBoundarySizeOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeight As Double, ByVal rotateAngle As Double, ByRef dstWidth As Double, ByRef dstHeight As Double, Optional ByVal padToIntegerValues As Boolean = True)
+Public Sub FindBoundarySizeOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeight As Double, ByVal rotateAngle As Double, ByRef dstWidth As Double, ByRef dstHeight As Double, Optional ByVal padToIntegerValues As Boolean = True)
 
     'Convert the rotation angle to radians
     rotateAngle = rotateAngle * (PI_DIV_180)
@@ -640,7 +640,7 @@ Public Sub findBoundarySizeOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeig
 End Sub
 
 'Given a rectangle (as defined by width and height, not position), calculate new corner positions as an array of PointF structs.
-Public Sub findCornersOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeight As Double, ByVal rotateAngle As Double, ByRef dstPoints() As POINTFLOAT, Optional ByVal arrayAlreadyDimmed As Boolean = False)
+Public Sub FindCornersOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeight As Double, ByVal rotateAngle As Double, ByRef dstPoints() As POINTFLOAT, Optional ByVal arrayAlreadyDimmed As Boolean = False)
 
     'Convert the rotation angle to radians
     rotateAngle = rotateAngle * (PI_DIV_180)

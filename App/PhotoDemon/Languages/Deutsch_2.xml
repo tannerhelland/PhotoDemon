@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.186</langversion>
+<langversion>6.7.187</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -11911,6 +11911,56 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 </phrase>
 
 <phrase>
+<original>fast, larger file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use interlacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>compression level</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>embed background color in file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>slow, smaller file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>lossless file size optimization (OptiPNG)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparency</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparent color (right-click image to select)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>click to generate a new preview image</original>
 <translation></translation>
 </phrase>
@@ -11941,57 +11991,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 </phrase>
 
 <phrase>
-<original>fast, larger file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>slow, smaller file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>lossless optimization options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>alpha cut-off</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>palette size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>transparency</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>transparent color (right-click image to select)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use interlacing</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>compression level</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>embed background color in file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>file size optimization</original>
 <translation></translation>
 </phrase>
 
@@ -12664,18 +12664,8 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei "
 </phrase>
 
 <phrase>
-<original>adjust size to fit rotated image</original>
-<translation>Größe an gedrehtes Bild anpassen</translation>
-</phrase>
-
-<phrase>
-<original>keep image at its present size</original>
-<translation>Bild in seiner jetzigen Größe beibehalten</translation>
-</phrase>
-
-<phrase>
-<original>rotated image size</original>
-<translation>Gedrehte Bildgröße</translation>
+<original>border regions</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12689,18 +12679,33 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei "
 </phrase>
 
 <phrase>
-<original>Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled.</original>
-<translation>Eine beliebige Rotation erfordert das FreeImage-Plugin, das nicht gefunden werden konnte. Rotation abgebrochen.</translation>
+<original>keep current</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.</original>
-<translation>Das FreeImage-Plugin ist für die Bildrotation erforderlich. Bitte gehen Sie im Menü auf "Werkzeuge > Optionen > Updates" und lassen PhotoDemon die Core-Plugins herunterladen. Dann starten Sie das Programm neu.</translation>
+<original>enlarge to fit</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>FreeImage plugin missing</original>
-<translation>FreeImage-Plugin nicht vorhanden</translation>
+<original>nearest-neighbor</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>bilinear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>bicubic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill with color</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12713,7 +12718,7 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei "
 <translation>Ebene drehen</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 19 phrases. 8 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Image_Rotate.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Image_Rotate.frm-->
 
@@ -12734,7 +12739,22 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei "
 <translation>Ausrichten abschließen.</translation>
 </phrase>
 
-<!-- Image_Straighten.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled.</original>
+<translation>Eine beliebige Rotation erfordert das FreeImage-Plugin, das nicht gefunden werden konnte. Rotation abgebrochen.</translation>
+</phrase>
+
+<phrase>
+<original>The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.</original>
+<translation>Das FreeImage-Plugin ist für die Bildrotation erforderlich. Bitte gehen Sie im Menü auf "Werkzeuge > Optionen > Updates" und lassen PhotoDemon die Core-Plugins herunterladen. Dann starten Sie das Programm neu.</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage plugin missing</original>
+<translation>FreeImage-Plugin nicht vorhanden</translation>
+</phrase>
+
+<!-- Image_Straighten.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Image_Straighten.frm-->
 
@@ -15091,10 +15111,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2581</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4475 phrases. -->
-<!-- 1898 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 13269 total words. -->
+<!-- As of this build, PhotoDemon contains 4477 phrases. -->
+<!-- 1896 are duplicates, so only 2581 unique phrases have been written to file. -->
+<!-- These 2581 phrases contain approximately 13269 total words. -->
 
 </pdData>

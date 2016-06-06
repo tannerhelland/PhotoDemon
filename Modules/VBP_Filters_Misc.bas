@@ -23,7 +23,7 @@ Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long, Optional ByVal ne
     'TODO: handle this with layers.  I'm not sure how best to do this, just yet - I may move all transparency
     '      concepts to the Layer menu.
     
-    If newColorDepth = 24 Then
+    If (newColorDepth = 24) Then
     
         'Ask the current DIB to convert itself to 24bpp mode
         pdImages(g_CurrentImage).GetActiveDIB.ConvertTo24bpp newBackColor
@@ -31,6 +31,7 @@ Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long, Optional ByVal ne
         'Because PD now uses an "always 32bpp" approach to layers, convert the image back to 32bpp mode.
         ' (All its alpha values will be 255.)
         pdImages(g_CurrentImage).GetActiveDIB.ConvertTo32bpp 255
+        pdImages(g_CurrentImage).GetActiveDIB.SetInitialAlphaPremultiplicationState True
         
     Else
     

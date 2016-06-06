@@ -880,17 +880,14 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     
 End Function
 
-'Simpler shorthand function for obtaining a GDI+ bitmap handle from a pdDIB object.  Note that 24/32bpp cases have to be handled separately
-' because GDI+ is stupid.
+'Simpler shorthand function for obtaining a GDI+ bitmap handle from a pdDIB object.  Note that 24/32bpp cases have to be handled
+' separately because GDI+ is unpredictable at automatically detecting color depth with 32-bpp DIBs.
 Private Sub GetGdipBitmapHandleFromDIB(ByRef tBitmap As Long, ByRef srcDIB As pdDIB)
     
-    If srcDIB Is Nothing Then Exit Sub
+    If (srcDIB Is Nothing) Then Exit Sub
     
-    If srcDIB.GetDIBColorDepth = 32 Then
-        
-        'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
+    If (srcDIB.GetDIBColorDepth = 32) Then
         GdipCreateBitmapFromScan0 srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBWidth * 4, PixelFormat32bppPARGB, ByVal srcDIB.GetDIBPointer, tBitmap
-        
     Else
     
         'Use GdipCreateBitmapFromGdiDib for 24bpp DIBs
@@ -1090,25 +1087,25 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
 End Function
 
 'Use GDI+ to render a series of white-black-white circles, which are preferable for on-canvas controls with good readability
-Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
+Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
 
-    GDIPlusDrawCircleToDC dstDC, cx, cy, cRadius, RGB(0, 0, 0), cTransparency, 3, True
+    GDIPlusDrawCircleToDC dstDC, cX, cY, cRadius, RGB(0, 0, 0), cTransparency, 3, True
     
     Dim topColor As Long
     If useHighlightColor Then topColor = g_Themer.GetGenericUIColor(UI_AccentLight) Else topColor = RGB(255, 255, 255)
-    GDIPlusDrawCircleToDC dstDC, cx, cy, cRadius, topColor, 220, 1, True
+    GDIPlusDrawCircleToDC dstDC, cX, cY, cRadius, topColor, 220, 1, True
     
 End Function
 
 'Identical function to GdiPlusDrawCanvasCircle, above, but a rect is used instead.  Note that it's inconvenient to the user to display
 ' a square but use circles for hit-detection, so plan accordingly!
-Public Function GDIPlusDrawCanvasSquare(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
+Public Function GDIPlusDrawCanvasSquare(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
 
-    GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cx - cRadius, cy - cRadius, cx + cRadius, cy + cRadius, RGB(0, 0, 0), cTransparency, 3, True, GP_LC_Round, True
+    GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cX - cRadius, cY - cRadius, cX + cRadius, cY + cRadius, RGB(0, 0, 0), cTransparency, 3, True, GP_LC_Round, True
     
     Dim topColor As Long
     If useHighlightColor Then topColor = g_Themer.GetGenericUIColor(UI_AccentLight) Else topColor = RGB(255, 255, 255)
-    GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cx - cRadius, cy - cRadius, cx + cRadius, cy + cRadius, topColor, 220, 1.6, True, GP_LC_Round, True
+    GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cX - cRadius, cY - cRadius, cX + cRadius, cY + cRadius, topColor, 220, 1.6, True, GP_LC_Round, True
     
 End Function
 
@@ -1127,39 +1124,6 @@ End Function
 Public Function GDIPlusDrawCanvasRectF(ByVal dstDC As Long, ByRef srcRect As RECTF, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
     GDI_Plus.GDIPlusDrawRectFOutlineToDC dstDC, srcRect, g_Themer.GetGenericUIColor(UI_LineEdge, , , useHighlightColor), cTransparency, 3, True, GP_LJ_Miter
     GDI_Plus.GDIPlusDrawRectFOutlineToDC dstDC, srcRect, g_Themer.GetGenericUIColor(UI_LineCenter, , , useHighlightColor), 220, 1.6, True, GP_LJ_Miter
-End Function
-
-'Use GDI+ to render overlapping black-white-black arcs, which are preferable for on-canvas controls with good readability
-Public Function GDIPlusDrawCanvasArc(ByVal dstDC As Long, ByVal centerX As Single, ByVal centerY As Single, ByVal arcRadius As Single, ByVal startAngle As Single, ByVal sweepAngle As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
-
-    GDIPlusDrawArcCircular dstDC, centerX, centerY, arcRadius, startAngle, sweepAngle, RGB(0, 0, 0), cTransparency, 3, True
-    
-    Dim topColor As Long
-    If useHighlightColor Then topColor = g_Themer.GetGenericUIColor(UI_AccentLight) Else topColor = RGB(255, 255, 255)
-    GDIPlusDrawArcCircular dstDC, centerX, centerY, arcRadius, startAngle, sweepAngle, topColor, 220, 1, True
-    
-End Function
-
-'Use GDI+ to render an arc onto a destination DC
-Public Function GDIPlusDrawArcCircular(ByVal dstDC As Long, ByVal centerX As Single, ByVal centerY As Single, ByVal arcRadius As Single, ByVal startAngle As Single, ByVal sweepAngle As Single, ByVal arcColor As Long, Optional ByVal arcTransparency As Long = 255, Optional ByVal drawRadius As Single = 1#, Optional ByVal useAA As Boolean = True) As Boolean
-    
-    'Create a GDI+ copy of the image and request matching AA behavior
-    Dim dstGraphics As Long
-    GdipCreateFromHDC dstDC, dstGraphics
-    If useAA Then GdipSetSmoothingMode dstGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode dstGraphics, SmoothingModeNone
-    
-    'Create a pen, which will be used to stroke the arc
-    Dim hPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(arcColor, arcTransparency), drawRadius, GP_U_Pixel, hPen
-    
-    'GDI+ arcs use bounding boxes to describe their placement.  As such, we must convert the incoming centerX/Y and radius values
-    ' to bounding box coordinates.
-    GDIPlusDrawArcCircular = CBool(GdipDrawArc(dstGraphics, hPen, centerX - arcRadius, centerY - arcRadius, arcRadius * 2, arcRadius * 2, startAngle, sweepAngle) = 0)
-        
-    'Release all created objects
-    GdipDeletePen hPen
-    GdipDeleteGraphics dstGraphics
-    
 End Function
 
 'Assuming the client has already obtained a GDI+ graphics handle and a GDI+ pen handle, they can use this function to quickly draw a line using
@@ -1354,7 +1318,7 @@ Public Function GDIPlusDrawRectFOutlineToDC(ByVal dstDC As Long, ByRef srcRectF 
 End Function
 
 'Use GDI+ to render a hollow circle, with optional color, opacity, and antialiasing
-Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, ByVal edgeColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
+Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, ByVal edgeColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -1366,7 +1330,7 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
     GdipCreatePen1 FillQuadWithVBRGB(edgeColor, cTransparency), drawRadius, GP_U_Pixel, iPen
     
     'Render the circle
-    GdipDrawEllipse iGraphics, iPen, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2
+    GdipDrawEllipse iGraphics, iPen, cX - cRadius, cY - cRadius, cRadius * 2, cRadius * 2
         
     'Release all created objects
     GdipDeletePen iPen
@@ -1375,7 +1339,7 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
 End Function
 
 'Use GDI+ to render a filled circle, with optional color, opacity, and antialiasing
-Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, ByVal fillColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True) As Boolean
+Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, ByVal fillColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -1387,7 +1351,7 @@ Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
     hBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(fillColor, cTransparency)
     
     If hBrush <> 0 Then
-        GDIPlusFillCircleToDC = CBool(GdipFillEllipse(iGraphics, hBrush, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2) = 0)
+        GDIPlusFillCircleToDC = CBool(GdipFillEllipse(iGraphics, hBrush, cX - cRadius, cY - cRadius, cRadius * 2, cRadius * 2) = 0)
         GDI_Plus.ReleaseGDIPlusBrush hBrush
     End If
     
@@ -1734,7 +1698,7 @@ Public Function FillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte)
     dstQuad.Red = Colors.ExtractR(vbRGB)
     dstQuad.Green = Colors.ExtractG(vbRGB)
     dstQuad.Blue = Colors.ExtractB(vbRGB)
-    dstQuad.Alpha = alphaValue
+    dstQuad.alpha = alphaValue
     
     Dim placeHolder As tmpLong
     LSet placeHolder = dstQuad
@@ -1747,7 +1711,7 @@ End Function
 Public Function GetOpacityFromPARGB(ByVal pARGB As Long) As Single
     Dim srcQuad As RGBQUAD
     CopyMemory srcQuad, pARGB, 4&
-    GetOpacityFromPARGB = CSng(srcQuad.Alpha) * CSng(100# / 255#)
+    GetOpacityFromPARGB = CSng(srcQuad.alpha) * CSng(100# / 255#)
 End Function
 
 'Given a long-type pARGB value returned from GDI+, retrieve just the RGB component in combined vbRGB format
@@ -1756,12 +1720,12 @@ Public Function GetColorFromPARGB(ByVal pARGB As Long) As Long
     Dim srcQuad As RGBQUAD
     CopyMemory srcQuad, pARGB, 4&
     
-    If (srcQuad.Alpha = 255) Then
+    If (srcQuad.alpha = 255) Then
         GetColorFromPARGB = RGB(srcQuad.Red, srcQuad.Green, srcQuad.Blue)
     Else
     
         Dim tmpSingle As Single
-        tmpSingle = CSng(srcQuad.Alpha) / 255
+        tmpSingle = CSng(srcQuad.alpha) / 255
         
         If (tmpSingle <> 0) Then
             Dim tmpRed As Long, tmpGreen As Long, tmpBlue As Long
@@ -2749,28 +2713,28 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
         ' algorithm from drawing semi-transparent lines randomly around image borders.
         ' Thank you to http://stackoverflow.com/questions/1890605/ghost-borders-ringing-when-resizing-in-gdi for the fix.
         Dim imgAttributesHandle As Long
-        If newAlpha <> 1 Then GdipCreateImageAttributes imgAttributesHandle Else imgAttributesHandle = 0
+        If (newAlpha <> 1) Then GdipCreateImageAttributes imgAttributesHandle Else imgAttributesHandle = 0
         
         'To improve performance and quality, explicitly request high-speed (aka linear) alpha compositing operation, and high-quality
         ' pixel offsets (treat pixels as if they fall on pixel borders, instead of center points - this provides rudimentary edge
         ' antialiasing, which is the best we can do without murdering performance)
-        GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
+        GdipSetCompositingQuality iGraphics, CompositingQualityAssumeLinear
         If useHQOffsets Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
         
         'If modified alpha is requested, pass the new value to this image container
-        If newAlpha <> 1 Then
+        If (newAlpha <> 1) Then
             m_AttributesMatrix(3, 3) = newAlpha
             GdipSetImageAttributesColorMatrix imgAttributesHandle, ColorAdjustTypeBitmap, 1, VarPtr(m_AttributesMatrix(0, 0)), 0, ColorMatrixFlagsDefault
         End If
-    
+        
         'Perform the draw
         GdipDrawImagePointsRect iGraphics, tBitmap, VarPtr(plgPoints(0)), 3, x2, y2, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle, 0&, 0&
         
         'Release our image attributes object
-        If imgAttributesHandle <> 0 Then GdipDisposeImageAttributes imgAttributesHandle
+        If (imgAttributesHandle <> 0) Then GdipDisposeImageAttributes imgAttributesHandle
         
         'Reset alpha in the master identity matrix
-        If newAlpha <> 1 Then m_AttributesMatrix(3, 3) = 1
+        If (newAlpha <> 1) Then m_AttributesMatrix(3, 3) = 1
         
         'Update premultiplication status in the target
         dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
@@ -2784,32 +2748,36 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
     'Uncomment the line below to receive timing reports
     'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
     
-    
 End Sub
 
 'Given a source DIB and an angle, rotate it into a destination DIB.  The destination DIB can be automatically resized
 ' to fit the rotated image, or a parameter can be set, instructing the function to use the destination DIB "as-is"
-Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotateAngle As Single, Optional ByVal dstDIBAlreadySized As Boolean = False)
+Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotateAngle As Single, Optional ByVal dstDIBAlreadySized As Boolean = False, Optional ByVal rotateQuality As InterpolationMode = InterpolationModeHighQualityBicubic, Optional ByVal transparentBackground As Boolean = True, Optional ByVal newBackColor As Long = vbWhite)
     
     'Before doing any rotating or blurring, we need to figure out the size of our destination image.  If we don't
     ' do this, the rotation will chop off the image's corners!
     Dim nWidth As Double, nHeight As Double
-    Math_Functions.findBoundarySizeOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, nWidth, nHeight, False
+    Math_Functions.FindBoundarySizeOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, nWidth, nHeight, False
     
     'Use these dimensions to size the destination image, as requested by the user
     If dstDIBAlreadySized Then
         nWidth = dstDIB.GetDIBWidth
         nHeight = dstDIB.GetDIBHeight
+        If (Not transparentBackground) Then GDI_Plus.GDIPlusFillDIBRect dstDIB, 0, 0, dstDIB.GetDIBWidth + 1, dstDIB.GetDIBHeight + 1, newBackColor, 255, CompositingModeSourceCopy
     Else
-        If dstDIB Is Nothing Then Set dstDIB = New pdDIB
-        dstDIB.CreateBlank nWidth, nHeight, srcDIB.GetDIBColorDepth, 0, 0
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+        If transparentBackground Then
+            dstDIB.CreateBlank nWidth, nHeight, srcDIB.GetDIBColorDepth, 0, 0
+        Else
+            dstDIB.CreateBlank nWidth, nHeight, srcDIB.GetDIBColorDepth, newBackColor, 255
+        End If
     End If
     
     'We also want a copy of the corner points of the rotated rect; we'll use these to perform a fast PlgBlt-like operation,
     ' which is how we draw both the rotation and the corner extensions.
     Dim listOfPoints() As POINTFLOAT
     ReDim listOfPoints(0 To 3) As POINTFLOAT
-    Math_Functions.findCornersOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, listOfPoints, True
+    Math_Functions.FindCornersOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, listOfPoints, True
     
     'Calculate the size difference between the source and destination images.  We need to add this offset to all
     ' rotation coordinates, to ensure the rotated image is fully contained within the destination DIB.
@@ -2825,8 +2793,57 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
         listOfPoints(i).y = listOfPoints(i).y + 0.5 + vOffset
     Next i
     
+    'If a background color is being applied, "cut out" the target region now
+    If (Not transparentBackground) Then
+        
+        Dim tmpPoints() As POINTFLOAT
+        ReDim tmpPoints(0 To 3) As POINTFLOAT
+        tmpPoints(0) = listOfPoints(0)
+        tmpPoints(1) = listOfPoints(1)
+        tmpPoints(2) = listOfPoints(3)
+        tmpPoints(3) = listOfPoints(2)
+        
+        'Shrink the max and min points by 1 pixel, to prevent unwanted borders
+        Dim cX As Single, cY As Single
+        For i = 0 To 3
+            cX = cX + tmpPoints(i).x
+            cY = cY + tmpPoints(i).y
+        Next i
+        cX = cX / 4
+        cY = cY / 4
+        
+        For i = 0 To 3
+            If (tmpPoints(i).x > cX) Then
+                tmpPoints(i).x = tmpPoints(i).x - 1
+            ElseIf (tmpPoints(i).x < cX) Then
+                tmpPoints(i).x = tmpPoints(i).x + 1
+            End If
+            If (tmpPoints(i).y > cY) Then
+                tmpPoints(i).y = tmpPoints(i).y - 1
+            ElseIf (tmpPoints(i).y < cY) Then
+                tmpPoints(i).y = tmpPoints(i).y + 1
+            End If
+        Next i
+        
+        'Paint the selected area transparent
+        Dim tmpGraphics As Long, tmpBrush As Long
+        GdipCreateFromHDC dstDIB.GetDIBDC, tmpGraphics
+        tmpBrush = GetGDIPlusSolidBrushHandle(0, 0)
+        
+        GdipSetCompositingMode tmpGraphics, CompositingModeSourceCopy
+        GdipSetPixelOffsetMode tmpGraphics, GP_POM_HighQuality
+        GdipSetInterpolationMode tmpGraphics, rotateQuality
+        GdipFillPolygon tmpGraphics, tmpBrush, VarPtr(tmpPoints(0)), 4, FillModeAlternate
+        GdipSetPixelOffsetMode tmpGraphics, GP_POM_HighSpeed
+        GdipSetCompositingMode tmpGraphics, CompositingModeSourceOver
+        
+        ReleaseGDIPlusBrush tmpBrush
+        ReleaseGDIPlusGraphics tmpGraphics
+        
+    End If
+    
     'Rotate the source DIB into the destination DIB.  At this point, corners are still blank - we'll deal with those momentarily.
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 1, InterpolationModeHighQualityBicubic, True
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 1, rotateQuality, True
     
 End Sub
 
@@ -2838,7 +2855,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     'Before doing any rotating or blurring, we need to figure out the size of our destination image.  If we don't
     ' do this, the rotation will chop off the image's corners!
     Dim nWidth As Double, nHeight As Double
-    Math_Functions.findBoundarySizeOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, nWidth, nHeight
+    Math_Functions.FindBoundarySizeOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, nWidth, nHeight
     
     'Use these dimensions to size the destination image
     If dstDIB Is Nothing Then Set dstDIB = New pdDIB
@@ -2852,7 +2869,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     ' which is how we draw both the rotation and the corner extensions.
     Dim listOfPoints() As POINTFLOAT
     ReDim listOfPoints(0 To 3) As POINTFLOAT
-    Math_Functions.findCornersOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, listOfPoints, True
+    Math_Functions.FindCornersOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, listOfPoints, True
     
     'Calculate the size difference between the source and destination images.  We need to add this offset to all
     ' rotation coordinates, to ensure the rotated image is fully contained within the destination DIB.
