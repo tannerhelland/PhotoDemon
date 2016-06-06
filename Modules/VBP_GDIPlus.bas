@@ -268,6 +268,18 @@ End Enum
     Private Const GP_U_World = 0, GP_U_Display = 1, GP_U_Pixel = 2, GP_U_Point = 3, GP_U_Inch = 4, GP_U_Document = 5, GP_U_Millimeter = 6
 #End If
 
+Public Enum GP_WrapMode
+    GP_WM_Tile = 0
+    GP_WM_TileFlipX = 1
+    GP_WM_TileFlipY = 2
+    GP_WM_TileFlipXY = 3
+    GP_WM_Clamp = 4
+End Enum
+
+#If False Then
+    Private Const GP_WM_Tile = 0, GP_WM_TileFlipX = 1, GP_WM_TileFlipY = 2, GP_WM_TileFlipXY = 3, GP_WM_Clamp = 4
+#End If
+
 'Core GDI+ functions:
 Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef gdipToken As Long, ByRef startupStruct As GDIPlusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GP_Result
 Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal gdipToken As Long) As GP_Result
@@ -296,6 +308,7 @@ Private Declare Function GdipGetRenderingOrigin Lib "gdiplus" (ByVal hGraphics A
 Private Declare Function GdipGetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstMode As GP_SmoothingMode) As GP_Result
 Private Declare Function GdipGetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByRef dstColor As Long) As GP_Result
 
+Private Declare Function GdipSetImageAttributesWrapMode Lib "gdiplus" (ByVal hImageAttr As Long, ByVal newWrapMode As GP_WrapMode, ByVal argbOfClampMode As Long, ByVal bClampMustBeZero As Long) As GP_Result
 Private Declare Function GdipSetPenColor Lib "gdiplus" (ByVal hPen As Long, ByVal pARGBColor As Long) As GP_Result
 Private Declare Function GdipSetPenDashCap Lib "gdiplus" Alias "GdipSetPenDashCap197819" (ByVal hPen As Long, ByVal newCap As GP_DashCap) As GP_Result
 Private Declare Function GdipSetPenDashStyle Lib "gdiplus" (ByVal hPen As Long, ByVal newDashStyle As GP_DashStyle) As GP_Result
@@ -665,7 +678,6 @@ Private Declare Function GdipSetCompositingMode Lib "gdiplus" (ByVal mGraphics A
 Private Declare Function GdipSetCompositingQuality Lib "gdiplus" (ByVal mGraphics As Long, ByVal mCompositingQuality As CompositingQuality) As Long
 Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef hImageAttr As Long) As Long
 Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal hImageAttr As Long) As Long
-Private Declare Function GdipSetImageAttributesWrapMode Lib "gdiplus" (ByVal hImageAttr As Long, ByVal mWrap As WrapMode, ByVal argbConst As Long, ByVal bClamp As Long) As Long
 Private Declare Function GdipImageRotateFlip Lib "gdiplus" (ByVal hImage As Long, ByVal rfType As RotateFlipType) As Long
 Private Declare Function GdipDrawCurve Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipDrawCurveI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
@@ -696,10 +708,10 @@ Private Declare Function GdipIsVisibleRegionRect Lib "gdiplus" (ByVal hRegion As
 Private Declare Function GdipCombineRegionRect Lib "gdiplus" (ByVal hRegion As Long, ByRef newRect As RECTF, ByVal useCombineMode As CombineMode) As Long
 Private Declare Function GdipGetRegionBounds Lib "gdiplus" (ByVal hRegion As Long, ByVal mGraphics As Long, ByRef dstRect As RECTF) As Long
 Private Declare Function GdipDeleteRegion Lib "gdiplus" (ByVal hRegion As Long) As Long
-Private Declare Function GdipCreateTexture Lib "gdiplus" (ByVal hImage As Long, ByVal iWrapMode As WrapMode, ByRef hTexture As Long) As Long
+Private Declare Function GdipCreateTexture Lib "gdiplus" (ByVal hImage As Long, ByVal textureWrapMode As GP_WrapMode, ByRef hTexture As Long) As Long
 Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType, ByVal EnableFlag As Long, ByVal colorMatrixPointer As Long, ByVal grayMatrixPointer As Long, ByVal extraFlags As ColorMatrixFlags) As Long
 Private Declare Function GdipSetImageAttributesToIdentity Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType) As Long
-Private Declare Function GdipCreateLineBrush Lib "gdiplus" (ByRef point1 As POINTFLOAT, ByRef point2 As POINTFLOAT, ByVal Color1 As Long, ByVal Color2 As Long, ByVal brushWrapMode As WrapMode, ByRef dstBrush As Long) As Long
+Private Declare Function GdipCreateLineBrush Lib "gdiplus" (ByRef point1 As POINTFLOAT, ByRef point2 As POINTFLOAT, ByVal Color1 As Long, ByVal Color2 As Long, ByVal brushWrapMode As GP_WrapMode, ByRef dstBrush As Long) As Long
 Private Declare Function GdipCreatePenFromBrush Lib "gdiplus" Alias "GdipCreatePen2" (ByVal srcBrush As Long, ByVal penWidth As Single, ByVal srcUnit As GP_Unit, ByRef dstPen As Long) As Long
 
 'Transforms
@@ -762,20 +774,6 @@ Public Enum CompositingQuality
    CompositingQualityGammaCorrected
    CompositingQualityAssumeLinear
 End Enum
-
-'Wrap modes, which control the way GDI+ handles pixels that lie outside image boundaries.  (These are similar to
-' the pdFilterSupport class used by many of PhotoDemon's distort filters.)
-Public Enum WrapMode
-   WrapModeTile = 0
-   WrapModeTileFlipX = 1
-   WrapModeTileFlipY = 2
-   WrapModeTileFlipXY = 3
-   WrapModeClamp = 4
-End Enum
-
-#If False Then
-    Private Const WrapModeTile = 0, WrapModeTileFlipX = 1, WrapModeTileFlipY = 2, WrapModeTileFlipXY = 3, WrapModeClamp = 4
-#End If
 
 Public Enum GDIFillMode
    FillModeAlternate = 0
@@ -854,7 +852,7 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
         ' Thank you to http://stackoverflow.com/questions/1890605/ghost-borders-ringing-when-resizing-in-gdi for the fix.
         Dim imgAttributesHandle As Long
         GdipCreateImageAttributes imgAttributesHandle
-        GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0&, 0&
+        GdipSetImageAttributesWrapMode imgAttributesHandle, GP_WM_TileFlipXY, 0&, 0&
         GdipSetCompositingQuality hGdipGraphics, CompositingQualityHighSpeed
         GdipSetPixelOffsetMode hGdipGraphics, GP_POM_HighSpeed
         
@@ -949,7 +947,7 @@ End Function
 ' The function currently expects the rotation to occur around the center point of the source image.  Unlike the various
 ' size interaction calls in this module, all (x,y) coordinate pairs refer to the CENTER of the image, not the top-left
 ' corner.  This was a deliberate decision to make copying rotated data easier.
-Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rotationAngle As Single, ByVal interpolationType As InterpolationMode, Optional ByVal wrapModeForEdges As WrapMode = WrapModeTileFlipXY) As Boolean
+Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rotationAngle As Single, ByVal interpolationType As InterpolationMode, Optional ByVal wrapModeForEdges As GP_WrapMode = GP_WM_TileFlipXY) As Boolean
 
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
@@ -1216,7 +1214,7 @@ Public Function GDIPlusDrawGradientLineToDC(ByVal dstDC As Long, ByVal x1 As Sin
     pt2.y = y2
     
     Dim srcBrush As Long
-    gdipReturn = GdipCreateLineBrush(pt1, pt2, FillQuadWithVBRGB(firstColor, firstTransparency), FillQuadWithVBRGB(secondColor, secondTransparency), WrapModeTileFlipXY, srcBrush)
+    gdipReturn = GdipCreateLineBrush(pt1, pt2, FillQuadWithVBRGB(firstColor, firstTransparency), FillQuadWithVBRGB(secondColor, secondTransparency), GP_WM_TileFlipXY, srcBrush)
     If gdipReturn = 0 Then
     
         '"Convert" that brush into a pen, which is what's actually used to stroke the line
@@ -1489,7 +1487,7 @@ Public Function GDIPlusFillPatternToDC(ByVal dstDC As Long, ByVal x1 As Single, 
     'Create a texture fill brush from the source image
     Dim srcBitmap As Long, hBrush As Long
     GetGdipBitmapHandleFromDIB srcBitmap, srcDIB
-    GdipCreateTexture srcBitmap, WrapModeTile, hBrush
+    GdipCreateTexture srcBitmap, GP_WM_Tile, hBrush
     
     'Because pattern fills are prone to boundary overflow when used with transparent overlays, the caller can
     ' have us restrict painting to the interior integer region only.)
@@ -1674,7 +1672,7 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
     'Create a texture fill brush from the source image
     Dim srcBitmap As Long, iBrush As Long
     GetGdipBitmapHandleFromDIB srcBitmap, srcDIB
-    GdipCreateTexture srcBitmap, WrapModeTile, iBrush
+    GdipCreateTexture srcBitmap, GP_WM_Tile, iBrush
     
     'Because pattern fills are prone to boundary overflow when used with transparent overlays, the caller can
     ' have us restrict painting to the interior integer region only.)
@@ -1736,7 +1734,7 @@ Public Function FillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte)
     dstQuad.Red = Colors.ExtractR(vbRGB)
     dstQuad.Green = Colors.ExtractG(vbRGB)
     dstQuad.Blue = Colors.ExtractB(vbRGB)
-    dstQuad.alpha = alphaValue
+    dstQuad.Alpha = alphaValue
     
     Dim placeHolder As tmpLong
     LSet placeHolder = dstQuad
@@ -1749,7 +1747,7 @@ End Function
 Public Function GetOpacityFromPARGB(ByVal pARGB As Long) As Single
     Dim srcQuad As RGBQUAD
     CopyMemory srcQuad, pARGB, 4&
-    GetOpacityFromPARGB = CSng(srcQuad.alpha) * CSng(100# / 255#)
+    GetOpacityFromPARGB = CSng(srcQuad.Alpha) * CSng(100# / 255#)
 End Function
 
 'Given a long-type pARGB value returned from GDI+, retrieve just the RGB component in combined vbRGB format
@@ -1758,12 +1756,12 @@ Public Function GetColorFromPARGB(ByVal pARGB As Long) As Long
     Dim srcQuad As RGBQUAD
     CopyMemory srcQuad, pARGB, 4&
     
-    If (srcQuad.alpha = 255) Then
+    If (srcQuad.Alpha = 255) Then
         GetColorFromPARGB = RGB(srcQuad.Red, srcQuad.Green, srcQuad.Blue)
     Else
     
         Dim tmpSingle As Single
-        tmpSingle = CSng(srcQuad.alpha) / 255
+        tmpSingle = CSng(srcQuad.Alpha) / 255
         
         If (tmpSingle <> 0) Then
             Dim tmpRed As Long, tmpGreen As Long, tmpBlue As Long
@@ -2688,7 +2686,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         
         'To improve performance, explicitly request high-speed (aka linear) alpha compositing operation, and standard
         ' pixel offsets (on pixel borders, instead of center points)
-        If (Not disableEdgeFix) Then GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0, 0
+        If (Not disableEdgeFix) Then GdipSetImageAttributesWrapMode imgAttributesHandle, GP_WM_TileFlipXY, 0, 0
         GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
         If isZoomedIn Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
         

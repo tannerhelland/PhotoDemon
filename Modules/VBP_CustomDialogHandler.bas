@@ -448,19 +448,19 @@ End Function
 '             (This reference will be used to provide live updates as the user plays with the dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function ShowGradientDialog(ByRef NewGradient As String, Optional ByVal initialGradient As String = vbNullString, Optional ByRef callingControl As pdGradientSelector) As Boolean
-    ShowGradientDialog = CBool(ChoosePDGradient(initialGradient, NewGradient, callingControl) = vbOK)
+Public Function ShowGradientDialog(ByRef newGradient As String, Optional ByVal initialGradient As String = vbNullString, Optional ByRef callingControl As pdGradientSelector) As Boolean
+    ShowGradientDialog = CBool(ChoosePDGradient(initialGradient, newGradient, callingControl) = vbOK)
 End Function
 
 'Display a custom gradient selection dialog
 ' RETURNS: MsgBoxResult from the dialog itself.  For easier interactions, I recommend using the showGradientDialog function, above.
-Public Function ChoosePDGradient(ByRef oldGradient As String, ByRef NewGradient As String, Optional ByRef callingControl As pdGradientSelector) As VbMsgBoxResult
+Public Function ChoosePDGradient(ByRef oldGradient As String, ByRef newGradient As String, Optional ByRef callingControl As pdGradientSelector) As VbMsgBoxResult
 
     Load dialog_GradientEditor
     dialog_GradientEditor.ShowDialog oldGradient, callingControl
     
     ChoosePDGradient = dialog_GradientEditor.DialogResult
-    If ChoosePDGradient = vbOK Then NewGradient = dialog_GradientEditor.NewGradient
+    If ChoosePDGradient = vbOK Then newGradient = dialog_GradientEditor.newGradient
     
     Unload dialog_GradientEditor
     Set dialog_GradientEditor = Nothing
