@@ -5,7 +5,7 @@ Public Type RGBQUAD
    Blue As Byte
    Green As Byte
    Red As Byte
-   alpha As Byte
+   Alpha As Byte
 End Type
 
 Public Type RECTF_RB
@@ -387,13 +387,6 @@ End Enum
     Private Const PDUT_STABLE = 0, PDUT_BETA = 1, PDUT_NIGHTLY = 2
 #End If
 
-'PD's gradient format is straightforward, and it's declared here so functions can easily create their own gradient interfaces.
-Public Type pdGradientPoint
-    pdgp_RGB As Long
-    pdgp_Opacity As Single
-    pdgp_Position As Single
-End Type
-
 'pdCompositor makes heavy use of level-of-detail (LOD) caches stored inside individual pdLayer objects.  Callers need to
 ' identify compositor requests with one of these IDs, which tells the compositor which cache to preferentially use.
 ' Correct LOD tags greatly improve performance, particularly on the primary canvas.
@@ -487,7 +480,7 @@ End Type
 'Color definition.  If one of the non-BaseColor values is missing in the theme, it will be replaced by the
 ' BaseColor value.  (As such, the BaseColor value will always be present in a color definition.)
 Public Type PDThemeColor
-    baseColor As Long
+    BaseColor As Long
     DisabledColor As Long
     ActiveColor As Long
     HoverColor As Long

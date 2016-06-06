@@ -294,7 +294,7 @@ Private m_OldGradient As String
 'Gradient strings are generated with the help of PD's core gradient class.  This class also renders two previews of the current gradient:
 ' 1) The main preview at the top of the page, which reflects all active settings
 ' 2) The node editor preview just below, which reflects only the current colors (and allows interactive editing)
-Private m_GradientPreview As pdGradient, m_NodePreview As pdGradient
+Private m_GradientPreview As pd2DGradient, m_NodePreview As pd2DGradient
 
 'If a user control spawned this dialog, it will pass itself as a reference.  We can then send gradient updates back
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
@@ -319,7 +319,7 @@ Attribute m_MouseEvents.VB_VarHelpID = -1
 
 'This interface tracks its own collection of gradient points
 Private m_NumOfGradientPoints As Long
-Private m_GradientPoints() As pdGradientPoint
+Private m_GradientPoints() As GRADIENTPOINT
 
 'The current gradient point (index) selected and/or hovered by the mouse.  -1 if no point is currently selected/hovered.
 Private m_CurPoint As Long, m_CurHoverPoint As Long
@@ -338,8 +338,8 @@ Public Property Get DialogResult() As VbMsgBoxResult
 End Property
 
 'The newly selected gradient (if any) is returned via this property
-Public Property Get NewGradient() As String
-    NewGradient = m_GradientPreview.GetGradientAsString
+Public Property Get newGradient() As String
+    newGradient = m_GradientPreview.GetGradientAsString
 End Property
 
 'The ShowDialog routine presents the user with this form.
@@ -353,11 +353,11 @@ Public Sub ShowDialog(ByVal initialGradient As String, Optional ByRef callingCon
     
     'Cache the initial gradient parameters so we can access it elsewhere
     m_OldGradient = initialGradient
-    Set m_GradientPreview = New pdGradient
+    Set m_GradientPreview = New pd2DGradient
     m_GradientPreview.CreateGradientFromString initialGradient
     
     'Mirror the gradient settings across the node-editor gradient object as well
-    Set m_NodePreview = New pdGradient
+    Set m_NodePreview = New pd2DGradient
     m_NodePreview.CreateGradientFromString m_GradientPreview.GetGradientAsString
     
     'TODO: force the node preview to be linear-type, angle 0
@@ -472,7 +472,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
     
     'Reset our generic outline object
-    Set m_GradientPreview = New pdGradient
+    Set m_GradientPreview = New pd2DGradient
     m_GradientPreview.CreateGradientFromString ""
     
     'Synchronize all controls to the updated settings
@@ -485,7 +485,7 @@ End Sub
 Private Sub csNode_ColorChanged()
     
     If (Not m_SuspendUI) And (m_CurPoint >= 0) Then
-        m_GradientPoints(m_CurPoint).pdgp_RGB = csNode.Color
+        m_GradientPoints(m_CurPoint).PointRGB = csNode.Color
         RedrawEverything
     End If
     
@@ -514,7 +514,7 @@ Private Sub Form_Load()
     
     If g_IsProgramRunning Then
     
-        If m_GradientPreview Is Nothing Then Set m_GradientPreview = New pdGradient
+        If m_GradientPreview Is Nothing Then Set m_GradientPreview = New pd2DGradient
         If m_MainPreviewDIB Is Nothing Then Set m_MainPreviewDIB = New pdDIB
         
         'Set up a special mouse handler for the gradient interaction window
@@ -572,18 +572,18 @@ End Sub
 Private Sub ResetGradientPoints()
     
     m_NumOfGradientPoints = 2
-    ReDim m_GradientPoints(0 To m_NumOfGradientPoints - 1) As pdGradientPoint
+    ReDim m_GradientPoints(0 To m_NumOfGradientPoints - 1) As GRADIENTPOINT
     
     With m_GradientPoints(0)
-        .pdgp_RGB = vbBlack
-        .pdgp_Opacity = 1
-        .pdgp_Position = 0
+        .PointRGB = vbBlack
+        .PointOpacity = 1
+        .PointPosition = 0
     End With
     
     With m_GradientPoints(1)
-        .pdgp_RGB = vbWhite
-        .pdgp_Opacity = 1
-        .pdgp_Position = 1
+        .PointRGB = vbWhite
+        .PointOpacity = 1
+        .PointPosition = 1
     End With
     
     m_GradientPreview.CreateGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
@@ -617,7 +617,7 @@ Private Sub UpdateGradientObjects()
         sortNeeded = False
         
         For i = 1 To m_NumOfGradientPoints - 1
-            If m_GradientPoints(i).pdgp_Position < m_GradientPoints(i - 1).pdgp_Position Then
+            If m_GradientPoints(i).PointPosition < m_GradientPoints(i - 1).PointPosition Then
                 sortNeeded = True
                 Exit For
             End If
@@ -638,20 +638,20 @@ Private Sub UpdateGradientObjects()
         
         'Redistribute points accordingly
         For i = 0 To m_NumOfGradientPoints - 1
-            m_GradientPoints(i).pdgp_Position = i / (m_NumOfGradientPoints - 1)
+            m_GradientPoints(i).PointPosition = i / (m_NumOfGradientPoints - 1)
         Next i
         
     End If
     
     With m_GradientPreview
-        .SetGradientProperty pdgs_GradientShape, btsShape.ListIndex
-        .SetGradientProperty pdgs_GradientAngle, sltAngle.Value
+        .SetGradientProperty P2_GradientShape, btsShape.ListIndex
+        .SetGradientProperty P2_GradientAngle, sltAngle.Value
         .CreateGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
     End With
 
     With m_NodePreview
-        .SetGradientProperty pdgs_GradientShape, pdgs_ShapeLinear
-        .SetGradientProperty pdgs_GradientAngle, 0#
+        .SetGradientProperty P2_GradientShape, P2_GS_Linear
+        .SetGradientProperty P2_GradientAngle, 0#
         .CreateGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
     End With
 
@@ -737,8 +737,8 @@ Private Sub SyncControlsToGradientObject()
     m_SuspendUI = True
     
     With m_GradientPreview
-        btsShape.ListIndex = .GetGradientProperty(pdgs_GradientShape)
-        sltAngle.Value = .GetGradientProperty(pdgs_GradientAngle)
+        btsShape.ListIndex = .GetGradientProperty(P2_GradientShape)
+        sltAngle.Value = .GetGradientProperty(P2_GradientAngle)
         .GetCopyOfPointCollection m_NumOfGradientPoints, m_GradientPoints
     End With
     
@@ -788,16 +788,16 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
     Else
     
         'Enlarge the target array as necessary
-        If m_NumOfGradientPoints >= UBound(m_GradientPoints) Then ReDim Preserve m_GradientPoints(0 To m_NumOfGradientPoints * 2) As pdGradientPoint
+        If m_NumOfGradientPoints >= UBound(m_GradientPoints) Then ReDim Preserve m_GradientPoints(0 To m_NumOfGradientPoints * 2) As GRADIENTPOINT
         
         With m_GradientPoints(m_NumOfGradientPoints)
-            .pdgp_Opacity = 1
-            .pdgp_Position = ConvertPixelCoordsToNodeCoords(x)
+            .PointOpacity = 1
+            .PointPosition = ConvertPixelCoordsToNodeCoords(x)
             
             'Preset the RGB value to match whatever the gradient already is at this point
             Dim newRGBA As RGBQUAD
-            m_GradientPreview.GetColorAtPosition_RGBA .pdgp_Position, newRGBA
-            .pdgp_RGB = RGB(newRGBA.Red, newRGBA.Green, newRGBA.Blue)
+            m_GradientPreview.GetColorAtPosition_RGBA .PointPosition, newRGBA
+            .PointRGB = RGB(newRGBA.Red, newRGBA.Green, newRGBA.Blue)
             
         End With
         
@@ -831,7 +831,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
         'The left mouse button is down.  Assign the new position to the active node.
         If (m_CurPoint >= 0) Then
             If CBool(chkDistributeEvenly.Value) Then chkDistributeEvenly.Value = vbUnchecked
-            m_GradientPoints(m_CurPoint).pdgp_Position = ConvertPixelCoordsToNodeCoords(x)
+            m_GradientPoints(m_CurPoint).PointPosition = ConvertPixelCoordsToNodeCoords(x)
         End If
         
         'Redraw the gradient interaction nodes and the gradient itself
@@ -870,7 +870,7 @@ Private Function GetPointAtPosition(ByVal x As Long, y As Long) As Long
     
     Dim i As Long
     For i = 0 To m_NumOfGradientPoints - 1
-        curDistance = Abs(m_GradientPoints(i).pdgp_Position - convPoint)
+        curDistance = Abs(m_GradientPoints(i).PointPosition - convPoint)
         If curDistance < minDistance Then
             minIndex = i
             minDistance = curDistance
@@ -925,9 +925,9 @@ Private Sub SyncUIToActiveNode()
             
             'Sync all UI elements to the current node's settings
             With m_GradientPoints(m_CurPoint)
-                csNode.Color = .pdgp_RGB
-                sltNodeOpacity.Value = .pdgp_Opacity * 100
-                sltNodePosition.Value = .pdgp_Position * 100
+                csNode.Color = .PointRGB
+                sltNodeOpacity.Value = .PointOpacity * 100
+                sltNodePosition.Value = .PointPosition * 100
             End With
         
         Else
@@ -1006,11 +1006,11 @@ Private Sub DrawGradientNodes()
             tmpBlock.CloneExistingPath baseBlock
             
             'Translate them to this node's position
-            tmpArrow.TranslatePath hOffset + m_GradientPoints(i).pdgp_Position * hScaleFactor, 0
-            tmpBlock.TranslatePath hOffset + m_GradientPoints(i).pdgp_Position * hScaleFactor, 0
+            tmpArrow.TranslatePath hOffset + m_GradientPoints(i).PointPosition * hScaleFactor, 0
+            tmpBlock.TranslatePath hOffset + m_GradientPoints(i).PointPosition * hScaleFactor, 0
             
             'The node's colored block is rendered the same regardless of hover
-            blockFill.SetBrushProperty P2_BrushColor, m_GradientPoints(i).pdgp_RGB
+            blockFill.SetBrushProperty P2_BrushColor, m_GradientPoints(i).PointRGB
             tmpBlock.FillPathToDIB_BareBrush blockFill.GetHandle, m_InteractiveDIB
             
             'All other renders vary by hover state
@@ -1051,7 +1051,7 @@ End Sub
 Private Sub sltNodeOpacity_Change()
     
     If (Not m_SuspendUI) And (m_CurPoint >= 0) Then
-        m_GradientPoints(m_CurPoint).pdgp_Opacity = sltNodeOpacity.Value / 100
+        m_GradientPoints(m_CurPoint).PointOpacity = sltNodeOpacity.Value / 100
         RedrawEverything
     End If
     
@@ -1060,7 +1060,7 @@ End Sub
 Private Sub sltNodePosition_Change()
     
     If (Not m_SuspendUI) And (m_CurPoint >= 0) Then
-        m_GradientPoints(m_CurPoint).pdgp_Position = sltNodePosition.Value / 100
+        m_GradientPoints(m_CurPoint).PointPosition = sltNodePosition.Value / 100
         RedrawEverything
     End If
     

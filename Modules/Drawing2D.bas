@@ -62,7 +62,7 @@ Public Enum PD_2D_BRUSH_SETTINGS
     P2_BrushPattern2Opacity = 7
     
     'Note that individual gradient values cannot be set/read.  Gradients are only supported as a complete gradient
-    ' XML packet, as supplied by the pdGradient class.
+    ' XML packet, as supplied by the pd2DGradient class.
     P2_BrushGradientXML = 8
     
     [_P2_NumOfBrushSettings] = 9
@@ -70,6 +70,18 @@ End Enum
 
 #If False Then
     Const P2_BrushMode = 0, P2_BrushColor = 1, P2_BrushOpacity = 2, P2_BrushPatternStyle = 3, P2_BrushPattern1Color = 4, P2_BrushPattern1Opacity = 5, P2_BrushPattern2Color = 6, P2_BrushPattern2Opacity = 7, P2_BrushGradientXML = 8, P2_NumOfBrushSettings = 9
+#End If
+
+'Gradients work a little differently; they expose *some* properties that you can change directly, but things like
+' individual gradient points must be operated on through dedicated functions.
+Public Enum PD_2D_GRADIENT_SETTINGS
+    P2_GradientShape = 0
+    P2_GradientAngle = 1
+    P2_GradientWrapMode = 2
+End Enum
+
+#If False Then
+    Private Const P2_GradientShape = 0, P2_GradientAngle = 1, P2_GradientWrapMode = 2
 #End If
 
 'Surfaces are somewhat limited at present, but this may change in the future
@@ -86,9 +98,20 @@ End Enum
 #End If
 
 'The whole point of Drawing2D is to avoid backend-specific parameters.  As such, we necessarily wrap a number of
-' GDI+ enums with our own P2-prefixed enums.  This seems redundant (and it is), but this is exactly what makes it
-' possible to support future backends that offer different capabilities.
-' (NOTE: individual PD2D classes note which of these enums map directly to matching GDI+ enums.)
+' GDI+ enums with our own P2-prefixed enums.  This seems redundant (and it is), but this is what makes it possible
+' to support backends with different capabilities.
+'
+'As such, all Drawing2D classes operate on the enums defined in this class.  Where appropriate, they internally
+' remap these values to backend-specific ones.
+
+Public Enum PD_2D_Antialiasing
+    P2_AA_None = 0&
+    P2_AA_Grayscale = 1&
+End Enum
+
+#If False Then
+    Private Const P2_AA_None = 0&, P2_AA_Grayscale = 1&
+#End If
 
 Public Enum PD_2D_BrushMode
     P2_BM_Solid = 0
@@ -123,6 +146,18 @@ End Enum
 
 #If False Then
     Private Const P2_DS_Solid = 0&, P2_DS_Dash = 1&, P2_DS_Dot = 2&, P2_DS_DashDot = 3&, P2_DS_DashDotDot = 4&, P2_DS_Custom = 5&
+#End If
+
+Public Enum PD_2D_GradientShape
+    P2_GS_Linear = 0
+    P2_GS_Reflection = 1
+    P2_GS_Radial = 2
+    P2_GS_Rectangle = 3
+    P2_GS_Diamond = 4
+End Enum
+
+#If False Then
+    Private Const P2_GS_Linear = 0, P2_GS_Reflection = 1, P2_GS_Radial = 2, P2_GS_Rectangle = 3, P2_GS_Diamond = 4
 #End If
 
 Public Enum PD_2D_LineCap
@@ -232,13 +267,16 @@ End Enum
     Private Const P2_PO_Normal = 0, P2_PO_Half = 1
 #End If
 
-Public Enum PD_2D_Antialiasing
-    P2_AA_None = 0&
-    P2_AA_Grayscale = 1&
+Public Enum PD_2D_WrapMode
+    P2_WM_Tile = 0
+    P2_WM_TileFlipX = 1
+    P2_WM_TileFlipY = 2
+    P2_WM_TileFlipXY = 3
+    P2_WM_Clamp = 4
 End Enum
 
 #If False Then
-    Private Const P2_AA_None = 0&, P2_AA_Grayscale = 1&
+    Private Const P2_WM_Tile = 0, P2_WM_TileFlipX = 1, P2_WM_TileFlipY = 2, P2_WM_TileFlipXY = 3, P2_WM_Clamp = 4
 #End If
 
 'Certain structs are immensely helpful when drawing
@@ -259,6 +297,13 @@ Public Type RECTF
     Top As Single
     Width As Single
     Height As Single
+End Type
+
+'PD's gradient format is straightforward, and it's declared here so functions can easily create their own gradient interfaces.
+Public Type GRADIENTPOINT
+    PointRGB As Long
+    PointOpacity As Single
+    PointPosition As Single
 End Type
 
 'If GDI+ is initialized successfully, this will be set to TRUE

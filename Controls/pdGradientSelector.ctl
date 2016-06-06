@@ -126,13 +126,13 @@ Public Property Let FontSize(ByVal newSize As Single)
     PropertyChanged "FontSize"
 End Property
 
-'You can retrieve the gradient param string (not a pdGradient object!) via this property
+'You can retrieve the gradient param string (not a pd2DGradient object!) via this property
 Public Property Get Gradient() As String
     Gradient = m_curGradient
 End Property
 
-Public Property Let Gradient(ByVal NewGradient As String)
-    m_curGradient = NewGradient
+Public Property Let Gradient(ByVal newGradient As String)
+    m_curGradient = newGradient
     RedrawBackBuffer
     RaiseEvent GradientChanged
     PropertyChanged "Gradient"
@@ -208,12 +208,12 @@ Private Sub RaiseGradientDialog()
     isDialogLive = True
     
     'Backup the current gradient; if the dialog is canceled, we want to restore it
-    Dim NewGradient As String, oldGradient As String
+    Dim newGradient As String, oldGradient As String
     oldGradient = Gradient
     
     'Display the gradient dialog, then wait for it to return
-    If ShowGradientDialog(NewGradient, oldGradient, Me) Then
-        Gradient = NewGradient
+    If ShowGradientDialog(newGradient, oldGradient, Me) Then
+        Gradient = newGradient
     Else
         Gradient = oldGradient
     End If
@@ -350,8 +350,8 @@ End Sub
 
 'If a gradient selection dialog is active, it will pass gradient updates backward to this function, so that we can let
 ' our parent form display live updates *while the user is playing with gradients*.
-Public Sub NotifyOfLiveGradientChange(ByVal NewGradient As String)
-    Gradient = NewGradient
+Public Sub NotifyOfLiveGradientChange(ByVal newGradient As String)
+    Gradient = newGradient
 End Sub
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this

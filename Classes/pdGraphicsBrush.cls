@@ -18,16 +18,19 @@ Attribute VB_Exposed = False
 'Last updated: 13/May/16
 'Last update: total overhaul
 '
-'This class manages a single GDI+ WAPI brush instance.  (Brushes are used to fill shapes/paths.)
+'This class manages a single brush (fill) instance.  Brushes are used to fill shapes, regions, and/or paths.
 '
-'At present, it is primarily based on the capabilities of GDI+.  This may change going forward, but because GDI+
-' provides a nice baseline feature set, that's where I started.
+'At present, this class is primarily based on the capabilities of GDI+.  This may change going forward, but because
+' GDI+ provides a nice baseline feature set, that's where I started.
 '
 'IMPORTANT NOTE!  Some property changes require us to destroy the current brush and create a new one from scratch.
 ' For example, a solid fill brush can change its color without creating a new handle, but a hatch brush cannot.
 ' (This is a built-in limitation of the GDI+ flat API.)  For that reason, you should not cache brush handles returned
 ' by this class.  Instead, you should always use the .GetHandle() function, as it will silently create new handles
-' as necessary.
+' when necessary.
+'
+'This class also supports gradient brushes.  Gradient brushes are managed differently; they rely on a pd2DGradient class,
+' which manages all gradient-related settings and simply passes this class a bare handle as necessary.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -53,7 +56,7 @@ Private m_Pattern2Opacity As Single
 
 'Gradient brushes are more complicated, as they rely on a variable number of settings.
 ' We use a specialized class to manage those settings.
-Private cGradient As pdGradient
+Private cGradient As pd2DGradient
 
 'Gradient fills also require a boundary rect to define the start/end positions of the gradient line.  You *must set this prior
 ' to requesting a gradient brush* or the gradient results will look funny!
@@ -203,7 +206,7 @@ Public Sub SetBrushProperty(ByVal propID As PD_2D_BRUSH_SETTINGS, ByVal newSetti
             m_Pattern2Opacity = CDbl(newSetting)
             
         Case P2_BrushGradientXML
-            If (cGradient Is Nothing) Then Set cGradient = New pdGradient
+            If (cGradient Is Nothing) Then Set cGradient = New pd2DGradient
             cGradient.CreateGradientFromString newSetting
             
     End Select
@@ -422,7 +425,7 @@ Private Sub Class_Initialize()
     Me.ResetAllProperties
     
     'Prep a default gradient handler and gradient-related properties
-    Set cGradient = New pdGradient
+    Set cGradient = New pd2DGradient
     With m_BoundaryRect
         .Left = 0
         .Top = 0

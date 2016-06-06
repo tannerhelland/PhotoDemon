@@ -7,6 +7,7 @@ Begin VB.Form toolpanel_Text
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   18465
+   ClipControls    =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
