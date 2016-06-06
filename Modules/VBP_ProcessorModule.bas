@@ -727,7 +727,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowRotateDialog PD_AT_WHOLEIMAGE
             Else
-                FormRotate.RotateArbitrary cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3)
+                FormRotate.RotateArbitrary cXMLParams.GetParamString
             End If
             
         'Other coordinate transforms
@@ -876,7 +876,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowRotateDialog PD_AT_SINGLELAYER
             Else
-                FormRotate.RotateArbitrary cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3)
+                FormRotate.RotateArbitrary cXMLParams.GetParamString
             End If
             
         Case "Flip layer horizontally"
