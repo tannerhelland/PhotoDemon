@@ -1170,12 +1170,12 @@ End Function
 ' (like saving a DIB to file in some non-BMP format), please use this function.
 '
 'ALSO NOTE!  This function does not affect alpha premultiplication.  It's assumed that the caller sets that value in advance.
-'ALSO NOTE!  The reverseScanlines parameter will be applied to the underlying pdDIB object - plan accordingly!
+'ALSO NOTE!  The forciblyReverseScanlines parameter will be applied to the underlying pdDIB object - plan accordingly!
 'ALSO NOTE!  This function does not free the outgoing FreeImage handle, by design.  Make sure to free it manually!
 'ALSO NOTE!  The function returns zero for failure state; please check the return value before trying to use it!
-Public Function GetFIHandleFromPDDib_NoCopy(ByRef srcDIB As pdDIB, Optional ByVal reverseScanlines As Boolean = False) As Long
+Public Function GetFIHandleFromPDDib_NoCopy(ByRef srcDIB As pdDIB, Optional ByVal forciblyReverseScanlines As Boolean = False) As Long
     With srcDIB
-        GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .GetDIBPointer, FIT_BITMAP, .GetDIBWidth, .GetDIBHeight, .GetDIBArrayWidth, .GetDIBColorDepth, , , , reverseScanlines)
+        GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .GetDIBPointer, FIT_BITMAP, .GetDIBWidth, .GetDIBHeight, .GetDIBArrayWidth, .GetDIBColorDepth, , , , forciblyReverseScanlines)
     End With
 End Function
 
