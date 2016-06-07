@@ -23,23 +23,34 @@ Begin VB.Form FormMonochrome
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   810
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdDropDown cboDither 
-      Height          =   375
-      Left            =   6120
+   Begin PhotoDemon.pdListBox lstDither 
+      Height          =   1935
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   1440
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   3413
+      Caption         =   "dithering technique"
+   End
+   Begin PhotoDemon.pdButtonStrip btsTransparency 
+      Height          =   1065
+      Left            =   6000
       TabIndex        =   6
-      Top             =   2880
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   661
+      Top             =   4680
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   1879
+      Caption         =   "transparency"
    End
    Begin PhotoDemon.pdSlider sltThreshold 
       Height          =   705
       Left            =   6000
       TabIndex        =   5
-      Top             =   960
-      Width           =   5925
-      _ExtentX        =   10451
-      _ExtentY        =   1270
+      Top             =   120
+      Width           =   6045
+      _ExtentX        =   10663
+      _ExtentY        =   1244
       Caption         =   "threshold"
       Min             =   1
       Max             =   254
@@ -51,9 +62,9 @@ Begin VB.Form FormMonochrome
       Height          =   330
       Left            =   6120
       TabIndex        =   4
-      Top             =   1860
-      Width           =   5790
-      _ExtentX        =   10213
+      Top             =   930
+      Width           =   5895
+      _ExtentX        =   10398
       _ExtentY        =   582
       Caption         =   "automatically calculate threshold"
       Value           =   0
@@ -72,20 +83,20 @@ Begin VB.Form FormMonochrome
       Index           =   0
       Left            =   6120
       TabIndex        =   1
-      Top             =   3840
-      Width           =   2775
-      _ExtentX        =   9763
+      Top             =   3960
+      Width           =   2895
+      _ExtentX        =   5106
       _ExtentY        =   1085
       curColor        =   0
    End
    Begin PhotoDemon.pdColorSelector colorPicker 
       Height          =   615
       Index           =   1
-      Left            =   9000
+      Left            =   9120
       TabIndex        =   2
-      Top             =   3840
-      Width           =   2775
-      _ExtentX        =   4895
+      Top             =   3960
+      Width           =   2895
+      _ExtentX        =   5106
       _ExtentY        =   1085
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
@@ -102,23 +113,11 @@ Begin VB.Form FormMonochrome
       Height          =   285
       Index           =   1
       Left            =   6000
-      Top             =   3480
+      Top             =   3600
       Width           =   5955
       _ExtentX        =   10504
       _ExtentY        =   503
       Caption         =   "final colors"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      Top             =   2520
-      Width           =   5880
-      _ExtentX        =   10372
-      _ExtentY        =   503
-      Caption         =   "dithering technique"
       FontSize        =   12
       ForeColor       =   4210752
    End
@@ -132,8 +131,8 @@ Attribute VB_Exposed = False
 'Monochrome Conversion Form
 'Copyright 2002-2016 by Tanner Helland
 'Created: some time 2002
-'Last updated: 17/August/13
-'Last update: greatly simplify code by using new command bar custom control
+'Last updated: 07/June/16
+'Last update: add option for stripping transparency from the image
 '
 'The meat of this form is in the module with the same name...look there for
 ' real algorithm info.
@@ -145,29 +144,27 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Sub cboDither_Click()
-    If CBool(chkAutoThreshold.Value) Then sltThreshold = calculateOptimalThreshold()
+Private Sub btsTransparency_Click(ByVal buttonIndex As Long)
+    UpdatePreview
+End Sub
+
+Private Sub lstDither_Click()
+    If CBool(chkAutoThreshold.Value) Then sltThreshold.Value = CalculateOptimalThreshold()
     UpdatePreview
 End Sub
 
 'When the auto threshold button is clicked, disable the scroll bar and text box and calculate the optimal value immediately
 Private Sub chkAutoThreshold_Click()
-    
-    If CBool(chkAutoThreshold.Value) Then
-        cmdBar.MarkPreviewStatus False
-        sltThreshold = calculateOptimalThreshold()
-        cmdBar.MarkPreviewStatus True
-    End If
-    
+    cmdBar.MarkPreviewStatus False
+    If CBool(chkAutoThreshold.Value) Then sltThreshold.Value = CalculateOptimalThreshold()
     sltThreshold.Enabled = Not CBool(chkAutoThreshold.Value)
-    
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Color to monochrome", , BuildParams(sltThreshold, cboDither.ListIndex, colorPicker(0).Color, colorPicker(1).Color), UNDO_LAYER
+    Process "Color to monochrome", , GetFunctionParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -179,26 +176,33 @@ Private Sub cmdBar_ResetClick()
     
     colorPicker(0).Color = RGB(0, 0, 0)
     colorPicker(1).Color = RGB(255, 255, 255)
-    cboDither.ListIndex = 6     'Stucki dithering
+    lstDither.ListIndex = 6     'Stucki dithering
     
     'Standard threshold value
     chkAutoThreshold.Value = vbUnchecked
-    sltThreshold.Value = 127
+    sltThreshold.Reset
     
 End Sub
+
+Private Function GetFunctionParamString() As String
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    With cParams
+        .AddParam "MonochromeThreshold", sltThreshold.Value
+        .AddParam "MonochromeDither", lstDither.ListIndex
+        .AddParam "MonochromeColor1", colorPicker(0).Color
+        .AddParam "MonochromeColor2", colorPicker(1).Color
+        .AddParam "MonochromeRemoveTransparency", CBool(btsTransparency.ListIndex = 1)
+    End With
+    GetFunctionParamString = cParams.GetParamString
+End Function
 
 Private Sub colorPicker_ColorChanged(Index As Integer)
     UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Draw the preview
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Load()
@@ -206,20 +210,29 @@ Private Sub Form_Load()
     cmdBar.MarkPreviewStatus False
     
     'Populate the dither combobox
-    cboDither.Clear
-    cboDither.AddItem "None", 0
-    cboDither.AddItem "Ordered (Bayer 4x4)", 1
-    cboDither.AddItem "Ordered (Bayer 8x8)", 2
-    cboDither.AddItem "False (Fast) Floyd-Steinberg", 3
-    cboDither.AddItem "Genuine Floyd-Steinberg", 4
-    cboDither.AddItem "Jarvis, Judice, and Ninke", 5
-    cboDither.AddItem "Stucki", 6
-    cboDither.AddItem "Burkes", 7
-    cboDither.AddItem "Sierra-3", 8
-    cboDither.AddItem "Two-Row Sierra", 9
-    cboDither.AddItem "Sierra Lite", 10
-    cboDither.AddItem "Atkinson / Classic Macintosh", 11
-    cboDither.ListIndex = 6
+    lstDither.SetAutomaticRedraws False
+    lstDither.Clear
+    lstDither.AddItem "None", 0
+    lstDither.AddItem "Ordered (Bayer 4x4)", 1
+    lstDither.AddItem "Ordered (Bayer 8x8)", 2
+    lstDither.AddItem "False (Fast) Floyd-Steinberg", 3
+    lstDither.AddItem "Genuine Floyd-Steinberg", 4
+    lstDither.AddItem "Jarvis, Judice, and Ninke", 5
+    lstDither.AddItem "Stucki", 6
+    lstDither.AddItem "Burkes", 7
+    lstDither.AddItem "Sierra-3", 8
+    lstDither.AddItem "Two-Row Sierra", 9
+    lstDither.AddItem "Sierra Lite", 10
+    lstDither.AddItem "Atkinson / Classic Macintosh", 11
+    lstDither.SetAutomaticRedraws True
+    lstDither.ListIndex = 6
+    
+    btsTransparency.AddItem "do not modify", 0
+    btsTransparency.AddItem "remove from image", 1
+    btsTransparency.ListIndex = 0
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
     
     cmdBar.MarkPreviewStatus True
     
@@ -230,7 +243,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Calculate the optimal threshold for the current image
-Private Function calculateOptimalThreshold() As Long
+Private Function CalculateOptimalThreshold() As Long
 
     'Create a local array and point it at the pixel data of the image
     Dim ImageData() As Byte
@@ -248,7 +261,7 @@ Private Function calculateOptimalThreshold() As Long
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Color variables
@@ -261,13 +274,13 @@ Private Function calculateOptimalThreshold() As Long
     
     'Loop through each pixel in the image, tallying values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
             
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
                 
         pLuminance = getLuminance(r, g, b)
         
@@ -302,20 +315,42 @@ Private Function calculateOptimalThreshold() As Long
     'Make sure our suggestion doesn't exceed the limits allowed by the tool
     If x > 254 Then x = 220
     
-    calculateOptimalThreshold = x
+    CalculateOptimalThreshold = x
         
 End Function
 
 'Convert an image to black and white (1-bit image)
-Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal DitherMethod As Long = 0, Optional ByVal lowColor As Long = &H0, Optional ByVal highColor As Long = &HFFFFFF, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
-
-    If Not toPreview Then Message "Converting image to two colors..."
+Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+    
+    If (Not toPreview) Then Message "Converting image to two colors..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString monochromeParams
+    
+    Dim cThreshold As Long, ditherMethod As Long, lowColor As Long, highColor As Long, removeTransparency As Boolean
+    With cParams
+        cThreshold = .GetLong("MonochromeThreshold", 127)
+        ditherMethod = .GetLong("MonochromeDither", 6)
+        lowColor = .GetLong("MonochromeColor1", vbBlack)
+        highColor = .GetLong("MonochromeColor2", vbWhite)
+        removeTransparency = .GetBool("MonochromeRemoveTransparency", False)
+    End With
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    PrepImageData tmpSA, toPreview, dstPic
+    'If the user wants transparency removed from the image, apply that change prior to monochrome conversion
+    Dim alphaAlreadyPremultiplied As Boolean: alphaAlreadyPremultiplied = False
+    If (removeTransparency And (curDIBValues.BytesPerPixel = 4)) Then
+        PrepImageData tmpSA, toPreview, dstPic, , , True
+        workingDIB.CompositeBackgroundColor 255, 255, 255
+        alphaAlreadyPremultiplied = True
+    Else
+        PrepImageData tmpSA, toPreview, dstPic
+    End If
+    
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -328,7 +363,7 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -348,7 +383,7 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
     highG = ExtractG(highColor)
     highB = ExtractB(highColor)
     
-    'Calculationg color variables (including luminance)
+    'Calculating color variables (including luminance)
     Dim r As Long, g As Long, b As Long
     Dim l As Long, newL As Long
     Dim xModQuick As Long
@@ -358,32 +393,32 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
     Dim dDivisor As Double
     
     'Process the image based on the dither method requested
-    Select Case DitherMethod
+    Select Case ditherMethod
         
         'No dither, so just perform a quick and dirty threshold calculation
         Case 0
     
             For x = initX To finalX
-                QuickVal = x * qvDepth
+                quickVal = x * qvDepth
             For y = initY To finalY
         
                 'Get the source pixel color values
-                r = ImageData(QuickVal + 2, y)
-                g = ImageData(QuickVal + 1, y)
-                b = ImageData(QuickVal, y)
+                r = ImageData(quickVal + 2, y)
+                g = ImageData(quickVal + 1, y)
+                b = ImageData(quickVal, y)
                 
                 'Convert those to a luminance value
                 l = getLuminance(r, g, b)
             
                 'Check the luminance against the threshold, and set new values accordingly
                 If l >= cThreshold Then
-                    ImageData(QuickVal + 2, y) = highR
-                    ImageData(QuickVal + 1, y) = highG
-                    ImageData(QuickVal, y) = highB
+                    ImageData(quickVal + 2, y) = highR
+                    ImageData(quickVal + 1, y) = highG
+                    ImageData(quickVal, y) = highB
                 Else
-                    ImageData(QuickVal + 2, y) = lowR
-                    ImageData(QuickVal + 1, y) = lowG
-                    ImageData(QuickVal, y) = lowB
+                    ImageData(quickVal + 2, y) = lowR
+                    ImageData(quickVal + 1, y) = lowG
+                    ImageData(quickVal, y) = lowB
                 End If
                 
             Next y
@@ -434,27 +469,27 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
 
             'Now loop through the image, using the dither values as our threshold
             For x = initX To finalX
-                QuickVal = x * qvDepth
+                quickVal = x * qvDepth
                 xModQuick = x And 3
             For y = initY To finalY
         
                 'Get the source pixel color values
-                r = ImageData(QuickVal + 2, y)
-                g = ImageData(QuickVal + 1, y)
-                b = ImageData(QuickVal, y)
+                r = ImageData(quickVal + 2, y)
+                g = ImageData(quickVal + 1, y)
+                b = ImageData(quickVal, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
                 l = getLuminance(r, g, b) + DitherTable(xModQuick, y And 3)
             
                 'Check THAT value against the threshold, and set new values accordingly
                 If l >= cThreshold Then
-                    ImageData(QuickVal + 2, y) = highR
-                    ImageData(QuickVal + 1, y) = highG
-                    ImageData(QuickVal, y) = highB
+                    ImageData(quickVal + 2, y) = highR
+                    ImageData(quickVal + 1, y) = highG
+                    ImageData(quickVal, y) = highB
                 Else
-                    ImageData(QuickVal + 2, y) = lowR
-                    ImageData(QuickVal + 1, y) = lowG
-                    ImageData(QuickVal, y) = lowB
+                    ImageData(quickVal + 2, y) = lowR
+                    ImageData(quickVal + 1, y) = lowG
+                    ImageData(quickVal, y) = lowB
                 End If
                 
             Next y
@@ -556,27 +591,27 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
 
             'Now loop through the image, using the dither values as our threshold
             For x = initX To finalX
-                QuickVal = x * qvDepth
+                quickVal = x * qvDepth
                 xModQuick = x And 7
             For y = initY To finalY
         
                 'Get the source pixel color values
-                r = ImageData(QuickVal + 2, y)
-                g = ImageData(QuickVal + 1, y)
-                b = ImageData(QuickVal, y)
+                r = ImageData(quickVal + 2, y)
+                g = ImageData(quickVal + 1, y)
+                b = ImageData(quickVal, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
                 l = getLuminance(r, g, b) + DitherTable(xModQuick, y And 7)
             
                 'Check THAT value against the threshold, and set new values accordingly
                 If l >= cThreshold Then
-                    ImageData(QuickVal + 2, y) = highR
-                    ImageData(QuickVal + 1, y) = highG
-                    ImageData(QuickVal, y) = highB
+                    ImageData(quickVal + 2, y) = highR
+                    ImageData(quickVal + 1, y) = highG
+                    ImageData(quickVal, y) = highB
                 Else
-                    ImageData(QuickVal + 2, y) = lowR
-                    ImageData(QuickVal + 1, y) = lowG
-                    ImageData(QuickVal, y) = lowB
+                    ImageData(quickVal + 2, y) = lowR
+                    ImageData(quickVal + 1, y) = lowG
+                    ImageData(quickVal, y) = lowB
                 End If
                 
             Next y
@@ -796,7 +831,7 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
     End Select
     
     'If we have been asked to use a non-ordered dithering method, apply it now
-    If DitherMethod >= 3 Then
+    If (ditherMethod >= 3) Then
     
         'First, we need a dithering table the same size as the image.  We make it of Single type to prevent rounding errors.
         ' (This uses a lot of memory, but on modern systems it shouldn't be a problem.)
@@ -808,13 +843,13 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
         
         'Now loop through the image, calculating errors as we go
         For x = initX To finalX
-            QuickVal = x * qvDepth
+            quickVal = x * qvDepth
         For y = initY To finalY
         
             'Get the source pixel color values
-            r = ImageData(QuickVal + 2, y)
-            g = ImageData(QuickVal + 1, y)
-            b = ImageData(QuickVal, y)
+            r = ImageData(quickVal + 2, y)
+            g = ImageData(quickVal + 1, y)
+            b = ImageData(quickVal, y)
             
             'Convert those to a luminance value and add the value of the error at this location
             l = getLuminance(r, g, b)
@@ -823,14 +858,14 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
             'Check our modified luminance value against the threshold, and set new values accordingly
             If newL >= cThreshold Then
                 errorVal = newL - 255
-                ImageData(QuickVal + 2, y) = highR
-                ImageData(QuickVal + 1, y) = highG
-                ImageData(QuickVal, y) = highB
+                ImageData(quickVal + 2, y) = highR
+                ImageData(quickVal + 1, y) = highG
+                ImageData(quickVal, y) = highB
             Else
                 errorVal = newL
-                ImageData(QuickVal + 2, y) = lowR
-                ImageData(QuickVal + 1, y) = lowG
-                ImageData(QuickVal, y) = lowB
+                ImageData(quickVal + 2, y) = lowR
+                ImageData(quickVal + 1, y) = lowG
+                ImageData(quickVal, y) = lowB
             End If
             
             'If there is an error, spread it
@@ -878,29 +913,20 @@ NextDitheredPixel:     Next j
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic, alphaAlreadyPremultiplied
 
 End Sub
 
 Private Sub sltThreshold_Change()
-    If CBool(chkAutoThreshold.Value) Then chkAutoThreshold.Value = vbUnchecked
     UpdatePreview
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then masterBlackWhiteConversion sltThreshold, cboDither.ListIndex, colorPicker(0).Color, colorPicker(1).Color, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then MasterBlackWhiteConversion GetFunctionParamString, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-
-
-
-
-
-
-
-
 

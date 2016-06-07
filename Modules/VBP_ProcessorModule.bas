@@ -1198,7 +1198,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormMonochrome
             Else
-                FormMonochrome.masterBlackWhiteConversion cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
+                FormMonochrome.MasterBlackWhiteConversion cXMLParams.GetParamString
             End If
             
         Case "Monochrome to grayscale"
