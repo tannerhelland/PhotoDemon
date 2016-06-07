@@ -483,10 +483,14 @@ Public Function ConvertArbitraryListToFurthestRoundedInt(ParamArray listOfValues
         
         Dim i As Long
         For i = LBound(listOfValues) To UBound(listOfValues)
-            If listOfValues(i) < 0 Then
+            If (listOfValues(i) < 0) Then
                 listOfValues(i) = Int(listOfValues(i))
             Else
-                listOfValues(i) = IIf(listOfValues(i) = Int(listOfValues(i)), listOfValues(i), Int(listOfValues(i)) + 1)
+                If (listOfValues(i) = Int(listOfValues(i))) Then
+                    listOfValues(i) = Int(listOfValues(i))
+                Else
+                    listOfValues(i) = Int(listOfValues(i)) + 1
+                End If
             End If
         Next i
         
