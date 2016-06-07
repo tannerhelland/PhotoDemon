@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.189</langversion>
+<langversion>6.7.190</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -4569,18 +4569,13 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>90° clockwise</original>
-<translation>90 ° a la derecha</translation>
+<original>90 clockwise</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>90° counter-clockwise</original>
-<translation>90 ° en sentido antihorario</translation>
-</phrase>
-
-<phrase>
-<original>180°</original>
-<translation>180 °</translation>
+<original>90 counter-clockwise</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4699,18 +4694,18 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>Rotate 90° clockwise</original>
-<translation>Girar 90 ° a la derecha</translation>
+<original>Rotate 90 clockwise</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Rotate 90° counter-clockwise</original>
-<translation>Gire 90 ° en sentido antihorario</translation>
+<original>Rotate 90 counter-clockwise</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Rotate 180°</original>
-<translation>Gire 180 °</translation>
+<original>Rotate 180</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6235,7 +6230,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 561 phrases. 186 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 186 were duplicates of existing phrases, so only 374 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6244,6 +6239,16 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <phrase>
 <original>Monochrome Conversion</original>
 <translation>Conversión monocromática</translation>
+</phrase>
+
+<phrase>
+<original>dithering technique</original>
+<translation>tramado técnica</translation>
+</phrase>
+
+<phrase>
+<original>transparency</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6259,11 +6264,6 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <phrase>
 <original>final colors</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>dithering technique</original>
-<translation>tramado técnica</translation>
 </phrase>
 
 <phrase>
@@ -6322,11 +6322,21 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
+<original>do not modify</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>remove from image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Converting image to two colors</original>
 <translation>La conversión de la imagen de dos colores</translation>
 </phrase>
 
-<!-- Adjustments_BlackAndWhite.frm contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Adjustments_BlackAndWhite.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BlackAndWhite.frm-->
 
@@ -11951,11 +11961,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>transparency</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation></translation>
 </phrase>
@@ -12045,7 +12050,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 59 phrases. 31 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 59 phrases. 32 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15111,10 +15116,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2581</phrasecount>
+<phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4477 phrases. -->
-<!-- 1896 are duplicates, so only 2581 unique phrases have been written to file. -->
-<!-- These 2581 phrases contain approximately 13269 total words. -->
+<!-- As of this build, PhotoDemon contains 4479 phrases. -->
+<!-- 1897 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- These 2582 phrases contain approximately 13275 total words. -->
 
 </pdData>
