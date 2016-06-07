@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1546</langversion>
+<langversion>6.8.1547</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -4568,18 +4568,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>90° clockwise</original>
-<translation>顺时针 90度</translation>
+<original>90 clockwise</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>90° counter-clockwise</original>
-<translation>逆时针 90度</translation>
-</phrase>
-
-<phrase>
-<original>180°</original>
-<translation>旋转180° </translation>
+<original>90 counter-clockwise</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4698,18 +4693,18 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Rotate 90° clockwise</original>
-<translation>旋转90度顺时针</translation>
+<original>Rotate 90 clockwise</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Rotate 90° counter-clockwise</original>
-<translation>旋转90度逆时针</translation>
+<original>Rotate 90 counter-clockwise</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Rotate 180°</original>
-<translation>旋转180度</translation>
+<original>Rotate 180</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6232,7 +6227,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 561 phrases. 186 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 186 were duplicates of existing phrases, so only 374 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6241,6 +6236,16 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <phrase>
 <original>Monochrome Conversion</original>
 <translation>单色转换</translation>
+</phrase>
+
+<phrase>
+<original>dithering technique</original>
+<translation>抖动技术</translation>
+</phrase>
+
+<phrase>
+<original>transparency</original>
+<translation>透明度</translation>
 </phrase>
 
 <phrase>
@@ -6256,11 +6261,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <phrase>
 <original>final colors</original>
 <translation>最终的颜色</translation>
-</phrase>
-
-<phrase>
-<original>dithering technique</original>
-<translation>抖动技术</translation>
 </phrase>
 
 <phrase>
@@ -6319,11 +6319,21 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
+<original>do not modify</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>remove from image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Converting image to two colors</original>
 <translation>把图像转换为双色</translation>
 </phrase>
 
-<!-- Adjustments_BlackAndWhite.frm contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Adjustments_BlackAndWhite.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BlackAndWhite.frm-->
 
@@ -11946,11 +11956,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>transparency</original>
-<translation>透明度</translation>
-</phrase>
-
-<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>透明颜色（右键选择图像）</translation>
 </phrase>
@@ -12040,7 +12045,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>这些有损优化设置减少了 %1 的文件大小。</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 59 phrases. 31 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 59 phrases. 32 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -15106,10 +15111,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2581</phrasecount>
+<phrasecount>2582</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4477 phrases. -->
-<!-- 1896 are duplicates, so only 2581 unique phrases have been written to file. -->
-<!-- These 2581 phrases contain approximately 13269 total words. -->
+<!-- As of this build, PhotoDemon contains 4479 phrases. -->
+<!-- 1897 are duplicates, so only 2582 unique phrases have been written to file. -->
+<!-- These 2582 phrases contain approximately 13275 total words. -->
 
 </pdData>
