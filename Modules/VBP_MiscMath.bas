@@ -297,7 +297,8 @@ Public Function AngleBetweenTwoIntersectingLines(ByRef ptIntersect As POINTFLOAT
     
 End Function
 
-'Return the arctangent of two values (rise / run)
+'Return the arctangent of two values (rise / run); unlike VB's integrated Atn() function, this return is quadrant-specific.
+' (It also circumvents potential DBZ errors when horizontal.)
 Public Function Atan2(ByVal y As Double, ByVal x As Double) As Double
  
     If (y = 0) And (x = 0) Then
@@ -497,7 +498,7 @@ End Function
 
 Public Sub ConvertCartesianToPolar(ByVal srcX As Double, ByVal srcY As Double, ByRef dstRadius As Double, ByRef dstAngle As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
     dstRadius = Sqr((srcX - centerX) * (srcX - centerX) + (srcY - centerY) * (srcY - centerY))
-    dstAngle = Atn((srcY - centerY) / (srcX - centerX))
+    dstAngle = Math_Functions.Atan2((srcY - centerY), (srcX - centerX))
 End Sub
 
 Public Sub ConvertPolarToCartesian(ByVal srcAngle As Double, ByVal srcRadius As Double, ByRef dstX As Double, ByRef dstY As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
