@@ -1087,25 +1087,25 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
 End Function
 
 'Use GDI+ to render a series of white-black-white circles, which are preferable for on-canvas controls with good readability
-Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
+Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
 
-    GDIPlusDrawCircleToDC dstDC, cX, cY, cRadius, RGB(0, 0, 0), cTransparency, 3, True
+    GDIPlusDrawCircleToDC dstDC, cx, cy, cRadius, RGB(0, 0, 0), cTransparency, 3, True
     
     Dim topColor As Long
     If useHighlightColor Then topColor = g_Themer.GetGenericUIColor(UI_AccentLight) Else topColor = RGB(255, 255, 255)
-    GDIPlusDrawCircleToDC dstDC, cX, cY, cRadius, topColor, 220, 1, True
+    GDIPlusDrawCircleToDC dstDC, cx, cy, cRadius, topColor, 220, 1, True
     
 End Function
 
 'Identical function to GdiPlusDrawCanvasCircle, above, but a rect is used instead.  Note that it's inconvenient to the user to display
 ' a square but use circles for hit-detection, so plan accordingly!
-Public Function GDIPlusDrawCanvasSquare(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
+Public Function GDIPlusDrawCanvasSquare(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
 
-    GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cX - cRadius, cY - cRadius, cX + cRadius, cY + cRadius, RGB(0, 0, 0), cTransparency, 3, True, GP_LC_Round, True
+    GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cx - cRadius, cy - cRadius, cx + cRadius, cy + cRadius, RGB(0, 0, 0), cTransparency, 3, True, GP_LC_Round, True
     
     Dim topColor As Long
     If useHighlightColor Then topColor = g_Themer.GetGenericUIColor(UI_AccentLight) Else topColor = RGB(255, 255, 255)
-    GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cX - cRadius, cY - cRadius, cX + cRadius, cY + cRadius, topColor, 220, 1.6, True, GP_LC_Round, True
+    GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cx - cRadius, cy - cRadius, cx + cRadius, cy + cRadius, topColor, 220, 1.6, True, GP_LC_Round, True
     
 End Function
 
@@ -1318,7 +1318,7 @@ Public Function GDIPlusDrawRectFOutlineToDC(ByVal dstDC As Long, ByRef srcRectF 
 End Function
 
 'Use GDI+ to render a hollow circle, with optional color, opacity, and antialiasing
-Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, ByVal edgeColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
+Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, ByVal edgeColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -1330,7 +1330,7 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cX As Single, B
     GdipCreatePen1 FillQuadWithVBRGB(edgeColor, cTransparency), drawRadius, GP_U_Pixel, iPen
     
     'Render the circle
-    GdipDrawEllipse iGraphics, iPen, cX - cRadius, cY - cRadius, cRadius * 2, cRadius * 2
+    GdipDrawEllipse iGraphics, iPen, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2
         
     'Release all created objects
     GdipDeletePen iPen
@@ -1339,7 +1339,7 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cX As Single, B
 End Function
 
 'Use GDI+ to render a filled circle, with optional color, opacity, and antialiasing
-Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, ByVal fillColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True) As Boolean
+Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, ByVal fillColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -1351,7 +1351,7 @@ Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cX As Single, B
     hBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(fillColor, cTransparency)
     
     If hBrush <> 0 Then
-        GDIPlusFillCircleToDC = CBool(GdipFillEllipse(iGraphics, hBrush, cX - cRadius, cY - cRadius, cRadius * 2, cRadius * 2) = 0)
+        GDIPlusFillCircleToDC = CBool(GdipFillEllipse(iGraphics, hBrush, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2) = 0)
         GDI_Plus.ReleaseGDIPlusBrush hBrush
     End If
     
@@ -2803,26 +2803,23 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
         tmpPoints(2) = listOfPoints(3)
         tmpPoints(3) = listOfPoints(2)
         
-        'Shrink the max and min points by 1 pixel, to prevent unwanted borders
-        Dim cX As Single, cY As Single
+        'Find the "center" of the rotated image
+        Dim cx As Single, cy As Single
         For i = 0 To 3
-            cX = cX + tmpPoints(i).x
-            cY = cY + tmpPoints(i).y
+            cx = cx + tmpPoints(i).x
+            cy = cy + tmpPoints(i).y
         Next i
-        cX = cX / 4
-        cY = cY / 4
+        cx = cx / 4
+        cy = cy / 4
         
+        'For each corner of the rotated square, convert the point to polar coordinates, then shrink the radius by one.
+        Dim tmpAngle As Double, tmpRadius As Double, tmpX As Double, tmpY As Double
         For i = 0 To 3
-            If (tmpPoints(i).x > cX) Then
-                tmpPoints(i).x = tmpPoints(i).x - 1
-            ElseIf (tmpPoints(i).x < cX) Then
-                tmpPoints(i).x = tmpPoints(i).x + 1
-            End If
-            If (tmpPoints(i).y > cY) Then
-                tmpPoints(i).y = tmpPoints(i).y - 1
-            ElseIf (tmpPoints(i).y < cY) Then
-                tmpPoints(i).y = tmpPoints(i).y + 1
-            End If
+            Math_Functions.ConvertCartesianToPolar tmpPoints(i).x, tmpPoints(i).y, tmpRadius, tmpAngle, cx, cy
+            tmpRadius = tmpRadius - 1
+            Math_Functions.ConvertPolarToCartesian tmpAngle, tmpRadius, tmpX, tmpY, cx, cy
+            tmpPoints(i).x = tmpX
+            tmpPoints(i).y = tmpY
         Next i
         
         'Paint the selected area transparent

@@ -130,17 +130,16 @@ End Sub
 
 'Given an arbitrary output range and input range, convert a value from the input range to the output range
 ' Thank you to expert coder audioglider for contributing this function.
-Public Function convertRange(ByVal originalStart As Double, ByVal originalEnd As Double, ByVal newStart As Double, ByVal newEnd As Double, ByVal Value As Double) As Double
+Public Function ConvertRange(ByVal originalStart As Double, ByVal originalEnd As Double, ByVal newStart As Double, ByVal newEnd As Double, ByVal Value As Double) As Double
     Dim dScale As Double
-    
     dScale = (newEnd - newStart) / (originalEnd - originalStart)
-    convertRange = (newStart + ((Value - originalStart) * dScale))
+    ConvertRange = (newStart + ((Value - originalStart) * dScale))
 End Function
 
 'Convert a decimal to a near-identical fraction using vector math.
 ' This excellent function comes courtesy of VB6 coder LaVolpe.  I have modified it slightly to suit PhotoDemon's unique needs.
 ' You can download the original at this link (good as of 13 June 2014): http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=61596&lngWId=1
-Public Sub convertToFraction(ByVal v As Double, w As Double, n As Double, d As Double, Optional ByVal maxDenomDigits As Byte, Optional ByVal Accuracy As Double = 100#)
+Public Sub ConvertToFraction(ByVal v As Double, w As Double, n As Double, d As Double, Optional ByVal maxDenomDigits As Byte, Optional ByVal Accuracy As Double = 100#)
 
     Const MaxTerms As Integer = 50          'Limit to prevent infinite loop
     Const MinDivisor As Double = 1E-16      'Limit to prevent divide by zero
@@ -256,28 +255,28 @@ Public Sub ConvertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, B
 End Sub
 
 'Return the distance between two values on the same line
-Public Function distanceOneDimension(ByVal x1 As Double, ByVal x2 As Double) As Double
-    distanceOneDimension = Sqr((x1 - x2) ^ 2)
+Public Function DistanceOneDimension(ByVal x1 As Double, ByVal x2 As Double) As Double
+    DistanceOneDimension = Sqr((x1 - x2) ^ 2)
 End Function
 
 'Return the distance between two points
-Public Function distanceTwoPoints(ByVal x1 As Double, ByVal y1 As Double, ByVal x2 As Double, ByVal y2 As Double) As Double
-    distanceTwoPoints = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
+Public Function DistanceTwoPoints(ByVal x1 As Double, ByVal y1 As Double, ByVal x2 As Double, ByVal y2 As Double) As Double
+    DistanceTwoPoints = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
 End Function
 
 'Return the distance between two points, but ignores the square root function; if calculating something simple, like "minimum distance only",
 ' we only need relative values - not absolute ones - so we can skip that step for an extra performance boost.
-Public Function distanceTwoPointsShortcut(ByVal x1 As Double, ByVal y1 As Double, ByVal x2 As Double, ByVal y2 As Double) As Double
-    distanceTwoPointsShortcut = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)
+Public Function DistanceTwoPointsShortcut(ByVal x1 As Double, ByVal y1 As Double, ByVal x2 As Double, ByVal y2 As Double) As Double
+    DistanceTwoPointsShortcut = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)
 End Function
 
 'Return the distance between two 3D points
-Public Function distanceThreeDimensions(ByVal x1 As Double, ByVal y1 As Double, ByVal z1 As Double, ByVal x2 As Double, ByVal y2 As Double, ByVal z2 As Double)
-    distanceThreeDimensions = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2 + (z1 - z2) ^ 2)
+Public Function DistanceThreeDimensions(ByVal x1 As Double, ByVal y1 As Double, ByVal z1 As Double, ByVal x2 As Double, ByVal y2 As Double, ByVal z2 As Double)
+    DistanceThreeDimensions = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2 + (z1 - z2) ^ 2)
 End Function
 
 'Given two intersecting lines, return the angle between them (e.g. the inner product: https://en.wikipedia.org/wiki/Inner_product_space)
-Public Function angleBetweenTwoIntersectingLines(ByRef ptIntersect As POINTFLOAT, ByRef pt1 As POINTFLOAT, ByRef pt2 As POINTFLOAT, Optional ByVal returnResultInDegrees As Boolean = True) As Double
+Public Function AngleBetweenTwoIntersectingLines(ByRef ptIntersect As POINTFLOAT, ByRef pt1 As POINTFLOAT, ByRef pt2 As POINTFLOAT, Optional ByVal returnResultInDegrees As Boolean = True) As Double
     
     Dim dx1i As Double, dy1i As Double, dx2i As Double, dy2i As Double
     dx1i = pt1.x - ptIntersect.x
@@ -290,10 +289,10 @@ Public Function angleBetweenTwoIntersectingLines(ByRef ptIntersect As POINTFLOAT
     m12 = Sqr(dx1i * dx1i + dy1i * dy1i)
     m13 = Sqr(dx2i * dx2i + dy2i * dy2i)
     
-    angleBetweenTwoIntersectingLines = Acos((dx1i * dx2i + dy1i * dy2i) / (m12 * m13))
+    AngleBetweenTwoIntersectingLines = Acos((dx1i * dx2i + dy1i * dy2i) / (m12 * m13))
     
     If returnResultInDegrees Then
-        angleBetweenTwoIntersectingLines = angleBetweenTwoIntersectingLines / PI_DIV_180
+        AngleBetweenTwoIntersectingLines = AngleBetweenTwoIntersectingLines / PI_DIV_180
     End If
     
 End Function
@@ -424,7 +423,7 @@ Public Function Min3Int(rR As Long, rG As Long, rB As Long) As Long
 End Function
 
 'Return the maximum value from an arbitrary list of floating point values
-Public Function maxArbitraryListF(ParamArray listOfValues() As Variant) As Double
+Public Function MaxArbitraryListF(ParamArray listOfValues() As Variant) As Double
     
     If UBound(listOfValues) >= LBound(listOfValues) Then
                     
@@ -440,7 +439,7 @@ Public Function maxArbitraryListF(ParamArray listOfValues() As Variant) As Doubl
             Next i
         End If
         
-        maxArbitraryListF = maxValue
+        MaxArbitraryListF = maxValue
         
     Else
         Debug.Print "No points provided - maxArbitraryListF() function failed!"
@@ -449,7 +448,7 @@ Public Function maxArbitraryListF(ParamArray listOfValues() As Variant) As Doubl
 End Function
 
 'Return the minimum value from an arbitrary list of floating point values
-Public Function minArbitraryListF(ParamArray listOfValues() As Variant) As Double
+Public Function MinArbitraryListF(ParamArray listOfValues() As Variant) As Double
     
     If UBound(listOfValues) >= LBound(listOfValues) Then
                     
@@ -465,7 +464,7 @@ Public Function minArbitraryListF(ParamArray listOfValues() As Variant) As Doubl
             Next i
         End If
         
-        minArbitraryListF = minValue
+        MinArbitraryListF = minValue
         
     Else
         Debug.Print "No points provided - minArbitraryListF() function failed!"
@@ -477,7 +476,7 @@ End Function
 ' Said another way, round negative numbers down, and positive numbers up.  This is often relevant in PD when performing
 ' coordinate conversions that are ultimately mapped to pixel locations, and we need to bounds-check corner coordinates
 ' in advance and push them away from 0, so any partially-covered pixels are converted to fully-covered ones.
-Public Function convertArbitraryListToFurthestRoundedInt(ParamArray listOfValues() As Variant)
+Public Function ConvertArbitraryListToFurthestRoundedInt(ParamArray listOfValues() As Variant)
     
     If UBound(listOfValues) >= LBound(listOfValues) Then
         
@@ -496,7 +495,12 @@ Public Function convertArbitraryListToFurthestRoundedInt(ParamArray listOfValues
 
 End Function
 
-Public Sub convertPolarToCartesian(ByVal srcAngle As Double, ByVal srcRadius As Double, ByRef dstX As Double, ByRef dstY As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
+Public Sub ConvertCartesianToPolar(ByVal srcX As Double, ByVal srcY As Double, ByRef dstRadius As Double, ByRef dstAngle As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
+    dstRadius = Sqr((srcX - centerX) * (srcX - centerX) + (srcY - centerY) * (srcY - centerY))
+    dstAngle = Atn((srcY - centerY) / (srcX - centerX))
+End Sub
+
+Public Sub ConvertPolarToCartesian(ByVal srcAngle As Double, ByVal srcRadius As Double, ByRef dstX As Double, ByRef dstY As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
 
     'Calculate the new (x, y)
     dstX = srcRadius * Cos(srcAngle)
@@ -525,7 +529,7 @@ End Function
 
 'Given an array of points, find the closest one to a target location.  If none fall below a minimum distance threshold, return -1.
 ' (This function is used by many bits of mouse interaction code, to see if the user has clicked on something interesting.)
-Public Function findClosestPointInArray(ByVal targetX As Double, ByVal targetY As Double, ByVal minAllowedDistance As Double, ByRef poiArray() As POINTAPI) As Long
+Public Function FindClosestPointInArray(ByVal targetX As Double, ByVal targetY As Double, ByVal minAllowedDistance As Double, ByRef poiArray() As POINTAPI) As Long
 
     Dim curMinDistance As Double, curMinIndex As Long
     curMinDistance = &HFFFFFFF
@@ -536,7 +540,7 @@ Public Function findClosestPointInArray(ByVal targetX As Double, ByVal targetY A
     'From the array of supplied points, find the one closest to the target point
     Dim i As Long
     For i = LBound(poiArray) To UBound(poiArray)
-        tmpDistance = distanceTwoPoints(targetX, targetY, poiArray(i).x, poiArray(i).y)
+        tmpDistance = DistanceTwoPoints(targetX, targetY, poiArray(i).x, poiArray(i).y)
         If tmpDistance < curMinDistance Then
             curMinDistance = tmpDistance
             curMinIndex = i
@@ -545,16 +549,16 @@ Public Function findClosestPointInArray(ByVal targetX As Double, ByVal targetY A
     
     'If the distance of the closest point falls below the allowed threshold, return that point's index.
     If curMinDistance < minAllowedDistance Then
-        findClosestPointInArray = curMinIndex
+        FindClosestPointInArray = curMinIndex
     Else
-        findClosestPointInArray = -1
+        FindClosestPointInArray = -1
     End If
 
 End Function
 
 'Given an array of points (in floating-point format), find the closest one to a target location.  If none fall below a minimum distance threshold,
 ' return -1.  (This function is used by many bits of mouse interaction code, to see if the user has clicked on something interesting.)
-Public Function findClosestPointInFloatArray(ByVal targetX As Double, ByVal targetY As Double, ByVal minAllowedDistance As Double, ByRef poiArray() As POINTFLOAT) As Long
+Public Function FindClosestPointInFloatArray(ByVal targetX As Double, ByVal targetY As Double, ByVal minAllowedDistance As Double, ByRef poiArray() As POINTFLOAT) As Long
 
     Dim curMinDistance As Double, curMinIndex As Long
     curMinDistance = &HFFFFFFF
@@ -565,7 +569,7 @@ Public Function findClosestPointInFloatArray(ByVal targetX As Double, ByVal targ
     'From the array of supplied points, find the one closest to the target point
     Dim i As Long
     For i = LBound(poiArray) To UBound(poiArray)
-        tmpDistance = distanceTwoPoints(targetX, targetY, poiArray(i).x, poiArray(i).y)
+        tmpDistance = DistanceTwoPoints(targetX, targetY, poiArray(i).x, poiArray(i).y)
         If tmpDistance < curMinDistance Then
             curMinDistance = tmpDistance
             curMinIndex = i
@@ -574,9 +578,9 @@ Public Function findClosestPointInFloatArray(ByVal targetX As Double, ByVal targ
     
     'If the distance of the closest point falls below the allowed threshold, return that point's index.
     If curMinDistance < minAllowedDistance Then
-        findClosestPointInFloatArray = curMinIndex
+        FindClosestPointInFloatArray = curMinIndex
     Else
-        findClosestPointInFloatArray = -1
+        FindClosestPointInFloatArray = -1
     End If
 
 End Function
@@ -622,16 +626,16 @@ Public Sub FindBoundarySizeOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeig
     'If the caller is using this for something like determining bounds of a rotated image, we need to convert all points to
     ' their "furthest from 0" integer amount.  Int() works on negative numbers, but a modified Ceiling()-type functions is
     ' required as VB oddly does not provide one.
-    If padToIntegerValues Then convertArbitraryListToFurthestRoundedInt x11, x21, x31, x41, y11, y21, y31, y41
+    If padToIntegerValues Then ConvertArbitraryListToFurthestRoundedInt x11, x21, x31, x41, y11, y21, y31, y41
     
     'Find max/min values
     Dim xMin As Double, xMax As Double
-    xMin = minArbitraryListF(x11, x21, x31, x41)
-    xMax = maxArbitraryListF(x11, x21, x31, x41)
+    xMin = MinArbitraryListF(x11, x21, x31, x41)
+    xMax = MaxArbitraryListF(x11, x21, x31, x41)
     
     Dim yMin As Double, yMax As Double
-    yMin = minArbitraryListF(y11, y21, y31, y41)
-    yMax = maxArbitraryListF(y11, y21, y31, y41)
+    yMin = MinArbitraryListF(y11, y21, y31, y41)
+    yMax = MaxArbitraryListF(y11, y21, y31, y41)
     
     'Return the max/min values
     dstWidth = xMax - xMin
