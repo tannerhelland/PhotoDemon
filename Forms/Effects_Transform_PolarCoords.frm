@@ -53,7 +53,6 @@ Begin VB.Form FormPolar
       Width           =   12105
       _ExtentX        =   21352
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -177,13 +176,13 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal swapXAndY As Boo
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent converted pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
     'Use the external function to create a polar coordinate DIB
     If swapXAndY Then
@@ -192,17 +191,17 @@ Public Sub ConvertToPolar(ByVal conversionMethod As Long, ByVal swapXAndY As Boo
         CreateXSwappedPolarCoordDIB conversionMethod, polarRadius, edgeHandling, useBilinear, srcDIB, workingDIB, toPreview
     End If
     
-    srcDIB.eraseDIB
+    srcDIB.EraseDIB
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Polar conversion", , buildParams(cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1)), UNDO_LAYER
+    Process "Polar conversion", , BuildParams(cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -221,7 +220,7 @@ Private Sub Form_Activate()
     ApplyThemeAndTranslations Me
         
     'Create the preview
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
 End Sub
@@ -229,7 +228,7 @@ End Sub
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     btsRender.AddItem "speed", 0
     btsRender.AddItem "quality", 1
@@ -257,18 +256,11 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ConvertToPolar cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ConvertToPolar cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-
-
-
-
-
-
-
 

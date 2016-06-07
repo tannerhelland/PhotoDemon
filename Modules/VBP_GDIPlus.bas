@@ -2816,7 +2816,7 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
         Dim tmpAngle As Double, tmpRadius As Double, tmpX As Double, tmpY As Double
         For i = 0 To 3
             Math_Functions.ConvertCartesianToPolar tmpPoints(i).x, tmpPoints(i).y, tmpRadius, tmpAngle, cx, cy
-            tmpRadius = tmpRadius - 1
+            tmpRadius = tmpRadius - 1#
             Math_Functions.ConvertPolarToCartesian tmpAngle, tmpRadius, tmpX, tmpY, cx, cy
             tmpPoints(i).x = tmpX
             tmpPoints(i).y = tmpY
