@@ -238,6 +238,9 @@ Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVa
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
 
+'Misc window APIs
+Private Declare Function DwmIsCompositionEnabled Lib "dwmapi.dll" (ByRef dstEnabledBool As Long) As Long
+
 'RedrawWindow API constants
 Private Const RDW_INVALIDATE As Long = &H1
 Private Const RDW_INTERNALPAINT As Long = &H2
@@ -354,6 +357,35 @@ Public Sub SetEnablementByHWnd(ByVal dstHwnd As Long, ByVal enabledState As Bool
     EnableWindow dstHwnd, IIf(enabledState, 1&, 0&)
 End Sub
 
+Public Function GetWindowLongWrapper(ByVal dstHwnd As Long, Optional ByVal useExtendedStyle As Boolean = False) As Long
+    Dim nIndex As Long
+    If useExtendedStyle Then nIndex = GWL_EXSTYLE Else nIndex = GWL_STYLE
+    GetWindowLongWrapper = GetWindowLong(dstHwnd, nIndex)
+End Function
+
+'As it says, a simplified wrapper to SetWindowLong.  Returns the original window style before any changes are made.
+Public Function SetWindowLongWrapper(ByVal dstHwnd As Long, ByVal newFlag As Long, Optional ByVal removeFlagInstead As Boolean = False, Optional ByVal useExtendedStyle As Boolean = False, Optional ByVal overrideEntireLong As Boolean = False) As Long
+    
+    Dim nIndex As Long
+    If useExtendedStyle Then nIndex = GWL_EXSTYLE Else nIndex = GWL_STYLE
+    
+    Dim curStyle As Long
+    curStyle = GetWindowLong(dstHwnd, nIndex)
+    
+    If overrideEntireLong Then
+        SetWindowLong dstHwnd, nIndex, newFlag
+    Else
+        If removeFlagInstead Then
+            SetWindowLong dstHwnd, nIndex, curStyle And (Not newFlag)
+        Else
+            SetWindowLong dstHwnd, nIndex, curStyle Or newFlag
+        End If
+    End If
+    
+    SetWindowLongWrapper = curStyle
+    
+End Function
+
 Friend Sub GetClientWinRect(ByVal srcHwnd As Long, ByRef dstRect As winRect)
     GetClientRect srcHwnd, dstRect
 End Sub
@@ -389,6 +421,20 @@ End Function
 Public Sub SetFocusAPI(ByVal hWndToReceiveFocus As Long)
     SetFocus hWndToReceiveFocus
 End Sub
+
+Public Function IsDWMCompositionEnabled() As Boolean
+    If g_IsVistaOrLater Then
+        If g_IsWin8OrLater Then
+            IsDWMCompositionEnabled = True
+        Else
+            Dim tmpLong As Long
+            DwmIsCompositionEnabled tmpLong
+            IsDWMCompositionEnabled = CBool(tmpLong <> 0)
+        End If
+    Else
+        IsDWMCompositionEnabled = False
+    End If
+End Function
 
 '***********************************************************************************************
 '  (/End GENERIC HELPER FUNCTIONS)
