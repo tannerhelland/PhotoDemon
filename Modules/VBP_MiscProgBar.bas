@@ -1,4 +1,4 @@
-Attribute VB_Name = "ProgressBar_Support_Functions"
+Attribute VB_Name = "ProgressBars"
 '***************************************************************************
 'Miscellaneous Functions Related to the Progress Bar
 'Copyright 2001-2016 by Tanner Helland

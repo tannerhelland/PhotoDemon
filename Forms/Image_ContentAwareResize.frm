@@ -324,7 +324,7 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal 
     ReleaseProgressBar
     
     'Check for user cancellation; if none occurred, copy the seam-carved image into place
-    If Not cancelCurrentAction Then
+    If Not g_cancelCurrentAction Then
         srcDIB.CreateFromExistingDIB seamCarver.getCarvedImage()
         SeamCarveDIB = True
     Else

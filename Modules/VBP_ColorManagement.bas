@@ -1061,7 +1061,7 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
         CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
         Erase ImageData
         
-        If cancelCurrentAction Then ConvertRGBUsingCustomEndpoints = False Else ConvertRGBUsingCustomEndpoints = True
+        If g_cancelCurrentAction Then ConvertRGBUsingCustomEndpoints = False Else ConvertRGBUsingCustomEndpoints = True
         
     Else
         ConvertRGBUsingCustomEndpoints = False

@@ -501,7 +501,7 @@ Public Function applyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
     
     'Unpremultiply the source DIB's alpha, as necessary
     Dim srcWasPremultiplied As Boolean
-    If (srcDIB.getDIBColorDepth = 32) And srcDIB.getAlphaPremultiplication Then
+    If (srcDIB.GetDIBColorDepth = 32) And srcDIB.GetAlphaPremultiplication Then
         srcWasPremultiplied = True
         srcDIB.SetAlphaPremultiplication False
     Else
@@ -511,20 +511,20 @@ Public Function applyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcDIB
+    PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -535,7 +535,7 @@ Public Function applyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color values are used, but I plan on doing some testing to see if direct LUT assignment is faster.
@@ -559,7 +559,7 @@ Public Function applyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -572,7 +572,7 @@ Public Function applyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
     'Reset alpha premultiplication, as necessary
     If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
     
-    If cancelCurrentAction Then applyLUTsToDIB_Color = 0 Else applyLUTsToDIB_Color = 1
+    If g_cancelCurrentAction Then applyLUTsToDIB_Color = 0 Else applyLUTsToDIB_Color = 1
     
 End Function
 
@@ -583,7 +583,7 @@ Public Function applyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
     
     'Unpremultiply the source DIB's alpha, as necessary
     Dim srcWasPremultiplied As Boolean
-    If (srcDIB.getDIBColorDepth = 32) And srcDIB.getAlphaPremultiplication Then
+    If (srcDIB.GetDIBColorDepth = 32) And srcDIB.GetAlphaPremultiplication Then
         srcWasPremultiplied = True
         srcDIB.SetAlphaPremultiplication False
     Else
@@ -593,20 +593,20 @@ Public Function applyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcDIB
+    PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -617,7 +617,7 @@ Public Function applyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color values are used, but I plan on doing some testing to see if direct LUT assignment is faster.
@@ -646,7 +646,7 @@ Public Function applyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -659,7 +659,7 @@ Public Function applyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
     'Reset alpha premultiplication, as necessary
     If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
     
-    If cancelCurrentAction Then applyLUTsToDIB_Gray = 0 Else applyLUTsToDIB_Gray = 1
+    If g_cancelCurrentAction Then applyLUTsToDIB_Gray = 0 Else applyLUTsToDIB_Gray = 1
     
 End Function
 
@@ -672,7 +672,7 @@ Public Function applyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() A
     
     'Unpremultiply the source DIB's alpha, as necessary
     Dim srcWasPremultiplied As Boolean
-    If (srcDIB.getDIBColorDepth = 32) And srcDIB.getAlphaPremultiplication Then
+    If (srcDIB.GetDIBColorDepth = 32) And srcDIB.GetAlphaPremultiplication Then
         srcWasPremultiplied = True
         srcDIB.SetAlphaPremultiplication False
     Else
@@ -682,20 +682,20 @@ Public Function applyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() A
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcDIB
+    PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -706,7 +706,7 @@ Public Function applyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() A
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color values are used, but I plan on doing some testing to see if direct LUT assignment is faster.
@@ -730,7 +730,7 @@ Public Function applyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() A
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -743,6 +743,6 @@ Public Function applyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() A
     'Reset alpha premultiplication, as necessary
     If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
     
-    If cancelCurrentAction Then applyLUTToAllColorChannels = 0 Else applyLUTToAllColorChannels = 1
+    If g_cancelCurrentAction Then applyLUTToAllColorChannels = 0 Else applyLUTToAllColorChannels = 1
     
 End Function

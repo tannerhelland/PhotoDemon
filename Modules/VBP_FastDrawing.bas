@@ -276,7 +276,7 @@ End Sub
 Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewTarget As pdFxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False, Optional ByVal doNotUnPremultiplyAlpha As Boolean = False)
 
     'Reset the public "cancel current action" tracker
-    cancelCurrentAction = False
+    g_cancelCurrentAction = False
     
     'The new Layers design sometimes requires us to apply actions outside of a layer's actual boundary.
     ' (For example: a selected area that extends outside the boundary of the current image.)  When this
@@ -564,13 +564,10 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
 
     'If the user canceled the current action, disregard the working DIB and exit immediately.  The central processor
     ' will take care of additional clean-up.
-    If (Not isPreview) And cancelCurrentAction Then
-        
+    If (Not isPreview) And g_cancelCurrentAction Then
         workingDIB.EraseDIB
         Set workingDIB = Nothing
-        
         Exit Sub
-        
     End If
     
     'Prepare a few image arrays (and array headers) in advance.

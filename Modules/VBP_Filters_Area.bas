@@ -38,7 +38,7 @@ Public Sub ApplyConvolutionFilter(ByVal fullParamString As String, Optional ByVa
     'Prepare a param parser
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.setParamString fullParamString
+    cParams.SetParamString fullParamString
         
     'Note that the only purpose of the FilterType string is to display this message
     If Not toPreview Then Message "Applying %1 filter...", cParams.GetString(1)
@@ -46,13 +46,13 @@ Public Sub ApplyConvolutionFilter(ByVal fullParamString As String, Optional ByVa
     'Create a local array and point it at the pixel data of the current image.  Note that the current layer is referred to as the
     ' DESTINATION image for the convolution; we will make a separate temp copy of the image to use as the SOURCE.
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent processed pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
     
     'Use the central ConvolveDIB function to apply the convolution
@@ -60,11 +60,11 @@ Public Sub ApplyConvolutionFilter(ByVal fullParamString As String, Optional ByVa
     
     
     'Free our temporary DIB
-    srcDIB.eraseDIB
+    srcDIB.EraseDIB
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
 End Sub
 
@@ -75,19 +75,19 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
     'Prepare a param parser; this is necessary for parsing out the individual convolution parameters from the param string
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.setParamString fullParamString
+    cParams.SetParamString fullParamString
     
     'Create a local array and point it at the destination pixel data
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, dstDIB
+    PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent processed pixel values from corrupting subsequent calculations.)
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -95,8 +95,8 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
     
     Dim checkXMin As Long, checkXMax As Long, checkYMin As Long, checkYMax As Long
     checkXMin = initX
@@ -107,7 +107,7 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -118,7 +118,7 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
         
     'We can now parse out the relevant filter values from the param string
@@ -248,7 +248,7 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
     Next y
         If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
             End If
         End If
@@ -262,7 +262,7 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
     Erase srcImageData
         
     'Return success/failure
-    If cancelCurrentAction Then ConvolveDIB = 0 Else ConvolveDIB = 1
+    If g_cancelCurrentAction Then ConvolveDIB = 0 Else ConvolveDIB = 1
 
 End Function
 
@@ -274,7 +274,7 @@ Public Sub FilterGridBlur()
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA
+    PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -288,8 +288,8 @@ Public Sub FilterGridBlur()
     iWidth = curDIBValues.Width
     iHeight = curDIBValues.Height
             
-    Dim NumOfPixels As Long
-    NumOfPixels = iWidth + iHeight
+    Dim numOfPixels As Long
+    numOfPixels = iWidth + iHeight
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -299,7 +299,7 @@ Public Sub FilterGridBlur()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
@@ -348,9 +348,9 @@ Public Sub FilterGridBlur()
     For y = initY To finalY
         
         'Average the horizontal and vertical values for each color component
-        r = (rax(x) + ray(y)) \ NumOfPixels
-        g = (gax(x) + gay(y)) \ NumOfPixels
-        b = (bax(x) + bay(y)) \ NumOfPixels
+        r = (rax(x) + ray(y)) \ numOfPixels
+        g = (gax(x) + gay(y)) \ numOfPixels
+        b = (bax(x) + bay(y)) \ numOfPixels
         
         'The colors shouldn't exceed 255, but it doesn't hurt to double-check
         If r > 255 Then r = 255
@@ -364,7 +364,7 @@ Public Sub FilterGridBlur()
         
     Next y
         If (x And progBarCheck) = 0 Then
-            If userPressedESC() Then Exit For
+            If UserPressedESC() Then Exit For
             SetProgBarVal x
         End If
     Next x
@@ -374,7 +374,7 @@ Public Sub FilterGridBlur()
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData
+    FinalizeImageData
 
 End Sub
 
@@ -480,24 +480,24 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcDIB
+    PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
     
     Dim iWidth As Long, iHeight As Long
-    iWidth = srcDIB.getDIBWidth
-    iHeight = srcDIB.getDIBHeight
+    iWidth = srcDIB.GetDIBWidth
+    iHeight = srcDIB.GetDIBHeight
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim quickX As Long, QuickX2 As Long, QuickY As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'Determine if alpha handling is necessary for this image
     Dim hasAlpha As Boolean
@@ -506,10 +506,10 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then modifyProgBarMax = srcDIB.getDIBWidth + srcDIB.getDIBHeight
+    If modifyProgBarMax = -1 Then modifyProgBarMax = srcDIB.GetDIBWidth + srcDIB.GetDIBHeight
     If Not suppressMessages Then SetProgBarMax modifyProgBarMax
     
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, a As Long
@@ -631,7 +631,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
         
         If Not suppressMessages Then
             If (y And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal y + modifyProgBarOffset
             End If
         End If
@@ -639,7 +639,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     Next y
     
     'Now repeat all the above steps, but filtering vertically along each column, instead
-    If Not cancelCurrentAction Then
+    If Not g_cancelCurrentAction Then
     
         For x = initX To finalX
             
@@ -693,7 +693,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
             
             If Not suppressMessages Then
                 If (x And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                     SetProgBarVal x + iHeight + modifyProgBarOffset
                 End If
             End If
@@ -703,7 +703,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     End If
     
     'Apply final post-scaling
-    If Not cancelCurrentAction Then
+    If Not g_cancelCurrentAction Then
         
         For x = initX To finalX
             quickX = x * qvDepth
@@ -738,7 +738,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    If cancelCurrentAction Then GaussianBlur_IIRImplementation = 0 Else GaussianBlur_IIRImplementation = 1
+    If g_cancelCurrentAction Then GaussianBlur_IIRImplementation = 0 Else GaussianBlur_IIRImplementation = 1
 
 End Function
 
@@ -751,24 +751,24 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcDIB
+    PrepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finalX = srcDIB.GetDIBWidth - 1
+    finalY = srcDIB.GetDIBHeight - 1
     
     Dim iWidth As Long, iHeight As Long
-    iWidth = srcDIB.getDIBWidth
-    iHeight = srcDIB.getDIBHeight
+    iWidth = srcDIB.GetDIBWidth
+    iHeight = srcDIB.GetDIBHeight
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim quickX As Long, QuickX2 As Long, QuickY As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'Determine if alpha handling is necessary for this image
     Dim hasAlpha As Boolean
@@ -777,10 +777,10 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then modifyProgBarMax = srcDIB.getDIBWidth
+    If modifyProgBarMax = -1 Then modifyProgBarMax = srcDIB.GetDIBWidth
     If Not suppressMessages Then SetProgBarMax modifyProgBarMax
     
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long, a As Long
@@ -911,7 +911,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
         
         If Not suppressMessages Then
             If (y And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal y + modifyProgBarOffset
             End If
         End If
@@ -919,7 +919,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     Next y
     
     'Apply final post-scaling
-    If Not cancelCurrentAction Then
+    If Not g_cancelCurrentAction Then
         
         For x = initX To finalX
             quickX = x * qvDepth
@@ -954,7 +954,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    If cancelCurrentAction Then HorizontalBlur_IIR = 0 Else HorizontalBlur_IIR = 1
+    If g_cancelCurrentAction Then HorizontalBlur_IIR = 0 Else HorizontalBlur_IIR = 1
 
 End Function
 

@@ -226,8 +226,8 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
     End If
     
     'The number of pixels in the current median box are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
     'We use an optimized histogram technique for calculating means, which means a lot of intermediate values are required
     Dim rValues() As Long, gValues() As Long, bValues() As Long, aValues() As Long
@@ -249,7 +249,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
     
     If cPixelIterator.InitializeIterator(srcDIB, mRadius, mRadius, kernelShape) Then
     
-        NumOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
+        numOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
         
         'Loop through each pixel in the image, applying the filter as we go
         For x = initX To finalX Step qvDepth
@@ -275,7 +275,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
                 r = 0
                 g = 0
                 b = 0
-                cutoffTotal = (mPercent * NumOfPixels)
+                cutoffTotal = (mPercent * numOfPixels)
                 If cutoffTotal = 0 Then cutoffTotal = 1
         
                 i = -1
@@ -306,16 +306,16 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
                 
                 'Move the iterator in the correct direction
                 If directionDown Then
-                    If y < finalY Then NumOfPixels = cPixelIterator.MoveYDown
+                    If y < finalY Then numOfPixels = cPixelIterator.MoveYDown
                 Else
-                    If y > initY Then NumOfPixels = cPixelIterator.MoveYUp
+                    If y > initY Then numOfPixels = cPixelIterator.MoveYUp
                 End If
         
             Next y
             
             'Reverse y-directionality on each pass
             directionDown = Not directionDown
-            If x < finalX Then NumOfPixels = cPixelIterator.MoveXRight
+            If x < finalX Then numOfPixels = cPixelIterator.MoveXRight
             
             'Update the progress bar every (progBarCheck) lines
             If Not suppressMessages Then
@@ -333,7 +333,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
         'Release our local array that points to the target DIB
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
             
-        If cancelCurrentAction Then CreateMedianDIB = 0 Else CreateMedianDIB = 1
+        If g_cancelCurrentAction Then CreateMedianDIB = 0 Else CreateMedianDIB = 1
     
     Else
         CreateMedianDIB = 0
@@ -414,11 +414,11 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Dim foundYet As Boolean
     foundYet = False
     
-    Dim NumOfPixels As Long
-    NumOfPixels = (finalX + 1) * (finalY + 1)
+    Dim numOfPixels As Long
+    numOfPixels = (finalX + 1) * (finalY + 1)
     
     Dim wbThreshold As Long
-    wbThreshold = NumOfPixels * percentIgnore
+    wbThreshold = numOfPixels * percentIgnore
     
     r = 0: g = 0: b = 0
     
@@ -547,7 +547,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    If cancelCurrentAction Then WhiteBalanceDIB = 0 Else WhiteBalanceDIB = 1
+    If g_cancelCurrentAction Then WhiteBalanceDIB = 0 Else WhiteBalanceDIB = 1
     
 End Function
 
@@ -628,11 +628,11 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
     Dim foundYet As Boolean
     foundYet = False
     
-    Dim NumOfPixels As Long
-    NumOfPixels = (finalX + 1) * (finalY + 1)
+    Dim numOfPixels As Long
+    numOfPixels = (finalX + 1) * (finalY + 1)
     
     Dim wbThreshold As Long
-    wbThreshold = NumOfPixels * percentIgnore
+    wbThreshold = numOfPixels * percentIgnore
     
     grayVal = 0
     
@@ -705,7 +705,7 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    If cancelCurrentAction Then ContrastCorrectDIB = 0 Else ContrastCorrectDIB = 1
+    If g_cancelCurrentAction Then ContrastCorrectDIB = 0 Else ContrastCorrectDIB = 1
     
 End Function
 
@@ -813,7 +813,7 @@ Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB 
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    If cancelCurrentAction Then CreateContourDIB = 0 Else CreateContourDIB = 1
+    If g_cancelCurrentAction Then CreateContourDIB = 0 Else CreateContourDIB = 1
     
 End Function
 
@@ -1046,7 +1046,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     
     'Next, it's time to operate on highlights.  The steps involved are pretty much identical to shadows, but we obviously
     ' use the highlight lookup table to determine valid correction candidates.
-    If (highlightAmount <> 0) And (Not cancelCurrentAction) Then
+    If (highlightAmount <> 0) And (Not g_cancelCurrentAction) Then
     
         'Before starting per-pixel processing, see if a highlight radius was specified.  If it was, and the radius differs
         ' from the shadow radius, calculate a new blur DIB now.
@@ -1151,7 +1151,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     
     'Last up is midtone correction.  The steps involved are pretty much identical to shadow and highlight correction, but we obviously
     ' use the midtone lookup table to determine valid correction candidates.  (Also, we do not use a blurred copy of the DIB.)
-    If (midtoneAmount <> 0) And (Not cancelCurrentAction) Then
+    If (midtoneAmount <> 0) And (Not g_cancelCurrentAction) Then
         
         'Once again, point an array at the source DIB
         PrepSafeArray srcSA, srcDIB
@@ -1228,7 +1228,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     
     If Not suppressMessages Then SetProgBarVal 6
     
-    If cancelCurrentAction Then AdjustDIBShadowHighlight = 0 Else AdjustDIBShadowHighlight = 1
+    If g_cancelCurrentAction Then AdjustDIBShadowHighlight = 0 Else AdjustDIBShadowHighlight = 1
     
 End Function
 
@@ -1296,7 +1296,7 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     gaussDIB.EraseDIB
     Set gaussDIB = Nothing
     
-    If cancelCurrentAction Then CreateApproximateGaussianBlurDIB = 0 Else CreateApproximateGaussianBlurDIB = 1
+    If g_cancelCurrentAction Then CreateApproximateGaussianBlurDIB = 0 Else CreateApproximateGaussianBlurDIB = 1
 
 End Function
 
@@ -1601,7 +1601,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
     
     'Because this function occurs in multiple passes, it requires specialized cancel behavior.  All array references must be dropped
     ' or the program will experience a hard-freeze.
-    If cancelCurrentAction Then
+    If g_cancelCurrentAction Then
         CopyMemory ByVal VarPtrArray(dstImageData()), 0&, 4
         CopyMemory ByVal VarPtrArray(srcImageData()), 0&, 4
         CopyMemory ByVal VarPtrArray(GaussImageData()), 0&, 4
@@ -1699,7 +1699,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
     gaussDIB.EraseDIB
     Set gaussDIB = Nothing
     
-    If cancelCurrentAction Then CreateGaussianBlurDIB = 0 Else CreateGaussianBlurDIB = 1
+    If g_cancelCurrentAction Then CreateGaussianBlurDIB = 0 Else CreateGaussianBlurDIB = 1
     
 End Function
 
@@ -1930,7 +1930,7 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    If cancelCurrentAction Then CreatePolarCoordDIB = 0 Else CreatePolarCoordDIB = 1
+    If g_cancelCurrentAction Then CreatePolarCoordDIB = 0 Else CreatePolarCoordDIB = 1
 
 End Function
 
@@ -2163,7 +2163,7 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    If cancelCurrentAction Then CreateXSwappedPolarCoordDIB = 0 Else CreateXSwappedPolarCoordDIB = 1
+    If g_cancelCurrentAction Then CreateXSwappedPolarCoordDIB = 0 Else CreateXSwappedPolarCoordDIB = 1
 
 End Function
 
@@ -2217,8 +2217,8 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     If rRadius > xRadius Then rRadius = xRadius
         
     'The number of pixels in the current horizontal line are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
     'Blurring takes a lot of variables
     Dim lbX As Long, ubX As Long
@@ -2245,7 +2245,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         
     Next y
         'Increase the pixel tally
-        NumOfPixels = NumOfPixels + 1
+        numOfPixels = numOfPixels + 1
     Next x
                 
     'Loop through each column in the image, tallying blur values as we go
@@ -2277,7 +2277,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
                 If qvDepth = 4 Then aTotals(y) = aTotals(y) - srcImageData(QuickValInner + 3, y)
             Next y
             
-            NumOfPixels = NumOfPixels - 1
+            numOfPixels = numOfPixels - 1
         
         End If
         
@@ -2293,7 +2293,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
                 If qvDepth = 4 Then aTotals(y) = aTotals(y) + srcImageData(QuickValInner + 3, y)
             Next y
             
-            NumOfPixels = NumOfPixels + 1
+            numOfPixels = numOfPixels + 1
             
         End If
             
@@ -2301,10 +2301,10 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         For y = initY To finalY
                 
             'With the blur box successfully calculated, we can finally apply the results to the image.
-            dstImageData(QuickVal + 2, y) = rTotals(y) \ NumOfPixels
-            dstImageData(QuickVal + 1, y) = gTotals(y) \ NumOfPixels
-            dstImageData(QuickVal, y) = bTotals(y) \ NumOfPixels
-            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aTotals(y) \ NumOfPixels
+            dstImageData(QuickVal + 2, y) = rTotals(y) \ numOfPixels
+            dstImageData(QuickVal + 1, y) = gTotals(y) \ numOfPixels
+            dstImageData(QuickVal, y) = bTotals(y) \ numOfPixels
+            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aTotals(y) \ numOfPixels
     
         Next y
         
@@ -2325,7 +2325,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    If cancelCurrentAction Then CreateHorizontalBlurDIB = 0 Else CreateHorizontalBlurDIB = 1
+    If g_cancelCurrentAction Then CreateHorizontalBlurDIB = 0 Else CreateHorizontalBlurDIB = 1
     
 End Function
 
@@ -2379,8 +2379,8 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
     If dRadius > yRadius Then dRadius = yRadius
         
     'The number of pixels in the current vertical line are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
     'Blurring takes a lot of variables
     Dim lbY As Long, ubY As Long
@@ -2405,7 +2405,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         If qvDepth = 4 Then aTotals(x) = aTotals(x) + srcImageData(QuickVal + 3, y)
     Next x
         'Increase the pixel tally
-        NumOfPixels = NumOfPixels + 1
+        numOfPixels = numOfPixels + 1
     Next y
                 
     'Loop through each row in the image, tallying blur values as we go
@@ -2436,7 +2436,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
                 If qvDepth = 4 Then aTotals(x) = aTotals(x) - srcImageData(QuickVal + 3, QuickY)
             Next x
             
-            NumOfPixels = NumOfPixels - 1
+            numOfPixels = numOfPixels - 1
         
         End If
         
@@ -2453,7 +2453,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
                 If qvDepth = 4 Then aTotals(x) = aTotals(x) + srcImageData(QuickVal + 3, QuickY)
             Next x
             
-            NumOfPixels = NumOfPixels + 1
+            numOfPixels = numOfPixels + 1
             
         End If
             
@@ -2463,10 +2463,10 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
             QuickVal = x * qvDepth
             
             'With the blur box successfully calculated, we can finally apply the results to the image.
-            dstImageData(QuickVal + 2, y) = rTotals(x) \ NumOfPixels
-            dstImageData(QuickVal + 1, y) = gTotals(x) \ NumOfPixels
-            dstImageData(QuickVal, y) = bTotals(x) \ NumOfPixels
-            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aTotals(x) \ NumOfPixels
+            dstImageData(QuickVal + 2, y) = rTotals(x) \ numOfPixels
+            dstImageData(QuickVal + 1, y) = gTotals(x) \ numOfPixels
+            dstImageData(QuickVal, y) = bTotals(x) \ numOfPixels
+            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aTotals(x) \ numOfPixels
     
         Next x
         
@@ -2487,7 +2487,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    If cancelCurrentAction Then CreateVerticalBlurDIB = 0 Else CreateVerticalBlurDIB = 1
+    If g_cancelCurrentAction Then CreateVerticalBlurDIB = 0 Else CreateVerticalBlurDIB = 1
     
 End Function
 
@@ -2600,7 +2600,7 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    If cancelCurrentAction Then CreateRotatedDIB = 0 Else CreateRotatedDIB = 1
+    If g_cancelCurrentAction Then CreateRotatedDIB = 0 Else CreateRotatedDIB = 1
 
 End Function
 
@@ -2718,7 +2718,7 @@ Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessa
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    If cancelCurrentAction Then GrayscaleDIB = 0 Else GrayscaleDIB = 1
+    If g_cancelCurrentAction Then GrayscaleDIB = 0 Else GrayscaleDIB = 1
     
 End Function
 
@@ -2804,7 +2804,7 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     'Premultiply the source DIB, as necessary
     If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication True
     
-    If cancelCurrentAction Then ScaleDIBRGBValues = 0 Else ScaleDIBRGBValues = 1
+    If g_cancelCurrentAction Then ScaleDIBRGBValues = 0 Else ScaleDIBRGBValues = 1
     
 End Function
 
@@ -2972,7 +2972,7 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
     'Premultiply the source DIB, as necessary
     If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication True
     
-    If cancelCurrentAction Then GammaCorrectDIB = 0 Else GammaCorrectDIB = 1
+    If g_cancelCurrentAction Then GammaCorrectDIB = 0 Else GammaCorrectDIB = 1
     
 End Function
 
@@ -3175,7 +3175,7 @@ Public Function createBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     'Our first pass is now complete, and the results have been cached inside midImageData.  To prevent edge distortion,
     ' we are now going to trim the mid DIB, then re-pad it with its processed edge values.
     
-    If Not cancelCurrentAction Then
+    If Not g_cancelCurrentAction Then
     
         'Release our array
         CopyMemory ByVal VarPtrArray(midImageData), 0&, 4
@@ -3292,6 +3292,6 @@ Public Function createBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    If cancelCurrentAction Then createBilateralDIB = 0 Else createBilateralDIB = 1
+    If g_cancelCurrentAction Then createBilateralDIB = 0 Else createBilateralDIB = 1
 
 End Function
