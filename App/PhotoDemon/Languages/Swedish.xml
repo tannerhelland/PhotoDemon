@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.187</langversion>
+<langversion>6.7.188</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -6348,6 +6348,11 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 </phrase>
 
 <phrase>
+<original>model</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>sample image for true contrast (slower but more accurate)</original>
 <translation>prov på bilden för en verklig kontrast (långsammare men mer exakt)</translation>
 </phrase>
@@ -6358,16 +6363,21 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 </phrase>
 
 <phrase>
-<original>Adjusting image brightness</original>
-<translation>Justera bildens ljusstyrka</translation>
+<original>Adjusting brightness and contrast</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Sampling image data to determine true contrast</original>
-<translation>Provtagning bilddata för att bestämma riktig kontrast</translation>
+<original>modern</original>
+<translation>moderna</translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>legacy</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BrightnessContrast.frm-->
 
@@ -9065,16 +9075,11 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
-<original>modern</original>
-<translation>moderna</translation>
-</phrase>
-
-<phrase>
 <original>traditional</original>
 <translation>traditionell</translation>
 </phrase>
 
-<!-- Effects_Blur_ZoomBlur.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Blur_ZoomBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_ZoomBlur.frm-->
 
@@ -9751,11 +9756,6 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
-<original>model</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Calculating energy gradients (pass %1 of %2)</original>
 <translation></translation>
 </phrase>
@@ -9785,7 +9785,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <translation></translation>
 </phrase>
 
-<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_Anisotropic.frm-->
 
@@ -15114,12 +15114,18 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for File_Save_GIF.frm-->
 
+<!-- BEGIN text for cUniversalDLLCalls.cls -->
+
+<!-- cUniversalDLLCalls.cls contains 0 phrases. -->
+
+<!-- END text for cUniversalDLLCalls.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2582</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4479 phrases. -->
 <!-- 1897 are duplicates, so only 2582 unique phrases have been written to file. -->
-<!-- These 2582 phrases contain approximately 13275 total words. -->
+<!-- These 2582 phrases contain approximately 13270 total words. -->
 
 </pdData>

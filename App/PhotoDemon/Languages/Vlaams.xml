@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.187</langversion>
+<langversion>6.7.188</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -6347,6 +6347,11 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 </phrase>
 
 <phrase>
+<original>model</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>sample image for true contrast (slower but more accurate)</original>
 <translation>voorbeeld voor echt contrast (langzamer maar nauwkeuriger)</translation>
 </phrase>
@@ -6357,16 +6362,21 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 </phrase>
 
 <phrase>
-<original>Adjusting image brightness</original>
-<translation>Instellen helderheid van de afbeelding</translation>
+<original>Adjusting brightness and contrast</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Sampling image data to determine true contrast</original>
-<translation>Sampling van afbeeldingsgegevens om het echte contrast te bepalen</translation>
+<original>modern</original>
+<translation>modern</translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>legacy</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BrightnessContrast.frm-->
 
@@ -9064,16 +9074,11 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
-<original>modern</original>
-<translation>modern</translation>
-</phrase>
-
-<phrase>
 <original>traditional</original>
 <translation>traditioneel</translation>
 </phrase>
 
-<!-- Effects_Blur_ZoomBlur.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Blur_ZoomBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_ZoomBlur.frm-->
 
@@ -9750,11 +9755,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
-<original>model</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Calculating energy gradients (pass %1 of %2)</original>
 <translation></translation>
 </phrase>
@@ -9784,7 +9784,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation></translation>
 </phrase>
 
-<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_Anisotropic.frm-->
 
@@ -15113,12 +15113,18 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for File_Save_GIF.frm-->
 
+<!-- BEGIN text for cUniversalDLLCalls.cls -->
+
+<!-- cUniversalDLLCalls.cls contains 0 phrases. -->
+
+<!-- END text for cUniversalDLLCalls.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2582</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4479 phrases. -->
 <!-- 1897 are duplicates, so only 2582 unique phrases have been written to file. -->
-<!-- These 2582 phrases contain approximately 13275 total words. -->
+<!-- These 2582 phrases contain approximately 13270 total words. -->
 
 </pdData>

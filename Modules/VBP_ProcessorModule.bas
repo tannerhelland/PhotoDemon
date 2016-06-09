@@ -1082,7 +1082,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormBrightnessContrast
             Else
-                FormBrightnessContrast.BrightnessContrast cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)
+                FormBrightnessContrast.BrightnessContrast cXMLParams.GetParamString
             End If
         
         Case "Curves"
@@ -1946,14 +1946,14 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     End If
     
     'If the user canceled the requested action before it completed, we need to roll back the undo data we created
-    If cancelCurrentAction Then
+    If g_cancelCurrentAction Then
         
         'Reset any interface elements that may still be in "processing" mode.
         ReleaseProgressBar
         Message "Action canceled."
     
         'Reset the cancel trigger; if this is not done, the user will not be able to cancel subsequent actions.
-        cancelCurrentAction = False
+        g_cancelCurrentAction = False
         
     'If the user did not cancel the action, and the action modified the image in any way, create an Undo entry now.
     Else
