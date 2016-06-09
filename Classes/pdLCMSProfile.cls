@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon LCMS (LittleCMS) Color Profile Manager
 'Copyright 2015-2016 by Tanner Helland
 'Created: 26/May/16
-'Last updated: 26/May/16
-'Last update: migrate existing LCMS code to this more OOP-friendly design
+'Last updated: 09/June/16
+'Last update: add support for linear RGB profiles
 '
 'This class interacts heavily with the LittleCMS module.  Look there for implementation details.
 ' (Also, this class obviously relies on the LittleCMS DLL, which must be present inside PhotoDemon's Plugins folder.)
@@ -55,6 +55,12 @@ Public Function CreateGenericGrayscaleProfile() As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
     m_ProfileHandle = LittleCMS.LCMS_LoadStockGrayProfile()
     CreateGenericGrayscaleProfile = CBool(m_ProfileHandle <> 0)
+End Function
+
+Public Function CreateLinearRGBProfile() As Boolean
+    If (m_ProfileHandle <> 0) Then ReleaseProfile
+    m_ProfileHandle = LittleCMS.LCMS_LoadLinearRGBProfile()
+    CreateLinearRGBProfile = CBool(m_ProfileHandle <> 0)
 End Function
 
 Public Function CreateSRGBProfile() As Boolean

@@ -3,8 +3,8 @@ Attribute VB_Name = "LittleCMS"
 'LittleCMS Interface
 'Copyright 2016-2016 by Tanner Helland
 'Created: 21/April/16
-'Last updated: 21/April/16
-'Last update: initial build
+'Last updated: 09/June/16
+'Last update: continued feature expansion
 '
 'Module for handling all LittleCMS interfacing.  This module is pointless without the accompanying
 ' LittleCMS plugin, which will be in the App/PhotoDemon/Plugins subdirectory as "lcms2.dll".
@@ -27,16 +27,34 @@ Attribute VB_Name = "LittleCMS"
 
 Option Explicit
 
-Public Type LCMS_cmsCIEXYZ
+Public Type LCMS_XYZ
     x As Double
     y As Double
     z As Double
 End Type
 
-Public Type LCMS_cmsCIExyY
+Public Type LCMS_xyY
     x As Double
     y As Double
     YY As Double
+End Type
+
+Public Type LCMS_Lab
+    l As Double
+    a As Double
+    b As Double
+End Type
+
+Public Type LCMS_LCh
+    l As Double
+    c As Double
+    h As Double
+End Type
+
+Public Type LCMS_JCh
+    j As Double
+    c As Double
+    h As Double
 End Type
 
 
@@ -248,35 +266,72 @@ Public Enum LCMS_TRANSFORM_FLAGS
     cmsFLAGS_COPY_ALPHA = &H4000000                ' alpha channels are copied on cmsDoTransform()
 End Enum
 
+'Only the first eight values (through F8) are actual LCMS defines; the others are provided for reference and interop, only
+Public Enum LCMS_ILLUMINANT
+    cmsILLUMINANT_TYPE_UNKNOWN = &H0
+    cmsILLUMINANT_TYPE_D50 = &H1
+    cmsILLUMINANT_TYPE_D65 = &H2
+    cmsILLUMINANT_TYPE_D93 = &H3
+    cmsILLUMINANT_TYPE_F2 = &H4
+    cmsILLUMINANT_TYPE_D55 = &H5
+    cmsILLUMINANT_TYPE_A = &H6
+    cmsILLUMINANT_TYPE_E = &H7
+    cmsILLUMINANT_TYPE_F8 = &H8
+End Enum
+
 'Return the current library version as a Long, e.g. "2.7" is returned as "2070"
 Private Declare Function cmsGetEncodedCMMversion Lib "lcms2.dll" () As Long
 
 'Error logger registration
 Private Declare Sub cmsSetLogErrorHandler Lib "lcms2.dll" (ByVal ptrToCmsLogErrorHandlerFunction As Long)
 
-'Profile create/release functions
+'Profile create/release functions; white points declared as ByVal Longs can typically be set to NULL to use the default D50 value
 Private Declare Function cmsCloseProfile Lib "lcms2.dll" (ByVal srcProfile As Long) As Long
-Private Declare Function cmsCreateGrayProfile Lib "lcms2.dll" (ByRef whitePoint As LCMS_cmsCIExyY, ByVal sourceToneCurve As Long) As Long
+Private Declare Function cmsCreateBCHSWabstractProfile Lib "lcms2.dll" (ByVal nLUTPoints As Long, ByVal newBrightness As Double, ByVal newContrast As Double, ByVal newHue As Double, ByVal newSaturation As Double, ByVal srcTemp As Long, ByVal dstTemp As Long) As Long
+Private Declare Function cmsCreateGrayProfile Lib "lcms2.dll" (ByVal ptrToWhitePointxyY As Long, ByVal sourceToneCurve As Long) As Long
+Private Declare Function cmsCreateLab2Profile Lib "lcms2.dll" (ByVal ptrToWhitePointxyY As Long) As Long
+Private Declare Function cmsCreateLab4Profile Lib "lcms2.dll" (ByVal ptrToWhitePointxyY As Long) As Long
 Private Declare Function cmsCreate_sRGBProfile Lib "lcms2.dll" () As Long
+Private Declare Function cmsCreateRGBProfile Lib "lcms2.dll" (ByVal ptrToWhitePointxyY As Long, ByVal ptrTo3xyYPrimaries As Long, ByVal ptrTo3ToneCurves As Long) As Long
+Private Declare Function cmsCreateXYZProfile Lib "lcms2.dll" () As Long
 Private Declare Function cmsOpenProfileFromMem Lib "lcms2.dll" (ByVal ptrProfile As Long, ByVal profileSizeInBytes As Long) As Long
-
+ 
 'Profile information functions
 Private Declare Function cmsGetHeaderRenderingIntent Lib "lcms2.dll" (ByVal hProfile As Long) As LCMS_RENDERING_INTENT
 
 'Tone curve creation/destruction
 Private Declare Function cmsBuildParametricToneCurve Lib "lcms2.dll" (ByVal ContextID As Long, ByVal tcType As Long, ByVal ptrToFirstParam As Long) As Long
-Private Declare Function cmsBuildGamma Lib "lcms2.dll" (ByVal ContextID As Long, ByVal cmsFloat64Number As Double) As Long
+Private Declare Function cmsBuildGamma Lib "lcms2.dll" (ByVal ContextID As Long, ByVal gammaValue As Double) As Long
 Private Declare Sub cmsFreeToneCurve Lib "lcms2.dll" (ByVal srcToneCurve As Long)
 
 'Transform functions
 Private Declare Function cmsCreateTransform Lib "lcms2.dll" (ByVal hInputProfile As Long, ByVal hInputFormat As LCMS_PIXEL_FORMAT, ByVal hOutputProfile As Long, ByVal hOutputFormat As LCMS_PIXEL_FORMAT, ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT, ByVal trnsFlags As LCMS_TRANSFORM_FLAGS) As Long
+Private Declare Function cmsCreateMultiprofileTransform Lib "lcms2.dll" (ByVal ptrToFirstProfile As Long, ByVal numOfProfiles As Long, ByVal hInputFormat As LCMS_PIXEL_FORMAT, ByVal hOutputFormat As LCMS_PIXEL_FORMAT, ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT, ByVal trnsFlags As LCMS_TRANSFORM_FLAGS) As Long
 Private Declare Sub cmsDeleteTransform Lib "lcms2.dll" (ByVal hTransform As Long)
+
+'Color space conversions; any conversion that requires an XYZ WhitePoint can pass null for default D50 values
+Private Declare Sub cmsLab2XYZ Lib "lcms2.dll" (ByVal ptrToWhitePointXYZ As Long, ByRef dstXYZ As LCMS_XYZ, ByRef srcLab As LCMS_Lab)
+Private Declare Sub cmsXYZ2Lab Lib "lcms2.dll" (ByVal ptrToWhitePointXYZ As Long, ByRef dstLab As LCMS_Lab, ByRef srcXYZ As LCMS_XYZ)
+Private Declare Sub cmsXYZ2xyY Lib "lcms2.dll" (ByRef dstxyY As LCMS_xyY, ByRef srcXYZ As LCMS_XYZ)
+Private Declare Sub cmsxyY2XYZ Lib "lcms2.dll" (ByRef dstXYZ As LCMS_XYZ, ByRef srcxyY As LCMS_xyY)
+Private Declare Function cmsWhitePointFromTemp Lib "lcms2.dll" (ByRef dstWhitePointxyY As LCMS_xyY, ByVal srcTemperature As Double) As Long
+Private Declare Function cmsTempFromWhitePoint Lib "lcms2.dll" (ByRef dstTemperature As Double, ByRef srcWhitePointxyY As LCMS_xyY) As Long
+
+'Pointers to the constant XYZ/xyY declarations for D50
+Private Declare Function cmsD50_XYZ Lib "lcms2.dll" () As Long
+Private Declare Function cmsD50_xyY Lib "lcms2.dll" () As Long
+
+'Similar internal functions for D65 (which is used by a number of RGB spaces, e.g. Adobe and sRGB)
+Private m_D65_XYZ() As Double, m_D65_xyY() As Double
 
 'Actual transform application functions
 Private Declare Sub cmsDoTransform Lib "lcms2.dll" (ByVal hTransform As Long, ByVal ptrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal numOfPixelsToTransform As Long)
 
 'A single LittleCMS handle is maintained for the life of a PD instance; see InitializeLCMS and ReleaseLCMS, below.
 Private m_LCMSHandle As Long
+
+'LittleCMS requires a CDECL callback for its error handler function.  VB can't provide this, so we use a workaround provided by LaVolpe.
+Private m_CdeclWorkaround As cUniversalDLLCalls, m_CdeclCallback As Long
 
 'Initialize LittleCMS.  Do not call this until you have verified the LCMS plugin's existence
 ' (typically via the PluginManager module)
@@ -292,9 +347,12 @@ Public Function InitializeLCMS() As Boolean
         
         'Set up an error logger.  Note that this WILL CRASH THAT PROGRAM after a log due to StdCall behavior.  As such,
         ' it's only good for retrieving a single error (before everything goes to shit).
-        'If InitializeLCMS Then
-        '    cmsSetLogErrorHandler AddressOf cmsErrorHandler
-        'End If
+        If InitializeLCMS Then
+            Set m_CdeclWorkaround = New cUniversalDLLCalls
+            m_CdeclCallback = m_CdeclWorkaround.ThunkFor_CDeclCallbackToVB(AddressOf cmsErrorHandler, 3)
+            Call cmsSetLogErrorHandler(m_CdeclCallback)
+            pdDebug.LogAction "LittleCMS callback successfully set: " & m_CdeclCallback
+        End If
         
         If (Not InitializeLCMS) Then
             pdDebug.LogAction "WARNING!  LoadLibrary failed to load LittleCMS.  Last DLL error: " & Err.LastDllError
@@ -302,10 +360,25 @@ Public Function InitializeLCMS() As Boolean
         End If
     #End If
     
+    'Initialize D65 primaries as well; these are helpful shortcuts when assembling RGB profiles on-the-fly
+    ReDim m_D65_XYZ(0 To 2) As Double
+    ReDim m_D65_xyY(0 To 2) As Double
+    m_D65_XYZ(0) = 0.95045471
+    m_D65_XYZ(1) = 1#
+    m_D65_XYZ(2) = 1.08905029
+    m_D65_xyY(0) = 0.3127
+    m_D65_xyY(1) = 0.329
+    m_D65_xyY(2) = 1#
+    
 End Function
 
 'When PD closes, make sure to release our library handle
 Public Sub ReleaseLCMS()
+    If (m_CdeclCallback <> 0) Then
+        m_CdeclWorkaround.ThunkRelease_CDECL m_CdeclCallback
+        m_CdeclCallback = 0
+        Set m_CdeclWorkaround = Nothing
+    End If
     If (m_LCMSHandle <> 0) Then FreeLibrary m_LCMSHandle
     g_LCMSEnabled = False
 End Sub
@@ -333,8 +406,66 @@ Public Function GetLCMSVersion() As String
     
 End Function
 
+'Fake wrappers to emulate the cmsD50 functions provided by LittleCMS
+Private Function cmsD65_XYZ() As Long
+    cmsD65_XYZ = VarPtr(m_D65_XYZ(0))
+End Function
+
+Private Function cmsD65_xyY() As Long
+    cmsD65_xyY = VarPtr(m_D65_xyY(0))
+End Function
+
+Public Function LCMS_GetIlluminantxyY(ByRef dstxyY As LCMS_xyY, Optional ByVal srcIlluminant As LCMS_ILLUMINANT = cmsILLUMINANT_TYPE_D50) As Boolean
+    If (srcIlluminant >= cmsILLUMINANT_TYPE_D50) And (srcIlluminant <= cmsILLUMINANT_TYPE_F8) Then
+        Dim srcTemperature As Double
+        LCMS_GetIlluminantTemperature srcTemperature, srcIlluminant
+        LCMS_GetIlluminantxyY = CBool(cmsWhitePointFromTemp(dstxyY, srcTemperature) <> 0)
+    Else
+        LCMS_GetIlluminantxyY = False
+    End If
+End Function
+
+Public Function LCMS_GetIlluminantTemperature(ByRef dstTemperature As Double, Optional ByVal srcIlluminant As LCMS_ILLUMINANT = cmsILLUMINANT_TYPE_D50) As Boolean
+    
+    Select Case srcIlluminant
+        Case cmsILLUMINANT_TYPE_UNKNOWN
+            LCMS_GetIlluminantTemperature = False
+        Case cmsILLUMINANT_TYPE_D50
+            LCMS_GetIlluminantTemperature = True
+            dstTemperature = 5003
+        Case cmsILLUMINANT_TYPE_D65
+            LCMS_GetIlluminantTemperature = True
+            dstTemperature = 6504
+        Case cmsILLUMINANT_TYPE_D93
+            LCMS_GetIlluminantTemperature = True
+            dstTemperature = 9303
+        Case cmsILLUMINANT_TYPE_F2
+            LCMS_GetIlluminantTemperature = True
+            dstTemperature = 4230
+        Case cmsILLUMINANT_TYPE_D55
+            LCMS_GetIlluminantTemperature = True
+            dstTemperature = 5503
+        Case cmsILLUMINANT_TYPE_A
+            LCMS_GetIlluminantTemperature = True
+            dstTemperature = 2856
+        Case cmsILLUMINANT_TYPE_E
+            LCMS_GetIlluminantTemperature = True
+            dstTemperature = 5454
+        Case cmsILLUMINANT_TYPE_F8
+            LCMS_GetIlluminantTemperature = True
+            dstTemperature = 5000
+        Case Else
+            LCMS_GetIlluminantTemperature = False
+    End Select
+
+End Function
+
 Public Function LCMS_CreateTwoProfileTransform(ByVal hInputProfile As Long, ByVal hOutputProfile As Long, Optional ByVal hInputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal hOutputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = cmsFLAGS_COPY_ALPHA) As Long
     LCMS_CreateTwoProfileTransform = cmsCreateTransform(hInputProfile, hInputFormat, hOutputProfile, hOutputFormat, trnsRenderingIntent, trnsFlags)
+End Function
+
+Public Function LCMS_CreateMultiProfileTransform(ByRef hProfiles() As Long, ByVal numOfProfiles As Long, Optional ByVal hInputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal hOutputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = cmsFLAGS_COPY_ALPHA) As Long
+    LCMS_CreateMultiProfileTransform = cmsCreateMultiprofileTransform(VarPtr(hProfiles(0)), numOfProfiles, hInputFormat, hOutputFormat, trnsRenderingIntent, trnsFlags)
 End Function
 
 Public Function LCMS_CreateInPlaceTransformForDIB(ByVal hInputProfile As Long, ByVal hOutputProfile As Long, ByRef srcDIB As pdDIB, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = cmsFLAGS_COPY_ALPHA) As Long
@@ -365,21 +496,56 @@ Public Function LCMS_LoadProfileFromMemory(ByVal ptrToProfile As Long, ByVal siz
 End Function
 
 Public Function LCMS_LoadStockGrayProfile() As Long
-    Dim whitePoint As LCMS_cmsCIExyY
-    With whitePoint
-        .x = 0.3127
-        .y = 0.329
-        .YY = 1#
-    End With
-    
     Dim tmpToneCurve As Long
     tmpToneCurve = LCMS_GetBasicToneCurve(1#)
-    LCMS_LoadStockGrayProfile = cmsCreateGrayProfile(whitePoint, tmpToneCurve)
+    LCMS_LoadStockGrayProfile = cmsCreateGrayProfile(cmsD50_xyY(), tmpToneCurve)
     LittleCMS.LCMS_FreeToneCurve tmpToneCurve
+End Function
+
+'Linear RGB profile is identical to sRGB except for the gamma curve, which is (obviously) flat
+Public Function LCMS_LoadLinearRGBProfile() As Long
+    
+    Dim rgbPrimaries() As Double
+    ReDim rgbPrimaries(0 To 8) As Double
+    rgbPrimaries(0) = 0.639998686
+    rgbPrimaries(1) = 0.330010138
+    rgbPrimaries(2) = 1#
+    
+    rgbPrimaries(3) = 0.300003784
+    rgbPrimaries(4) = 0.600003357
+    rgbPrimaries(5) = 1#
+    
+    rgbPrimaries(6) = 0.150002046
+    rgbPrimaries(7) = 0.059997204
+    rgbPrimaries(8) = 1#
+    
+    Dim rgbToneCurves() As Long
+    ReDim rgbToneCurves(0 To 2) As Long
+    rgbToneCurves(0) = LCMS_GetBasicToneCurve(1#)
+    rgbToneCurves(1) = rgbToneCurves(0)
+    rgbToneCurves(2) = rgbToneCurves(0)
+    
+    LCMS_LoadLinearRGBProfile = cmsCreateRGBProfile(cmsD65_xyY(), VarPtr(rgbPrimaries(0)), VarPtr(rgbToneCurves(0)))
+    
+    'The intermediate tone curve *must* be freed now, as it's never directly exposed to the caller
+    LCMS_FreeToneCurve rgbToneCurves(0)
+    
 End Function
 
 Public Function LCMS_LoadStockSRGBProfile() As Long
     LCMS_LoadStockSRGBProfile = cmsCreate_sRGBProfile()
+End Function
+
+Public Function LCMS_LoadStockLabProfile(Optional ByVal useVersion4 As Boolean = True) As Long
+    If useVersion4 Then
+        LCMS_LoadStockLabProfile = cmsCreateLab4Profile(0&)
+    Else
+        LCMS_LoadStockLabProfile = cmsCreateLab2Profile(0&)
+    End If
+End Function
+
+Public Function LCMS_CreateAbstractBCHSProfile(Optional ByVal newBrightness As Double = 0#, Optional ByVal newContrast As Double = 1#, Optional ByVal newHue As Double = 0#, Optional ByVal newSaturation As Double = 0#, Optional ByVal srcTemp As Long = 0, Optional ByVal dstTemp As Long = 0) As Long
+    LCMS_CreateAbstractBCHSProfile = cmsCreateBCHSWabstractProfile(16, newBrightness, newContrast, newHue, newSaturation, srcTemp, dstTemp)
 End Function
 
 Public Function LCMS_CloseProfileHandle(ByRef srcHandle As Long) As Boolean
@@ -531,6 +697,12 @@ End Function
 
 Private Function cmsErrorHandler(ByVal ContextID As Long, ByVal cmsError As Long, ByVal ptrToText As Long) As Long
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  LittleCMS returned the following error: #" & cmsError
+        Dim cUnicode As pdUnicode
+        Set cUnicode = New pdUnicode
+        
+        Dim errorMsg As String
+        errorMsg = cUnicode.ConvertCharPointerToVBString(ptrToText, False)
+        
+        pdDebug.LogAction "WARNING!  LittleCMS error occurred (#" & cmsError & "): " & errorMsg
     #End If
 End Function
