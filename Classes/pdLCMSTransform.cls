@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon LCMS (LittleCMS) Transformation Manager
 'Copyright 2015-2016 by Tanner Helland
 'Created: 26/May/16
-'Last updated: 26/May/16
-'Last update: migrate existing LCMS code to this more OOP-friendly design
+'Last updated: 09/June/16
+'Last update: add support for RGB modification transforms, which allow adjustment of brightness, contrast, hue, and saturation
 '
 'This class interacts heavily with the LittleCMS module.  Look there for implementation details.
 ' (Also, this class obviously relies on the LittleCMS DLL, which must be present inside PhotoDemon's Plugins folder.)
@@ -68,6 +68,40 @@ Friend Function CreateInPlaceTransformForDIB(ByRef srcDIB As pdDIB, ByRef srcPro
         m_TransformHandle = LittleCMS.LCMS_CreateInPlaceTransformForDIB(srcProfile.GetHandle, dstProfile.GetHandle, srcDIB, trnsRenderingIntent, trnsFlags)
         CreateInPlaceTransformForDIB = CBool(m_TransformHandle <> 0)
     End If
+End Function
+
+'Create an RGB modification transform, for adjusting brightness, contrast, hue, and/or saturation.  A source profile is optional;
+' if one isn't passed, sRGB will be assumed.
+Friend Function CreateRGBModificationTransform(Optional ByRef srcProfile As pdLCMSProfile = Nothing, Optional ByVal newBrightness As Double = 0#, Optional ByVal newContrast As Double = 1#, Optional ByVal newHue As Double = 0#, Optional ByVal newSaturation As Double = 0#, Optional ByVal srcTemp As Long = 0, Optional ByVal dstTemp As Long = 0, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = cmsFLAGS_COPY_ALPHA) As Boolean
+    
+    If (m_TransformHandle <> 0) Then ReleaseTransform
+    
+    'Start by creating an array of 5 individual prfoiles.  I know, it's ridiculous - but here's how the profiles look:
+    ' 1) sRGB
+    ' 2) Lab
+    ' 3) Abstract Lab -> Lab color modification
+    ' 4) Abstract Lab -> Lab color modification (yes, the abstract profile needs to be used twice, because it defines both input
+    '    and output behavior)
+    ' 5) sRGB
+    Dim transformProfiles() As Long
+    ReDim transformProfiles(0 To 4) As Long
+    If (srcProfile Is Nothing) Then transformProfiles(0) = LittleCMS.LCMS_LoadStockSRGBProfile() Else transformProfiles(0) = srcProfile.GetHandle
+    transformProfiles(1) = LittleCMS.LCMS_LoadStockLabProfile(True)
+    transformProfiles(2) = LittleCMS.LCMS_CreateAbstractBCHSProfile(newBrightness, newContrast, newHue, newSaturation, srcTemp, dstTemp)
+    transformProfiles(3) = transformProfiles(2)
+    transformProfiles(4) = transformProfiles(0)
+    
+    'Take that horrible mess of profiles and create a single unified transform from them
+    m_TransformHandle = LittleCMS.LCMS_CreateMultiProfileTransform(transformProfiles, 5, , , trnsRenderingIntent, trnsFlags)
+    
+    'We can now unload our temporary profiles
+    If (srcProfile Is Nothing) Then LittleCMS.LCMS_CloseProfileHandle transformProfiles(0)
+    LittleCMS.LCMS_CloseProfileHandle transformProfiles(1)
+    LittleCMS.LCMS_CloseProfileHandle transformProfiles(2)
+    'Profiles (3) and (4) are deliberately skipped, because they are just copies of profile (2) and (0) - see above
+    
+    CreateRGBModificationTransform = CBool(m_TransformHandle <> 0)
+    
 End Function
 
 Public Function GetHandle() As Long
