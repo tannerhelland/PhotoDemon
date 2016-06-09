@@ -23,6 +23,16 @@ Begin VB.Form FormBrightnessContrast
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   805
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdButtonStrip btsModel 
+      Height          =   975
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   2880
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1720
+      Caption         =   "model"
+   End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -37,7 +47,7 @@ Begin VB.Form FormBrightnessContrast
       Height          =   330
       Left            =   6120
       TabIndex        =   3
-      Top             =   3840
+      Top             =   3960
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   582
@@ -56,7 +66,7 @@ Begin VB.Form FormBrightnessContrast
       Height          =   705
       Left            =   6000
       TabIndex        =   1
-      Top             =   1680
+      Top             =   1200
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -68,7 +78,7 @@ Begin VB.Form FormBrightnessContrast
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   2760
+      Top             =   2040
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -86,14 +96,12 @@ Attribute VB_Exposed = False
 'Brightness and Contrast Handler
 'Copyright 2001-2016 by Tanner Helland
 'Created: 2/6/01
-'Last updated: 16/February/16
-'Last update: use this dialog to test some new theming options; Form_Load may end up being preferable for theming
-'              steps, after all...
+'Last updated: 09/June/16
+'Last update: total overhaul; the old code was stupid and slow, and an option is now provided for a modern
+'             L*a*b*-based conversion (via LittleCMS, if available)
 '
-'The central brightness/contrast handler.  Everything is done via look-up tables, so it's extremely fast.
-' It's all linear (not logarithmic; sorry). Maybe someday I'll change that, maybe not... honestly, I probably
-' won't, since brightness and contrast are such stupid functions anyway.  People should be using levels or
-' curves or white balance instead!
+'Basic brightness/contrast handler.  A legacy LUT-based method is provided, but the modern L*a*b* implementation
+' (via LittleCMS) is preferred.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -106,6 +114,15 @@ Option Explicit
 Private m_previewHasSampled As Boolean
 Private m_previewSampledContrast As Long
 
+Private Sub btsModel_Click(ByVal buttonIndex As Long)
+    SetLegacyVisibility
+    UpdatePreview
+End Sub
+
+Private Sub SetLegacyVisibility()
+    chkSample.Visible = CBool(btsModel.ListIndex <> 0)
+End Sub
+
 'Update the preview when the "sample contrast" checkbox value is changed
 Private Sub chkSample_Click()
     UpdatePreview
@@ -113,17 +130,28 @@ End Sub
 
 'Single routine for modifying both brightness and contrast.  Brightness is in the range (-255,255) while
 ' contrast is (-100,100).  Optionally, the image can be sampled to obtain a true midpoint for the contrast function.
-Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Optional ByVal TrueContrast As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Adjusting image brightness..."
+    'Start by extract individual function parameters from the XML string we're passed
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString functionParams
+    
+    Dim newBrightness As Long, newContrast As Double
+    newBrightness = cParams.GetLong("BrightnessContrastNewBrightness", 0)
+    newContrast = cParams.GetLong("BrightnessContrastNewContrast", 0#)
+    
+    Dim useLegacyModel As Boolean, sampleContrast As Boolean
+    useLegacyModel = cParams.GetBool("BrightnessContrastUseLegacy", False)
+    sampleContrast = cParams.GetBool("BrightnessContrastSampleContrast", False)
+    
+    If (Not toPreview) Then Message "Adjusting brightness and contrast..."
     
     'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
+    Dim srcImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    
     PrepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
-        
+    
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
@@ -133,155 +161,166 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    Dim xCheck As Long, pxSize As Long
+    pxSize = curDIBValues.BytesPerPixel
+    
+    Dim xStart As Long, xStop As Long
+    xStart = initX * pxSize
+    xStop = finalX * pxSize
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    If (Not toPreview) Then
+        ProgressBars.SetProgBarMax finalY
+        progBarCheck = ProgressBars.FindBestProgBarValue()
+    End If
     
-    'If the brightness value is anything but 0, process it
-    If (Bright <> 0) Then
+    'How we apply brightness varies; by default, a modern L*a*b*-based transform is used.  This produces a
+    ' much higher-quality result, with significantly less clipping at either end of the histogram.
+    
+    '(LittleCMS is used for the transform, and if it's missing or disabled, we obviously can't proceed; if that happens,
+    ' we fall back to the default brightness/contrast transform.
+    Dim modernAlgorithmFailed As Boolean: modernAlgorithmFailed = True
+    If (Not useLegacyModel) And g_LCMSEnabled Then
         
-        If Not toPreview Then
+        'Convert the incoming brightness and contrast values to ranges appropriate for L*a*b*
+        Dim tmpBright As Double, tmpContrast As Double
+        tmpBright = CDbl(newBrightness / 16)
+        tmpContrast = CDbl(newContrast / 800) + 1#
         
-            Message "Adjusting image brightness..."
+        'We cheat and also use contrast as saturation, to flatten colors a bit when contrast is reduced
+        Dim tmpSaturation As Double
+        tmpSaturation = (newContrast / 12)
+        If (newContrast > 0) Then tmpSaturation = tmpSaturation + 1
         
-            'Because contrast and brightness are handled together, set the progress bar maximum value
-            ' contingent on whether we're handling just brightness, or both brightness AND contrast.
-            If (Contrast <> 0) Then
-                SetProgBarMax finalX * 2
-                progBarCheck = FindBestProgBarValue()
-            End If
+        'Create an abstract LCMS transform that defines this adjustment
+        Dim labTransform As pdLCMSTransform
+        Set labTransform = New pdLCMSTransform
+        If labTransform.CreateRGBModificationTransform(, tmpBright, tmpContrast, , tmpSaturation, , , INTENT_PRESERVE_K_PLANE_PERCEPTUAL) Then
+            
+            Dim scanWidthBytes As Long, scanWidthPixels As Long
+            scanWidthBytes = workingDIB.GetDIBArrayWidth
+            scanWidthPixels = workingDIB.GetDIBWidth
+            
+            'Apply the transform one line at a time
+            For y = initY To finalY
+                labTransform.ApplyTransformToArbitraryMemory workingDIB.GetDIBScanline(y), workingDIB.GetDIBScanline(y), scanWidthBytes, scanWidthBytes, 1, scanWidthPixels, False
+                If (Not toPreview) Then
+                    If (y And progBarCheck) = 0 Then
+                        If UserPressedESC() Then Exit For
+                        ProgressBars.SetProgBarVal y
+                    End If
+                End If
+            Next y
+            
+            modernAlgorithmFailed = False
             
         End If
         
-        'Look-up tables work brilliantly for brightness
-        Dim BrightTable(0 To 255) As Byte
-        Dim BTCalc As Long
-        
-        For x = 0 To 255
-            BTCalc = x + Bright
-            If BTCalc > 255 Then BTCalc = 255
-            If BTCalc < 0 Then BTCalc = 0
-            BrightTable(x) = CByte(BTCalc)
-        Next x
-        
-        'Loop through each pixel in the image, converting values as we go
-        For x = initX To finalX
-            QuickVal = x * qvDepth
-        For y = initY To finalY
-            
-            'Use the look-up table to perform an ultra-quick brightness adjustment
-            ImageData(QuickVal, y) = BrightTable(ImageData(QuickVal, y))
-            ImageData(QuickVal + 1, y) = BrightTable(ImageData(QuickVal + 1, y))
-            ImageData(QuickVal + 2, y) = BrightTable(ImageData(QuickVal + 2, y))
-            
-        Next y
-            If toPreview = False Then
-                If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
-                    SetProgBarVal x
-                End If
-            End If
-        Next x
-        
     End If
     
-    'If the contrast value is anything but 0, process it
-    If (Contrast <> 0) And (Not cancelCurrentAction) Then
-    
-        'Contrast requires an average value to operate correctly; it works by pushing luminance values away from that average.
-        Dim Mean As Long
-    
-        'Sampled contrast is my invention; traditionally contrast pushes colors toward or away from gray.
-        ' I like the option to push the colors toward or away from the image's actual midpoint, which
-        ' may not be gray.  For most white-balanced photos the difference is minimal, but for images with
-        ' non-traditional white balance, sampled contrast offers better results.
-        If TrueContrast Then
+    'If the legacy mode is required (either by user choice or failure of LittleCMS), apply it now
+    If (useLegacyModel Or modernAlgorithmFailed) And (Not g_cancelCurrentAction) Then
         
-            If toPreview And m_previewHasSampled Then
+        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(tmpSA), 4
+        
+        Dim newBCTable(0 To 255) As Byte
+        Dim btCalc As Long
+        
+        'Calculate brightness first; if no brightness change is being applied, no problem; the LUT will just
+        ' be an identity LUT
+        For x = 0 To 255
+            btCalc = x + newBrightness
+            If (btCalc > 255) Then btCalc = 255
+            If (btCalc < 0) Then btCalc = 0
+            newBCTable(x) = CByte(btCalc)
+        Next x
+        
+        If (newContrast <> 0) Then
+        
+            'Calculate contrast second.  Contrast is unique because it may require us to sample the source image
+            ' to find the image's "true" luminance mean.
+            Dim imgMean As Long
             
-                Mean = m_previewSampledContrast
-            
+            'Sampled contrast is my invention; traditionally contrast pushes colors toward or away from gray.
+            ' I like the option to push the colors toward or away from the image's actual midpoint, which
+            ' may not be gray.  For most white-balanced photos the difference is minimal, but for images with
+            ' non-traditional white balance, sampled contrast offers better results.
+            If sampleContrast Then
+                
+                'During preview mode, we cache sampled contrast so we don't have to recalculate it on each redraw
+                If (toPreview And m_previewHasSampled) Then
+                    imgMean = m_previewSampledContrast
+                Else
+                
+                    Dim rTotal As Single, gTotal As Single, bTotal As Single
+                    rTotal = 0#
+                    gTotal = 0#
+                    bTotal = 0#
+                    
+                    Dim numOfPixels As Long
+                    numOfPixels = 0
+                    
+                    For y = initY To finalY
+                    For x = xStart To xStop Step pxSize
+                        bTotal = bTotal + srcImageData(x, y)
+                        gTotal = gTotal + srcImageData(x + 1, y)
+                        rTotal = rTotal + srcImageData(x + 2, y)
+                        numOfPixels = numOfPixels + 1
+                    Next x
+                    Next y
+                    
+                    rTotal = rTotal \ numOfPixels
+                    gTotal = gTotal \ numOfPixels
+                    bTotal = bTotal \ numOfPixels
+                    
+                    imgMean = (rTotal + gTotal + bTotal) \ 3
+                    
+                    'As mentioned earlier, cache the sample contrast during preview mode
+                    If toPreview Then
+                        m_previewSampledContrast = imgMean
+                        m_previewHasSampled = True
+                    End If
+                
+                End If
+                    
+            'If we're not using true contrast, set the mean to the traditional 127
             Else
-            
-                If toPreview = False Then Message "Sampling image data to determine true contrast..."
-                
-                Dim rTotal As Long, gTotal As Long, bTotal As Long
-                rTotal = 0
-                gTotal = 0
-                bTotal = 0
-                
-                Dim NumOfPixels As Long
-                NumOfPixels = 0
-                
-                For x = initX To finalX
-                    QuickVal = x * qvDepth
-                For y = initY To finalY
-                    rTotal = rTotal + ImageData(QuickVal + 2, y)
-                    gTotal = gTotal + ImageData(QuickVal + 1, y)
-                    bTotal = bTotal + ImageData(QuickVal, y)
-                    NumOfPixels = NumOfPixels + 1
-                Next y
-                Next x
-                
-                rTotal = rTotal \ NumOfPixels
-                gTotal = gTotal \ NumOfPixels
-                bTotal = bTotal \ NumOfPixels
-                
-                Mean = (rTotal + gTotal + bTotal) \ 3
-                
-                If toPreview Then
-                    m_previewSampledContrast = Mean
-                    m_previewHasSampled = True
-                End If
-            
+                imgMean = 127
             End If
-                
-        'If we're not using true contrast, set the mean to the traditional 127
-        Else
-            Mean = 127
+            
+            'Use the calculated mean to complete the look-up table
+            Dim ctCalc As Long, srcBrightness As Long
+            For x = 0 To 255
+                srcBrightness = newBCTable(x)
+                ctCalc = srcBrightness + (((srcBrightness - imgMean) * newContrast) \ 100)
+                If (ctCalc > 255) Then ctCalc = 255
+                If (ctCalc < 0) Then ctCalc = 0
+                newBCTable(x) = CByte(ctCalc)
+            Next x
+        
         End If
-            
         
-        If Not toPreview Then Message "Adjusting image contrast..."
-        
-        'Like brightness, contrast works beautifully with look-up tables
-        Dim ContrastTable(0 To 255) As Byte, CTCalc As Long
-                
-        For x = 0 To 255
-            CTCalc = x + (((x - Mean) * Contrast) \ 100)
-            If CTCalc > 255 Then CTCalc = 255
-            If CTCalc < 0 Then CTCalc = 0
-            ContrastTable(x) = CByte(CTCalc)
-        Next x
-        
-        'Loop through each pixel in the image, converting values as we go
-        For x = initX To finalX
-            QuickVal = x * qvDepth
+        'Apply the LUT to the image!
         For y = initY To finalY
-            
-            'Use the look-up table to perform an ultra-quick brightness adjustment
-            ImageData(QuickVal, y) = ContrastTable(ImageData(QuickVal, y))
-            ImageData(QuickVal + 1, y) = ContrastTable(ImageData(QuickVal + 1, y))
-            ImageData(QuickVal + 2, y) = ContrastTable(ImageData(QuickVal + 2, y))
-            
-        Next y
-            If toPreview = False Then
-                If (x And progBarCheck) = 0 Then
+        For x = xStart To xStop Step pxSize
+            srcImageData(x, y) = newBCTable(srcImageData(x, y))
+            srcImageData(x + 1, y) = newBCTable(srcImageData(x + 1, y))
+            srcImageData(x + 2, y) = newBCTable(srcImageData(x + 2, y))
+        Next x
+            If (Not toPreview) Then
+                If (y And progBarCheck) = 0 Then
                     If UserPressedESC() Then Exit For
-                    If Bright <> 0 Then SetProgBarVal x + finalX Else SetProgBarVal x
+                    SetProgBarVal y
                 End If
             End If
-        Next x
+        Next y
+        
+        'With our work complete, point the local array away from the DIB
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         
     End If
-    
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
@@ -290,8 +329,20 @@ End Sub
 
 'OK button.  Note that the command bar class handles validation, form hiding, and form unload for us.
 Private Sub cmdBar_OKClick()
-    Process "Brightness and contrast", , BuildParams(sltBright, sltContrast, CBool(chkSample.Value)), UNDO_LAYER
+    Process "Brightness and contrast", , GetFunctionParamString(), UNDO_LAYER
 End Sub
+
+Private Function GetFunctionParamString() As String
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    With cParams
+        .AddParam "BrightnessContrastNewBrightness", sltBright.Value
+        .AddParam "BrightnessContrastNewContrast", sltContrast.Value
+        .AddParam "BrightnessContrastUseLegacy", CBool(btsModel.ListIndex = 1)
+        .AddParam "BrightnessContrastSampleContrast", CBool(chkSample.Value)
+    End With
+    GetFunctionParamString = cParams.GetParamString
+End Function
 
 'Sometimes the command bar will perform actions (like loading a preset) that require an updated preview.  This function
 ' is fired by the control when it's ready for such an update.
@@ -307,9 +358,14 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub Form_Load()
-
+    
     m_previewHasSampled = 0
     m_previewSampledContrast = 0
+    
+    btsModel.AddItem "modern", 0
+    btsModel.AddItem "legacy", 1
+    btsModel.ListIndex = 0
+    SetLegacyVisibility
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
@@ -329,16 +385,11 @@ Private Sub sltContrast_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then BrightnessContrast sltBright, sltContrast, CBool(chkSample.Value), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then BrightnessContrast GetFunctionParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-
-
-
-
-
 

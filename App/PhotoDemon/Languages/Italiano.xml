@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.187</langversion>
+<langversion>6.7.188</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -6346,6 +6346,11 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
+<original>model</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>sample image for true contrast (slower but more accurate)</original>
 <translation>immagine campione per il contrasto reale (lento ma molto preciso)</translation>
 </phrase>
@@ -6356,16 +6361,21 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
-<original>Adjusting image brightness</original>
-<translation>Regolazione della luminosità nell'immagine</translation>
+<original>Adjusting brightness and contrast</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Sampling image data to determine true contrast</original>
-<translation>Campionamento dei dati nell'immagine per determinare il contrasto reale</translation>
+<original>modern</original>
+<translation>moderno</translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>legacy</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Adjustments_BrightnessContrast.frm-->
 
@@ -9063,16 +9073,11 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>modern</original>
-<translation>moderno</translation>
-</phrase>
-
-<phrase>
 <original>traditional</original>
 <translation>tradizionale</translation>
 </phrase>
 
-<!-- Effects_Blur_ZoomBlur.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Blur_ZoomBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_ZoomBlur.frm-->
 
@@ -9749,11 +9754,6 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>model</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Calculating energy gradients (pass %1 of %2)</original>
 <translation></translation>
 </phrase>
@@ -9783,7 +9783,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation></translation>
 </phrase>
 
-<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_Anisotropic.frm-->
 
@@ -15112,12 +15112,18 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- END text for File_Save_GIF.frm-->
 
+<!-- BEGIN text for cUniversalDLLCalls.cls -->
+
+<!-- cUniversalDLLCalls.cls contains 0 phrases. -->
+
+<!-- END text for cUniversalDLLCalls.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2582</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4479 phrases. -->
 <!-- 1897 are duplicates, so only 2582 unique phrases have been written to file. -->
-<!-- These 2582 phrases contain approximately 13275 total words. -->
+<!-- These 2582 phrases contain approximately 13270 total words. -->
 
 </pdData>
