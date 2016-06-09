@@ -186,7 +186,7 @@ Public Sub MenuComicBook()
     
     CreateGaussianBlurDIB gRadius, srcDIB, gaussDIB, False, finalY + finalY + finalX + finalX
     
-    If cancelCurrentAction Then
+    If g_cancelCurrentAction Then
         srcDIB.EraseDIB
         gaussDIB.EraseDIB
         FinalizeImageData
@@ -268,7 +268,7 @@ Public Sub MenuComicBook()
     
     'Because this function occurs in multiple passes, it requires specialized cancel behavior.  All array references must be dropped
     ' or the program will experience a hard-freeze.
-    If cancelCurrentAction Then
+    If g_cancelCurrentAction Then
         CopyMemory ByVal VarPtrArray(dstImageData()), 0&, 4
         CopyMemory ByVal VarPtrArray(srcImageData()), 0&, 4
         FinalizeImageData

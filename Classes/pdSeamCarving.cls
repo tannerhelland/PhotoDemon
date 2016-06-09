@@ -73,7 +73,7 @@ End Enum
 'For performance reasons, the seam carver class maintains its own copy of the source image.
 Public Sub setSourceImage(ByRef srcDIB As pdDIB)
     Set m_SourceImage = New pdDIB
-    m_SourceImage.createFromExistingDIB srcDIB
+    m_SourceImage.CreateFromExistingDIB srcDIB
 End Sub
 
 'Retrieve the carved image into a DIB of the calling function's choosing
@@ -85,19 +85,19 @@ Public Sub setEnergyImage(ByRef srcDIB As pdDIB)
     
     'Create a copy of the energy image
     Set m_EnergyImage = New pdDIB
-    m_EnergyImage.createFromExistingDIB srcDIB
+    m_EnergyImage.CreateFromExistingDIB srcDIB
     
     'Transparency data is not relevant for computing pixel energy, so remove it if present
-    If m_EnergyImage.getDIBColorDepth = 32 Then m_EnergyImage.convertTo24bpp
+    If m_EnergyImage.GetDIBColorDepth = 32 Then m_EnergyImage.ConvertTo24bpp
     
     'To speed up processing, we are going to store all energy data in the blue channel of the image.
     Dim energyData() As Byte
     Dim energySA As SAFEARRAY2D
-    prepSafeArray energySA, m_EnergyImage
+    PrepSafeArray energySA, m_EnergyImage
     CopyMemory ByVal VarPtrArray(energyData()), VarPtr(energySA), 4
     
     'Prepare the module-level energy array
-    ReDim m_Energy(0 To m_EnergyImage.getDIBWidth - 1, 0 To m_EnergyImage.getDIBHeight - 1) As Byte
+    ReDim m_Energy(0 To m_EnergyImage.GetDIBWidth - 1, 0 To m_EnergyImage.GetDIBHeight - 1) As Byte
     
     Dim x As Long, y As Long, QuickVal As Long
     Dim r As Long, g As Long, b As Long
@@ -108,9 +108,9 @@ Public Sub setEnergyImage(ByRef srcDIB As pdDIB)
         grayLookUp(x) = x \ 3
     Next x
     
-    For x = 0 To srcDIB.getDIBWidth - 1
+    For x = 0 To srcDIB.GetDIBWidth - 1
         QuickVal = x * 3
-    For y = 0 To srcDIB.getDIBHeight - 1
+    For y = 0 To srcDIB.GetDIBHeight - 1
         r = energyData(QuickVal + 2, y)
         g = energyData(QuickVal + 1, y)
         b = energyData(QuickVal, y)
@@ -122,7 +122,7 @@ Public Sub setEnergyImage(ByRef srcDIB As pdDIB)
     CopyMemory ByVal VarPtrArray(energyData), 0&, 4
         
     'Release the energy DIB
-    m_EnergyImage.eraseDIB
+    m_EnergyImage.EraseDIB
     Set m_EnergyImage = Nothing
         
 End Sub
@@ -258,7 +258,7 @@ Private Function shrinkVertically(ByRef seamMap() As Long, ByVal finalX As Long,
             'Both the energy image and source image must have their data shifted.
             
             'Source image is easy - just use BitBlt
-            BitBlt m_SourceImage.getDIBDC, x, rowIndex, 1, finalY - rowIndex, m_SourceImage.getDIBDC, x, rowIndex + 1, vbSrcCopy
+            BitBlt m_SourceImage.GetDIBDC, x, rowIndex, 1, finalY - rowIndex, m_SourceImage.GetDIBDC, x, rowIndex + 1, vbSrcCopy
             
             'Energy array must be done manually
             For y = rowIndex + 1 To finalY
@@ -332,7 +332,7 @@ Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
 
     'Due to limitations of the seam carving algorithm, this function can only add [imageheight] number of seams at a time.
     ' If the user has selected a larger resize than that, this function must be called again.
-    If numOfAddedSeams > m_SourceImage.getDIBHeight / 2 Then numOfAddedSeams = m_SourceImage.getDIBHeight / 2
+    If numOfAddedSeams > m_SourceImage.GetDIBHeight / 2 Then numOfAddedSeams = m_SourceImage.GetDIBHeight / 2
     
     Dim x As Long, y As Long, i As Long
     
@@ -430,17 +430,17 @@ Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
     'Create a blank destination image
     Dim tmpImage As pdDIB
     Set tmpImage = New pdDIB
-    tmpImage.createBlank finalX + 1, finalY + 1 + numOfAddedSeams, m_SourceImage.getDIBColorDepth
+    tmpImage.CreateBlank finalX + 1, finalY + 1 + numOfAddedSeams, m_SourceImage.GetDIBColorDepth
     
     'Obtain a pointer to the raw DIB bits of both the source and destination images
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, m_SourceImage
+    PrepSafeArray srcSA, m_SourceImage
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, tmpImage
+    PrepSafeArray dstSA, tmpImage
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Note that if the image is going to be resized again in the future, we also need to update the energy map
@@ -450,7 +450,7 @@ Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
     Dim quickX As Long, QuickY As Long, yOffset As Long
     
     Dim alphaPresent As Boolean, colorDepthOffset As Long
-    If m_SourceImage.getDIBColorDepth = 32 Then
+    If m_SourceImage.GetDIBColorDepth = 32 Then
         alphaPresent = True
         colorDepthOffset = 4
     Else
@@ -500,7 +500,7 @@ Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
     'Replace the source image with the newly generated destination image
-    m_SourceImage.createFromExistingDIB tmpImage
+    m_SourceImage.CreateFromExistingDIB tmpImage
     Set tmpImage = Nothing
     
     'Replace the master energy array with the resized copy
@@ -639,7 +639,7 @@ Private Function shrinkHorizontally(ByRef seamMap() As Long, ByVal finalX As Lon
             'Both the energy image and source image must have their data shifted
             
             'The source image is easy - just use BitBlt
-            BitBlt m_SourceImage.getDIBDC, columnIndex, y, finalX - columnIndex, 1, m_SourceImage.getDIBDC, columnIndex + 1, y, vbSrcCopy
+            BitBlt m_SourceImage.GetDIBDC, columnIndex, y, finalX - columnIndex, 1, m_SourceImage.GetDIBDC, columnIndex + 1, y, vbSrcCopy
             
             'Energy array must be done manually
             CopyMemory ByVal VarPtr(m_Energy(columnIndex, y)), ByVal VarPtr(m_Energy(columnIndex + 1, y)), finalX - columnIndex
@@ -714,7 +714,7 @@ Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
 
     'Due to limitations of the seam carving algorithm, this function can only add [imagewidth] number of seams at a time.
     ' If the user has selected a larger resize than that, this function must be called again.
-    If numOfAddedSeams > m_SourceImage.getDIBWidth / 2 Then numOfAddedSeams = m_SourceImage.getDIBWidth / 2
+    If numOfAddedSeams > m_SourceImage.GetDIBWidth / 2 Then numOfAddedSeams = m_SourceImage.GetDIBWidth / 2
     
     Dim x As Long, y As Long, i As Long
     
@@ -812,17 +812,17 @@ Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
     'Create a blank destination image
     Dim tmpImage As pdDIB
     Set tmpImage = New pdDIB
-    tmpImage.createBlank finalX + 1 + numOfAddedSeams, finalY + 1, m_SourceImage.getDIBColorDepth
+    tmpImage.CreateBlank finalX + 1 + numOfAddedSeams, finalY + 1, m_SourceImage.GetDIBColorDepth
     
     'Obtain a pointer to the raw DIB bits of both the source and destination images
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, m_SourceImage
+    PrepSafeArray srcSA, m_SourceImage
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, tmpImage
+    PrepSafeArray dstSA, tmpImage
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Note that if the image is going to be resized again in the future, we also need to update the energy map
@@ -832,7 +832,7 @@ Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
     Dim quickSrcX As Long, quickDstX As Long, xOffset As Long, innerXOffset As Long
     
     Dim alphaPresent As Boolean, colorDepthOffset As Long
-    If m_SourceImage.getDIBColorDepth = 32 Then
+    If m_SourceImage.GetDIBColorDepth = 32 Then
         alphaPresent = True
         colorDepthOffset = 4
     Else
@@ -881,7 +881,7 @@ Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
     'Replace the source image with the newly generated destination image
-    m_SourceImage.createFromExistingDIB tmpImage
+    m_SourceImage.CreateFromExistingDIB tmpImage
     Set tmpImage = Nothing
     
     'Replace the master energy array with the resized copy
@@ -895,8 +895,8 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
 
     'We will be referencing image size frequently in this function, so cache these values in advance
     Dim srcWidth As Long, srcHeight As Long
-    srcWidth = m_SourceImage.getDIBWidth
-    srcHeight = m_SourceImage.getDIBHeight
+    srcWidth = m_SourceImage.GetDIBWidth
+    srcHeight = m_SourceImage.GetDIBHeight
     
     'Start by determining if we are widening or shrinking the image in the horizontal and/or vertical directions
     ' We'll use a simple system: -1 means shrinking, 0 means no change, and 1 means enlarging.
@@ -925,7 +925,7 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
     'Because we need to transfer image data back and forth between DIBs, a temporary DIB comes in handy
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB m_SourceImage
+    tmpDIB.CreateFromExistingDIB m_SourceImage
     
     'Determine a progress bar maximum value.  We'll refresh the progress bar approximately once for each
     ' seam added or removed from the image.
@@ -955,22 +955,22 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
                 
                 If (i And 8) = 0 Then
                     SetProgBarVal i
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                 End If
                 
             Next i
             
             'Check for user cancellation (by pressing ESC)
-            If cancelCurrentAction Then Exit Function
+            If g_cancelCurrentAction Then Exit Function
             
             'All necessary horizontal seams have been removed from the image.  Overwrite the original source image with
             ' the new image data.
-            tmpDIB.createBlank newWidth, srcHeight, m_SourceImage.getDIBColorDepth
-            BitBlt tmpDIB.getDIBDC, 0, 0, newWidth, srcHeight, m_SourceImage.getDIBDC, 0, 0, vbSrcCopy
-            m_SourceImage.createFromExistingDIB tmpDIB
+            tmpDIB.CreateBlank newWidth, srcHeight, m_SourceImage.GetDIBColorDepth
+            BitBlt tmpDIB.GetDIBDC, 0, 0, newWidth, srcHeight, m_SourceImage.GetDIBDC, 0, 0, vbSrcCopy
+            m_SourceImage.CreateFromExistingDIB tmpDIB
             
             'Note the new width now, in case the user is also changing the vertical size of the image
-            srcWidth = m_SourceImage.getDIBWidth
+            srcWidth = m_SourceImage.GetDIBWidth
     
         'Horizontal size is growing
         Case ScaleLarger
@@ -984,12 +984,12 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
                 growHorizontally seamData, newWidth - srcWidth, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex
                 
                 'Update the source width, in case this function must be called again
-                srcWidth = m_SourceImage.getDIBWidth
+                srcWidth = m_SourceImage.GetDIBWidth
             
-            Loop While m_SourceImage.getDIBWidth < newWidth
+            Loop While m_SourceImage.GetDIBWidth < newWidth
             
             'Update the temp image (which may be used by subsequent vertical resize functions)
-            tmpDIB.createFromExistingDIB m_SourceImage
+            tmpDIB.CreateFromExistingDIB m_SourceImage
     
     End Select
     
@@ -1014,19 +1014,19 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
                 
                 If (i And 8) = 0 Then
                     SetProgBarVal hDiff + i
-                    If userPressedESC() Then Exit For
+                    If UserPressedESC() Then Exit For
                 End If
                 
             Next i
             
             'Check for user cancellation (by pressing ESC)
-            If cancelCurrentAction Then Exit Function
+            If g_cancelCurrentAction Then Exit Function
             
             'All necessary vertical seams have been removed from the image.  Overwrite the original source image with
             ' the new image data.
-            tmpDIB.createBlank newWidth, newHeight, m_SourceImage.getDIBColorDepth
-            BitBlt tmpDIB.getDIBDC, 0, 0, newWidth, newHeight, m_SourceImage.getDIBDC, 0, 0, vbSrcCopy
-            m_SourceImage.createFromExistingDIB tmpDIB
+            tmpDIB.CreateBlank newWidth, newHeight, m_SourceImage.GetDIBColorDepth
+            BitBlt tmpDIB.GetDIBDC, 0, 0, newWidth, newHeight, m_SourceImage.GetDIBDC, 0, 0, vbSrcCopy
+            m_SourceImage.CreateFromExistingDIB tmpDIB
             
     
         'Vertical size is growing
@@ -1041,12 +1041,12 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
                 growVertically seamData, newHeight - srcHeight, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex, hDiff
                 
                 'Update the source height, in case this function must be called again
-                srcHeight = m_SourceImage.getDIBHeight
+                srcHeight = m_SourceImage.GetDIBHeight
             
-            Loop While m_SourceImage.getDIBHeight < newHeight
+            Loop While m_SourceImage.GetDIBHeight < newHeight
             
             'Update the temp image (which will be used to overwrite the original image)
-            tmpDIB.createFromExistingDIB m_SourceImage
+            tmpDIB.CreateFromExistingDIB m_SourceImage
     
     
     End Select
@@ -1054,11 +1054,11 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
     
     'Now that all seam carves have been carried out, generate a final destination image
     Set m_DestinationImage = New pdDIB
-    m_DestinationImage.createFromExistingDIB tmpDIB
+    m_DestinationImage.CreateFromExistingDIB tmpDIB
     
     'Reset the progress bar
     SetProgBarVal 0
-    releaseProgressBar
+    ReleaseProgressBar
     
     Exit Function
     

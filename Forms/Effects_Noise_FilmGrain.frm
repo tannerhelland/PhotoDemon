@@ -186,9 +186,9 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     Erase dstImageData
     
     'Next, we need to soften the noise DIB
-    If (Not toPreview) And (Not cancelCurrentAction) Then Message "Softening film grain..."
+    If (Not toPreview) And (Not g_cancelCurrentAction) Then Message "Softening film grain..."
     
-    If (gSoftness > 0) And (Not cancelCurrentAction) Then
+    If (gSoftness > 0) And (Not g_cancelCurrentAction) Then
     
         'If this is a preview, we need to adjust the softening radius to match the size of the preview box
         If toPreview Then
@@ -209,7 +209,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     noiseDIB.EraseDIB
     Set noiseDIB = Nothing
     
-    If Not cancelCurrentAction Then
+    If Not g_cancelCurrentAction Then
     
         'We now have a softened noise DIB. Next, create three arrays - one pointing at the original image data, one pointing at
         ' the noise data, and one pointing at the destination data.

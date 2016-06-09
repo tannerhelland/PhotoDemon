@@ -300,7 +300,7 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
     
     'Intelligent Coloring requires extra work.  Perform a second loop through the image, replacing values with their
     ' computed counterparts.
-    If smartColors And (Not cancelCurrentAction) Then
+    If smartColors And (Not g_cancelCurrentAction) Then
     
         If Not toPreview Then
             SetProgBarVal GetProgBarMax
@@ -504,7 +504,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     
     'Intelligent Coloring requires extra work.  Perform a second loop through the image, replacing values with their
     ' computed counterparts.
-    If smartColors And (Not cancelCurrentAction) Then
+    If smartColors And (Not g_cancelCurrentAction) Then
         
         If Not toPreview Then
             SetProgBarVal GetProgBarMax

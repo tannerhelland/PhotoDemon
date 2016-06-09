@@ -488,7 +488,7 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    If cancelCurrentAction Then fGrayscaleCustom = 0 Else fGrayscaleCustom = 1
+    If g_cancelCurrentAction Then fGrayscaleCustom = 0 Else fGrayscaleCustom = 1
     
 End Function
 
@@ -851,7 +851,7 @@ NextDitheredPixel:     Next j
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    If cancelCurrentAction Then fGrayscaleCustomDither = 0 Else fGrayscaleCustomDither = 1
+    If g_cancelCurrentAction Then fGrayscaleCustomDither = 0 Else fGrayscaleCustomDither = 1
     
 End Function
 
@@ -929,7 +929,7 @@ Public Function MenuGrayscaleAverage(ByRef srcDIB As pdDIB, Optional ByVal suppr
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    If cancelCurrentAction Then MenuGrayscaleAverage = 0 Else MenuGrayscaleAverage = 1
+    If g_cancelCurrentAction Then MenuGrayscaleAverage = 0 Else MenuGrayscaleAverage = 1
     
 End Function
 
@@ -1002,7 +1002,7 @@ Public Function MenuGrayscale(ByRef srcDIB As pdDIB, Optional ByVal suppressMess
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    If cancelCurrentAction Then MenuGrayscale = 0 Else MenuGrayscale = 1
+    If g_cancelCurrentAction Then MenuGrayscale = 0 Else MenuGrayscale = 1
     
 End Function
 
@@ -1074,7 +1074,7 @@ Public Function MenuDesaturate(ByRef srcDIB As pdDIB, Optional ByVal suppressMes
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    If cancelCurrentAction Then MenuDesaturate = 0 Else MenuDesaturate = 1
+    If g_cancelCurrentAction Then MenuDesaturate = 0 Else MenuDesaturate = 1
     
 End Function
 
@@ -1146,7 +1146,7 @@ Public Function MenuDecompose(ByVal maxOrMin As Long, ByRef srcDIB As pdDIB, Opt
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    If cancelCurrentAction Then MenuDecompose = 0 Else MenuDecompose = 1
+    If g_cancelCurrentAction Then MenuDecompose = 0 Else MenuDecompose = 1
     
 End Function
 
@@ -1225,7 +1225,7 @@ Public Function MenuGrayscaleSingleChannel(ByVal cChannel As Long, ByRef srcDIB 
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
-    If cancelCurrentAction Then MenuGrayscaleSingleChannel = 0 Else MenuGrayscaleSingleChannel = 1
+    If g_cancelCurrentAction Then MenuGrayscaleSingleChannel = 0 Else MenuGrayscaleSingleChannel = 1
         
 End Function
 

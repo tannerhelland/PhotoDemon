@@ -59,7 +59,7 @@ Private Const WM_KEYFIRST As Long = &H100
 Private Const WM_KEYLAST As Long = &H108
 Private Const PM_REMOVE As Long = &H1
 
-Public cancelCurrentAction As Boolean
+Public g_cancelCurrentAction As Boolean
 
 'Some UI elements are always enabled or disabled as a group.  For example, the PDUI_Save group will simultaneously en/disable the
 ' File -> Save menu, toolbar Save button(s), Ctrl+S hotkey, etc.  This enum is used throughout the interface manager to optimize the
@@ -1901,20 +1901,20 @@ Public Function UserPressedESC(Optional ByVal displayConfirmationPrompt As Boole
             If displayConfirmationPrompt Then
                 Dim msgReturn As VbMsgBoxResult
                 msgReturn = PDMsgBox("Are you sure you want to cancel %1?", vbInformation + vbYesNo + vbApplicationModal, "Cancel image processing", LastProcess.Id)
-                If msgReturn = vbYes Then cancelCurrentAction = True Else cancelCurrentAction = False
+                If msgReturn = vbYes Then g_cancelCurrentAction = True Else g_cancelCurrentAction = False
             Else
-                cancelCurrentAction = True
+                g_cancelCurrentAction = True
             End If
             
         Else
-            cancelCurrentAction = False
+            g_cancelCurrentAction = False
         End If
         
     Else
-        cancelCurrentAction = False
+        g_cancelCurrentAction = False
     End If
     
-    UserPressedESC = cancelCurrentAction
+    UserPressedESC = g_cancelCurrentAction
     
 End Function
 
