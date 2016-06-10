@@ -1291,7 +1291,7 @@ End Sub
 Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDoEvents As Boolean = False)
     
     'Some forms call this function during the load step, meaning they will be triggered during compilation; avoid this
-    If Not g_IsProgramRunning Then Exit Sub
+    If (Not g_IsProgramRunning) Then Exit Sub
     
     'FORM STEP 1: apply any form-level changes (like backcolor), as child controls may pull this automatically
     dstForm.BackColor = Colors.GetRGBLongFromHex(g_Themer.LookUpColor("Default", "Background"))
@@ -2025,4 +2025,27 @@ Public Sub ShowDisabledPreviewImage(ByRef dstPreview As pdFxPreviewCtl)
     
     notifyFont.ReleaseFromDC
     
+End Sub
+
+'When the user's changes the UI theme, call this function to force a redraw of all visible elements.  The optional "DoEvents" parameter
+' does what you expect; it yields for periodic refreshes, so the user can "see" the transformation as it occurs.
+Public Sub RedrawEntireUI(Optional ByVal useDoEvents As Boolean = False, Optional ByVal updateAccelerators As Boolean = False)
+    
+    If FormMain.Visible Then
+    
+        FormMain.UpdateAgainstCurrentTheme useDoEvents
+        If updateAccelerators Then DrawAccelerators
+        ApplyAllMenuIcons True
+        
+        'Resync the interface to redraw any remaining text and/or buttons
+        SyncInterfaceToCurrentImage
+        
+        'Redraw any/all toolbars as well
+        toolbar_Toolbox.UpdateAgainstCurrentTheme
+        toolbar_Toolbox.ResetToolButtonStates
+        toolbar_Options.UpdateAgainstCurrentTheme
+        toolbar_Layers.UpdateAgainstCurrentTheme
+        
+    End If
+
 End Sub

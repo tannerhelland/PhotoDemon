@@ -340,8 +340,8 @@ Public Sub UpdateAgainstCurrentTheme()
     End If
     
     'TODO: pass along the request to any active child forms.
-    If Not (layerpanel_Navigator) Is Nothing Then layerpanel_Layers.UpdateAgainstCurrentTheme
-    If Not (layerpanel_Colors) Is Nothing Then layerpanel_Layers.UpdateAgainstCurrentTheme
+    If Not (layerpanel_Navigator) Is Nothing Then layerpanel_Navigator.UpdateAgainstCurrentTheme
+    If Not (layerpanel_Colors) Is Nothing Then layerpanel_Colors.UpdateAgainstCurrentTheme
     If Not (layerpanel_Layers) Is Nothing Then layerpanel_Layers.UpdateAgainstCurrentTheme
     
     'Reflow the interface, to account for any language changes.  (This will also trigger a redraw of the layer list box.)

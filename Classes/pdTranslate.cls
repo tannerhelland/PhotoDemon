@@ -174,11 +174,9 @@ End Sub
 
 'Given an index in the availableLanguages array, mark that as the new language (including saving it to the preferences file)
 Public Sub ActivateNewLanguage(ByVal newLangIndex As Long, Optional ByVal useDoEvents As Boolean = False)
-
     curLanguage = newLangIndex
     WriteLanguagePreferencesToFile
     ApplyLanguage useDoEvents
-
 End Sub
 
 'If the language file updater has updated one or more language files, it will call this function.  Any subsequent language update functions (such as loading a
@@ -190,7 +188,7 @@ Public Sub NotifyHotPatchingComplete()
     
         'Retrieve the current language version
         Dim curLanguageVersion As String
-        curLanguageVersion = xmlEngine.getUniqueTag_String("langversion")
+        curLanguageVersion = xmlEngine.GetUniqueTag_String("langversion")
         
         'Retrieve the version of the XML file on disk; if an update has occurred, we can detect it by comparing version numbers.
         Dim tmpXML As pdXML
@@ -199,7 +197,7 @@ Public Sub NotifyHotPatchingComplete()
             
             'Retrieve the version number from the potentially updated file
             Dim newLanguageVersion As String
-            newLanguageVersion = tmpXML.getUniqueTag_String("langversion")
+            newLanguageVersion = tmpXML.GetUniqueTag_String("langversion")
             
             If StrComp(curLanguageVersion, newLanguageVersion, vbBinaryCompare) <> 0 Then
             
@@ -355,30 +353,15 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
         Set xmlEngine = New pdXML
         xmlEngine.LoadXMLFile availableLanguages(curLanguage).FileName
         
-        'New as of August '14 is use of binary text comparisons.  This provides a huge performance boost, while also rendering
-        ' more faithful text where case is concerned.
-        xmlEngine.setTextCompareMode vbBinaryCompare
+        'New as of August '14 is use of binary text comparisons when matching translations.  This provides a large
+        ' performance boost, and also results in correct captioning when the same word is used in multiple places
+        ' with different cases (e.g. menus vs sliders)
+        xmlEngine.SetTextCompareMode vbBinaryCompare
         
     End If
-
-    'Redraw all text on the main form using the new language
-    If FormMain.Visible Then
     
-        FormMain.UpdateAgainstCurrentTheme useDoEvents
-        DrawAccelerators
-        ApplyAllMenuIcons True
-        
-        'Resync the interface to redraw any remaining text and/or buttons
-        SyncInterfaceToCurrentImage
-        
-        'Redraw any/all toolbars as well
-        toolbar_Toolbox.UpdateAgainstCurrentTheme
-        toolbar_Toolbox.ResetToolButtonStates
-        toolbar_Options.UpdateAgainstCurrentTheme
-        toolbar_Layers.UpdateAgainstCurrentTheme
-        
-    End If
-        
+    Interface.RedrawEntireUI useDoEvents, True
+    
 End Sub
 
 'Check the current default user language, and return it as a standard language code, e.g. "en" or "en-GB" or "de-CH"
@@ -454,7 +437,7 @@ Private Function TallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
             If tmpXMLEngine.LoadXMLFile(chkFile) Then
             
                 'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
-                If tmpXMLEngine.isPDDataType("Translation") And tmpXMLEngine.validateLoadedXMLData("langid", "langname", "phrase") Then
+                If tmpXMLEngine.IsPDDataType("Translation") And tmpXMLEngine.ValidateLoadedXMLData("langid", "langname", "phrase") Then
                     
                     'If this is a valid language file, get the language information (if available).
                     FillLanguageInfo tmpXMLEngine, availableLanguages(nLanguages)
@@ -486,10 +469,10 @@ Public Sub CheckAvailableLanguages()
     ReDim Preserve availableLanguages(0 To 99) As pdLanguageFile
     
     'Find all available OFFICIAL language files
-    numOfLanguages = TallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath(False), 0, "Official")
+    numOfLanguages = TallyLanguageFilesInFolder(g_UserPreferences.GetLanguagePath(False), 0, "Official")
     
     'Find all available USER language files
-    numOfLanguages = numOfLanguages + TallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath(True), numOfLanguages, "Unofficial")
+    numOfLanguages = numOfLanguages + TallyLanguageFilesInFolder(g_UserPreferences.GetLanguagePath(True), numOfLanguages, "Unofficial")
     
     'Add a dummy entry for PhotoDemon's default language (en-US)
     availableLanguages(numOfLanguages).FileName = ""
@@ -500,7 +483,7 @@ Public Sub CheckAvailableLanguages()
     
     'If the MASTER.XML language file is available, retrieve versioning information directly from it.
     Dim masterEnFile As String
-    masterEnFile = g_UserPreferences.getLanguagePath() & "Master\MASTER.xml"
+    masterEnFile = g_UserPreferences.GetLanguagePath() & "Master\MASTER.xml"
         
     If m_FSO.FileExist(masterEnFile) Then
         
@@ -510,7 +493,7 @@ Public Sub CheckAvailableLanguages()
         If tmpXML.LoadXMLFile(masterEnFile) Then
             
             Dim curMasterVersion As String
-            curMasterVersion = tmpXML.getUniqueTag_String("langversion")
+            curMasterVersion = tmpXML.GetUniqueTag_String("langversion")
             availableLanguages(numOfLanguages).langVersion = curMasterVersion
             
         Else
@@ -579,13 +562,13 @@ Private Sub FillLanguageInfo(ByRef srcXMLEngine As pdXML, ByRef targetLangHolder
     'First, get the language ID and name - these are the most important values, and technically the only REQUIRED ones.
     With targetLangHolder
         
-        .langID = srcXMLEngine.getUniqueTag_String("langid")
-        .LangName = srcXMLEngine.getUniqueTag_String("langname")
+        .langID = srcXMLEngine.GetUniqueTag_String("langid")
+        .LangName = srcXMLEngine.GetUniqueTag_String("langname")
     
     'Version, status, and author information should also be present, but the file will still be loaded even if they don't exist
-        .langVersion = srcXMLEngine.getUniqueTag_String("langversion")
-        .LangStatus = srcXMLEngine.getUniqueTag_String("langstatus")
-        .Author = srcXMLEngine.getUniqueTag_String("author")
+        .langVersion = srcXMLEngine.GetUniqueTag_String("langversion")
+        .LangStatus = srcXMLEngine.GetUniqueTag_String("langstatus")
+        .Author = srcXMLEngine.GetUniqueTag_String("author")
         
     End With
         
@@ -707,13 +690,13 @@ Private Function GetOriginalTagFromTranslation(ByVal curCaption As String) As St
         PreProcessText curCaption
         
         Dim phraseLocation As Long
-        phraseLocation = xmlEngine.getLocationOfParentTag("phrase", "translation", curCaption)
+        phraseLocation = xmlEngine.GetLocationOfParentTag("phrase", "translation", curCaption)
         
         'Make sure a phrase tag was found
         If phraseLocation > 0 Then
             
             'Retrieve the <translation> tag inside this phrase tag
-            curCaption = xmlEngine.getUniqueTag_String("original", "", phraseLocation)
+            curCaption = xmlEngine.GetUniqueTag_String("original", "", phraseLocation)
             
         End If
         
@@ -739,13 +722,13 @@ Private Function GetTranslationTagFromCaption(ByVal origCaption As String) As St
     PreProcessText origCaption
     
     Dim phraseLocation As Long
-    phraseLocation = xmlEngine.getLocationOfParentTag("phrase", "original", origCaption)
+    phraseLocation = xmlEngine.GetLocationOfParentTag("phrase", "original", origCaption)
     
     'Make sure a phrase tag was found
     If phraseLocation > 0 Then
         
         'Retrieve the <translation> tag inside this phrase tag
-        origCaption = xmlEngine.getUniqueTag_String("translation", "", phraseLocation)
+        origCaption = xmlEngine.GetUniqueTag_String("translation", "", phraseLocation)
         PostProcessText origCaption
         If origCaption <> "" Then
             GetTranslationTagFromCaption = origCaption

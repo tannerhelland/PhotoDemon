@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.188</langversion>
+<langversion>6.7.189</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -46,6 +46,11 @@
 </phrase>
 
 <phrase>
+<original>Initializing theme engine</original>
+<translation>Initialisation de Moteur de thème </translation>
+</phrase>
+
+<phrase>
 <original>Analyzing current monitor setup</original>
 <translation>Analyser la configuration du moniteur en cours</translation>
 </phrase>
@@ -58,11 +63,6 @@
 <phrase>
 <original>Loading import/export libraries</original>
 <translation>Chargement bibliothèques import/export</translation>
-</phrase>
-
-<phrase>
-<original>Initializing theme engine</original>
-<translation>Initialisation de Moteur de thème </translation>
 </phrase>
 
 <phrase>
@@ -2434,6 +2434,24 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <!-- END text for IFileDialog.cls-->
 
+<!-- BEGIN text for cBasicBuffer.cls -->
+
+<!-- cBasicBuffer.cls contains 0 phrases. -->
+
+<!-- END text for cBasicBuffer.cls-->
+
+<!-- BEGIN text for cGoogleTranslate.cls -->
+
+<!-- cGoogleTranslate.cls contains 0 phrases. -->
+
+<!-- END text for cGoogleTranslate.cls-->
+
+<!-- BEGIN text for clsMenuImage.cls -->
+
+<!-- clsMenuImage.cls contains 0 phrases. -->
+
+<!-- END text for clsMenuImage.cls-->
+
 <!-- BEGIN text for cPerlin3D.cls -->
 
 <!-- cPerlin3D.cls contains 0 phrases. -->
@@ -2458,23 +2476,11 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <!-- END text for cUnicodeBrowseFolders.cls-->
 
-<!-- BEGIN text for cBasicBuffer.cls -->
+<!-- BEGIN text for cUniversalDLLCalls.cls -->
 
-<!-- cBasicBuffer.cls contains 0 phrases. -->
+<!-- cUniversalDLLCalls.cls contains 0 phrases. -->
 
-<!-- END text for cBasicBuffer.cls-->
-
-<!-- BEGIN text for cGoogleTranslate.cls -->
-
-<!-- cGoogleTranslate.cls contains 0 phrases. -->
-
-<!-- END text for cGoogleTranslate.cls-->
-
-<!-- BEGIN text for clsMenuImage.cls -->
-
-<!-- clsMenuImage.cls contains 0 phrases. -->
-
-<!-- END text for clsMenuImage.cls-->
+<!-- END text for cUniversalDLLCalls.cls-->
 
 <!-- BEGIN text for IMRUList.cls -->
 
@@ -5573,6 +5579,31 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 </phrase>
 
 <phrase>
+<original>Light theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Dark theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Blue</original>
+<translation>Bleu</translation>
+</phrase>
+
+<phrase>
+<original>Green</original>
+<translation>Vert</translation>
+</phrase>
+
+<phrase>
+<original>Purple</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>&Fenêtre</translation>
 </phrase>
@@ -6229,7 +6260,7 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 <translation>Retirer canal alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 186 were duplicates of existing phrases, so only 374 new phrases were written to file. -->
+<!-- MainWindow.frm contains 565 phrases. 186 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11743,6 +11774,42 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 
 <!-- END text for File_PrintXP.frm-->
 
+<!-- BEGIN text for File_Save_GIF.frm (dialog_ExportGIF) -->
+
+<phrase>
+<original>GIF export options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparent color (right-click image to select)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>by cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>by color</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_GIF.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for File_Save_GIF.frm-->
+
 <!-- BEGIN text for File_Save_JP2Settings.frm (dialog_ExportJP2) -->
 
 <phrase>
@@ -11768,11 +11835,6 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 
 <phrase>
 <original>chroma subsampling</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>metadata</original>
 <translation></translation>
 </phrase>
 
@@ -11836,7 +11898,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <translation></translation>
 </phrase>
 
-<!-- File_Save_JPEGSettings.frm contains 26 phrases. 10 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- File_Save_JPEGSettings.frm contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_Save_JPEGSettings.frm-->
 
@@ -11950,17 +12012,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 </phrase>
 
 <phrase>
-<original>alpha cut-off</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>palette size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>transparent color (right-click image to select)</original>
 <translation></translation>
 </phrase>
 
@@ -12049,7 +12101,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 59 phrases. 32 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 59 phrases. 34 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -13505,16 +13557,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>Green</original>
-<translation>Vert</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>Bleu</translation>
-</phrase>
-
-<phrase>
 <original>Alpha</original>
 <translation>Alpha</translation>
 </phrase>
@@ -13584,7 +13626,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>Cette option contrôle quels critères utilise la baguette magique pour déterminer si un pixel doit être ajoutée à la sélection actuelle.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 54 phrases. 15 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 54 phrases. 17 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15093,39 +15135,12 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for File_Save_GIF.frm (dialog_ExportGIF) -->
-
-<phrase>
-<original>GIF export options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>by cut-off</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>by color</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_GIF.frm contains 18 phrases. 15 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for File_Save_GIF.frm-->
-
-<!-- BEGIN text for cUniversalDLLCalls.cls -->
-
-<!-- cUniversalDLLCalls.cls contains 0 phrases. -->
-
-<!-- END text for cUniversalDLLCalls.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2582</phrasecount>
+<phrasecount>2585</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4479 phrases. -->
-<!-- 1897 are duplicates, so only 2582 unique phrases have been written to file. -->
-<!-- These 2582 phrases contain approximately 13270 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1899 are duplicates, so only 2585 unique phrases have been written to file. -->
+<!-- These 2585 phrases contain approximately 13275 total words. -->
 
 </pdData>

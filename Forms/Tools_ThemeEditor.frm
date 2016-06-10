@@ -252,7 +252,7 @@ Begin VB.Form FormThemeEditor
       _ExtentX        =   22886
       _ExtentY        =   1508
       Alignment       =   2
-      Caption         =   "DEAR TRANSLATORS: this dialog is just for testing.  I have deliberately omitted from the translation files."
+      Caption         =   "DEAR TRANSLATORS: this dialog is just for testing.  I have deliberately omitted it from the translation files."
       FontSize        =   12
       Layout          =   1
    End
