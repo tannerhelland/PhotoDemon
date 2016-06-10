@@ -148,12 +148,10 @@ Private Sub pdFxPreview_ColorSelected()
     UpdatePreview
 End Sub
 
-'Convert a DIB from 24bpp to 32bpp, based on the supplied convertType value:
-' 0: use the supplied convertConstant value, and set the entire alpha channel to that
-' 1: color-based.  Remove the color specified by convertColor, according to the thresholds supplied in eraseThreshold and blendThreshold
-Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eraseThreshold As Double = 15, Optional ByVal blendThreshold As Double = 30, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+'Convert a DIB from 24bpp to 32bpp, using a high-quality color-matching scheme in the L*a*b* color space.
+Public Sub ColorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eraseThreshold As Double = 15, Optional ByVal blendThreshold As Double = 30, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
-    If Not toPreview Then Message "Adding new alpha channel to image..."
+    If (Not toPreview) Then Message "Adding new alpha channel to image..."
     
     'Call prepImageData, which will prepare a temporary copy of the image
     Dim ImageData() As Byte
@@ -161,7 +159,7 @@ Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
     PrepImageData tmpSA, toPreview, dstPic
     
     'Before doing anything else, convert this DIB to 32bpp.
-    If workingDIB.GetDIBColorDepth <> 32 Then workingDIB.ConvertTo32bpp
+    If (workingDIB.GetDIBColorDepth <> 32) Then workingDIB.ConvertTo32bpp
     
     'Create a local array and point it at the pixel data we want to operate on
     PrepSafeArray tmpSA, workingDIB
@@ -173,16 +171,16 @@ Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
-    qvDepth = workingDIB.GetDIBColorDepth \ 8
+    
+    'For this function to work, each pixel needs to be RGBA, 32-bpp
+    Dim pxWidth As Long
+    pxWidth = workingDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    ProgressBars.SetProgBarMax finalY
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     'Color variables
     Dim r As Long, g As Long, b As Long, a As Long
@@ -193,12 +191,44 @@ Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
     g2 = ExtractG(ConvertColor)
     b2 = ExtractB(ConvertColor)
     
-    'For maximum quality, we will apply our color comparison in the CieLAB color space
+    'For maximum quality, we will apply our color comparison in the L*a*b* color space; each scanline will be
+    ' transformed to L*a*b* all at once, for performance reasons
+    Dim labValues() As Single
+    ReDim labValues(0 To finalX * pxWidth + pxWidth) As Single
+    
     Dim labL As Double, labA As Double, labB As Double
     Dim labL2 As Double, labA2 As Double, labB2 As Double
     
+    Dim labLf As Single, labAf As Single, labBf As Single
+    Dim labL2f As Single, labA2f As Single, labB2f As Single
+    
+    Dim labTransform As pdLCMSTransform
+    
     'Calculate the L*a*b* values of the color to be removed
-    RGBtoLAB r2, g2, b2, labL2, labA2, labB2
+    If g_LCMSEnabled Then
+    
+        'If LittleCMS is available, we're going to use it to perform the whole damn L*a*b* transform.
+        Set labTransform = New pdLCMSTransform
+        labTransform.CreateRGBAToLabTransform , True, INTENT_PERCEPTUAL, 0&
+        
+        Dim rgbBytes() As Byte
+        ReDim rgbBytes(0 To 3) As Byte
+        rgbBytes(0) = b2: rgbBytes(1) = g2: rgbBytes(2) = r2
+        
+        Dim labBytes() As Single
+        ReDim labBytes(0 To 3) As Single
+        labTransform.ApplyTransformToScanline VarPtr(rgbBytes(0)), VarPtr(labBytes(0)), 1
+        
+        labL2f = labBytes(0)
+        labA2f = labBytes(1)
+        labB2f = labBytes(2)
+        
+    Else
+        RGBtoLAB r2, g2, b2, labL2, labA2, labB2
+        labL2f = labL2
+        labA2f = labA2
+        labB2f = labB2
+    End If
     
     'The blend threshold is used to "smooth" the edges of the green screen.  Calculate the difference between
     ' the erase and the blend thresholds in advance.
@@ -208,78 +238,97 @@ Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
     
     Dim cDistance As Double
     Dim newAlpha As Long
+    
+    'To improve performance of our horizontal loop, we'll move through bytes an entire pixel at a time
+    Dim xStart As Long, xStop As Long
+    xStart = initX * pxWidth
+    xStop = finalX * pxWidth
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
     For y = initY To finalY
     
-        'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        If qvDepth = 4 Then a = ImageData(QuickVal + 3, y)
+        'Start by pre-calculating all L*a*b* values for this row
+        If g_LCMSEnabled Then
+            labTransform.ApplyTransformToScanline VarPtr(ImageData(0, y)), VarPtr(labValues(0)), finalX + 1
+        Else
+            For x = xStart To xStop Step pxWidth
+                b = ImageData(x, y)
+                g = ImageData(x + 1, y)
+                r = ImageData(x + 2, y)
+                RGBtoLAB r, g, b, labL, labA, labB
+                labValues(x) = labL
+                labValues(x + 1) = labA
+                labValues(x + 2) = labB
+            Next x
+        End If
         
-        'Convert the color to the L*a*b* color space
-        RGBtoLAB r, g, b, labL, labA, labB
+        'With all lab values pre-calculated, we can quickly step through each pixel, calculating distances as we go
+        For x = xStart To xStop Step pxWidth
         
-        'Perform a basic distance calculation (not ideal, but faster than a completely correct comparison;
-        ' see http://en.wikipedia.org/wiki/Color_difference for a full report)
-        cDistance = distanceThreeDimensions(labL, labA, labB, labL2, labA2, labB2)
-        
-        'If the distance is below the erasure threshold, remove it completely
-        If cDistance < eraseThreshold Then
-        
-            ImageData(QuickVal + 3, y) = 0
+            'Get the source pixel color values
+            b = ImageData(x, y)
+            g = ImageData(x + 1, y)
+            r = ImageData(x + 2, y)
+            a = ImageData(x + 3, y)
             
-        'If the color is between the erasure and blend threshold, feather it against a partial alpha and
-        ' color-correct it to remove any "color fringing" from the removed color.
-        ElseIf cDistance < blendThreshold Then
-            
-            'Use a ^2 curve to improve blending response
-            cDistance = ((blendThreshold - cDistance) / difThreshold)
-            cDistance = cDistance * cDistance
-            
-            'Calculate a new alpha value for this pixel, based on its distance from the threshold.  Large
-            ' distances from the removed color are made less transparent than small distances.
-            newAlpha = 255 - (cDistance * 255)
-            
-            'Feathering the alpha often isn't enough to fully remove the color fringing caused by the removed
-            ' background color, which will have "infected" the core RGB values.  Attempt to correct this by
-            ' subtracting the target color from the original color, using the calculated threshold value; this
-            ' is the only way I know to approximate the "feathering" caused by light bleeding over object edges.
-            If cDistance = 1 Then cDistance = 0.999999
-            r = (r - (r2 * cDistance)) / (1 - cDistance)
-            g = (g - (g2 * cDistance)) / (1 - cDistance)
-            b = (b - (b2 * cDistance)) / (1 - cDistance)
-            
-            If r > 255 Then r = 255
-            If g > 255 Then g = 255
-            If b > 255 Then b = 255
-            If r < 0 Then r = 0
-            If g < 0 Then g = 0
-            If b < 0 Then b = 0
-            
-            'Assign the new color and alpha values
-            ImageData(QuickVal + 2, y) = r
-            ImageData(QuickVal + 1, y) = g
-            ImageData(QuickVal, y) = b
-            If qvDepth = 3 Then
-                ImageData(QuickVal + 3, y) = newAlpha
+            'Perform a basic distance calculation (not ideal, but faster than a completely correct comparison;
+            ' see http://en.wikipedia.org/wiki/Color_difference for a full report)
+            If g_LCMSEnabled Then
+                cDistance = Math_Functions.Distance3D_FastFloat(labValues(x), labValues(x + 1), labValues(x + 2), labL2f, labA2f, labB2f)
             Else
-                ImageData(QuickVal + 3, y) = newAlpha * (a / 255)
+                cDistance = Math_Functions.DistanceThreeDimensions(labValues(x), labValues(x + 1), labValues(x + 2), labL2, labA2, labB2)
             End If
+            
+            'If the distance is below the erasure threshold, remove it completely
+            If (cDistance < eraseThreshold) Then
+                ImageData(x + 3, y) = 0
                 
+            'If the color is between the erasure and blend threshold, feather it against a partial alpha and
+            ' color-correct it to remove any "color fringing" from the removed color.
+            ElseIf (cDistance < blendThreshold) Then
+                
+                'Use a ^2 curve to improve blending response
+                cDistance = ((blendThreshold - cDistance) / difThreshold)
+                cDistance = cDistance * cDistance
+                
+                'Calculate a new alpha value for this pixel, based on its distance from the threshold.  Large
+                ' distances from the removed color are made less transparent than small distances.
+                newAlpha = 255 - (cDistance * 255)
+                
+                'Feathering the alpha often isn't enough to fully remove the color fringing caused by the removed
+                ' background color, which will have "infected" the core RGB values.  Attempt to correct this by
+                ' subtracting the target color from the original color, using the calculated threshold value; this
+                ' is the only way I know to approximate the "feathering" caused by light bleeding over object edges.
+                If (cDistance = 1) Then cDistance = 0.999999
+                r = (r - (r2 * cDistance)) / (1 - cDistance)
+                g = (g - (g2 * cDistance)) / (1 - cDistance)
+                b = (b - (b2 * cDistance)) / (1 - cDistance)
+                
+                If (r > 255) Then r = 255
+                If (g > 255) Then g = 255
+                If (b > 255) Then b = 255
+                If (r < 0) Then r = 0
+                If (g < 0) Then g = 0
+                If (b < 0) Then b = 0
+                
+                'Assign the new color and alpha values
+                ImageData(x, y) = b
+                ImageData(x + 1, y) = g
+                ImageData(x + 2, y) = r
+                ImageData(x + 3, y) = newAlpha * (a / 255)
+                    
+            End If
+            
+        Next x
+        
+        If (Not toPreview) Then
+            If (y And progBarCheck) = 0 Then
+                If UserPressedESC() Then Exit For
+                SetProgBarVal y
+            End If
         End If
         
     Next y
-        If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
-                SetProgBarVal x
-            End If
-        End If
-    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -300,15 +349,11 @@ End Sub
 
 'Render a new preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then colorToAlpha colorPicker.Color, sltErase.Value, sltBlend.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ColorToAlpha colorPicker.Color, sltErase.Value, sltBlend.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-
-
-
-
 
