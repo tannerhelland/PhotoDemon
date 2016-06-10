@@ -28,13 +28,10 @@ Public Sub ResetImageImportPreferenceCache()
 End Sub
 
 Public Function GetImportPref_JPEGOrientation() As Boolean
-    
     If (m_JpegObeyEXIFOrientation = PD_BOOL_UNKNOWN) Then
         If g_UserPreferences.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then m_JpegObeyEXIFOrientation = PD_BOOL_TRUE Else m_JpegObeyEXIFOrientation = PD_BOOL_FALSE
     End If
-    
     GetImportPref_JPEGOrientation = CBool(m_JpegObeyEXIFOrientation = PD_BOOL_TRUE)
-    
 End Function
 
 'PDI loading.  "PhotoDemon Image" files are the only format PD supports for saving layered images.  PDI to PhotoDemon is like
@@ -716,6 +713,91 @@ LoadVBImageFail:
     
 End Function
 
+Public Function IsFileSVGCandidate(ByVal imagePath As String) As Boolean
+    IsFileSVGCandidate = CBool(StrComp(LCase$(Right$(imagePath, 3)), "svg", vbBinaryCompare) = 0)
+    
+    'Compressed SVG files are not currently supported.  (For them to work, we'd need to decompress to a temp file, which causes
+    ' some messy interaction details with ExifTool - we'll deal with this in the future.)
+    'If (Not IsFileSVGCandidate) Then IsFileSVGCandidate = CBool(StrComp(LCase$(Right$(imagePath, 4)), "svgz", vbBinaryCompare) = 0)
+End Function
+
+'SVG support is *experimental only*!  This function should not be enabled in production builds.
+Public Function LoadSVG(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
+    
+    On Error GoTo LoadSVGFail
+    
+    'In the future, we'll add meaningful heuristics, but for now, don't even attempt a load unless the file extension matches.
+    If IsFileSVGCandidate(imagePath) Then
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Waiting for SVG parsing to complete..."
+        #End If
+        
+        'Hang out while we wait for ExifTool to finish processing this image's metadata
+        Do While (Not dstImage.imgMetadata.HasMetadata)
+            DoEvents
+            If ExifTool.IsMetadataFinished Then
+                dstImage.imgMetadata.LoadAllMetadata ExifTool.RetrieveMetadataString, dstImage.imageID
+            End If
+        Loop
+        
+        'Retrieve the target SVG's width and height
+        Dim svgWidth As String, svgHeight As String
+        svgWidth = dstImage.imgMetadata.GetTagValue("SVG:ImageWidth", vbBinaryCompare, True)
+        svgHeight = dstImage.imgMetadata.GetTagValue("SVG:ImageHeight", vbBinaryCompare, True)
+        
+        'If there's a viewbox, grab it too
+        Dim svgHasViewbox As Boolean
+        svgHasViewbox = dstImage.imgMetadata.DoesTagExistFullName("SVG:ViewBox", , vbBinaryCompare)
+        
+        Dim svgWidthL As Long, svgHeightL As Long
+        If (Len(svgWidth) <> 0) Then
+            
+            'Check for sizes defined as percentages (possible when a view box is specified)
+            If (InStr(1, svgWidth, "%", vbBinaryCompare) <> 0) Then
+                'TODO: grab width/height from viewbox
+                svgWidthL = 100
+            Else
+                Debug.Print "HERE 2", InStr(1, svgWidth, "%", vbBinaryCompare)
+                svgWidthL = CLng(svgWidth)
+            End If
+            
+        Else
+            svgWidthL = 100
+        End If
+        
+        If (Len(svgHeight) <> 0) Then
+            If (InStr(1, svgHeight, "%", vbBinaryCompare) <> 0) Then
+                svgHeightL = 100    'TODO: grab height/height from viewbox
+            Else
+                svgHeightL = CLng(svgHeight)
+            End If
+            
+        Else
+            svgHeightL = 100
+        End If
+        
+        LoadSVG = True
+        dstDIB.CreateBlank svgWidthL, svgHeightL, 32, vbWhite, 255
+        dstDIB.SetInitialAlphaPremultiplicationState True
+        
+    Else
+        LoadSVG = False
+    End If
+    
+    Exit Function
+    
+LoadSVGFail:
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  SVG parsing failed with error #" & Err.Number & ": " & Err.Description
+    #End If
+    
+    LoadSVG = False
+    Exit Function
+    
+End Function
+
 'Load data from a PD-generated Undo file.  This function is fairly complex, on account of PD's new diff-based Undo engine.
 ' Note that two types of Undo data must be specified: the Undo type of the file requested (because this function has no
 ' knowledge of that, by design), and what type of Undo data the caller wants extracted from the file.
@@ -878,12 +960,26 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
     
     CascadeLoadGenericImage = False
     
+    'Before jumping out to a 3rd-party library, check for any image formats that we must decode using internal plugins.
+    #If DEBUGMODE = 1 Then
+        
+        'SVG support is just experimental at present!
+        CascadeLoadGenericImage = ImageImporter.LoadSVG(srcFile, dstDIB, dstImage)
+        If CascadeLoadGenericImage Then
+            decoderUsed = PDIDE_SVGPARSER
+            dstImage.originalFileFormat = PDIF_SVG
+            dstImage.SetDPI 96, 96
+            dstImage.originalColorDepth = 32
+        End If
+        
+    #End If
+    
     'Note that FreeImage may raise additional dialogs (e.g. for HDR/RAW images), so it does not return a binary pass/fail.
     ' If the function fails due to user cancellation, we will suppress subsequent error message boxes.
     freeImage_Return = PD_FAILURE_GENERIC
     
     'If FreeImage is available, we first use it to try and load the image.
-    If g_ImageFormats.FreeImageEnabled Then
+    If (Not CascadeLoadGenericImage) And g_ImageFormats.FreeImageEnabled Then
     
         'Start by seeing if the image file contains multiple pages.  If it does, we will load each page as a separate layer.
         ' TODO: preferences or prompt for how to handle such files??

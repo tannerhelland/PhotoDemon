@@ -43,6 +43,10 @@ Attribute VB_Name = "ExifTool"
 
 Option Explicit
 
+'DEBUGGING ONLY!  Do not enable this constant in production builds, as it does obnoxious things like overwriting the clipboard with
+' retrieved metadata information.
+Public Const EXIFTOOL_DEBUGGING_ENABLED As Long = 0&
+
 'A number of API functions are required to pipe stdout
 Private Const STARTF_USESHOWWINDOW = &H1
 Private Const STARTF_USESTDHANDLES = &H100
@@ -257,7 +261,7 @@ Private isExifToolRunning As Boolean
 Private curMetadataString As String
 
 'While capture mode is active (e.g. while retrieving metadata information we care about) this will be set to TRUE.
-Private captureModeActive As Boolean
+Private m_captureModeActive As Boolean
 
 'While verification mode is active (e.g. we only care about ExifTool succeeding or failing), this will be set to TRUE.
 Private m_VerificationModeActive As Boolean
@@ -308,7 +312,7 @@ End Function
 ' from ExifTool.
 Public Sub NewMetadataReceived(ByVal newMetadata As String)
     
-    If captureModeActive Then
+    If m_captureModeActive Then
         curMetadataString = curMetadataString & newMetadata
     
     'During verification mode, we must also check to see if verification has finished
@@ -392,6 +396,11 @@ Private Sub StopVerificationMode()
     
 End Sub
 
+'Returns TRUE if ExifTool is currently parsing metadata asynchronously
+Public Function IsMetadataPipeActive() As Boolean
+    IsMetadataPipeActive = m_captureModeActive
+End Function
+
 'When ExifTool has completed work on metadata, it will send "{ready}" to stdout.  We check for the presence of "{ready}" in
 ' the metadata string to see if ExifTool is done.
 Public Function IsMetadataFinished() As Boolean
@@ -407,7 +416,7 @@ Public Function IsMetadataFinished() As Boolean
     ' metadata string (to avoid collisions?).
     Dim tmpMetadata As String
     
-    If captureModeActive Then
+    If m_captureModeActive Then
         tmpMetadata = curMetadataString
     ElseIf m_VerificationModeActive Then
         tmpMetadata = m_VerificationString
@@ -422,12 +431,12 @@ Public Function IsMetadataFinished() As Boolean
     If Len(tmpMetadata) = 0 Then Exit Function
     
     'Different verification modes require different checks for completion.
-    If captureModeActive Then
+    If m_captureModeActive Then
         
         If InStr(1, tmpMetadata, "{ready" & m_LastRequestID & "}", vbBinaryCompare) > 0 Then
             
             'Terminate the relevant mode
-            captureModeActive = False
+            m_captureModeActive = False
             IsMetadataFinished = True
             
         Else
@@ -516,7 +525,7 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
     End If
     
     'Notify the program that stdout capture has begun
-    captureModeActive = True
+    m_captureModeActive = True
     
     'Erase any previous metadata caches.
     ' NOTE! Upon implementing PD's new asynchronous metadata retrieval mechanism, we don't want to erase the master metadata string,
@@ -557,9 +566,16 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
         cmdParams = cmdParams & "-b" & vbCrLf
     End If
     
-    'If the user wants us to extract unknown tags, do so now
-    If g_UserPreferences.GetPref_Boolean("Loading", "Metadata Extract Unknown", False) Then
-        cmdParams = cmdParams & "-u" & vbCrLf
+    'If the user wants us to extract unknown tags, do so now.
+    ' IMPORTANT NOTE: this behavior is overridden if a file appears to be SVG.  ExifTool will happily parse SVG files
+    ' for us, but it will return all SVG entities as "unknowns", which we must handle manually.
+    If ImageImporter.IsFileSVGCandidate(srcFile) Then
+        cmdParams = cmdParams & "-U" & vbCrLf
+    'If this file is *not* an SVG candidate, rely on the user's setting to control unknown tag behavior.
+    Else
+        If g_UserPreferences.GetPref_Boolean("Loading", "Metadata Extract Unknown", False) Then
+            cmdParams = cmdParams & "-u" & vbCrLf
+        End If
     End If
     
     'If the user wants us to expose duplicate tags, do so now.  (Default behavior is to suppress duplicates.)

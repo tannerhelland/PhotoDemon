@@ -334,9 +334,12 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     'We now know that 1) ExifTool exists, and 2) it returned *something* for this image.
     
     'If you want to examine the XML output yourself (e.g. while debugging), you can dump the full XML contents to the clipboard
-    ' using the following two lines of code.  (Note that a forcible ANSI conversion will be applied.)
-    'Clipboard.Clear
-    'Clipboard.SetText mdString
+    ' by enabling the EXIFTOOL_DEBUGGING_ENABLED constant inside the Exiftool module.  (Note that a forcible ANSI conversion will
+    ' be applied, so extended chars may not survive.)
+    If (EXIFTOOL_DEBUGGING_ENABLED <> 0) Then
+        Clipboard.Clear
+        Clipboard.SetText mdString
+    End If
     
     'Because PD intercepts metadata asynchronously, the returned string will contain trailing text similar to {ready123},
     ' where 123 is the ID number of this image.  Because we don't actually want to store that text, use the supplied

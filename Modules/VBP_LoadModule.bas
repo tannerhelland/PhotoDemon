@@ -92,7 +92,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     ' and depending on user input, handle the file a few different ways.
     Dim imageHasMultiplePages As Boolean: imageHasMultiplePages = False
     Dim numOfPages As Long: numOfPages = 0
-        
+    
     'We now have one last tedious check to perform: making sure the file actually exists!
     If (Not cFile.FileExist(srcFile)) Then
         If handleUIDisabling Then Processor.MarkProgramBusyState False, True
@@ -210,7 +210,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     #End If
     
     'Because ExifTool is sending us data in the background, we must periodically yield for metadata piping.
-    If (decoderUsed <> PDIDE_INTERNAL) Then DoEvents
+    If (ExifTool.IsMetadataPipeActive) Then DoEvents
     
     
     '*************************************************************************************************************************************
@@ -313,7 +313,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         End If
         
         'Because ExifTool is sending us data in the background, we periodically yield for metadata piping.
-        If (decoderUsed <> PDIDE_INTERNAL) Then DoEvents
+        If (ExifTool.IsMetadataPipeActive) Then DoEvents
             
             
         '*************************************************************************************************************************************
@@ -331,7 +331,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         ImageImporter.ApplyPostLoadUIChanges srcFile, targetImage, addToRecentFiles
         
         'Because ExifTool is sending us data in the background, we periodically yield for metadata piping.
-        If (decoderUsed <> PDIDE_INTERNAL) Then DoEvents
+        If (ExifTool.IsMetadataPipeActive) Then DoEvents
         
             
         '*************************************************************************************************************************************
@@ -397,17 +397,22 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         
         'Ask the metadata handler if it has finished parsing the image
         If g_ExifToolEnabled And (decoderUsed <> PDIDE_INTERNAL) Then
-    
-            If IsMetadataFinished Then
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Metadata retrieved successfully."
-                #End If
-                targetImage.imgMetadata.LoadAllMetadata RetrieveMetadataString, targetImage.imageID
-            Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Metadata parsing hasn't finished; switching to asynchronous wait mode..."
-                #End If
-                If Not FormMain.tmrMetadata.Enabled Then FormMain.tmrMetadata.Enabled = True
+            
+            'Some tools may have already stopped to load metadata
+            If (Not targetImage.imgMetadata.HasMetadata) Then
+            
+                If ExifTool.IsMetadataFinished Then
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "Metadata retrieved successfully."
+                    #End If
+                    targetImage.imgMetadata.LoadAllMetadata ExifTool.RetrieveMetadataString, targetImage.imageID
+                Else
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "Metadata parsing hasn't finished; switching to asynchronous wait mode..."
+                    #End If
+                    If Not FormMain.tmrMetadata.Enabled Then FormMain.tmrMetadata.Enabled = True
+                End If
+            
             End If
     
             'Next, retrieve any specific metadata-related entries that may be useful to further processing, like image resolution
