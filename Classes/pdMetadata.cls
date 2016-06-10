@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Handler
 'Copyright 2013-2016 by Tanner Helland
 'Created: 23/May/13
-'Last updated: 08/April/16
-'Last update: mass overhaul in conjunction with building the Metadata Editor dialog
+'Last updated: 09/June/16
+'Last update: improve parsing behavior against incorrectly formed multiline print values that are non-binary in nature
 '
 'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
@@ -174,7 +174,7 @@ End Function
 
 'Does a given tag exist in the metadata collection?  Returns TRUE if yes, FALSE, if no.
 ' If the tag does exist, the optional byref tagIndex will be set to the index.  It will be set to -1 if the tag is not found.
-Private Function DoesTagExistFullName(ByVal tagNameAndGroup As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
+Public Function DoesTagExistFullName(ByVal tagNameAndGroup As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
 
     DoesTagExistFullName = False
     
@@ -200,12 +200,16 @@ End Function
 '
 '(It's assumed that the caller has called DoesTagExistFullName() before calling this function, so they know whether a null string is
 ' the actual return value of the given metadata entry, or a fail state.)
-Private Function GetTagValue(ByVal tagNameAndGroup As String, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As String
+Public Function GetTagValue(ByVal tagNameAndGroup As String, Optional ByVal searchMode As VbCompareMethod = vbTextCompare, Optional ByVal returnPrintFriendlyValue As Boolean = False) As String
 
     Dim tagIndex As Long
     
     If DoesTagExistFullName(tagNameAndGroup, tagIndex, searchMode) Then
-        GetTagValue = GetMetadataEntry(tagIndex).TagValue       'Friendly?
+        If returnPrintFriendlyValue Then
+            GetTagValue = GetMetadataEntry(tagIndex).TagValueFriendly
+        Else
+            GetTagValue = GetMetadataEntry(tagIndex).TagValue
+        End If
     Else
         GetTagValue = vbNullString
     End If
@@ -1056,6 +1060,9 @@ Private Function PARSE_UnprocessedBinaryValue(ByRef xmlLines() As String, ByRef 
 '     </rdf:Description>
 '    </Composite:ThumbnailImage>
     
+    Dim i As Long
+    Dim finalValueLine As Long, fullTagValue As String
+    
     'ExifTool's output is consistent (including the datatype identifier), so we can use line separators to quickly check for such tags.
     If StrComp(Trim$(xmlLines(tagStartLine + 3)), "<et:prt rdf:datatype='http://www.w3.org/2001/XMLSchema#base64Binary'>", vbBinaryCompare) = 0 Then
         
@@ -1064,15 +1071,13 @@ Private Function PARSE_UnprocessedBinaryValue(ByRef xmlLines() As String, ByRef 
         dstMetadata.IsTagBinary = True
         
         'Looping backward from the closing tag line (which has already been discovered!), look for the closing </et:prt> tag.
-        Dim i As Long
         For i = (tagEndLine - 1) To tagStartLine Step -1
             If StrComp(Trim$(xmlLines(i)), "</et:prt>", vbBinaryCompare) = 0 Then Exit For
         Next i
         
         If (i > tagStartLine) Then
             
-            Dim finalValueLine As Long:  finalValueLine = i - 1
-            Dim fullTagValue As String
+            finalValueLine = i - 1
             
             For i = (tagStartLine + 4) To finalValueLine
                 fullTagValue = fullTagValue & xmlLines(i)
@@ -1087,9 +1092,37 @@ Private Function PARSE_UnprocessedBinaryValue(ByRef xmlLines() As String, ByRef 
             
         End If
         
+        PARSE_UnprocessedBinaryValue = dstMetadata.IsTagBinary
+        
+    'If this line does *not* include a base-64 tag, it is a normal printable tag -- just a multiline one.
+    Else
+        
+        'Looping backward from the closing tag line (which has already been discovered!), look for the closing </et:prt> tag.
+        For i = (tagEndLine - 1) To tagStartLine Step -1
+            If StrComp(Trim$(xmlLines(i)), "</et:prt>", vbBinaryCompare) = 0 Then Exit For
+        Next i
+        
+        If (i >= tagStartLine) Then
+            
+            finalValueLine = i - 1
+            
+            If (Len(xmlLines(tagStartLine + 3)) > 8) Then
+                fullTagValue = xmlLines(tagStartLine + 3)
+                fullTagValue = Right$(fullTagValue, Len(fullTagValue) - (InStr(1, fullTagValue, "<et:prt>", vbBinaryCompare) + 7))
+            End If
+            
+            For i = (tagStartLine + 4) To finalValueLine
+                fullTagValue = fullTagValue & xmlLines(i)
+            Next i
+            
+            'Store the result as a normal tag.
+            dstMetadata.TagValueFriendly = ExifTool.PARSE_UnescapeXML(fullTagValue)
+            dstMetadata.TagValue = dstMetadata.TagValueFriendly
+            PARSE_UnprocessedBinaryValue = True
+            
+        End If
+        
     End If
-    
-    PARSE_UnprocessedBinaryValue = dstMetadata.IsTagBinary
     
 End Function
 
