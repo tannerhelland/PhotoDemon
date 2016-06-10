@@ -271,8 +271,12 @@ Public Function DistanceTwoPointsShortcut(ByVal x1 As Double, ByVal y1 As Double
 End Function
 
 'Return the distance between two 3D points
-Public Function DistanceThreeDimensions(ByVal x1 As Double, ByVal y1 As Double, ByVal z1 As Double, ByVal x2 As Double, ByVal y2 As Double, ByVal z2 As Double)
+Public Function DistanceThreeDimensions(ByVal x1 As Double, ByVal y1 As Double, ByVal z1 As Double, ByVal x2 As Double, ByVal y2 As Double, ByVal z2 As Double) As Double
     DistanceThreeDimensions = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2 + (z1 - z2) ^ 2)
+End Function
+
+Public Function Distance3D_FastFloat(ByRef x1 As Single, ByRef y1 As Single, ByRef z1 As Single, ByRef x2 As Single, ByRef y2 As Single, ByRef z2 As Single) As Single
+    Distance3D_FastFloat = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2 + (z1 - z2) ^ 2)
 End Function
 
 'Given two intersecting lines, return the angle between them (e.g. the inner product: https://en.wikipedia.org/wiki/Inner_product_space)

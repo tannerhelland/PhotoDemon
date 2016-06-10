@@ -69,6 +69,12 @@ Public Function CreateSRGBProfile() As Boolean
     CreateSRGBProfile = CBool(m_ProfileHandle <> 0)
 End Function
 
+Public Function CreateLabProfile(Optional ByVal useVersion4 As Boolean = True) As Boolean
+    If (m_ProfileHandle <> 0) Then ReleaseProfile
+    m_ProfileHandle = LittleCMS.LCMS_LoadStockLabProfile(useVersion4)
+    CreateLabProfile = CBool(m_ProfileHandle <> 0)
+End Function
+
 Public Function GetHandle() As Long
     GetHandle = m_ProfileHandle
 End Function
