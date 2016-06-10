@@ -5,7 +5,7 @@ Public Type RGBQUAD
    Blue As Byte
    Green As Byte
    Red As Byte
-   Alpha As Byte
+   alpha As Byte
 End Type
 
 Public Type RECTF_RB
@@ -297,10 +297,11 @@ Public Enum PD_IMAGE_DECODER_ENGINE
     PDIDE_FREEIMAGE = 1
     PDIDE_GDIPLUS = 2
     PDIDE_VBLOADPICTURE = 3
+    PDIDE_SVGPARSER = 4
 End Enum
 
 #If False Then
-    Private Const PDIDE_INTERNAL = 0, PDIDE_FREEIMAGE = 1, PDIDE_GDIPLUS = 2, PDIDE_VBLOADPICTURE = 3
+    Private Const PDIDE_INTERNAL = 0, PDIDE_FREEIMAGE = 1, PDIDE_GDIPLUS = 2, PDIDE_VBLOADPICTURE = 3, PDIDE_SVGPARSER = 4
 #End If
 
 'Some UI DIBs are generated at run-time.  These DIBs can be requested by using the getRuntimeUIDIB() function.
@@ -480,7 +481,7 @@ End Type
 'Color definition.  If one of the non-BaseColor values is missing in the theme, it will be replaced by the
 ' BaseColor value.  (As such, the BaseColor value will always be present in a color definition.)
 Public Type PDThemeColor
-    BaseColor As Long
+    baseColor As Long
     DisabledColor As Long
     ActiveColor As Long
     HoverColor As Long
@@ -549,6 +550,7 @@ Public Enum PHOTODEMON_IMAGE_FORMAT
     PDIF_WMF = 110
     PDIF_EMF = 111
     PDIF_PNM = 112      'Catch-all for various portable pixmap filetypes
+    PDIF_SVG = 113      'Support is currently experimental *only*!  Recommend disabling in production builds.
     
 End Enum
 
