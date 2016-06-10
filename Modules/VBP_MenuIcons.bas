@@ -930,7 +930,7 @@ Public Sub InitializeCursors()
     'Previously, system cursors were cached here.  This is no longer needed per https://github.com/tannerhelland/PhotoDemon/issues/78
     ' I am leaving this sub in case I need to pre-load tool cursors in the future.
     
-    'Note that unloadAllCursors below is still required, as the program may dynamically generate custom cursors while running, and
+    'Note that UnloadAllCursors below is still required, as the program may dynamically generate custom cursors while running, and
     ' these cursors will not be automatically deleted by the system.
 
 End Sub
@@ -947,22 +947,16 @@ Public Sub UnloadAllCursors()
     
 End Sub
 
-'Use any 32bpp PNG resource as a cursor (yes, it's amazing!).  When setting the mouse pointer of VB objects, please use
-' setPNGCursorToObject, below.
+'Use any 32bpp PNG resource as a cursor .  When setting the mouse pointer of VB objects, please use setPNGCursorToObject, below.
 Public Sub SetPNGCursorToHwnd(ByVal dstHwnd As Long, ByVal pngTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0)
     SetClassLong dstHwnd, GCL_HCURSOR, RequestCustomCursor(pngTitle, curHotspotX, curHotspotY)
 End Sub
 
-'Use any 32bpp PNG resource as a cursor (yes, it's amazing!).  Use this function preferentially over the previous one, if
-' you can.  If a VB object does not have its MousePointer property set to "custom", it will override our attempts to set
-' a custom mouse icon.
+'Use any 32bpp PNG resource as a cursor.  Use this function preferentially over the previous one, "SetPNGCursorToHwnd", when possible.
+' (If a VB object does not have its MousePointer property set to "custom", it will override our attempts to set a custom mouse icon.)
 Public Sub SetPNGCursorToObject(ByRef srcObject As Object, ByVal pngTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0)
-    
-    'Force VB to use a custom cursor
     srcObject.MousePointer = vbCustom
-    
     SetClassLong srcObject.hWnd, GCL_HCURSOR, RequestCustomCursor(pngTitle, curHotspotX, curHotspotY)
-    
 End Sub
 
 'Set a single object to use the hand cursor
@@ -984,36 +978,6 @@ End Sub
 Public Sub SetArrowCursor(ByRef tControl As Object)
     tControl.MousePointer = vbCustom
     SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_ARROW)
-End Sub
-
-'Set a single form to use the cross cursor
-Public Sub SetCrossCursor(ByRef tControl As Object)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_CROSS)
-End Sub
-    
-'Set a single form to use the Size All cursor
-Public Sub SetSizeAllCursor(ByRef tControl As Object)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZEALL)
-End Sub
-
-'Set a single form to use the Size NESW cursor
-Public Sub SetSizeNESWCursor(ByRef tControl As Object)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZENESW)
-End Sub
-
-'Set a single form to use the Size NS cursor
-Public Sub SetSizeNSCursor(ByRef tControl As Object)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZENS)
-End Sub
-
-'Set a single form to use the Size NWSE cursor
-Public Sub SetSizeNWSECursor(ByRef tControl As Object)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZENWSE)
-End Sub
-
-'Set a single form to use the Size WE cursor
-Public Sub SetSizeWECursor(ByRef tControl As Object)
-    SetClassLong tControl.hWnd, GCL_HCURSOR, LoadCursor(0, IDC_SIZEWE)
 End Sub
 
 'If a custom PNG cursor has not been loaded, this function will load the PNG, convert it to cursor format, then store

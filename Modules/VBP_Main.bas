@@ -264,6 +264,21 @@ Public Sub ContinueLoadingProgram()
     g_Language.ApplyLanguage False
     
     
+    '*************************************************************************************************************************************
+    ' Initialize the visual themes engine
+    '*************************************************************************************************************************************
+    
+    #If DEBUGMODE = 1 Then
+        perfCheck.markEvent "Initialize theme engine"
+    #End If
+    
+    'Because this class controls the visual appearance of all forms in the project, it must be loaded early in the boot process
+    LoadMessage "Initializing theme engine..."
+    
+    Set g_Themer = New pdVisualThemes
+    
+    'Load and validate the user's selected theme file
+    g_Themer.LoadDefaultPDTheme
     
     
     '*************************************************************************************************************************************
@@ -326,8 +341,7 @@ Public Sub ContinueLoadingProgram()
     
     'Display the splash screen, centered on whichever monitor the user previously used the program on.
     FormSplash.Show vbModeless
-    
-    
+        
     
     '*************************************************************************************************************************************
     ' Check for the presence of plugins (as other functions rely on these to initialize themselves)
@@ -350,8 +364,7 @@ Public Sub ContinueLoadingProgram()
     #If DEBUGMODE = 1 Then
         pdDebug.InitializeDebugger True
     #End If
-    
-    
+        
     
     '*************************************************************************************************************************************
     ' Based on available plugins, determine which image formats PhotoDemon can handle
@@ -371,24 +384,6 @@ Public Sub ContinueLoadingProgram()
     'Generate a list of currently supported input/output formats, which may vary based on plugin version and availability
     g_ImageFormats.GenerateInputFormats
     g_ImageFormats.GenerateOutputFormats
-    
-    
-    
-    '*************************************************************************************************************************************
-    ' Initialize the visual themes engine
-    '*************************************************************************************************************************************
-    
-    #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Initialize theme engine"
-    #End If
-    
-    'Because this class controls the visual appearance of all forms in the project, it must be loaded early in the boot process
-    LoadMessage "Initializing theme engine..."
-    
-    Set g_Themer = New pdVisualThemes
-    
-    'Load and validate the user's selected theme file
-    g_Themer.LoadDefaultPDTheme
     
     
     '*************************************************************************************************************************************
@@ -560,6 +555,7 @@ Public Sub ContinueLoadingProgram()
     FormMain.mainCanvas(0).ReadUserPreferences
     
     'Apply visual styles
+    g_Themer.SynchronizeThemeMenus
     FormMain.UpdateAgainstCurrentTheme False
     
     

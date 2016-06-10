@@ -112,7 +112,7 @@ End Sub
 ' immediately written to file.
 Public Sub EndBatchPreferenceMode()
     m_BatchModeActive = False
-    xmlEngine.writeXMLToFile PreferencesPath
+    xmlEngine.WriteXMLToFile PreferencesPath
 End Sub
 
 'Get the current Theme path.  Note that there are /App (program default) and /Data (userland) variants of this folder.
@@ -406,137 +406,143 @@ Private Sub CreateNewPreferencesFile()
     
     'Create a pdXML class, which will help us assemble the preferences file (in XML format, obviously)
     Set xmlEngine = New pdXML
-    xmlEngine.prepareNewXML "User Preferences"
-    xmlEngine.writeBlankLine
+    xmlEngine.PrepareNewXML "User Preferences"
+    xmlEngine.WriteBlankLine
     
     'Write out a comment marking the date and build of this preferences code; this can be helpful when debugging
-    xmlEngine.writeComment "This preferences file was created on " & Format$(Now, "dd-mmm-yyyy") & " by version " & App.Major & "." & App.Minor & "." & App.Revision & " of the software."
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteComment "This preferences file was created on " & Format$(Now, "dd-mmm-yyyy") & " by version " & App.Major & "." & App.Minor & "." & App.Revision & " of the software."
+    xmlEngine.WriteBlankLine
     
     'Write out the "advanced" block of preferences:
-    xmlEngine.writeTag "Advanced", "", True
+    xmlEngine.WriteTag "Advanced", "", True
         'As of 6.4, there are no longer any Advanced preferences that need to be stored here.  There may be in the future,
         ' so I've left the creation code for this section of the preferences file.
-    xmlEngine.closeTag "Advanced"
-    xmlEngine.writeBlankLine
+    xmlEngine.CloseTag "Advanced"
+    xmlEngine.WriteBlankLine
     
-    xmlEngine.writeTag "BatchProcess", "", True
-        xmlEngine.writeTag "DriveBox", ""
-        xmlEngine.writeTag "InputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
-        xmlEngine.writeTag "ListFolder", GetWindowsFolder(CSIDL_MY_DOCUMENTS)
-        xmlEngine.writeTag "OutputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
-    xmlEngine.closeTag "BatchProcess"
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteTag "BatchProcess", "", True
+        xmlEngine.WriteTag "DriveBox", ""
+        xmlEngine.WriteTag "InputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
+        xmlEngine.WriteTag "ListFolder", GetWindowsFolder(CSIDL_MY_DOCUMENTS)
+        xmlEngine.WriteTag "OutputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
+    xmlEngine.CloseTag "BatchProcess"
+    xmlEngine.WriteBlankLine
     
     'Write out the "core" block of preferences.  These are preferences that PD uses internally.  These are never directly
     ' exposed to the user (e.g. the user cannot toggle these from the Preferences dialog).
-    xmlEngine.writeTag "Core", "", True
-        xmlEngine.writeTag "DisplayIDEWarning", "True"
-        xmlEngine.writeTag "HasGitHubAccount", ""
-        xmlEngine.writeTag "LastOpenFilter", "1"        'Default to "All Compatible Graphics" filter for loading
-        xmlEngine.writeTag "LastPreferencesPage", "0"
-        xmlEngine.writeTag "LastSaveFilter", "-1"       'Mark the last-used save filter as "unknown"
-        xmlEngine.writeTag "LastWindowState", "0"
-        xmlEngine.writeTag "LastWindowLeft", "1"
-        xmlEngine.writeTag "LastWindowTop", "1"
-        xmlEngine.writeTag "LastWindowWidth", "1"
-        xmlEngine.writeTag "LastWindowHeight", "1"
-    xmlEngine.closeTag "Core"
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteTag "Core", "", True
+        xmlEngine.WriteTag "DisplayIDEWarning", "True"
+        xmlEngine.WriteTag "HasGitHubAccount", ""
+        xmlEngine.WriteTag "LastOpenFilter", "1"        'Default to "All Compatible Graphics" filter for loading
+        xmlEngine.WriteTag "LastPreferencesPage", "0"
+        xmlEngine.WriteTag "LastSaveFilter", "-1"       'Mark the last-used save filter as "unknown"
+        xmlEngine.WriteTag "LastWindowState", "0"
+        xmlEngine.WriteTag "LastWindowLeft", "1"
+        xmlEngine.WriteTag "LastWindowTop", "1"
+        xmlEngine.WriteTag "LastWindowWidth", "1"
+        xmlEngine.WriteTag "LastWindowHeight", "1"
+    xmlEngine.CloseTag "Core"
+    xmlEngine.WriteBlankLine
     
     'Write out a blank "dialogs" block.  Dialogs that offer to remember the user's current choice will store the given choice here.
     ' We don't prepopulate it with all possible choices; instead, choices are added as the user encounters those dialogs.
-    xmlEngine.writeTag "Dialogs", "", True
-    xmlEngine.closeTag "Dialogs"
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteTag "Dialogs", "", True
+    xmlEngine.CloseTag "Dialogs"
+    xmlEngine.WriteBlankLine
     
-    xmlEngine.writeTag "Interface", "", True
-        xmlEngine.writeTag "HighResolutionInput", "False"
-        xmlEngine.writeTag "MRUCaptionLength", "0"
-        xmlEngine.writeTag "RecentFilesLimit", "10"
-        xmlEngine.writeTag "WindowCaptionLength", "0"
-    xmlEngine.closeTag "Interface"
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteTag "Interface", "", True
+        xmlEngine.WriteTag "HighResolutionInput", "False"
+        xmlEngine.WriteTag "MRUCaptionLength", "0"
+        xmlEngine.WriteTag "RecentFilesLimit", "10"
+        xmlEngine.WriteTag "WindowCaptionLength", "0"
+    xmlEngine.CloseTag "Interface"
+    xmlEngine.WriteBlankLine
     
-    xmlEngine.writeTag "Language", "", True
-        xmlEngine.writeTag "CurrentLanguageFile", ""
-    xmlEngine.closeTag "Language"
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteTag "Language", "", True
+        xmlEngine.WriteTag "CurrentLanguageFile", ""
+    xmlEngine.CloseTag "Language"
+    xmlEngine.WriteBlankLine
     
-    xmlEngine.writeTag "Loading", "", True
-        xmlEngine.writeTag "ExifAutoRotate", "True"
-        xmlEngine.writeTag "InitialImageZoom", "0"
-        xmlEngine.writeTag "MetadataEstimateJPEG", "True"
-        xmlEngine.writeTag "MetadataExtractBinary", "False"
-        xmlEngine.writeTag "MetadataExtractUnknown", "False"
-        xmlEngine.writeTag "MetadataHideDuplicates", "True"
-        xmlEngine.writeTag "ToneMappingPrompt", "True"
-    xmlEngine.closeTag "Loading"
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteTag "Loading", "", True
+        xmlEngine.WriteTag "ExifAutoRotate", "True"
+        xmlEngine.WriteTag "InitialImageZoom", "0"
+        xmlEngine.WriteTag "MetadataEstimateJPEG", "True"
+        xmlEngine.WriteTag "MetadataExtractBinary", "False"
+        xmlEngine.WriteTag "MetadataExtractUnknown", "False"
+        xmlEngine.WriteTag "MetadataHideDuplicates", "True"
+        xmlEngine.WriteTag "ToneMappingPrompt", "True"
+    xmlEngine.CloseTag "Loading"
+    xmlEngine.WriteBlankLine
     
-    xmlEngine.writeTag "Paths", "", True
-        xmlEngine.writeTag "TempFiles", GetSystemTemporaryPath
-        xmlEngine.writeTag "OpenImage", GetWindowsFolder(CSIDL_MYPICTURES)
-        xmlEngine.writeTag "SaveImage", GetWindowsFolder(CSIDL_MYPICTURES)
-        xmlEngine.writeTag "Macro", MacroPath
-        xmlEngine.writeTag "Selections", SelectionPath
-    xmlEngine.closeTag "Paths"
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteTag "Paths", "", True
+        xmlEngine.WriteTag "TempFiles", GetSystemTemporaryPath
+        xmlEngine.WriteTag "OpenImage", GetWindowsFolder(CSIDL_MYPICTURES)
+        xmlEngine.WriteTag "SaveImage", GetWindowsFolder(CSIDL_MYPICTURES)
+        xmlEngine.WriteTag "Macro", MacroPath
+        xmlEngine.WriteTag "Selections", SelectionPath
+    xmlEngine.CloseTag "Paths"
+    xmlEngine.WriteBlankLine
     
-    xmlEngine.writeTag "Performance", "", True
-        xmlEngine.writeTag "ColorPerformance", "1"
-        xmlEngine.writeTag "InterfaceDecorationPerformance", "1"
-        xmlEngine.writeTag "ThumbnailPerformance", "1"
-        xmlEngine.writeTag "ViewportRenderPerformance", "1"
-        xmlEngine.writeTag "UndoCompression", "0"
-    xmlEngine.closeTag "Performance"
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteTag "Performance", "", True
+        xmlEngine.WriteTag "ColorPerformance", "1"
+        xmlEngine.WriteTag "InterfaceDecorationPerformance", "1"
+        xmlEngine.WriteTag "ThumbnailPerformance", "1"
+        xmlEngine.WriteTag "ViewportRenderPerformance", "1"
+        xmlEngine.WriteTag "UndoCompression", "0"
+    xmlEngine.CloseTag "Performance"
+    xmlEngine.WriteBlankLine
     
-    xmlEngine.writeTag "Plugins", "", True
-        xmlEngine.writeTag "ForceExifToolDisable", "False"
-        xmlEngine.writeTag "ForceEZTwainDisable", "False"
-        xmlEngine.writeTag "ForceFreeImageDisable", "False"
-        xmlEngine.writeTag "ForceLittleCMSDisable", "False"
-        xmlEngine.writeTag "ForceOptiPNGDisable", "False"
-        xmlEngine.writeTag "ForcePngQuantDisable", "False"
-        xmlEngine.writeTag "ForceZLibDisable", "False"
-        xmlEngine.writeTag "LastPluginPreferencesPage", "0"
-    xmlEngine.closeTag "Plugins"
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteTag "Plugins", "", True
+        xmlEngine.WriteTag "ForceExifToolDisable", "False"
+        xmlEngine.WriteTag "ForceEZTwainDisable", "False"
+        xmlEngine.WriteTag "ForceFreeImageDisable", "False"
+        xmlEngine.WriteTag "ForceLittleCMSDisable", "False"
+        xmlEngine.WriteTag "ForceOptiPNGDisable", "False"
+        xmlEngine.WriteTag "ForcePngQuantDisable", "False"
+        xmlEngine.WriteTag "ForceZLibDisable", "False"
+        xmlEngine.WriteTag "LastPluginPreferencesPage", "0"
+    xmlEngine.CloseTag "Plugins"
+    xmlEngine.WriteBlankLine
     
-    xmlEngine.writeTag "Saving", "", True
-        xmlEngine.writeTag "ConfirmClosingUnsaved", "True"
-        xmlEngine.writeTag "OverwriteOrCopy", "0"
-        xmlEngine.writeTag "SuggestedFormat", "0"
-        xmlEngine.writeTag "PreserveMetadata", "True"
-        xmlEngine.writeTag "AnonymizeMetadata", "False"
-        xmlEngine.writeTag "MetadataListPD", "True"
-    xmlEngine.closeTag "Saving"
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteTag "Saving", "", True
+        xmlEngine.WriteTag "ConfirmClosingUnsaved", "True"
+        xmlEngine.WriteTag "OverwriteOrCopy", "0"
+        xmlEngine.WriteTag "SuggestedFormat", "0"
+        xmlEngine.WriteTag "PreserveMetadata", "True"
+        xmlEngine.WriteTag "AnonymizeMetadata", "False"
+        xmlEngine.WriteTag "MetadataListPD", "True"
+    xmlEngine.CloseTag "Saving"
+    xmlEngine.WriteBlankLine
+    
+    xmlEngine.WriteTag "Themes", "", True
+        xmlEngine.WriteTag "CurrentTheme", "Light"
+        xmlEngine.WriteTag "CurrentAccent", "Blue"
+    xmlEngine.CloseTag "Themes"
+    xmlEngine.WriteBlankLine
     
     'Toolbox settings are automatically filled-in by the Toolboxes module
-    xmlEngine.writeTag "Toolbox", "", True
-    xmlEngine.closeTag "Toolbox"
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteTag "Toolbox", "", True
+    xmlEngine.CloseTag "Toolbox"
+    xmlEngine.WriteBlankLine
     
-    xmlEngine.writeTag "Tools", "", True
-        xmlEngine.writeTag "ClearSelectionAfterCrop", "True"
-    xmlEngine.closeTag "Tools"
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteTag "Tools", "", True
+        xmlEngine.WriteTag "ClearSelectionAfterCrop", "True"
+    xmlEngine.CloseTag "Tools"
+    xmlEngine.WriteBlankLine
     
-    xmlEngine.writeTag "Transparency", "", True
-        xmlEngine.writeTag "AlphaCheckMode", "0"
-        xmlEngine.writeTag "AlphaCheckOne", Trim$(Str(RGB(255, 255, 255)))
-        xmlEngine.writeTag "AlphaCheckTwo", Trim$(Str(RGB(204, 204, 204)))
-        xmlEngine.writeTag "AlphaCheckSize", "1"
-    xmlEngine.closeTag "Transparency"
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteTag "Transparency", "", True
+        xmlEngine.WriteTag "AlphaCheckMode", "0"
+        xmlEngine.WriteTag "AlphaCheckOne", Trim$(Str(RGB(255, 255, 255)))
+        xmlEngine.WriteTag "AlphaCheckTwo", Trim$(Str(RGB(204, 204, 204)))
+        xmlEngine.WriteTag "AlphaCheckSize", "1"
+    xmlEngine.CloseTag "Transparency"
+    xmlEngine.WriteBlankLine
     
-    xmlEngine.writeTag "Updates", "", True
-        xmlEngine.writeTag "CheckForUpdates", "True"
-        xmlEngine.writeTag "LastUpdateCheck", ""
-        xmlEngine.writeTag "PromptForPluginDownload", "True"
-        xmlEngine.writeTag "UpdateFrequency", PDUF_EACH_SESSION
+    xmlEngine.WriteTag "Updates", "", True
+        xmlEngine.WriteTag "CheckForUpdates", "True"
+        xmlEngine.WriteTag "LastUpdateCheck", ""
+        xmlEngine.WriteTag "PromptForPluginDownload", "True"
+        xmlEngine.WriteTag "UpdateFrequency", PDUF_EACH_SESSION
         
         'The current update track is set according to the hard-coded build ID of this .exe instance.
         Select Case PD_BUILD_QUALITY
@@ -545,25 +551,25 @@ Private Sub CreateNewPreferencesFile()
             ' to the nightly builds to fix a specific bug.  As they likely don't want to be bothered by so many updates, I am
             ' changing this to default to beta builds only.
             Case PD_PRE_ALPHA, PD_ALPHA
-                xmlEngine.writeTag "UpdateTrack", PDUT_BETA
+                xmlEngine.WriteTag "UpdateTrack", PDUT_BETA
                 
             Case PD_BETA
-                xmlEngine.writeTag "UpdateTrack", PDUT_BETA
+                xmlEngine.WriteTag "UpdateTrack", PDUT_BETA
                 
             Case PD_PRODUCTION
-                xmlEngine.writeTag "UpdateTrack", PDUT_STABLE
+                xmlEngine.WriteTag "UpdateTrack", PDUT_STABLE
         
         End Select
         
-        xmlEngine.writeTag "UpdateLanguagesIndependently", True
-        xmlEngine.writeTag "UpdatePluginsIndependently", True
-        xmlEngine.writeTag "UpdateNotifications", True
+        xmlEngine.WriteTag "UpdateLanguagesIndependently", True
+        xmlEngine.WriteTag "UpdatePluginsIndependently", True
+        xmlEngine.WriteTag "UpdateNotifications", True
         
-    xmlEngine.closeTag "Updates"
-    xmlEngine.writeBlankLine
+    xmlEngine.CloseTag "Updates"
+    xmlEngine.WriteBlankLine
     
     'With all tags successfully written, we can now close the XML data and write it out to file.
-    xmlEngine.writeXMLToFile PreferencesPath
+    xmlEngine.WriteXMLToFile PreferencesPath
     
 End Sub
 
@@ -682,8 +688,8 @@ Private Function GetPreference(ByRef strSectionHeader As String, ByRef strVariab
     End If
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon preferences file
-    If xmlEngine.isPDDataType("User Preferences") And xmlEngine.validateLoadedXMLData("Paths") Then
-        GetPreference = xmlEngine.getUniqueTag_String(strVariableName, , , strSectionHeader)
+    If xmlEngine.IsPDDataType("User Preferences") And xmlEngine.ValidateLoadedXMLData("Paths") Then
+        GetPreference = xmlEngine.GetUniqueTag_String(strVariableName, , , strSectionHeader)
     Else
         GetPreference = ""
     End If
@@ -705,23 +711,23 @@ Public Function WritePreference(strSectionHeader As String, strVariableName As S
     End If
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon preferences file
-    If xmlEngine.isPDDataType("User Preferences") And xmlEngine.validateLoadedXMLData("Paths") Then
+    If xmlEngine.IsPDDataType("User Preferences") And xmlEngine.ValidateLoadedXMLData("Paths") Then
     
         'Update the requested tag, and if it does not exist, write it out as a new tag at the end of the specified section
-        If xmlEngine.updateTag(strVariableName, strValue, strSectionHeader) Then
+        If xmlEngine.UpdateTag(strVariableName, strValue, strSectionHeader) Then
             WritePreference = True
-            If Not m_BatchModeActive Then xmlEngine.writeXMLToFile PreferencesPath
+            If Not m_BatchModeActive Then xmlEngine.WriteXMLToFile PreferencesPath
         Else
             
             'Update tag will fail if the requested preferences section doesn't exist (which may happen after the user upgrades from
             ' an old PhotoDemon version, but keeps their old preferences file).  To prevent the problem from recurring, add this
             ' section to the preferences file.
-            If xmlEngine.writeNewSection(strSectionHeader) Then
+            If xmlEngine.WriteNewSection(strSectionHeader) Then
             
                 'Try the write again
-                If xmlEngine.updateTag(strVariableName, strValue, strSectionHeader) Then
+                If xmlEngine.UpdateTag(strVariableName, strValue, strSectionHeader) Then
                     WritePreference = True
-                    If Not m_BatchModeActive Then xmlEngine.writeXMLToFile PreferencesPath
+                    If Not m_BatchModeActive Then xmlEngine.WriteXMLToFile PreferencesPath
                 Else
                     WritePreference = False
                 End If

@@ -9,6 +9,7 @@
 		<Author>PhotoDemon</Author>
 		<Description>Default "dark" theme</Description>
 		<Version>6.8.0</Version>
+		<ThemeClass>Dark</ThemeClass>
 		
 		<!-- The Definitions section describes any custom, reusable color values you wish to create. -->
 		

@@ -200,7 +200,7 @@ Public Sub UpdateLoadProgress(ByVal newProgressMarker As Long)
         lineRadius = FixDPI(6)
         lineY = splashDIB.GetDIBHeight - FixDPI(2) - lineRadius
         
-        GDI_Plus.GDIPlusDrawLineToDC Me.hDC, lineOffset, lineY, (splashDIB.GetDIBWidth - lineOffset) * ((newProgressMarker - m_ProgressAtFirstNotify) / (m_MaxProgress - m_ProgressAtFirstNotify)), lineY, RGB(50, 127, 255), 255, lineRadius, True, GP_LC_Round
+        GDI_Plus.GDIPlusDrawLineToDC Me.hDC, lineOffset, lineY, (splashDIB.GetDIBWidth - lineOffset) * ((newProgressMarker - m_ProgressAtFirstNotify) / (m_MaxProgress - m_ProgressAtFirstNotify)), lineY, g_Themer.GetGenericUIColor(UI_Accent), 255, lineRadius, True, GP_LC_Round
         
         'Manually refresh the form
         Me.Picture = Me.Image

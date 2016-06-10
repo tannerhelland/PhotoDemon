@@ -32,22 +32,34 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'As a broad advisement, themes are classified as:
-' - THEME_LIGHT (dark accents and text on light backgrounds)
-' - THEME_DARK (light accents and text on dark backgrounds)
-' - THEME_HIGH_CONTRAST (ultra-contrasted elements, for accessibility)
-' This is important when finding replacement colors for missing color entries, as we may have to fall back on PD's default
-' values for some entries, and using LIGHT default entries on a DARK theme would be bad.
-Public Enum PD_THEME_CONTRAST
-    THEME_LIGHT = 0
-    THEME_DARK = 1
-    THEME_HIGH_CONTRAST = 2
+' - LIGHT (dark accents and text on light backgrounds)
+' - DARK (light accents and text on dark backgrounds)
+' - HIGH CONTRAST (ultra-contrasted elements, for accessibility)
+'Among other things, these values are used to correctly render things like monochrome icons.
+Public Enum PD_THEME_CLASS
+    PDTC_Light = 0
+    PDTC_Dark = 1
+    PDTC_HighContrast = 2
 End Enum
 
 #If False Then
-    Private Const THEME_LIGHT = 0, THEME_DARK = 1, THEME_HIGH_CONTRAST = 2
+    Private Const PDTC_Light = 0, PDTC_Dark = 1, PDTC_HighContrast = 2
 #End If
 
-Private curThemeContrast As PD_THEME_CONTRAST
+Private m_ThemeClass As PD_THEME_CLASS
+
+Public Enum PD_THEME_ACCENT
+    PDTA_Undefined = -1
+    PDTA_Blue = 0
+    PDTA_Green = 1
+    PDTA_Purple = 2
+End Enum
+
+#If False Then
+    Private Const PDTA_Undefined = -1, PDTA_Blue = 0, PDTA_Green = 1, PDTA_Purple = 2
+#End If
+
+Private m_ThemeAccent As PD_THEME_ACCENT
 
 'XML object for parsing theme files.
 Private m_XML As pdXML
@@ -60,7 +72,7 @@ Private Const DEFAULT_COLOR_CACHE_SIZE As Long = 16
 
 'For the most part, we leave individual controls to manage their own color lists.  This provides excellent flexibility
 ' with UI rendering.  However, there are some colors that appear so frequently throughout PD that it makes more sense
-' to cache them here, so one-off functions don't need to deal with messy color maintenance.
+' to cache them here, so one-off functions aren't burdened with themed color maintenance.
 Public Enum PD_UI_COLOR_LIST
     [_First] = 0
     UI_Accent = 0
@@ -100,36 +112,127 @@ End Enum
 'Color retrieval and storage of program-wide UI colors is handled by a dedicated class
 Private m_UniversalColors As pdThemeColors
 
-'Fill the curThemeColors array with PD's default color scheme
+'Pull the current default PD theme from the user preferences file, and attempt to load it.  If the theme can't be loaded,
+' we'll fall back to PD's default light-on-dark theme.
 Public Sub LoadDefaultPDTheme()
 
-    'Default to the light theme
-    ' (TODO: read the user's preference for theme, which should probably be just a path to the theme file?)
-    curThemeContrast = THEME_LIGHT
+    'By default, we assume a light-on-dark theme.  (This will be overridden by a successful theme load.)
+    m_ThemeClass = PDTC_Light
     
     'Retrieve the preferred theme file from the user preferences file.  (NOTE: this step will fail inside the IDE.)
-    Dim themeFilename As String
+    Dim themeName As String, themeFilename As String, accentName As String, accentFilename As String
     If g_IsProgramRunning Then
-        themeFilename = "Default_Light.xml"
+        themeName = g_UserPreferences.GetPref_String("Themes", "CurrentTheme", "Light")
+        themeFilename = "Default_" & themeName & ".xml"
+        accentName = g_UserPreferences.GetPref_String("Themes", "CurrentAccent", "Blue")
+        accentFilename = "Colors_" & accentName & ".xml"
     Else
-        'TODO: pull the theme directly from the resource file, or perhaps trigger some kind of failsafe IDE mode...?
+        'FYI: inside the designer, PD will silently fall back on hard-coded IDE colors
     End If
     
     'Load the preferred XML file, and if it fails, fall back to PD's default theme
-    Dim themeLoadedCorrectly As Boolean
-    themeLoadedCorrectly = Me.LoadThemeFile(themeFilename)
-    
-    #If DEBUGMODE = 1 Then
-        If themeLoadedCorrectly Then
-            If g_IsProgramRunning Then pdDebug.LogAction "Successfully loaded theme file: " & themeFilename
+    Dim themeLoadedCorrectly As Boolean: themeLoadedCorrectly = False
+    If (Len(themeFilename) <> 0) Then
+        If (Len(accentFilename) <> 0) Then
+            themeLoadedCorrectly = Me.LoadThemeFile(themeFilename, accentFilename)
         Else
-            If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  Failed to load theme file: " & themeFilename
+            themeLoadedCorrectly = Me.LoadThemeFile(themeFilename)
         End If
-    #End If
+    End If
+    
+    If themeLoadedCorrectly Then
+        If g_IsProgramRunning Then RaiseThemingError "successfully loaded theme file: " & themeFilename, True
+    Else
+        If g_IsProgramRunning Then RaiseThemingError "failed to load theme file: " & themeFilename
+    End If
     
     'Theme colors are loaded on-demand, so we have no further work to do here
     
 End Sub
+
+Public Function SetNewTheme(ByVal themeClass As PD_THEME_CLASS, Optional ByVal accentColor As PD_THEME_ACCENT = PDTA_Undefined, Optional ByVal syncMenusToMatch As Boolean = False) As Boolean
+    
+    Dim themeName As String
+    Select Case themeClass
+        Case PDTC_Light
+            themeName = "Light"
+        Case PDTC_Dark
+            themeName = "Dark"
+        Case PDTC_HighContrast
+            themeName = "HighContrast"
+    End Select
+    
+    Dim accentName As String
+    Select Case accentColor
+        Case PDTA_Blue
+            accentName = "Blue"
+        Case PDTA_Green
+            accentName = "Green"
+        Case PDTA_Purple
+            accentName = "Purple"
+        Case Else
+            accentName = vbNullString
+    End Select
+    
+    If (Not g_UserPreferences Is Nothing) Then
+        If (Len(themeName) <> 0) Then g_UserPreferences.WritePreference "Themes", "CurrentTheme", themeName
+        If (Len(accentName) <> 0) Then g_UserPreferences.WritePreference "Themes", "CurrentAccent", accentName
+        SetNewTheme = True
+    Else
+        SetNewTheme = False
+    End If
+    
+    If syncMenusToMatch Then SynchronizeThemeMenus
+    
+End Function
+
+'After theme changes are made, call this sub to synchronize the main window's theme menu to the current theme's properties
+Public Sub SynchronizeThemeMenus()
+    
+    If g_IsProgramRunning Then
+    
+        Dim themeName As String, accentName As String
+        themeName = g_UserPreferences.GetPref_String("Themes", "CurrentTheme", "Light")
+        accentName = g_UserPreferences.GetPref_String("Themes", "CurrentAccent", "Blue")
+        
+        If (StrComp(LCase$(themeName), "light", vbBinaryCompare) = 0) Then
+            FormMain.MnuDevelopers(2).Checked = True
+            FormMain.MnuDevelopers(3).Checked = False
+        Else
+            FormMain.MnuDevelopers(2).Checked = False
+            FormMain.MnuDevelopers(3).Checked = True
+        End If
+        
+        Select Case accentName
+        
+            Case "Blue"
+                FormMain.MnuDevelopers(5).Checked = True
+                FormMain.MnuDevelopers(6).Checked = False
+                FormMain.MnuDevelopers(7).Checked = False
+            
+            Case "Green"
+                FormMain.MnuDevelopers(5).Checked = False
+                FormMain.MnuDevelopers(6).Checked = True
+                FormMain.MnuDevelopers(7).Checked = False
+            
+            Case Else
+                FormMain.MnuDevelopers(5).Checked = False
+                FormMain.MnuDevelopers(6).Checked = False
+                FormMain.MnuDevelopers(7).Checked = True
+        
+        End Select
+        
+    End If
+
+End Sub
+
+Friend Function GetCurrentThemeClass() As PD_THEME_CLASS
+    GetCurrentThemeClass = m_ThemeClass
+End Function
+
+Friend Function GetCurrentThemeAccent() As PD_THEME_ACCENT
+    GetCurrentThemeAccent = m_ThemeAccent
+End Function
 
 'Load a given theme file.  Note that the filename SHOULD NOT INCLUDE THE FULL PATH - just the filename.  PD will
 ' automatically search the /App and /Data folders as necessary to find the file.
@@ -152,24 +255,40 @@ Public Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
         If m_XML.LoadXMLFile(fullThemePath) Then
             
             'Perform minor validation on the file
-            LoadThemeFile = m_XML.isPDDataType("Visual theme") And m_XML.validateLoadedXMLData("Colors")
+            LoadThemeFile = m_XML.IsPDDataType("Visual theme") And m_XML.ValidateLoadedXMLData("Colors")
             
         Else
-            #If DEBUGMODE = 1 Then
-                If g_IsProgramRunning Then
-                    pdDebug.LogAction "WARNING! Failed to load requested theme: " & fullThemePath
-                    pdDebug.LogAction "WARNING! Falling back to default PD theme..."
-                End If
-            #End If
+            If g_IsProgramRunning Then
+                RaiseThemingError "failed to load requested theme: " & fullThemePath
+                RaiseThemingError "falling back to default PD theme..."
+            End If
             
             fullThemePath = g_UserPreferences.GetThemePath & "Default_Light.xml"
             LoadThemeFile = m_XML.LoadXMLFile(fullThemePath)
-            LoadThemeFile = LoadThemeFile And m_XML.isPDDataType("Visual theme") And m_XML.validateLoadedXMLData("Colors")
+            LoadThemeFile = LoadThemeFile And m_XML.IsPDDataType("Visual theme") And m_XML.ValidateLoadedXMLData("Colors")
             
         End If
         
         'Regardless of success or failure, reset our internal color cache(s)
         ResetColorCache
+        
+        'Resolve the theme class type (light, dark, or high-contrast)
+        Select Case m_XML.GetUniqueTag_String("ThemeClass", "Light")
+            
+            Case "Light"
+                m_ThemeClass = PDTC_Light
+            
+            Case "Dark"
+                m_ThemeClass = PDTC_Dark
+            
+            Case "HighContrast"
+                m_ThemeClass = PDTC_HighContrast
+            
+            Case Else
+                RaiseThemingError "theme file doesn't define a theme class; assuming light theme"
+                m_ThemeClass = PDTC_Light
+            
+        End Select
         
         'Theme files generally consist of two parts: a theme XML file, and a color definition file.  This system allows
         ' a single theme file to be re-used against multiple color definition files, making it easy to support various
@@ -190,36 +309,30 @@ Public Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
                 If Len(overrideColorDefinitionFilename) <> 0 Then
                     fullDefinitionPath = g_UserPreferences.GetThemePath & overrideColorDefinitionFilename
                 Else
-                    fullDefinitionPath = g_UserPreferences.GetThemePath & m_XML.getUniqueTag_String("DefinitionFile")
+                    fullDefinitionPath = g_UserPreferences.GetThemePath & m_XML.GetUniqueTag_String("DefinitionFile")
                 End If
                 
                 If tmpXML.LoadXMLFile(fullDefinitionPath) Then
                 
-                    If tmpXML.isPDDataType("Color definitions") And tmpXML.validateLoadedXMLData("Definitions") Then
+                    If tmpXML.IsPDDataType("Color definitions") And tmpXML.ValidateLoadedXMLData("Definitions") Then
                     
                         'Retrieve the definition list
                         Dim colorDefinitionList As String
-                        colorDefinitionList = tmpXML.getUniqueTag_String("Definitions")
+                        colorDefinitionList = tmpXML.GetUniqueTag_String("Definitions")
                         
                         'Plug it straight into the Definitions section of the current XML file.
-                        colorDefinitionList = colorDefinitionList & m_XML.getUniqueTag_String("Definitions")
+                        colorDefinitionList = colorDefinitionList & m_XML.GetUniqueTag_String("Definitions")
                         
-                        If Not m_XML.updateTag("Definitions", colorDefinitionList) Then
-                            #If DEBUGMODE = 1 Then
-                                If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  The color definition file listed in " & fullThemePath & " couldn't be dynamically inserted into its parent theme."
-                            #End If
+                        If Not m_XML.UpdateTag("Definitions", colorDefinitionList) Then
+                            RaiseThemingError "color definition file listed in " & fullThemePath & " couldn't be dynamically inserted into parent theme"
                         End If
                     
                     Else
-                        #If DEBUGMODE = 1 Then
-                            If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  The color definition file listed in " & fullThemePath & " failed to validate."
-                        #End If
+                        RaiseThemingError "color definition file listed in " & fullThemePath & " failed to validate"
                     End If
                 
                 Else
-                    #If DEBUGMODE = 1 Then
-                        If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  The color definition file listed in " & fullThemePath & " failed to load."
-                    #End If
+                    RaiseThemingError "color definition file listed in " & fullThemePath & " failed to load"
                 End If
             
             End If
@@ -231,10 +344,8 @@ Public Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
         
         'If the user's choice of theme didn't load correctly, or the default theme failed to load, run some heuristics
         ' on the theme folder.
-        If Not LoadThemeFile Then
-            #If DEBUGMODE = 1 Then
-                If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  PD's default theme failed to load!  Catastrophic failure imminent!"
-            #End If
+        If (Not LoadThemeFile) Then
+            RaiseThemingError "Default theme failed to load!  Catastrophic failure imminent!"
             ' (TODO: this entire step, including pulling themes from the .exe's resource section as necessary)
         End If
         
@@ -319,7 +430,7 @@ Private Function ResolveColor(ByVal initialColorValue As String) As String
             'Attempt to retrieve a new value from the theme's color definition section, then run our validation
             ' checks a second time.  (We'll repeat this until we fail to retrieve a new definition, or we identify
             ' a string that can be parsed into an actual color.)
-            initialColorValue = m_XML.getUniqueTag_String(initialColorValue, vbNullString, , "Definitions")
+            initialColorValue = m_XML.GetUniqueTag_String(initialColorValue, vbNullString, , "Definitions")
             
         End If
     
@@ -413,6 +524,16 @@ End Sub
 Friend Function GetGenericUIColor(ByVal colorID As PD_UI_COLOR_LIST, Optional ByVal enabledState As Boolean = True, Optional ByVal activeState As Boolean = False, Optional ByVal hoverState As Boolean = False) As Long
     GetGenericUIColor = m_UniversalColors.RetrieveColor(colorID, enabledState, activeState, hoverState)
 End Function
+
+Private Sub RaiseThemingError(ByVal msgError As String, Optional ByVal msgIsNonErrorFeedback As Boolean = False)
+    #If DEBUGMODE = 1 Then
+        If msgIsNonErrorFeedback Then
+            pdDebug.LogAction "pdVisualThemes reported: " & msgError
+        Else
+            pdDebug.LogAction "WARNING!  pdVisualThemes error: " & msgError
+        End If
+    #End If
+End Sub
 
 Private Sub Class_Initialize()
     Set m_XML = New pdXML

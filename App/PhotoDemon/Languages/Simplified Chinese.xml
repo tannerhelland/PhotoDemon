@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1548</langversion>
+<langversion>6.8.1549</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -46,6 +46,11 @@
 </phrase>
 
 <phrase>
+<original>Initializing theme engine</original>
+<translation>初始化主题引擎</translation>
+</phrase>
+
+<phrase>
 <original>Analyzing current monitor setup</original>
 <translation>分析当前监视器设置</translation>
 </phrase>
@@ -58,11 +63,6 @@
 <phrase>
 <original>Loading import/export libraries</original>
 <translation>加载输入/输出库</translation>
-</phrase>
-
-<phrase>
-<original>Initializing theme engine</original>
-<translation>初始化主题引擎</translation>
 </phrase>
 
 <phrase>
@@ -2435,6 +2435,24 @@ Please enter a numeric value.</original>
 
 <!-- END text for IFileDialog.cls-->
 
+<!-- BEGIN text for cBasicBuffer.cls -->
+
+<!-- cBasicBuffer.cls contains 0 phrases. -->
+
+<!-- END text for cBasicBuffer.cls-->
+
+<!-- BEGIN text for cGoogleTranslate.cls -->
+
+<!-- cGoogleTranslate.cls contains 0 phrases. -->
+
+<!-- END text for cGoogleTranslate.cls-->
+
+<!-- BEGIN text for clsMenuImage.cls -->
+
+<!-- clsMenuImage.cls contains 0 phrases. -->
+
+<!-- END text for clsMenuImage.cls-->
+
 <!-- BEGIN text for cPerlin3D.cls -->
 
 <!-- cPerlin3D.cls contains 0 phrases. -->
@@ -2459,23 +2477,11 @@ Please enter a numeric value.</original>
 
 <!-- END text for cUnicodeBrowseFolders.cls-->
 
-<!-- BEGIN text for cBasicBuffer.cls -->
+<!-- BEGIN text for cUniversalDLLCalls.cls -->
 
-<!-- cBasicBuffer.cls contains 0 phrases. -->
+<!-- cUniversalDLLCalls.cls contains 0 phrases. -->
 
-<!-- END text for cBasicBuffer.cls-->
-
-<!-- BEGIN text for cGoogleTranslate.cls -->
-
-<!-- cGoogleTranslate.cls contains 0 phrases. -->
-
-<!-- END text for cGoogleTranslate.cls-->
-
-<!-- BEGIN text for clsMenuImage.cls -->
-
-<!-- clsMenuImage.cls contains 0 phrases. -->
-
-<!-- END text for clsMenuImage.cls-->
+<!-- END text for cUniversalDLLCalls.cls-->
 
 <!-- BEGIN text for IMRUList.cls -->
 
@@ -5573,6 +5579,31 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Light theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Dark theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Blue</original>
+<translation>蓝色</translation>
+</phrase>
+
+<phrase>
+<original>Green</original>
+<translation>绿色</translation>
+</phrase>
+
+<phrase>
+<original>Purple</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>&W 窗口</translation>
 </phrase>
@@ -6227,7 +6258,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 186 were duplicates of existing phrases, so only 374 new phrases were written to file. -->
+<!-- MainWindow.frm contains 565 phrases. 186 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11739,6 +11770,42 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <!-- END text for File_PrintXP.frm-->
 
+<!-- BEGIN text for File_Save_GIF.frm (dialog_ExportGIF) -->
+
+<phrase>
+<original>GIF export options</original>
+<translation>GIF导出选项</translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation>阿尔法截止</translation>
+</phrase>
+
+<phrase>
+<original>transparent color (right-click image to select)</original>
+<translation>透明颜色（右键选择图像）</translation>
+</phrase>
+
+<phrase>
+<original>metadata</original>
+<translation>元数据</translation>
+</phrase>
+
+<phrase>
+<original>by cut-off</original>
+<translation>通过切断</translation>
+</phrase>
+
+<phrase>
+<original>by color</original>
+<translation>通过颜色</translation>
+</phrase>
+
+<!-- File_Save_GIF.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for File_Save_GIF.frm-->
+
 <!-- BEGIN text for File_Save_JP2Settings.frm (dialog_ExportJP2) -->
 
 <phrase>
@@ -11765,11 +11832,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <phrase>
 <original>chroma subsampling</original>
 <translation>色度抽样</translation>
-</phrase>
-
-<phrase>
-<original>metadata</original>
-<translation>元数据</translation>
 </phrase>
 
 <phrase>
@@ -11832,7 +11894,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>黑白（8 位）</translation>
 </phrase>
 
-<!-- File_Save_JPEGSettings.frm contains 26 phrases. 10 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- File_Save_JPEGSettings.frm contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_Save_JPEGSettings.frm-->
 
@@ -11946,18 +12008,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>alpha cut-off</original>
-<translation>阿尔法截止</translation>
-</phrase>
-
-<phrase>
 <original>palette size</original>
 <translation>调色板大小</translation>
-</phrase>
-
-<phrase>
-<original>transparent color (right-click image to select)</original>
-<translation>透明颜色（右键选择图像）</translation>
 </phrase>
 
 <phrase>
@@ -12045,7 +12097,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>这些有损优化设置减少了 %1 的文件大小。</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 59 phrases. 32 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 59 phrases. 34 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -13504,16 +13556,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>Green</original>
-<translation>绿色</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>蓝色</translation>
-</phrase>
-
-<phrase>
 <original>Alpha</original>
 <translation>阿尔法</translation>
 </phrase>
@@ -13583,7 +13625,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>此选项控制了魔术棒使用的标准，以确定是否应该将像素添加到当前选择。</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 54 phrases. 15 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 54 phrases. 17 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15088,39 +15130,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for File_Save_GIF.frm (dialog_ExportGIF) -->
-
-<phrase>
-<original>GIF export options</original>
-<translation>GIF导出选项</translation>
-</phrase>
-
-<phrase>
-<original>by cut-off</original>
-<translation>通过切断</translation>
-</phrase>
-
-<phrase>
-<original>by color</original>
-<translation>通过颜色</translation>
-</phrase>
-
-<!-- File_Save_GIF.frm contains 18 phrases. 15 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for File_Save_GIF.frm-->
-
-<!-- BEGIN text for cUniversalDLLCalls.cls -->
-
-<!-- cUniversalDLLCalls.cls contains 0 phrases. -->
-
-<!-- END text for cUniversalDLLCalls.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2582</phrasecount>
+<phrasecount>2585</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4479 phrases. -->
-<!-- 1897 are duplicates, so only 2582 unique phrases have been written to file. -->
-<!-- These 2582 phrases contain approximately 13270 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1899 are duplicates, so only 2585 unique phrases have been written to file. -->
+<!-- These 2585 phrases contain approximately 13275 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.188</langversion>
+<langversion>6.7.189</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -46,6 +46,11 @@
 </phrase>
 
 <phrase>
+<original>Initializing theme engine</original>
+<translation>Initialiseren themamachine</translation>
+</phrase>
+
+<phrase>
 <original>Analyzing current monitor setup</original>
 <translation>Analyseren van de huidige monitor instelling</translation>
 </phrase>
@@ -58,11 +63,6 @@
 <phrase>
 <original>Loading import/export libraries</original>
 <translation>Laden import/export bibliotheken</translation>
-</phrase>
-
-<phrase>
-<original>Initializing theme engine</original>
-<translation>Initialiseren themamachine</translation>
 </phrase>
 
 <phrase>
@@ -2434,6 +2434,24 @@ Geef een numerieke waarde.</translation>
 
 <!-- END text for IFileDialog.cls-->
 
+<!-- BEGIN text for cBasicBuffer.cls -->
+
+<!-- cBasicBuffer.cls contains 0 phrases. -->
+
+<!-- END text for cBasicBuffer.cls-->
+
+<!-- BEGIN text for cGoogleTranslate.cls -->
+
+<!-- cGoogleTranslate.cls contains 0 phrases. -->
+
+<!-- END text for cGoogleTranslate.cls-->
+
+<!-- BEGIN text for clsMenuImage.cls -->
+
+<!-- clsMenuImage.cls contains 0 phrases. -->
+
+<!-- END text for clsMenuImage.cls-->
+
 <!-- BEGIN text for cPerlin3D.cls -->
 
 <!-- cPerlin3D.cls contains 0 phrases. -->
@@ -2458,23 +2476,11 @@ Geef een numerieke waarde.</translation>
 
 <!-- END text for cUnicodeBrowseFolders.cls-->
 
-<!-- BEGIN text for cBasicBuffer.cls -->
+<!-- BEGIN text for cUniversalDLLCalls.cls -->
 
-<!-- cBasicBuffer.cls contains 0 phrases. -->
+<!-- cUniversalDLLCalls.cls contains 0 phrases. -->
 
-<!-- END text for cBasicBuffer.cls-->
-
-<!-- BEGIN text for cGoogleTranslate.cls -->
-
-<!-- cGoogleTranslate.cls contains 0 phrases. -->
-
-<!-- END text for cGoogleTranslate.cls-->
-
-<!-- BEGIN text for clsMenuImage.cls -->
-
-<!-- clsMenuImage.cls contains 0 phrases. -->
-
-<!-- END text for clsMenuImage.cls-->
+<!-- END text for cUniversalDLLCalls.cls-->
 
 <!-- BEGIN text for IMRUList.cls -->
 
@@ -5573,6 +5579,31 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>Light theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Dark theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Blue</original>
+<translation>Blauw</translation>
+</phrase>
+
+<phrase>
+<original>Green</original>
+<translation>Groen</translation>
+</phrase>
+
+<phrase>
+<original>Purple</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>&Venster</translation>
 </phrase>
@@ -6229,7 +6260,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 186 were duplicates of existing phrases, so only 374 new phrases were written to file. -->
+<!-- MainWindow.frm contains 565 phrases. 186 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11743,6 +11774,42 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <!-- END text for File_PrintXP.frm-->
 
+<!-- BEGIN text for File_Save_GIF.frm (dialog_ExportGIF) -->
+
+<phrase>
+<original>GIF export options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparent color (right-click image to select)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>metadata</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>by cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>by color</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_GIF.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for File_Save_GIF.frm-->
+
 <!-- BEGIN text for File_Save_JP2Settings.frm (dialog_ExportJP2) -->
 
 <phrase>
@@ -11768,11 +11835,6 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <phrase>
 <original>chroma subsampling</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>metadata</original>
 <translation></translation>
 </phrase>
 
@@ -11836,7 +11898,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation></translation>
 </phrase>
 
-<!-- File_Save_JPEGSettings.frm contains 26 phrases. 10 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- File_Save_JPEGSettings.frm contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_Save_JPEGSettings.frm-->
 
@@ -11950,17 +12012,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
-<original>alpha cut-off</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>palette size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>transparent color (right-click image to select)</original>
 <translation></translation>
 </phrase>
 
@@ -12049,7 +12101,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 59 phrases. 32 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 59 phrases. 34 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -13505,16 +13557,6 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 </phrase>
 
 <phrase>
-<original>Green</original>
-<translation>Groen</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>Blauw</translation>
-</phrase>
-
-<phrase>
 <original>Alpha</original>
 <translation>Alpha</translation>
 </phrase>
@@ -13584,7 +13626,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <translation>Deze optie controleerd welke criteria de toverstaf gebruikt om te bepalen of een pixel moet toegevoegd worden aan de huidige selectie.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 54 phrases. 15 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 54 phrases. 17 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -15092,39 +15134,12 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for File_Save_GIF.frm (dialog_ExportGIF) -->
-
-<phrase>
-<original>GIF export options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>by cut-off</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>by color</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_GIF.frm contains 18 phrases. 15 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for File_Save_GIF.frm-->
-
-<!-- BEGIN text for cUniversalDLLCalls.cls -->
-
-<!-- cUniversalDLLCalls.cls contains 0 phrases. -->
-
-<!-- END text for cUniversalDLLCalls.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2582</phrasecount>
+<phrasecount>2585</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4479 phrases. -->
-<!-- 1897 are duplicates, so only 2582 unique phrases have been written to file. -->
-<!-- These 2582 phrases contain approximately 13270 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1899 are duplicates, so only 2585 unique phrases have been written to file. -->
+<!-- These 2585 phrases contain approximately 13275 total words. -->
 
 </pdData>

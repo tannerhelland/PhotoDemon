@@ -62,7 +62,7 @@ Begin VB.Form FormMain
       Top             =   1080
       _extentx        =   635
       _extenty        =   635
-      errasout        =   0
+      errasout        =   0   'False
       pollinterval    =   5
    End
    Begin VB.Menu MnuFileTop 
@@ -1425,6 +1425,34 @@ Begin VB.Form FormMain
             Caption         =   "Theme editor..."
             Index           =   0
          End
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "-"
+            Index           =   1
+         End
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "Light theme"
+            Index           =   2
+         End
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "Dark theme"
+            Index           =   3
+         End
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "-"
+            Index           =   4
+         End
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "Blue"
+            Index           =   5
+         End
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "Green"
+            Index           =   6
+         End
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "Purple"
+            Index           =   7
+         End
       End
    End
    Begin VB.Menu MnuWindowTop 
@@ -1861,14 +1889,49 @@ End Sub
 
 'The Developer Tools menu is automatically hidden in production builds, so (obviously) do not put anything here that end-users might want access to.
 Private Sub mnuDevelopers_Click(Index As Integer)
-
+    
+    Dim themeRefreshRequired As Boolean: themeRefreshRequired = False
+    
     Select Case Index
     
         'Theme Editor
         Case 0
             ShowPDDialog vbModal, FormThemeEditor
+            
+        '(separator)
+        Case 1
+        
+        'Light/dark themes
+        Case 2
+            g_Themer.SetNewTheme PDTC_Light, g_Themer.GetCurrentThemeAccent, True
+            themeRefreshRequired = True
+        
+        Case 3
+            g_Themer.SetNewTheme PDTC_Dark, g_Themer.GetCurrentThemeAccent, True
+            themeRefreshRequired = True
+        
+        '(separator)
+        Case 4
+        
+        'Accent colors
+        Case 5
+            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Blue, True
+            themeRefreshRequired = True
+        
+        Case 6
+            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Green, True
+            themeRefreshRequired = True
+        
+        Case 7
+            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Purple, True
+            themeRefreshRequired = True
     
     End Select
+    
+    If themeRefreshRequired Then
+        g_Themer.LoadDefaultPDTheme
+        Interface.RedrawEntireUI
+    End If
 
 End Sub
 
