@@ -33,62 +33,6 @@ End Enum
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
 Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
 
-'Given a DIB, fill a Single-type array with a L*a*b* representation of the image
-Public Function convertEntireDIBToLabColor(ByRef srcDIB As pdDIB, ByRef dstArray() As Single) As Boolean
-
-    'This only works on 24bpp images; exit prematurely on 32bpp encounters
-    If srcDIB.GetDIBColorDepth = 32 Then
-        convertEntireDIBToLabColor = False
-        Exit Function
-    End If
-
-    'Redim the destination array to proper dimensions
-    ReDim dstArray(0 To srcDIB.GetDIBArrayWidth, 0 To srcDIB.GetDIBHeight) As Single
-    
-    'Request a pointer to the source dib
-    Dim tmpSA As SAFEARRAY2D
-    PrepSafeArray tmpSA, srcDIB
-    
-    Dim ImageData() As Byte
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
-    
-    'Iterate through the image, converting colors as we go
-    Dim x As Long, y As Long, finalX As Long, finalY As Long, quickX As Long
-    
-    finalX = srcDIB.GetDIBWidth - 1
-    finalY = srcDIB.GetDIBHeight - 1
-    
-    Dim r As Long, g As Long, b As Long
-    Dim labL As Double, labA As Double, labB As Double
-    
-    For x = 0 To finalX
-        quickX = x * 3
-    For y = 0 To finalY
-    
-        'Get the source pixel color values
-        r = ImageData(quickX + 2, y)
-        g = ImageData(quickX + 1, y)
-        b = ImageData(quickX, y)
-        
-        'Convert the color to the L*a*b* color space
-        RGBtoLAB r, g, b, labL, labA, labB
-        
-        'Store the L*a*b* values
-        dstArray(quickX, y) = labL
-        dstArray(quickX + 1, y) = labA
-        dstArray(quickX + 2, y) = labB
-    
-    Next y
-    Next x
-    
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
-    
-    convertEntireDIBToLabColor = True
-
-End Function
-
 'Present the user with PD's custom color selection dialog.
 ' INPUTS:  1) a Long-type variable (ByRef, of course) which will receive the new color
 '          2) an optional initial color
@@ -109,27 +53,27 @@ End Function
 
 'Given the number of colors in an image (as supplied by getQuickColorCount, below), return the highest color depth
 ' that includes all those colors and is supported by PhotoDemon (1/4/8/24/32)
-Public Function getColorDepthFromColorCount(ByVal srcColors As Long, ByRef refDIB As pdDIB) As Long
+Public Function GetColorDepthFromColorCount(ByVal srcColors As Long, ByRef refDIB As pdDIB) As Long
     
     If srcColors <= 256 Then
     
         If srcColors > 16 Then
-            getColorDepthFromColorCount = 8
+            GetColorDepthFromColorCount = 8
         Else
             
             'FreeImage only supports the writing of 4bpp and 1bpp images if they are grayscale. Thus, only
             ' mark images as 4bpp or 1bpp if they are gray/b&w - otherwise, consider them 8bpp indexed color.
             If (srcColors > 2) Then
                                 
-                If g_IsImageGray Then getColorDepthFromColorCount = 4 Else getColorDepthFromColorCount = 8
+                If g_IsImageGray Then GetColorDepthFromColorCount = 4 Else GetColorDepthFromColorCount = 8
             
             'If there are only two colors, see if they are black and white, other shades of gray, or colors.
             ' Mark the color depth as 1bpp, 4bpp, or 8bpp respectively.
             Else
                 If g_IsImageMonochrome Then
-                    getColorDepthFromColorCount = 1
+                    GetColorDepthFromColorCount = 1
                 Else
-                    If g_IsImageGray Then getColorDepthFromColorCount = 4 Else getColorDepthFromColorCount = 8
+                    If g_IsImageGray Then GetColorDepthFromColorCount = 4 Else GetColorDepthFromColorCount = 8
                 End If
             End If
             
@@ -138,9 +82,9 @@ Public Function getColorDepthFromColorCount(ByVal srcColors As Long, ByRef refDI
     Else
     
         If refDIB.GetDIBColorDepth = 24 Then
-            getColorDepthFromColorCount = 24
+            GetColorDepthFromColorCount = 24
         Else
-            getColorDepthFromColorCount = 32
+            GetColorDepthFromColorCount = 32
         End If
         
     End If
@@ -321,17 +265,17 @@ End Function
 
 'This function will return the luminance value of an RGB triplet.  Note that the value will be in the [0,255] range instead
 ' of the usual [0,1.0] one.
-Public Function getLuminance(ByVal r As Long, ByVal g As Long, ByVal b As Long) As Long
+Public Function GetLuminance(ByVal r As Long, ByVal g As Long, ByVal b As Long) As Long
     Dim Max As Long, Min As Long
     Max = Max3Int(r, g, b)
     Min = Min3Int(r, g, b)
-    getLuminance = (Max + Min) \ 2
+    GetLuminance = (Max + Min) \ 2
 End Function
 
 'This function will return a well-calculated luminance value of an RGB triplet.  Note that the value will be in
 ' the [0,255] range instead of the usual [0,1.0] one.
-Public Function getHQLuminance(ByVal r As Long, ByVal g As Long, ByVal b As Long) As Long
-    getHQLuminance = (213 * r + 715 * g + 72 * b) \ 1000
+Public Function GetHQLuminance(ByVal r As Long, ByVal g As Long, ByVal b As Long) As Long
+    GetHQLuminance = (213 * r + 715 * g + 72 * b) \ 1000
 End Function
 
 'HSL <-> RGB conversion routines
@@ -781,11 +725,9 @@ End Sub
 
 'This function is just a thin wrapper to RGBtoXYZ and XYZtoLAB.  There is no direct conversion from RGB to CieLAB.
 Public Sub RGBtoLAB(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef labL As Double, ByRef labA As Double, ByRef labB As Double)
-
     Dim x As Double, y As Double, z As Double
     RGBtoXYZ r, g, b, x, y, z
     XYZtoLab x, y, z, labL, labA, labB
-
 End Sub
 
 'Convert RGB to XYZ space, using an sRGB conversion and the assumption of a D65 (e.g. color temperature of 6500k) illuminant
