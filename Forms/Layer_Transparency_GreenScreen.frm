@@ -90,8 +90,8 @@ Attribute VB_Exposed = False
 'Make color transparent ("green screen") tool dialog
 'Copyright 2013-2016 by Tanner Helland
 'Created: 13/August/13
-'Last updated: 21/August/13
-'Last update: gave this tool its own dialog, in keeping with the "do one thing and do it well" philosophy of PD dialogs
+'Last updated: 10/June/16
+'Last update: add a LittleCMS path for the algorithm; this improves performance by ~30%
 '
 'PhotoDemon has long provided the ability to convert a 24bpp image to 32bpp, but the lack of an interface meant it could
 ' only add a fully opaque alpha channel.  Now the user can select from one of several conversion methods.
