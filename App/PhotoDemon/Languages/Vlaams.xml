@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.189</langversion>
+<langversion>6.7.190</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -9104,12 +9104,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Toepassen zoomvervaging</translation>
 </phrase>
 
-<phrase>
-<original>traditional</original>
-<translation>traditioneel</translation>
-</phrase>
-
-<!-- Effects_Blur_ZoomBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Blur_ZoomBlur.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Blur_ZoomBlur.frm-->
 
@@ -15136,10 +15131,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2585</phrasecount>
+<phrasecount>2584</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4484 phrases. -->
-<!-- 1899 are duplicates, so only 2585 unique phrases have been written to file. -->
-<!-- These 2585 phrases contain approximately 13275 total words. -->
+<!-- As of this build, PhotoDemon contains 4482 phrases. -->
+<!-- 1898 are duplicates, so only 2584 unique phrases have been written to file. -->
+<!-- These 2584 phrases contain approximately 13274 total words. -->
 
 </pdData>

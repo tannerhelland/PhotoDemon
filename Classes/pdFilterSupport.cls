@@ -80,9 +80,9 @@ Public Sub getColorsFromSource(ByRef r As Long, ByRef g As Long, ByRef b As Long
         'Interpolate a new pixel value
         If m_Interpolate Then
             
-            r = pInterpolate(srcX, srcY, srcData, 2)
-            g = pInterpolate(srcX, srcY, srcData, 1)
             b = pInterpolate(srcX, srcY, srcData, 0)
+            g = pInterpolate(srcX, srcY, srcData, 1)
+            r = pInterpolate(srcX, srcY, srcData, 2)
             If m_ColorDepth = 4 Then a = pInterpolate(srcX, srcY, srcData, 3)
         
         'Round to the nearest coordinate value
@@ -91,9 +91,9 @@ Public Sub getColorsFromSource(ByRef r As Long, ByRef g As Long, ByRef b As Long
             quickValX = Int(srcX) * m_ColorDepth
             quickValY = Int(srcY)
             
-            r = srcData(quickValX + 2, quickValY)
-            g = srcData(quickValX + 1, quickValY)
             b = srcData(quickValX, quickValY)
+            g = srcData(quickValX + 1, quickValY)
+            r = srcData(quickValX + 2, quickValY)
             If m_ColorDepth = 4 Then a = srcData(quickValX + 3, quickValY)
             
         End If

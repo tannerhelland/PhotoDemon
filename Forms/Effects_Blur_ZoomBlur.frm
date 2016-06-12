@@ -23,16 +23,6 @@ Begin VB.Form FormZoomBlur
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdButtonStrip btsStyle 
-      Height          =   1095
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   1680
-      Width           =   5850
-      _ExtentX        =   10319
-      _ExtentY        =   1931
-      Caption         =   "style"
-   End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -42,7 +32,6 @@ Begin VB.Form FormZoomBlur
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -53,18 +42,73 @@ Begin VB.Form FormZoomBlur
       _ExtentX        =   9922
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
+      PointSelection  =   -1  'True
    End
    Begin PhotoDemon.pdSlider sltDistance 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   3120
+      Top             =   2760
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
       Caption         =   "distance"
       Min             =   -200
       Max             =   200
+   End
+   Begin PhotoDemon.pdSlider sltXCenter 
+      Height          =   405
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   1560
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   873
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      NotchPosition   =   2
+      NotchValueCustom=   0.5
+   End
+   Begin PhotoDemon.pdSlider sltYCenter 
+      Height          =   405
+      Left            =   9000
+      TabIndex        =   4
+      Top             =   1560
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   873
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      NotchPosition   =   2
+      NotchValueCustom=   0.5
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   285
+      Index           =   0
+      Left            =   6000
+      Top             =   1200
+      Width           =   5925
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "center position (x, y)"
+      FontSize        =   12
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdLabel lblExplanation 
+      Height          =   435
+      Index           =   0
+      Left            =   6120
+      Top             =   2130
+      Width           =   5655
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   2
+      Caption         =   "Note: you can also set a center position by clicking the preview window."
+      FontSize        =   9
+      ForeColor       =   4210752
+      Layout          =   1
    End
 End
 Attribute VB_Name = "FormZoomBlur"
@@ -76,17 +120,10 @@ Attribute VB_Exposed = False
 'Zoom Blur Tool
 'Copyright 2013-2016 by Tanner Helland
 'Created: 27/August/13
-'Last updated: 25/September/14
-'Last update: improve traditional mode output, and allow negative zoom values
+'Last updated: 11/June/16
+'Last update: rewrite algorithm to support variable center positioning
 '
-'Basic zoom blur tool.  For performance reasons, my approach relies heavily on StretchBlt and AlphaBlend.  The
-' resulting zoom is of reasonably good quality, and it outperforms similar tools in both GIMP and Paint.NET, so I
-' think the implementation is solid.  That said, this function doesn't allow for sub-pixel control, which means that
-' even at small levels the blur is quite strong.  I could remedy this by using my internal pan/zoom function instead
-' of StretchBlt, but there would be a large performance penalty.  Maybe in the future...
-'
-'Note that unlike other blur tools, this one performances quite nicely in the IDE (due to its reliance on API
-' functions to do the heavy lifting).
+'Basic zoom blur tool.  Performance is middling, but the end result is of reasonably good quality.
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit http://photodemon.org/about/license/
@@ -95,248 +132,205 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'AlphaBlend is used to render a fast zoom blur estimation
-Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
-
-'Because PD now provides two styles of zoom blur, I've added this wrapper function, which calls the appropriate *actual* zoom blur
-' function, without the caller having to know details about either implementation.
-Public Sub ZoomBlurWrapper(ByVal useModernStyle As Boolean, ByVal zDistance As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
-
-    If useModernStyle Then
-        ZoomBlurModern zDistance, toPreview, dstPic
-    Else
-        ZoomBlurTraditional zDistance, toPreview, dstPic
-    End If
-
-End Sub
-
 'Apply motion blur to an image using a "modern" approach that allows for both in and out zoom
 'Inputs: distance of the blur
-Public Sub ZoomBlurModern(ByVal zDistance As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Applying zoom blur..."
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString functionParams
     
-    'Call prepImageData, which will initialize a workingDIB object for us (with all selection tool masks applied)
+    Dim zDistance As Double, zCenterX As Double, zCenterY As Double
+    zDistance = cParams.GetDouble("ZoomBlurDistance", 0#)
+    zCenterX = cParams.GetDouble("ZoomBlurCenterX", 0.5)
+    zCenterY = cParams.GetDouble("ZoomBlurCenterY", 0.5)
+    
+    If (Not toPreview) Then Message "Applying zoom blur..."
+    
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic, , , True
+    PrepImageData dstSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    Dim finalX As Long, finalY As Long
-    finalX = workingDIB.getDIBWidth
-    finalY = workingDIB.getDIBHeight
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent diffused pixels from spreading across the image as we go.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.CreateFromExistingDIB workingDIB
+    
+    PrepSafeArray srcSA, srcDIB
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim qvDepth As Long, xQuick As Long, xQuickInner As Long, yQuick As Long
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not toPreview Then
-        SetProgBarMax Abs(zDistance)
-        progBarCheck = FindBestProgBarValue()
-    End If
+    progBarCheck = FindBestProgBarValue()
     
-    'AlphaBlend has two limitations we have to work around: it only stretches using nearest-neighbor interpolation (which
-    ' creates very obvious blocking along the lines where the algorithm stretches), and it is incapable of rendering from
-    ' a source DC to a matching dest DC.  Thus we will make our own a temporary copy of the image, which we will use to
-    ' work around these two issues.
-    Dim tmpSrcDIB As pdDIB
-    Set tmpSrcDIB = New pdDIB
-    tmpSrcDIB.createFromExistingDIB workingDIB
+    Dim newR As Long, newG As Long, newB As Long, newA As Long
+    Dim origR As Long, origG As Long, origB As Long, origA As Long
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim tmpSum As Long, tmpSumFirst As Long
     
-    'Next, we set up some AlphaBlend parameters.  If the image already has alpha data, we want to make use of it, although
-    ' it will result in a funky final image (I may work around this in the future, but right now I don't care).  If the
-    ' image is 24bpp, we'll use halftoning to generate a higher-quality zoom.
-    Dim blendVal As Long
-    blendVal = 127 * &H10000
-    If workingDIB.getDIBColorDepth = 32 Then
-        SetStretchBltMode tmpSrcDIB.getDIBDC, STRETCHBLT_COLORONCOLOR
-    Else
-        SetStretchBltMode tmpSrcDIB.getDIBDC, STRETCHBLT_HALFTONE
-    End If
+    'Calculate the center of the image
+    Dim midX As Double, midY As Double
+    midX = CDbl(finalX - initX) * zCenterX
+    midX = midX + initX
+    midY = CDbl(finalY - initY) * zCenterY
+    midY = midY + initY
     
-    'Finally, we're going to use the image's aspect ratio to try and generate a more realistic zoom blur.  Calculate
-    ' that ratio now.
-    Dim aspectRatio As Double
-    If workingDIB.getDIBWidth > workingDIB.getDIBHeight Then
-        aspectRatio = workingDIB.getDIBHeight / workingDIB.getDIBWidth
-    Else
-        aspectRatio = workingDIB.getDIBWidth / workingDIB.getDIBHeight
-    End If
+    'Rotation values
+    Dim theta As Double, sDistance As Double, prevDistance As Double, distCalc As Double
     
-    'Zoom distance must be adjusted during a preview, so that the preview accurately represents the finished product.
-    If toPreview Then zDistance = Int(CDbl(zDistance) * curDIBValues.previewModifier)
+    'X and Y values, remapped around a center point of (0, 0)
+    Dim nX As Double, nY As Double
     
-    'Now comes the actual transform.  We basically just repeat a series of AlphaBlend calls on the image, blending at 50% opacity
-    ' as we go.  Ridiculous?  Yes.  Simple?  Yes.  :)
-    Dim i As Long, zoomOffset As Double
+    'Reverse-mapped source X and Y values
+    Dim srcX As Double, srcY As Double
     
-    'Note also that we have to use different functions for +/- distance
-    If zDistance > 0 Then
+    Dim numSamples As Long
+    numSamples = Abs(zDistance)
+    If (numSamples < 8) Then numSamples = 8
+    
+    Dim tmpSamples As Long, sampRatio As Single
+    
+    Dim maxRadius As Double
+    maxRadius = Sqr(finalX * finalX + finalY * finalY)
+    
+    Dim i As Long
+    Dim tmpDistance As Double
+    Dim cosTheta As Single, sinTheta As Single
+    
+    Dim distRatio As Double
+    distRatio = CDbl(zDistance) / 100
+    
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        xQuick = x * qvDepth
+    For y = initY To finalY
         
-        For i = 0 To zDistance Step 1
+        'Reset all supersampling values
+        newB = 0
+        newG = 0
+        newR = 0
+        newA = 0
         
-            'Because AlphaBlend can't stretch with anything besides nearest neighbor, we must do our own StretchBlt in advance.
-            ' I also modify the blend factors using the aspect ratio calculated above, which applies the blur at roughly the
-            ' same aspect ratio as the image itself (e.g. the "zoom" lines extend from the center toward the corners, and not
-            ' at 45 degree increments).
-            zoomOffset = i / 2
-            If workingDIB.getDIBWidth > workingDIB.getDIBHeight Then
-                StretchBlt tmpSrcDIB.getDIBDC, 0, 0, finalX, finalY, workingDIB.getDIBDC, zoomOffset, zoomOffset * aspectRatio, finalX - zoomOffset * 2, finalY - ((zoomOffset * aspectRatio) * 2), vbSrcCopy
-            Else
-                StretchBlt tmpSrcDIB.getDIBDC, 0, 0, finalX, finalY, workingDIB.getDIBDC, zoomOffset * aspectRatio, zoomOffset, finalX - ((zoomOffset * aspectRatio) * 2), finalY - zoomOffset * 2, vbSrcCopy
-            End If
+        b = srcImageData(xQuick, y)
+        g = srcImageData(xQuick + 1, y)
+        r = srcImageData(xQuick + 2, y)
+        a = srcImageData(xQuick + 3, y)
+        
+        'Remap the coordinates around a center point of (0, 0)
+        nX = x - midX
+        nY = y - midY
+        
+        'Calculate distance automatically
+        sDistance = Sqr((nX * nX) + (nY * nY))
+        distCalc = distRatio * sDistance
+        prevDistance = sDistance
+        
+        'Calculate theta
+        theta = Atan2(nY, nX)
+        cosTheta = Cos(theta)
+        sinTheta = Sin(theta)
+        
+        tmpSamples = CDbl(numSamples) * (sDistance / maxRadius)
+        If (tmpSamples < 4) Then
+            tmpSamples = 4
+        ElseIf (tmpSamples > numSamples) Then
+            tmpSamples = numSamples
+        End If
+        
+        sampRatio = (1 / numSamples)
+        
+        'We now want to sample (numSamples) pixels lying along this theta, but at different radii.
+        For i = 1 To tmpSamples
             
-            'Finally, AlphaBlend the modified DIB onto the working DIB, then rinse and repeat!
-            AlphaBlend workingDIB.getDIBDC, 0, 0, finalX, finalY, tmpSrcDIB.getDIBDC, 0, 0, finalX, finalY, blendVal
+            tmpDistance = (i * sampRatio) * distCalc + sDistance
+            If (tmpDistance < 0) Then tmpDistance = 0
             
-            If Not toPreview Then
-                If (i And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
-                    SetProgBarVal i
+            'If this sample is very close to the previous sample, there's no point in calculating it.
+            ' (This function performs no subsampling, so values are always integer-clamped.)
+            If (Abs(tmpDistance - prevDistance) > 0.5) Then
+                
+                'Convert the new distance and original theta back to cartesian coordinates
+                srcX = tmpDistance * cosTheta + midX
+                srcY = tmpDistance * sinTheta + midY
+                
+                If (srcX < 0) Then
+                    srcX = 0
+                ElseIf (srcX > finalX) Then
+                    srcX = finalX
                 End If
+                If (srcY < 0) Then
+                    srcY = 0
+                ElseIf (srcY > finalY) Then
+                    srcY = finalY
+                End If
+                
+                xQuickInner = Int(srcX) * qvDepth
+                yQuick = Int(srcY)
+                
+                b = srcImageData(xQuickInner, yQuick)
+                g = srcImageData(xQuickInner + 1, yQuick)
+                r = srcImageData(xQuickInner + 2, yQuick)
+                a = srcImageData(xQuickInner + 3, yQuick)
+                
+                prevDistance = tmpDistance
+            
             End If
-        
+            
+            newR = newR + r
+            newG = newG + g
+            newB = newB + b
+            newA = newA + a
+            
         Next i
         
-    Else
-    
-        For i = 0 To zDistance Step -1
-        
-            'Because AlphaBlend can't stretch with anything besides nearest neighbor, we must do our own StretchBlt in advance.
-            ' I also modify the blend factors using the aspect ratio calculated above, which applies the blur at roughly the
-            ' same aspect ratio as the image itself (e.g. the "zoom" lines extend from the center toward the corners, and not
-            ' at 45 degree increments).
-            zoomOffset = Abs(i / 2)
-            If workingDIB.getDIBWidth > workingDIB.getDIBHeight Then
-                StretchBlt tmpSrcDIB.getDIBDC, zoomOffset, zoomOffset * aspectRatio, finalX - zoomOffset * 2, finalY - ((zoomOffset * aspectRatio) * 2), workingDIB.getDIBDC, 0, 0, finalX, finalY, vbSrcCopy
-            Else
-                StretchBlt tmpSrcDIB.getDIBDC, zoomOffset * aspectRatio, zoomOffset, finalX - ((zoomOffset * aspectRatio) * 2), finalY - zoomOffset * 2, workingDIB.getDIBDC, 0, 0, finalX, finalY, vbSrcCopy
-            End If
-            
-            'Finally, AlphaBlend the modified DIB onto the working DIB, then rinse and repeat!
-            AlphaBlend workingDIB.getDIBDC, 0, 0, finalX, finalY, tmpSrcDIB.getDIBDC, 0, 0, finalX, finalY, blendVal
-            
-            If Not toPreview Then
-                If (Abs(i) And progBarCheck) = 0 Then
-                    If userPressedESC() Then Exit For
-                    SetProgBarVal Abs(i)
-                End If
-            End If
-        
-        Next i
-    
-    End If
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic, True
-    
-End Sub
-
-'Apply "traditional" zoom blur to an image
-'Inputs: distance of the blur
-Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
-    
-    If Not toPreview Then Message "Applying zoom blur..."
-    
-    'Create a local array and point it at the pixel data of the current image
-    Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
-    
-    'Create a second local array. This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim srcDIB As pdDIB
-    Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
-    
-    'By dividing blur distance by 200 (its maximum value), we can use it as a fractional amount to determine the strength of our horizontal blur.
-    If toPreview Then bDistance = bDistance * curDIBValues.previewModifier
-    
-    Dim finalX As Long, finalY As Long
-    finalX = workingDIB.getDIBWidth
-    finalY = workingDIB.getDIBHeight
-    
-    Dim newProgBarMax As Long
-    
-    'Negative and positive zooms are both allowed; these trigger whether we apply a forward or reverse horizontal/vertical blur.
-    Dim forwardBlurDistance As Long, backwardBlurDistance As Long
-    
-    If bDistance < 0 Then
-        forwardBlurDistance = Abs(bDistance)
-        backwardBlurDistance = 0
-    Else
-        forwardBlurDistance = 0
-        backwardBlurDistance = Abs(bDistance)
-    End If
-    
-    'Zoom blur basically works by converting an image to polar coordinates, applying a horizontal (or vertical) blur,
-    ' then converting back to rectangular coordinates.  Even with interpolation, the two coordinate conversion functions
-    ' result in a loss of image data, so I've gone to some lengths to try and mitigate this.
-    '
-    'Polar coordinate conversion basically works by using either X or Y to represent radius, and the other to represent theta
-    ' (or the angle of the pixel).  Because images are stored as rectangles, radius tends to preserve more of the original data
-    ' than theta, and obviously the larger of X or Y will retain more data by virtue of having more pixels available.
-    '
-    'Thus, PD checks the image's aspect ratio.  Whichever dimension is bigger is used to determine the type of polar coordinate
-    ' conversion used.  This should result in improved quality for both portrait and landscape aspect ratio images.
-    
-    If finalX > finalY Then
-    
-        'Because this function actually wraps three functions, calculating the progress bar maximum is a bit convoluted
-        newProgBarMax = finalX * 3
-    
-        'Start by converting the image to polar coordinates, using a specific set of actions to maximize quality
-        If CreatePolarCoordDIB(1, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax) Then
-            
-            workingDIB.SetAlphaPremultiplication True
-            
-            'Now we can apply the box blur to the temporary DIB, using the blur radius supplied by the user
-            If CreateVerticalBlurDIB(backwardBlurDistance, forwardBlurDistance, workingDIB, srcDIB, toPreview, newProgBarMax, finalX) Then
+        sampRatio = 1 / tmpSamples
+        dstImageData(xQuick, y) = newB * sampRatio
+        dstImageData(xQuick + 1, y) = newG * sampRatio
+        dstImageData(xQuick + 2, y) = newR * sampRatio
+        dstImageData(xQuick + 3, y) = newA * sampRatio
                 
-                srcDIB.SetAlphaPremultiplication False
-                
-                'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
-                CreatePolarCoordDIB 0, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax, finalX + finalX
-                
+    Next y
+        If Not toPreview Then
+            If (x And progBarCheck) = 0 Then
+                If UserPressedESC() Then Exit For
+                SetProgBarVal x
             End If
-            
         End If
+    Next x
     
-    Else
+    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
     
-        'Because this function actually wraps three functions, calculating the progress bar maximum is a bit convoluted
-        newProgBarMax = finalX * 2 + finalY
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
     
-        'Start by converting the image to polar coordinates, using a specific set of actions to maximize quality
-        If CreateXSwappedPolarCoordDIB(1, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax) Then
-            
-            workingDIB.SetAlphaPremultiplication True
-            
-            'Now we can apply the box blur to the temporary DIB, using the blur radius supplied by the user
-            If CreateHorizontalBlurDIB(backwardBlurDistance, forwardBlurDistance, workingDIB, srcDIB, toPreview, newProgBarMax, finalX) Then
-                
-                srcDIB.SetAlphaPremultiplication False
-                
-                'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
-                CreateXSwappedPolarCoordDIB 0, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax, finalX + finalY
-                
-            End If
-            
-        End If
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    FinalizeImageData toPreview, dstPic
     
-    End If
-    
-    srcDIB.eraseDIB
-    Set srcDIB = Nothing
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
-    
-End Sub
-
-'Modern style allows for zooming in and out.  Traditional only allows out.
-Private Sub btsStyle_Click(ByVal buttonIndex As Long)
-    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Zoom blur", , buildParams((btsStyle.ListIndex = 0), sltDistance), UNDO_LAYER
+    Process "Zoom blur", , getFilterParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -344,35 +338,43 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub Form_Activate()
-
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Draw a preview of the effect
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Load()
-    
-    'Disable previews until the form is fully initialized
-    cmdBar.markPreviewStatus False
-    
-    'Add style options to the button strip
-    btsStyle.AddItem "modern", 0
-    btsStyle.AddItem "traditional", 1
-    btsStyle.ListIndex = 0
-    
+    cmdBar.MarkPreviewStatus False
+    ApplyThemeAndTranslations Me
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ZoomBlurWrapper (btsStyle.ListIndex = 0), sltDistance, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.ApplyZoomBlur getFilterParamString(), True, pdFxPreview
+End Sub
+
+Private Function getFilterParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    With cParams
+        .AddParam "ZoomBlurDistance", sltDistance.Value
+        .AddParam "ZoomBlurCenterX", sltXCenter.Value
+        .AddParam "ZoomBlurCenterY", sltYCenter.Value
+    End With
+    
+    getFilterParamString = cParams.GetParamString
+    
+End Function
+
+Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
+    cmdBar.MarkPreviewStatus False
+    sltXCenter.Value = xRatio
+    sltYCenter.Value = yRatio
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
 End Sub
 
 Private Sub sltDistance_Change()
@@ -384,8 +386,10 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
+Private Sub sltXCenter_Change()
+    UpdatePreview
+End Sub
 
-
-
-
-
+Private Sub sltYCenter_Change()
+    UpdatePreview
+End Sub
