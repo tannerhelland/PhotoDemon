@@ -915,7 +915,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormTransparency_FromColor
             Else
-                FormTransparency_FromColor.colorToAlpha cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3)
+                FormTransparency_FromColor.ColorToAlpha cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
             
         Case "Remove alpha channel"
@@ -1416,7 +1416,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormZoomBlur
             Else
-                FormZoomBlur.ZoomBlurWrapper cParams.GetBool(1), cParams.GetLong(2)
+                FormZoomBlur.ApplyZoomBlur cXMLParams.GetParamString
             End If
             
         'Miscellaneous blurs

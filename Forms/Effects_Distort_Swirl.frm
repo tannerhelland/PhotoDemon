@@ -68,7 +68,7 @@ Begin VB.Form FormSwirl
       _ExtentY        =   1270
       Caption         =   "radius (percentage)"
       Min             =   1
-      Max             =   100
+      Max             =   200
       Value           =   100
       NotchPosition   =   2
       NotchValueCustom=   100
@@ -464,13 +464,11 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
-
     cmdBar.MarkPreviewStatus False
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
     cmdBar.MarkPreviewStatus True
     UpdatePreview
-
 End Sub
 
 Private Sub sltAngle_Change()
@@ -502,8 +500,4 @@ End Sub
 Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
-
-
-
-
 

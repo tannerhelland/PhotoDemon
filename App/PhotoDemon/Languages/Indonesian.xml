@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.131</langversion>
+<langversion>6.6.132</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -9110,12 +9110,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Memohon kabur zoom</translation>
 </phrase>
 
-<phrase>
-<original>traditional</original>
-<translation>tradisional</translation>
-</phrase>
-
-<!-- Effects_Blur_ZoomBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Blur_ZoomBlur.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Blur_ZoomBlur.frm-->
 
@@ -15142,10 +15137,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2585</phrasecount>
+<phrasecount>2584</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4484 phrases. -->
-<!-- 1899 are duplicates, so only 2585 unique phrases have been written to file. -->
-<!-- These 2585 phrases contain approximately 13275 total words. -->
+<!-- As of this build, PhotoDemon contains 4482 phrases. -->
+<!-- 1898 are duplicates, so only 2584 unique phrases have been written to file. -->
+<!-- These 2584 phrases contain approximately 13274 total words. -->
 
 </pdData>

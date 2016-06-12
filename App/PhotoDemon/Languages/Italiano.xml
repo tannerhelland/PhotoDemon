@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.189</langversion>
+<langversion>6.7.190</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -9103,12 +9103,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Applicazione dello zoom alla sfocatura</translation>
 </phrase>
 
-<phrase>
-<original>traditional</original>
-<translation>tradizionale</translation>
-</phrase>
-
-<!-- Effects_Blur_ZoomBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Blur_ZoomBlur.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Blur_ZoomBlur.frm-->
 
@@ -15135,10 +15130,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2585</phrasecount>
+<phrasecount>2584</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4484 phrases. -->
-<!-- 1899 are duplicates, so only 2585 unique phrases have been written to file. -->
-<!-- These 2585 phrases contain approximately 13275 total words. -->
+<!-- As of this build, PhotoDemon contains 4482 phrases. -->
+<!-- 1898 are duplicates, so only 2584 unique phrases have been written to file. -->
+<!-- These 2584 phrases contain approximately 13274 total words. -->
 
 </pdData>
