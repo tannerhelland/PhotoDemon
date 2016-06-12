@@ -217,14 +217,8 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Draw a preview of the effect
     cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Load()
@@ -234,6 +228,9 @@ Private Sub Form_Load()
     
     'Populate the kernel shape box with whatever shapes PD currently supports
     Interface.PopKernelShapeButtonStrip btsKernelShape, PDPRS_Circle
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
     
 End Sub
 
@@ -290,9 +287,4 @@ End Sub
 Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("radius", sltRadius.Value, "percent", sltPercent.Value, "kernelShape", btsKernelShape.ListIndex)
 End Function
-
-
-
-
-
 

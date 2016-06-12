@@ -2307,12 +2307,12 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
         
         'Apply new alpha.  (This function will return TRUE if the color match is found, and the resulting image thus
         ' contains some amount of transparency.)
-        If srcDIB.MakeColorTransparent_Ex(tmpTransparencyTable, alphaCutoffOrColor) Then
+        If DIB_Support.MakeColorTransparent_Ex(srcDIB, tmpTransparencyTable, alphaCutoffOrColor) Then
             
             'If the output color depth is 32-bpp, apply the new transparency table immediately
             If (outputColorDepth > 8) Then
                 ResetExportPreviewDIB tmpDIBRequired, srcDIB
-                m_ExportPreviewDIB.ApplyBinaryTransparencyTable tmpTransparencyTable, finalBackColor
+                DIB_Support.ApplyBinaryTransparencyTable m_ExportPreviewDIB, tmpTransparencyTable, finalBackColor
                 currentAlphaState = PDAS_BinaryAlpha
             
             'If the output color depth is 8-bpp, note that we need to re-apply the transparency table *after* quantization
@@ -2320,7 +2320,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                 transparencyTableActive = True
             End If
         
-        'If the MakeColorTransparent function failed, no color matches are found; this lets us use 24-bpp output.
+        'If the MakeColorTransparent_Ex function failed, no color matches are found; this lets us use 24-bpp output.
         Else
             ResetExportPreviewDIB tmpDIBRequired, srcDIB
             m_ExportPreviewDIB.CompositeBackgroundColor Colors.ExtractR(finalBackColor), Colors.ExtractG(finalBackColor), Colors.ExtractB(finalBackColor)
@@ -2341,12 +2341,12 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
             'If the image doesn't already have binary alpha, apply it now
             If (currentAlphaState <> PDAS_BinaryAlpha) Or (outputColorDepth < 32) Then
                 
-                srcDIB.ApplyAlphaCutoff_Ex tmpTransparencyTable, alphaCutoffOrColor
+                DIB_Support.ApplyAlphaCutoff_Ex srcDIB, tmpTransparencyTable, alphaCutoffOrColor
                 
                 'If the output color depth is 32-bpp, apply the new transparency table immediately
                 If (outputColorDepth > 8) Then
                     ResetExportPreviewDIB tmpDIBRequired, srcDIB
-                    m_ExportPreviewDIB.ApplyBinaryTransparencyTable tmpTransparencyTable, finalBackColor
+                    DIB_Support.ApplyBinaryTransparencyTable m_ExportPreviewDIB, tmpTransparencyTable, finalBackColor
                     currentAlphaState = PDAS_BinaryAlpha
                 
                 'If the output color depth is 8-bpp, note that we need to re-apply the transparency table *after* quantization
@@ -2367,7 +2367,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
     ' internally, so we can skip this step entirely.)
     If forceGrayscale And ((desiredAlphaState <> PDAS_NoAlpha) Or (paletteCount <> 256) Or (outputColorDepth > 16) Or (doNotUseFIGrayscale)) Then
         ResetExportPreviewDIB tmpDIBRequired, srcDIB
-        DIB_Handler.MakeDIBGrayscale m_ExportPreviewDIB, paletteCount
+        DIB_Support.MakeDIBGrayscale m_ExportPreviewDIB, paletteCount
     End If
     
     'Next, figure out scenarios where we can pass FreeImage a 24-bpp image.  This is helpful because FreeImage is
@@ -2379,9 +2379,9 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
     'We will also forcibly reduce the incoming image to 24bpp if it doesn't contain any meaningful alpha values
     If (Not reduceTo24bpp) Then
         If tmpDIBRequired Then
-            If (m_ExportPreviewDIB.GetDIBColorDepth = 32) Then reduceTo24bpp = DIB_Handler.IsDIBAlphaBinary(m_ExportPreviewDIB, False)
+            If (m_ExportPreviewDIB.GetDIBColorDepth = 32) Then reduceTo24bpp = DIB_Support.IsDIBAlphaBinary(m_ExportPreviewDIB, False)
         Else
-            If (srcDIB.GetDIBColorDepth = 32) Then reduceTo24bpp = DIB_Handler.IsDIBAlphaBinary(srcDIB, False)
+            If (srcDIB.GetDIBColorDepth = 32) Then reduceTo24bpp = DIB_Support.IsDIBAlphaBinary(srcDIB, False)
         End If
     End If
     
@@ -2583,7 +2583,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
                         If (desiredAlphaState = PDAS_ComplicatedAlpha) Then
                             
                             'Start by backing up the image's current transparency data.
-                            srcDIB.RetrieveTransparencyTable tmpTransparencyTable
+                            DIB_Support.RetrieveTransparencyTable srcDIB, tmpTransparencyTable
                             
                             'Fix premultiplication
                             ResetExportPreviewDIB tmpDIBRequired, srcDIB

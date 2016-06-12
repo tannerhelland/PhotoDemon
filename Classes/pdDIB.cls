@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
 'Copyright 2012-2016 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 26/April/16
-'Last update: lots of new transparency-related functions, to facilitate the DIB export process
+'Last updated: 12/June/16
+'Last update: clean-up some esoteric functions by moving them to the DIB_Support module.
 '
 'This class is the core of PhotoDemon.  Any image interactions are handled through this lightweight Windows DIB wrapper, and as you
 ' might expect, a number of other capabilities are built into the class.
@@ -82,21 +82,22 @@ Private Type RECT
     y2 As Long
 End Type
 
-'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
-Private Type SAFEARRAYBOUND
-    cElements As Long
-    lBound As Long
-End Type
-
-Private Type SAFEARRAY2D
-    cDims As Integer
-    fFeatures As Integer
-    cbElements As Long
-    cLocks As Long
-    pvData As Long
-    Bounds(1) As SAFEARRAYBOUND
-End Type
-
+'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data).
+' (Inside PhotoDemon, we declare these types elsewhere, as they're used in a whole bunch of functions, but to use this class
+'  as a standalone instance you will need to uncomment these.)
+'Public Type SAFEARRAYBOUND
+'    cElements As Long
+'    lBound As Long
+'End Type
+'
+'Public Type SAFEARRAY2D
+'    cDims As Integer
+'    fFeatures As Integer
+'    cbElements As Long
+'    cLocks As Long
+'    pvData As Long
+'    Bounds(1) As SAFEARRAYBOUND
+'End Type
 
 'Drawing API functions
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
@@ -136,16 +137,11 @@ Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_C
 Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
 
 'Variables related to the DIB
-'hDC for this DIB
-Private m_dibDC As Long
-'Actual DIB handle for this DIB
-Private m_dibHandle As Long
-'Original handle when this DIB is first created (we must store this so we can properly clean up the DIB when we're finished)
-Private m_dibHandleOriginal As Long
-'Pointer to the actual DIB bits
-Private m_dibBits As Long
-'Persistent DIB header; this will be used with WAPI to create the DIB initially
-Private m_dibHeader As BITMAPINFOHEADER
+Private m_dibDC As Long                 'hDC for this DIB
+Private m_dibHandle As Long             'Actual DIB handle for this DIB
+Private m_dibHandleOriginal As Long     'Original handle when this DIB is first created (we must store this so we can properly clean up the DIB when we're finished)
+Private m_dibBits As Long               'Pointer to the actual DIB pixel bits
+Private m_dibHeader As BITMAPINFOHEADER 'Persistent DIB header; this will be used with WAPI to create the DIB initially
 
 'The DIB's width and height
 Private m_dibWidth As Long, m_dibHeight As Long
@@ -154,16 +150,12 @@ Private m_dibWidth As Long, m_dibHeight As Long
 Private m_dibArrayWidth As Long
 
 'The DIB's color depth (should only ever be 24 or 32)
-Private m_DibColorDepth As Long
+Private m_dibColorDepth As Long
 
 'Used when writing/reading DIB data to/from a file
-Private Const DIB_IDENTIFIER As Long = &H726C4450  'PDlr
+Private Const DIB_IDENTIFIER As Long = &H726C4450  'The ASCII chars "PDlr"
 Private Const DIB_FILE_VERSION_2012 As Long = &H1000&
 Private Const DIB_FILE_VERSION_2015 As Long = &H1001&
-
-'When converting a 32bpp DIB to 8bpp with transparency, we need to know the location of a transparent pixel.
-' This location is passed to FreeImage, and it designates the palette index at that location as the transparent index.
-Private m_trnsX As Long, m_trnsY As Long
 
 'Remember the original color of the pixels made transparent, then restore it after the "magic magenta" has served its purpose
 Private m_OriginalTransparentColor As Long
@@ -280,12 +272,6 @@ Public Function GetOriginalTransparentColor() As Long
     GetOriginalTransparentColor = m_OriginalTransparentColor
 End Function
 
-'Return the location of a transparent pixel. This will be set as part of the applyAlphaCutoff routine.
-Public Sub GetTransparentLocation(ByRef srcX As Long, ByRef srcY As Long)
-    srcX = m_trnsX
-    srcY = m_trnsY
-End Sub
-
 'Given a pixel coordinate, return an RGBA quad for that coordinate.
 ' Returns: TRUE if the pixel lies inside DIB boundaries; FALSE otherwise.  Make sure to check this before using the RGBQUAD.
 Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad As RGBQUAD) As Boolean
@@ -296,28 +282,26 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
         'The point lies inside the DIB, which means we need to figure out the color at this position
         GetPixelRGBQuad = True
         
-        Dim tmpData() As Byte
-        Dim tSA As SAFEARRAY2D
-        PrepInternalSafeArray tSA
-        CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4&
+        Dim tmpData() As Byte, tSA As SAFEARRAY2D
+        Me.WrapArrayAroundDIB tmpData, tSA
         
         Dim quickX As Long
-        quickX = x * (m_DibColorDepth \ 8)
+        quickX = x * (m_dibColorDepth \ 8)
         
         'Failsafe bounds check
         If ((quickX + 2) < m_dibArrayWidth) Then
         
             With dstQuad
-                .Red = tmpData(quickX + 2, y)
-                .Green = tmpData(quickX + 1, y)
                 .Blue = tmpData(quickX, y)
-                If m_DibColorDepth = 32 Then .alpha = tmpData(quickX + 3, y)
+                .Green = tmpData(quickX + 1, y)
+                .Red = tmpData(quickX + 2, y)
+                If m_dibColorDepth = 32 Then .alpha = tmpData(quickX + 3, y)
             End With
             
         End If
         
-        CopyMemory ByVal VarPtrArray(tmpData), 0&, 4
-    
+        Me.UnwrapArrayFromDIB tmpData
+        
     'This coordinate does not lie inside the layer.
     Else
         GetPixelRGBQuad = False
@@ -325,555 +309,16 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
 
 End Function
 
-'This function will apply an "alpha-cutoff" to a 32bpp image.  The location of a transparent pixel (m_trnsX, m_trnsY)
-' will be memorized, and if forceColor is TRUE, any alpha values above the cutoff will be replaced with magic
-' magenta (253,0,253) to make subsequent palettization easier.
-Public Sub ApplyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal forceColor As Boolean = True, Optional ByVal newBackgroundColor As Long = 16777215)
-
-    If (m_DibColorDepth = 32) Then
-        If (Me.GetDIBDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
-            
-            If (cutOff = 0) Then
-                ConvertTo24bpp newBackgroundColor
-                Exit Sub
-            End If
-            
-            Dim iData() As Byte
-            Dim tmpSA As SAFEARRAY2D
-            PrepInternalSafeArray tmpSA
-            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-    
-            Dim x As Long, y As Long, finalX As Long, finalY As Long
-            finalX = (m_dibWidth - 1) * 4
-            finalY = (m_dibHeight - 1)
-            
-            Dim chkAlpha As Byte
-            Dim tmpAlpha As Double
-            
-            'This function requires unpremultiplied alpha
-            If Me.GetAlphaPremultiplication Then Me.SetAlphaPremultiplication False
-            Dim stillLookingForTransPixel As Boolean: stillLookingForTransPixel = True
-            
-            'Retrieve RGB values from the new background color, which we'll use to composite semi-transparent pixels
-            Dim backR As Long, backG As Long, backB As Long
-            backR = Colors.ExtractR(newBackgroundColor)
-            backG = Colors.ExtractG(newBackgroundColor)
-            backB = Colors.ExtractB(newBackgroundColor)
-                
-            'Loop through the image, checking alphas as we go
-            For y = 0 To finalY
-            For x = 0 To finalX Step 4
-                
-                chkAlpha = iData(x + 3, y)
-                
-                'If the alpha value is less than the cutoff, mark this pixel for exploration
-                If (chkAlpha < cutOff) Then
-                
-                    'Remember this location if we haven't already
-                    If stillLookingForTransPixel Then
-                        stillLookingForTransPixel = False
-                        m_trnsX = (x \ 4)
-                        m_trnsY = y
-                        m_OriginalTransparentColor = RGB(iData(x + 2, y), iData(x + 1, y), iData(x, y))
-                    End If
-                    
-                    'Color this pixel with magic magenta - RGB(253, 0, 253)
-                    ' (NOTE: when previewing this effect, we don't actually want to change pixel colors. Otherwise,
-                    '  HALFTONE-mode resampling may bleed the magenta into the preview and give poor results.
-                    '  That's why this option can be toggled.)
-                    If forceColor Then
-                        iData(x, y) = 253
-                        iData(x + 1, y) = 0
-                        iData(x + 2, y) = 253
-                    End If
-                    
-                    'Blank the alpha channel
-                    iData(x + 3, y) = 0
-                    
-                'If the pixel is not beneath the cut-off, and not fully opaque, composite it against the requested background
-                Else
-                
-                    If (chkAlpha < 255) Then
-                
-                        'Convert the alpha value to a floating-point variable
-                        tmpAlpha = CDbl(chkAlpha) / 255
-                
-                        'Use that alpha value to blend the current color against white
-                        iData(x, y) = Blend2Colors(iData(x, y), backB, tmpAlpha)
-                        iData(x + 1, y) = Blend2Colors(iData(x + 1, y), backG, tmpAlpha)
-                        iData(x + 2, y) = Blend2Colors(iData(x + 2, y), backR, tmpAlpha)
-                        
-                        'Opaque-ify the alpha channel
-                        iData(x + 3, y) = 255
-                    
-                    End If
-                
-                End If
-                
-            Next x
-            Next y
-    
-            'With our alpha channel complete, point iData() away from the DIB and deallocate it
-            CopyMemory ByVal VarPtrArray(iData), 0&, 4
-            
-        End If
-    End If
-    
+'Convenience functions for wrapping an array around this DIB's bits.  You *must* call the Unwrap function prior to the array
+' falling out of scope, or VB will crash.
+Friend Sub WrapArrayAroundDIB(ByRef srcArray() As Byte, ByRef srcSafeArray As SAFEARRAY2D)
+    PrepInternalSafeArray srcSafeArray
+    CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
 End Sub
 
-'This function will apply an "alpha-cutoff" to a 32bpp image.  This _Ex version requires an input byte array, which will be
-' initialized to the size of the image and filled with a copy of the image's new transparency data, if that cut-off were applied.
-' (e.g. the return array will only include values of 0 or 255 for each pixel).
-'
-'Note that - by design - the DIB is not actually modified by this function.
-Public Sub ApplyAlphaCutoff_Ex(ByRef dstTransparencyTable() As Byte, Optional ByVal cutOff As Long = 127)
-
-    If (m_DibColorDepth = 32) Then
-        If (Me.GetDIBDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
-            
-            ReDim dstTransparencyTable(0 To (m_dibWidth - 1), 0 To (m_dibHeight - 1)) As Byte
-            
-            If (cutOff = 0) Then
-                FillMemory VarPtr(dstTransparencyTable(0)), m_dibWidth * m_dibHeight, 255
-                Exit Sub
-            End If
-            
-            Dim iData() As Byte
-            Dim tmpSA As SAFEARRAY2D
-            PrepInternalSafeArray tmpSA
-            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-            
-            Dim x As Long, y As Long, finalX As Long, finalY As Long
-            finalX = (m_dibWidth - 1)
-            finalY = (m_dibHeight - 1)
-            
-            Dim chkAlpha As Byte
-                
-            'Loop through the image, checking alphas as we go
-            For y = 0 To finalY
-            For x = 0 To finalX
-                
-                chkAlpha = iData(x * 4 + 3, y)
-                
-                'If the alpha value is less than the cutoff, mark this pixel for exploration
-                If (chkAlpha < cutOff) Then
-                    dstTransparencyTable(x, y) = 0
-                'If the pixel is not beneath the cut-off, and not fully opaque, composite it against the requested background
-                Else
-                    dstTransparencyTable(x, y) = 255
-                End If
-                
-            Next x
-            Next y
-    
-            'With our alpha channel complete, point iData() away from the DIB and deallocate it
-            CopyMemory ByVal VarPtrArray(iData), 0&, 4
-            
-        End If
-    End If
-    
+Public Sub UnwrapArrayFromDIB(ByRef srcArray() As Byte)
+    CopyMemory ByVal VarPtrArray(srcArray), 0&, 4&
 End Sub
-
-'(See comments for ApplyAlphaCutoff_Ex, above; this function is identical, but using a target color instead of an alpha cutoff.)
-'Returns: TRUE if at least one pixel was made transparent; FALSE otherwise
-Public Function MakeColorTransparent_Ex(ByRef dstTransparencyTable() As Byte, ByVal srcColor As Long) As Boolean
-
-    If (m_DibColorDepth = 32) Then
-        If (Me.GetDIBDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
-            
-            Dim iData() As Byte
-            Dim tmpSA As SAFEARRAY2D
-            PrepInternalSafeArray tmpSA
-            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-            
-            Dim x As Long, y As Long, finalX As Long, finalY As Long, xLookup As Long
-            finalX = (m_dibWidth - 1)
-            finalY = (m_dibHeight - 1)
-            
-            ReDim dstTransparencyTable(0 To (m_dibWidth - 1), 0 To (m_dibHeight - 1)) As Byte
-            
-            Dim chkR As Long, chkG As Long, chkB As Long, chkAlpha As Byte
-            Dim targetR As Long, targetG As Long, targetB As Long
-            targetR = Colors.ExtractR(srcColor)
-            targetG = Colors.ExtractG(srcColor)
-            targetB = Colors.ExtractB(srcColor)
-            
-            Dim tmpAlpha As Double
-            
-            'This function require unpremultiplied alpha
-            Dim needToResetPremultiplication As Boolean: needToResetPremultiplication = False
-            If Me.GetAlphaPremultiplication Then
-                Me.SetAlphaPremultiplication False
-                needToResetPremultiplication = True
-            End If
-        
-            'We will return TRUE if at least one pixel is made transparent
-            Dim stillLookingForTransPixel As Boolean: stillLookingForTransPixel = True
-                
-            'Loop through the image, checking alphas as we go
-            For y = 0 To finalY
-            For x = 0 To finalX
-                
-                xLookup = x * 4
-                chkB = iData(xLookup, y)
-                chkG = iData(xLookup + 1, y)
-                chkR = iData(xLookup + 2, y)
-                
-                'There are basically two options here:
-                ' 1) This pixel matches our target color, and needs to be made fully transparent
-                ' 2) This pixel does not match our target color, and needs to be made fully opaque
-                If (targetR = chkR) And (targetG = chkG) And (targetB = chkB) Then
-                
-                    'This pixel is a match!  Make it fully transparent.
-                    dstTransparencyTable(x, y) = 0
-                    
-                    'Remember this location if we haven't already
-                    If stillLookingForTransPixel Then stillLookingForTransPixel = False
-                    
-                Else
-                    dstTransparencyTable(x, y) = 255
-                End If
-                
-            Next x
-            Next y
-    
-            'With our alpha channel complete, point iData() away from the DIB and deallocate it
-            CopyMemory ByVal VarPtrArray(iData), 0&, 4
-            
-            If needToResetPremultiplication Then Me.SetAlphaPremultiplication True
-            
-            MakeColorTransparent_Ex = Not stillLookingForTransPixel
-            
-        End If
-    Else
-        Debug.Print "WARNING!  pdDIB.MakeColorTransparent_Ex() requires a 32-bpp DIB to operate correctly."
-    End If
-    
-End Function
-
-'This function will return the alpha channel of a 32bpp image.  An input byte array is required; it will be initialized
-' to the size of the image and filled with a copy of the image's alpha values.
-'
-'Note that - by design - the DIB is not actually modified by this function.
-Public Sub RetrieveTransparencyTable(ByRef dstTransparencyTable() As Byte)
-
-    If (m_DibColorDepth = 32) Then
-        If (Me.GetDIBDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
-            
-            ReDim dstTransparencyTable(0 To (m_dibWidth - 1), 0 To (m_dibHeight - 1)) As Byte
-            
-            Dim iData() As Byte
-            Dim tmpSA As SAFEARRAY2D
-            PrepInternalSafeArray tmpSA
-            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-            
-            Dim x As Long, y As Long, finalX As Long, finalY As Long
-            finalX = (m_dibWidth - 1)
-            finalY = (m_dibHeight - 1)
-                
-            'Loop through the image, checking alphas as we go
-            For y = 0 To finalY
-            For x = 0 To finalX
-                dstTransparencyTable(x, y) = iData(x * 4 + 3, y)
-            Next x
-            Next y
-    
-            'With our alpha channel complete, point iData() away from the DIB and deallocate it
-            CopyMemory ByVal VarPtrArray(iData), 0&, 4
-            
-        End If
-    End If
-    
-End Sub
-
-'Given a binary table (e.g. a byte array at the same dimensions as the image, containing the desired per-pixel alpha values),
-' apply said transparency table to the current DIB.
-Public Function ApplyTransparencyTable(ByRef srcTransparencyTable() As Byte) As Boolean
-
-    If (m_DibColorDepth = 32) Then
-        If (Me.GetDIBDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
-            
-            Dim iData() As Byte
-            Dim tmpSA As SAFEARRAY2D
-            PrepInternalSafeArray tmpSA
-            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-            
-            Dim x As Long, y As Long, finalX As Long, finalY As Long
-            finalX = (m_dibWidth - 1)
-            finalY = (m_dibHeight - 1)
-            
-            Dim restorePremultiplication As Boolean: restorePremultiplication = False
-            If Me.GetAlphaPremultiplication Then
-                Me.SetAlphaPremultiplication False
-                restorePremultiplication = True
-            End If
-                
-            'Loop through the image, checking alphas as we go
-            For y = 0 To finalY
-            For x = 0 To finalX
-                iData(x * 4 + 3, y) = srcTransparencyTable(x, y)
-            Next x
-            Next y
-    
-            'With our alpha channel complete, point iData() away from the DIB and deallocate it
-            CopyMemory ByVal VarPtrArray(iData), 0&, 4
-            
-            If restorePremultiplication Then Me.SetAlphaPremultiplication True
-            
-            ApplyTransparencyTable = True
-            
-        End If
-    Else
-        Debug.Print "WARNING!  pdDIB.ApplyBinaryTransparencyTable() requires a 32-bpp DIB to operate correctly."
-    End If
-    
-End Function
-
-'Given a binary transparency table (e.g. a byte array at the same dimensions as the image, with only values 0 or 255),
-' apply said transparency table to the current DIB.  This function contains special optimizations over the generic
-' ApplyTransparencyTable function, so use it for a speed boost if you know the transparency table is limited to full
-' opacity and/or full transparency.
-Public Function ApplyBinaryTransparencyTable(ByRef srcTransparencyTable() As Byte, Optional ByVal newBackgroundColor As Long = vbWhite) As Boolean
-
-    If (m_DibColorDepth = 32) Then
-        If (Me.GetDIBDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
-            
-            Dim iData() As Byte
-            Dim tmpSA As SAFEARRAY2D
-            PrepInternalSafeArray tmpSA
-            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-            
-            Dim x As Long, y As Long, finalX As Long, finalY As Long, xLookup As Long
-            finalX = (m_dibWidth - 1)
-            finalY = (m_dibHeight - 1)
-            
-            Dim alphaPremultiplied As Boolean: alphaPremultiplied = Me.GetAlphaPremultiplication
-            
-            Dim chkR As Long, chkG As Long, chkB As Long, chkAlpha As Byte
-            Dim tmpAlpha As Double
-            
-            'Premultiplication requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table
-            ' for converting single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-            Dim intToFloat() As Single
-            ReDim intToFloat(0 To 255) As Single
-            Dim i As Long
-            For i = 0 To 255
-                If alphaPremultiplied Then
-                    intToFloat(i) = 1 - (i / 255)
-                Else
-                    intToFloat(i) = i / 255
-                End If
-            Next i
-            
-            'Retrieve RGB values from the new background color, which we'll use to composite semi-transparent pixels
-            Dim backR As Long, backG As Long, backB As Long
-            backR = Colors.ExtractR(newBackgroundColor)
-            backG = Colors.ExtractG(newBackgroundColor)
-            backB = Colors.ExtractB(newBackgroundColor)
-                
-            'Loop through the image, checking alphas as we go
-            For y = 0 To finalY
-            For x = 0 To finalX
-                
-                xLookup = x * 4
-                
-                'If the transparency table is 0, erase this pixel
-                If srcTransparencyTable(x, y) = 0 Then
-                    iData(xLookup, y) = 0
-                    iData(xLookup + 1, y) = 0
-                    iData(xLookup + 2, y) = 0
-                    iData(xLookup + 3, y) = 0
-                
-                'Otherwise, make this pixel fully opaque and composite it against the specified backcolor
-                Else
-                    chkB = iData(xLookup, y)
-                    chkG = iData(xLookup + 1, y)
-                    chkR = iData(xLookup + 2, y)
-                    chkAlpha = iData(xLookup + 3, y)
-                    
-                    If (chkAlpha <> 255) Then
-                        tmpAlpha = intToFloat(chkAlpha)
-                        
-                        If alphaPremultiplied Then
-                            iData(xLookup, y) = backB * tmpAlpha + chkB
-                            iData(xLookup + 1, y) = backG * tmpAlpha + chkG
-                            iData(xLookup + 2, y) = backR * tmpAlpha + chkR
-                        Else
-                            iData(xLookup, y) = Blend2Colors(chkB, backB, tmpAlpha)
-                            iData(xLookup + 1, y) = Blend2Colors(chkG, backG, tmpAlpha)
-                            iData(xLookup + 2, y) = Blend2Colors(chkR, backR, tmpAlpha)
-                        End If
-                        
-                        iData(xLookup + 3, y) = 255
-                    End If
-                    
-                End If
-                
-            Next x
-            Next y
-    
-            'With our alpha channel complete, point iData() away from the DIB and deallocate it
-            CopyMemory ByVal VarPtrArray(iData), 0&, 4
-            
-            ApplyBinaryTransparencyTable = True
-            
-        End If
-    Else
-        Debug.Print "WARNING!  pdDIB.ApplyBinaryTransparencyTable() requires a 32-bpp DIB to operate correctly."
-    End If
-    
-End Function
-
-'If an image already has binary alpha, don't waste your time with ApplyAlphaCutoff(), above.  Instead, call this
-' function to memorize the same data without scanning the entire image from scratch.
-Public Sub MemorizeBinaryAlphaData()
-    
-    If m_DibColorDepth = 32 Then
-        If (Me.GetDIBDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
-            
-            Dim iData() As Byte
-            Dim tmpSA As SAFEARRAY2D
-            PrepInternalSafeArray tmpSA
-            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-            
-            Dim x As Long, y As Long, finalX As Long, finalY As Long
-            finalX = (m_dibWidth - 1) * 4
-            finalY = m_dibHeight - 1
-            
-            Dim transPixelFound As Boolean: transPixelFound = False
-            
-            'Loop through the image, checking alphas as we go
-            For y = 0 To finalY
-            For x = 0 To finalX Step 4
-                
-                'If the pixel is transparent, use it as our transparent pixel reference
-                If iData(x + 3, y) = 0 Then
-                    transPixelFound = True
-                    m_trnsX = (x \ 4)
-                    m_trnsY = y
-                    m_OriginalTransparentColor = RGB(iData(x + 2, y), iData(x + 1, y), iData(x, y))
-                End If
-                
-                If transPixelFound Then Exit For
-            Next x
-                If transPixelFound Then Exit For
-            Next y
-            
-            CopyMemory ByVal VarPtrArray(iData), 0&, 4
-            
-        End If
-    End If
-    
-End Sub
-
-'This function will generate a new alpha channel for a 32bpp image, using a target color as its guide.
-' Just like the ApplyAlphaCutOff function, above, the location of a transparent pixel (m_trnsX, m_trnsY)
-' will be memorized, and if forceColor is TRUE, any alpha values above the cutoff will be replaced with magic
-' magenta (253,0,253) to make subsequent palettization easier.
-'
-'Returns: TRUE if at least one pixel was made transparent; FALSE otherwise
-Public Function MakeColorTransparent(ByVal srcColor As Long, Optional ByVal forceColor As Boolean = True, Optional ByVal newBackgroundColor As Long = 16777215) As Boolean
-
-    If (m_DibColorDepth = 32) Then
-        If (Me.GetDIBDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
-            
-            Dim iData() As Byte
-            Dim tmpSA As SAFEARRAY2D
-            PrepInternalSafeArray tmpSA
-            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-    
-            Dim x As Long, y As Long, finalX As Long, finalY As Long
-            finalX = (m_dibWidth - 1) * 4
-            finalY = (m_dibHeight - 1)
-            
-            Dim chkR As Long, chkG As Long, chkB As Long, chkAlpha As Byte
-            Dim targetR As Long, targetG As Long, targetB As Long
-            targetR = Colors.ExtractR(srcColor)
-            targetG = Colors.ExtractG(srcColor)
-            targetB = Colors.ExtractB(srcColor)
-            
-            Dim tmpAlpha As Double
-            
-            'This function require unpremultiplied alpha
-            If Me.GetAlphaPremultiplication Then Me.SetAlphaPremultiplication False
-        
-            Dim stillLookingForTransPixel As Boolean: stillLookingForTransPixel = True
-            
-            'Retrieve RGB values from the new background color, which we'll use to composite semi-transparent pixels
-            Dim backR As Long, backG As Long, backB As Long
-            backR = Colors.ExtractR(newBackgroundColor)
-            backG = Colors.ExtractG(newBackgroundColor)
-            backB = Colors.ExtractB(newBackgroundColor)
-                
-            'Loop through the image, checking alphas as we go
-            For y = 0 To finalY
-            For x = 0 To finalX Step 4
-                
-                chkB = iData(x, y)
-                chkG = iData(x + 1, y)
-                chkR = iData(x + 2, y)
-                chkAlpha = iData(x + 3, y)
-                
-                'There are basically two options here:
-                ' 1) This pixel matches our target color, and needs to be made fully transparent
-                ' 2) This pixel does not match our target color, and needs to be made fully opaque
-                If (targetR = chkR) And (targetG = chkG) And (targetB = chkB) Then
-                
-                    'This pixel is a match!  Make it fully transparent.
-                    
-                    'Remember this location if we haven't already
-                    If stillLookingForTransPixel Then
-                        stillLookingForTransPixel = False
-                        m_trnsX = (x \ 4)
-                        m_trnsY = y
-                        m_OriginalTransparentColor = RGB(targetR, targetG, targetB)
-                    End If
-                    
-                    'Color this pixel with magic magenta - RGB(253, 0, 253)
-                    ' (NOTE: when previewing this effect, we don't actually want to change pixel colors. Otherwise,
-                    '  HALFTONE-mode resampling may bleed the magenta into the preview and give poor results.
-                    '  That's why this option can be toggled.)
-                    ' (ALSO NOTE: this has unpredictable effects if the caller assumes a premultiplied state.
-                    '  Plan accordingly!)
-                    If forceColor Then
-                        iData(x, y) = 253
-                        iData(x + 1, y) = 0
-                        iData(x + 2, y) = 253
-                    End If
-                    
-                    'Blank the alpha channel
-                    iData(x + 3, y) = 0
-                    
-                Else
-                
-                    'This pixel is not a match!  Make it fully opaque.
-                    If (chkAlpha <> 255) Then
-                
-                        'Convert the alpha value to a floating-point variable
-                        tmpAlpha = CDbl(chkAlpha) / 255
-                        iData(x, y) = Blend2Colors(chkB, backB, tmpAlpha)
-                        iData(x + 1, y) = Blend2Colors(chkG, backG, tmpAlpha)
-                        iData(x + 2, y) = Blend2Colors(chkR, backR, tmpAlpha)
-                        
-                        'Opaque-ify the alpha channel
-                        iData(x + 3, y) = 255
-                    
-                    End If
-                
-                End If
-                
-            Next x
-            Next y
-    
-            'With our alpha channel complete, point iData() away from the DIB and deallocate it
-            CopyMemory ByVal VarPtrArray(iData), 0&, 4
-            
-            MakeColorTransparent = Not stillLookingForTransPixel
-            
-        End If
-    End If
-    
-End Function
 
 'Force all alpha bytes in the DIB to some preset value.  If the value is *not* 255, please remember to premultiply
 ' alpha accordingly, if the DIB will be rendered to the screen.
@@ -882,17 +327,15 @@ Public Function ForceNewAlpha(ByVal newAlpha As Byte) As Boolean
     ForceNewAlpha = False
     
     'Make sure this DIB is 32bpp. If it isn't, running this function is pointless.
-    If (m_DibColorDepth = 32) Then
+    If (m_dibColorDepth = 32) Then
 
         'Make sure this DIB isn't empty
         If (Me.GetDIBDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
             
             'Loop through the image and force each alpha value to the user's specified value
-            Dim iData() As Byte
-            Dim tmpSA As SAFEARRAY2D
-            PrepInternalSafeArray tmpSA
-            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-    
+            Dim iData() As Byte, tmpSA As SAFEARRAY2D
+            Me.WrapArrayAroundDIB iData, tmpSA
+            
             Dim x As Long, y As Long, finalX As Long
             finalX = (m_dibWidth - 1) * 4
                 
@@ -903,7 +346,7 @@ Public Function ForceNewAlpha(ByVal newAlpha As Byte) As Boolean
             Next x
             Next y
             
-            CopyMemory ByVal VarPtrArray(iData), 0&, 4
+            Me.UnwrapArrayFromDIB iData
             ForceNewAlpha = True
             
         Else
@@ -934,7 +377,7 @@ End Sub
 
 'Return this DIB's color depth
 Public Function GetDIBColorDepth() As Long
-    GetDIBColorDepth = m_DibColorDepth
+    GetDIBColorDepth = m_dibColorDepth
 End Function
 
 'Return this DIB's array width
@@ -1017,7 +460,7 @@ Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
         If (newWidth = srcDIB.GetDIBWidth) And (newHeight = srcDIB.GetDIBHeight) Then
             
             'If we are already at the same size and bit-depth as the source image, we can use our existing DIB and DC as-is.
-            If (newWidth = m_dibWidth) And (newHeight = m_dibHeight) And (srcDIB.GetDIBColorDepth = m_DibColorDepth) Then
+            If (newWidth = m_dibWidth) And (newHeight = m_dibHeight) And (srcDIB.GetDIBColorDepth = m_dibColorDepth) Then
             
                 'Copy the image data without modification
                 BitBlt Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
@@ -1104,7 +547,7 @@ Public Function ConvertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As
     ConvertTo24bpp = False
     
     'Make sure this DIB is 32bpp. If it isn't, running this function pointless.
-    If (m_DibColorDepth = 32) Then
+    If (m_dibColorDepth = 32) Then
 
         'Make sure this DIB isn't empty
         If (Me.GetDIBDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
@@ -1141,8 +584,7 @@ Public Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
     'Make sure this DIB isn't empty
     If (Me.GetDIBDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
 
-        Dim iData() As Byte
-        Dim tmpSA As SAFEARRAY2D
+        Dim iData() As Byte, tmpSA As SAFEARRAY2D
         Dim x As Long, y As Long, quickX As Long
         
         Dim newTransFloat As Double
@@ -1262,7 +704,7 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
                     
                     'Finally, if the copied image contains an alpha channel (icons, PNGs, etc), it will be set against a
                     ' black background. We typically want the background to be white, so perform a composite if requested.
-                    If forceWhiteBackground And (m_DibColorDepth = 32) Then CompositeBackgroundColor
+                    If forceWhiteBackground And (m_dibColorDepth = 32) Then CompositeBackgroundColor
                     
                     'Success!
                     CreateFromPicture = True
@@ -1306,7 +748,7 @@ Public Function CreateBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     If (iHeight <= 0) Then iHeight = 1
     
     'Remember the requested color depth, width, and height
-    m_DibColorDepth = colorDepth
+    m_dibColorDepth = colorDepth
     m_dibWidth = iWidth
     m_dibHeight = iHeight
     
@@ -1533,7 +975,7 @@ Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
         tmpDIB.CreateBlank dWidth, dHeight, 24
         
         'For 24bpp images, simply copy over the current image data
-        If (m_DibColorDepth = 24) Then
+        If (m_dibColorDepth = 24) Then
         
             'If the target area is smaller than the DIB, request halftoning
             If (dstPicture.ScaleWidth < m_dibWidth) Or (dstPicture.ScaleHeight < m_dibHeight) Then
@@ -1561,7 +1003,7 @@ Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
     Else
         
         'For 24bpp images, simply copy over the current image data
-        If (m_DibColorDepth = 24) Then
+        If (m_dibColorDepth = 24) Then
         
             'If the target area is smaller than the DIB, request halftoning
             If (dstPicture.ScaleWidth < m_dibWidth) Or (dstPicture.ScaleHeight < m_dibHeight) Then
@@ -1894,7 +1336,7 @@ Public Sub WriteToBitmapFile(ByRef dstFilename As String)
     If Me.GetDIBColorDepth = 32 Then
         slWidth = Me.GetDIBArrayWidth
     Else
-        slWidth = ((m_dibWidth * m_DibColorDepth + 31) \ 32) * 4
+        slWidth = ((m_dibWidth * m_dibColorDepth + 31) \ 32) * 4
     End If
     
     'A valid bitmap header consists of two parts: a file header, and an image header.
@@ -2011,6 +1453,7 @@ Private Sub PrepInternalSafeArray(ByRef dstSafeArray As SAFEARRAY2D)
     With dstSafeArray
         .cbElements = 1
         .cDims = 2
+        .cLocks = 1
         .Bounds(0).lBound = 0
         .Bounds(0).cElements = m_dibHeight
         .Bounds(1).lBound = 0
@@ -2049,7 +1492,7 @@ End Sub
 Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional ByVal newG As Byte = 255, Optional ByVal newB As Byte = 255)
 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
-    If (m_DibColorDepth <> 32) Then Exit Sub
+    If (m_dibColorDepth <> 32) Then Exit Sub
     
 '    #If DEBUGMODE = 1 Then
 '        Debug.Print "Compositing DIB of size " & m_dibWidth & "x" & m_dibHeight & ".  Alpha premultiplication = " & m_IsAlphaPremultiplied & "."
@@ -2199,7 +1642,7 @@ End Sub
 Public Sub CopyAlphaFromExistingDIB(ByRef srcDIB As pdDIB)
 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
-    If (m_DibColorDepth <> 32) Then ConvertTo32bpp
+    If (m_dibColorDepth <> 32) Then ConvertTo32bpp
 
     'Prepare a SafeArray that points to our own DIB data
     Dim iData() As Byte
@@ -2236,11 +1679,11 @@ End Sub
 Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Boolean = False, Optional ByVal ignoreEmbeddedValue As Boolean = False)
 
     'This function doesn't matter if the image isn't 32bpp
-    If (m_DibColorDepth <> 32) Then Exit Sub
+    If (m_dibColorDepth <> 32) Then Exit Sub
     
     'If alpha premultiplication already matches the requested state, exit now
     If (m_IsAlphaPremultiplied = applyPremultiplication) And (Not ignoreEmbeddedValue) Then
-        Debug.Print "WARNING! Alpha premultiplication = " & applyPremultiplication & " is pointless, as image is already in that state.  (" & m_dibWidth & "x" & m_dibHeight & "x" & m_DibColorDepth & ")  Abandoning request."
+        Debug.Print "WARNING! Alpha premultiplication = " & applyPremultiplication & " is pointless, as image is already in that state.  (" & m_dibWidth & "x" & m_dibHeight & "x" & m_dibColorDepth & ")  Abandoning request."
         Exit Sub
     End If
     
@@ -2370,7 +1813,7 @@ Public Sub AlphaBlendToDC(ByVal dstDC As Long, Optional ByVal customAlpha As Lon
     If (newWidth = 0) Then newWidth = m_dibWidth
     If (newHeight = 0) Then newHeight = m_dibHeight
     
-    If (m_DibColorDepth = 32) Then
+    If (m_dibColorDepth = 32) Then
         
         'Use the image's current alpha channel, and blend it with the supplied customAlpha value
         bfParams = customAlpha * &H10000 Or &H1000000
@@ -2394,7 +1837,7 @@ Public Sub AlphaBlendToDCEx(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY 
     
     Dim bfParams As Long
     
-    If (m_DibColorDepth = 32) Then
+    If (m_dibColorDepth = 32) Then
     
         'Use the image's current alpha channel, and blend it with the supplied customAlpha value
         bfParams = customAlpha * &H10000 Or &H1000000

@@ -233,7 +233,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     pdImages(g_CurrentImage).RetrieveProcessedSelection tmpDIB, False, True
     
     'If the selected area has a blank alpha channel, convert it to 24bpp
-    If Not DIB_Handler.IsDIBAlphaBinary(tmpDIB, False) Then tmpDIB.ConvertTo24bpp
+    If Not DIB_Support.IsDIBAlphaBinary(tmpDIB, False) Then tmpDIB.ConvertTo24bpp
     
     'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
@@ -521,7 +521,7 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             poiList(3).y = tBottom
             
             'Used the generalized point comparison function to see if one of the points matches
-            closestPoint = findClosestPointInArray(imgX, imgY, minDistance, poiList)
+            closestPoint = FindClosestPointInArray(imgX, imgY, minDistance, poiList)
             
             'Was a close point found? If yes, then return that value
             If closestPoint <> -1 Then
@@ -533,10 +533,10 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             ' (Unfortunately, we don't yet have a generalized function for edge checking, so this must be done manually.)
             Dim nDist As Double, eDist As Double, sDist As Double, wDist As Double
             
-            nDist = distanceOneDimension(imgY, tTop)
-            eDist = distanceOneDimension(imgX, tRight)
-            sDist = distanceOneDimension(imgY, tBottom)
-            wDist = distanceOneDimension(imgX, tLeft)
+            nDist = DistanceOneDimension(imgY, tTop)
+            eDist = DistanceOneDimension(imgX, tRight)
+            sDist = DistanceOneDimension(imgY, tBottom)
+            wDist = DistanceOneDimension(imgX, tLeft)
             
             If (nDist <= minDistance) And (imgX > (tLeft - minDistance)) And (imgX < (tRight + minDistance)) Then
                 minDistance = nDist
@@ -581,10 +581,10 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             closestPoint = -1
             
             srcImage.mainSelection.getSelectionCoordinates 1, xCoord, yCoord
-            firstDist = distanceTwoPoints(imgX, imgY, xCoord, yCoord)
+            firstDist = DistanceTwoPoints(imgX, imgY, xCoord, yCoord)
             
             srcImage.mainSelection.getSelectionCoordinates 2, xCoord, yCoord
-            secondDist = distanceTwoPoints(imgX, imgY, xCoord, yCoord)
+            secondDist = DistanceTwoPoints(imgX, imgY, xCoord, yCoord)
                         
             If (firstDist <= minDistance) Then closestPoint = 0
             If (secondDist <= minDistance) Then closestPoint = 1
@@ -599,7 +599,7 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             pdImages(g_CurrentImage).mainSelection.getPolygonPoints poiListFloat()
             
             'Used the generalized point comparison function to see if one of the points matches
-            closestPoint = findClosestPointInFloatArray(imgX, imgY, minDistance, poiListFloat)
+            closestPoint = FindClosestPointInFloatArray(imgX, imgY, minDistance, poiListFloat)
             
             'Was a close point found? If yes, then return that value
             If closestPoint <> -1 Then
@@ -637,7 +637,7 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             closestPoint = -1
             
             srcImage.mainSelection.getSelectionCoordinates 1, xCoord, yCoord
-            firstDist = distanceTwoPoints(imgX, imgY, xCoord, yCoord)
+            firstDist = DistanceTwoPoints(imgX, imgY, xCoord, yCoord)
                         
             If (firstDist <= minDistance) Then closestPoint = 0
             
@@ -844,7 +844,7 @@ Public Sub sharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
             g2 = srcImageData(QuickVal + 1, y)
             b2 = srcImageData(QuickVal, y)
             
-            tLumDelta = Abs(getLuminance(r, g, b) - getLuminance(r2, g2, b2))
+            tLumDelta = Abs(GetLuminance(r, g, b) - GetLuminance(r2, g2, b2))
                 
             newR = (scaleFactor * r) + (invScaleFactor * r2)
             If newR > 255 Then newR = 255

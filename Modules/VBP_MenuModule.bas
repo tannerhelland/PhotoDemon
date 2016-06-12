@@ -301,7 +301,7 @@ Private Function GetSuggestedSaveFormatAndExtension(ByRef srcImage As pdImage, B
         Else
         
             'Query the only layer in the image.  If it has meaningful alpha values, we'll suggest PNG; otherwise, JPEG.
-            If DIB_Handler.IsDIBAlphaBinary(srcImage.GetActiveDIB, False) Then
+            If DIB_Support.IsDIBAlphaBinary(srcImage.GetActiveDIB, False) Then
                 GetSuggestedSaveFormatAndExtension = PDIF_JPEG
             Else
                 GetSuggestedSaveFormatAndExtension = PDIF_PNG
