@@ -325,7 +325,7 @@ Private Sub CreateShape(ByVal srcShape As PD_PIXEL_REGION_SHAPE)
     '       in advance.)
     
     'Convert the reference image into a 2D byte array, which is much faster to access and process.
-    DIB_Handler.GetDIBGrayscaleMap m_ShapeImage, m_ReferenceMap
+    DIB_Support.GetDIBGrayscaleMap m_ShapeImage, m_ReferenceMap
     m_ShapeImage.EraseDIB
     
 End Sub
@@ -508,9 +508,9 @@ End Function
 'Given source RGB values, return a corresponding luminance value (high-quality calculation)
 Private Function GetLuminanceFromRGB(ByVal srcR As Long, ByVal srcG As Long, ByVal srcB As Long) As Long
     If m_LuminanceMode = PDLM_VALUE Then
-        GetLuminanceFromRGB = Colors.getLuminance(srcR, srcG, srcB)
+        GetLuminanceFromRGB = Colors.GetLuminance(srcR, srcG, srcB)
     Else
-        GetLuminanceFromRGB = Colors.getHQLuminance(srcR, srcG, srcB)
+        GetLuminanceFromRGB = Colors.GetHQLuminance(srcR, srcG, srcB)
     End If
 End Function
 

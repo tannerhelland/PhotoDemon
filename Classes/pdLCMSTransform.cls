@@ -38,11 +38,11 @@ Public Function ApplyTransformToScanline(ByVal srcPointer As Long, ByVal dstPoin
     End If
 End Function
 
-Public Function ApplyTransformToArbitraryMemory(ByVal srcPointer As Long, ByVal dstPointer As Long, ByVal srcScanlineWidth As Long, ByVal dstScanlineWidth As Long, ByVal numScanlines As Long, ByVal scanlineWidthPixels As Long, Optional ByVal reverseScanlines As Boolean = False) As Boolean
+Public Function ApplyTransformToArbitraryMemory(ByVal srcPointer As Long, ByVal dstPointer As Long, ByVal srcScanlineWidth As Long, ByVal dstScanlineWidth As Long, ByVal numScanlines As Long, ByVal scanlineWidthPixels As Long, Optional ByVal reverseScanlineOrder As Boolean = False) As Boolean
     If (m_TransformHandle <> 0) Then
         
         Dim i As Long
-        If reverseScanlines Then
+        If reverseScanlineOrder Then
             For i = 0 To numScanlines - 1
                 LittleCMS.LCMS_TransformArbitraryMemory srcPointer + i * srcScanlineWidth, dstPointer + ((numScanlines - 1) - i) * dstScanlineWidth, scanlineWidthPixels, m_TransformHandle
             Next i

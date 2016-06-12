@@ -145,7 +145,7 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
     
     'From that, grab a grayscale map
     Dim grayMap() As Byte
-    DIB_Handler.GetDIBGrayscaleMap workingDIB, grayMap, True
+    DIB_Support.GetDIBGrayscaleMap workingDIB, grayMap, True
     
     If Not toPreview Then SetProgBarVal 1
     
@@ -197,13 +197,13 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
     
     'Our overlay is now complete.  We now need to convert it back into a DIB.
     Dim overlayDIB As pdDIB
-    DIB_Handler.CreateDIBFromGrayscaleMap overlayDIB, grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
+    DIB_Support.CreateDIBFromGrayscaleMap overlayDIB, grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
     
     If Not toPreview Then SetProgBarVal 6
     
     'We can save a lot of time by avoiding alpha handling.  Query the base image to see if we need to deal with alpha.
     Dim alphaIsRelevant As Boolean
-    alphaIsRelevant = Not DIB_Handler.IsDIBAlphaBinary(workingDIB, False)
+    alphaIsRelevant = Not DIB_Support.IsDIBAlphaBinary(workingDIB, False)
     
     If alphaIsRelevant Then
         overlayDIB.CopyAlphaFromExistingDIB workingDIB
