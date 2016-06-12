@@ -150,7 +150,7 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic, , , True
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -180,12 +180,11 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = FindBestProgBarValue()
+    ProgressBars.SetProgBarMax finalY
+    progBarCheck = ProgressBars.FindBestProgBarValue()
     
     Dim newR As Long, newG As Long, newB As Long, newA As Long
-    Dim origR As Long, origG As Long, origB As Long, origA As Long
     Dim r As Long, g As Long, b As Long, a As Long
-    Dim tmpSum As Long, tmpSumFirst As Long
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
@@ -203,6 +202,8 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
     'Reverse-mapped source X and Y values
     Dim srcX As Double, srcY As Double
     
+    'It's very time-consuming to sample every point along the zoom line, so instead, we sample only a portion of points.
+    ' This value is determined by the total zoom distance (with an enforced minimum so that short blur radii work okay).
     Dim numSamples As Long
     numSamples = Abs(zDistance)
     If (numSamples < 8) Then numSamples = 8
@@ -220,11 +221,12 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
     distRatio = CDbl(zDistance) / 100
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        xQuick = x * qvDepth
     For y = initY To finalY
+    For x = initX To finalX
         
-        'Reset all supersampling values
+        xQuick = x * qvDepth
+        
+        'Reset all averages and cache the source color values
         newB = 0
         newG = 0
         newR = 0
@@ -239,16 +241,18 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
         nX = x - midX
         nY = y - midY
         
-        'Calculate distance automatically
+        'Calculate distance automatically and reset the "previous distance" cache
         sDistance = Sqr((nX * nX) + (nY * nY))
         distCalc = distRatio * sDistance
         prevDistance = sDistance
         
-        'Calculate theta
+        'Calculate theta and precalculate expensive trig functions
         theta = Atan2(nY, nX)
         cosTheta = Cos(theta)
         sinTheta = Sin(theta)
         
+        'Figure out how many times we're going to sample this line.  The number of samples directly correlates to this pixel's
+        ' distance from the center of the image.  (Pixels nearer the center are sampled less, because they are blurred less.)
         tmpSamples = CDbl(numSamples) * (sDistance / maxRadius)
         If (tmpSamples < 4) Then
             tmpSamples = 4
@@ -258,30 +262,26 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
         
         sampRatio = (1 / numSamples)
         
-        'We now want to sample (numSamples) pixels lying along this theta, but at different radii.
+        'We now want to sample (numSamples) pixels lying along this theta, but at different distances from the center.
         For i = 1 To tmpSamples
             
+            'Calculate a new distance, but do not allow the distance to flip sign
             tmpDistance = (i * sampRatio) * distCalc + sDistance
             If (tmpDistance < 0) Then tmpDistance = 0
             
             'If this sample is very close to the previous sample, there's no point in calculating it.
-            ' (This function performs no subsampling, so values are always integer-clamped.)
+            ' (This function performs no subsampling, so pixel coordinates are always integer-clamped; this means that two
+            ' pixels whose distance differs by less than half a pixel are effectively the same coordinate.)
             If (Abs(tmpDistance - prevDistance) > 0.5) Then
                 
-                'Convert the new distance and original theta back to cartesian coordinates
+                'Convert the new distance and original theta back to cartesian coordinates and clamp to image edges
                 srcX = tmpDistance * cosTheta + midX
                 srcY = tmpDistance * sinTheta + midY
                 
-                If (srcX < 0) Then
-                    srcX = 0
-                ElseIf (srcX > finalX) Then
-                    srcX = finalX
-                End If
-                If (srcY < 0) Then
-                    srcY = 0
-                ElseIf (srcY > finalY) Then
-                    srcY = finalY
-                End If
+                If (srcX < 0) Then srcX = 0
+                If (srcX > finalX) Then srcX = finalX
+                If (srcY < 0) Then srcY = 0
+                If (srcY > finalY) Then srcY = finalY
                 
                 xQuickInner = Int(srcX) * qvDepth
                 yQuick = Int(srcY)
@@ -291,10 +291,12 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
                 r = srcImageData(xQuickInner + 2, yQuick)
                 a = srcImageData(xQuickInner + 3, yQuick)
                 
+                'Cache this distance so we can skip the next sample if it lies too close to this one
                 prevDistance = tmpDistance
             
             End If
             
+            'Keep a running total of average pixel values
             newR = newR + r
             newG = newG + g
             newB = newB + b
@@ -308,14 +310,14 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
         dstImageData(xQuick + 2, y) = newR * sampRatio
         dstImageData(xQuick + 3, y) = newA * sampRatio
                 
-    Next y
+    Next x
         If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
+            If (y And progBarCheck) = 0 Then
                 If UserPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal y
             End If
         End If
-    Next x
+    Next y
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -325,7 +327,7 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic, True
     
 End Sub
 
