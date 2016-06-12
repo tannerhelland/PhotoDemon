@@ -261,7 +261,7 @@ Private Function CalculateOptimalThreshold() As Long
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Color variables
@@ -274,15 +274,15 @@ Private Function CalculateOptimalThreshold() As Long
     
     'Loop through each pixel in the image, tallying values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
     For y = initY To finalY
             
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
                 
-        pLuminance = getLuminance(r, g, b)
+        pLuminance = GetLuminance(r, g, b)
         
         'Store this value in the histogram
         lLookup(pLuminance) = lLookup(pLuminance) + 1
@@ -328,10 +328,10 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     Set cParams = New pdParamXML
     cParams.SetParamString monochromeParams
     
-    Dim cThreshold As Long, ditherMethod As Long, lowColor As Long, highColor As Long, removeTransparency As Boolean
+    Dim cThreshold As Long, DitherMethod As Long, lowColor As Long, highColor As Long, removeTransparency As Boolean
     With cParams
         cThreshold = .GetLong("MonochromeThreshold", 127)
-        ditherMethod = .GetLong("MonochromeDither", 6)
+        DitherMethod = .GetLong("MonochromeDither", 6)
         lowColor = .GetLong("MonochromeColor1", vbBlack)
         highColor = .GetLong("MonochromeColor2", vbWhite)
         removeTransparency = .GetBool("MonochromeRemoveTransparency", False)
@@ -363,7 +363,7 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -393,32 +393,32 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     Dim dDivisor As Double
     
     'Process the image based on the dither method requested
-    Select Case ditherMethod
+    Select Case DitherMethod
         
         'No dither, so just perform a quick and dirty threshold calculation
         Case 0
     
             For x = initX To finalX
-                quickVal = x * qvDepth
+                QuickVal = x * qvDepth
             For y = initY To finalY
         
                 'Get the source pixel color values
-                r = ImageData(quickVal + 2, y)
-                g = ImageData(quickVal + 1, y)
-                b = ImageData(quickVal, y)
+                r = ImageData(QuickVal + 2, y)
+                g = ImageData(QuickVal + 1, y)
+                b = ImageData(QuickVal, y)
                 
                 'Convert those to a luminance value
-                l = getLuminance(r, g, b)
+                l = GetLuminance(r, g, b)
             
                 'Check the luminance against the threshold, and set new values accordingly
                 If l >= cThreshold Then
-                    ImageData(quickVal + 2, y) = highR
-                    ImageData(quickVal + 1, y) = highG
-                    ImageData(quickVal, y) = highB
+                    ImageData(QuickVal + 2, y) = highR
+                    ImageData(QuickVal + 1, y) = highG
+                    ImageData(QuickVal, y) = highB
                 Else
-                    ImageData(quickVal + 2, y) = lowR
-                    ImageData(quickVal + 1, y) = lowG
-                    ImageData(quickVal, y) = lowB
+                    ImageData(QuickVal + 2, y) = lowR
+                    ImageData(QuickVal + 1, y) = lowG
+                    ImageData(QuickVal, y) = lowB
                 End If
                 
             Next y
@@ -469,27 +469,27 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
 
             'Now loop through the image, using the dither values as our threshold
             For x = initX To finalX
-                quickVal = x * qvDepth
+                QuickVal = x * qvDepth
                 xModQuick = x And 3
             For y = initY To finalY
         
                 'Get the source pixel color values
-                r = ImageData(quickVal + 2, y)
-                g = ImageData(quickVal + 1, y)
-                b = ImageData(quickVal, y)
+                r = ImageData(QuickVal + 2, y)
+                g = ImageData(QuickVal + 1, y)
+                b = ImageData(QuickVal, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
-                l = getLuminance(r, g, b) + DitherTable(xModQuick, y And 3)
+                l = GetLuminance(r, g, b) + DitherTable(xModQuick, y And 3)
             
                 'Check THAT value against the threshold, and set new values accordingly
                 If l >= cThreshold Then
-                    ImageData(quickVal + 2, y) = highR
-                    ImageData(quickVal + 1, y) = highG
-                    ImageData(quickVal, y) = highB
+                    ImageData(QuickVal + 2, y) = highR
+                    ImageData(QuickVal + 1, y) = highG
+                    ImageData(QuickVal, y) = highB
                 Else
-                    ImageData(quickVal + 2, y) = lowR
-                    ImageData(quickVal + 1, y) = lowG
-                    ImageData(quickVal, y) = lowB
+                    ImageData(QuickVal + 2, y) = lowR
+                    ImageData(QuickVal + 1, y) = lowG
+                    ImageData(QuickVal, y) = lowB
                 End If
                 
             Next y
@@ -591,27 +591,27 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
 
             'Now loop through the image, using the dither values as our threshold
             For x = initX To finalX
-                quickVal = x * qvDepth
+                QuickVal = x * qvDepth
                 xModQuick = x And 7
             For y = initY To finalY
         
                 'Get the source pixel color values
-                r = ImageData(quickVal + 2, y)
-                g = ImageData(quickVal + 1, y)
-                b = ImageData(quickVal, y)
+                r = ImageData(QuickVal + 2, y)
+                g = ImageData(QuickVal + 1, y)
+                b = ImageData(QuickVal, y)
                 
                 'Convert those to a luminance value and add the value of the dither table
-                l = getLuminance(r, g, b) + DitherTable(xModQuick, y And 7)
+                l = GetLuminance(r, g, b) + DitherTable(xModQuick, y And 7)
             
                 'Check THAT value against the threshold, and set new values accordingly
                 If l >= cThreshold Then
-                    ImageData(quickVal + 2, y) = highR
-                    ImageData(quickVal + 1, y) = highG
-                    ImageData(quickVal, y) = highB
+                    ImageData(QuickVal + 2, y) = highR
+                    ImageData(QuickVal + 1, y) = highG
+                    ImageData(QuickVal, y) = highB
                 Else
-                    ImageData(quickVal + 2, y) = lowR
-                    ImageData(quickVal + 1, y) = lowG
-                    ImageData(quickVal, y) = lowB
+                    ImageData(QuickVal + 2, y) = lowR
+                    ImageData(QuickVal + 1, y) = lowG
+                    ImageData(QuickVal, y) = lowB
                 End If
                 
             Next y
@@ -831,45 +831,50 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     End Select
     
     'If we have been asked to use a non-ordered dithering method, apply it now
-    If (ditherMethod >= 3) Then
+    If (DitherMethod >= 3) Then
     
         'First, we need a dithering table the same size as the image.  We make it of Single type to prevent rounding errors.
         ' (This uses a lot of memory, but on modern systems it shouldn't be a problem.)
-        Dim dErrors() As Double
+        Dim dErrors() As Single
+        ReDim dErrors(0 To workingDIB.GetDIBWidth, 0 To workingDIB.GetDIBHeight) As Single
         
-        ReDim dErrors(0 To workingDIB.GetDIBWidth, 0 To workingDIB.GetDIBHeight) As Double
+        If (Not toPreview) Then
+            ProgressBars.SetProgBarMax finalY
+            progBarCheck = ProgressBars.FindBestProgBarValue()
+        End If
         
-        Dim quickX As Long, QuickY As Long
+        Dim xQuick As Long, xQuickInner As Long, yQuick As Long
         
         'Now loop through the image, calculating errors as we go
-        For x = initX To finalX
-            quickVal = x * qvDepth
         For y = initY To finalY
-        
+        For x = initX To finalX
+            
+            xQuick = x * qvDepth
+            
             'Get the source pixel color values
-            r = ImageData(quickVal + 2, y)
-            g = ImageData(quickVal + 1, y)
-            b = ImageData(quickVal, y)
+            b = ImageData(xQuick, y)
+            g = ImageData(xQuick + 1, y)
+            r = ImageData(xQuick + 2, y)
             
             'Convert those to a luminance value and add the value of the error at this location
-            l = getLuminance(r, g, b)
+            l = GetLuminance(r, g, b)
             newL = l + dErrors(x, y)
             
             'Check our modified luminance value against the threshold, and set new values accordingly
             If newL >= cThreshold Then
                 errorVal = newL - 255
-                ImageData(quickVal + 2, y) = highR
-                ImageData(quickVal + 1, y) = highG
-                ImageData(quickVal, y) = highB
+                ImageData(xQuick, y) = highB
+                ImageData(xQuick + 1, y) = highG
+                ImageData(xQuick + 2, y) = highR
             Else
                 errorVal = newL
-                ImageData(quickVal + 2, y) = lowR
-                ImageData(quickVal + 1, y) = lowG
-                ImageData(quickVal, y) = lowB
+                ImageData(xQuick, y) = lowB
+                ImageData(xQuick + 1, y) = lowG
+                ImageData(xQuick + 2, y) = lowR
             End If
             
             'If there is an error, spread it
-            If errorVal <> 0 Then
+            If (errorVal <> 0) Then
             
                 'Now, spread that error across the relevant pixels according to the dither table formula
                 For i = xLeft To xRight
@@ -881,30 +886,34 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
                     'Second, ignore pixels that have a zero in the dither table
                     If DitherTable(i, j) = 0 Then GoTo NextDitheredPixel
                     
-                    quickX = x + i
-                    QuickY = y + j
+                    xQuickInner = x + i
+                    yQuick = y + j
                     
                     'Next, ignore target pixels that are off the image boundary
-                    If quickX < initX Then GoTo NextDitheredPixel
-                    If quickX > finalX Then GoTo NextDitheredPixel
-                    If QuickY > finalY Then GoTo NextDitheredPixel
+                    If (xQuickInner < initX) Then
+                        GoTo NextDitheredPixel
+                    ElseIf (xQuickInner > finalX) Then
+                        GoTo NextDitheredPixel
+                    End If
+                    
+                    If (yQuick > finalY) Then GoTo NextDitheredPixel
                     
                     'If we've made it all the way here, we are able to actually spread the error to this location
-                    dErrors(quickX, QuickY) = dErrors(quickX, QuickY) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
+                    dErrors(xQuickInner, yQuick) = dErrors(xQuickInner, yQuick) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
                 
 NextDitheredPixel:     Next j
                 Next i
             
             End If
                 
-        Next y
+        Next x
             If Not toPreview Then
-                If (x And progBarCheck) = 0 Then
+                If (y And progBarCheck) = 0 Then
                     If UserPressedESC() Then Exit For
-                    SetProgBarVal x
+                    SetProgBarVal y
                 End If
             End If
-        Next x
+        Next y
     
     End If
     
