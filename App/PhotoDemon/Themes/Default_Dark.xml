@@ -182,6 +182,10 @@
 				<Background>#1e1e22</Background>
 			</PDCommandBar>
 			
+			<PDContainer>
+				<Background>BackgroundDefault</Background>
+			</PDContainer>
+			
 			<PDDropDown>
 				<Background></Background>
 				<ComboBorder>GrayDefault</ComboBorder>

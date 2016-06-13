@@ -26,22 +26,15 @@ Begin VB.Form toolpanel_FancyText
    ScaleWidth      =   1229
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin VB.PictureBox picConvertLayer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer ctlGroupConvertLayer 
       Height          =   1335
       Left            =   0
-      ScaleHeight     =   89
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   97
       TabIndex        =   42
       Top             =   840
       Visible         =   0   'False
       Width           =   1455
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdHyperlink lblConvertLayerConfirm 
          Height          =   240
          Left            =   120
@@ -98,20 +91,15 @@ Begin VB.Form toolpanel_FancyText
       Caption         =   "text:"
       ForeColor       =   0
    End
-   Begin VB.PictureBox picCategory 
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer ctlGroupCategory 
       Height          =   1500
       Index           =   0
       Left            =   8520
-      ScaleHeight     =   100
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   729
       TabIndex        =   2
       Top             =   0
       Width           =   10935
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdButtonStripVertical btsCharCategory 
          Height          =   1380
          Left            =   0
@@ -121,21 +109,16 @@ Begin VB.Form toolpanel_FancyText
          _ExtentX        =   3201
          _ExtentY        =   2434
       End
-      Begin VB.PictureBox picCharCategory 
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         DrawStyle       =   5  'Transparent
-         HasDC           =   0   'False
+      Begin PhotoDemon.pdContainer ctlGroupCharCategory 
          Height          =   1500
          Index           =   0
          Left            =   1920
-         ScaleHeight     =   100
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   729
          TabIndex        =   19
          Top             =   60
          Visible         =   0   'False
          Width           =   10935
+         _ExtentX        =   0
+         _ExtentY        =   0
          Begin PhotoDemon.pdDropDownFont cboTextFontFace 
             Height          =   375
             Left            =   1320
@@ -271,21 +254,16 @@ Begin VB.Form toolpanel_FancyText
             StickyToggle    =   -1  'True
          End
       End
-      Begin VB.PictureBox picCharCategory 
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         DrawStyle       =   5  'Transparent
-         HasDC           =   0   'False
+      Begin PhotoDemon.pdContainer ctlGroupCharCategory 
          Height          =   1500
          Index           =   1
          Left            =   1920
-         ScaleHeight     =   100
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   729
          TabIndex        =   27
          Top             =   60
          Visible         =   0   'False
          Width           =   10935
+         _ExtentX        =   0
+         _ExtentY        =   0
          Begin PhotoDemon.pdSpinner tudJitter 
             Height          =   345
             Index           =   0
@@ -440,37 +418,27 @@ Begin VB.Form toolpanel_FancyText
          End
       End
    End
-   Begin VB.PictureBox picCategory 
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer ctlGroupCategory 
       Height          =   1500
       Index           =   3
       Left            =   8520
-      ScaleHeight     =   100
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   729
       TabIndex        =   7
       Top             =   0
       Visible         =   0   'False
       Width           =   10935
+      _ExtentX        =   0
+      _ExtentY        =   0
    End
-   Begin VB.PictureBox picCategory 
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer ctlGroupCategory 
       Height          =   1500
       Index           =   2
       Left            =   8520
-      ScaleHeight     =   100
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   729
       TabIndex        =   6
       Top             =   0
       Visible         =   0   'False
       Width           =   10935
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdButtonStripVertical btsAppearanceCategory 
          Height          =   1380
          Left            =   0
@@ -480,21 +448,16 @@ Begin VB.Form toolpanel_FancyText
          _ExtentX        =   3201
          _ExtentY        =   2434
       End
-      Begin VB.PictureBox picAppearanceCategory 
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         DrawStyle       =   5  'Transparent
-         HasDC           =   0   'False
+      Begin PhotoDemon.pdContainer ctlGroupAppearanceCategory 
          Height          =   1500
          Index           =   1
          Left            =   1920
-         ScaleHeight     =   100
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   729
          TabIndex        =   11
          Top             =   0
          Visible         =   0   'False
          Width           =   10935
+         _ExtentX        =   0
+         _ExtentY        =   0
          Begin PhotoDemon.pdPenSelector psTextBackground 
             Height          =   855
             Left            =   4680
@@ -562,21 +525,16 @@ Begin VB.Form toolpanel_FancyText
             Value           =   0
          End
       End
-      Begin VB.PictureBox picAppearanceCategory 
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         DrawStyle       =   5  'Transparent
-         HasDC           =   0   'False
+      Begin PhotoDemon.pdContainer ctlGroupAppearanceCategory 
          Height          =   1500
          Index           =   0
          Left            =   1920
-         ScaleHeight     =   100
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   729
          TabIndex        =   10
          Top             =   0
          Visible         =   0   'False
          Width           =   10935
+         _ExtentX        =   0
+         _ExtentY        =   0
          Begin PhotoDemon.pdPenSelector psText 
             Height          =   855
             Left            =   4680
@@ -642,21 +600,16 @@ Begin VB.Form toolpanel_FancyText
          End
       End
    End
-   Begin VB.PictureBox picCategory 
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer ctlGroupCategory 
       Height          =   1500
       Index           =   1
       Left            =   8520
-      ScaleHeight     =   100
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   729
       TabIndex        =   3
       Top             =   0
       Visible         =   0   'False
       Width           =   10935
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSpinner tudLineSpacing 
          Height          =   345
          Left            =   5160
@@ -989,7 +942,7 @@ Private Sub btsAppearanceCategory_Click(ByVal buttonIndex As Long)
     'When the current category is changed, show the relevant panel and hide all others
     Dim i As Long
     For i = 0 To btsAppearanceCategory.ListCount - 1
-        picAppearanceCategory(i).Visible = CBool(i = buttonIndex)
+        ctlGroupAppearanceCategory(i).Visible = CBool(i = buttonIndex)
     Next i
     
 End Sub
@@ -999,7 +952,7 @@ Private Sub btsCategory_Click(ByVal buttonIndex As Long)
     'When the current category is changed, show the relevant panel and hide all others
     Dim i As Long
     For i = 0 To btsCategory.ListCount - 1
-        picCategory(i).Visible = CBool(i = buttonIndex)
+        ctlGroupCategory(i).Visible = CBool(i = buttonIndex)
     Next i
     
 End Sub
@@ -1009,7 +962,7 @@ Private Sub btsCharCategory_Click(ByVal buttonIndex As Long)
     'When the current category is changed, show the relevant panel and hide all others
     Dim i As Long
     For i = 0 To btsCharCategory.ListCount - 1
-        picCharCategory(i).Visible = CBool(i = buttonIndex)
+        ctlGroupCharCategory(i).Visible = CBool(i = buttonIndex)
     Next i
     
 End Sub
@@ -1864,25 +1817,26 @@ Public Sub UpdateAgainstCurrentLayer()
                 Me.lblConvertLayerConfirm.Caption = g_Language.TranslateMessage("Click here to convert this layer to a typography layer.")
                 
                 'Make the prompt panel the size of the tool window
-                Me.picConvertLayer.Move 0, 0, Me.ScaleWidth, Me.ScaleHeight
+                Me.ctlGroupConvertLayer.SetPositionAndSize 0, 0, Me.ScaleWidth, Me.ScaleHeight
                 
                 'Center all labels on the panel
                 Me.lblConvertLayer.SetLeft (Me.ScaleWidth - lblConvertLayer.GetWidth) / 2
                 Me.lblConvertLayerConfirm.SetLeft (Me.ScaleWidth - lblConvertLayerConfirm.GetWidth) / 2
                 
                 'Display the panel
-                Me.picConvertLayer.Visible = True
+                Me.ctlGroupConvertLayer.Visible = True
+                Me.ctlGroupConvertLayer.Refresh
                 
             Else
-                Me.picConvertLayer.Visible = False
+                Me.ctlGroupConvertLayer.Visible = False
             End If
         
         Else
-            Me.picConvertLayer.Visible = False
+            Me.ctlGroupConvertLayer.Visible = False
         End If
         
     Else
-        Me.picConvertLayer.Visible = False
+        Me.ctlGroupConvertLayer.Visible = False
     End If
 
 End Sub

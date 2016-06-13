@@ -1294,7 +1294,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     If (Not g_IsProgramRunning) Then Exit Sub
     
     'FORM STEP 1: apply any form-level changes (like backcolor), as child controls may pull this automatically
-    dstForm.BackColor = Colors.GetRGBLongFromHex(g_Themer.LookUpColor("Default", "Background"))
+    dstForm.BackColor = g_Themer.GetGenericUIColor(UI_Background)
     dstForm.MouseIcon = LoadPicture("")
     dstForm.MousePointer = 0
     
@@ -1368,7 +1368,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
             isPDControl = True
         ElseIf (TypeOf eControl Is pdCommandBar) Or (TypeOf eControl Is pdCommandBarMini) Then
             isPDControl = True
-        ElseIf (TypeOf eControl Is pdResize) Then
+        ElseIf (TypeOf eControl Is pdResize) Or (TypeOf eControl Is pdContainer) Then
             isPDControl = True
         ElseIf (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is pdCanvasView) Then
             isPDControl = True

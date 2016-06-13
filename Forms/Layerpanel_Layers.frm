@@ -3,7 +3,7 @@ Begin VB.Form layerpanel_Layers
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   7275
+   ClientHeight    =   7335
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3885
@@ -19,15 +19,68 @@ Begin VB.Form layerpanel_Layers
    EndProperty
    HasDC           =   0   'False
    LinkTopic       =   "Form1"
-   ScaleHeight     =   485
+   ScaleHeight     =   489
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   259
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdContainer ctlGroupLayerButtons 
+      Height          =   525
+      Left            =   0
+      TabIndex        =   6
+      Top             =   6720
+      Width           =   3735
+      _ExtentX        =   6588
+      _ExtentY        =   926
+      Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
+         Height          =   510
+         Index           =   0
+         Left            =   0
+         TabIndex        =   7
+         Top             =   0
+         Width           =   540
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
+         Height          =   510
+         Index           =   1
+         Left            =   720
+         TabIndex        =   8
+         Top             =   0
+         Width           =   540
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
+         Height          =   510
+         Index           =   2
+         Left            =   1440
+         TabIndex        =   9
+         Top             =   0
+         Width           =   540
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
+         Height          =   510
+         Index           =   3
+         Left            =   2160
+         TabIndex        =   10
+         Top             =   0
+         Width           =   540
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
+      End
+   End
    Begin PhotoDemon.pdScrollBar vsLayer 
       Height          =   4695
       Left            =   3360
-      TabIndex        =   10
+      TabIndex        =   5
       Top             =   1320
       Width           =   255
       _ExtentX        =   238
@@ -47,71 +100,9 @@ Begin VB.Form layerpanel_Layers
       ScaleHeight     =   311
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   215
-      TabIndex        =   7
+      TabIndex        =   2
       Top             =   1320
       Width           =   3255
-   End
-   Begin VB.PictureBox picLayerButtons 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
-      Height          =   525
-      Left            =   0
-      ScaleHeight     =   35
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   249
-      TabIndex        =   2
-      TabStop         =   0   'False
-      Top             =   6600
-      Width           =   3735
-      Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
-         Height          =   510
-         Index           =   0
-         Left            =   0
-         TabIndex        =   3
-         Top             =   0
-         Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   900
-         AutoToggle      =   -1  'True
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
-         Height          =   510
-         Index           =   1
-         Left            =   720
-         TabIndex        =   4
-         Top             =   0
-         Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   900
-         AutoToggle      =   -1  'True
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
-         Height          =   510
-         Index           =   2
-         Left            =   1440
-         TabIndex        =   5
-         Top             =   0
-         Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   900
-         AutoToggle      =   -1  'True
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
-         Height          =   510
-         Index           =   3
-         Left            =   2160
-         TabIndex        =   6
-         Top             =   0
-         Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   900
-         AutoToggle      =   -1  'True
-      End
    End
    Begin PhotoDemon.pdDropDown cboBlendMode 
       Height          =   360
@@ -147,7 +138,7 @@ Begin VB.Form layerpanel_Layers
       CausesValidation=   0   'False
       Height          =   405
       Left            =   960
-      TabIndex        =   8
+      TabIndex        =   3
       Top             =   30
       Width           =   2760
       _ExtentX        =   4868
@@ -181,7 +172,7 @@ Begin VB.Form layerpanel_Layers
    Begin PhotoDemon.pdDropDown cboAlphaMode 
       Height          =   360
       Left            =   960
-      TabIndex        =   9
+      TabIndex        =   4
       Top             =   900
       Width           =   2775
       _ExtentX        =   4895
@@ -412,11 +403,11 @@ End Sub
 
 Private Sub cboAlphaMode_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Generic pgp_AlphaMode, cboAlphaMode.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Generic pgp_AlphaMode, cboAlphaMode.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboAlphaMode_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Generic pgp_AlphaMode, cboAlphaMode.ListIndex
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Generic pgp_AlphaMode, cboAlphaMode.ListIndex
 End Sub
 
 'Change the blend mode of the active layer
@@ -441,11 +432,11 @@ End Sub
 
 Private Sub cboBlendMode_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Generic pgp_BlendMode, cboBlendMode.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Generic pgp_BlendMode, cboBlendMode.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboBlendMode_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Generic pgp_BlendMode, cboBlendMode.ListIndex
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Generic pgp_BlendMode, cboBlendMode.ListIndex
 End Sub
 
 Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
@@ -661,7 +652,7 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
         txtLayerName.Text = pdImages(g_CurrentImage).GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerName
         
         'Set an Undo/Redo marker for the existing layer name
-        Processor.flagInitialNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerName, pdImages(g_CurrentImage).GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerID
+        Processor.FlagInitialNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerName, pdImages(g_CurrentImage).GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerID
         
         txtLayerName.SetFocus
         
@@ -1425,11 +1416,11 @@ End Sub
 
 Private Sub sltLayerOpacity_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Generic pgp_Opacity, sltLayerOpacity.Value, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_Generic pgp_Opacity, sltLayerOpacity.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltLayerOpacity_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Generic pgp_Opacity, sltLayerOpacity.Value
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Generic pgp_Opacity, sltLayerOpacity.Value
 End Sub
 
 Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As Boolean)
@@ -1443,7 +1434,7 @@ Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As 
         pdImages(g_CurrentImage).GetActiveLayer.SetLayerName txtLayerName.Text
         
         'If the user changed the name, set an Undo/Redo point now
-        If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).GetActiveLayer.GetLayerName
+        If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).GetActiveLayer.GetLayerName
         
         'Re-enable hotkeys now that editing is finished
         m_LayerNameEditMode = False
@@ -1483,7 +1474,7 @@ Private Sub UpdateHoveredLayer(ByVal newLayerUnderMouse As Long)
         'If this control has focus, finalize any Undo/Redo changes to the existing layer (curLayerHover)
         If (g_OpenImageCount > 0) And (g_WindowManager.GetFocusAPI = picLayers.hWnd) Then
             If (curLayerHover > -1) And (curLayerHover < pdImages(g_CurrentImage).GetNumOfLayers) And Tool_Support.CanvasToolsAllowed Then
-                Processor.flagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetLayerByIndex(curLayerHover).GetLayerVisibility
+                Processor.FlagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetLayerByIndex(curLayerHover).GetLayerVisibility
             End If
         End If
         
@@ -1492,7 +1483,7 @@ Private Sub UpdateHoveredLayer(ByVal newLayerUnderMouse As Long)
         'If this control has focus, mark the current state of the newly selected layer (newLayerUnderMouse)
         If (g_OpenImageCount > 0) And (g_WindowManager.GetFocusAPI = picLayers.hWnd) Then
             If (curLayerHover > -1) And (curLayerHover < pdImages(g_CurrentImage).GetNumOfLayers) Then
-                Processor.flagInitialNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetLayerByIndex(curLayerHover).GetLayerVisibility, pdImages(g_CurrentImage).GetLayerByIndex(curLayerHover).GetLayerID
+                Processor.FlagInitialNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetLayerByIndex(curLayerHover).GetLayerVisibility, pdImages(g_CurrentImage).GetLayerByIndex(curLayerHover).GetLayerID
             End If
         End If
         
@@ -1514,11 +1505,11 @@ Private Sub ReflowInterface()
     Dim sizeCheck As Long
     
     'Start by moving the button box to the bottom of the available area
-    sizeCheck = Me.ScaleHeight - picLayerButtons.Height - FixDPI(7)
-    If (sizeCheck > 0) Then picLayerButtons.Top = sizeCheck Else Exit Sub
+    sizeCheck = Me.ScaleHeight - ctlGroupLayerButtons.GetHeight - FixDPI(7)
+    If (sizeCheck > 0) Then ctlGroupLayerButtons.SetTop sizeCheck Else Exit Sub
     
     'Next, stretch the layer box to fill the available space
-    sizeCheck = (picLayerButtons.Top - picLayers.Top) - FixDPI(7)
+    sizeCheck = (ctlGroupLayerButtons.GetTop - picLayers.Top) - FixDPI(7)
     If (sizeCheck > 0) Then picLayers.Height = sizeCheck Else Exit Sub
     
     'Make the toolbar the same height as the layer box
@@ -1541,14 +1532,14 @@ Private Sub ReflowInterface()
     UpdateLayerScrollbarVisibility
     
     'Reflow the bottom button box; this is inevitably more complicated, owing to the spacing requirements of the buttons
-    picLayerButtons.Left = picLayers.Left
-    picLayerButtons.Width = picLayers.Width
+    ctlGroupLayerButtons.SetLeft picLayers.Left
+    ctlGroupLayerButtons.SetWidth picLayers.Width
     
     '44px (at 96 DPI) is the ideal distance between buttons: 36px for the button, plus 8px for spacing.
     ' The total size of the button area of the box is thus 4 * 36 + 3 * 8, for FOUR buttons and THREE spacers.
     Dim buttonAreaWidth As Long, buttonAreaLeft As Long
     buttonAreaWidth = FixDPI(4 * 36 + 3 * 8)
-    buttonAreaLeft = (picLayerButtons.ScaleWidth - buttonAreaWidth) \ 2
+    buttonAreaLeft = (ctlGroupLayerButtons.GetWidth - buttonAreaWidth) \ 2
     
     Dim i As Long
     For i = 0 To cmdLayerAction.Count - 1

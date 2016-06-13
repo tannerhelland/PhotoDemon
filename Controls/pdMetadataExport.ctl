@@ -7,6 +7,15 @@ Begin VB.UserControl pdMetadataExport
    ClientTop       =   0
    ClientWidth     =   5250
    DrawStyle       =   5  'Transparent
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.25
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
    HasDC           =   0   'False
    ScaleHeight     =   310
    ScaleMode       =   3  'Pixel
@@ -96,6 +105,20 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'***************************************************************************
+'PhotoDemon Metadata Export control group
+'Copyright 2016-2016 by Tanner Helland
+'Created: 18/March/16
+'Last updated: 13/June/16
+'Last update: minor code clean-up
+'
+'This simple "control" is used by various export dialog to expose settings related to metadata handling.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+'
+'***************************************************************************
+
 Option Explicit
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
@@ -147,6 +170,60 @@ Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 
+'Container hWnd must be exposed for external tooltip handling
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
+End Property
+
+'To support high-DPI settings properly, we expose specialized move+size functions
+Public Function GetLeft() As Long
+    GetLeft = ucSupport.GetControlLeft
+End Function
+
+Public Sub SetLeft(ByVal newLeft As Long)
+    ucSupport.RequestNewPosition newLeft, , True
+End Sub
+
+Public Function GetTop() As Long
+    GetTop = ucSupport.GetControlTop
+End Function
+
+Public Sub SetTop(ByVal newTop As Long)
+    ucSupport.RequestNewPosition , newTop, True
+End Sub
+
+Public Function GetWidth() As Long
+    GetWidth = ucSupport.GetControlWidth
+End Function
+
+Public Sub SetWidth(ByVal newWidth As Long)
+    ucSupport.RequestNewSize newWidth, , True
+End Sub
+
+Public Function GetHeight() As Long
+    GetHeight = ucSupport.GetControlHeight
+End Function
+
+Public Sub SetHeight(ByVal newHeight As Long)
+    ucSupport.RequestNewSize , newHeight, True
+End Sub
+
+Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
+    ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
+End Sub
+
+Private Sub ucSupport_GotFocusAPI()
+    RaiseEvent GotFocusAPI
+End Sub
+
+Private Sub ucSupport_LostFocusAPI()
+    RaiseEvent LostFocusAPI
+End Sub
+
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    UpdateControlLayout
+End Sub
+
 Private Sub chkMetadata_Click()
 
     If CBool(chkMetadata.Value) Then
@@ -161,18 +238,6 @@ End Sub
 
 Private Sub hplReviewMetadata_Click()
     ExifTool.ShowMetadataDialog m_ImageCopy, UserControl.Parent
-End Sub
-
-Private Sub ucSupport_GotFocusAPI()
-    RaiseEvent GotFocusAPI
-End Sub
-
-Private Sub ucSupport_LostFocusAPI()
-    RaiseEvent LostFocusAPI
-End Sub
-
-Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
 End Sub
 
 Private Sub UserControl_Initialize()

@@ -1247,28 +1247,28 @@ End Sub
 'Are selections currently allowed?  Program states like "no open images" prevent selections from ever being created, and individual
 ' functions can use this function to determine it.  Passing TRUE for the transformableMatters param will add a check for an existing,
 ' transformable-type selection (squares, etc) to the evaluation list.
-Public Function selectionsAllowed(ByVal transformableMatters As Boolean) As Boolean
+Public Function SelectionsAllowed(ByVal transformableMatters As Boolean) As Boolean
 
     If (g_OpenImageCount > 0) Then
         If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
             If (Not pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests) Then
                 If transformableMatters Then
                     If pdImages(g_CurrentImage).mainSelection.isTransformable Then
-                        selectionsAllowed = True
+                        SelectionsAllowed = True
                     Else
-                        selectionsAllowed = False
+                        SelectionsAllowed = False
                     End If
                 Else
-                    selectionsAllowed = True
+                    SelectionsAllowed = True
                 End If
             Else
-                selectionsAllowed = False
+                SelectionsAllowed = False
             End If
         Else
-            selectionsAllowed = False
+            SelectionsAllowed = False
         End If
     Else
-        selectionsAllowed = False
+        SelectionsAllowed = False
     End If
     
 End Function

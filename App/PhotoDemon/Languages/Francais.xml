@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.190</langversion>
+<langversion>6.7.191</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -13404,7 +13404,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 24 phrases. 6 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_MoveSize.frm-->
 
@@ -13621,7 +13621,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>Cette option contrôle quels critères utilise la baguette magique pour déterminer si un pixel doit être ajoutée à la sélection actuelle.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 54 phrases. 17 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 22 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -13838,7 +13838,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 59 phrases. 26 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 60 phrases. 27 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -15130,12 +15130,18 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdContainer.ctl -->
+
+<!-- pdContainer.ctl contains 0 phrases. -->
+
+<!-- END text for pdContainer.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2584</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4482 phrases. -->
-<!-- 1898 are duplicates, so only 2584 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4491 phrases. -->
+<!-- 1907 are duplicates, so only 2584 unique phrases have been written to file. -->
 <!-- These 2584 phrases contain approximately 13274 total words. -->
 
 </pdData>

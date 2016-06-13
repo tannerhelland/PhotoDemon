@@ -181,6 +181,10 @@
 				<Background>#dcdce1</Background>
 			</PDCommandBar>
 			
+			<PDContainer>
+				<Background>BackgroundDefault</Background>
+			</PDContainer>
+			
 			<PDDropDown>
 				<Background></Background>
 				<ComboBorder>GrayDefault</ComboBorder>
