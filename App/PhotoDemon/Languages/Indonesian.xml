@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.132</langversion>
+<langversion>6.6.133</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -13410,7 +13410,7 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 24 phrases. 6 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_MoveSize.frm-->
 
@@ -13627,7 +13627,7 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 <translation>Opsyen ini mengawal kriteria yang tongkat sihir digunakan untuk menentukan sama ada piksel yang perlu ditambah kepada pilihan semasa.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 54 phrases. 17 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 22 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -13844,7 +13844,7 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 59 phrases. 26 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 60 phrases. 27 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -15135,12 +15135,18 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdContainer.ctl -->
+
+<!-- pdContainer.ctl contains 0 phrases. -->
+
+<!-- END text for pdContainer.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2584</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4482 phrases. -->
-<!-- 1898 are duplicates, so only 2584 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4491 phrases. -->
+<!-- 1907 are duplicates, so only 2584 unique phrases have been written to file. -->
 <!-- These 2584 phrases contain approximately 13274 total words. -->
 
 </pdData>

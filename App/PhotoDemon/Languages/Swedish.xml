@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.190</langversion>
+<langversion>6.7.191</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -13405,7 +13405,7 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 24 phrases. 6 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_MoveSize.frm-->
 
@@ -13622,7 +13622,7 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <translation>Det här alternativet styr vilka kriterier trollspö använder för att avgöra om en pixel bör läggas till den aktuella markeringen.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 54 phrases. 17 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 22 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -13839,7 +13839,7 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 59 phrases. 26 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 60 phrases. 27 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -15130,12 +15130,18 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdContainer.ctl -->
+
+<!-- pdContainer.ctl contains 0 phrases. -->
+
+<!-- END text for pdContainer.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2584</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4482 phrases. -->
-<!-- 1898 are duplicates, so only 2584 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4491 phrases. -->
+<!-- 1907 are duplicates, so only 2584 unique phrases have been written to file. -->
 <!-- These 2584 phrases contain approximately 13274 total words. -->
 
 </pdData>

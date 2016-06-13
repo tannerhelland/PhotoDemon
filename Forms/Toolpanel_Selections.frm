@@ -69,22 +69,15 @@ Begin VB.Form toolpanel_Selections
       _ExtentY        =   714
       Max             =   100
    End
-   Begin VB.PictureBox picSelectionSubcontainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
       Height          =   1470
       Index           =   0
       Left            =   5340
-      ScaleHeight     =   98
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   665
       TabIndex        =   5
       Top             =   0
       Width           =   9975
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdDropDown cboSelArea 
          Height          =   735
          Index           =   0
@@ -196,22 +189,15 @@ Begin VB.Form toolpanel_Selections
          Caption         =   "size (w, h)"
       End
    End
-   Begin VB.PictureBox picSelectionSubcontainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
       Height          =   1470
       Index           =   1
       Left            =   5340
-      ScaleHeight     =   98
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   665
       TabIndex        =   34
       Top             =   0
       Width           =   9975
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdDropDown cboSelArea 
          Height          =   735
          Index           =   1
@@ -310,22 +296,15 @@ Begin VB.Form toolpanel_Selections
          Caption         =   "position (x, y)"
       End
    End
-   Begin VB.PictureBox picSelectionSubcontainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
       Height          =   1470
       Index           =   2
       Left            =   5340
-      ScaleHeight     =   98
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   665
       TabIndex        =   26
       Top             =   0
       Width           =   9975
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdDropDown cboSelArea 
          Height          =   735
          Index           =   2
@@ -438,22 +417,15 @@ Begin VB.Form toolpanel_Selections
          Caption         =   "1st point (x, y)"
       End
    End
-   Begin VB.PictureBox picSelectionSubcontainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
       Height          =   1470
       Index           =   3
       Left            =   5340
-      ScaleHeight     =   98
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   665
       TabIndex        =   22
       Top             =   0
       Width           =   9975
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdDropDown cboSelArea 
          Height          =   735
          Index           =   3
@@ -496,22 +468,15 @@ Begin VB.Form toolpanel_Selections
          SigDigits       =   2
       End
    End
-   Begin VB.PictureBox picSelectionSubcontainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
       Height          =   1470
       Index           =   4
       Left            =   5340
-      ScaleHeight     =   98
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   665
       TabIndex        =   18
       Top             =   0
       Width           =   9975
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdDropDown cboSelArea 
          Height          =   735
          Index           =   4
@@ -555,22 +520,15 @@ Begin VB.Form toolpanel_Selections
          SigDigits       =   2
       End
    End
-   Begin VB.PictureBox picSelectionSubcontainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer ctlGroupSelectionSubcontainer 
       Height          =   1470
       Index           =   5
       Left            =   5340
-      ScaleHeight     =   98
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   665
       TabIndex        =   13
       Top             =   0
       Width           =   9975
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdDropDown cboWandCompare 
          Height          =   375
          Left            =   3300
@@ -646,7 +604,7 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 Private Sub btsWandArea_Click(ByVal buttonIndex As Long)
     
     'If a selection is already active, change its type to match the current option, then redraw it
-    If selectionsAllowed(False) Then
+    If SelectionsAllowed(False) Then
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_WAND_SEARCH_MODE, buttonIndex
         Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
@@ -656,7 +614,7 @@ End Sub
 Private Sub btsWandMerge_Click(ByVal buttonIndex As Long)
 
     'If a selection is already active, change its type to match the current option, then redraw it
-    If selectionsAllowed(False) Then
+    If SelectionsAllowed(False) Then
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_WAND_SAMPLE_MERGED, buttonIndex
         Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
@@ -672,7 +630,7 @@ Private Sub cboSelArea_Click(Index As Integer)
     End If
     
     'If a selection is already active, change its type to match the current selection, then redraw it
-    If selectionsAllowed(False) Then
+    If SelectionsAllowed(False) Then
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_AREA, cboSelArea(Index).ListIndex
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_BORDER_WIDTH, sltSelectionBorder(Index).Value
         Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -690,7 +648,7 @@ Private Sub cboSelRender_Click()
     End If
     
     'Redraw the viewport
-    If selectionsAllowed(False) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If SelectionsAllowed(False) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -699,7 +657,7 @@ Private Sub cboSelSmoothing_Click()
     UpdateSelectionPanelLayout
     
     'If a selection is already active, change its type to match the current selection, then redraw it
-    If selectionsAllowed(False) Then
+    If SelectionsAllowed(False) Then
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_SMOOTHING, cboSelSmoothing.ListIndex
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_FEATHERING_RADIUS, sltSelectionFeathering.Value
         Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -717,7 +675,7 @@ Private Sub cboWandCompare_Click()
     End If
     
     'If a selection is already active, change its type to match the current option, then redraw it
-    If selectionsAllowed(False) Then
+    If SelectionsAllowed(False) Then
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_WAND_COMPARE_METHOD, cboWandCompare.ListIndex
         Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
@@ -727,7 +685,7 @@ End Sub
 Private Sub csSelectionHighlight_ColorChanged()
     
     'Redraw the viewport
-    If selectionsAllowed(False) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If SelectionsAllowed(False) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -811,35 +769,35 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
 End Sub
 
 Private Sub sltCornerRounding_Change()
-    If selectionsAllowed(True) Then
+    If SelectionsAllowed(True) Then
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_ROUNDED_CORNER_RADIUS, sltCornerRounding.Value
         Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
 
 Private Sub sltPolygonCurvature_Change()
-    If selectionsAllowed(True) Then
+    If SelectionsAllowed(True) Then
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_POLYGON_CURVATURE, sltPolygonCurvature.Value
         Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
 
 Private Sub sltSelectionBorder_Change(Index As Integer)
-    If selectionsAllowed(False) Then
+    If SelectionsAllowed(False) Then
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_BORDER_WIDTH, sltSelectionBorder(Index).Value
         Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
 
 Private Sub sltSelectionFeathering_Change()
-    If selectionsAllowed(False) Then
+    If SelectionsAllowed(False) Then
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_FEATHERING_RADIUS, sltSelectionFeathering.Value
         Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
 
 Private Sub sltSelectionLineWidth_Change()
-    If selectionsAllowed(True) Then
+    If SelectionsAllowed(True) Then
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_LINE_WIDTH, sltSelectionLineWidth.Value
         Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
@@ -892,14 +850,14 @@ Public Sub UpdateSelectionPanelLayout()
 End Sub
 
 Private Sub sltSmoothStroke_Change()
-    If selectionsAllowed(False) Then
+    If SelectionsAllowed(False) Then
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_SMOOTH_STROKE, sltSmoothStroke.Value
         Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
 
 Private Sub sltWandTolerance_Change()
-    If selectionsAllowed(False) Then
+    If SelectionsAllowed(False) Then
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_WAND_TOLERANCE, sltWandTolerance.Value
         Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
@@ -912,7 +870,7 @@ Private Sub tudSel_Change(Index As Integer)
 End Sub
 
 Private Sub UpdateSelectionsValuesViaText()
-    If selectionsAllowed(True) Then
+    If SelectionsAllowed(True) Then
         If Not pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests Then
             pdImages(g_CurrentImage).mainSelection.updateViaTextBox
             Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)

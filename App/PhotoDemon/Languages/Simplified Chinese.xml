@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1550</langversion>
+<langversion>6.8.1551</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -13403,7 +13403,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>邻近</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 24 phrases. 6 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_MoveSize.frm-->
 
@@ -13620,7 +13620,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>此选项控制了魔术棒使用的标准，以确定是否应该将像素添加到当前选择。</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 54 phrases. 17 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 22 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -13837,7 +13837,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>单击此处可将此图层转换为排版层。</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 59 phrases. 26 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 60 phrases. 27 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -15125,12 +15125,18 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdContainer.ctl -->
+
+<!-- pdContainer.ctl contains 0 phrases. -->
+
+<!-- END text for pdContainer.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2584</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4482 phrases. -->
-<!-- 1898 are duplicates, so only 2584 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4491 phrases. -->
+<!-- 1907 are duplicates, so only 2584 unique phrases have been written to file. -->
 <!-- These 2584 phrases contain approximately 13274 total words. -->
 
 </pdData>

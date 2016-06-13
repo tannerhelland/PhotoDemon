@@ -35,22 +35,15 @@ Begin VB.Form toolpanel_MoveSize
       _ExtentX        =   4048
       _ExtentY        =   2328
    End
-   Begin VB.PictureBox picMoveContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer ctlMoveContainer 
       Height          =   1455
       Index           =   0
       Left            =   2520
-      ScaleHeight     =   97
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   937
       TabIndex        =   1
       Top             =   0
       Width           =   14055
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdDropDown cboLayerResizeQuality 
          Height          =   660
          Left            =   5190
@@ -144,22 +137,15 @@ Begin VB.Form toolpanel_MoveSize
          Caption         =   "other options"
       End
    End
-   Begin VB.PictureBox picMoveContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer ctlMoveContainer 
       Height          =   1455
       Index           =   1
       Left            =   2520
-      ScaleHeight     =   97
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   937
       TabIndex        =   12
       Top             =   0
       Width           =   14055
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltLayerAngle 
          Height          =   765
          Left            =   120
@@ -221,22 +207,15 @@ Begin VB.Form toolpanel_MoveSize
          Caption         =   "other options"
       End
    End
-   Begin VB.PictureBox picMoveContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer ctlMoveContainer 
       Height          =   1455
       Index           =   2
       Left            =   2520
-      ScaleHeight     =   97
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   937
       TabIndex        =   8
       Top             =   0
       Width           =   14055
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   0
@@ -337,13 +316,10 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 
 'Two sub-panels are available on the "move options" panel
 Private Sub btsMoveOptions_Click(ByVal buttonIndex As Long)
-    
     Dim i As Long
-    
-    For i = 0 To picMoveContainer.UBound
-        picMoveContainer(i).Visible = CBool(i = buttonIndex)
+    For i = 0 To ctlMoveContainer.UBound
+        ctlMoveContainer(i).Visible = CBool(i = buttonIndex)
     Next i
-    
 End Sub
 
 Private Sub cboLayerResizeQuality_Click()

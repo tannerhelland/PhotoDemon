@@ -10,6 +10,15 @@ Begin VB.UserControl ShellPipe
    ClipBehavior    =   0  'None
    ClipControls    =   0   'False
    DrawStyle       =   5  'Transparent
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.25
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
    HitBehavior     =   0  'None
    InvisibleAtRuntime=   -1  'True
    PaletteMode     =   4  'None

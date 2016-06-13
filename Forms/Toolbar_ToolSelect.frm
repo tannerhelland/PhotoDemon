@@ -732,7 +732,7 @@ Private Sub NewToolSelected()
         Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO
         
             'See if a selection is already active on the image
-            If selectionsAllowed(False) Then
+            If SelectionsAllowed(False) Then
             
                 'A selection is already active!
                 
@@ -858,12 +858,8 @@ Public Sub ResetToolButtonStates()
     
         activeSelectionSubpanel = Selection_Handler.GetSelectionSubPanelFromCurrentTool
         
-        For i = 0 To toolpanel_Selections.picSelectionSubcontainer.Count - 1
-            If i = activeSelectionSubpanel Then
-                toolpanel_Selections.picSelectionSubcontainer(i).Visible = True
-            Else
-                toolpanel_Selections.picSelectionSubcontainer(i).Visible = False
-            End If
+        For i = 0 To toolpanel_Selections.ctlGroupSelectionSubcontainer.Count - 1
+            toolpanel_Selections.ctlGroupSelectionSubcontainer(i).Visible = CBool(i = activeSelectionSubpanel)
         Next i
         
     End If
@@ -875,7 +871,7 @@ Public Sub ResetToolButtonStates()
     'Check the selection state before swapping tools.  If a selection is active, and the user is switching to the same
     ' tool used to create the current selection, we don't want to erase the current selection.  If they are switching
     ' to a *different* selection tool, however, then we *do* want to erase the current selection.
-    If selectionsAllowed(False) And (getRelevantToolFromSelectShape() <> g_CurrentTool) And (getSelectionShapeFromCurrentTool > -1) Then
+    If SelectionsAllowed(False) And (getRelevantToolFromSelectShape() <> g_CurrentTool) And (getSelectionShapeFromCurrentTool > -1) Then
         
         'Switching between rectangle and circle selections is an exception to the usual rule; these are interchangeable.
         If (g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape = sRectangle) Or _

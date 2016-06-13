@@ -29,73 +29,32 @@ Begin VB.Form toolbar_Layers
    ScaleWidth      =   249
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
-      Height          =   735
-      Index           =   2
+   Begin PhotoDemon.pdContainer ctlContainer 
+      Height          =   615
+      Index           =   0
       Left            =   240
-      ScaleHeight     =   49
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   121
-      TabIndex        =   5
-      Top             =   3960
-      Width           =   1815
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
-      Height          =   735
-      Index           =   1
-      Left            =   360
-      ScaleHeight     =   49
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   121
-      TabIndex        =   2
-      Top             =   3000
-      Width           =   1815
+      TabIndex        =   3
+      Top             =   1560
+      Width           =   2535
+      _ExtentX        =   4471
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   270
       Index           =   0
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   60
       Width           =   3495
       _ExtentX        =   6165
       _ExtentY        =   476
       Caption         =   "overview"
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
-      Height          =   735
-      Index           =   0
-      Left            =   480
-      ScaleHeight     =   49
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   121
-      TabIndex        =   0
-      Top             =   2040
-      Width           =   1815
-   End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   270
       Index           =   2
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   960
       Width           =   3495
       _ExtentX        =   6165
@@ -106,12 +65,32 @@ Begin VB.Form toolbar_Layers
       Height          =   270
       Index           =   1
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   480
       Width           =   3495
       _ExtentX        =   6165
       _ExtentY        =   476
       Caption         =   "color selector"
+   End
+   Begin PhotoDemon.pdContainer ctlContainer 
+      Height          =   615
+      Index           =   1
+      Left            =   240
+      TabIndex        =   4
+      Top             =   2280
+      Width           =   2535
+      _ExtentX        =   4471
+      _ExtentY        =   1085
+   End
+   Begin PhotoDemon.pdContainer ctlContainer 
+      Height          =   615
+      Index           =   2
+      Left            =   240
+      TabIndex        =   5
+      Top             =   3000
+      Width           =   2535
+      _ExtentX        =   4471
+      _ExtentY        =   1085
    End
    Begin VB.Line lnSeparatorLeft 
       X1              =   0
@@ -192,15 +171,15 @@ Private Sub Form_Load()
     Set m_WindowSync = New pdWindowSync
     
     Load layerpanel_Navigator
-    m_WindowSync.SynchronizeWindows picContainer(0).hWnd, layerpanel_Navigator.hWnd
+    m_WindowSync.SynchronizeWindows ctlContainer(0).hWnd, layerpanel_Navigator.hWnd
     layerpanel_Navigator.Show
     
     Load layerpanel_Colors
-    m_WindowSync.SynchronizeWindows picContainer(1).hWnd, layerpanel_Colors.hWnd
+    m_WindowSync.SynchronizeWindows ctlContainer(1).hWnd, layerpanel_Colors.hWnd
     layerpanel_Colors.Show
     
     Load layerpanel_Layers
-    m_WindowSync.SynchronizeWindows picContainer(picContainer.UBound).hWnd, layerpanel_Layers.hWnd
+    m_WindowSync.SynchronizeWindows ctlContainer(ctlContainer.UBound).hWnd, layerpanel_Layers.hWnd
     layerpanel_Layers.Show
     
     'Load any last-used settings for this form
@@ -296,21 +275,21 @@ Private Sub ReflowInterface()
             'Move the panel into position.  For all panels except the layers panel, height is hard-coded at design-time.
             If (xWidth - xOffset > 0) Then
                 If i < (m_numOfPanels - 1) Then
-                    picContainer(i).Move xOffset * 2, yOffset, xWidth - xOffset, m_defaultPanelHeight(i)
+                    ctlContainer(i).SetPositionAndSize xOffset * 2, yOffset, xWidth - xOffset, m_defaultPanelHeight(i)
                     
                 'The layers panel is unique, because it shrinks to fit all available space.
                 Else
-                    If (Me.ScaleHeight - yOffset > 0) Then picContainer(i).Move xOffset * 2, yOffset, xWidth - xOffset, Me.ScaleHeight - yOffset
+                    If (Me.ScaleHeight - yOffset > 0) Then ctlContainer(i).SetPositionAndSize xOffset * 2, yOffset, xWidth - xOffset, Me.ScaleHeight - yOffset
                 End If
             End If
             
             'Show the panel, and add its height to the running offset calculation
-            picContainer(i).Visible = True
-            yOffset = yOffset + picContainer(i).Height
+            ctlContainer(i).Visible = True
+            yOffset = yOffset + ctlContainer(i).GetHeight
             
         'If the title bar state is FALSE, close its corresponding panel.
         Else
-            picContainer(i).Visible = False
+            ctlContainer(i).Visible = False
         End If
         
         'Regardless of visibility, always add some padding to the running offset
