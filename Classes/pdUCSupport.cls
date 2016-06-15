@@ -207,7 +207,7 @@ Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         
         'Flicker-free double-buffered window painting.  For IDE support of windowless controls, we have no choice but to subclass.
         Set m_WindowPainter = New pdWindowPainter
-        If g_IsProgramRunning Then m_WindowPainter.StartPainter m_hWnd
+        If g_IsProgramRunning Then m_WindowPainter.StartPainter m_hWnd, , noBackBufferRequired
         
         'Reliable, API-based Got/LostFocus detection
         Set m_FocusDetector = New pdFocusDetector
@@ -790,6 +790,29 @@ Private Sub m_MoveSize_WindowResize(ByVal newWidth As Long, ByVal newHeight As L
         
     End If
     
+End Sub
+
+'Erase events will *only* be raised if the underlying control is using "no backbuffer" mode
+Private Sub m_WindowPainter_EraseBkgnd()
+    
+    If m_NoBackBufferMode Then
+    
+        Dim targetDC As Long
+        If (m_hDC <> 0) Then targetDC = m_hDC Else targetDC = m_WindowPainter.GetPaintStructDC
+        
+        Dim finalBackColor As Long
+        If m_BackColor = -1 Then
+            finalBackColor = m_Colors.RetrieveColor(UCS_Background)
+        Else
+            finalBackColor = m_BackColor
+        End If
+        
+        'debug.Print "ERASING NOW: " &
+        
+        Drawing.FillRectToDC targetDC, -1, -1, Me.GetControlWidth + 2, Me.GetControlHeight + 2, finalBackColor
+        
+    End If
+        
 End Sub
 
 'Rather than bother the caller with paint requests, we handle them internally, by flipping the back buffer to the underlying

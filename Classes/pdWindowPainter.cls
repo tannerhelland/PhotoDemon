@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Flicker-Free Window Painter class
 'Copyright 2014-2016 by Tanner Helland
 'Created: 20/October/14  (but built from many parts existing earlier)
-'Last updated: 17/February/16
-'Last update: rework immediate paint behavior of the .RequestRepaint() function
+'Last updated: 15/June/16
+'Last update: improve WM_ERASEBKGND handling for controls without persistent back buffers
 '
 'Now that PD provides so many of its own user-controls, we have to do a lot of manual window painting.  Supporting the
 ' full spectrum of Windows versions (particularly XP), theme settings (including accessibility themes), window settings
@@ -42,6 +42,10 @@ Option Explicit
 ' they're always relevant!
 Public Event PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
 
+'Erase messages will only be passed if specifically requested; anything double-buffered can ignore these, but certain
+' controls (like pdContainer) do not maintain a persistent buffer for performance reasons.
+Public Event EraseBkgnd()
+
 'Subclassing is used to better optimize the control's painting; this also requires manual validation of the control rect.
 Private Const WM_PAINT As Long = &HF
 Private Const WM_ERASEBKGND As Long = &H14
@@ -66,6 +70,11 @@ Private m_PaintStruct As PAINTSTRUCT
 'BeginPaint returns a DC for the given window; we cache this, in case the client needs to make use of it
 Private m_WindowDC As Long
 
+'Most PD controls use double-buffering, so WM_ERASEBKGND messages are not relevant.  However, some container-only
+' controls (like pdContainer) don't maintain buffers for performance reasons, so they are the exception, and they
+' must be notified of erase messages.
+Private m_WantEraseMessages As Boolean
+
 'Subclasser for intercepting window messages
 Private cSubclass As cSelfSubHookCallback
 
@@ -82,7 +91,7 @@ End Sub
 
 'This function must be called in the UserControl's Initialize event.  For best results, check for the IDE and do not
 ' load this class.
-Public Sub StartPainter(ByVal srcHwnd As Long, Optional ByVal isAPIWindow As Boolean = False)
+Public Sub StartPainter(ByVal srcHwnd As Long, Optional ByVal isAPIWindow As Boolean = False, Optional ByVal wantEraseMessages As Boolean = False)
     
     'Release the existing subclasser, if any
     If Not (cSubclass Is Nothing) Then
@@ -97,6 +106,7 @@ Public Sub StartPainter(ByVal srcHwnd As Long, Optional ByVal isAPIWindow As Boo
         If (cSubclass Is Nothing) Then Set cSubclass = New cSelfSubHookCallback
         cSubclass.ssc_Subclass m_hWnd, , 1, Me, , , isAPIWindow
         cSubclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_PAINT, WM_ERASEBKGND
+        m_WantEraseMessages = wantEraseMessages
     End If
     
 End Sub
@@ -187,7 +197,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 '*************************************************************************************************
 
 
-    If uMsg = WM_PAINT Then
+    If (uMsg = WM_PAINT) Then
         
         'Ignore paint requests for empty regions
         If GetUpdateRect(m_hWnd, m_UpdateRect, 0) <> 0 Then
@@ -198,13 +208,30 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         bHandled = True
         lReturn = 0
                 
-    ElseIf uMsg = WM_ERASEBKGND Then
+    ElseIf (uMsg = WM_ERASEBKGND) Then
+        
+        'Controls that do not maintain persistent back buffers need to respond to erase messages
+        If m_WantEraseMessages Then
+            
+            'Back up the current DC
+            Dim tmpDC As Long
+            tmpDC = m_WindowDC
+            
+            'wParam contains the new window DC
+            m_WindowDC = wParam
+            
+            'Let the control repaint
+            RaiseEvent EraseBkgnd
+            
+            'Reset everything
+            m_WindowDC = tmpDC
+            
+        End If
         
         bHandled = True
         lReturn = 1
         
     End If
-
 
 
 ' *************************************************************
