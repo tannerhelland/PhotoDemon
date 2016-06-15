@@ -43,21 +43,15 @@ Begin VB.Form FormPreferences
       _ExtentX        =   4630
       _ExtentY        =   11774
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   6660
       Index           =   6
       Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   444
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
       TabIndex        =   6
       Top             =   120
       Width           =   8295
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdButton cmdReset 
          Height          =   600
          Left            =   240
@@ -131,7 +125,6 @@ Begin VB.Form FormPreferences
          Caption         =   "memory usage will be displayed here"
          ForeColor       =   8405056
          Layout          =   1
-         UseCustomForeColor=   -1  'True
       End
       Begin PhotoDemon.pdLabel lblMemoryUsageCurrent 
          Height          =   540
@@ -143,7 +136,6 @@ Begin VB.Form FormPreferences
          Caption         =   "memory usage will be displayed here"
          ForeColor       =   8405056
          Layout          =   1
-         UseCustomForeColor=   -1  'True
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
@@ -194,21 +186,15 @@ Begin VB.Form FormPreferences
          ForeColor       =   4210752
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   6660
       Index           =   5
       Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   444
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
       TabIndex        =   4
       Top             =   120
       Width           =   8295
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdLabel lblExplanation 
          Height          =   2535
          Left            =   240
@@ -307,21 +293,15 @@ Begin VB.Form FormPreferences
          Caption         =   "notify me when an update is ready"
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   6660
       Index           =   0
       Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   444
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
       TabIndex        =   0
       Top             =   120
       Width           =   8295
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdDropDown cboMRUCaption 
          Height          =   330
          Left            =   240
@@ -431,21 +411,15 @@ Begin VB.Form FormPreferences
          ForeColor       =   4210752
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   6660
       Index           =   4
       Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   444
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
       TabIndex        =   7
       Top             =   120
       Width           =   8295
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdButton cmdColorProfilePath 
          Height          =   375
          Left            =   7380
@@ -614,21 +588,15 @@ Begin VB.Form FormPreferences
          ForeColor       =   4210752
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   6660
       Index           =   2
       Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   444
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
       TabIndex        =   18
       Top             =   120
       Width           =   8295
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdCheckBox chkSaveMetadata 
          Height          =   375
          Left            =   240
@@ -770,21 +738,15 @@ Begin VB.Form FormPreferences
          Caption         =   "list PhotoDemon as the last-used editing software"
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   6660
       Index           =   1
       Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   444
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
       TabIndex        =   11
       Top             =   120
       Width           =   8295
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdCheckBox chkToneMapping 
          Height          =   330
          Left            =   240
@@ -915,21 +877,15 @@ Begin VB.Form FormPreferences
          Caption         =   "automatically hide duplicate tags"
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   6660
       Index           =   3
       Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   444
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
       TabIndex        =   3
       Top             =   120
       Width           =   8295
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltUndoCompression 
          Height          =   405
          Left            =   240
@@ -1992,7 +1948,7 @@ End Sub
 
 'When the form is loaded, populate the various checkboxes and textboxes with the values from the preferences file
 Private Sub Form_Load()
-        
+    
     Set cSysInfo = New pdSystemInfo
         
     Dim i As Long
@@ -2052,12 +2008,6 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    
-    'For some reason, the container picture boxes automatically acquire the pointer of children objects.
-    ' Manually force those cursors to arrows to prevent this.
-    For i = 0 To picContainer.Count - 1
-        SetArrowCursor picContainer(i)
-    Next i
     
     userInitiatedColorSelection = True
     

@@ -79,18 +79,10 @@ Begin VB.Form dialog_ExportPNG
          _ExtentX        =   12515
          _ExtentY        =   1085
       End
-      Begin VB.PictureBox picContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         HasDC           =   0   'False
+      Begin PhotoDemon.pdContainer picContainer 
          Height          =   5175
          Index           =   0
          Left            =   0
-         ScaleHeight     =   345
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   473
          TabIndex        =   13
          Top             =   720
          Width           =   7095
@@ -177,18 +169,10 @@ Begin VB.Form dialog_ExportPNG
             Caption         =   "lossless file size optimization (OptiPNG)"
          End
       End
-      Begin VB.PictureBox picContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         HasDC           =   0   'False
+      Begin PhotoDemon.pdContainer picContainer 
          Height          =   5175
          Index           =   2
          Left            =   0
-         ScaleHeight     =   345
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   473
          TabIndex        =   11
          Top             =   720
          Width           =   7095
@@ -202,18 +186,10 @@ Begin VB.Form dialog_ExportPNG
             _ExtentY        =   5741
          End
       End
-      Begin VB.PictureBox picContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         HasDC           =   0   'False
+      Begin PhotoDemon.pdContainer picContainer 
          Height          =   5175
          Index           =   1
          Left            =   0
-         ScaleHeight     =   345
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   473
          TabIndex        =   4
          Top             =   720
          Width           =   7095

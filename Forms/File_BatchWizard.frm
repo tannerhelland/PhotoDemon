@@ -111,17 +111,10 @@ Begin VB.Form FormBatchWizard
       FontSize        =   12
       ForeColor       =   4210752
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   7455
       Index           =   0
       Left            =   3480
-      ScaleHeight     =   497
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
       TabIndex        =   6
       Top             =   720
       Width           =   11775
@@ -272,17 +265,10 @@ Begin VB.Form FormBatchWizard
          ForeColor       =   4210752
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   7500
       Index           =   1
       Left            =   3480
-      ScaleHeight     =   500
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
       TabIndex        =   5
       Top             =   720
       Width           =   11775
@@ -513,17 +499,10 @@ Begin VB.Form FormBatchWizard
          Y2              =   296
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   7455
       Index           =   4
       Left            =   3480
-      ScaleHeight     =   497
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
       TabIndex        =   60
       Top             =   720
       Width           =   11775
@@ -554,17 +533,10 @@ Begin VB.Form FormBatchWizard
          Layout          =   1
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   7455
       Index           =   3
       Left            =   3480
-      ScaleHeight     =   497
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
       TabIndex        =   19
       Top             =   720
       Width           =   11775
@@ -755,17 +727,10 @@ Begin VB.Form FormBatchWizard
          ForeColor       =   4210752
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   7455
       Index           =   2
       Left            =   3480
-      ScaleHeight     =   497
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
       TabIndex        =   7
       Top             =   720
       Width           =   11775
@@ -2494,12 +2459,6 @@ Private Sub Form_Load()
         
     'Apply visual themes and translations
     ApplyThemeAndTranslations Me
-    
-    'For some reason, the container picture boxes automatically acquire the cursor of children objects.
-    ' Manually force those cursors to arrows to prevent this.
-    For i = 0 To picContainer.Count - 1
-        SetArrowCursor picContainer(i)
-    Next i
     
     'Cache the translations for words used in high-performance processes
     m_wordForBatchList = g_Language.TranslateMessage("batch list")

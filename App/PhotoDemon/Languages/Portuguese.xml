@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.191</langversion>
+<langversion>6.7.192</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -3899,6 +3899,12 @@ or os menus File> Open e File> Import.</translation>
 
 <!-- END text for pdCommandBarMini.ctl-->
 
+<!-- BEGIN text for pdContainer.ctl -->
+
+<!-- pdContainer.ctl contains 0 phrases. -->
+
+<!-- END text for pdContainer.ctl-->
+
 <!-- BEGIN text for pdDownload.ctl -->
 
 <!-- pdDownload.ctl contains 0 phrases. -->
@@ -6863,7 +6869,7 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 <translation>saída</translation>
 </phrase>
 
-<!-- Adjustments_Curves.frm contains 31 phrases. 15 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Adjustments_Curves.frm contains 32 phrases. 16 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Curves.frm-->
 
@@ -7679,7 +7685,7 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 <translation>avançado</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -8015,7 +8021,7 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 <translation>sólido</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 17 phrases. 3 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8153,7 +8159,7 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 <translation>por favor selecione um nó</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 27 phrases. 7 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -8371,7 +8377,7 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 <translation>Reinhard</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -8760,7 +8766,7 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 <translation>velocidade</translation>
 </phrase>
 
-<!-- Effects_Artistic_Kaleidoscope.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Effects_Artistic_Kaleidoscope.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Kaleidoscope.frm-->
 
@@ -9213,7 +9219,7 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 <translation>imagem fritar</translation>
 </phrase>
 
-<!-- Effects_Distort_Donut.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_Donut.frm-->
 
@@ -9332,7 +9338,7 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 <translation>Simulando ondulações sobre a superfície imagem</translation>
 </phrase>
 
-<!-- Effects_Distort_Ripple.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Distort_Ripple.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_Ripple.frm-->
 
@@ -9653,7 +9659,7 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 <translation>não</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_LensFlare.frm contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_LightAndShadow_LensFlare.frm contains 17 phrases. 10 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Effects_LightAndShadow_LensFlare.frm-->
 
@@ -11291,7 +11297,7 @@ By padrão, a transparência será dividido ao meio, ou você pode especificar u
 <translation>processada antes de cancelamento. Última imagem processada foi " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 264 phrases. 86 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 267 phrases. 89 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -11811,7 +11817,7 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <translation>por cor</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 18 phrases. 12 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
@@ -11903,7 +11909,7 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <translation>preto e branco (8-bpp)</translation>
 </phrase>
 
-<!-- File_Save_JPEGSettings.frm contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- File_Save_JPEGSettings.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_Save_JPEGSettings.frm-->
 
@@ -11939,7 +11945,7 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <translation>Compressão Super, muito má qualidade de imagem (20)</translation>
 </phrase>
 
-<!-- File_Save_JXRSettings.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_JXRSettings.frm contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_Save_JXRSettings.frm-->
 
@@ -12106,7 +12112,7 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 59 phrases. 34 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 61 phrases. 36 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -12157,7 +12163,7 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <translation></translation>
 </phrase>
 
-<!-- File_Save_TIFF.frm contains 41 phrases. 32 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Save_TIFF.frm contains 43 phrases. 34 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for File_Save_TIFF.frm-->
 
@@ -12587,7 +12593,7 @@ To ativar o suporte para esse recurso, copie o arquivo FreeImage.dll para o plug
 <translation>lista de %1, uma entrada por linha</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 114 phrases. 65 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 115 phrases. 66 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -15024,7 +15030,7 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 <translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 183 phrases. 33 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 188 phrases. 38 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15135,22 +15141,16 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 <translation>desaparecido</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 37 phrases. 16 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for pdContainer.ctl -->
-
-<!-- pdContainer.ctl contains 0 phrases. -->
-
-<!-- END text for pdContainer.ctl-->
 
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2584</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4491 phrases. -->
-<!-- 1907 are duplicates, so only 2584 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4527 phrases. -->
+<!-- 1943 are duplicates, so only 2584 unique phrases have been written to file. -->
 <!-- These 2584 phrases contain approximately 13274 total words. -->
 
 </pdData>

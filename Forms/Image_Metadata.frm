@@ -98,18 +98,10 @@ Begin VB.Form FormMetadata
       _ExtentY        =   1111
       AutoToggle      =   -1  'True
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   6015
       Index           =   1
       Left            =   8040
-      ScaleHeight     =   401
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   406
       TabIndex        =   5
       Top             =   1200
       Visible         =   0   'False
@@ -193,18 +185,10 @@ Begin VB.Form FormMetadata
          Caption         =   "Remove tags that might contain personal information"
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   6015
       Index           =   0
       Left            =   8040
-      ScaleHeight     =   401
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   406
       TabIndex        =   4
       Top             =   1200
       Width           =   6090

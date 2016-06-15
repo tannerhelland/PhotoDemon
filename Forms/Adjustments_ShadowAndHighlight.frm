@@ -53,17 +53,10 @@ Begin VB.Form FormShadowHighlight
       _ExtentY        =   1693
       Caption         =   "options"
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   4575
       Index           =   0
       Left            =   5880
-      ScaleHeight     =   305
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   409
       TabIndex        =   4
       Top             =   120
       Width           =   6135
@@ -104,17 +97,10 @@ Begin VB.Form FormShadowHighlight
          Max             =   100
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   4575
       Index           =   1
       Left            =   5880
-      ScaleHeight     =   305
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   409
       TabIndex        =   5
       Top             =   120
       Width           =   6135

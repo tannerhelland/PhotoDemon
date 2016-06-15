@@ -65,17 +65,10 @@ Begin VB.Form FormCurves
       ForeColor       =   4210752
       Layout          =   1
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   6150
       Index           =   0
       Left            =   5880
-      ScaleHeight     =   410
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   481
       TabIndex        =   4
       Top             =   60
       Width           =   7215
@@ -105,17 +98,10 @@ Begin VB.Form FormCurves
          Caption         =   "channel"
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   6150
       Index           =   1
       Left            =   5880
-      ScaleHeight     =   410
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   481
       TabIndex        =   5
       Top             =   60
       Width           =   7215

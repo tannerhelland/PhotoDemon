@@ -55,18 +55,10 @@ Begin VB.Form dialog_ExportGIF
       _ExtentY        =   1085
       FontSize        =   11
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   5535
       Index           =   0
       Left            =   5880
-      ScaleHeight     =   369
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   473
       TabIndex        =   2
       Top             =   840
       Width           =   7095
@@ -163,18 +155,10 @@ Begin VB.Form dialog_ExportGIF
          curColor        =   16711935
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   5535
       Index           =   1
       Left            =   5880
-      ScaleHeight     =   369
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   473
       TabIndex        =   11
       Top             =   840
       Width           =   7095

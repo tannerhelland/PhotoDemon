@@ -53,18 +53,10 @@ Begin VB.Form dialog_ExportJP2
       _ExtentY        =   1085
       FontSize        =   11
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   4815
       Index           =   0
       Left            =   5880
-      ScaleHeight     =   321
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   441
       TabIndex        =   5
       Top             =   840
       Width           =   6615
@@ -131,18 +123,10 @@ Begin VB.Form dialog_ExportJP2
          ForeColor       =   4210752
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   4815
       Index           =   1
       Left            =   5880
-      ScaleHeight     =   321
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   441
       TabIndex        =   3
       Top             =   840
       Width           =   6615
