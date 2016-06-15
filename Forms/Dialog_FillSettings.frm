@@ -46,11 +46,11 @@ Begin VB.Form dialog_FillSettings
       TabIndex        =   1
       Top             =   7155
       Width           =   12270
-      _extentx        =   21643
-      _extenty        =   1323
-      autoloadlastpreset=   -1  'True
-      dontautounloadparent=   -1  'True
-      dontresetautomatically=   -1  'True
+      _ExtentX        =   21643
+      _ExtentY        =   1323
+      AutoloadLastPreset=   -1  'True
+      DontAutoUnloadParent=   -1  'True
+      DontResetAutomatically=   -1  'True
    End
    Begin PhotoDemon.pdButtonStrip btsStyle 
       Height          =   1050
@@ -58,10 +58,10 @@ Begin VB.Form dialog_FillSettings
       TabIndex        =   0
       Top             =   1140
       Width           =   12015
-      _extentx        =   21193
-      _extenty        =   1852
-      caption         =   "fill style"
-      fontsize        =   12
+      _ExtentX        =   21193
+      _ExtentY        =   1852
+      Caption         =   "fill style"
+      FontSize        =   12
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
@@ -69,10 +69,10 @@ Begin VB.Form dialog_FillSettings
       Left            =   120
       Top             =   120
       Width           =   9375
-      _extentx        =   16536
-      _extenty        =   556
-      caption         =   "preview"
-      fontsize        =   12
+      _ExtentX        =   16536
+      _ExtentY        =   556
+      Caption         =   "preview"
+      FontSize        =   12
    End
    Begin PhotoDemon.pdSlider sltFillOpacity 
       CausesValidation=   0   'False
@@ -81,13 +81,13 @@ Begin VB.Form dialog_FillSettings
       TabIndex        =   8
       Top             =   3000
       Width           =   6060
-      _extentx        =   10689
-      _extenty        =   1270
-      caption         =   "fill opacity"
-      max             =   100
-      value           =   100
-      notchposition   =   2
-      notchvaluecustom=   100
+      _ExtentX        =   10689
+      _ExtentY        =   1270
+      Caption         =   "fill opacity"
+      Max             =   100
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
@@ -95,27 +95,82 @@ Begin VB.Form dialog_FillSettings
       Left            =   6120
       Top             =   2400
       Width           =   6015
-      _extentx        =   10610
-      _extenty        =   556
-      caption         =   "common settings"
-      fontsize        =   12
+      _ExtentX        =   10610
+      _ExtentY        =   556
+      Caption         =   "common settings"
+      FontSize        =   12
    End
-   Begin PhotoDemon.pdContainer picContainer 
+   Begin PhotoDemon.pdContainer ctlGroupFill 
+      Height          =   4935
+      Index           =   2
+      Left            =   120
+      TabIndex        =   5
+      Top             =   2400
+      Width           =   5775
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdGradientSelector gsPrimary 
+         Height          =   1335
+         Left            =   0
+         TabIndex        =   13
+         Top             =   480
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   2355
+         Caption         =   "colors"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   3
+         Left            =   0
+         Top             =   0
+         Width           =   9375
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "gradient fill settings"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdButtonStrip btsGradientShape 
+         Height          =   1035
+         Left            =   0
+         TabIndex        =   15
+         Top             =   1920
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   1614
+         Caption         =   "shape"
+      End
+      Begin PhotoDemon.pdSlider sldGradientAngle 
+         Height          =   705
+         Left            =   0
+         TabIndex        =   16
+         Top             =   3120
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   1244
+         Caption         =   "angle"
+         Max             =   360
+         SigDigits       =   1
+      End
+   End
+   Begin PhotoDemon.pdContainer ctlGroupFill 
       Height          =   4815
       Index           =   1
       Left            =   120
       TabIndex        =   4
       Top             =   2400
       Width           =   5775
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdListBoxOD lstFillPattern 
          Height          =   2535
          Left            =   0
          TabIndex        =   14
          Top             =   480
          Width           =   5655
-         _extentx        =   9975
-         _extenty        =   4471
-         caption         =   "pattern"
+         _ExtentX        =   9975
+         _ExtentY        =   4471
+         Caption         =   "pattern"
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
@@ -123,10 +178,10 @@ Begin VB.Form dialog_FillSettings
          Left            =   0
          Top             =   0
          Width           =   5655
-         _extentx        =   16536
-         _extenty        =   556
-         caption         =   "pattern fill settings"
-         fontsize        =   12
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "pattern fill settings"
+         FontSize        =   12
       End
       Begin PhotoDemon.pdColorSelector csPattern 
          Height          =   855
@@ -135,9 +190,9 @@ Begin VB.Form dialog_FillSettings
          TabIndex        =   9
          Top             =   3120
          Width           =   2775
-         _extentx        =   9975
-         _extenty        =   1508
-         caption         =   "pattern color"
+         _ExtentX        =   9975
+         _ExtentY        =   1508
+         Caption         =   "pattern color"
       End
       Begin PhotoDemon.pdColorSelector csPattern 
          Height          =   855
@@ -146,10 +201,10 @@ Begin VB.Form dialog_FillSettings
          TabIndex        =   10
          Top             =   3120
          Width           =   2775
-         _extentx        =   9975
-         _extenty        =   1508
-         curcolor        =   0
-         caption         =   "background color"
+         _ExtentX        =   9975
+         _ExtentY        =   1508
+         Caption         =   "background color"
+         curColor        =   0
       End
       Begin PhotoDemon.pdSlider sltPatternOpacity 
          CausesValidation=   0   'False
@@ -159,12 +214,12 @@ Begin VB.Form dialog_FillSettings
          TabIndex        =   11
          Top             =   4080
          Width           =   2820
-         _extentx        =   10054
-         _extenty        =   873
-         max             =   100
-         value           =   100
-         notchposition   =   2
-         notchvaluecustom=   100
+         _ExtentX        =   10054
+         _ExtentY        =   873
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
       End
       Begin PhotoDemon.pdSlider sltPatternOpacity 
          CausesValidation=   0   'False
@@ -174,31 +229,33 @@ Begin VB.Form dialog_FillSettings
          TabIndex        =   12
          Top             =   4080
          Width           =   2820
-         _extentx        =   10054
-         _extenty        =   873
-         max             =   100
-         value           =   100
-         notchposition   =   2
-         notchvaluecustom=   100
+         _ExtentX        =   10054
+         _ExtentY        =   873
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
       End
    End
-   Begin PhotoDemon.pdContainer picContainer 
+   Begin PhotoDemon.pdContainer ctlGroupFill 
       Height          =   4935
       Index           =   0
       Left            =   120
       TabIndex        =   3
       Top             =   2400
       Width           =   5775
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
          Index           =   1
          Left            =   0
          Top             =   0
          Width           =   9375
-         _extentx        =   16536
-         _extenty        =   556
-         caption         =   "solid fill settings"
-         fontsize        =   12
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "solid fill settings"
+         FontSize        =   12
       End
       Begin PhotoDemon.pdColorSelector csFillColor 
          Height          =   1560
@@ -206,69 +263,31 @@ Begin VB.Form dialog_FillSettings
          TabIndex        =   7
          Top             =   600
          Width           =   5655
-         _extentx        =   9975
-         _extenty        =   2752
-         curcolor        =   0
-         caption         =   "color"
+         _ExtentX        =   9975
+         _ExtentY        =   2752
+         Caption         =   "color"
+         curColor        =   0
       End
    End
-   Begin PhotoDemon.pdContainer picContainer 
+   Begin PhotoDemon.pdContainer ctlGroupFill 
       Height          =   4815
       Index           =   3
       Left            =   120
       TabIndex        =   6
       Top             =   2400
       Width           =   5775
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
          Index           =   4
          Left            =   0
          Top             =   0
          Width           =   9375
-         _extentx        =   16536
-         _extenty        =   556
-         caption         =   "texture fill settings"
-         fontsize        =   12
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   4935
-      Index           =   2
-      Left            =   120
-      TabIndex        =   5
-      Top             =   2400
-      Width           =   5775
-      Begin PhotoDemon.pdGradientSelector gsPrimary 
-         Height          =   1335
-         Left            =   120
-         TabIndex        =   13
-         Top             =   1080
-         Width           =   5655
-         _extentx        =   9975
-         _extenty        =   2355
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   3
-         Left            =   0
-         Top             =   0
-         Width           =   9375
-         _extentx        =   16536
-         _extenty        =   556
-         caption         =   "gradient fill settings"
-         fontsize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   7
-         Left            =   0
-         Top             =   600
-         Width           =   5565
-         _extentx        =   9816
-         _extenty        =   503
-         caption         =   "gradient"
-         fontsize        =   12
-         forecolor       =   0
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "texture fill settings"
+         FontSize        =   12
       End
    End
 End
@@ -302,6 +321,9 @@ Private m_OldBrush As String
 
 'Brush strings are generated with the help of a fill (GDI+ brush) class.  This class also renders a preview of the current fill.
 Private m_Filler As pd2DBrush
+
+'Gradient brushes are constructed with help from a pdGradient instance
+Private m_Gradient As pd2DGradient
 
 'If a user control spawned this dialog, it will pass itself as a reference.  We can then send brush updates back
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
@@ -355,15 +377,13 @@ Public Property Get DialogResult() As VbMsgBoxResult
 End Property
 
 'The newly selected brush (if any) is returned via this property
-Public Property Get newBrush() As String
-    newBrush = m_Filler.GetBrushPropertiesAsXML
+Public Property Get NewBrush() As String
+    NewBrush = m_Filler.GetBrushPropertiesAsXML
 End Property
 
 'The ShowDialog routine presents the user with this form.
 Public Sub ShowDialog(ByVal initialBrush As String, Optional ByRef callingControl As pdBrushSelector = Nothing)
-
-    Debug.Print "Initial brush=" & initialBrush
-
+    
     'Store a reference to the calling control (if any)
     Set parentBrushControl = callingControl
 
@@ -402,11 +422,16 @@ Public Sub ShowDialog(ByVal initialBrush As String, Optional ByRef callingContro
 
 End Sub
 
+Private Sub btsGradientShape_Click(ByVal buttonIndex As Long)
+    UpdateGradientOptionVisibility
+    UpdatePreview
+End Sub
+
 Private Sub btsStyle_Click(ByVal buttonIndex As Long)
     
     Dim i As Long
-    For i = picContainer.lBound To picContainer.UBound
-        picContainer(i).Visible = CBool(i = buttonIndex)
+    For i = ctlGroupFill.lBound To ctlGroupFill.UBound
+        ctlGroupFill(i).Visible = CBool(i = buttonIndex)
     Next i
     
     UpdatePreview
@@ -467,13 +492,20 @@ Private Sub Form_Load()
     m_Colors.InitializeColorList "PDFillPatterns", colorCount
     UpdateColorList
     
-    'Populate the main style button strip
+    'Populate various button strip selectors
     btsStyle.AddItem "solid", 0
     btsStyle.AddItem "pattern", 1
     btsStyle.AddItem "gradient", 2
     'btsStyle.AddItem "texture", 3      'texture brushes are still TODO!
     btsStyle.ListIndex = 0
     btsStyle_Click 0
+    
+    btsGradientShape.AddItem "line", 0
+    btsGradientShape.AddItem "reflection", 1
+    btsGradientShape.AddItem "circle", 2
+    btsGradientShape.AddItem "rectangle", 3
+    btsGradientShape.AddItem "diamond", 4
+    UpdateGradientOptionVisibility
     
     'The hatch preview box is owner-drawn, so calculate some additional metrics now
     Drawing2D.QuickCreatePainter m_Painter
@@ -502,6 +534,7 @@ Private Sub Form_Load()
     
     If g_IsProgramRunning Then
         If (m_Filler Is Nothing) Then Set m_Filler = New pd2DBrush
+        If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
         Set m_PreviewDIB = New pdDIB
     End If
     
@@ -511,6 +544,17 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+End Sub
+
+Private Sub UpdateGradientOptionVisibility()
+    
+    'Show/hide the angle slider depending on the current shape
+    If (btsGradientShape.ListIndex = 0) Or (btsGradientShape.ListIndex = 1) Then
+        sldGradientAngle.Visible = True
+    Else
+        sldGradientAngle.Visible = False
+    End If
+    
 End Sub
 
 'Update our internal brush class against any/all changed settings.
@@ -525,14 +569,21 @@ Private Sub UpdateFillObject()
         .SetBrushProperty P2_BrushPattern1Opacity, sltPatternOpacity(0).Value
         .SetBrushProperty P2_BrushPattern2Color, csPattern(1).Color
         .SetBrushProperty P2_BrushPattern2Opacity, sltPatternOpacity(1).Value
-        .SetBrushProperty P2_BrushGradientXML, gsPrimary.Gradient
+        
+        'Gradient settings are first passed through a pd2DGradient instance, which condenses all the gradient options
+        ' into a single settable string.
+        m_Gradient.CreateGradientFromString gsPrimary.Gradient
+        m_Gradient.SetGradientProperty P2_GradientShape, btsGradientShape.ListIndex
+        m_Gradient.SetGradientProperty P2_GradientAngle, sldGradientAngle.Value
+        .SetBrushProperty P2_BrushGradientXML, m_Gradient.GetGradientAsString
+        
     End With
 
 End Sub
 
 Private Sub UpdatePreview()
     
-    If Not m_SuspendRedraws Then
+    If (Not m_SuspendRedraws) Then
     
         'Make sure our fill object is up-to-date
         UpdateFillObject
@@ -651,6 +702,10 @@ Private Sub lstFillPattern_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex
     
 End Sub
 
+Private Sub sldGradientAngle_Change()
+    UpdatePreview
+End Sub
+
 Private Sub sltFillOpacity_Change()
     UpdatePreview
 End Sub
@@ -676,8 +731,11 @@ Private Sub SyncControlsToFillObject()
         sltPatternOpacity(0).Value = .GetBrushProperty(P2_BrushPattern1Opacity)
         sltPatternOpacity(1).Value = .GetBrushProperty(P2_BrushPattern2Opacity)
         
-        gsPrimary.Gradient = .GetBrushProperty(P2_BrushGradientXML)
-    
+        m_Gradient.CreateGradientFromString .GetBrushProperty(P2_BrushGradientXML)
+        gsPrimary.Gradient = m_Gradient.GetGradientAsString
+        btsGradientShape.ListIndex = m_Gradient.GetGradientShape
+        sldGradientAngle.Value = m_Gradient.GetGradientAngle
+        
     End With
     
     m_SuspendRedraws = False
