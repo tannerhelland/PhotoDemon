@@ -131,8 +131,8 @@ Public Property Get Gradient() As String
     Gradient = m_curGradient
 End Property
 
-Public Property Let Gradient(ByVal newGradient As String)
-    m_curGradient = newGradient
+Public Property Let Gradient(ByVal NewGradient As String)
+    m_curGradient = NewGradient
     RedrawBackBuffer
     RaiseEvent GradientChanged
     PropertyChanged "Gradient"
@@ -208,12 +208,12 @@ Private Sub RaiseGradientDialog()
     isDialogLive = True
     
     'Backup the current gradient; if the dialog is canceled, we want to restore it
-    Dim newGradient As String, oldGradient As String
+    Dim NewGradient As String, oldGradient As String
     oldGradient = Gradient
     
     'Display the gradient dialog, then wait for it to return
-    If ShowGradientDialog(newGradient, oldGradient, Me) Then
-        Gradient = newGradient
+    If ShowGradientDialog(NewGradient, oldGradient, Me) Then
+        Gradient = NewGradient
     Else
         Gradient = oldGradient
     End If
@@ -225,7 +225,7 @@ End Sub
 Private Sub UserControl_Initialize()
     
     Set m_Brush = New pd2DBrush
-    m_Brush.SetBrushProperty P2_BrushMode, 2
+    m_Brush.SetBrushMode P2_BM_Gradient
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
@@ -320,9 +320,16 @@ Private Sub RedrawBackBuffer()
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable brush portion.
     If g_IsProgramRunning Then
     
-        'Render the brush first
+        'Render the gradient first.  To do this, we use a temporary gradient object that *only* renders as
+        ' a linear gradient.  (This gradient control only allows editing of a gradient's color, not its shape.)
+        Dim tmpGradient As pd2DGradient
+        Set tmpGradient = New pd2DGradient
+        tmpGradient.CreateGradientFromString m_curGradient
+        tmpGradient.SetGradientShape P2_GS_Linear
+        tmpGradient.SetGradientAngle 0#
+        
         m_Brush.SetBoundaryRect m_GradientRect
-        m_Brush.SetBrushProperty P2_BrushGradientXML, m_curGradient
+        m_Brush.SetBrushProperty P2_BrushGradientXML, tmpGradient.GetGradientAsString
         
         Dim tmpBrush As Long
         tmpBrush = m_Brush.GetHandle
@@ -350,8 +357,8 @@ End Sub
 
 'If a gradient selection dialog is active, it will pass gradient updates backward to this function, so that we can let
 ' our parent form display live updates *while the user is playing with gradients*.
-Public Sub NotifyOfLiveGradientChange(ByVal newGradient As String)
-    Gradient = newGradient
+Public Sub NotifyOfLiveGradientChange(ByVal NewGradient As String)
+    Gradient = NewGradient
 End Sub
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this

@@ -70,13 +70,25 @@ Friend Function GetGradientShape() As PD_2D_GradientShape
     GetGradientShape = GetGradientProperty(P2_GradientShape)
 End Function
 
+Friend Sub SetGradientShape(ByVal newShape As PD_2D_GradientShape)
+    SetGradientProperty P2_GradientShape, newShape
+End Sub
+
 Public Function GetGradientAngle() As Single
     GetGradientAngle = GetGradientProperty(P2_GradientAngle)
 End Function
 
-Friend Function GetGradientWrapMode() As Long   '
+Public Sub SetGradientAngle(ByVal newAngle As Single)
+    SetGradientProperty P2_GradientAngle, newAngle
+End Sub
 
+Friend Function GetGradientWrapMode() As PD_2D_WrapMode
+    GetGradientWrapMode = GetGradientProperty(P2_GradientWrapMode)
 End Function
+
+Friend Sub SetGradientWrapMode(ByVal newWrapMode As PD_2D_WrapMode)
+    SetGradientProperty P2_GradientWrapMode, newWrapMode
+End Sub
 
 'Get/set individual settings by enum type
 Public Function GetGradientProperty(ByVal propID As PD_2D_GRADIENT_SETTINGS) As Variant
@@ -466,7 +478,7 @@ Private Function GetMergedRGBA(ByVal gpIndex As Long, Optional ByVal customOpaci
     dstQuad.Red = ExtractR(m_GradientPoints(gpIndex).PointRGB)
     dstQuad.Green = ExtractG(m_GradientPoints(gpIndex).PointRGB)
     dstQuad.Blue = ExtractB(m_GradientPoints(gpIndex).PointRGB)
-    dstQuad.Alpha = (m_GradientPoints(gpIndex).PointOpacity * customOpacityModifier) * 255#
+    dstQuad.alpha = (m_GradientPoints(gpIndex).PointOpacity * customOpacityModifier) * 255#
     
     Dim placeHolder As tmpLong
     LSet placeHolder = dstQuad
@@ -532,7 +544,7 @@ Friend Function GetColorAtPosition_RGBA(ByVal cPosition As Single, ByRef dstRGBA
             dstRGBA.Red = GetBlendedColors(tmpLow.Red, tmpHigh.Red, blendFactor)
             dstRGBA.Green = GetBlendedColors(tmpLow.Green, tmpHigh.Green, blendFactor)
             dstRGBA.Blue = GetBlendedColors(tmpLow.Blue, tmpHigh.Blue, blendFactor)
-            dstRGBA.Alpha = GetBlendedColors(tmpLow.Alpha, tmpHigh.Alpha, blendFactor)
+            dstRGBA.alpha = GetBlendedColors(tmpLow.alpha, tmpHigh.alpha, blendFactor)
         
         End If
         

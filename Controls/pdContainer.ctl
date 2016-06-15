@@ -7,7 +7,6 @@ Begin VB.UserControl pdContainer
    ClientTop       =   0
    ClientWidth     =   4800
    ClipBehavior    =   0  'None
-   ClipControls    =   0   'False
    ControlContainer=   -1  'True
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -80,6 +79,7 @@ Private m_Colors As pdThemeColors
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
@@ -89,6 +89,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
 End Property
 
 Public Property Get hWnd() As Long
+Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 
