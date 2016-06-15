@@ -100,17 +100,10 @@ Begin VB.Form dialog_FillSettings
       caption         =   "common settings"
       fontsize        =   12
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   4815
       Index           =   1
       Left            =   120
-      ScaleHeight     =   321
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   385
       TabIndex        =   4
       Top             =   2400
       Width           =   5775
@@ -189,17 +182,10 @@ Begin VB.Form dialog_FillSettings
          notchvaluecustom=   100
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   4935
       Index           =   0
       Left            =   120
-      ScaleHeight     =   329
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   385
       TabIndex        =   3
       Top             =   2400
       Width           =   5775
@@ -226,17 +212,10 @@ Begin VB.Form dialog_FillSettings
          caption         =   "color"
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   4815
       Index           =   3
       Left            =   120
-      ScaleHeight     =   321
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   385
       TabIndex        =   6
       Top             =   2400
       Width           =   5775
@@ -252,17 +231,10 @@ Begin VB.Form dialog_FillSettings
          fontsize        =   12
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   4935
       Index           =   2
       Left            =   120
-      ScaleHeight     =   329
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   385
       TabIndex        =   5
       Top             =   2400
       Width           =   5775

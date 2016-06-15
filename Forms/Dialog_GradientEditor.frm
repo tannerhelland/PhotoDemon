@@ -25,17 +25,10 @@ Begin VB.Form dialog_GradientEditor
    ScaleWidth      =   844
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   5775
       Index           =   0
       Left            =   0
-      ScaleHeight     =   385
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   841
       TabIndex        =   3
       Top             =   3000
       Width           =   12615
@@ -247,17 +240,10 @@ Begin VB.Form dialog_GradientEditor
       Caption         =   "preview"
       FontSize        =   12
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   5775
       Index           =   1
       Left            =   0
-      ScaleHeight     =   385
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   841
       TabIndex        =   4
       Top             =   3000
       Width           =   12615

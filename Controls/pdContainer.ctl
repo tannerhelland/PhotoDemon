@@ -23,6 +23,7 @@ Begin VB.UserControl pdContainer
    ScaleHeight     =   240
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
+   ToolboxBitmap   =   "pdContainer.ctx":0000
 End
 Attribute VB_Name = "pdContainer"
 Attribute VB_GlobalNameSpace = False

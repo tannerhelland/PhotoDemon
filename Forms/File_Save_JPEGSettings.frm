@@ -53,17 +53,10 @@ Begin VB.Form dialog_ExportJPEG
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   4695
       Index           =   0
       Left            =   5880
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   481
       TabIndex        =   3
       Top             =   1080
       Width           =   7215
@@ -122,18 +115,10 @@ Begin VB.Form dialog_ExportJPEG
          Caption         =   "background color"
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   4695
       Index           =   1
       Left            =   5880
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   481
       TabIndex        =   9
       Top             =   1080
       Width           =   7215
@@ -158,18 +143,10 @@ Begin VB.Form dialog_ExportJPEG
          Caption         =   "depth"
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   4695
       Index           =   2
       Left            =   5880
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   481
       TabIndex        =   5
       Top             =   1080
       Width           =   7215

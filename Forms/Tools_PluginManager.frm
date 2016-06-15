@@ -52,17 +52,10 @@ Begin VB.Form FormPluginManager
       _ExtentY        =   1085
       Caption         =   "Reset all plugin options"
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   5895
       Index           =   1
       Left            =   3000
-      ScaleHeight     =   393
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   513
       TabIndex        =   3
       Top             =   240
       Width           =   7695
@@ -188,17 +181,10 @@ Begin VB.Form FormPluginManager
          Layout          =   2
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   5895
       Index           =   0
       Left            =   3000
-      ScaleHeight     =   393
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   513
       TabIndex        =   0
       Top             =   240
       Width           =   7695
@@ -425,13 +411,7 @@ Private Sub Form_Load()
     maxWidth = maxWidth + lblInterfaceTitle(0).GetLeft + FixDPI(8)
     For i = 0 To PluginManager.GetNumOfPlugins - 1
         lblStatus(i).SetLeft maxWidth
-        lblStatus(i).SetWidth picContainer(0).ScaleWidth - lblStatus(i).GetLeft
-    Next i
-    
-    'For some reason, the container picture boxes automatically acquire the pointer of children objects.
-    ' Manually force those cursors to arrows to prevent this.
-    For i = 0 To picContainer.Count - 1
-        setArrowCursor picContainer(i)
+        lblStatus(i).SetWidth picContainer(0).GetWidth - lblStatus(i).GetLeft
     Next i
     
     m_IgnoreButtonStripEvents = True
@@ -458,10 +438,10 @@ Private Sub Form_Load()
     lblPluginExpectedVersion.SetLeft maxPosition + FixDPI(12)
     lblPluginVersion.SetLeft lblPluginExpectedVersion.GetLeft
     
-    hypHomepage.SetWidth picContainer(1).ScaleWidth - hypHomepage.GetLeft
-    hypLicense.SetWidth picContainer(1).ScaleWidth - hypLicense.GetLeft
-    lblPluginExpectedVersion.SetWidth picContainer(1).ScaleWidth - lblPluginExpectedVersion.GetLeft
-    lblPluginVersion.SetWidth picContainer(1).ScaleWidth - lblPluginVersion.GetLeft
+    hypHomepage.SetWidth picContainer(1).GetWidth - hypHomepage.GetLeft
+    hypLicense.SetWidth picContainer(1).GetWidth - hypLicense.GetLeft
+    lblPluginExpectedVersion.SetWidth picContainer(1).GetWidth - lblPluginExpectedVersion.GetLeft
+    lblPluginVersion.SetWidth picContainer(1).GetWidth - lblPluginVersion.GetLeft
     
 End Sub
 

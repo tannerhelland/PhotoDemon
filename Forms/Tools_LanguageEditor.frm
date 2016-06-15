@@ -82,19 +82,11 @@ Begin VB.Form FormLanguageEditor
       FontSize        =   12
       ForeColor       =   4210752
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   7455
       Index           =   0
       Left            =   3480
-      ScaleHeight     =   497
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
       TabIndex        =   6
-      TabStop         =   0   'False
       Top             =   720
       Width           =   11775
       Begin PhotoDemon.pdListBox lstLanguages 
@@ -152,19 +144,11 @@ Begin VB.Form FormLanguageEditor
          ForeColor       =   4210752
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   7455
       Index           =   1
       Left            =   3480
-      ScaleHeight     =   497
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
       TabIndex        =   18
-      TabStop         =   0   'False
       Top             =   720
       Width           =   11775
       Begin VB.PictureBox picProgBar 
@@ -195,19 +179,11 @@ Begin VB.Form FormLanguageEditor
          ForeColor       =   4210752
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   7455
       Index           =   2
       Left            =   3480
-      ScaleHeight     =   497
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
       TabIndex        =   11
-      TabStop         =   0   'False
       Top             =   720
       Width           =   11775
       Begin PhotoDemon.pdTextBox txtLangID 
@@ -411,19 +387,11 @@ Begin VB.Form FormLanguageEditor
          ForeColor       =   4210752
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   7455
       Index           =   3
       Left            =   3480
-      ScaleHeight     =   497
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
       TabIndex        =   8
-      TabStop         =   0   'False
       Top             =   720
       Width           =   11775
       Begin PhotoDemon.pdListBox lstPhrases 

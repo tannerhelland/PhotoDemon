@@ -69,17 +69,10 @@ Begin VB.Form dialog_ToneMapping
       _ExtentX        =   9790
       _ExtentY        =   1058
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   3375
       Index           =   3
       Left            =   4800
-      ScaleHeight     =   225
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   457
       TabIndex        =   6
       Top             =   2040
       Visible         =   0   'False
@@ -130,17 +123,10 @@ Begin VB.Form dialog_ToneMapping
          SliderTrackStyle=   1
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   3375
       Index           =   1
       Left            =   4800
-      ScaleHeight     =   225
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   457
       TabIndex        =   14
       Top             =   2040
       Visible         =   0   'False
@@ -210,17 +196,10 @@ Begin VB.Form dialog_ToneMapping
       ForeColor       =   2105376
       Layout          =   1
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   3375
       Index           =   0
       Left            =   4800
-      ScaleHeight     =   225
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   457
       TabIndex        =   5
       Top             =   2040
       Width           =   6855
@@ -288,17 +267,10 @@ Begin VB.Form dialog_ToneMapping
          Caption         =   "full spectrum"
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   3375
       Index           =   2
       Left            =   4800
-      ScaleHeight     =   225
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   457
       TabIndex        =   8
       Top             =   2040
       Visible         =   0   'False
@@ -512,11 +484,7 @@ Private Sub btsMethod_Click(ByVal buttonIndex As Long)
     
     Dim i As Long
     For i = 0 To picContainer.UBound
-        If i = buttonIndex Then
-            picContainer(i).Visible = True
-        Else
-            picContainer(i).Visible = False
-        End If
+        picContainer(i).Visible = CBool(i = buttonIndex)
     Next i
     
     UpdatePreview

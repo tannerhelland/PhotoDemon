@@ -54,17 +54,10 @@ Begin VB.Form FormLensFlare
       _ExtentY        =   1693
       Caption         =   "options"
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   4695
       Index           =   0
       Left            =   5880
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   409
       TabIndex        =   2
       Top             =   0
       Width           =   6135
@@ -168,17 +161,10 @@ Begin VB.Form FormLensFlare
          ForeColor       =   4210752
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   4695
       Index           =   1
       Left            =   5880
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   409
       TabIndex        =   9
       Top             =   0
       Visible         =   0   'False
