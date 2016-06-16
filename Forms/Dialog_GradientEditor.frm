@@ -363,7 +363,7 @@ Private Sub cmdBar_AddCustomPresetData()
     '
     'However, there's no reason to require horrible duplication code, when the gradient class is already capable of serializing
     ' all relevant data for this control!
-    cmdBar.AddPresetData "FullGradientDefinition", m_NodePreview.GetGradientAsString
+    cmdBar.AddPresetData "FullGradientDefinition", GetGradientAsOriginalShape()
 
 End Sub
 

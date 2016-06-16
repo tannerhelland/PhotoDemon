@@ -48,7 +48,7 @@ Private m_IsSorted As Boolean
 Private m_Path As pdGraphicsPath
 
 'This class is capable of serializing itself to/from XML strings
-Private cSerialize As pdParamXML
+Private m_Serializer As pdParamXML
 
 'Quick and dirty memory swap APIs
 Private Type tmpLong
@@ -90,6 +90,23 @@ Friend Sub SetGradientWrapMode(ByVal newWrapMode As PD_2D_WrapMode)
     SetGradientProperty P2_GradientWrapMode, newWrapMode
 End Sub
 
+'It's a little confusing, but a gradient string is actually comprised of two portions:
+' 1) Overall gradient settings (shape, angle, etc)
+' 2) A list of gradient nodes (including count, node colors, and node positions)
+'
+'For convenience to callers, it's important that (2) be allowed to behave as a standalone property, e.g. something that
+' you can set or read in a single pass.  That's the purpose of these get/set functions.
+'
+'(Note that in order to maintain a consistent naming convention, this public-facing GetGradientNodes() function wraps
+' a similarly named internal function; the internal function does the heavy lifting.)
+Public Function GetGradientNodes() As String
+    GetGradientNodes = GetGradientProperty(P2_GradientNodes)
+End Function
+
+Private Sub SetGradientNodes(ByRef srcString As String)
+    SetGradientProperty P2_GradientNodes, srcString
+End Sub
+
 'Get/set individual settings by enum type
 Public Function GetGradientProperty(ByVal propID As PD_2D_GRADIENT_SETTINGS) As Variant
     
@@ -103,6 +120,9 @@ Public Function GetGradientProperty(ByVal propID As PD_2D_GRADIENT_SETTINGS) As 
             
         Case P2_GradientWrapMode
             GetGradientProperty = m_GradientWrapMode
+            
+        Case P2_GradientNodes
+            GetGradientProperty = GetGradientNodesAsString
             
     End Select
     
@@ -121,24 +141,25 @@ Public Sub SetGradientProperty(ByVal propID As PD_2D_GRADIENT_SETTINGS, ByVal ne
         Case P2_GradientWrapMode
             m_GradientWrapMode = CLng(newSetting)
             
+        Case P2_GradientNodes
+            SetGradientNodesFromString CStr(newSetting)
+            
     End Select
     
 End Sub
 
-'For interop purposes, gradients are passed around PD as XML strings.
-Public Function GetGradientAsString() As String
+Private Function GetGradientNodesAsString() As String
     
-    With cSerialize
-        .Reset 1#
+    Dim tmpXML As pdParamXML
+    Set tmpXML = New pdParamXML
+    With tmpXML
         
-        'Add parameters whose size and count do not vary
+        'Add two management parameters: the point count (which simplifies parsing), and whether we have already sorted the list.
+        ' (If we have, this saves future functions from needing to perform their own sort.)
         .AddParam "GradientPointCount", m_NumOfPoints
         .AddParam "GradientListAlreadySorted", m_IsSorted
-        .AddParam "GradientShape", m_GradientShape
-        .AddParam "GradientAngle", m_GradientAngle
-        .AddParam "GradientWrapMode", m_GradientWrapMode
         
-        'Add the gradient point list
+        'Add the gradient point list; for convenience, RGB and opacity are manually separated.
         Dim i As Long, iString As String
         For i = 0 To m_NumOfPoints - 1
             iString = Trim$(Str(i))
@@ -149,47 +170,25 @@ Public Function GetGradientAsString() As String
         
     End With
     
-    GetGradientAsString = cSerialize.GetParamString
+    GetGradientNodesAsString = tmpXML.GetParamString()
     
 End Function
 
-Public Sub CreateGradientFromString(ByVal srcString As String)
+Private Sub SetGradientNodesFromString(ByRef srcString As String)
     
-    'If the string is empty, prep a default object
     If (Len(srcString) = 0) Then
-        
-        m_NumOfPoints = 2
-        ReDim m_GradientPoints(0 To 1) As GRADIENTPOINT
-        
-        With m_GradientPoints(0)
-            .PointRGB = vbBlack
-            .PointOpacity = 1
-            .PointPosition = 0
-        End With
-        
-        With m_GradientPoints(1)
-            .PointRGB = vbWhite
-            .PointOpacity = 1
-            .PointPosition = 1
-        End With
-        
-        m_GradientShape = P2_GS_Linear
-        m_GradientAngle = 0
-        m_GradientWrapMode = P2_WM_Tile
+        Me.ResetAllProperties
         
     Else
-
-        With cSerialize
+        Dim tmpXML As pdParamXML
+        Set tmpXML = New pdParamXML
+        With tmpXML
+        
             .SetParamString srcString
             
-            'Retrieve parameters whose size and count do not vary
-            m_NumOfPoints = .GetLong("GradientPointCount", 0)
+            m_NumOfPoints = .GetLong("GradientPointCount", 2)
             m_IsSorted = .GetBool("GradientListAlreadySorted", False)
-            m_GradientShape = .GetLong("GradientShape", P2_GS_Linear)
-            m_GradientAngle = .GetDouble("GradientAngle", 0)
-            m_GradientWrapMode = .GetLong("GradientWrapMode", P2_WM_Tile)
-            
-            'Retrieve the gradient point list
+                
             ReDim m_GradientPoints(0 To m_NumOfPoints) As GRADIENTPOINT
             
             Dim i As Long, iString As String
@@ -200,6 +199,72 @@ Public Sub CreateGradientFromString(ByVal srcString As String)
                 m_GradientPoints(i).PointPosition = .GetDouble("GradientPoint_" & iString & "_Position", i / m_NumOfPoints)
             Next i
             
+        End With
+        
+    End If
+    
+End Sub
+
+'For interop purposes, gradients are passed around PD as XML strings.
+Public Function GetGradientAsString() As String
+    
+    With m_Serializer
+        .Reset 1#
+        
+        'Add whole-gradient parameters
+        .AddParam "GradientShape", m_GradientShape
+        .AddParam "GradientAngle", m_GradientAngle
+        .AddParam "GradientWrapMode", m_GradientWrapMode
+        
+        'Add the gradient point list (and associated params, like number of points) as one contiguous string
+        .AddParam "GradientNodes", GetGradientNodesAsString()
+        
+    End With
+    
+    GetGradientAsString = m_Serializer.GetParamString
+    
+End Function
+
+Public Sub CreateGradientFromString(ByVal srcString As String)
+    
+    'If the string is empty, prep a default object
+    If (Len(srcString) = 0) Then
+        Me.ResetAllProperties
+        
+    Else
+
+        With m_Serializer
+            .SetParamString srcString
+            
+            'Retrieve parameters whose size and count do not vary
+            m_GradientShape = .GetLong("GradientShape", P2_GS_Linear)
+            m_GradientAngle = .GetDouble("GradientAngle", 0)
+            m_GradientWrapMode = .GetLong("GradientWrapMode", P2_WM_Tile)
+            
+            'There are two possible options for gradient storage:
+            ' 1) New versions of PD stick gradient nodes into their own XML entry.  Retrieve these and pass them off to a
+            '    dedicated node parsing function.
+            If m_Serializer.DoesParamExist("GradientNodes") Then
+                SetGradientNodesFromString .GetString("GradientNodes", vbNullString)
+            
+            ' 2) Old versions of PD stored bare node data right there in the main XML string.  Parse them manually.
+            Else
+            
+                m_NumOfPoints = .GetLong("GradientPointCount", 0)
+                m_IsSorted = .GetBool("GradientListAlreadySorted", False)
+            
+                ReDim m_GradientPoints(0 To m_NumOfPoints) As GRADIENTPOINT
+                
+                Dim i As Long, iString As String
+                For i = 0 To m_NumOfPoints - 1
+                    iString = Trim$(Str(i))
+                    m_GradientPoints(i).PointRGB = .GetLong("GradientPoint_" & iString & "_RGB", vbBlack)
+                    m_GradientPoints(i).PointOpacity = .GetDouble("GradientPoint_" & iString & "_Opacity", 1)
+                    m_GradientPoints(i).PointPosition = .GetDouble("GradientPoint_" & iString & "_Position", i / m_NumOfPoints)
+                Next i
+                
+            End If
+                
         End With
         
     End If
@@ -227,6 +292,29 @@ Friend Sub GetCopyOfPointCollection(ByRef numOfPoints As Long, ByRef srcPoints()
     numOfPoints = m_NumOfPoints
     ReDim srcPoints(0 To m_NumOfPoints) As GRADIENTPOINT
     CopyMemoryStrict VarPtr(srcPoints(0)), VarPtr(m_GradientPoints(0)), LenB(m_GradientPoints(0)) * m_NumOfPoints
+End Sub
+
+Public Sub ResetAllProperties()
+    
+    m_GradientShape = P2_GS_Linear
+    m_GradientAngle = 0
+    m_GradientWrapMode = P2_WM_Tile
+    
+    m_NumOfPoints = 2
+    ReDim m_GradientPoints(0 To 1) As GRADIENTPOINT
+    
+    With m_GradientPoints(0)
+        .PointRGB = vbBlack
+        .PointOpacity = 1
+        .PointPosition = 0
+    End With
+    
+    With m_GradientPoints(1)
+        .PointRGB = vbWhite
+        .PointOpacity = 1
+        .PointPosition = 1
+    End With
+        
 End Sub
 
 'Sort the gradient array in ascending order.  This greatly simplifies the process of creating a matching GDI+ brush.
@@ -566,7 +654,7 @@ End Function
 Private Sub Class_Initialize()
     
     'Prep a string serializer (for storing/loading gradients externally)
-    Set cSerialize = New pdParamXML
+    Set m_Serializer = New pdParamXML
     
     'Prep a path (for constructing non-linear gradients)
     Set m_Path = New pdGraphicsPath
