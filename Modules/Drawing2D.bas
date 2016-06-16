@@ -78,10 +78,11 @@ Public Enum PD_2D_GRADIENT_SETTINGS
     P2_GradientShape = 0
     P2_GradientAngle = 1
     P2_GradientWrapMode = 2
+    P2_GradientNodes = 3
 End Enum
 
 #If False Then
-    Private Const P2_GradientShape = 0, P2_GradientAngle = 1, P2_GradientWrapMode = 2
+    Private Const P2_GradientShape = 0, P2_GradientAngle = 1, P2_GradientWrapMode = 2, P2_GradientNodes = 3
 #End If
 
 'Surfaces are somewhat limited at present, but this may change in the future
