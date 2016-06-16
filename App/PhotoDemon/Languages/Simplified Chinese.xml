@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1552</langversion>
+<langversion>6.8.1553</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -7960,8 +7960,18 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>common settings</original>
-<translation>常用的设置</translation>
+<original>color</original>
+<translation>颜色</translation>
+</phrase>
+
+<phrase>
+<original>colors</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>shape</original>
+<translation>形状</translation>
 </phrase>
 
 <phrase>
@@ -7970,33 +7980,13 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>pattern fill settings</original>
-<translation>图案填充设置</translation>
-</phrase>
-
-<phrase>
 <original>pattern color</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>solid fill settings</original>
-<translation>实心填充设置</translation>
-</phrase>
-
-<phrase>
-<original>color</original>
-<translation>颜色</translation>
-</phrase>
-
-<phrase>
-<original>texture fill settings</original>
-<translation>纹理填充设置</translation>
-</phrase>
-
-<phrase>
-<original>gradient fill settings</original>
-<translation>渐变填充设置</translation>
+<original>solid</original>
+<translation>实心</translation>
 </phrase>
 
 <phrase>
@@ -8005,11 +7995,31 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>solid</original>
-<translation>实心</translation>
+<original>line</original>
+<translation>线</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<phrase>
+<original>reflection</original>
+<translation>反射</translation>
+</phrase>
+
+<phrase>
+<original>circle</original>
+<translation>圈</translation>
+</phrase>
+
+<phrase>
+<original>rectangle</original>
+<translation>矩形</translation>
+</phrase>
+
+<phrase>
+<original>diamond</original>
+<translation>钻石</translation>
+</phrase>
+
+<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8058,11 +8068,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>shape</original>
-<translation>形状</translation>
-</phrase>
-
-<phrase>
 <original>current node settings</original>
 <translation>当前节点设置</translation>
 </phrase>
@@ -8070,11 +8075,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <phrase>
 <original>position</original>
 <translation>新层上下位置：</translation>
-</phrase>
-
-<phrase>
-<original>full gradient settings</original>
-<translation>全部渐变设置</translation>
 </phrase>
 
 <phrase>
@@ -8113,31 +8113,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>line</original>
-<translation>线</translation>
-</phrase>
-
-<phrase>
-<original>reflection</original>
-<translation>反射</translation>
-</phrase>
-
-<phrase>
-<original>circle</original>
-<translation>圈</translation>
-</phrase>
-
-<phrase>
-<original>rectangle</original>
-<translation>矩形</translation>
-</phrase>
-
-<phrase>
-<original>diamond</original>
-<translation>钻石</translation>
-</phrase>
-
-<phrase>
 <original>node settings</original>
 <translation>节点设置</translation>
 </phrase>
@@ -8147,7 +8122,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>请选择一个节点</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 19 phrases. 6 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -15133,10 +15108,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2584</phrasecount>
+<phrasecount>2579</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4527 phrases. -->
-<!-- 1943 are duplicates, so only 2584 unique phrases have been written to file. -->
-<!-- These 2584 phrases contain approximately 13274 total words. -->
+<!-- As of this build, PhotoDemon contains 4520 phrases. -->
+<!-- 1941 are duplicates, so only 2579 unique phrases have been written to file. -->
+<!-- These 2579 phrases contain approximately 13258 total words. -->
 
 </pdData>
