@@ -287,7 +287,11 @@ Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal gdipToken As Long)
 'Object creation/destruction/property functions
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef dstGraphics As Long) As GP_Result
 Private Declare Function GdipCreateHatchBrush Lib "gdiplus" (ByVal bHatchStyle As GP_PatternStyle, ByVal bForeColor As Long, ByVal bBackColor As Long, ByRef dstBrush As Long) As GP_Result
+Private Declare Function GdipCreateLineBrush Lib "gdiplus" (ByRef firstPoint As POINTFLOAT, ByRef secondPoint As POINTFLOAT, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal brushWrapMode As GP_WrapMode, ByRef dstBrush As Long) As GP_Result
+Private Declare Function GdipCreateLineBrushFromRectWithAngle Lib "gdiplus" (ByRef srcRect As RECTF, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal gradAngle As Single, ByVal isAngleScalable As Long, ByVal gradientWrapMode As GP_WrapMode, ByRef dstLineGradientBrush As Long) As GP_Result
+Private Declare Function GdipCreatePathGradientFromPath Lib "gdiplus" (ByVal ptrToSrcPath As Long, ByRef dstPathGradientBrush As Long) As GP_Result
 Private Declare Function GdipCreatePen1 Lib "gdiplus" (ByVal srcColor As Long, ByVal srcWidth As Single, ByVal srcUnit As GP_Unit, ByRef dstPen As Long) As GP_Result
+Private Declare Function GdipCreatePenFromBrush Lib "gdiplus" Alias "GdipCreatePen2" (ByVal srcBrush As Long, ByVal penWidth As Single, ByVal srcUnit As GP_Unit, ByRef dstPen As Long) As GP_Result
 Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal srcColor As Long, ByRef dstBrush As Long) As Long
 
 Private Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal hBrush As Long) As GP_Result
@@ -309,6 +313,10 @@ Private Declare Function GdipGetSmoothingMode Lib "gdiplus" (ByVal hGraphics As 
 Private Declare Function GdipGetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByRef dstColor As Long) As GP_Result
 
 Private Declare Function GdipSetImageAttributesWrapMode Lib "gdiplus" (ByVal hImageAttr As Long, ByVal newWrapMode As GP_WrapMode, ByVal argbOfClampMode As Long, ByVal bClampMustBeZero As Long) As GP_Result
+Private Declare Function GdipSetLinePresetBlend Lib "gdiplus" (ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As GP_Result
+Private Declare Function GdipSetPathGradientCenterPoint Lib "gdiplus" (ByVal hBrush As Long, ByRef newCenterPoints As POINTFLOAT) As GP_Result
+Private Declare Function GdipSetPathGradientPresetBlend Lib "gdiplus" (ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As GP_Result
+Private Declare Function GdipSetPathGradientWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByVal newWrapMode As GP_WrapMode) As GP_Result
 Private Declare Function GdipSetPenColor Lib "gdiplus" (ByVal hPen As Long, ByVal pARGBColor As Long) As GP_Result
 Private Declare Function GdipSetPenDashCap Lib "gdiplus" Alias "GdipSetPenDashCap197819" (ByVal hPen As Long, ByVal newCap As GP_DashCap) As GP_Result
 Private Declare Function GdipSetPenDashStyle Lib "gdiplus" (ByVal hPen As Long, ByVal newDashStyle As GP_DashStyle) As GP_Result
@@ -340,7 +348,6 @@ Private Declare Function GdipFillEllipseI Lib "gdiplus" (ByVal hGraphics As Long
 Private Declare Function GdipFillRectangle Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single) As GP_Result
 Private Declare Function GdipFillRectangleI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long) As GP_Result
 
-
 'Non-GDI+ helper functions:
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 
@@ -360,7 +367,8 @@ Private m_AttributesMatrix() As Single
 
 '***************************************************************************
 
-'Old declarations and descriptions follow:
+'Old declarations and descriptions follow.  These need to be reworked into something coherent, but it's a
+' slog of a process...
 
 Public Enum GDIPlusImageFormat
     [ImageBMP] = 0
@@ -555,10 +563,10 @@ End Enum
 
 'GDI+ image properties
 Private Type PropertyItem
-   propID As Long              ' ID of this property
-   propLength As Long              ' Length of the property value, in bytes
-   propType As Integer             ' Type of the value, as one of TAG_TYPE_XXX
-   propValue As Long               ' property value
+    propID As Long              ' ID of this property
+    propLength As Long              ' Length of the property value, in bytes
+    propType As Integer             ' Type of the value, as one of TAG_TYPE_XXX
+    propValue As Long               ' property value
 End Type
 
 ' Image property types
@@ -711,8 +719,6 @@ Private Declare Function GdipDeleteRegion Lib "gdiplus" (ByVal hRegion As Long) 
 Private Declare Function GdipCreateTexture Lib "gdiplus" (ByVal hImage As Long, ByVal textureWrapMode As GP_WrapMode, ByRef hTexture As Long) As Long
 Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType, ByVal EnableFlag As Long, ByVal colorMatrixPointer As Long, ByVal grayMatrixPointer As Long, ByVal extraFlags As ColorMatrixFlags) As Long
 Private Declare Function GdipSetImageAttributesToIdentity Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType) As Long
-Private Declare Function GdipCreateLineBrush Lib "gdiplus" (ByRef point1 As POINTFLOAT, ByRef point2 As POINTFLOAT, ByVal Color1 As Long, ByVal Color2 As Long, ByVal brushWrapMode As GP_WrapMode, ByRef dstBrush As Long) As Long
-Private Declare Function GdipCreatePenFromBrush Lib "gdiplus" Alias "GdipCreatePen2" (ByVal srcBrush As Long, ByVal penWidth As Single, ByVal srcUnit As GP_Unit, ByRef dstPen As Long) As Long
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal order As Long) As Long
@@ -3203,6 +3209,33 @@ Public Function GetGDIPlusPatternBrushHandle(ByVal brushPattern As GP_PatternSty
     GdipCreateHatchBrush brushPattern, FillQuadWithVBRGB(bFirstColor, bFirstColorOpacity), FillQuadWithVBRGB(bSecondColor, bSecondColorOpacity), GetGDIPlusPatternBrushHandle
 End Function
 
+Public Function GetGDIPlusLinearBrushHandle(ByRef srcRect As RECTF, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal gradAngle As Single, ByVal isAngleScalable As Long, ByVal gradientWrapMode As PD_2D_WrapMode) As Long
+    GdipCreateLineBrushFromRectWithAngle srcRect, firstRGBA, secondRGBA, gradAngle, isAngleScalable, gradientWrapMode, GetGDIPlusLinearBrushHandle
+End Function
+
+Public Function OverrideGDIPlusLinearGradient(ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As Boolean
+    OverrideGDIPlusLinearGradient = CBool(GdipSetLinePresetBlend(hBrush, ptrToFirstColor, ptrToFirstPosition, numOfPoints) = GP_OK)
+End Function
+
+Public Function GetGDIPlusPathBrushHandle(ByVal hGraphicsPath As Long) As Long
+    GdipCreatePathGradientFromPath hGraphicsPath, GetGDIPlusPathBrushHandle
+End Function
+
+Public Function SetGDIPlusPathBrushCenter(ByVal hBrush As Long, ByVal centerX As Single, ByVal centerY As Single) As Long
+    Dim centerPoint As POINTFLOAT
+    centerPoint.x = centerX
+    centerPoint.y = centerY
+    GdipSetPathGradientCenterPoint hBrush, centerPoint
+End Function
+
+Public Function SetGDIPlusPathBrushWrap(ByVal hBrush As Long, ByVal newWrapMode As GP_WrapMode) As Boolean
+    SetGDIPlusPathBrushWrap = CBool(GdipSetPathGradientWrapMode(hBrush, newWrapMode) = GP_OK)
+End Function
+
+Public Function OverrideGDIPlusPathGradient(ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As Boolean
+    OverrideGDIPlusPathGradient = CBool(GdipSetPathGradientPresetBlend(hBrush, ptrToFirstColor, ptrToFirstPosition, numOfPoints) = GP_OK)
+End Function
+
 'Retrieve a persistent handle to a GDI+-format graphics container.  Optionally, a smoothing mode can be specified so that it does
 ' not have to be repeatedly specified by a caller function.  (GDI+ sets smoothing mode by graphics container, not by function call.)
 Public Function GetGDIPlusGraphicsFromDC(ByVal srcDC As Long, Optional ByVal graphicsAntialiasing As GP_SmoothingMode = GP_SM_None, Optional ByVal graphicsPixelOffsetMode As GP_PixelOffsetMode = GP_POM_None) As Long
@@ -3331,7 +3364,23 @@ Public Function GetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD
                 GetGDIPlusBrushProperty = 0#
                 
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushGradientXML
+            Case P2_BrushGradientAllSettings
+                GetGDIPlusBrushProperty = vbNullString
+                
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case P2_BrushGradientShape
+                GetGDIPlusBrushProperty = P2_GS_Linear
+                
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case P2_BrushGradientAngle
+                GetGDIPlusBrushProperty = 0#
+            
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case P2_BrushGradientWrapMode
+                GetGDIPlusBrushProperty = P2_WM_TileFlipXY
+            
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case P2_BrushGradientNodes
                 GetGDIPlusBrushProperty = vbNullString
                 
         End Select
@@ -3387,7 +3436,23 @@ Public Function SetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD
                 SetGDIPlusBrushProperty = False
                 
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
-            Case P2_BrushGradientXML
+            Case P2_BrushGradientAllSettings
+                SetGDIPlusBrushProperty = False
+            
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case P2_BrushGradientShape
+                SetGDIPlusBrushProperty = False
+                
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case P2_BrushGradientAngle
+                SetGDIPlusBrushProperty = False
+            
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case P2_BrushGradientWrapMode
+                SetGDIPlusBrushProperty = False
+            
+            'Not directly supported by GDI+; use the pd2DBrush class to handle this
+            Case P2_BrushGradientNodes
                 SetGDIPlusBrushProperty = False
                 
         End Select

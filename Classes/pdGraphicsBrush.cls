@@ -56,7 +56,7 @@ Private m_Pattern2Opacity As Single
 
 'Gradient brushes are more complicated, as they rely on a variable number of settings.
 ' We use a specialized class to manage those settings.
-Private cGradient As pd2DGradient
+Private m_Gradient As pd2DGradient
 
 'Gradient fills also require a boundary rect to define the start/end positions of the gradient line.  You *must set this prior
 ' to requesting a gradient brush* or the gradient results will look funny!
@@ -109,6 +109,26 @@ Public Function GetBrushPattern2Opacity() As Single
     GetBrushPattern2Opacity = Me.GetBrushProperty(P2_BrushPattern2Opacity)
 End Function
 
+Public Function GetBrushGradientAllSettings() As String
+    GetBrushGradientAllSettings = Me.GetBrushProperty(P2_BrushGradientAllSettings)
+End Function
+    
+Friend Function GetBrushGradientShape() As PD_2D_GradientShape
+    GetBrushGradientShape = Me.GetBrushProperty(P2_BrushGradientShape)
+End Function
+
+Public Function GetBrushGradientAngle() As Single
+    GetBrushGradientAngle = Me.GetBrushProperty(P2_BrushGradientAngle)
+End Function
+
+Public Function GetBrushGradientWrapMode() As PD_2D_WrapMode
+    GetBrushGradientWrapMode = Me.GetBrushProperty(P2_BrushGradientAngle)
+End Function
+
+Public Function GetBrushGradientNodes() As String
+    GetBrushGradientNodes = Me.GetBrushProperty(P2_BrushGradientAngle)
+End Function
+
 Public Sub SetBrushMode(ByVal newSetting As PD_2D_BrushMode)
     Me.SetBrushProperty P2_BrushMode, newSetting
 End Sub
@@ -141,6 +161,26 @@ Public Sub SetBrushPattern2Opacity(ByVal newSetting As Single)
     Me.SetBrushProperty P2_BrushPattern2Opacity, newSetting
 End Sub
 
+Public Sub SetBrushGradientAllSettings(ByVal newSetting As String)
+    Me.SetBrushProperty P2_BrushGradientAllSettings, newSetting
+End Sub
+    
+Friend Sub SetBrushGradientShape(ByVal newSetting As PD_2D_GradientShape)
+    Me.SetBrushProperty P2_BrushGradientShape, newSetting
+End Sub
+
+Public Sub SetBrushGradientAngle(ByVal newSetting As Single)
+    Me.SetBrushProperty P2_BrushGradientAngle, newSetting
+End Sub
+
+Public Sub SetBrushGradientWrapMode(ByVal newSetting As PD_2D_WrapMode)
+    Me.SetBrushProperty P2_BrushGradientAngle, newSetting
+End Sub
+
+Public Sub SetBrushGradientNodes(ByVal newSetting As String)
+    Me.SetBrushProperty P2_BrushGradientAngle, newSetting
+End Sub
+
 'Get/set individual settings by enum type
 Public Function GetBrushProperty(ByVal propID As PD_2D_BRUSH_SETTINGS) As Variant
     
@@ -170,8 +210,20 @@ Public Function GetBrushProperty(ByVal propID As PD_2D_BRUSH_SETTINGS) As Varian
         Case P2_BrushPattern2Opacity
             GetBrushProperty = m_Pattern2Opacity
             
-        Case P2_BrushGradientXML
-            GetBrushProperty = cGradient.GetGradientAsString()
+        Case P2_BrushGradientAllSettings
+            GetBrushProperty = m_Gradient.GetGradientAsString()
+            
+        Case P2_BrushGradientShape
+            GetBrushProperty = m_Gradient.GetGradientShape()
+            
+        Case P2_BrushGradientAngle
+            GetBrushProperty = m_Gradient.GetGradientAngle()
+            
+        Case P2_BrushGradientWrapMode
+            GetBrushProperty = m_Gradient.GetGradientWrapMode()
+            
+        Case P2_BrushGradientNodes
+            GetBrushProperty = m_Gradient.GetGradientNodes()
             
     End Select
     
@@ -205,9 +257,25 @@ Public Sub SetBrushProperty(ByVal propID As PD_2D_BRUSH_SETTINGS, ByVal newSetti
         Case P2_BrushPattern2Opacity
             m_Pattern2Opacity = CDbl(newSetting)
             
-        Case P2_BrushGradientXML
-            If (cGradient Is Nothing) Then Set cGradient = New pd2DGradient
-            cGradient.CreateGradientFromString newSetting
+        Case P2_BrushGradientAllSettings
+            If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
+            m_Gradient.CreateGradientFromString newSetting
+        
+        Case P2_BrushGradientShape
+            If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
+            m_Gradient.SetGradientShape CLng(newSetting)
+            
+        Case P2_BrushGradientAngle
+            If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
+            m_Gradient.SetGradientAngle CSng(newSetting)
+            
+        Case P2_BrushGradientWrapMode
+            If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
+            m_Gradient.SetGradientWrapMode CLng(newSetting)
+            
+        Case P2_BrushGradientNodes
+            If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
+            m_Gradient.SetGradientNodes CStr(newSetting)
             
     End Select
     
@@ -255,8 +323,20 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_BRUSH_SETTINGS)
                     Case P2_BrushPattern2Opacity
                         If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushPattern2Opacity, m_Pattern2Opacity)) Then ReleaseBrush
                         
-                    Case P2_BrushGradientXML
-                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientXML, cGradient.GetGradientAsString())) Then ReleaseBrush
+                    Case P2_BrushGradientAllSettings
+                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientAllSettings, m_Gradient.GetGradientAsString())) Then ReleaseBrush
+                    
+                    Case P2_BrushGradientShape
+                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientShape, m_Gradient.GetGradientShape())) Then ReleaseBrush
+                        
+                    Case P2_BrushGradientAngle
+                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientAngle, m_Gradient.GetGradientAngle())) Then ReleaseBrush
+                        
+                    Case P2_BrushGradientWrapMode
+                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientWrapMode, m_Gradient.GetGradientWrapMode())) Then ReleaseBrush
+                        
+                    Case P2_BrushGradientNodes
+                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientNodes, m_Gradient.GetGradientNodes())) Then ReleaseBrush
                         
                 End Select
                 
@@ -281,14 +361,16 @@ Public Function GetBrushPropertiesAsXML() As String
     With cSerialize
         .Reset 1#
         .AddParam "BrushMode", m_BrushMode
-        .AddParam "PrimaryColor", m_PrimaryColor
-        .AddParam "PrimaryOpacity", m_PrimaryOpacity
-        .AddParam "PatternID", m_PatternStyle
-        .AddParam "PatternColor1", m_Pattern1Color
-        .AddParam "PatternColor1Opacity", m_Pattern1Opacity
-        .AddParam "PatternColor2", m_Pattern2Color
-        .AddParam "PatternColor2Opacity", m_Pattern2Opacity
-        .AddParam "BrushGradientString", cGradient.GetGradientAsString()
+        .AddParam "BrushPrimaryColor", m_PrimaryColor
+        .AddParam "BrushPrimaryOpacity", m_PrimaryOpacity
+        .AddParam "BrushPatternID", m_PatternStyle
+        .AddParam "BrushPatternColor1", m_Pattern1Color
+        .AddParam "BrushPatternColor1Opacity", m_Pattern1Opacity
+        .AddParam "BrushPatternColor2", m_Pattern2Color
+        .AddParam "BrushPatternColor2Opacity", m_Pattern2Opacity
+        
+        'All other gradient parameters derive from this master string, so we do not need to set them individually
+        .AddParam "BrushGradientString", m_Gradient.GetGradientAsString()
     End With
     
     GetBrushPropertiesAsXML = cSerialize.GetParamString
@@ -306,14 +388,16 @@ Public Sub SetBrushPropertiesFromXML(ByRef srcString As String)
         With cSerialize
             .SetParamString srcString
             m_BrushMode = .GetLong("BrushMode", P2_BM_Solid)
-            m_PrimaryColor = .GetLong("PrimaryColor", vbWhite)
-            m_PrimaryOpacity = .GetDouble("PrimaryOpacity", 100#)
-            m_PatternStyle = .GetLong("PatternID", P2_PS_Horizontal)
-            m_Pattern1Color = .GetLong("PatternColor1", vbWhite)
-            m_Pattern1Opacity = .GetDouble("PatternColor1Opacity", 100#)
-            m_Pattern2Color = .GetLong("PatternColor2", vbBlack)
-            m_Pattern2Opacity = .GetDouble("PatternColor2Opacity", 100#)
-            cGradient.CreateGradientFromString .GetString("BrushGradientString", vbNullString)
+            m_PrimaryColor = .GetLong("BrushPrimaryColor", vbWhite)
+            m_PrimaryOpacity = .GetDouble("BrushPrimaryOpacity", 100#)
+            m_PatternStyle = .GetLong("BrushPatternID", P2_PS_Horizontal)
+            m_Pattern1Color = .GetLong("BrushPatternColor1", vbWhite)
+            m_Pattern1Opacity = .GetDouble("BrushPatternColor1Opacity", 100#)
+            m_Pattern2Color = .GetLong("BrushPatternColor2", vbBlack)
+            m_Pattern2Opacity = .GetDouble("BrushPatternColor2Opacity", 100#)
+            
+            'All other gradient parameters derive from this master string, so we do not need to retrieve them individually
+            m_Gradient.CreateGradientFromString .GetString("BrushGradientString", vbNullString)
         End With
         
     End If
@@ -366,7 +450,7 @@ Friend Function CreateBrush() As Boolean
             
         'Gradient fill
         Case P2_BM_Gradient
-            m_BrushHandle = cGradient.GetBrushHandle(m_BoundaryRect, False, m_PrimaryOpacity / 100)
+            m_BrushHandle = m_Gradient.GetBrushHandle(m_BoundaryRect, False, m_PrimaryOpacity / 100)
             
         'Texture fill (TODO)
         Case P2_BM_Texture
@@ -404,6 +488,7 @@ Public Function ReleaseBrush() As Boolean
 End Function
 
 Public Sub ResetAllProperties()
+
     Me.SetBrushProperty P2_BrushMode, P2_BM_Solid
     Me.SetBrushProperty P2_BrushColor, vbWhite
     Me.SetBrushProperty P2_BrushOpacity, 100#
@@ -412,7 +497,10 @@ Public Sub ResetAllProperties()
     Me.SetBrushProperty P2_BrushPattern1Opacity, 100#
     Me.SetBrushProperty P2_BrushPattern2Color, vbBlack
     Me.SetBrushProperty P2_BrushPattern2Opacity, 100#
-    Me.SetBrushProperty P2_BrushGradientXML, vbNullString
+    
+    'All other gradient parameters derive from this master string, so we do not need to set them individually
+    Me.SetBrushProperty P2_BrushGradientAllSettings, vbNullString
+    
 End Sub
 
 'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
@@ -425,7 +513,7 @@ Private Sub Class_Initialize()
     Me.ResetAllProperties
     
     'Prep a default gradient handler and gradient-related properties
-    Set cGradient = New pd2DGradient
+    Set m_Gradient = New pd2DGradient
     With m_BoundaryRect
         .Left = 0
         .Top = 0
