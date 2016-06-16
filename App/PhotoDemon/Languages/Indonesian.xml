@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.134</langversion>
+<langversion>6.6.135</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -7968,17 +7968,22 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 </phrase>
 
 <phrase>
-<original>common settings</original>
+<original>color</original>
+<translation>warna</translation>
+</phrase>
+
+<phrase>
+<original>colors</original>
 <translation></translation>
+</phrase>
+
+<phrase>
+<original>shape</original>
+<translation>bentuk</translation>
 </phrase>
 
 <phrase>
 <original>pattern</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>pattern fill settings</original>
 <translation></translation>
 </phrase>
 
@@ -7988,22 +7993,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 </phrase>
 
 <phrase>
-<original>solid fill settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color</original>
-<translation>warna</translation>
-</phrase>
-
-<phrase>
-<original>texture fill settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>gradient fill settings</original>
+<original>solid</original>
 <translation></translation>
 </phrase>
 
@@ -8013,11 +8003,31 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 </phrase>
 
 <phrase>
-<original>solid</original>
+<original>line</original>
 <translation></translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<phrase>
+<original>reflection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>circle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>rectangle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>diamond</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8066,11 +8076,6 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 </phrase>
 
 <phrase>
-<original>shape</original>
-<translation>bentuk</translation>
-</phrase>
-
-<phrase>
 <original>current node settings</original>
 <translation></translation>
 </phrase>
@@ -8078,11 +8083,6 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <phrase>
 <original>position</original>
 <translation>kedudukan</translation>
-</phrase>
-
-<phrase>
-<original>full gradient settings</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -8121,31 +8121,6 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 </phrase>
 
 <phrase>
-<original>line</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reflection</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>circle</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>rectangle</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>diamond</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>node settings</original>
 <translation></translation>
 </phrase>
@@ -8155,7 +8130,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <translation></translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 19 phrases. 6 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -15143,10 +15118,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2584</phrasecount>
+<phrasecount>2579</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4527 phrases. -->
-<!-- 1943 are duplicates, so only 2584 unique phrases have been written to file. -->
-<!-- These 2584 phrases contain approximately 13274 total words. -->
+<!-- As of this build, PhotoDemon contains 4520 phrases. -->
+<!-- 1941 are duplicates, so only 2579 unique phrases have been written to file. -->
+<!-- These 2579 phrases contain approximately 13258 total words. -->
 
 </pdData>

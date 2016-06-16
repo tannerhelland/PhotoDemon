@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.195</langversion>
+<langversion>6.7.196</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -7963,17 +7963,22 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
-<original>common settings</original>
+<original>color</original>
+<translation>de color</translation>
+</phrase>
+
+<phrase>
+<original>colors</original>
 <translation></translation>
+</phrase>
+
+<phrase>
+<original>shape</original>
+<translation>forma</translation>
 </phrase>
 
 <phrase>
 <original>pattern</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>pattern fill settings</original>
 <translation></translation>
 </phrase>
 
@@ -7983,22 +7988,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
-<original>solid fill settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color</original>
-<translation>de color</translation>
-</phrase>
-
-<phrase>
-<original>texture fill settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>gradient fill settings</original>
+<original>solid</original>
 <translation></translation>
 </phrase>
 
@@ -8008,11 +7998,31 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
-<original>solid</original>
+<original>line</original>
 <translation></translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<phrase>
+<original>reflection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>circle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>rectangle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>diamond</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8061,11 +8071,6 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
-<original>shape</original>
-<translation>forma</translation>
-</phrase>
-
-<phrase>
 <original>current node settings</original>
 <translation></translation>
 </phrase>
@@ -8073,11 +8078,6 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <phrase>
 <original>position</original>
 <translation>posición</translation>
-</phrase>
-
-<phrase>
-<original>full gradient settings</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -8116,31 +8116,6 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
-<original>line</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reflection</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>circle</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>rectangle</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>diamond</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>node settings</original>
 <translation></translation>
 </phrase>
@@ -8150,7 +8125,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation></translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 28 phrases. 8 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Dialog_GradientEditor.frm contains 19 phrases. 6 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_GradientEditor.frm-->
 
@@ -15138,10 +15113,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2584</phrasecount>
+<phrasecount>2579</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4527 phrases. -->
-<!-- 1943 are duplicates, so only 2584 unique phrases have been written to file. -->
-<!-- These 2584 phrases contain approximately 13274 total words. -->
+<!-- As of this build, PhotoDemon contains 4520 phrases. -->
+<!-- 1941 are duplicates, so only 2579 unique phrases have been written to file. -->
+<!-- These 2579 phrases contain approximately 13258 total words. -->
 
 </pdData>
