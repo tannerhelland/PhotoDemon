@@ -4,7 +4,7 @@ Begin VB.Form dialog_FillSettings
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Fill settings"
-   ClientHeight    =   7905
+   ClientHeight    =   8820
    ClientLeft      =   45
    ClientTop       =   375
    ClientWidth     =   12270
@@ -20,7 +20,7 @@ Begin VB.Form dialog_FillSettings
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   527
+   ScaleHeight     =   588
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   818
    ShowInTaskbar   =   0   'False
@@ -30,21 +30,21 @@ Begin VB.Form dialog_FillSettings
       AutoRedraw      =   -1  'True
       BackColor       =   &H00FFFFFF&
       ForeColor       =   &H00000000&
-      Height          =   615
-      Left            =   300
-      ScaleHeight     =   39
+      Height          =   1815
+      Left            =   270
+      ScaleHeight     =   119
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   787
+      ScaleWidth      =   789
       TabIndex        =   2
       Top             =   480
-      Width           =   11835
+      Width           =   11865
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   1
-      Top             =   7155
+      Top             =   8070
       Width           =   12270
       _ExtentX        =   21643
       _ExtentY        =   1323
@@ -56,7 +56,7 @@ Begin VB.Form dialog_FillSettings
       Height          =   1050
       Left            =   120
       TabIndex        =   0
-      Top             =   1140
+      Top             =   2400
       Width           =   12015
       _ExtentX        =   21193
       _ExtentY        =   1852
@@ -77,76 +77,85 @@ Begin VB.Form dialog_FillSettings
    Begin PhotoDemon.pdSlider sltFillOpacity 
       CausesValidation=   0   'False
       Height          =   705
-      Left            =   6120
+      Left            =   120
       TabIndex        =   8
-      Top             =   3000
-      Width           =   6060
-      _ExtentX        =   10689
-      _ExtentY        =   1270
+      Top             =   3600
+      Width           =   5940
+      _ExtentX        =   10478
+      _ExtentY        =   1244
       Caption         =   "fill opacity"
       Max             =   100
       Value           =   100
       NotchPosition   =   2
       NotchValueCustom=   100
    End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   315
-      Index           =   5
-      Left            =   6120
-      Top             =   2400
-      Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   556
-      Caption         =   "common settings"
-      FontSize        =   12
+   Begin PhotoDemon.pdContainer ctlGroupFill 
+      Height          =   3600
+      Index           =   0
+      Left            =   120
+      TabIndex        =   3
+      Top             =   4440
+      Width           =   12015
+      _ExtentX        =   21193
+      _ExtentY        =   6350
+      Begin PhotoDemon.pdColorSelector csFillColor 
+         Height          =   2535
+         Left            =   0
+         TabIndex        =   7
+         Top             =   0
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   4471
+         Caption         =   "color"
+         curColor        =   0
+      End
    End
    Begin PhotoDemon.pdContainer ctlGroupFill 
-      Height          =   4935
+      Height          =   3600
+      Index           =   3
+      Left            =   120
+      TabIndex        =   6
+      Top             =   4440
+      Width           =   12015
+      _ExtentX        =   21193
+      _ExtentY        =   6350
+   End
+   Begin PhotoDemon.pdContainer ctlGroupFill 
+      Height          =   3600
       Index           =   2
       Left            =   120
       TabIndex        =   5
-      Top             =   2400
-      Width           =   5775
-      _ExtentX        =   0
-      _ExtentY        =   0
+      Top             =   4440
+      Width           =   12015
+      _ExtentX        =   21193
+      _ExtentY        =   6350
       Begin PhotoDemon.pdGradientSelector gsPrimary 
-         Height          =   1335
+         Height          =   2535
          Left            =   0
          TabIndex        =   13
-         Top             =   480
-         Width           =   5775
-         _ExtentX        =   10186
-         _ExtentY        =   2355
-         Caption         =   "colors"
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   3
-         Left            =   0
          Top             =   0
-         Width           =   9375
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "gradient fill settings"
-         FontSize        =   12
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   4471
+         Caption         =   "colors"
       End
       Begin PhotoDemon.pdButtonStrip btsGradientShape 
          Height          =   1035
-         Left            =   0
+         Left            =   6120
          TabIndex        =   15
-         Top             =   1920
-         Width           =   5775
-         _ExtentX        =   10186
-         _ExtentY        =   1614
+         Top             =   0
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1826
          Caption         =   "shape"
       End
       Begin PhotoDemon.pdSlider sldGradientAngle 
          Height          =   705
-         Left            =   0
+         Left            =   6120
          TabIndex        =   16
-         Top             =   3120
-         Width           =   5775
-         _ExtentX        =   10186
+         Top             =   1080
+         Width           =   5895
+         _ExtentX        =   10398
          _ExtentY        =   1244
          Caption         =   "angle"
          Max             =   360
@@ -154,55 +163,44 @@ Begin VB.Form dialog_FillSettings
       End
    End
    Begin PhotoDemon.pdContainer ctlGroupFill 
-      Height          =   4815
+      Height          =   3600
       Index           =   1
       Left            =   120
       TabIndex        =   4
-      Top             =   2400
-      Width           =   5775
-      _ExtentX        =   0
-      _ExtentY        =   0
+      Top             =   4440
+      Width           =   12015
+      _ExtentX        =   21193
+      _ExtentY        =   6350
       Begin PhotoDemon.pdListBoxOD lstFillPattern 
          Height          =   2535
          Left            =   0
          TabIndex        =   14
-         Top             =   480
-         Width           =   5655
-         _ExtentX        =   9975
+         Top             =   0
+         Width           =   5895
+         _ExtentX        =   10398
          _ExtentY        =   4471
          Caption         =   "pattern"
       End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   2
-         Left            =   0
-         Top             =   0
-         Width           =   5655
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "pattern fill settings"
-         FontSize        =   12
-      End
       Begin PhotoDemon.pdColorSelector csPattern 
-         Height          =   855
+         Height          =   1095
          Index           =   0
-         Left            =   0
+         Left            =   6000
          TabIndex        =   9
-         Top             =   3120
-         Width           =   2775
-         _ExtentX        =   9975
-         _ExtentY        =   1508
+         Top             =   0
+         Width           =   2970
+         _ExtentX        =   5239
+         _ExtentY        =   1931
          Caption         =   "pattern color"
       End
       Begin PhotoDemon.pdColorSelector csPattern 
-         Height          =   855
+         Height          =   1095
          Index           =   1
-         Left            =   2880
+         Left            =   9060
          TabIndex        =   10
-         Top             =   3120
-         Width           =   2775
-         _ExtentX        =   9975
-         _ExtentY        =   1508
+         Top             =   0
+         Width           =   2970
+         _ExtentX        =   5239
+         _ExtentY        =   1931
          Caption         =   "background color"
          curColor        =   0
       End
@@ -210,12 +208,12 @@ Begin VB.Form dialog_FillSettings
          CausesValidation=   0   'False
          Height          =   405
          Index           =   0
-         Left            =   0
+         Left            =   6000
          TabIndex        =   11
-         Top             =   4080
-         Width           =   2820
-         _ExtentX        =   10054
-         _ExtentY        =   873
+         Top             =   1200
+         Width           =   2940
+         _ExtentX        =   5186
+         _ExtentY        =   714
          Max             =   100
          Value           =   100
          NotchPosition   =   2
@@ -225,69 +223,16 @@ Begin VB.Form dialog_FillSettings
          CausesValidation=   0   'False
          Height          =   405
          Index           =   1
-         Left            =   2880
+         Left            =   9060
          TabIndex        =   12
-         Top             =   4080
-         Width           =   2820
-         _ExtentX        =   10054
-         _ExtentY        =   873
+         Top             =   1200
+         Width           =   2940
+         _ExtentX        =   5186
+         _ExtentY        =   714
          Max             =   100
          Value           =   100
          NotchPosition   =   2
          NotchValueCustom=   100
-      End
-   End
-   Begin PhotoDemon.pdContainer ctlGroupFill 
-      Height          =   4935
-      Index           =   0
-      Left            =   120
-      TabIndex        =   3
-      Top             =   2400
-      Width           =   5775
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   1
-         Left            =   0
-         Top             =   0
-         Width           =   9375
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "solid fill settings"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdColorSelector csFillColor 
-         Height          =   1560
-         Left            =   0
-         TabIndex        =   7
-         Top             =   600
-         Width           =   5655
-         _ExtentX        =   9975
-         _ExtentY        =   2752
-         Caption         =   "color"
-         curColor        =   0
-      End
-   End
-   Begin PhotoDemon.pdContainer ctlGroupFill 
-      Height          =   4815
-      Index           =   3
-      Left            =   120
-      TabIndex        =   6
-      Top             =   2400
-      Width           =   5775
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   4
-         Left            =   0
-         Top             =   0
-         Width           =   9375
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "texture fill settings"
-         FontSize        =   12
       End
    End
 End
@@ -300,11 +245,11 @@ Attribute VB_Exposed = False
 'Brush Selection Dialog
 'Copyright 2015-2016 by Tanner Helland
 'Created: 30/June/15 (but assembled from many bits written earlier)
-'Last updated: 30/June/15
-'Last update: start migrating brush creation bits into this singular dialog
+'Last updated: 16/June/16
+'Last update: overhaul UI to make better use of available space
 '
-'Comprehensive brush selection dialog.  This dialog is currently based around the properties of GDI+ brushes, but it could
-' easily be expanded in the future due to its modular design.
+'Comprehensive brush selection dialog.  This dialog is currently based around the properties of GDI+ brushes, but it
+' could easily be expanded in the future thanks to its modular design.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -415,7 +360,7 @@ Public Sub ShowDialog(ByVal initialBrush As String, Optional ByRef callingContro
     m_XMLFilename = g_UserPreferences.GetPresetPath & "Brush_Selector.xml"
     
     'TODO: if an XML file exists, load its contents now
-    'loadRecentBrushList
+    'LoadRecentBrushList
         
     'Display the dialog
     ShowPDDialog vbModal, Me, True
