@@ -322,8 +322,8 @@ Public Property Get DialogResult() As VbMsgBoxResult
 End Property
 
 'The newly selected brush (if any) is returned via this property
-Public Property Get NewBrush() As String
-    NewBrush = m_Filler.GetBrushPropertiesAsXML
+Public Property Get newBrush() As String
+    newBrush = m_Filler.GetBrushPropertiesAsXML
 End Property
 
 'The ShowDialog routine presents the user with this form.
@@ -520,7 +520,7 @@ Private Sub UpdateFillObject()
         m_Gradient.CreateGradientFromString gsPrimary.Gradient
         m_Gradient.SetGradientProperty P2_GradientShape, btsGradientShape.ListIndex
         m_Gradient.SetGradientProperty P2_GradientAngle, sldGradientAngle.Value
-        .SetBrushProperty P2_BrushGradientXML, m_Gradient.GetGradientAsString
+        .SetBrushProperty P2_BrushGradientAllSettings, m_Gradient.GetGradientAsString
         
     End With
 
@@ -676,7 +676,7 @@ Private Sub SyncControlsToFillObject()
         sltPatternOpacity(0).Value = .GetBrushProperty(P2_BrushPattern1Opacity)
         sltPatternOpacity(1).Value = .GetBrushProperty(P2_BrushPattern2Opacity)
         
-        m_Gradient.CreateGradientFromString .GetBrushProperty(P2_BrushGradientXML)
+        m_Gradient.CreateGradientFromString .GetBrushProperty(P2_BrushGradientAllSettings)
         gsPrimary.Gradient = m_Gradient.GetGradientAsString
         btsGradientShape.ListIndex = m_Gradient.GetGradientShape
         sldGradientAngle.Value = m_Gradient.GetGradientAngle

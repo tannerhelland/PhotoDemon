@@ -61,15 +61,23 @@ Public Enum PD_2D_BRUSH_SETTINGS
     P2_BrushPattern2Color = 6
     P2_BrushPattern2Opacity = 7
     
-    'Note that individual gradient values cannot be set/read.  Gradients are only supported as a complete gradient
-    ' XML packet, as supplied by the pd2DGradient class.
-    P2_BrushGradientXML = 8
+    'As a convenience, gradient brushes can be fully get/set as a whole XML packet (e.g. the XML returned by
+    ' the pd2DGradient class).  This overrides all existing gradient settings.
+    P2_BrushGradientAllSettings = 8
     
-    [_P2_NumOfBrushSettings] = 9
+    'Most individual gradient settings can also be get/set individually (with the exception of nodes, which must
+    ' be handled as an entire group - this is a limitation of pdGradient, specifically)
+    P2_BrushGradientShape = 9
+    P2_BrushGradientAngle = 10
+    P2_BrushGradientWrapMode = 11
+    P2_BrushGradientNodes = 12
+    
+    [_P2_NumOfBrushSettings] = 13
 End Enum
 
 #If False Then
-    Const P2_BrushMode = 0, P2_BrushColor = 1, P2_BrushOpacity = 2, P2_BrushPatternStyle = 3, P2_BrushPattern1Color = 4, P2_BrushPattern1Opacity = 5, P2_BrushPattern2Color = 6, P2_BrushPattern2Opacity = 7, P2_BrushGradientXML = 8, P2_NumOfBrushSettings = 9
+    Const P2_BrushMode = 0, P2_BrushColor = 1, P2_BrushOpacity = 2, P2_BrushPatternStyle = 3, P2_BrushPattern1Color = 4, P2_BrushPattern1Opacity = 5, P2_BrushPattern2Color = 6, P2_BrushPattern2Opacity = 7, P2_BrushGradientAllSettings = 8, P2_BrushGradientShape = 9, P2_BrushGradientAngle = 10
+    Private Const P2_BrushGradientWrapMode = 11, P2_BrushGradientNodes = 12, P2_NumOfBrushSettings = 13
 #End If
 
 'Gradients work a little differently; they expose *some* properties that you can change directly, but things like

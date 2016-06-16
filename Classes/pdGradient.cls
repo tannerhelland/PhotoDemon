@@ -15,13 +15,17 @@ Attribute VB_Exposed = False
 'PhotoDemon Gradient Manager
 'Copyright 2015-2016 by Tanner Helland
 'Created: 23/July/15
-'Last updated: 04/June/16
-'Last update: lots of clean-up to match the new pd2D drawing system.
+'Last updated: 16/June/16
+'Last update: continued clean-up to match the new pd2D drawing system.
 '
 'This class manages a single PD gradient instance.
 '
 'At present, it is primarily based on the capabilities of GDI+ gradient brushes.  This will likely expand in the future,
 ' but GDI+ provides a nice baseline feature set.
+'
+'Also, note that unlike other pd2D classes, this class does not expose a "debug mode" parameter.  While you can use this class
+' to create and edit gradients directly, I *strongly* recommend handling actual gradient brush creation through the pd2DBrush class.
+' It is equipped to properly create and destroy brush handles automatically, so you don't have to worry about leaks.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -37,7 +41,7 @@ Private m_GradientWrapMode As PD_2D_WrapMode
 'Number of points in the current gradient
 Private m_NumOfPoints As Long
 
-'Collection of GRADIENTPOINTs
+'Collection of individual gradient nodes; these define a color, opacity, and position for each node
 Private m_GradientPoints() As GRADIENTPOINT
 
 'Are the points currently sorted from lowest-to-highest?  If they are, this will be set to TRUE; this allows us to skip sorting
@@ -55,19 +59,10 @@ Private Type tmpLong
     lngResult As Long
 End Type
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
-Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal filledValue As Byte)
-
-'GDI+ brush creation
-Private Declare Function GdipCreateLineBrushFromRectWithAngle Lib "gdiplus" (ByRef srcRect As RECTF, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal gradAngle As Single, ByVal isAngleScalable As Long, ByVal gradientWrapMode As PD_2D_WrapMode, ByRef dstLineGradientBrush As Long) As Long
-Private Declare Function GdipCreatePathGradientFromPath Lib "gdiplus" (ByVal ptrToSrcPath As Long, ByRef dstPathGradientBrush As Long) As Long
-Private Declare Function GdipSetLinePresetBlend Lib "gdiplus" (ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal ptCount As Long) As Long
-Private Declare Function GdipSetPathGradientPresetBlend Lib "gdiplus" (ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal ptCount As Long) As Long
-Private Declare Function GdipSetPathGradientWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByVal newWrapMode As PD_2D_WrapMode) As Long
-Private Declare Function GdipSetPathGradientCenterPoint Lib "gdiplus" (ByVal hBrush As Long, ByRef newCenterPoints As POINTFLOAT) As Long
 
 'Get/set individual settings.  Note that these just wrap the generic Get/SetGradientProperty functions, below.
 Friend Function GetGradientShape() As PD_2D_GradientShape
-    GetGradientShape = GetGradientProperty(P2_GradientShape)
+    GetGradientShape = Me.GetGradientProperty(P2_GradientShape)
 End Function
 
 Friend Sub SetGradientShape(ByVal newShape As PD_2D_GradientShape)
@@ -75,7 +70,7 @@ Friend Sub SetGradientShape(ByVal newShape As PD_2D_GradientShape)
 End Sub
 
 Public Function GetGradientAngle() As Single
-    GetGradientAngle = GetGradientProperty(P2_GradientAngle)
+    GetGradientAngle = Me.GetGradientProperty(P2_GradientAngle)
 End Function
 
 Public Sub SetGradientAngle(ByVal newAngle As Single)
@@ -83,7 +78,7 @@ Public Sub SetGradientAngle(ByVal newAngle As Single)
 End Sub
 
 Friend Function GetGradientWrapMode() As PD_2D_WrapMode
-    GetGradientWrapMode = GetGradientProperty(P2_GradientWrapMode)
+    GetGradientWrapMode = Me.GetGradientProperty(P2_GradientWrapMode)
 End Function
 
 Friend Sub SetGradientWrapMode(ByVal newWrapMode As PD_2D_WrapMode)
@@ -100,10 +95,10 @@ End Sub
 '(Note that in order to maintain a consistent naming convention, this public-facing GetGradientNodes() function wraps
 ' a similarly named internal function; the internal function does the heavy lifting.)
 Public Function GetGradientNodes() As String
-    GetGradientNodes = GetGradientProperty(P2_GradientNodes)
+    GetGradientNodes = Me.GetGradientProperty(P2_GradientNodes)
 End Function
 
-Private Sub SetGradientNodes(ByRef srcString As String)
+Public Sub SetGradientNodes(ByRef srcString As String)
     SetGradientProperty P2_GradientNodes, srcString
 End Sub
 
@@ -317,7 +312,9 @@ Public Sub ResetAllProperties()
         
 End Sub
 
-'Sort the gradient array in ascending order.  This greatly simplifies the process of creating a matching GDI+ brush.
+'Sort the gradient array in ascending order.  This greatly simplifies the process of creating a matching brush.
+' (TODO: optimize the algorithm to pre-check for a sorted array; most of the time, that will be the case, so we can
+'        skip the sorting step entirely.)
 Private Sub SortGradientArray()
     
     'If the array is already sorted, ignore this request
@@ -351,21 +348,26 @@ Private Sub SwapGradientPoints(ByVal gIndex1 As Long, ByVal gIndex2 As Long)
     m_GradientPoints(gIndex2) = tmpPoint
 End Sub
 
-'Once this class is populated correctly, you can use this function to retrieve a matching GDI+ brush handle.
-' Note that a rect is *required* in order to size the gradient region correctly.
-' Finally, if you only want a default linear gradient (as used in the UI, among other things), set overrideNormalSettings to TRUE.
-' This will return a linear gradient brush at angle zero, suitable for previews.
+'Once this class is populated correctly, you can use this function to retrieve a matching brush handle.  (At present, only GDI+
+' is supported as a backend.)
 '
-'(Also, the caller is obviously responsible for freeing the handle when done.)
-Friend Function GetBrushHandle(ByRef dstRect As RECTF, Optional ByVal overrideNormalSettings As Boolean = False, Optional ByVal customOpacity As Single = 1#) As Long
+'Note that a rect is *required* in order to size the gradient region correctly.  (The rect defines where the gradient starts and ends.)
+'
+'As a convenience, if you only want a default linear gradient (as used in the UI, among other things), set forceToLinearMode to TRUE.
+' This will return a linear gradient brush at angle zero, suitable for previews or any kind of "gradient editor" UI, without modifying
+' any of the current gradient settings.
+'
+'Finally, the caller is obviously responsible for freeing the handle when done.  If you interface with this class via pd2DBrush,
+' it will take care of that automatically - but if you access this class manually, make sure to free the brush using the
+' correct backend-specific function!
+Friend Function GetBrushHandle(ByRef dstRect As RECTF, Optional ByVal forceToLinearMode As Boolean = False, Optional ByVal customOpacity As Single = 1#, Optional ByVal brushBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Long
     
-    'Start by sorting the array.  (GDI+ may fail if an unsorted array is passed.)
+    'Start by sorting the point array from lowest to highest.
     If (Not m_IsSorted) Then SortGradientArray
     
     'Next, we need to convert the gradient points into two separate arrays: one with merged RGBA values, and one with positions
-    ' (as floating-point values on the range [0, 1].
-    
-    'As part of this process, we also need to insert discrete points at position 0 and position 1 (if they don't already exist).
+    ' (as floating-point values on the range [0, 1]).  GDI+ accepts these as pointers to separate arrays, rather than a unified type.
+    ' (As part of this process, we will also insert discrete points at position 0 and position 1 if they don't already exist.)
     Dim dstRGBA() As Long, dstPosition() As Single
     ReDim dstRGBA(0 To m_NumOfPoints + 1) As Long
     ReDim dstPosition(0 To m_NumOfPoints + 1) As Single
@@ -373,7 +375,7 @@ Friend Function GetBrushHandle(ByRef dstRect As RECTF, Optional ByVal overrideNo
     Dim gpOffset As Long
     gpOffset = 0
     
-    'Start by creating position 0 if it doesn't already exist
+    'Creating a discrete point at position 0.0 if it doesn't already exist
     If (m_GradientPoints(0).PointPosition <> 0) Then
         gpOffset = 1
         dstRGBA(0) = GetMergedRGBA(0, customOpacity)
@@ -387,18 +389,19 @@ Friend Function GetBrushHandle(ByRef dstRect As RECTF, Optional ByVal overrideNo
         dstPosition(i + gpOffset) = m_GradientPoints(i).PointPosition
     Next i
     
-    'Finally, see if we need to add a closing point at position 1
+    'Finally, see if we need to add a discrete point at position 1.0
     If m_GradientPoints(m_NumOfPoints - 1).PointPosition <> 1 Then
         gpOffset = gpOffset + 1
         dstRGBA(m_NumOfPoints - 1 + gpOffset) = GetMergedRGBA(m_NumOfPoints - 1, customOpacity)
         dstPosition(m_NumOfPoints - 1 + gpOffset) = 1
     End If
     
-    'The point arrays are now successfully constructed.  The "reflection" gradient type requires one additional step.
-    ' We must manually enlarge the point array, and fill the top half with mirror copies of the existing gradient.
-    Dim finalPointCount As Long
+    'The point arrays are now successfully constructed.
     
-    If (m_GradientShape = P2_GS_Reflection) And (Not overrideNormalSettings) Then
+    'Before proceeding, note that the "reflection" gradient type requires one additional step (it's a custom-built feature).
+    ' If active, we must manually enlarge the point array, and fill the top half with mirror copies of the existing gradient.
+    Dim finalPointCount As Long
+    If (m_GradientShape = P2_GS_Reflection) And (Not forceToLinearMode) Then
         
         Dim originalPointCount As Long
         originalPointCount = m_NumOfPoints + gpOffset
@@ -424,19 +427,21 @@ Friend Function GetBrushHandle(ByRef dstRect As RECTF, Optional ByVal overrideNo
     End If
     
     'We can now create the brush!  We must do this in two steps.
+    ' (IMPORTANT NOTE: at present, only GDI+ brushes are created.  Future backends will need to split out their behavior here.)
     Dim gdipBrush As Long
     
     'First: the user can request a default, angle = 0 linear version of the gradient for UI purposes.  Handle that case separately.
-    If overrideNormalSettings Then
+    If forceToLinearMode Then
     
-        'Create a default linear gradient brush
-        If GdipCreateLineBrushFromRectWithAngle(dstRect, dstRGBA(0), dstRGBA(1), 0#, 1, P2_WM_TileFlipXY, gdipBrush) <> 0 Then
-            Debug.Print "WARNING!  pd2DGradient.getBrushHandle failed during line brush creation."
-        End If
+        'Create a default linear gradient brush.  Note that GDI+ only allows you to supply two colors, so we'll just supply
+        ' two dummy colors.
+        gdipBrush = GDI_Plus.GetGDIPlusLinearBrushHandle(dstRect, dstRGBA(0), dstRGBA(1), 0#, 1, P2_WM_TileFlipXY)
+        If (gdipBrush = 0) Then
+            Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed during line brush creation."
+        Else
         
-        'Next, override the brush colors with our custom array
-        If GdipSetLinePresetBlend(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) <> 0 Then
-            Debug.Print "WARNING!  pd2DGradient.getBrushHandle failed during line preset blending."
+            'Now that we have a brush handle, override the dummy colors with our full color array
+            If Not GDI_Plus.OverrideGDIPlusLinearGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed to override the default gradient brush colors."
         End If
         
     Else
@@ -445,18 +450,15 @@ Friend Function GetBrushHandle(ByRef dstRect As RECTF, Optional ByVal overrideNo
         Select Case m_GradientShape
         
             Case P2_GS_Linear, P2_GS_Reflection
-                
-                'Create a default linear gradient brush
-                If GdipCreateLineBrushFromRectWithAngle(dstRect, dstRGBA(0), dstRGBA(1), m_GradientAngle, 1, m_GradientWrapMode, gdipBrush) <> 0 Then
-                    Debug.Print "WARNING!  pd2DGradient.getBrushHandle failed during line brush creation."
+                gdipBrush = GDI_Plus.GetGDIPlusLinearBrushHandle(dstRect, dstRGBA(0), dstRGBA(1), m_GradientAngle, 1, m_GradientWrapMode)
+                If (gdipBrush = 0) Then
+                    Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed during line brush creation."
+                Else
+                    If Not GDI_Plus.OverrideGDIPlusLinearGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed to override the default gradient brush colors."
                 End If
                 
-                'Next, override the brush colors with our custom array
-                If GdipSetLinePresetBlend(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) <> 0 Then
-                    Debug.Print "WARNING!  pd2DGradient.getBrushHandle failed during line preset blending."
-                End If
-        
-            'At present, all other gradient types are constructed via reference path
+            'At present, all other gradient types are constructed as "path gradients".  These gradients require a GDI+ GraphicsPath
+            ' object that defines the external border of the gradient.
             Case Else
             
                 'Reset our graphics path reference
@@ -485,17 +487,17 @@ Friend Function GetBrushHandle(ByRef dstRect As RECTF, Optional ByVal overrideNo
                 End With
                 
                 'Construct a reference path, using the 1) target rect, and 2) gradient shape to determine path behavior
-                If m_GradientShape = P2_GS_Radial Then
+                If (m_GradientShape = P2_GS_Radial) Then
                     
                     'Enclose the gradient within a circle with the same radius as the bounding rect's diagonal
                     m_Path.AddEllipse_Absolute centerX - radiusRect, centerY - radiusRect, centerX + radiusRect, centerY + radiusRect
                 
-                ElseIf m_GradientShape = P2_GS_Rectangle Then
+                ElseIf (m_GradientShape = P2_GS_Rectangle) Then
                     
                     'Rectangles are easy - just use the bounding rect itself!
                     m_Path.AddRectangle_RectF dstRect
                     
-                ElseIf m_GradientShape = P2_GS_Diamond Then
+                ElseIf (m_GradientShape = P2_GS_Diamond) Then
                     
                     'I had to derive this bounding formula by hand, so sorry for the lack of an easy diagram!
                     
@@ -524,31 +526,29 @@ Friend Function GetBrushHandle(ByRef dstRect As RECTF, Optional ByVal overrideNo
                         .Height = dHypotenuse
                     End With
                     
-                    'Rotate the square 45 degrees and bam, we have a perfectly constricted diamond region!
+                    'Rotate the square 45 degrees and bam, we have a perfectly constructed diamond region!
                     m_Path.AddRectangle_RectF squareRect
                     m_Path.RotatePathAroundItsCenter 45#
                     
                 End If
                 
                 'Create a path gradient brush, using our path object as the reference
-                If GdipCreatePathGradientFromPath(m_Path.GetCopyOfPathHandle, gdipBrush) <> 0 Then
-                    Debug.Print "WARNING!  pd2DGradient.getBrushHandle failed during path brush creation."
+                gdipBrush = GDI_Plus.GetGDIPlusPathBrushHandle(m_Path.GetCopyOfPathHandle)
+                If (gdipBrush <> 0) Then
+                    
+                    'Set a default center point (in the future, we should expose this to the user)
+                    GDI_Plus.SetGDIPlusPathBrushCenter gdipBrush, centerX, centerY
+                    
+                    'Next, override the brush colors with our custom array
+                    If Not GDI_Plus.OverrideGDIPlusPathGradient(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) Then Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed to override the default gradient brush colors."
+                    
+                    'Finally, set any/all custom parameters (e.g. wrap mode)
+                    GDI_Plus.SetGDIPlusPathBrushWrap gdipBrush, m_GradientWrapMode
+                
+                Else
+                    Debug.Print "WARNING!  pd2DGradient.GetBrushHandle failed to create a valid path brush handle."
                 End If
                 
-                'Set a default center point (in the future we may make this editable)
-                Dim centerPoint As POINTFLOAT
-                centerPoint.x = centerX
-                centerPoint.y = centerY
-                GdipSetPathGradientCenterPoint gdipBrush, centerPoint
-                
-                'Next, override the brush colors with our custom array
-                If GdipSetPathGradientPresetBlend(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) <> 0 Then
-                    Debug.Print "WARNING!  pd2DGradient.getBrushHandle failed during pathpreset blending."
-                End If
-                
-                'Finally, set any/all custom parameters (e.g. wrap mode)
-                GdipSetPathGradientWrapMode gdipBrush, m_GradientWrapMode
-        
         End Select
         
     End If
