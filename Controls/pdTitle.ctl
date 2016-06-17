@@ -72,6 +72,9 @@ Private m_CaptionRect As RECT
 'Current title state (TRUE when arrow is pointing down, e.g. the associated container is "open")
 Private m_TitleState As Boolean
 
+'2D painting support classes
+Private m_Painter As pd2DPainter
+
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -292,6 +295,9 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestCaptionSupport
     ucSupport.SetCaptionAutomaticPainting False
     
+    'Prep painting classes
+    Drawing2D.QuickCreatePainter m_Painter
+    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDTITLE_COLOR_LIST: colorCount = [_Count]
@@ -461,14 +467,33 @@ Private Sub RedrawBackBuffer()
         
         End If
         
-        Dim arrowWidth As Single
-        If ucSupport.IsMouseInside Then arrowWidth = 2 Else arrowWidth = 1
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, arrowPt1.x, arrowPt1.y, arrowPt2.x, arrowPt2.y, arrowColor, 255, 2, True, GP_LC_Round
-        GDI_Plus.GDIPlusDrawLineToDC bufferDC, arrowPt2.x, arrowPt2.y, arrowPt3.x, arrowPt3.y, arrowColor, 255, 2, True, GP_LC_Round
+        'Draw the drop-down arrow
+        Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+        Drawing2D.QuickCreateSolidPen cPen, 2#, arrowColor, 100#, P2_LJ_Round, P2_LC_Round
+        m_Painter.DrawLineF_FromPtF cSurface, cPen, arrowPt1, arrowPt2
+        m_Painter.DrawLineF_FromPtF cSurface, cPen, arrowPt2, arrowPt3
         
         'Finally, frame the control.  At present, this consists of two gradient lines - one across the top, the other down the right side.
-        GDI_Plus.GDIPlusDrawGradientLineToDC bufferDC, 0#, 0#, bWidth - 1, 0#, ctlFillColor, ctlTopLineColor, 255, 255, 1, True, GP_LC_Round
-        GDI_Plus.GDIPlusDrawGradientLineToDC bufferDC, bWidth - 1, 0#, bWidth - 1, bHeight, ctlTopLineColor, ctlFillColor, 255, 255, 1, True, GP_LC_Round
+        Dim ctlRect As RECTF
+        With ctlRect
+            .Left = 0#
+            .Top = 0#
+            .Width = bWidth
+            .Height = bHeight
+        End With
+        Drawing2D.QuickCreateTwoColorGradientBrush cBrush, ctlRect, ctlFillColor, ctlTopLineColor
+        cPen.SetPenWidth 1#
+        cPen.CreatePenFromBrush cBrush
+        m_Painter.DrawLineF cSurface, cPen, ctlRect.Left, ctlRect.Top, ctlRect.Width, ctlRect.Top
+        
+        ctlRect.Top = ctlRect.Top - 1
+        ctlRect.Width = ctlRect.Width - 1
+        Drawing2D.QuickCreateTwoColorGradientBrush cBrush, ctlRect, ctlFillColor, ctlTopLineColor, , , , 270#
+        cPen.CreatePenFromBrush cBrush
+        m_Painter.DrawLineF cSurface, cPen, ctlRect.Width, ctlRect.Top, ctlRect.Width, ctlRect.Height
+        
+        Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
         
     End If
     
