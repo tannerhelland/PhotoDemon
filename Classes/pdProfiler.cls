@@ -131,7 +131,7 @@ End Sub
 ' Inputs:
 ' 1) reportName - String that defines the purpose of the report.  Note that it will also be used as the filename of the report.
 ' 2) useDatabase - Store timing data between runs, and report means, std devs, and CVs in addition to per-session values.
-Public Sub startProfiling(Optional ByVal reportName As String = "Generic report", Optional ByVal useDatabase As Boolean = False)
+Public Sub StartProfiling(Optional ByVal reportName As String = "Generic report", Optional ByVal useDatabase As Boolean = False)
 
     'Note the use of a database.  (We won't actually do anything with this value until the log session ends, FYI.)
     m_UseDatabase = useDatabase
@@ -175,7 +175,7 @@ Public Sub startProfiling(Optional ByVal reportName As String = "Generic report"
 End Sub
 
 'Use this function to add a new event to the profiler.
-Public Sub markEvent(ByRef eventName As String)
+Public Sub MarkEvent(ByRef eventName As String)
 
     'Retrieve the current tick count
     Dim curTick As Long
@@ -201,7 +201,7 @@ End Sub
 
 'Call this function to STOP profile recording.  If the class is terminated before this function is called, no worries - PD will still
 ' clean everything up just fine, but you (obviously) won't get your timing report.
-Public Sub stopProfiling()
+Public Sub StopProfiling()
     
     'Fill in the final tick count for the last profile entry
     m_Events(m_CurrentEventIndex - 1).EndTick = timeGetTime()
@@ -221,7 +221,7 @@ Public Sub stopProfiling()
 End Sub
 
 'Generate a report on this profile instance.  Optional parameters may be added in the future to make the data easier to use.
-Public Sub generateProfileReport(Optional ByVal alsoWriteToFile As Boolean = False)
+Public Sub GenerateProfileReport(Optional ByVal alsoWriteToFile As Boolean = False)
     
     'For convenience, assemble the report into one giant string.  We will decide where to stick the data later.
     Dim reportString As String
@@ -244,7 +244,7 @@ Public Sub generateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
     'Next, report each event individually, but sorted from longest to shortest
     reportString = reportString & "Timing for THIS SESSION, with events sorted from longest to shortest:" & vbCrLf & vbCrLf
     
-    sortProfileEntries PDPSORT_SESSION_TIME
+    SortProfileEntries PDPSORT_SESSION_TIME
     
     Dim i As Long
     For i = 0 To m_CurrentEventIndex - 1
@@ -256,15 +256,15 @@ Public Sub generateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If m_UseDatabase And cFile.FileExist(getDatabaseFilename) Then
+    If m_UseDatabase And cFile.FileExist(GetDatabaseFilename) Then
     
         'Retrieve values from file
-        retrieveDatabase
+        RetrieveDatabase
     
         'Display results by their historical mean time taken
         reportString = reportString & vbCrLf & "Mean time across ALL RECORDED SESSIONS, with events sorted from longest to shortest:" & vbCrLf & vbCrLf
         
-        sortProfileEntries PDPSORT_MEAN
+        SortProfileEntries PDPSORT_MEAN
         
         Dim uncertaintyValue As Double
         
@@ -283,7 +283,7 @@ Public Sub generateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
         ' This tells us which timing values are most variable.
         reportString = reportString & vbCrLf & "Coefficient of variation across ALL RECORDED SESSIONS, with events sorted from highest to lowest magnitude:" & vbCrLf & vbCrLf
         
-        sortProfileEntries PDPSORT_CV
+        SortProfileEntries PDPSORT_CV
         
         For i = 0 To m_CurrentEventIndex - 1
             reportString = reportString & vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).CoefficientVariation, 4, vbTrue, vbFalse, vbFalse) & vbCrLf
@@ -297,13 +297,13 @@ Public Sub generateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
     If alsoWriteToFile Then
     
         Dim logFile As String
-        logFile = getReportFilename()
+        logFile = GetReportFilename()
         
         'Write the data to file using pdFSO
         cFile.SaveStringToTextFile reportString, logFile
         
         'If the user wants us to use a persistent database for timing data, write out the current session's data now.
-        If m_UseDatabase Then writeUpdatedDatabase
+        If m_UseDatabase Then WriteUpdatedDatabase
         
     'If not writing the data out to file, dump it to the debug window instead
     Else
@@ -313,17 +313,17 @@ Public Sub generateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
 End Sub
 
 'After a timing session completes, use this function to write a new database out to file.
-Private Sub retrieveDatabase()
+Private Sub RetrieveDatabase()
 
     'As always, we'll use an XML engine to retrieve the database from file
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
     
     'Load the XML file into memory
-    xmlEngine.loadXMLFile getDatabaseFilename()
+    xmlEngine.LoadXMLFile GetDatabaseFilename()
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon XML file
-    If xmlEngine.isPDDataType("Timing Database") And xmlEngine.validateLoadedXMLData("reportName") Then
+    If xmlEngine.IsPDDataType("Timing Database") And xmlEngine.ValidateLoadedXMLData("reportName") Then
     
         Dim oldMean As Double, oldStdDev As Double
     
@@ -333,14 +333,14 @@ Private Sub retrieveDatabase()
         For i = 0 To m_CurrentEventIndex - 1
             
             'See if the XML engine can locate an entry for this event
-            tagPosition = xmlEngine.getLocationOfTagPlusAttribute("profileEvent", "name", Replace(m_Events(i).Name, " ", "_"))
+            tagPosition = xmlEngine.GetLocationOfTagPlusAttribute("profileEvent", "name", Replace(m_Events(i).Name, " ", "_"))
             
             'If an entry was found, retrieve it
             If tagPosition > 0 Then
             
-                m_Events(i).NumHistoricalEntries = xmlEngine.getUniqueTag_Long("numRecordedEntries", m_Events(i).NumHistoricalEntries, tagPosition)
-                oldMean = xmlEngine.getUniqueTag_Double("eventMean", m_Events(i).HistoricalMean, tagPosition)
-                oldStdDev = xmlEngine.getUniqueTag_Double("eventStdDev", m_Events(i).HistoricalStdDev, tagPosition)
+                m_Events(i).NumHistoricalEntries = xmlEngine.GetUniqueTag_Long("numRecordedEntries", m_Events(i).NumHistoricalEntries, tagPosition)
+                oldMean = xmlEngine.GetUniqueTag_Double("eventMean", m_Events(i).HistoricalMean, tagPosition)
+                oldStdDev = xmlEngine.GetUniqueTag_Double("eventStdDev", m_Events(i).HistoricalStdDev, tagPosition)
                 
                 'We now need to factor the current timing results into the historical average.  We do this using a very cool
                 ' optimization from a 1962 paper by BP Welford (see http://www.johndcook.com/standard_deviation.html).
@@ -376,30 +376,30 @@ Private Sub retrieveDatabase()
 End Sub
 
 'After a timing session completes, use this function to write a new database out to file.
-Private Sub writeUpdatedDatabase()
+Private Sub WriteUpdatedDatabase()
 
     'As always, we'll use an XML engine to write the database to file
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
-    xmlEngine.prepareNewXML "Timing Database"
+    xmlEngine.PrepareNewXML "Timing Database"
     
     'Write out the name of the report, so we can check it when the database is loaded in the future
-    xmlEngine.writeTag "reportName", m_ReportName
+    xmlEngine.WriteTag "reportName", m_ReportName
     
     'Not technically necessary, but mark how many events we've recorded
-    xmlEngine.writeTag "eventsTracked", m_CurrentEventIndex
+    xmlEngine.WriteTag "eventsTracked", m_CurrentEventIndex
     
-    xmlEngine.writeBlankLine
-    xmlEngine.writeComment "This file is a performance report automatically generated by a non-production PhotoDemon build."
-    xmlEngine.writeComment "You can delete this file without consequence; it only exists to help PD's developers track down bugs."
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteBlankLine
+    xmlEngine.WriteComment "This file is a performance report automatically generated by a non-production PhotoDemon build."
+    xmlEngine.WriteComment "You can delete this file without consequence; it only exists to help PD's developers track down bugs."
+    xmlEngine.WriteBlankLine
     
     'Write each timed event to file
     Dim i As Long
     For i = 0 To m_CurrentEventIndex - 1
     
         'Write a header for each entry
-        xmlEngine.writeTagWithAttribute "profileEvent", "name", Replace(m_Events(i).Name, " ", "_"), "", True
+        xmlEngine.WriteTagWithAttribute "profileEvent", "name", Replace(m_Events(i).Name, " ", "_"), "", True
         
         'Before writing anything, if this is the first time writing the database, update each entry's historical values
         ' to match the current entry.
@@ -411,25 +411,25 @@ Private Sub writeUpdatedDatabase()
         
         'Dump all relevant data from the type
         With xmlEngine
-            .writeTag "numRecordedEntries", m_Events(i).NumHistoricalEntries
-            .writeTag "eventMean", m_Events(i).HistoricalMean
-            .writeTag "eventStdDev", m_Events(i).HistoricalStdDev
+            .WriteTag "numRecordedEntries", m_Events(i).NumHistoricalEntries
+            .WriteTag "eventMean", m_Events(i).HistoricalMean
+            .WriteTag "eventStdDev", m_Events(i).HistoricalStdDev
         End With
         
         'Close this entry
-        xmlEngine.closeTag "profileEvent"
-        xmlEngine.writeBlankLine
+        xmlEngine.CloseTag "profileEvent"
+        xmlEngine.WriteBlankLine
             
     Next i
     
     'Write the file
-    xmlEngine.writeXMLToFile getDatabaseFilename()
+    xmlEngine.WriteXMLToFile GetDatabaseFilename()
 
 End Sub
 
 'Once a report's name has been set, use the following two functions to retrieve the report's log filename and database filename,
 ' both of which adhere to strict patterns, which is how we can track them between runs!
-Private Function getReportFilename()
+Private Function GetReportFilename()
 
     'Generate a default filename, using the report title
     Dim dstFilename As String
@@ -449,11 +449,11 @@ Private Function getReportFilename()
     
     'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used
     ' in debug mode, we know that folder exists.
-    getReportFilename = g_UserPreferences.getDebugPath & dstFilename
+    GetReportFilename = g_UserPreferences.GetDebugPath & dstFilename
 
 End Function
 
-Private Function getDatabaseFilename()
+Private Function GetDatabaseFilename()
 
     'Generate a default filename, using the report title
     Dim dstFilename As String
@@ -473,12 +473,12 @@ Private Function getDatabaseFilename()
     
     'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used
     ' in debug mode, we know that folder exists.
-    getDatabaseFilename = g_UserPreferences.getDebugPath & dstFilename
+    GetDatabaseFilename = g_UserPreferences.GetDebugPath & dstFilename
 
 End Function
 
 'Sort the profile entries from longest to shortest time taken
-Private Sub sortProfileEntries(Optional ByVal sortCriteria As PD_PROFILE_SORT_CRITERIA = PDPSORT_SESSION_TIME)
+Private Sub SortProfileEntries(Optional ByVal sortCriteria As PD_PROFILE_SORT_CRITERIA = PDPSORT_SESSION_TIME)
 
     Dim i As Long, j As Long
     
@@ -490,16 +490,16 @@ Private Sub sortProfileEntries(Optional ByVal sortCriteria As PD_PROFILE_SORT_CR
             Select Case sortCriteria
                 
                 Case PDPSORT_SESSION_TIME
-                    If m_Events(i).ElapsedTime > m_Events(j).ElapsedTime Then swapEventData m_Events(i), m_Events(j)
+                    If m_Events(i).ElapsedTime > m_Events(j).ElapsedTime Then SwapEventData m_Events(i), m_Events(j)
                 
                 Case PDPSORT_MEAN
-                    If m_Events(i).HistoricalMean > m_Events(j).HistoricalMean Then swapEventData m_Events(i), m_Events(j)
+                    If m_Events(i).HistoricalMean > m_Events(j).HistoricalMean Then SwapEventData m_Events(i), m_Events(j)
                 
                 Case PDPSORT_STDDEV
-                    If m_Events(i).HistoricalStdDev > m_Events(j).HistoricalStdDev Then swapEventData m_Events(i), m_Events(j)
+                    If m_Events(i).HistoricalStdDev > m_Events(j).HistoricalStdDev Then SwapEventData m_Events(i), m_Events(j)
                     
                 Case PDPSORT_CV
-                    If m_Events(i).CoefficientVariation > m_Events(j).CoefficientVariation Then swapEventData m_Events(i), m_Events(j)
+                    If m_Events(i).CoefficientVariation > m_Events(j).CoefficientVariation Then SwapEventData m_Events(i), m_Events(j)
                 
             End Select
             
@@ -509,7 +509,7 @@ Private Sub sortProfileEntries(Optional ByVal sortCriteria As PD_PROFILE_SORT_CR
 End Sub
 
 'Swap the values of two event profile entries
-Private Sub swapEventData(ByRef profileOne As PD_TIMER_EVENT, ByRef profileTwo As PD_TIMER_EVENT)
+Private Sub SwapEventData(ByRef profileOne As PD_TIMER_EVENT, ByRef profileTwo As PD_TIMER_EVENT)
     Dim tmpProf As PD_TIMER_EVENT
     tmpProf = profileOne
     profileOne = profileTwo
@@ -520,8 +520,8 @@ Private Sub Class_Terminate()
 
     'Failsafe check to end profiling.
     If m_TimingActive Then
-        stopProfiling
-        Debug.Print "WARNING!  Why are you terminating an active pdProfile instance?  The stopProfiling() function exists for a reason!"
+        StopProfiling
+        Debug.Print "WARNING!  Why are you terminating an active pdProfile instance?  The .StopProfiling() function exists for a reason!"
     End If
 
 End Sub

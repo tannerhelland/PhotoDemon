@@ -1,4 +1,4 @@
-Attribute VB_Name = "modMain"
+Attribute VB_Name = "MainModule"
 'Note: this file has been modified for use within PhotoDemon.
 
 'This module is required for theming via embedded manifest.  Many thanks to LaVolpe for the automated tool that coincides
@@ -280,6 +280,8 @@ Public Sub ContinueLoadingProgram()
     'Load and validate the user's selected theme file
     g_Themer.LoadDefaultPDTheme
     
+    'Now that a theme has been loaded, we can initialize additional UI rendering elements
+    Drawing.CacheUIPensAndBrushes
     
     '*************************************************************************************************************************************
     ' PhotoDemon works very well with multiple monitors.  Check for such a situation now.
@@ -336,7 +338,7 @@ Public Sub ContinueLoadingProgram()
     Set tmpFontCheck = Nothing
     
     'Ask the splash screen to finish whatever initializing it needs prior to displaying itself
-    FormSplash.prepareSplashLogo NUMBER_OF_LOADING_STEPS
+    FormSplash.PrepareSplashLogo NUMBER_OF_LOADING_STEPS
     FormSplash.prepareRestOfSplash
     
     'Display the splash screen, centered on whichever monitor the user previously used the program on.
