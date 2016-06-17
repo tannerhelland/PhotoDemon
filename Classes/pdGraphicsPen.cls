@@ -391,6 +391,31 @@ Public Function CreatePen() As Boolean
     
 End Function
 
+'So, some notes about this function:
+' 1) Yes, it will create a pen with the same attributes as the brush it receives.  Very cool!
+' 2) Because pens-from-brushes are a uniquely weird use-case, these pens obey slightly different rules.
+'    Specifically, you *must* observe some special criteria when creating them:
+'    - You *must* set a pen width prior to creation.  Changing the pen width post-creation is not guaranteed to work.
+'    - You *cannot* serialize the pen to/from a string.  (Instead, serialize the source pd2DBrush object.)
+'    - This function only works with the GDI+ backend.
+Friend Function CreatePenFromBrush(ByRef srcBrush As pd2DBrush) As Boolean
+    
+    If (m_PenHandle <> 0) Then ReleasePen
+    
+    'Call the backend-specific surface creation function
+    Select Case m_PenBackend
+        
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            m_PenHandle = GDI_Plus.GetGDIPlusPenFromBrush(srcBrush.GetHandle, m_PenWidth)
+            CreatePenFromBrush = (m_PenHandle <> 0)
+            
+    End Select
+    
+    'When debug mode is active, all object creations are reported back to the master Drawing2D module
+    If (CreatePenFromBrush And m_DebugMode) Then Drawing2D.DEBUG_NotifyPenCountChange m_PenBackend, True
+    
+End Function
+
 Public Function ReleasePen() As Boolean
     
     If (m_PenHandle <> 0) Then

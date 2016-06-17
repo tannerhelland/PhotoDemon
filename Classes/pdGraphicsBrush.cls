@@ -431,7 +431,8 @@ End Function
 ' NOTE: the caller doesn't actually *need* to call this directly.  If GetBrushHandle is called and the brush doesn't yet exist,
 '       it will be auto-created.
 ' NOTE: specialty brushes like the gradient brush may require additional properties to be set.  FOR EXAMPLE, gradient brushes
-'       require a source rect to know how to scale the gradient - if you haven't set one, this function will fail.
+'       require a boundary rect to know how to scale the gradient - if you haven't set one, this function will fail, or return
+'       undesirable results.
 Friend Function CreateBrush() As Boolean
     
     If (m_BrushHandle <> 0) Then ReleaseBrush
@@ -450,7 +451,7 @@ Friend Function CreateBrush() As Boolean
             
         'Gradient fill
         Case P2_BM_Gradient
-            m_BrushHandle = m_Gradient.GetBrushHandle(m_BoundaryRect, False, m_PrimaryOpacity / 100)
+            m_BrushHandle = m_Gradient.GetBrushHandle(m_BoundaryRect, False, m_PrimaryOpacity / 100, m_BrushBackend)
             
         'Texture fill (TODO)
         Case P2_BM_Texture

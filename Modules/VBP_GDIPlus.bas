@@ -1166,60 +1166,6 @@ Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
 
 End Function
 
-'Use GDI+ to render a gradient line, with optional color, opacity, and antialiasing
-Public Function GDIPlusDrawGradientLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal firstColor As Long, ByVal secondColor As Long, Optional ByVal firstTransparency As Long = 255, Optional ByVal secondTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLineCap As GP_LineCap = GP_LC_Flat) As Boolean
-    
-    Dim gdipReturn As Long
-    
-    'Create a GDI+ copy of the image and request matching AA behavior
-    Dim hGraphics As Long
-    GdipCreateFromHDC dstDC, hGraphics
-    If useAA Then GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode hGraphics, SmoothingModeNone
-    
-    'GDI+ does not allow direct creation of gradient pens.  We must first construct a linear gradient brush.
-    Dim pt1 As POINTFLOAT, pt2 As POINTFLOAT
-    pt1.x = x1
-    pt1.y = y1
-    pt2.x = x2
-    pt2.y = y2
-    
-    Dim srcBrush As Long
-    gdipReturn = GdipCreateLineBrush(pt1, pt2, FillQuadWithVBRGB(firstColor, firstTransparency), FillQuadWithVBRGB(secondColor, secondTransparency), GP_WM_TileFlipXY, srcBrush)
-    If gdipReturn = 0 Then
-    
-        '"Convert" that brush into a pen, which is what's actually used to stroke the line
-        Dim hPen As Long
-        gdipReturn = GdipCreatePenFromBrush(srcBrush, lineWidth, GP_U_Pixel, hPen)
-        If gdipReturn = 0 Then
-        
-            'If a custom line cap was specified, apply it now
-            If customLineCap > 0 Then GdipSetPenLineCap hPen, customLineCap, customLineCap, 0&
-            
-            'Render the line
-            GdipDrawLine hGraphics, hPen, x1, y1, x2, y2
-                
-            'Release the pen
-            GdipDeletePen hPen
-                
-        Else
-            #If DEBUGMODE = 1 Then
-                If g_IsProgramRunning Then pdDebug.LogAction "WARNING - GDI+ PEN FAILURE IN GDIPlusDrawGradientLineToDC: " & gdipReturn
-            #End If
-        End If
-        
-        'Release the reference brush
-        ReleaseGDIPlusBrush srcBrush
-        
-    Else
-        #If DEBUGMODE = 1 Then
-            If g_IsProgramRunning Then pdDebug.LogAction "WARNING - GDI+ BRUSH FAILURE IN GDIPlusDrawGradientLineToDC: " & gdipReturn
-        #End If
-    End If
-    
-    GdipDeleteGraphics hGraphics
-
-End Function
-
 'Use GDI+ to render a filled, closed shape, with optional color, opacity, antialiasing, curvature, and more
 Public Function GDIPlusDrawFilledShapeToDC(ByVal dstDC As Long, ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5, Optional ByVal useFillMode As GDIFillMode = FillModeAlternate) As Boolean
 
@@ -3288,6 +3234,10 @@ Public Function GetGDIPlusPenHandle(ByVal penColor As Long, Optional ByVal penOp
     
     GetGDIPlusPenHandle = hPen
 
+End Function
+
+Public Function GetGDIPlusPenFromBrush(ByVal hBrush As Long, ByVal penWidth As Single, Optional ByVal penUnit As GP_Unit = GP_U_Pixel) As Long
+    GdipCreatePenFromBrush hBrush, penWidth, penUnit, GetGDIPlusPenFromBrush
 End Function
 
 Public Function ReleaseGDIPlusBrush(ByVal srcHandle As Long) As Boolean
