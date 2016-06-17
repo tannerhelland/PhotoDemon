@@ -352,6 +352,29 @@ Public Function QuickCreateSolidBrush(ByRef dstBrush As pd2DBrush, Optional ByVa
     End With
 End Function
 
+'Shortcut function for creating a two-color gradient brush
+Public Function QuickCreateTwoColorGradientBrush(ByRef dstBrush As pd2DBrush, ByRef gradientBoundary As RECTF, Optional ByVal firstColor As Long = vbBlack, Optional ByVal secondColor As Long = vbWhite, Optional ByVal firstColorOpacity As Single = 100#, Optional ByVal secondColorOpacity As Single = 100#, Optional ByVal gradientShape As PD_2D_GradientShape = P2_GS_Linear, Optional ByVal gradientAngle As Single = 0#) As Boolean
+    
+    If (dstBrush Is Nothing) Then Set dstBrush = New pd2DBrush
+    
+    Dim tmpGradient As pd2DGradient
+    Set tmpGradient = New pd2DGradient
+    With tmpGradient
+        .SetGradientShape gradientShape
+        .SetGradientAngle gradientAngle
+        .CreateTwoPointGradient firstColor, secondColor, firstColorOpacity, secondColorOpacity
+    End With
+    
+    With dstBrush
+        .SetDebugMode m_DebugMode
+        .SetBrushMode P2_BM_Gradient
+        .SetBoundaryRect gradientBoundary
+        .SetBrushGradientAllSettings tmpGradient.GetGradientAsString
+        QuickCreateTwoColorGradientBrush = .CreateBrush()
+    End With
+    
+End Function
+
 'Shortcut function for creating a solid pen
 Public Function QuickCreateSolidPen(ByRef dstPen As pd2DPen, Optional ByVal penWidth As Single = 1#, Optional ByVal penColor As Long = vbWhite, Optional ByVal penOpacity As Single = 100#, Optional ByVal penLineJoin As PD_2D_LineJoin = P2_LJ_Miter, Optional ByVal penLineCap As PD_2D_LineCap = P2_LC_Flat) As Boolean
     If (dstPen Is Nothing) Then Set dstPen = New pd2DPen
