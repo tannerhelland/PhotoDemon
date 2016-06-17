@@ -96,7 +96,7 @@ Private m_ColorList() As Long
 'Initially, we used a collection of RectF objects to house the coordinates for each subregion, but to increase flexibility,
 ' these were later moved to generic path objects.  This is how we are able to provide both rectangular and circular appearances,
 ' with almost no changes to the underlying code.
-Private m_ColorRegions() As pdGraphicsPath
+Private m_ColorRegions() As pd2DPath
 
 'This control supports both rectangular and circular shapes
 Public Enum COLOR_WHEEL_SHAPE
@@ -109,6 +109,9 @@ End Enum
 #End If
 
 Private m_ControlShape As COLOR_WHEEL_SHAPE
+
+'2D painting support classes
+Private m_Painter As pd2DPainter
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -282,6 +285,9 @@ Private Sub UserControl_Initialize()
     
     m_MouseInsideRegion = -1
     
+    'Prep painting classes
+    Drawing2D.QuickCreatePainter m_Painter
+    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCV_COLOR_LIST: colorCount = [_Count]
@@ -290,11 +296,11 @@ Private Sub UserControl_Initialize()
     
     'Prep the various color variant lists
     ReDim m_ColorList(0 To NUM_OF_VARIANTS - 1) As Long
-    ReDim m_ColorRegions(0 To NUM_OF_VARIANTS - 1) As pdGraphicsPath
+    ReDim m_ColorRegions(0 To NUM_OF_VARIANTS - 1) As pd2DPath
     
     Dim i As Long
     For i = 0 To NUM_OF_VARIANTS - 1
-        Set m_ColorRegions(i) = New pdGraphicsPath
+        Set m_ColorRegions(i) = New pd2DPath
     Next i
     
     CalculateVariantColors
@@ -394,7 +400,7 @@ Private Sub CreateSubregions_Rectangular(ByVal ucLeft As Long, ByVal ucTop As Lo
     dpiAwareBorderSize = FixDPI(VARIANT_BOX_SIZE)
     
     'For this control layout, we are going to use a temporary rect collection to define the position of all color variants.
-    ' This simplifies things a bit, and when we're done, we'll simply copy all rects into the master pdGraphicsPath array.
+    ' This simplifies things a bit, and when we're done, we'll simply copy all rects into the master pd2DPath array.
     Dim colorRects() As RECTF
     ReDim colorRects(0 To NUM_OF_VARIANTS - 1) As RECTF
     
@@ -530,10 +536,10 @@ Private Sub CreateSubregions_Circular(ByVal ucLeft As Long, ByVal ucTop As Long,
     
         'Calculate (x, y) coordinates for the four corners of this subregion.  We use these as the endpoints for the radial lines
         ' marking either side of the "slice".
-        Math_Functions.convertPolarToCartesian Math_Functions.DegreesToRadians(startAngle), innerRadius, x1, y1, centerX, centerY
-        Math_Functions.convertPolarToCartesian Math_Functions.DegreesToRadians(startAngle), outerRadius, x2, y2, centerX, centerY
-        Math_Functions.convertPolarToCartesian Math_Functions.DegreesToRadians(startAngle + sweepAngle), innerRadius, x3, y3, centerX, centerY
-        Math_Functions.convertPolarToCartesian Math_Functions.DegreesToRadians(startAngle + sweepAngle), outerRadius, x4, y4, centerX, centerY
+        Math_Functions.ConvertPolarToCartesian Math_Functions.DegreesToRadians(startAngle), innerRadius, x1, y1, centerX, centerY
+        Math_Functions.ConvertPolarToCartesian Math_Functions.DegreesToRadians(startAngle), outerRadius, x2, y2, centerX, centerY
+        Math_Functions.ConvertPolarToCartesian Math_Functions.DegreesToRadians(startAngle + sweepAngle), innerRadius, x3, y3, centerX, centerY
+        Math_Functions.ConvertPolarToCartesian Math_Functions.DegreesToRadians(startAngle + sweepAngle), outerRadius, x4, y4, centerX, centerY
         
         'Add the two divider lines to the current path object, and place connecting arcs between them
         m_ColorRegions(i).AddLine x1, y1, x2, y2
@@ -588,7 +594,7 @@ Private Sub CalculateVariantColors()
             Case CV_SaturationUp
                 
                 'Use a fake saturation calculation
-                grayNew = Colors.getHQLuminance(rNew, gNew, bNew)
+                grayNew = Colors.GetHQLuminance(rNew, gNew, bNew)
                 rNew = rNew + (rNew - grayNew) * 0.4
                 gNew = gNew + (gNew - grayNew) * 0.4
                 bNew = bNew + (bNew - grayNew) * 0.4
@@ -622,7 +628,7 @@ Private Sub CalculateVariantColors()
             Case CV_SaturationDown
                 
                 'Use a fake saturation calculation
-                grayNew = Colors.getHQLuminance(rNew, gNew, bNew)
+                grayNew = Colors.GetHQLuminance(rNew, gNew, bNew)
                 rNew = rNew + (grayNew - rNew) * 0.3
                 gNew = gNew + (grayNew - gNew) * 0.3
                 bNew = bNew + (grayNew - bNew) * 0.3
@@ -666,38 +672,41 @@ Private Sub RedrawBackBuffer()
     
     If g_IsProgramRunning Then
     
-        Dim borderColor As Long, borderPen As Long
+        Dim borderColor As Long
         borderColor = m_Colors.RetrieveColor(PDCV_Border, Me.Enabled, False, False)
         
+        'Prep various painting objects
+        Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
+        Dim cPenUIBase As pd2DPen, cPenUITop As pd2DPen
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+        
         'We can reuse a single border pen for all sub-paths
-        borderPen = GDI_Plus.GetGDIPlusPenHandle(borderColor, , , , GP_LJ_Miter)
+        Drawing2D.QuickCreateSolidPen cPen, 1#, borderColor, 100#, P2_LJ_Miter
         
         'Draw each subregion in turn, filling it first, then tracing its borders.
         Dim i As Long, regionBrush As Long
         For i = CV_Primary To CV_RedDown
-            
-            regionBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(m_ColorList(i), 255)
-            m_ColorRegions(i).FillPathToDIB_BareBrush regionBrush, , bufferDC
-            GDI_Plus.ReleaseGDIPlusBrush regionBrush
-            
-            m_ColorRegions(i).StrokePath_BarePen borderPen, bufferDC
-            
+            Drawing2D.QuickCreateSolidBrush cBrush, m_ColorList(i)
+            m_Painter.FillPath cSurface, cBrush, m_ColorRegions(i)
+            m_Painter.DrawPath cSurface, cPen, m_ColorRegions(i)
         Next i
         
         'Draw a special outline around the central primary color, to help it stand out more.  (But only do this if
         ' the central primary color is UNSELECTED; if it's selected, we'll paint it in the accent color momentarily.)
-        If m_MouseInsideRegion <> CV_Primary Then m_ColorRegions(CV_Primary).StrokePath_UIStyle bufferDC, False, False, GP_LJ_Miter
-        
-        'Release any remaining GDI+ objects
-        GDI_Plus.ReleaseGDIPlusPen borderPen
+        If (m_MouseInsideRegion <> CV_Primary) Then
+            Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop
+            m_Painter.DrawPath cSurface, cPenUIBase, m_ColorRegions(CV_Primary)
+            m_Painter.DrawPath cSurface, cPenUITop, m_ColorRegions(CV_Primary)
+        End If
         
         'If a subregion is currently hovered, trace it with a highlight outline.
-        If m_MouseInsideRegion >= 0 Then
-            borderColor = m_Colors.RetrieveColor(PDCV_Border, Me.Enabled, True, True)
-            borderPen = GDI_Plus.GetGDIPlusPenHandle(borderColor, , 3#, , GP_LJ_Miter)
-            m_ColorRegions(m_MouseInsideRegion).StrokePath_BarePen borderPen, bufferDC
-            GDI_Plus.ReleaseGDIPlusPen borderPen
+        If (m_MouseInsideRegion >= 0) Then
+            Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, True
+            m_Painter.DrawPath cSurface, cPenUIBase, m_ColorRegions(m_MouseInsideRegion)
+            m_Painter.DrawPath cSurface, cPenUITop, m_ColorRegions(m_MouseInsideRegion)
         End If
+        
+        Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
         
     End If
     

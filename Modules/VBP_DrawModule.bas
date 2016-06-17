@@ -632,9 +632,9 @@ Public Sub DrawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     'Next, convert each corner from image coordinate space to the active viewport coordinate space
     Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerCorners, False
     
-    'Pass the list of coordinates to a pdGraphicsPath object; it will handle the actual UI rendering
-    Dim tmpPath As pdGraphicsPath
-    Set tmpPath = New pdGraphicsPath
+    'Pass the list of coordinates to a pd2DPath object; it will handle the actual UI rendering
+    Dim tmpPath As pd2DPath
+    Set tmpPath = New pd2DPath
     
     'Note that we must add the layer boundary lines manually - otherwise, the top-right and bottom-left corners will connect
     ' due to the way srcLayer.getLayerCornerCoordinates returns the points!
@@ -710,8 +710,8 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
         
         'First, draw a line from the center of the layer to the rotation node, to provide visual feedback on where the rotation
         ' will actually occur.
-        Dim tmpPath As pdGraphicsPath
-        Set tmpPath = New pdGraphicsPath
+        Dim tmpPath As pd2DPath
+        Set tmpPath = New pd2DPath
         tmpPath.AddLine layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(relevantPoint).x, layerRotateNodes(relevantPoint).y
         tmpPath.StrokePath_UIStyle dstDC
         
@@ -724,7 +724,7 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
         
             'Start by finding the distance of the rotation line.
             Dim rRadius As Double
-            rRadius = Math_Functions.distanceTwoPoints(layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(relevantPoint).x, layerRotateNodes(relevantPoint).y)
+            rRadius = Math_Functions.DistanceTwoPoints(layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(relevantPoint).x, layerRotateNodes(relevantPoint).y)
             
             'From there, bounds are easy-peasy
             Dim rotateBoundRect As RECTF

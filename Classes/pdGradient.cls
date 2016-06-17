@@ -48,8 +48,8 @@ Private m_GradientPoints() As GRADIENTPOINT
 ' prior to constructing the actual brush.
 Private m_IsSorted As Boolean
 
-'All non-linear brushes are constructed with the help of a pdGraphicsPath object
-Private m_Path As pdGraphicsPath
+'All non-linear brushes are constructed with the help of a pd2DPath object
+Private m_Path As pd2DPath
 
 'This class is capable of serializing itself to/from XML strings
 Private m_Serializer As pdParamXML
@@ -578,7 +578,7 @@ Friend Function GetBrushHandle(ByRef dstRect As RECTF, Optional ByVal forceToLin
                 End If
                 
                 'Create a path gradient brush, using our path object as the reference
-                gdipBrush = GDI_Plus.GetGDIPlusPathBrushHandle(m_Path.GetCopyOfPathHandle)
+                gdipBrush = GDI_Plus.GetGDIPlusPathBrushHandle(m_Path.GetHandle)
                 If (gdipBrush <> 0) Then
                     
                     'Set a default center point (in the future, we should expose this to the user)
@@ -702,7 +702,7 @@ Private Sub Class_Initialize()
     Set m_Serializer = New pdParamXML
     
     'Prep a path (for constructing non-linear gradients)
-    Set m_Path = New pdGraphicsPath
+    Set m_Path = New pd2DPath
     
     'Assume sorting has not taken place
     m_IsSorted = False

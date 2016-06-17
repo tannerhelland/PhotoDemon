@@ -168,6 +168,15 @@ Public Function DrawLineI(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DP
     End If
 End Function
 
+Public Function DrawPath(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcPath As pd2DPath) As Boolean
+    If VerifyDrawBackends(dstSurface, srcPen) Then
+        Select Case dstSurface.GetSurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                DrawPath = GDI_Plus.GDIPlus_DrawPath(dstSurface.GetHandle, srcPen.GetHandle, srcPath.GetHandle)
+        End Select
+    End If
+End Function
+
 Public Function DrawRectangleF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Boolean
     If VerifyDrawBackends(dstSurface, srcPen) Then
         Select Case dstSurface.GetSurfaceBackend
@@ -244,6 +253,15 @@ End Function
 
 Friend Function FillEllipseI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcRect As RECTL) As Boolean
     FillEllipseI_FromRectL = Me.FillEllipseI(dstSurface, srcBrush, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
+End Function
+
+Public Function FillPath(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcPath As pd2DPath) As Boolean
+    If VerifyFillBackends(dstSurface, srcBrush) Then
+        Select Case dstSurface.GetSurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                FillPath = GDI_Plus.GDIPlus_FillPath(dstSurface.GetHandle, srcBrush.GetHandle, srcPath.GetHandle)
+        End Select
+    End If
 End Function
 
 Public Function FillRectangleF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Boolean

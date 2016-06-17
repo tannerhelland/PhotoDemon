@@ -1413,7 +1413,7 @@ Public Sub retreatLassoPosition(ByRef newCursorX_ImgCoords As Double, ByRef newC
     Do While (netDistance < 10) And (newLassoIndex > 0)
     
         'Calculate a distance between this coordinate and the previous one.
-        netDistance = netDistance + Math_Functions.distanceTwoPoints(m_LassoPoints(newLassoIndex).x, m_LassoPoints(newLassoIndex).y, m_LassoPoints(newLassoIndex - 1).x, m_LassoPoints(newLassoIndex - 1).y)
+        netDistance = netDistance + Math_Functions.DistanceTwoPoints(m_LassoPoints(newLassoIndex).x, m_LassoPoints(newLassoIndex).y, m_LassoPoints(newLassoIndex - 1).x, m_LassoPoints(newLassoIndex - 1).y)
     
         'Decrement the test index and repeat
         newLassoIndex = newLassoIndex - 1
@@ -2312,8 +2312,8 @@ Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
     End If
     
     'New in version 6.6 is an awesome new path class, which makes the rendering steps much easier than they have historically been.
-    Dim pdPath As pdGraphicsPath
-    Set pdPath = New pdGraphicsPath
+    Dim pdPath As pd2DPath
+    Set pdPath = New pd2DPath
     
     Select Case sShape
     
@@ -2381,7 +2381,13 @@ Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
     End Select
     
     'Draw the assembled path onto the canvas
-    pdPath.StrokePath_UIStyle dstDIB.GetDIBDC
+    Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cPenUIBase As pd2DPen, cPenUITop As pd2DPen
+    Drawing2D.QuickCreatePainter cPainter
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, True
+    Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, , P2_LJ_Round, P2_LC_Round
+    
+    cPainter.DrawPath cSurface, cPenUIBase, pdPath
+    cPainter.DrawPath cSurface, cPenUITop, pdPath
     
 End Sub
 

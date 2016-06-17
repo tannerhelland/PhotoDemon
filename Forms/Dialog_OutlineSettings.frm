@@ -209,8 +209,8 @@ Private m_PenPreview As pd2DPen
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
 Private parentPenControl As pdPenSelector
 
-'Pen previews are rendered using a pdGraphicsPath as the sample
-Private m_PreviewPath As pdGraphicsPath
+'Pen previews are rendered using a pd2DPath as the sample
+Private m_PreviewPath As pd2DPath
 
 'Recently used pens are loaded to/saved from a custom XML file
 Private m_XMLEngine As pdXML
@@ -365,7 +365,7 @@ Private Sub Form_Load()
     If g_IsProgramRunning Then
     
         If m_PenPreview Is Nothing Then Set m_PenPreview = New pd2DPen
-        If m_PreviewPath Is Nothing Then Set m_PreviewPath = New pdGraphicsPath
+        If m_PreviewPath Is Nothing Then Set m_PreviewPath = New pd2DPath
         Set m_PreviewDIB = New pdDIB
                 
     End If

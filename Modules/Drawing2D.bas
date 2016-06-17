@@ -389,6 +389,43 @@ Public Function QuickCreateSolidPen(ByRef dstPen As pd2DPen, Optional ByVal penW
     End With
 End Function
 
+'Shortcut function for creating two pens for UI purposes.  This function could use a clearer name, but "UI pens" consist
+' of a wide, semi-translucent black pen on bottom, and a thin, less-translucent white pen on top.  This combination
+' of pens are perfect for drawing on any arbitrary background of any color or pattern, and ensuring the line will still
+' be visible.  (This approach is used in modern software instead of the old "invert" pen approach of past decades.)
+'
+'If the line is currently being hovered or otherwise interacted with, you can set "useHighlightColor" to TRUE.  This will
+' return the top pen in the current highlight color (hard-coded at the top of this module) instead of plain white.
+'
+'By design, pen width is not settable via this function.  The top pen will always be 1.6 pixels wide (a size required
+' to bypass GDI+ subpixel flaws between 1 and 2 pixels) while the bottom pen will always be 3.0 pixels wide.
+Public Function QuickCreatePairOfUIPens(ByRef dstPenBase As pd2DPen, ByRef dstPenTop As pd2DPen, Optional ByVal useHighlightColor As Boolean = False, Optional ByVal penLineJoin As PD_2D_LineJoin = P2_LJ_Miter, Optional ByVal penLineCap As PD_2D_LineCap = P2_LC_Flat) As Boolean
+    
+    If (dstPenBase Is Nothing) Then Set dstPenBase = New pd2DPen
+    If (dstPenTop Is Nothing) Then Set dstPenTop = New pd2DPen
+    
+    With dstPenBase
+        .SetDebugMode m_DebugMode
+        .SetPenWidth 3#
+        .SetPenColor g_Themer.GetGenericUIColor(UI_LineEdge, , , useHighlightColor)
+        .SetPenOpacity 75#
+        .SetPenLineJoin penLineJoin
+        .SetPenLineCap penLineCap
+        QuickCreatePairOfUIPens = .CreatePen()
+    End With
+    
+    With dstPenTop
+        .SetDebugMode m_DebugMode
+        .SetPenWidth 1.6
+        .SetPenColor g_Themer.GetGenericUIColor(UI_LineCenter, , , useHighlightColor)
+        .SetPenOpacity 87.5
+        .SetPenLineJoin penLineJoin
+        .SetPenLineCap penLineCap
+        QuickCreatePairOfUIPens = CBool(QuickCreatePairOfUIPens And .CreatePen())
+    End With
+    
+End Function
+
 Public Function IsRenderingEngineActive(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Boolean
     Select Case targetBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
