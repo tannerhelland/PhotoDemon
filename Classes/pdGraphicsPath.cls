@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "pdGraphicsPath"
+Attribute VB_Name = "pd2DPath"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -211,32 +211,32 @@ Public Sub AddTriangle(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Singl
     
 End Sub
 
-Public Sub AddPath(ByRef srcGraphicsPath As pdGraphicsPath, Optional ByVal offsetX As Single = 0, Optional ByVal offsetY As Single = 0, Optional ByVal connectToLastPointOfThisPath As Boolean = False)
+Public Sub AddPath(ByRef srcGraphicsPath As pd2DPath, Optional ByVal offsetX As Single = 0, Optional ByVal offsetY As Single = 0, Optional ByVal connectToLastPointOfThisPath As Boolean = False)
     
     'Make sure the glyph exists
     If srcGraphicsPath Is Nothing Then
-        Debug.Print "WARNING!  pdGraphicsPath.addPath was handed a non-existent path."
+        Debug.Print "WARNING!  pd2DPath.addPath was handed a non-existent path."
         Exit Sub
     End If
     
     'If no offsets are specified, copy the path as-is
     If (offsetX = 0) And (offsetY = 0) Then
     
-        GdipAddPathPath m_PathHandle, srcGraphicsPath.GetCopyOfPathHandle, IIf(connectToLastPointOfThisPath, 1&, 0&)
+        GdipAddPathPath m_PathHandle, srcGraphicsPath.GetHandle, IIf(connectToLastPointOfThisPath, 1&, 0&)
         
     'If offsets were specified, we need to clone the path, translate it, then add it
     Else
     
         'Clone the path
-        Dim tmpPath As pdGraphicsPath
-        Set tmpPath = New pdGraphicsPath
+        Dim tmpPath As pd2DPath
+        Set tmpPath = New pd2DPath
         tmpPath.CloneExistingPath srcGraphicsPath
         
         'Translate the path
         tmpPath.TranslatePath offsetX, offsetY
         
         'Add it
-        GdipAddPathPath m_PathHandle, tmpPath.GetCopyOfPathHandle, IIf(connectToLastPointOfThisPath, 1&, 0&)
+        GdipAddPathPath m_PathHandle, tmpPath.GetHandle, IIf(connectToLastPointOfThisPath, 1&, 0&)
         
         'Free our temporary path object
         Set tmpPath = Nothing
@@ -472,11 +472,11 @@ End Function
 '
 ' BEGIN: EXTERNAL PATH ACCESS
 
-Public Function GetCopyOfPathHandle() As Long
-    GetCopyOfPathHandle = m_PathHandle
+Public Function GetHandle() As Long
+    GetHandle = m_PathHandle
 End Function
 
-Public Sub CloneExistingPath(ByRef srcPath As pdGraphicsPath)
+Public Sub CloneExistingPath(ByRef srcPath As pd2DPath)
     
     'Make sure the source path exists!
     If srcPath Is Nothing Then
@@ -485,10 +485,10 @@ Public Sub CloneExistingPath(ByRef srcPath As pdGraphicsPath)
     End If
     
     'If we already have a path, delete it
-    If m_PathHandle <> 0 Then GdipDeletePath m_PathHandle
+    If (m_PathHandle <> 0) Then GdipDeletePath m_PathHandle
     
     'Clone the new path
-    GdipClonePath srcPath.GetCopyOfPathHandle, m_PathHandle
+    GdipClonePath srcPath.GetHandle, m_PathHandle
     
 End Sub
 
@@ -547,7 +547,7 @@ Public Function IsPointInsidePath(ByVal x As Single, ByVal y As Single) As Boole
         IsPointInsidePath = CBool(ptInside <> 0)
     Else
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdGraphicsPath.isPointInsidePath() failed to call GdipIsVisiblePathPoint(). Failure code " & gdipReturn & "."
+            pdDebug.LogAction "WARNING!  pd2DPath.isPointInsidePath() failed to call GdipIsVisiblePathPoint(). Failure code " & gdipReturn & "."
         #End If
     End If
     

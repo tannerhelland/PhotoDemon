@@ -220,7 +220,7 @@ Public Type pdGlyphUniscribe
     
     AdvanceWidth As Long
     
-    glyphPath As pdGraphicsPath     'GDI+ GraphicsPath wrapper containing the fully translated font outline.  Note that this value is not
+    glyphPath As pd2DPath     'GDI+ GraphicsPath wrapper containing the fully translated font outline.  Note that this value is not
                                     ' filled by PD's Uniscribe interface; pdGlyphCollection actually handles that step.
     isSoftBreak As Boolean
     isWhiteSpace As Boolean

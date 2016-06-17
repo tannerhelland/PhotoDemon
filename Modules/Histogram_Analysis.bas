@@ -149,7 +149,7 @@ Public Sub generateHistogramImages(ByRef histogramData() As Double, ByRef channe
     'The DIBs, however, are fully under our control
     ReDim dstDIBs(0 To 3) As pdDIB
     
-    Dim tmpPath As pdGraphicsPath, histogramShape() As POINTFLOAT
+    Dim tmpPath As pd2DPath, histogramShape() As POINTFLOAT
     Dim tmpPen As Long, tmpBrush As Long, hColor As Long
     Dim i As Long, j As Long
     Dim yMax As Double
@@ -192,7 +192,7 @@ Public Sub generateHistogramImages(ByRef histogramData() As Double, ByRef channe
         
         End Select
                 
-        'New strategy!  Use the awesome pdGraphicsPath class to construct a matching polygon for each histogram.
+        'New strategy!  Use the awesome pd2DPath class to construct a matching polygon for each histogram.
         ' Then, stroke and fill the polygon in one fell swoop (much faster).
         ReDim histogramShape(0 To 260) As POINTFLOAT
         
@@ -213,15 +213,15 @@ Public Sub generateHistogramImages(ByRef histogramData() As Double, ByRef channe
         histogramShape(259).y = imgHeight + 1
         
         'Populate shape objects using those point lists
-        Set tmpPath = New pdGraphicsPath
-        tmpPath.addPolygon 260, VarPtr(histogramShape(0)), True, True
+        Set tmpPath = New pd2DPath
+        tmpPath.AddPolygon 260, VarPtr(histogramShape(0)), True, True
         
         'Prep pens and brushes in the current color
         tmpPen = GDI_Plus.GetGDIPlusPenHandle(hColor, 255, 1, GP_LC_Round, GP_LJ_Round)
         tmpBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(hColor, 64)
         
         'Render the paths to their target DIBs
-        tmpPath.fillPathToDIB_BareBrush tmpBrush, dstDIBs(i)
+        tmpPath.FillPathToDIB_BareBrush tmpBrush, dstDIBs(i)
         tmpPath.StrokePath_BarePen tmpPen, dstDIBs(i).GetDIBDC
         
         'Free our pen and brush resources

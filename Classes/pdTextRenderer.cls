@@ -1701,7 +1701,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     
     'Retrieve a full, composite path from the glyph collector.  It handles messy business like character positioning,
     ' and simply hands us a fully composited path, ready for rendering.
-    Dim finalTextPath As pdGraphicsPath
+    Dim finalTextPath As pd2DPath
     m_GlyphCollection.NotifyCustomLayoutSettings m_LineSpacing, m_CharSpacing, m_CharOrientation, m_CharJitterX, m_CharJitterY, m_CharInflation, m_CharMirror
     
     If m_GlyphCollection.AssembleCompositePath(finalTextPath, boundingRect, m_HorizontalAlignment, m_VerticalAlignment, m_WordWrap) Then
@@ -1749,13 +1749,13 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
             textFillBrush.SetBoundaryRect boundingRect
             gdipFillBrush = textFillBrush.GetHandle
             
-            gdipReturn = GdipFillPath(dstGraphics, gdipFillBrush, finalTextPath.GetCopyOfPathHandle)
+            gdipReturn = GdipFillPath(dstGraphics, gdipFillBrush, finalTextPath.GetHandle)
             If gdipReturn <> 0 Then Debug.Print "WARNING!  GdipFillPath failed; return code was " & gdipReturn
         End If
         
         'If outline mode is active, stroke the text now
         If (gdipOutlinePen <> 0) Then
-            gdipReturn = GdipDrawPath(dstGraphics, gdipOutlinePen, finalTextPath.GetCopyOfPathHandle)
+            gdipReturn = GdipDrawPath(dstGraphics, gdipOutlinePen, finalTextPath.GetHandle)
             If (gdipReturn <> 0) Then Debug.Print "WARNING!  GdipDrawPath failed; return code was " & gdipReturn
         End If
         

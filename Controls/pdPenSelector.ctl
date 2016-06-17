@@ -66,7 +66,7 @@ Private m_curPen As String
 Private m_PenPreview As pd2DPen
 
 'The path used for the preview window
-Private m_PreviewPath As pdGraphicsPath
+Private m_PreviewPath As pd2DPath
 
 'When the "select pen" dialog is live, this will be set to TRUE
 Private isDialogLive As Boolean
@@ -229,7 +229,7 @@ End Sub
 Private Sub UserControl_Initialize()
     
     Set m_PenPreview = New pd2DPen
-    Set m_PreviewPath = New pdGraphicsPath
+    Set m_PreviewPath = New pd2DPath
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport

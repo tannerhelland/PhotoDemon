@@ -88,6 +88,9 @@ Private m_Hue As Double, m_Saturation As Double, m_Value As Double
 ' We can use this to help orient the user.
 Private m_HueHover As Double, m_SaturationHover As Double, m_ValueHover As Double
 
+'2D painting support classes
+Private m_Painter As pd2DPainter
+
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
 Private WithEvents ucSupport As pdUCSupport
@@ -398,6 +401,9 @@ Private Sub UserControl_Initialize()
     ucSupport.RegisterControl UserControl.hWnd
     ucSupport.RequestExtraFunctionality True
     
+    'Prep painting classes
+    Drawing2D.QuickCreatePainter m_Painter
+    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCW_COLOR_LIST: colorCount = [_Count]
@@ -621,7 +627,7 @@ Private Sub CreateSVSquare()
     'While we're here, let's also calculate the top-left rendering origin for the square, so we don't have to do it in the core
     ' rendering function.
     Dim tmpX As Double, tmpY As Double
-    Math_Functions.convertPolarToCartesian -(3 * PI) / 4, m_HueRadiusInner, tmpX, tmpY, m_HueWheelCenterX, m_HueWheelCenterY
+    Math_Functions.ConvertPolarToCartesian -(3 * PI) / 4, m_HueRadiusInner, tmpX, tmpY, m_HueWheelCenterX, m_HueWheelCenterY
     m_SVRectF.Left = tmpX
     m_SVRectF.Top = tmpY
     
@@ -646,17 +652,23 @@ Private Sub RedrawBackBuffer()
         'Paint the hue wheel (currently left-aligned)
         If Not (m_WheelBuffer Is Nothing) Then m_WheelBuffer.AlphaBlendToDC bufferDC
         
+        'Prep various painting objects
+        Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
+        Dim cPenUIBase As pd2DPen, cPenUITop As pd2DPen
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+        
         'Trace the edges of the hue wheel, to help separate the bright portions from the background.
-        Dim borderWidth As Single, borderTransparency As Long
+        Dim borderWidth As Single, borderTransparency As Single
         If m_MouseInsideWheel Then
             borderWidth = 2#
-            borderTransparency = 255
+            borderTransparency = 100#
         Else
             borderWidth = 1#
-            borderTransparency = 128
+            borderTransparency = 75#
         End If
-        GDI_Plus.GDIPlusDrawCircleToDC bufferDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter, wheelBorderColor, borderTransparency, borderWidth
-        GDI_Plus.GDIPlusDrawCircleToDC bufferDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner, wheelBorderColor, borderTransparency, borderWidth
+        Drawing2D.QuickCreateSolidPen cPen, borderWidth, wheelBorderColor, borderTransparency
+        m_Painter.DrawCircleF cSurface, cPen, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner
+        m_Painter.DrawCircleF cSurface, cPen, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter
         
         'Paint the saturation+value square
         If Not (m_SquareBuffer Is Nothing) Then
@@ -669,12 +681,15 @@ Private Sub RedrawBackBuffer()
             'Trace the edges of the square, to help separate the bright portions from the background
             If m_MouseInsideBox Then
                 borderWidth = 2#
-                borderTransparency = 255
+                borderTransparency = 100#
             Else
                 borderWidth = 1#
-                borderTransparency = 128
+                borderTransparency = 50#
             End If
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_SVRectF, boxBorderColor, borderTransparency, borderWidth, True, GP_LJ_Miter, True
+            Drawing2D.QuickCreateSolidPen cPen, borderWidth, boxBorderColor, borderTransparency, P2_LJ_Miter, P2_LC_Flat
+            If (Not m_MouseInsideBox) Then cSurface.SetSurfacePixelOffset P2_PO_Half
+            m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_SVRectF
+            cSurface.SetSurfacePixelOffset P2_PO_Normal
             
         End If
         
@@ -683,8 +698,8 @@ Private Sub RedrawBackBuffer()
         hueAngle = GetUIAngleOfHue(m_Hue)
         
         'We are now going to construct a "slice-like" overlay for the current hue position.
-        Dim slicePath As pdGraphicsPath
-        Set slicePath = New pdGraphicsPath
+        Dim slicePath As pd2DPath
+        Set slicePath = New pd2DPath
         
         'The sweep of the slice should really be contingent on the radius, but for this first draft, we'll simply hard-code it.
         Dim sliceSweep As Single
@@ -697,10 +712,10 @@ Private Sub RedrawBackBuffer()
         'Next, calculate (x, y) coordinates for the four corners of the slice.  We use these as the endpoints for the radial lines
         ' marking either side of the "slice".
         Dim x1 As Double, x2 As Double, x3 As Double, x4 As Double, y1 As Double, y2 As Double, y3 As Double, y4 As Double
-        Math_Functions.convertPolarToCartesian hueAngle - (sliceSweep / 2), m_HueRadiusInner - sliceExtend, x1, y1, m_HueWheelCenterX, m_HueWheelCenterY
-        Math_Functions.convertPolarToCartesian hueAngle - (sliceSweep / 2), m_HueRadiusOuter + sliceExtend, x2, y2, m_HueWheelCenterX, m_HueWheelCenterY
-        Math_Functions.convertPolarToCartesian hueAngle + (sliceSweep / 2), m_HueRadiusInner - sliceExtend, x3, y3, m_HueWheelCenterX, m_HueWheelCenterY
-        Math_Functions.convertPolarToCartesian hueAngle + (sliceSweep / 2), m_HueRadiusOuter + sliceExtend, x4, y4, m_HueWheelCenterX, m_HueWheelCenterY
+        Math_Functions.ConvertPolarToCartesian hueAngle - (sliceSweep / 2), m_HueRadiusInner - sliceExtend, x1, y1, m_HueWheelCenterX, m_HueWheelCenterY
+        Math_Functions.ConvertPolarToCartesian hueAngle - (sliceSweep / 2), m_HueRadiusOuter + sliceExtend, x2, y2, m_HueWheelCenterX, m_HueWheelCenterY
+        Math_Functions.ConvertPolarToCartesian hueAngle + (sliceSweep / 2), m_HueRadiusInner - sliceExtend, x3, y3, m_HueWheelCenterX, m_HueWheelCenterY
+        Math_Functions.ConvertPolarToCartesian hueAngle + (sliceSweep / 2), m_HueRadiusOuter + sliceExtend, x4, y4, m_HueWheelCenterX, m_HueWheelCenterY
         
         'Add those two lines to the path object, and place connecting arcs between them
         slicePath.AddLine x1, y1, x2, y2
@@ -710,7 +725,10 @@ Private Sub RedrawBackBuffer()
         slicePath.CloseCurrentFigure
         
         'Render the completed slice onto the overlay
-        slicePath.StrokePath_UIStyle bufferDC, , m_MouseDownWheel
+        Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, m_MouseDownWheel
+        m_Painter.DrawPath cSurface, cPenUIBase, slicePath
+        m_Painter.DrawPath cSurface, cPenUITop, slicePath
+        cSurface.SetSurfacePixelOffset P2_PO_Normal
         
         'Lastly, let's draw a circle around the current saturation + value point.
         
@@ -734,7 +752,9 @@ Private Sub RedrawBackBuffer()
         svY = svY + m_SVRectF.Top
         
         'Draw a canvas-style circle around that point
-        GDI_Plus.GDIPlusDrawCanvasCircle bufferDC, svX, svY, COLOR_CIRCLE_RADIUS, , m_MouseDownBox
+        Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, m_MouseDownBox
+        m_Painter.DrawCircleF cSurface, cPenUIBase, svX, svY, COLOR_CIRCLE_RADIUS
+        m_Painter.DrawCircleF cSurface, cPenUITop, svX, svY, COLOR_CIRCLE_RADIUS
         
         'Finally, if the mouse is over the hue wheel or SV box, but the mouse is *NOT* down, we want to paint a little
         ' color triangle to let the user know what color they'd get if they DID click the mouse button in this location.
@@ -761,8 +781,8 @@ Private Sub RedrawBackBuffer()
             End If
             
             'Paint the color in a small triangle in the corner
-            Dim pcPath As pdGraphicsPath
-            Set pcPath = New pdGraphicsPath
+            Dim pcPath As pd2DPath
+            Set pcPath = New pd2DPath
             
             Dim pcLength As Double, wWidth As Double, wHeight As Double
             wWidth = m_WheelBuffer.GetDIBWidth - 1: wHeight = m_WheelBuffer.GetDIBHeight - 1
@@ -770,16 +790,17 @@ Private Sub RedrawBackBuffer()
             pcLength = (pcLength - (wWidth / 2)) * (PI_HALF * 0.8)
             pcPath.AddTriangle wWidth, wHeight, wWidth - pcLength, wHeight, wWidth, wHeight - pcLength
             
-            Dim pcBrush As Long, pcPen As Long
-            pcBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(proposedColor)
-            pcPen = GDI_Plus.GetGDIPlusPenHandle(colorPreviewBorder, 192, , GP_LC_Round, GP_LJ_Round)
-            pcPath.FillPathToDIB_BareBrush pcBrush, , bufferDC
-            pcPath.StrokePath_BarePen pcPen, bufferDC
-            GDI_Plus.ReleaseGDIPlusPen pcPen
-            GDI_Plus.ReleaseGDIPlusBrush pcBrush
+            Drawing2D.QuickCreateSolidBrush cBrush, proposedColor
+            m_Painter.FillPath cSurface, cBrush, pcPath
+            
+            Drawing2D.QuickCreateSolidPen cPen, 1, colorPreviewBorder, 75, P2_LJ_Round, P2_LC_Round
+            m_Painter.DrawPath cSurface, cPen, pcPath
+            
             Set pcPath = Nothing
             
         End If
+        
+        Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
         
     End If
     

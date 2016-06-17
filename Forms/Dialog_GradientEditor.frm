@@ -847,9 +847,9 @@ Private Sub DrawGradientNodes()
         ' 3) An outline encompassing (1) and (2), which is colored based on the node's hover state
         
         'To simplify things, we assemble generic paths for (1) and (2), then simply translate and draw them for each individual node.
-        Dim baseArrow As pdGraphicsPath, baseBlock As pdGraphicsPath
-        Set baseArrow = New pdGraphicsPath
-        Set baseBlock = New pdGraphicsPath
+        Dim baseArrow As pd2DPath, baseBlock As pd2DPath
+        Set baseArrow = New pd2DPath
+        Set baseBlock = New pd2DPath
         
         'The base arrow is centered at 0, for convenience when translating
         Dim triangleHalfWidth As Single, triangleHeight As Single
@@ -861,9 +861,9 @@ Private Sub DrawGradientNodes()
         baseBlock.AddRectangle_Relative -1 * GRADIENT_NODE_WIDTH \ 2, triangleHeight, GRADIENT_NODE_WIDTH, GRADIENT_NODE_HEIGHT
         
         'We also want some duplicate nodes, to remove the need to reset our base node shapes between draws
-        Dim tmpArrow As pdGraphicsPath, tmpBlock As pdGraphicsPath
-        Set tmpArrow = New pdGraphicsPath
-        Set tmpBlock = New pdGraphicsPath
+        Dim tmpArrow As pd2DPath, tmpBlock As pd2DPath
+        Set tmpArrow = New pd2DPath
+        Set tmpBlock = New pd2DPath
         
         'Finally, some generic scale factors to simplify the process of positioning nodes (who store their positions on the range [0, 1])
         Dim hOffset As Single, hScaleFactor As Single
