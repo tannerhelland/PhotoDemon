@@ -503,13 +503,13 @@ Private Sub ResetGradientPoints()
     
     With m_GradientPoints(0)
         .PointRGB = vbBlack
-        .PointOpacity = 1
+        .PointOpacity = 100
         .PointPosition = 0
     End With
     
     With m_GradientPoints(1)
         .PointRGB = vbWhite
-        .PointOpacity = 1
+        .PointOpacity = 100
         .PointPosition = 1
     End With
     
@@ -681,7 +681,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
         If m_NumOfGradientPoints >= UBound(m_GradientPoints) Then ReDim Preserve m_GradientPoints(0 To m_NumOfGradientPoints * 2) As GRADIENTPOINT
         
         With m_GradientPoints(m_NumOfGradientPoints)
-            .PointOpacity = 1
+            .PointOpacity = 100
             .PointPosition = ConvertPixelCoordsToNodeCoords(x)
             
             'Preset the RGB value to match whatever the gradient already is at this point
@@ -816,7 +816,7 @@ Private Sub SyncUIToActiveNode()
             'Sync all UI elements to the current node's settings
             With m_GradientPoints(m_CurPoint)
                 csNode.Color = .PointRGB
-                sltNodeOpacity.Value = .PointOpacity * 100
+                sltNodeOpacity.Value = .PointOpacity
                 sltNodePosition.Value = .PointPosition * 100
             End With
         
@@ -936,7 +936,7 @@ End Sub
 
 Private Sub sltNodeOpacity_Change()
     If (Not m_SuspendUI) And (m_CurPoint >= 0) Then
-        m_GradientPoints(m_CurPoint).PointOpacity = sltNodeOpacity.Value / 100
+        m_GradientPoints(m_CurPoint).PointOpacity = sltNodeOpacity.Value
         RedrawEverything
     End If
 End Sub
