@@ -71,6 +71,11 @@ Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 ' passed, a special Rect transform may occur on RtL systems; see http://msdn.microsoft.com/en-us/library/dd145046%28v=vs.85%29.aspx
 Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByRef lpPoints As POINTAPI, ByVal cPoints As Long) As Long
 
+'At startup, PD caches a few different UI pens and brushes related to viewport rendering.
+Private m_Painter As pd2DPainter
+Private m_PenUIBase As pd2DPen, m_PenUITop As pd2DPen
+Private m_PenUIBaseHighlight As pd2DPen, m_PenUITopHighlight As pd2DPen
+
 'Given a target picture box, draw a hue preview across the horizontal axis.  This is helpful for tools that provide
 ' a hue slider, so that the user can easily find a color of their choosing.  Optionally, saturation and luminance
 ' can be provided, though it's generally assumed that those values will both be 1.0.
@@ -644,7 +649,10 @@ Public Sub DrawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     tmpPath.AddLine layerCorners(2).x, layerCorners(2).y, layerCorners(0).x, layerCorners(0).y
     
     'Render the final UI
-    tmpPath.StrokePath_UIStyle dstCanvas.hDC
+    Dim cSurface As pd2DSurface
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True
+    m_Painter.DrawPath cSurface, m_PenUIBase, tmpPath
+    m_Painter.DrawPath cSurface, m_PenUITop, tmpPath
     
 End Sub
 
@@ -663,17 +671,23 @@ Public Sub DrawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As p
     'Next, convert each corner from image coordinate space to the active viewport coordinate space
     Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerCorners, False
     
-    Dim circRadius As Long, circAlpha As Long
-    circRadius = 7
-    circAlpha = 190
+    Dim cornerSize As Single, halfCornerSize As Single
+    cornerSize = 12#
+    halfCornerSize = cornerSize * 0.5
     
-    Dim dstDC As Long
-    dstDC = dstCanvas.hDC
+    Dim cSurface As pd2DSurface
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True
     
     'Use GDI+ to render four corner circles
     Dim i As Long
     For i = 0 To 3
-        GDI_Plus.GDIPlusDrawCanvasSquare dstDC, layerCorners(i).x, layerCorners(i).y, circRadius, circAlpha, CBool(i = curPOI)
+        If (i = curPOI) Then
+            m_Painter.DrawRectangleF cSurface, m_PenUIBaseHighlight, layerCorners(i).x - halfCornerSize, layerCorners(i).y - halfCornerSize, cornerSize, cornerSize
+            m_Painter.DrawRectangleF cSurface, m_PenUITopHighlight, layerCorners(i).x - halfCornerSize, layerCorners(i).y - halfCornerSize, cornerSize, cornerSize
+        Else
+            m_Painter.DrawRectangleF cSurface, m_PenUIBase, layerCorners(i).x - halfCornerSize, layerCorners(i).y - halfCornerSize, cornerSize, cornerSize
+            m_Painter.DrawRectangleF cSurface, m_PenUITop, layerCorners(i).x - halfCornerSize, layerCorners(i).y - halfCornerSize, cornerSize, cornerSize
+        End If
     Next i
     
 End Sub
@@ -689,20 +703,10 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     srcLayer.GetLayerRotationNodeCoordinates layerRotateNodes, True
     Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerRotateNodes, False
     
-    'Render the circles
-    Dim circRadius As Long, circAlpha As Long
-    circRadius = 7
-    circAlpha = 190
+    Dim cSurface As pd2DSurface
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True
     
-    Dim dstDC As Long
-    dstDC = dstCanvas.hDC
-    
-    Dim i As Long
-    For i = 1 To 4
-        GDIPlusDrawCanvasCircle dstDC, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius, circAlpha, CBool(curPOI = i + 3)
-    Next i
-    
-    'As a convenience to the user, we also draw some additional UI features if a rotation node is actively hovered by the mouse.
+    'As a convenience to the user, we draw some additional UI features if a rotation node is actively hovered by the mouse.
     If (curPOI >= 4) And (curPOI <= 7) Then
         
         Dim relevantPoint As Long
@@ -713,7 +717,9 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
         Dim tmpPath As pd2DPath
         Set tmpPath = New pd2DPath
         tmpPath.AddLine layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(relevantPoint).x, layerRotateNodes(relevantPoint).y
-        tmpPath.StrokePath_UIStyle dstDC
+        
+        m_Painter.DrawPath cSurface, m_PenUIBase, tmpPath
+        m_Painter.DrawPath cSurface, m_PenUITop, tmpPath
         
         'Next, we are going to draw an arc with arrows on the end, to display where the actual rotation will occur.
         ' (At present, we skip this step if shearing is active, as I haven't figured out how to correctly skew the arc into the
@@ -748,19 +754,45 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
             arcSweep = (arcLength * 180) / (PI * rRadius)
             
             'Make sure the arc fits within a valid range (e.g. no complete circles or nearly-straight lines)
-            If arcSweep > 90 Then arcSweep = 90
-            If arcSweep < 30 Then arcSweep = 30
+            If (arcSweep > 90) Then arcSweep = 90
+            If (arcSweep < 30) Then arcSweep = 30
             
             'We need to modify the default layer angle depending on the current POI
             Dim relevantAngle As Double
             relevantAngle = srcLayer.GetLayerAngle + ((relevantPoint - 1) * 90)
-            
             tmpPath.AddArc rotateBoundRect, relevantAngle - arcSweep / 2, arcSweep
-            tmpPath.StrokePath_UIStyle dstDC, False, True, , GP_LC_ArrowAnchor, GP_LC_ArrowAnchor
+            
+            Dim prevLineCap As PD_2D_LineCap
+            prevLineCap = m_PenUIBase.GetPenLineCap
+            m_PenUIBase.SetPenLineCap P2_LC_ArrowAnchor
+            m_PenUITop.SetPenLineCap P2_LC_ArrowAnchor
+            
+            cSurface.SetSurfacePixelOffset P2_PO_Half
+            m_Painter.DrawPath cSurface, m_PenUIBase, tmpPath
+            m_Painter.DrawPath cSurface, m_PenUITop, tmpPath
+            cSurface.SetSurfacePixelOffset P2_PO_Normal
+            
+            m_PenUIBase.SetPenLineCap prevLineCap
+            m_PenUITop.SetPenLineCap prevLineCap
             
         End If
         
     End If
+    
+    'Render the circles at each rotation point
+    Dim circRadius As Single
+    circRadius = 7#
+    
+    Dim i As Long
+    For i = 1 To 4
+        If (curPOI = i + 3) Then
+            m_Painter.DrawCircleF cSurface, m_PenUIBaseHighlight, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius
+            m_Painter.DrawCircleF cSurface, m_PenUITopHighlight, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius
+        Else
+            m_Painter.DrawCircleF cSurface, m_PenUIBase, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius
+            m_Painter.DrawCircleF cSurface, m_PenUITop, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius
+        End If
+    Next i
     
 End Sub
 
@@ -806,4 +838,14 @@ End Sub
 
 Public Sub ForceGDIFlush()
     GdiFlush
+End Sub
+
+'During startup, we cache a few different UI pens and brushes; this accelerates the process of viewport rendering.
+' When the UI theme changes, this cache should be regenerated against any new colors.
+'
+'(Also, note that there is no corresponding "free" or "release" statement - all pd2D pens and brushes are self-freeing.)
+Public Sub CacheUIPensAndBrushes()
+    Drawing2D.QuickCreatePainter m_Painter
+    Drawing2D.QuickCreatePairOfUIPens m_PenUIBase, m_PenUITop
+    Drawing2D.QuickCreatePairOfUIPens m_PenUIBaseHighlight, m_PenUITopHighlight, True
 End Sub

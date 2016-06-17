@@ -25,7 +25,7 @@ Option Explicit
 ' 3) Array for max channel values (dimensioned [0,3])
 ' 4) Array for max log channel values
 ' 5) Array of where the maximum channel values occur (histogram index)
-Public Sub fillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Double, ByRef channelMax() As Double, ByRef channelMaxLog() As Double, ByRef channelMaxPosition() As Byte)
+Public Sub FillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Double, ByRef channelMax() As Double, ByRef channelMaxLog() As Double, ByRef channelMaxPosition() As Byte)
     
     'Redimension the various arrays
     ReDim hData(0 To 3, 0 To 255) As Double
@@ -142,7 +142,7 @@ End Sub
 '
 'Note: this function only takes one set of input histogram data, so if you want images for both log and non-log variants,
 ' you'll need to call this function *twice*, once for each set.
-Public Sub generateHistogramImages(ByRef histogramData() As Double, ByRef channelMax() As Double, ByRef dstDIBs() As pdDIB, ByVal imgWidth As Long, ByVal imgHeight As Long)
+Public Sub GenerateHistogramImages(ByRef histogramData() As Double, ByRef channelMax() As Double, ByRef dstDIBs() As pdDIB, ByVal imgWidth As Long, ByVal imgHeight As Long)
     
     'The incoming histogramData() and channelMax() arrays are already filled, and must not be modified.
     

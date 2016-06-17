@@ -2608,7 +2608,7 @@ End Sub
 
 
 'THE BEGINNING OF EVERYTHING
-' Actually, Sub "Main" in the module "modMain" is loaded first, but all it does is set up native theming.  Once it has done that, FormMain is loaded.
+' Actually, Sub "Main" in the module "MainModule" is loaded first, but all it does is set up native theming.  Once it has done that, FormMain is loaded.
 Private Sub Form_Load()
     
     On Error GoTo FormMainLoadError
@@ -2618,7 +2618,7 @@ Private Sub Form_Load()
     '*************************************************************************************************************************************
     
     'The bulk of the loading code actually takes place inside the main module's ContinueLoadingProgram() function
-    modMain.ContinueLoadingProgram
+    MainModule.ContinueLoadingProgram
     
     
     '*************************************************************************************************************************************
@@ -3119,10 +3119,10 @@ Private Sub Form_Unload(Cancel As Integer)
     Autosave_Handler.NotifyCleanShutdown
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Shutdown appears to be clean.  Turning final control over to modMain.finalShutdown()..."
+        pdDebug.LogAction "Shutdown appears to be clean.  Turning final control over to MainModule.finalShutdown()..."
     #End If
     
-    modMain.FinalShutdown
+    MainModule.FinalShutdown
     
     'If a restart is allowed, the last thing we do before exiting is shell a new PhotoDemon instance
     'If g_UserWantsRestart Then Update_Support.initiateRestart
