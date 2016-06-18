@@ -18,13 +18,13 @@ Attribute VB_Exposed = False
 'Last updated: 19/May/15
 'Last update: various changes to improve compatibility with the new Uniscribe backend (see pdGlyphCollection)
 '
-'This class handles the messy business of font management for PD's new text layers.  It intermixes GDI, GDI+, and Uniscribe
-' as necessary to provide a comprehensive text rendering solution.
+'This class handles the messy business of font management for PD's text and typography layers.  It intermixes
+' GDI, GDI+, and Uniscribe as necessary to provide a comprehensive text rendering solution.
 '
-'I had originally planned to split this class in two, as a GDI-specific backend and a separate GDI+-specific backend (with
-' Uniscribe stuff handled totally separately).  But there are complications with this.  GDI and GDI+ have different strengths
-' and weaknesses (GDI has no 32-bpp rendering support, while GDI+ doesn't support OpenType), so to really provide a decent
-' font experience without native libraries, one must utilize parts of all the libraries.
+'I originally planned to split this class in two, as a GDI-specific backend and a separate GDI+-specific backend (with
+' Uniscribe stuff handled separately).  But there are complications with this.  GDI and GDI+ have different strengths
+' and weaknesses (GDI has no 32-bpp rendering support, while GDI+ doesn't support OpenType), so to really provide a
+' decent font experience without native libraries, one must utilize parts of all the libraries.
 '
 'Hence this class.  Here's the basic setup:
 '
@@ -196,22 +196,6 @@ End Enum
     Private Const QualityModeInvalid = -1, QualityModeDefault = 0, QualityModeLow = 1, QualityModeHigh = 2
 #End If
 
-'Compositing quality constants; there are really only three settings: HighSpeed, AssumeLinear, and GammaCorrected
-' (in that order, going from fast performance to slow performance)
-Private Enum GdiPlusCompositingQuality
-    CompositingQualityInvalid = QualityModeInvalid
-    CompositingQualityDefault = QualityModeDefault
-    CompositingQualityHighSpeed = QualityModeLow
-    CompositingQualityHighQuality = QualityModeHigh
-    CompositingQualityGammaCorrected
-    CompositingQualityAssumeLinear
-End Enum
-
-#If False Then
-    Private Const CompositingQualityInvalid = QualityModeInvalid, CompositingQualityDefault = QualityModeDefault, CompositingQualityHighSpeed = QualityModeLow
-    Private Const CompositingQualityHighQuality = QualityModeHigh, CompositingQualityGammaCorrected = 0, CompositingQualityAssumeLinear = 0
-#End If
-
 'SmoothingMode controls generic AA operations for pens
 Private Enum GdiPlusSmoothingMode
     SmoothingModeInvalid = QualityModeInvalid
@@ -225,22 +209,6 @@ End Enum
 #If False Then
     Private Const SmoothingModeInvalid = QualityModeInvalid, SmoothingModeDefault = QualityModeDefault, SmoothingModeHighSpeed = QualityModeLow, SmoothingModeHighQuality = QualityModeHigh
     Private Const SmoothingModeNone = 0, SmoothingModeAntiAlias = 0
-#End If
-
-'Pixel offset mode controls the "theoretical" positioning of pixel commands.  Half mode treats pixel coordinates as occurring "between" physical pixels,
-' which can improve AA output
-Private Enum GdiPlusPixelOffsetMode
-    PixelOffsetModeInvalid = QualityModeInvalid
-    PixelOffsetModeDefault = QualityModeDefault
-    GP_POM_HighSpeed = QualityModeLow
-    GP_POM_HighQuality = QualityModeHigh
-    PixelOffsetModeNone
-    PixelOffsetModeHalf
-End Enum
-
-#If False Then
-    Private Const PixelOffsetModeInvalid = QualityModeInvalid, PixelOffsetModeDefault = QualityModeDefault, GP_POM_HighSpeed = QualityModeLow, GP_POM_HighQuality = QualityModeHigh
-    Private Const PixelOffsetModeNone = 0, PixelOffsetModeHalf = 0
 #End If
 
 'GDI+ supports multiple text antialiasing modes, but half of them don't work on 32-bpp rendering targets (UGGGGGH).  Rather than expose a confusing list
@@ -335,9 +303,7 @@ Private Declare Function GdipMeasureString Lib "gdiplus" (ByVal srcGraphics As L
 'GDI+ graphics container font functions
 Private Declare Function GdipSetTextRenderingHint Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newRenderHintMode As GdiPlusTextRenderingHint) As Long
 Private Declare Function GdipSetTextContrast Lib "gdiplus" (ByVal dstGraphics As Long, ByVal textContrast As Long) As Long
-Private Declare Function GdipSetCompositingQuality Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newCompositingQuality As GdiPlusCompositingQuality) As Long
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newSmoothingMode As GdiPlusSmoothingMode) As Long
-Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newPixelOffsetMode As GdiPlusPixelOffsetMode) As Long
 
 'GDI+ Render functions
 Private Declare Function GdipDrawString Lib "gdiplus" (ByVal dstGraphics As Long, ByVal ptrToString As Long, ByVal strLength As Long, ByVal gdipFontHandle As Long, ByRef layoutRect As RECTF, ByVal gdipStringFormat As Long, ByVal gdipBrush As Long) As Long
@@ -1471,13 +1437,9 @@ Private Function RenderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
         Debug.Print "Failed to set text contrast " & m_TextContrast
     End If
     
-    If GdipSetCompositingQuality(dstGraphics, CompositingQualityAssumeLinear) <> 0 Then
-        Debug.Print "Failed to set compositing quality."
-    End If
-    
-    If GdipSetPixelOffsetMode(dstGraphics, PixelOffsetModeHalf) <> 0 Then
-        Debug.Print "Failed to set pixel offset mode."
-    End If
+    'New GDI+ definitions should look like this:
+    If Not GDI_Plus.SetGDIPlusGraphicsProperty(dstGraphics, P2_SurfaceBlendUsingSRGBGamma, GP_CQ_AssumeLinear) Then Debug.Print "Failed to set compositing quality."
+    If Not GDI_Plus.SetGDIPlusGraphicsProperty(dstGraphics, P2_SurfacePixelOffset, GP_POM_Half) Then Debug.Print "Failed to set pixel offset mode."
     
     'Create a solid fill brush.  (In the future, we'll add more impressive options!)
     Dim gdipBrush As Long
@@ -1502,7 +1464,7 @@ Private Function RenderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
         
         'If the offset value is negative, we want to increase our rendering offset proportionally.  (Note that we add an
         ' extra pixel to account for possible antialiasing along the border.)
-        If firstCharABCWidth.abcfA < 0 Then
+        If (firstCharABCWidth.abcfA < 0) Then
             
             Dim newLeft As Long, newWidth As Long
             newLeft = boundingRect.Left + Abs(firstCharABCWidth.abcfA) + 1
@@ -1572,11 +1534,11 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     End With
     
     'Next, set up all container-specific path settings
-    Dim targetSmoothingMode As GdiPlusSmoothingMode, targetOffsetMode As GdiPlusPixelOffsetMode
+    Dim targetSmoothingMode As GdiPlusSmoothingMode, targetOffsetMode As GP_PixelOffsetMode
     
-    'Compositing quality does not change; GDI+ is unreliable in its handling of compositing quality (which affects gamma correction), and it
-    ' can cause premultiplied alpha to be calculated incorrectly, leading to random hot pixels.
-    GdipSetCompositingQuality dstGraphics, CompositingQualityHighSpeed
+    'Compositing quality does not change; GDI+ is unreliable in its handling of compositing quality (which assumes gamma correction),
+    ' and it can cause premultiplied alpha to be calculated incorrectly, leading to random hot pixels.
+    GDI_Plus.SetGDIPlusGraphicsProperty dstGraphics, P2_SurfaceBlendUsingSRGBGamma, GP_CQ_AssumeLinear
     
     'Antialiasing settings currently affect both smoothing mode and offset mode.  Offset mode is particularly relevant when working with
     ' tiny text, as it greatly improves clarity to use half mode.  (Also, note that antialiasing affects *all drawing operations on the target*,
@@ -1585,15 +1547,15 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         
         Case pdta_None
             targetSmoothingMode = SmoothingModeHighSpeed
-            targetOffsetMode = GP_POM_HighSpeed
+            targetOffsetMode = GP_POM_None
         
         Case pdta_Standard
             targetSmoothingMode = SmoothingModeAntiAlias
-            targetOffsetMode = GP_POM_HighSpeed
+            targetOffsetMode = GP_POM_None
         
         Case pdta_Crisp
             targetSmoothingMode = SmoothingModeAntiAlias
-            targetOffsetMode = PixelOffsetModeHalf
+            targetOffsetMode = GP_POM_Half
         
     End Select
     
@@ -1715,7 +1677,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         If (gdipBackgroundBrush <> 0) Then
             
             'Prior to filling, set high-speed offset mode.
-            GdipSetPixelOffsetMode dstGraphics, GP_POM_HighSpeed
+            GDI_Plus.SetGDIPlusGraphicsProperty dstGraphics, P2_SurfacePixelOffset, GP_POM_None
             
             'If an outline is being drawn, we don't need antialiasing, which also improves performance
             If (gdipBackBorderPen <> 0) Then
@@ -1731,7 +1693,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         
         'Now we can set our desired smoothing and offset modes, which are constant for all remaining draw operations
         GdipSetSmoothingMode dstGraphics, targetSmoothingMode
-        GdipSetPixelOffsetMode dstGraphics, targetOffsetMode
+        GDI_Plus.SetGDIPlusGraphicsProperty dstGraphics, P2_SurfacePixelOffset, targetOffsetMode
                 
         'If background border is active, stroke it now
         If (gdipBackBorderPen <> 0) Then

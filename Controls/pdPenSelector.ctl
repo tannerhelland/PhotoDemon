@@ -69,10 +69,13 @@ Private m_PenPreview As pd2DPen
 Private m_PreviewPath As pd2DPath
 
 'When the "select pen" dialog is live, this will be set to TRUE
-Private isDialogLive As Boolean
+Private m_IsDialogLive As Boolean
 
 'The rectangle where the pen preview is actually rendered, and a boolean to track whether the mouse is inside that rect
 Private m_PenRect As RECTF, m_MouseInsidePenRect As Boolean, m_MouseDownPenRect As Boolean
+
+'2D painting support classes
+Private m_Painter As pd2DPainter
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -209,7 +212,7 @@ End Sub
 
 Private Sub RaisePenDialog()
 
-    isDialogLive = True
+    m_IsDialogLive = True
     
     'Backup the current pen; if the dialog is canceled, we want to restore it
     Dim NewPen As String, oldPen As String
@@ -222,7 +225,7 @@ Private Sub RaisePenDialog()
         Pen = oldPen
     End If
     
-    isDialogLive = False
+    m_IsDialogLive = False
     
 End Sub
 
@@ -230,6 +233,9 @@ Private Sub UserControl_Initialize()
     
     Set m_PenPreview = New pd2DPen
     Set m_PreviewPath = New pd2DPath
+    
+    'Prep painting classes
+    Drawing2D.QuickCreatePainter m_Painter
     
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
@@ -329,6 +335,9 @@ Private Sub RedrawBackBuffer()
             GDI_Plus.GDIPlusFillPatternToDC bufferDC, .Left, .Top, .Width, .Height, g_CheckerboardPattern
         End With
         
+        Dim cSurface As pd2DSurface, cPen As pd2DPen
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+        
         'Next, create a matching GDI+ pen
         m_PenPreview.SetPenPropertiesFromXML Me.Pen
         
@@ -337,7 +346,7 @@ Private Sub RedrawBackBuffer()
             'Prep the preview path.  Note that we manually pad it to make the preview look a little prettier.
             Dim hPadding As Single, vPadding As Single
             hPadding = m_PenPreview.GetPenProperty(P2_PenWidth) * 2
-            If hPadding > FixDPIFloat(12) Then hPadding = FixDPIFloat(12)
+            If (hPadding > FixDPIFloat(12)) Then hPadding = FixDPIFloat(12)
             vPadding = hPadding
             
             m_PreviewPath.ResetPath
@@ -353,6 +362,8 @@ Private Sub RedrawBackBuffer()
         outlineColor = m_Colors.RetrieveColor(PDPS_Border, Me.Enabled, m_MouseDownPenRect, m_MouseInsidePenRect)
         If m_MouseInsidePenRect Then outlineWidth = 3 Else outlineWidth = 1
         GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_PenRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
+        
+        Set cSurface = Nothing: Set cPen = Nothing
         
     End If
     

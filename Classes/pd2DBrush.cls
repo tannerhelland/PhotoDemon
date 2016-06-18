@@ -32,6 +32,8 @@ Attribute VB_Exposed = False
 'This class also supports gradient brushes.  Gradient brushes are managed differently; they rely on a pd2DGradient class,
 ' which manages all gradient-related settings and simply passes this class a bare handle as necessary.
 '
+'Texture brushes are still TODO.
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
@@ -522,4 +524,8 @@ Private Sub Class_Initialize()
         .Height = 100
     End With
     
+End Sub
+
+Private Sub Class_Terminate()
+    Me.ReleaseBrush
 End Sub
