@@ -99,11 +99,12 @@ Public Enum PD_2D_SURFACE_SETTINGS
     P2_SurfacePixelOffset = 1
     P2_SurfaceRenderingOriginX = 2
     P2_SurfaceRenderingOriginY = 3
-    [_P2_NumOfSurfaceSettings] = 4
+    P2_SurfaceBlendUsingSRGBGamma = 4
+    [_P2_NumOfSurfaceSettings] = 5
 End Enum
 
 #If False Then
-    Private Const P2_SurfaceAntialiasing = 0, P2_SurfacePixelOffset = 1, P2_SurfaceRenderingOriginX = 2, P2_SurfaceRenderingOriginY = 3, P2_NumOfSurfaceSettings = 4
+    Private Const P2_SurfaceAntialiasing = 0, P2_SurfacePixelOffset = 1, P2_SurfaceRenderingOriginX = 2, P2_SurfaceRenderingOriginY = 3, P2_SurfaceBlendUsingSRGBGamma = 4, P2_NumOfSurfaceSettings = 5
 #End If
 
 'The whole point of Drawing2D is to avoid backend-specific parameters.  As such, we necessarily wrap a number of
@@ -322,7 +323,7 @@ Private m_GDIPlusAvailable As Boolean
 Private m_DebugMode As Boolean
 
 'When debug mode is active, live counts of various drawing objects are tracked on a per-backend basis
-Private m_SurfaceCount_GDIPlus As Long, m_PenCount_GDIPlus As Long, m_BrushCount_GDIPlus As Long
+Private m_SurfaceCount_GDIPlus As Long, m_PenCount_GDIPlus As Long, m_BrushCount_GDIPlus As Long, m_RegionCount_GDIPlus As Long
 
 'Shortcut function for creating a generic painter
 Public Function QuickCreatePainter(ByRef dstPainter As pd2DPainter) As Boolean
@@ -498,6 +499,15 @@ Public Sub DEBUG_NotifyPenCountChange(ByVal targetBackend As PD_2D_RENDERING_BAC
             If objectCreated Then m_PenCount_GDIPlus = m_PenCount_GDIPlus + 1 Else m_PenCount_GDIPlus = m_PenCount_GDIPlus - 1
         Case Else
             InternalRenderingError "Bad Parameter", "Pen creation/destruction was not counted: backend ID unknown"
+    End Select
+End Sub
+
+Public Sub DEBUG_NotifyRegionCountChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal objectCreated As Boolean)
+    Select Case targetBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            If objectCreated Then m_RegionCount_GDIPlus = m_RegionCount_GDIPlus + 1 Else m_RegionCount_GDIPlus = m_RegionCount_GDIPlus - 1
+        Case Else
+            InternalRenderingError "Bad Parameter", "Region creation/destruction was not counted: backend ID unknown"
     End Select
 End Sub
 

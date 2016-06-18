@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Graphics Path Wrapper
 'Copyright 2014-2016 by Tanner Helland
 'Created: 17/October/14 (though assembled from various parts written much earlier)
-'Last updated: 09/May/15
-'Last update: integrate with new pdGraphixMatrix class, for easier affine transformations
+'Last updated: 18/June/16
+'Last update: continued work on bringing this class into the pd2D fold
 'Dependencies: pdGraphicsMatrix, for applying affine transformations to a path.
 '
 'This class is a VB6-friendly wrapper for the GDI+ GraphicsPath object.  It is not intended as a comprehensive interface;
@@ -24,7 +24,7 @@ Attribute VB_Exposed = False
 '
 'The GDI+ path handle is created at class initialization, and released at class termination.  The path handle is
 ' persistent by design, so no functions are provided for recreating or deleting it.  If you need to start over, use
-' the resetPath() function.
+' the ResetPath() function.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/

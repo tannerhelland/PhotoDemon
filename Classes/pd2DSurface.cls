@@ -42,6 +42,7 @@ Private m_DebugMode As Boolean
 Private m_SurfaceAntialiasing As PD_2D_Antialiasing
 Private m_SurfacePixelOffset As PD_2D_PixelOffset
 Private m_SurfaceRenderingOriginX As Single, m_SurfaceRenderingOriginY As Single
+Private m_SurfaceBlendUsingSRGBGamma As Boolean
 
 'Get/set individual settings.  Note that these just wrap the generic Get/SetPenProperty functions, below.
 Public Function GetSurfaceAntialiasing() As PD_2D_Antialiasing
@@ -60,6 +61,10 @@ Public Function GetSurfaceRenderingOriginY() As Single
     GetSurfaceRenderingOriginY = Me.GetSurfaceProperty(P2_SurfaceRenderingOriginY)
 End Function
 
+Public Function GetSurfaceBlendUsingSRGBGamma() As Boolean
+    GetSurfaceBlendUsingSRGBGamma = Me.GetSurfaceProperty(P2_SurfaceBlendUsingSRGBGamma)
+End Function
+
 Public Sub SetSurfaceAntialiasing(ByVal newSetting As PD_2D_Antialiasing)
     Me.SetSurfaceProperty P2_SurfaceAntialiasing, newSetting
 End Sub
@@ -74,6 +79,10 @@ End Sub
 
 Public Sub SetSurfaceRenderingOriginY(ByVal newSetting As Single)
     Me.SetSurfaceProperty P2_SurfaceRenderingOriginY, newSetting
+End Sub
+
+Public Sub SetSurfaceBlendUsingSRGBGamma(ByVal newSetting As Boolean)
+    Me.SetSurfaceProperty P2_SurfaceBlendUsingSRGBGamma, newSetting
 End Sub
 
 'Get/set individual settings by enum type
@@ -92,6 +101,9 @@ Public Function GetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS) As Va
         
         Case P2_SurfaceRenderingOriginY
             GetSurfaceProperty = m_SurfaceRenderingOriginY
+        
+        Case P2_SurfaceBlendUsingSRGBGamma
+            GetSurfaceProperty = m_SurfaceBlendUsingSRGBGamma
     
     End Select
 
@@ -113,11 +125,45 @@ Public Sub SetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS, ByVal newS
         Case P2_SurfaceRenderingOriginY
             m_SurfaceRenderingOriginY = CSng(newSetting)
             
+        Case P2_SurfaceBlendUsingSRGBGamma
+            m_SurfaceBlendUsingSRGBGamma = CBool(newSetting)
+            
     End Select
     
     RelayPropertyChangeToBackend propID
     
 End Sub
+
+'Some property changes exist only at run-time.  Because these properties are not well-defined, they do not support
+' serialization (e.g. you cannot save/load them to a string).  Clipping is one such property, because clipping may
+' be undefined, a simple rect, or a complex region, and pd2D doesn't implement all those features... yet.
+Public Function SetSurfaceClip_FromRectangle(ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Boolean
+
+    If (m_SurfaceHandle <> 0) Then
+    
+        Select Case m_SurfaceBackend
+            
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+            
+        End Select
+        
+    Else
+        SetSurfaceClip_FromRectangle = False
+    End If
+        
+End Function
+
+Friend Function SetSurfaceClip_FromRectF(ByRef srcRectF As RECTF) As Boolean
+    With srcRectF
+        SetSurfaceClip_FromRectF = SetSurfaceClip_FromRectangle(.Left, .Top, .Width, .Height)
+    End With
+End Function
+
+Friend Function SetSurfaceClip_FromRectL(ByRef srcRectL As RECTL) As Boolean
+    With srcRectL
+        SetSurfaceClip_FromRectL = SetSurfaceClip_FromRectangle(.Left, .Top, .Right - .Left, .Bottom - .Top)
+    End With
+End Function
 
 'Wrap this surface around some existing hDC.  It's fine to call this function multiple times on the same DC - changes to the handle
 ' are detected automatically
@@ -228,6 +274,13 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_SURFACE_SETTINGS)
                     Case P2_SurfaceRenderingOriginY
                         GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, propID, m_SurfaceRenderingOriginY
                         
+                    Case P2_SurfaceBlendUsingSRGBGamma
+                        If m_SurfaceBlendUsingSRGBGamma Then
+                            GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, P2_SurfaceBlendUsingSRGBGamma, GP_CQ_GammaCorrected
+                        Else
+                            GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, P2_SurfaceBlendUsingSRGBGamma, GP_CQ_AssumeLinear
+                        End If
+                        
                 End Select
                 
             'In the future, other backends can be handled here...
@@ -244,6 +297,7 @@ Public Sub ResetAllProperties()
     Me.SetSurfaceProperty P2_SurfacePixelOffset, P2_PO_Normal
     Me.SetSurfaceProperty P2_SurfaceRenderingOriginX, 0#
     Me.SetSurfaceProperty P2_SurfaceRenderingOriginY, 0#
+    Me.SetSurfaceProperty P2_SurfaceBlendUsingSRGBGamma, False
 End Sub
 
 'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
@@ -256,5 +310,5 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-    ReleaseSurface
+    Me.ReleaseSurface
 End Sub

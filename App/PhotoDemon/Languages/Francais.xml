@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.193</langversion>
+<langversion>6.7.194</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -2428,11 +2428,11 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <!-- END text for VBP_ZoomModule.bas-->
 
-<!-- BEGIN text for IFileDialog.cls -->
+<!-- BEGIN text for cFileDialogVista.cls -->
 
-<!-- IFileDialog.cls contains 0 phrases. -->
+<!-- cFileDialogVista.cls contains 0 phrases. -->
 
-<!-- END text for IFileDialog.cls-->
+<!-- END text for cFileDialogVista.cls-->
 
 <!-- BEGIN text for cBasicBuffer.cls -->
 
@@ -2488,11 +2488,17 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <!-- END text for IMRUList.cls-->
 
-<!-- BEGIN text for pdGraphicsBrush.cls -->
+<!-- BEGIN text for pd2DBrush.cls -->
 
-<!-- pdGraphicsBrush.cls contains 0 phrases. -->
+<!-- pd2DBrush.cls contains 0 phrases. -->
 
-<!-- END text for pdGraphicsBrush.cls-->
+<!-- END text for pd2DBrush.cls-->
+
+<!-- BEGIN text for pd2DGradient.cls -->
+
+<!-- pd2DGradient.cls contains 0 phrases. -->
+
+<!-- END text for pd2DGradient.cls-->
 
 <!-- BEGIN text for pd2DPainter.cls -->
 
@@ -2500,17 +2506,29 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <!-- END text for pd2DPainter.cls-->
 
-<!-- BEGIN text for pdGraphicsPen.cls -->
+<!-- BEGIN text for pd2DPath.cls -->
 
-<!-- pdGraphicsPen.cls contains 0 phrases. -->
+<!-- pd2DPath.cls contains 0 phrases. -->
 
-<!-- END text for pdGraphicsPen.cls-->
+<!-- END text for pd2DPath.cls-->
 
-<!-- BEGIN text for pdSurface2D.cls -->
+<!-- BEGIN text for pd2DPen.cls -->
 
-<!-- pdSurface2D.cls contains 0 phrases. -->
+<!-- pd2DPen.cls contains 0 phrases. -->
 
-<!-- END text for pdSurface2D.cls-->
+<!-- END text for pd2DPen.cls-->
+
+<!-- BEGIN text for pd2DRegion.cls -->
+
+<!-- pd2DRegion.cls contains 0 phrases. -->
+
+<!-- END text for pd2DRegion.cls-->
+
+<!-- BEGIN text for pd2DSurface.cls -->
+
+<!-- pd2DSurface.cls contains 0 phrases. -->
+
+<!-- END text for pd2DSurface.cls-->
 
 <!-- BEGIN text for pdCaption.cls -->
 
@@ -2701,23 +2719,11 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <!-- END text for pdGlyphCollection.cls-->
 
-<!-- BEGIN text for pdGradient.cls -->
-
-<!-- pdGradient.cls contains 0 phrases. -->
-
-<!-- END text for pdGradient.cls-->
-
 <!-- BEGIN text for pdGraphicsMatrix.cls -->
 
 <!-- pdGraphicsMatrix.cls contains 0 phrases. -->
 
 <!-- END text for pdGraphicsMatrix.cls-->
-
-<!-- BEGIN text for pdGraphicsPath.cls -->
-
-<!-- pdGraphicsPath.cls contains 0 phrases. -->
-
-<!-- END text for pdGraphicsPath.cls-->
 
 <!-- BEGIN text for pdICCProfile.cls -->
 
