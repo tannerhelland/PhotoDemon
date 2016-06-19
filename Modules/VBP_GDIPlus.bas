@@ -312,6 +312,13 @@ Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef gdipToken As Long, 
 Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal gdipToken As Long) As GP_Result
 
 'Object creation/destruction/property functions
+Private Declare Function GdipCloneRegion Lib "gdiplus" (ByVal srcRegion As Long, ByRef dstRegion As Long) As GP_Result
+
+Private Declare Function GdipCombineRegionRect Lib "gdiplus" (ByVal hRegion As Long, ByRef srcRectF As RECTF, ByVal dstCombineMode As GP_CombineMode) As GP_Result
+Private Declare Function GdipCombineRegionRectI Lib "gdiplus" (ByVal hRegion As Long, ByRef srcRectL As RECTL, ByVal dstCombineMode As GP_CombineMode) As GP_Result
+Private Declare Function GdipCombineRegionRegion Lib "gdiplus" (ByVal dstRegion As Long, ByVal srcRegion As Long, ByVal dstCombineMode As GP_CombineMode) As GP_Result
+Private Declare Function GdipCombineRegionPath Lib "gdiplus" (ByVal dstRegion As Long, ByVal srcPath As Long, ByVal dstCombineMode As GP_CombineMode) As GP_Result
+
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef dstGraphics As Long) As GP_Result
 Private Declare Function GdipCreateHatchBrush Lib "gdiplus" (ByVal bHatchStyle As GP_PatternStyle, ByVal bForeColor As Long, ByVal bBackColor As Long, ByRef dstBrush As Long) As GP_Result
 Private Declare Function GdipCreateLineBrush Lib "gdiplus" (ByRef firstPoint As POINTFLOAT, ByRef secondPoint As POINTFLOAT, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal brushWrapMode As GP_WrapMode, ByRef dstBrush As Long) As GP_Result
@@ -330,6 +337,7 @@ Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal hGraphics As Lo
 Private Declare Function GdipDeletePen Lib "gdiplus" (ByVal hPen As Long) As GP_Result
 Private Declare Function GdipDeleteRegion Lib "gdiplus" (ByVal hRegion As Long) As GP_Result
 
+Private Declare Function GdipGetClip Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstRegion As Long) As GP_Result
 Private Declare Function GdipGetCompositingQuality Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstCompositingQuality As GP_CompositingQuality) As GP_Result
 Private Declare Function GdipGetPenColor Lib "gdiplus" (ByVal hPen As Long, ByRef dstPARGBColor As Long) As GP_Result
 Private Declare Function GdipGetPenDashCap Lib "gdiplus" Alias "GdipGetPenDashCap197819" (ByVal hPen As Long, ByRef dstCap As GP_DashCap) As GP_Result
@@ -341,12 +349,22 @@ Private Declare Function GdipGetPenMiterLimit Lib "gdiplus" (ByVal hPen As Long,
 Private Declare Function GdipGetPenMode Lib "gdiplus" (ByVal hPen As Long, ByRef dstPenMode As GP_PenAlignment) As GP_Result
 Private Declare Function GdipGetPenWidth Lib "gdiplus" (ByVal hPen As Long, ByRef dstWidth As Single) As GP_Result
 Private Declare Function GdipGetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstMode As GP_PixelOffsetMode) As GP_Result
+Private Declare Function GdipGetRegionBounds Lib "gdiplus" (ByVal hRegion As Long, ByVal hGraphics As Long, ByRef dstRectF As RECTF) As GP_Result
+Private Declare Function GdipGetRegionBoundsI Lib "gdiplus" (ByVal hRegion As Long, ByVal hGraphics As Long, ByRef dstRectL As RECTL) As GP_Result
 Private Declare Function GdipGetRenderingOrigin Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstX As Long, ByRef dstY As Long) As GP_Result
 Private Declare Function GdipGetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstMode As GP_SmoothingMode) As GP_Result
 Private Declare Function GdipGetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByRef dstColor As Long) As GP_Result
 
+Private Declare Function GdipIsEmptyRegion Lib "gdiplus" (ByVal srcRegion As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
+Private Declare Function GdipIsInfiniteRegion Lib "gdiplus" (ByVal srcRegion As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
+Private Declare Function GdipIsEqualRegion Lib "gdiplus" (ByVal srcRegion1 As Long, ByVal srcRegion2 As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
+
+Private Declare Function GdipSetClipRect Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single, ByVal useCombineMode As GP_CombineMode) As GP_Result
+Private Declare Function GdipSetClipRegion Lib "gdiplus" (ByVal hGraphics As Long, ByVal hRegion As Long, ByVal useCombineMode As GP_CombineMode) As GP_Result
 Private Declare Function GdipSetCompositingQuality Lib "gdiplus" (ByVal hGraphics As Long, ByVal newCompositingQuality As GP_CompositingQuality) As GP_Result
+Private Declare Function GdipSetEmpty Lib "gdiplus" (ByVal hRegion As Long) As GP_Result
 Private Declare Function GdipSetImageAttributesWrapMode Lib "gdiplus" (ByVal hImageAttr As Long, ByVal newWrapMode As GP_WrapMode, ByVal argbOfClampMode As Long, ByVal bClampMustBeZero As Long) As GP_Result
+Private Declare Function GdipSetInfinite Lib "gdiplus" (ByVal hRegion As Long) As GP_Result
 Private Declare Function GdipSetLinePresetBlend Lib "gdiplus" (ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As GP_Result
 Private Declare Function GdipSetPathGradientCenterPoint Lib "gdiplus" (ByVal hBrush As Long, ByRef newCenterPoints As POINTFLOAT) As GP_Result
 Private Declare Function GdipSetPathGradientPresetBlend Lib "gdiplus" (ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As GP_Result
@@ -362,6 +380,7 @@ Private Declare Function GdipSetPenMode Lib "gdiplus" (ByVal hPen As Long, ByVal
 Private Declare Function GdipSetPenStartCap Lib "gdiplus" (ByVal hPen As Long, ByVal startCap As GP_LineCap) As GP_Result
 Private Declare Function GdipSetPenWidth Lib "gdiplus" (ByVal hPen As Long, ByVal penWidth As Single) As GP_Result
 Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_PixelOffsetMode) As GP_Result
+
 Private Declare Function GdipSetRenderingOrigin Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Long, ByVal y As Long) As GP_Result
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_SmoothingMode) As GP_Result
 Private Declare Function GdipSetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByVal newColor As Long) As GP_Result
@@ -744,8 +763,6 @@ Private Declare Function GdipFillPolygon2 Lib "gdiplus" (ByVal mGraphics As Long
 Private Declare Function GdipFillPolygon2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipIsVisibleRegionPoint Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Single, ByVal y As Single, ByVal hGraphics As Long, ByRef boolResult As Long) As Long
 Private Declare Function GdipIsVisibleRegionRect Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Single, ByVal y As Single, ByVal Width As Single, ByVal Height As Single, ByVal hGraphics As Long, ByRef dstResult As Long) As Long
-Private Declare Function GdipCombineRegionRect Lib "gdiplus" (ByVal hRegion As Long, ByRef newRect As RECTF, ByVal useCombineMode As GP_CombineMode) As Long
-Private Declare Function GdipGetRegionBounds Lib "gdiplus" (ByVal hRegion As Long, ByVal mGraphics As Long, ByRef dstRect As RECTF) As Long
 Private Declare Function GdipCreateTexture Lib "gdiplus" (ByVal hImage As Long, ByVal textureWrapMode As GP_WrapMode, ByRef hTexture As Long) As Long
 Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType, ByVal EnableFlag As Long, ByVal colorMatrixPointer As Long, ByVal grayMatrixPointer As Long, ByVal extraFlags As ColorMatrixFlags) As Long
 Private Declare Function GdipSetImageAttributesToIdentity Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType) As Long
@@ -3144,9 +3161,65 @@ Private Function GDIP_Debug_Proc(ByVal deLevel As GP_DebugEventLevel, ByVal ptrC
     
 End Function
 
-Private Function InternalGDIPlusError(ByVal errName As String, ByVal errDescription As Long, Optional ByVal errNumber As Long = 0)
+Private Function InternalGDIPlusError(Optional ByVal errName As String = vbNullString, Optional ByVal errDescription As String = vbNullString, Optional ByVal errNumber As GP_Result = GP_OK)
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  Internal GDI+ error #" & errNumber & ", """ & errName & """ - " & errDescription
+        
+        'If the caller passes an error number but no error name or description, attempt to automatically populate
+        ' these based on the error number.
+        If ((Len(errName) = 0) And (errNumber <> GP_OK)) Then
+            
+            Select Case errNumber
+                Case GP_GenericError
+                    errName = "Generic Error"
+                Case GP_InvalidParameter
+                    errName = "Invalid parameter"
+                Case GP_OutOfMemory
+                    errName = "Out of memory"
+                Case GP_ObjectBusy
+                    errName = "Object busy"
+                Case GP_InsufficientBuffer
+                    errName = "Insufficient buffer size"
+                Case GP_NotImplemented
+                    errName = "Feature is not implemented"
+                Case GP_Win32Error
+                    errName = "Win32 error"
+                Case GP_WrongState
+                    errName = "Wrong state"
+                Case GP_Aborted
+                    errName = "Operation aborted"
+                Case GP_FileNotFound
+                    errName = "File not found"
+                Case GP_ValueOverflow
+                    errName = "Value too large (overflow)"
+                Case GP_AccessDenied
+                    errName = "Access denied"
+                Case GP_UnknownImageFormat
+                    errName = "Image format was not recognized"
+                Case GP_FontFamilyNotFound
+                    errName = "Font family not found"
+                Case GP_FontStyleNotFound
+                    errName = "Font style not found"
+                Case GP_NotTrueTypeFont
+                    errName = "Font is not TrueType (only TT fonts are supported)"
+                Case GP_UnsupportedGDIPlusVersion
+                    errName = "GDI+ version is not supported"
+                Case GP_GDIPlusNotInitialized
+                    errName = "GDI+ was not initialized correctly"
+                Case GP_PropertyNotFound
+                    errName = "Property missing"
+                Case GP_PropertyNotSupported
+                    errName = "Property not supported"
+                Case Else
+                    errName = "Undefined error (number doesn't match known returns)"
+            End Select
+            
+        End If
+        
+        Dim tmpString As String
+        tmpString = "WARNING!  Internal GDI+ error #" & errNumber & ", """ & errName & """"
+        If (Len(errDescription) <> 0) Then tmpString = tmpString & ": " & errDescription
+        pdDebug.LogAction tmpString
+        
     #End If
 End Function
 
@@ -3675,5 +3748,89 @@ End Function
 
 Public Function GDIPlus_FillEllipseI(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal ellipseLeft As Long, ByVal ellipseTop As Long, ByVal ellipseWidth As Long, ByVal ellipseHeight As Long) As Boolean
     GDIPlus_FillEllipseI = CBool(GdipFillEllipseI(dstGraphics, srcBrush, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight) = GP_OK)
+End Function
+
+Public Function GDIPlus_GraphicsGetClipRegion(ByVal srcGraphics As Long) As Long
+    Dim tmpReturn As Long
+    tmpReturn = GdipGetClip(srcGraphics, GDIPlus_GraphicsGetClipRegion)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_GraphicsSetClipRect(ByVal dstGraphics As Long, ByVal clipX As Single, ByVal clipY As Single, ByVal clipWidth As Single, ByVal clipHeight As Single, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean
+    Dim tmpReturn As Long
+    tmpReturn = GdipSetClipRect(dstGraphics, clipX, clipY, clipWidth, clipHeight, useCombineMode)
+    GDIPlus_GraphicsSetClipRect = CBool(tmpReturn = GP_OK)
+    If (Not GDIPlus_GraphicsSetClipRect) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_GraphicsSetClipRegion(ByVal dstGraphics As Long, ByVal srcRegion As Long, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean
+    Dim tmpReturn As Long
+    tmpReturn = GdipSetClipRegion(dstGraphics, srcRegion, useCombineMode)
+    GDIPlus_GraphicsSetClipRegion = CBool(tmpReturn = GP_OK)
+    If (Not GDIPlus_GraphicsSetClipRegion) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_RegionAddRectF(ByVal dstRegion As Long, ByRef srcRectF As RECTF, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean
+    GDIPlus_RegionAddRectF = CBool(GdipCombineRegionRect(dstRegion, srcRectF, useCombineMode) = GP_OK)
+End Function
+
+Public Function GDIPlus_RegionAddRectL(ByVal dstRegion As Long, ByRef srcRectL As RECTL, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean
+    GDIPlus_RegionAddRectL = CBool(GdipCombineRegionRectI(dstRegion, srcRectL, useCombineMode) = GP_OK)
+End Function
+
+Public Function GDIPlus_RegionAddRegion(ByVal dstRegion As Long, ByVal srcRegion As Long, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean
+    GDIPlus_RegionAddRegion = CBool(GdipCombineRegionRegion(dstRegion, srcRegion, useCombineMode) = GP_OK)
+End Function
+
+Public Function GDIPlus_RegionAddPath(ByVal dstRegion As Long, ByVal srcPath As Long, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean
+    GDIPlus_RegionAddPath = CBool(GdipCombineRegionPath(dstRegion, srcPath, useCombineMode) = GP_OK)
+End Function
+
+Public Function GDIPlus_RegionClone(ByVal srcRegion As Long, ByRef dstRegion As Long) As Boolean
+    Dim tmpReturn As Long
+    tmpReturn = GdipCloneRegion(srcRegion, dstRegion)
+    GDIPlus_RegionClone = CBool(tmpReturn = GP_OK)
+    If (Not GDIPlus_RegionClone) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_RegionGetClipRectF(ByVal srcRegion As Long) As RECTF
+    Dim tmpReturn As Long
+    tmpReturn = GdipGetRegionBounds(srcRegion, m_TransformGraphics, GDIPlus_RegionGetClipRectF)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_RegionGetClipRectI(ByVal srcRegion As Long) As RECTL
+    Dim tmpReturn As Long
+    tmpReturn = GdipGetRegionBoundsI(srcRegion, m_TransformGraphics, GDIPlus_RegionGetClipRectI)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_RegionIsInfinite(ByVal srcRegion As Long) As Boolean
+    Dim tmpResult As Long, tmpReturn As GP_Result
+    tmpReturn = GdipIsInfiniteRegion(srcRegion, m_TransformGraphics, tmpResult)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+    GDIPlus_RegionIsInfinite = CBool(tmpResult <> 0)
+End Function
+
+Public Function GDIPlus_RegionIsEmpty(ByVal srcRegion As Long) As Boolean
+    Dim tmpResult As Long, tmpReturn As GP_Result
+    tmpReturn = GdipIsEmptyRegion(srcRegion, m_TransformGraphics, tmpResult)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+    GDIPlus_RegionIsEmpty = CBool(tmpResult <> 0)
+End Function
+
+Public Function GDIPlus_RegionsAreEqual(ByVal srcRegion1 As Long, ByVal srcRegion2 As Long) As Boolean
+    Dim tmpResult As Long, tmpReturn As GP_Result
+    tmpReturn = GdipIsEqualRegion(srcRegion1, srcRegion2, m_TransformGraphics, tmpResult)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+    GDIPlus_RegionsAreEqual = CBool(tmpResult <> 0)
+End Function
+
+Public Function GDIPlus_RegionSetEmpty(ByVal dstRegion As Long) As Boolean
+    GDIPlus_RegionSetEmpty = CBool(GdipSetEmpty(dstRegion) = GP_OK)
+End Function
+
+Public Function GDIPlus_RegionSetInfinite(ByVal dstRegion As Long) As Boolean
+    GDIPlus_RegionSetInfinite = CBool(GdipSetInfinite(dstRegion) = GP_OK)
 End Function
 
