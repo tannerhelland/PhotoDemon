@@ -137,14 +137,35 @@ End Sub
 'Some property changes exist only at run-time.  Because these properties are not well-defined, they do not support
 ' serialization (e.g. you cannot save/load them to a string).  Clipping is one such property, because clipping may
 ' be undefined, a simple rect, or a complex region, and pd2D doesn't implement all those features... yet.
-Public Function SetSurfaceClip_FromRectangle(ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Boolean
+' (GDIPlus can retrieve region data as a byte array, so we could theoretically convert that to Base64 and store it
+'  inside an XML tag.)
+Public Function GetSurfaceClippingRegion(ByRef dstRegion As pd2DRegion) As Boolean
+
+    If (m_SurfaceHandle <> 0) Then
+        
+        If (dstRegion Is Nothing) Then Set dstRegion = New pd2DRegion
+        
+        Select Case m_SurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                Dim tmpHandle As Long
+                tmpHandle = GDI_Plus.GDIPlus_GraphicsGetClipRegion(m_SurfaceHandle)
+                dstRegion.AssignExternalHandleDirectly tmpHandle
+                GetSurfaceClippingRegion = CBool(tmpHandle <> 0)
+        End Select
+        
+    Else
+        GetSurfaceClippingRegion = False
+    End If
+        
+End Function
+
+Public Function SetSurfaceClip_FromRectangle(ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
 
     If (m_SurfaceHandle <> 0) Then
     
         Select Case m_SurfaceBackend
-            
             Case P2_DefaultBackend, P2_GDIPlusBackend
-            
+                SetSurfaceClip_FromRectangle = GDI_Plus.GDIPlus_GraphicsSetClipRect(m_SurfaceHandle, rectLeft, rectTop, rectWidth, rectHeight, useCombineMode)
         End Select
         
     Else
@@ -153,16 +174,31 @@ Public Function SetSurfaceClip_FromRectangle(ByVal rectLeft As Single, ByVal rec
         
 End Function
 
-Friend Function SetSurfaceClip_FromRectF(ByRef srcRectF As RECTF) As Boolean
+Friend Function SetSurfaceClip_FromRectF(ByRef srcRectF As RECTF, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
     With srcRectF
         SetSurfaceClip_FromRectF = SetSurfaceClip_FromRectangle(.Left, .Top, .Width, .Height)
     End With
 End Function
 
-Friend Function SetSurfaceClip_FromRectL(ByRef srcRectL As RECTL) As Boolean
+Friend Function SetSurfaceClip_FromRectL(ByRef srcRectL As RECTL, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
     With srcRectL
         SetSurfaceClip_FromRectL = SetSurfaceClip_FromRectangle(.Left, .Top, .Right - .Left, .Bottom - .Top)
     End With
+End Function
+
+Friend Function SetSurfaceClip_FromRegion(ByRef srcRegion As pd2DRegion, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
+
+    If (m_SurfaceHandle <> 0) Then
+    
+        Select Case m_SurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                SetSurfaceClip_FromRegion = GDI_Plus.GDIPlus_GraphicsSetClipRegion(m_SurfaceHandle, srcRegion.GetHandle, useCombineMode)
+        End Select
+        
+    Else
+        SetSurfaceClip_FromRegion = False
+    End If
+    
 End Function
 
 'Wrap this surface around some existing hDC.  It's fine to call this function multiple times on the same DC - changes to the handle

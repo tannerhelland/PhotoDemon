@@ -134,6 +134,19 @@ End Enum
     Private Const P2_BM_Solid = 0, P2_BM_Pattern = 1, P2_BM_Gradient = 2, P2_BM_Texture = 3
 #End If
 
+Public Enum PD_2D_CombineMode
+    P2_CM_Replace = 0
+    P2_CM_Intersect = 1
+    P2_CM_Union = 2
+    P2_CM_Xor = 3
+    P2_CM_Exclude = 4
+    P2_CM_Complement = 5
+End Enum
+
+#If False Then
+    Private Const P2_CM_Replace = 0, P2_CM_Intersect = 1, P2_CM_Union = 2, P2_CM_Xor = 3, P2_CM_Exclude = 4, P2_CM_Complement = 5
+#End If
+
 Public Enum PD_2D_DashCap
     P2_DC_Flat = 0
     P2_DC_Square = 1        'NOTE: GDI+ does not support square dash caps - only flat ones - so square simply remaps to flat
@@ -330,6 +343,15 @@ Public Function QuickCreatePainter(ByRef dstPainter As pd2DPainter) As Boolean
     If (dstPainter Is Nothing) Then Set dstPainter = New pd2DPainter
     dstPainter.SetDebugMode m_DebugMode
     QuickCreatePainter = True
+End Function
+
+'Shortcut function for creating a new rectangular region with the default rendering backend
+Public Function QuickCreateRegionRectangle(ByRef dstRegion As pd2DRegion, ByVal rLeft As Single, ByVal rTop As Single, ByVal rWidth As Single, ByVal rHeight As Single) As Boolean
+    If (dstRegion Is Nothing) Then Set dstRegion = New pd2DRegion
+    With dstRegion
+        .SetDebugMode m_DebugMode
+        QuickCreateRegionRectangle = .AddRectangleF(rLeft, rTop, rWidth, rHeight, P2_CM_Replace)
+    End With
 End Function
 
 'Shortcut function for creating a new surface with the default rendering backend and default rendering settings

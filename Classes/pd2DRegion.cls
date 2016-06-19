@@ -15,15 +15,17 @@ Attribute VB_Exposed = False
 'PhotoDemon Region Class
 'Copyright 2016-2016 by Tanner Helland
 'Created: 18/June/16 (but assembled from many bits written earlier)
-'Last updated: 18/June/16
-'Last update: start migrating various region bits into this dedicated class
+'Last updated: 19/June/16
+'Last update: continue expanding functionality
 '
-'This class manages a single region instance.  Unlike other classes, a default (infinite) region is constructed
-' by default, when the class is initialized.  This greatly simplifies subsequent interactions, but it may cause
-' some confusion when debugging - so adjust any leak-checking expectations accordingly!
+'This class manages a single region instance.  Unlike other classes, this class does not delay construction of
+' the underlying object until it's actually requested; as soon as the region is modified in any way, a default
+' (infinitely large) region will be created, and subsequent requests are applied against that region.
+' This approach greatly simplifies the class's design, but note that it may cause region counts in the central
+' debugger to appear higher than other types of pd2D objects.
 '
-'At present, it is primarily based on the capabilities of GDI+.  This may change going forward, but because GDI+
-' provides a nice baseline feature set, that's where we started.
+'At present, this class is primarily based on the capabilities of GDI+.  This may change going forward,
+' but because GDI+ provides a nice baseline feature set, that's where I started.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -44,13 +46,159 @@ Private m_DebugMode As Boolean
 'Once a region has been created, this handle value will be non-zero
 Private m_RegionHandle As Long
 
-'Add your own error-handling behavior here, as desired
-Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  pd2DRegion encountered an error: """ & errName & """ - " & errDescription
-        If (ErrNum <> 0) Then pdDebug.LogAction "(Also, an error number was reported: " & ErrNum & ")"
-    #End If
+Friend Function AddRectangleF(ByVal rLeft As Single, ByVal rTop As Single, ByVal rWidth As Single, ByVal rHeight As Single, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
+    
+    If (m_RegionHandle = 0) Then Me.CreateRegion
+    
+    Dim tmpRectF As RECTF
+    tmpRectF.Left = rLeft
+    tmpRectF.Top = rTop
+    tmpRectF.Width = rWidth
+    tmpRectF.Height = rHeight
+    
+    Select Case m_RegionBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            AddRectangleF = GDI_Plus.GDIPlus_RegionAddRectF(m_RegionHandle, tmpRectF, useCombineMode)
+    End Select
+    
+End Function
+
+Friend Function AddRectangle_FromRectF(ByRef srcRectF As RECTF, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
+    
+    If (m_RegionHandle = 0) Then Me.CreateRegion
+    
+    Select Case m_RegionBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            AddRectangle_FromRectF = GDI_Plus.GDIPlus_RegionAddRectF(m_RegionHandle, srcRectF, useCombineMode)
+    End Select
+    
+End Function
+
+Friend Function AddRectangle_FromRectL(ByRef srcRectL As RECTL, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
+    
+    If (m_RegionHandle = 0) Then Me.CreateRegion
+    
+    Select Case m_RegionBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            AddRectangle_FromRectL = GDI_Plus.GDIPlus_RegionAddRectL(m_RegionHandle, srcRectL, useCombineMode)
+    End Select
+    
+End Function
+
+Friend Function AddRegion(ByRef srcRegion As pd2DRegion, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
+    
+    If (m_RegionHandle = 0) Then Me.CreateRegion
+    
+    Select Case m_RegionBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            AddRegion = GDI_Plus.GDIPlus_RegionAddRegion(m_RegionHandle, srcRegion.GetHandle, useCombineMode)
+    End Select
+    
+End Function
+
+Friend Function AddPath(ByRef srcPath As pd2DPath, Optional ByVal useCombineMode As PD_2D_CombineMode = P2_CM_Replace) As Boolean
+    
+    If (m_RegionHandle = 0) Then Me.CreateRegion
+    
+    Select Case m_RegionBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            AddPath = GDI_Plus.GDIPlus_RegionAddPath(m_RegionHandle, srcPath.GetHandle, useCombineMode)
+    End Select
+    
+End Function
+
+Friend Function CloneRegion(ByRef srcRegion As pd2DRegion) As Boolean
+
+    If (m_RegionHandle <> 0) Then Me.ReleaseRegion
+    
+    Select Case m_RegionBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            CloneRegion = GDI_Plus.GDIPlus_RegionClone(srcRegion.GetHandle, m_RegionHandle)
+    End Select
+    
+End Function
+
+Friend Function GetRegionBoundsF() As RECTF
+    If (m_RegionHandle <> 0) Then
+        Select Case m_RegionBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                GetRegionBoundsF = GDI_Plus.GDIPlus_RegionGetClipRectF(m_RegionHandle)
+        End Select
+    End If
+End Function
+
+Friend Function GetRegionBoundsL() As RECTL
+    If (m_RegionHandle <> 0) Then
+        Select Case m_RegionBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                GetRegionBoundsL = GDI_Plus.GDIPlus_RegionGetClipRectI(m_RegionHandle)
+        End Select
+    End If
+End Function
+
+'Don't use this function unless you know what you're doing.  This will copy (*not* clone) an external handle from the
+' current backend.  That handle *must not be in use elsewhere*, because if it is deleted, this class has no way of
+' detecting that.  (This function is only used when a convoluted API does not allow us to directly grab a returned
+' handle ourselves.)
+Public Sub AssignExternalHandleDirectly(ByVal srcHandle As Long)
+    If (m_RegionHandle <> 0) Then Me.ReleaseRegion
+    m_RegionHandle = srcHandle
 End Sub
+
+Public Function MakeRegionInfinite() As Boolean
+
+    If (m_RegionHandle = 0) Then Me.CreateRegion
+    
+    Select Case m_RegionBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+             MakeRegionInfinite = GDI_Plus.GDIPlus_RegionSetInfinite(m_RegionHandle)
+    End Select
+    
+End Function
+
+Public Function MakeRegionEmpty() As Boolean
+
+    If (m_RegionHandle = 0) Then Me.CreateRegion
+    
+    Select Case m_RegionBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+             MakeRegionEmpty = GDI_Plus.GDIPlus_RegionSetEmpty(m_RegionHandle)
+    End Select
+    
+End Function
+
+Public Function IsRegionInfinite() As Boolean
+
+    If (m_RegionHandle = 0) Then Me.CreateRegion
+    
+    Select Case m_RegionBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+             IsRegionInfinite = GDI_Plus.GDIPlus_RegionIsInfinite(m_RegionHandle)
+    End Select
+    
+End Function
+
+Public Function IsRegionEmpty() As Boolean
+
+    If (m_RegionHandle = 0) Then Me.CreateRegion
+    
+    Select Case m_RegionBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+             IsRegionEmpty = GDI_Plus.GDIPlus_RegionIsEmpty(m_RegionHandle)
+    End Select
+    
+End Function
+
+Public Function IsEqual(ByRef srcRegion As pd2DRegion) As Boolean
+    
+    If (m_RegionHandle = 0) Then Me.CreateRegion
+    
+    Select Case m_RegionBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+             IsEqual = GDI_Plus.GDIPlus_RegionsAreEqual(srcRegion.GetHandle, m_RegionHandle)
+    End Select
+    
+End Function
 
 Public Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As Long
     If (createAsNecessary And (m_RegionHandle = 0)) Then
@@ -80,7 +228,7 @@ End Function
 '       yet exist, it will be auto-created.
 Friend Function CreateRegion() As Boolean
 
-    If (m_RegionHandle <> 0) Then ReleaseRegion
+    If (m_RegionHandle <> 0) Then Me.ReleaseRegion
     
     'Call the backend-specific creation function
     Select Case m_RegionBackend
@@ -124,6 +272,14 @@ End Sub
 'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
 Public Sub SetDebugMode(ByVal newMode As Boolean)
     m_DebugMode = newMode
+End Sub
+
+'Add your own error-handling behavior here, as desired
+Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  pd2DRegion encountered an error: """ & errName & """ - " & errDescription
+        If (ErrNum <> 0) Then pdDebug.LogAction "(Also, an error number was reported: " & ErrNum & ")"
+    #End If
 End Sub
 
 Private Sub Class_Initialize()
