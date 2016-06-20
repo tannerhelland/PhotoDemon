@@ -347,7 +347,7 @@ End Function
 
 'Shortcut function for creating a new rectangular region with the default rendering backend
 Public Function QuickCreateRegionRectangle(ByRef dstRegion As pd2DRegion, ByVal rLeft As Single, ByVal rTop As Single, ByVal rWidth As Single, ByVal rHeight As Single) As Boolean
-    If (dstRegion Is Nothing) Then Set dstRegion = New pd2DRegion
+    If (dstRegion Is Nothing) Then Set dstRegion = New pd2DRegion Else dstRegion.ResetAllProperties
     With dstRegion
         .SetDebugMode m_DebugMode
         QuickCreateRegionRectangle = .AddRectangleF(rLeft, rTop, rWidth, rHeight, P2_CM_Replace)
@@ -356,7 +356,7 @@ End Function
 
 'Shortcut function for creating a new surface with the default rendering backend and default rendering settings
 Public Function QuickCreateSurfaceFromDC(ByRef dstSurface As pd2DSurface, ByVal srcDC As Long, Optional ByVal enableAntialiasing As Boolean = False) As Boolean
-    If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface
+    If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface Else dstSurface.ResetAllProperties
     With dstSurface
         .SetDebugMode m_DebugMode
         If enableAntialiasing Then .SetSurfaceAntialiasing P2_AA_Grayscale Else .SetSurfaceAntialiasing P2_AA_None
@@ -366,7 +366,7 @@ End Function
 
 'Shortcut function for creating a solid brush
 Public Function QuickCreateSolidBrush(ByRef dstBrush As pd2DBrush, Optional ByVal brushColor As Long = vbWhite, Optional ByVal brushOpacity As Single = 100#) As Boolean
-    If (dstBrush Is Nothing) Then Set dstBrush = New pd2DBrush
+    If (dstBrush Is Nothing) Then Set dstBrush = New pd2DBrush Else dstBrush.ResetAllProperties
     With dstBrush
         .SetDebugMode m_DebugMode
         .SetBrushColor brushColor
@@ -378,7 +378,7 @@ End Function
 'Shortcut function for creating a two-color gradient brush
 Public Function QuickCreateTwoColorGradientBrush(ByRef dstBrush As pd2DBrush, ByRef gradientBoundary As RECTF, Optional ByVal firstColor As Long = vbBlack, Optional ByVal secondColor As Long = vbWhite, Optional ByVal firstColorOpacity As Single = 100#, Optional ByVal secondColorOpacity As Single = 100#, Optional ByVal gradientShape As PD_2D_GradientShape = P2_GS_Linear, Optional ByVal gradientAngle As Single = 0#) As Boolean
     
-    If (dstBrush Is Nothing) Then Set dstBrush = New pd2DBrush
+    If (dstBrush Is Nothing) Then Set dstBrush = New pd2DBrush Else dstBrush.ResetAllProperties
     
     Dim tmpGradient As pd2DGradient
     Set tmpGradient = New pd2DGradient
@@ -400,7 +400,7 @@ End Function
 
 'Shortcut function for creating a solid pen
 Public Function QuickCreateSolidPen(ByRef dstPen As pd2DPen, Optional ByVal penWidth As Single = 1#, Optional ByVal penColor As Long = vbWhite, Optional ByVal penOpacity As Single = 100#, Optional ByVal penLineJoin As PD_2D_LineJoin = P2_LJ_Miter, Optional ByVal penLineCap As PD_2D_LineCap = P2_LC_Flat) As Boolean
-    If (dstPen Is Nothing) Then Set dstPen = New pd2DPen
+    If (dstPen Is Nothing) Then Set dstPen = New pd2DPen Else dstPen.ResetAllProperties
     With dstPen
         .SetDebugMode m_DebugMode
         .SetPenWidth penWidth
@@ -424,8 +424,8 @@ End Function
 ' to bypass GDI+ subpixel flaws between 1 and 2 pixels) while the bottom pen will always be 3.0 pixels wide.
 Public Function QuickCreatePairOfUIPens(ByRef dstPenBase As pd2DPen, ByRef dstPenTop As pd2DPen, Optional ByVal useHighlightColor As Boolean = False, Optional ByVal penLineJoin As PD_2D_LineJoin = P2_LJ_Miter, Optional ByVal penLineCap As PD_2D_LineCap = P2_LC_Flat) As Boolean
     
-    If (dstPenBase Is Nothing) Then Set dstPenBase = New pd2DPen
-    If (dstPenTop Is Nothing) Then Set dstPenTop = New pd2DPen
+    If (dstPenBase Is Nothing) Then Set dstPenBase = New pd2DPen Else dstPenBase.ResetAllProperties
+    If (dstPenTop Is Nothing) Then Set dstPenTop = New pd2DPen Else dstPenTop.ResetAllProperties
     
     With dstPenBase
         .SetDebugMode m_DebugMode

@@ -32,8 +32,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Pen Selector custom control
 'Copyright 2015-2016 by Tanner Helland
 'Created: 04/July/15
-'Last updated: 01/February/16
-'Last update: finalize theming support
+'Last updated: 20/June/16
+'Last update: migrate to pd2D for all UI rendering
 '
 'This thin user control is basically an empty control that when clicked, displays a pen selection window.  If a
 ' pen is selected (e.g. Cancel is not pressed), it updates its appearance to match, and raises a "PenChanged"
@@ -61,9 +61,6 @@ Public Event LostFocusAPI()
 
 'The control's current pen settings
 Private m_curPen As String
-
-'A temporary pen object, used to render the pen preview
-Private m_PenPreview As pd2DPen
 
 'The path used for the preview window
 Private m_PreviewPath As pd2DPath
@@ -231,7 +228,6 @@ End Sub
 
 Private Sub UserControl_Initialize()
     
-    Set m_PenPreview = New pd2DPen
     Set m_PreviewPath = New pd2DPath
     
     'Prep painting classes
@@ -339,29 +335,37 @@ Private Sub RedrawBackBuffer()
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
         
         'Next, create a matching GDI+ pen
-        m_PenPreview.SetPenPropertiesFromXML Me.Pen
+        Set cPen = New pd2DPen
+        cPen.SetPenPropertiesFromXML Me.Pen
         
-        If m_PenPreview.CreatePen Then
+        'If the pen is too large, it won't render correctly inside the preview area.  Cap the size at a reasonable amount.
+        Dim smallestDimension As Single
+        smallestDimension = m_PenRect.Width
+        If (m_PenRect.Height < m_PenRect.Width) Then smallestDimension = m_PenRect.Height
+        smallestDimension = smallestDimension / 3
+        If (cPen.GetPenWidth > smallestDimension) Then cPen.SetPenWidth smallestDimension
         
-            'Prep the preview path.  Note that we manually pad it to make the preview look a little prettier.
-            Dim hPadding As Single, vPadding As Single
-            hPadding = m_PenPreview.GetPenProperty(P2_PenWidth) * 2
-            If (hPadding > FixDPIFloat(12)) Then hPadding = FixDPIFloat(12)
-            vPadding = hPadding
-            
-            m_PreviewPath.ResetPath
-            m_PreviewPath.CreateSamplePathForRect m_PenRect, hPadding, vPadding
-            
-            m_PreviewPath.StrokePath_BarePen m_PenPreview.GetHandle, bufferDC, True, VarPtr(m_PenRect)
-            m_PenPreview.ReleasePen
-                
-        End If
+        'Prep the preview path.  Note that we manually pad it to make the preview look a little prettier.
+        Dim hPadding As Single, vPadding As Single
+        hPadding = cPen.GetPenWidth * 2#
+        If (hPadding > FixDPIFloat(12)) Then hPadding = FixDPIFloat(12)
+        vPadding = hPadding
+        
+        m_PreviewPath.ResetPath
+        m_PreviewPath.CreateSamplePathForRect m_PenRect, hPadding, vPadding
+        
+        cSurface.SetSurfaceClip_FromRectF m_PenRect, P2_CM_Replace
+        m_Painter.DrawPath cSurface, cPen, m_PreviewPath
         
         'Draw borders around the brush results.
         Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long
         outlineColor = m_Colors.RetrieveColor(PDPS_Border, Me.Enabled, m_MouseDownPenRect, m_MouseInsidePenRect)
         If m_MouseInsidePenRect Then outlineWidth = 3 Else outlineWidth = 1
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_PenRect, outlineColor, , outlineWidth, False, GP_LJ_Miter
+        
+        Drawing2D.QuickCreateSolidPen cPen, outlineWidth, outlineColor
+        cSurface.SetSurfaceAntialiasing P2_AA_None
+        cSurface.SetSurfaceClip_None
+        m_Painter.DrawRectangleF_FromRectF cSurface, cPen, m_PenRect
         
         Set cSurface = Nothing: Set cPen = Nothing
         
