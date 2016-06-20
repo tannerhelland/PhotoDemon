@@ -64,6 +64,12 @@ Private m_Gradient As pd2DGradient
 ' to requesting a gradient brush* or the gradient results will look funny!
 Private m_BoundaryRect As RECTF
 
+'Texture brushes are much simpler if we maintain a copy of the source texture (e.g. this avoids messy cases like the caller
+' creating a texture brush, then erasing the source image prior to freeing *this* brush).  For simplicity, the brush is stored
+' inside a pdDIB object, with any clipping applied *prior* to creating the DIB.
+Private m_TextureSrc As pdDIB
+Private m_TextureWrapMode As PD_2D_WrapMode
+
 'This class is capable of serializing itself to/from XML strings
 Private cSerialize As pdParamXML
 
@@ -131,6 +137,10 @@ Public Function GetBrushGradientNodes() As String
     GetBrushGradientNodes = Me.GetBrushProperty(P2_BrushGradientAngle)
 End Function
 
+Public Function GetBrushTextureWrapMode() As PD_2D_WrapMode
+    GetBrushTextureWrapMode = Me.GetBrushProperty(P2_BrushTextureWrapMode)
+End Function
+
 Public Sub SetBrushMode(ByVal newSetting As PD_2D_BrushMode)
     Me.SetBrushProperty P2_BrushMode, newSetting
 End Sub
@@ -183,6 +193,20 @@ Public Sub SetBrushGradientNodes(ByVal newSetting As String)
     Me.SetBrushProperty P2_BrushGradientAngle, newSetting
 End Sub
 
+Public Sub SetBrushTextureFromDC(ByVal srcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal srcColorDepth As Long = 32)
+    If (m_TextureSrc Is Nothing) Then Set m_TextureSrc = New pdDIB
+    m_TextureSrc.CreateFromDC srcDC, srcX, srcY, srcWidth, srcHeight, srcColorDepth
+End Sub
+
+Public Sub SetBrushTextureFromDIB(ByVal srcDIB As pdDIB)
+    If (m_TextureSrc Is Nothing) Then Set m_TextureSrc = New pdDIB
+    m_TextureSrc.CreateFromExistingDIB srcDIB
+End Sub
+
+Public Sub SetBrushTextureWrapMode(ByVal newSetting As PD_2D_WrapMode)
+    Me.SetBrushProperty P2_BrushTextureWrapMode, newSetting
+End Sub
+
 'Get/set individual settings by enum type
 Public Function GetBrushProperty(ByVal propID As PD_2D_BRUSH_SETTINGS) As Variant
     
@@ -226,6 +250,9 @@ Public Function GetBrushProperty(ByVal propID As PD_2D_BRUSH_SETTINGS) As Varian
             
         Case P2_BrushGradientNodes
             GetBrushProperty = m_Gradient.GetGradientNodes()
+            
+        Case P2_BrushTextureWrapMode
+            GetBrushProperty = m_TextureWrapMode
             
     End Select
     
@@ -278,6 +305,9 @@ Public Sub SetBrushProperty(ByVal propID As PD_2D_BRUSH_SETTINGS, ByVal newSetti
         Case P2_BrushGradientNodes
             If (m_Gradient Is Nothing) Then Set m_Gradient = New pd2DGradient
             m_Gradient.SetGradientNodes CStr(newSetting)
+            
+        Case P2_BrushTextureWrapMode
+            m_TextureWrapMode = CLng(newSetting)
             
     End Select
     
@@ -339,7 +369,10 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_BRUSH_SETTINGS)
                         
                     Case P2_BrushGradientNodes
                         If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushGradientNodes, m_Gradient.GetGradientNodes())) Then ReleaseBrush
-                        
+                    
+                    Case P2_BrushTextureWrapMode
+                        If (Not GDI_Plus.SetGDIPlusBrushProperty(m_BrushHandle, P2_BrushTextureWrapMode, m_TextureWrapMode)) Then ReleaseBrush
+                    
                 End Select
                 
             'In the future, other backends can be handled here...
@@ -373,6 +406,11 @@ Public Function GetBrushPropertiesAsXML() As String
         
         'All other gradient parameters derive from this master string, so we do not need to set them individually
         .AddParam "BrushGradientString", m_Gradient.GetGradientAsString()
+        
+        'Textures themselves are not stored.  A solution to this is TBD, but I'm honestly not thrilled about the notion of
+        ' serializing an entire texture (which may be enormous) to Base-64.  Texture brushes may just be an exception to
+        ' the rule, and you'll be forced to always create them manually.  IDK.
+        .AddParam "BrushTextureWrapMode", m_TextureWrapMode
     End With
     
     GetBrushPropertiesAsXML = cSerialize.GetParamString
@@ -400,6 +438,9 @@ Public Sub SetBrushPropertiesFromXML(ByRef srcString As String)
             
             'All other gradient parameters derive from this master string, so we do not need to retrieve them individually
             m_Gradient.CreateGradientFromString .GetString("BrushGradientString", vbNullString)
+            
+            'Texture brush *properties* are retrieved, but at present, the texture itself cannot be serialized.
+            m_TextureWrapMode = .GetLong("BrushTextureWrapMode", P2_WM_Tile)
         End With
         
     End If
@@ -457,7 +498,7 @@ Friend Function CreateBrush() As Boolean
             
         'Texture fill (TODO)
         Case P2_BM_Texture
-            m_BrushHandle = 0
+            m_BrushHandle = GDI_Plus.GetGDIPlusTextureBrush(m_TextureSrc, m_TextureWrapMode)
             
     End Select
     
@@ -503,6 +544,11 @@ Public Sub ResetAllProperties()
     
     'All other gradient parameters derive from this master string, so we do not need to set them individually
     Me.SetBrushProperty P2_BrushGradientAllSettings, vbNullString
+    
+    Me.SetBrushProperty P2_BrushTextureWrapMode, P2_WM_Tile
+    
+    'Free any associated textures
+    Set m_TextureSrc = Nothing
     
 End Sub
 

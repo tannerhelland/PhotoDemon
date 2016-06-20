@@ -255,6 +255,21 @@ Friend Function GetSurfaceBackend() As PD_2D_RENDERING_BACKEND
     GetSurfaceBackend = m_SurfaceBackend
 End Function
 
+'I'm still debating whether it's wise to expose this function externally.  GDI+ handles DCs in weird ways; as long as it is only ever
+' wrapped around *existing* DCs, you can intermix GDI+ and GDI calls without issue, and everything auto-synchronizes.  However, if you
+' create a native GDI+ surface then use GdipGetDC() to retrieve a DC for it, you *must* call GdipReleaseDC when you're done (which is
+' really unintuitive, given the way DCs usually work for VB programmers).
+'
+'As such, my current inclination is to always keep a GDI-backed copy of any surfaces created by this class.  This allows the caller to
+' freely intermix bare GDI calls (like BitBlt) and pd2D drawing calls without consequence, and it also circumvents some really obnoxious
+' GDI+ limitations (like being forced to keep a file around for the lifetime of an image object, if the image object is created from
+' that file).
+'
+'Anyway, I mention this here as an FYI, but tl;dr: for now, this function is safe to use.
+Public Function GetSurfaceDC() As Long
+    GetSurfaceDC = m_SurfaceDC
+End Function
+
 Public Function HasSurface() As Boolean
     HasSurface = CBool(m_SurfaceHandle <> 0)
 End Function

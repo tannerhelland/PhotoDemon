@@ -96,6 +96,10 @@ Public g_LastSaveFilter As Long
 ' checkerboard prior to rendering.
 Public g_CheckerboardPattern As pdDIB
 
+'Copy of g_CheckerboardPattern, above, but in pd2DBrush format.  The brush is pre-built as a GDI+ texture brush,
+' which makes it preferable for painting on 32-bpp surfaces.
+Public g_CheckerboardBrush As pd2DBrush
+
 'Is the current system running Vista, 7, 8, or later?  (Used to determine availability of certain system features)
 Public g_IsVistaOrLater As Boolean
 Public g_IsWin7OrLater As Boolean

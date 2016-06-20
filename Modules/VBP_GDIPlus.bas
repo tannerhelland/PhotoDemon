@@ -331,6 +331,7 @@ Private Declare Function GdipCreateRegionPath Lib "gdiplus" (ByVal hPath As Long
 Private Declare Function GdipCreateRegionRect Lib "gdiplus" (ByRef srcRect As RECTF, ByRef hRegion As Long) As GP_Result
 Private Declare Function GdipCreateRegionRgnData Lib "gdiplus" (ByVal ptrToRegionData As Long, ByVal sizeOfRegionData As Long, ByRef dstRegion As Long) As GP_Result
 Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal srcColor As Long, ByRef dstBrush As Long) As GP_Result
+Private Declare Function GdipCreateTexture Lib "gdiplus" (ByVal hImage As Long, ByVal textureWrapMode As GP_WrapMode, ByRef dstTexture As Long) As GP_Result
 
 Private Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal hBrush As Long) As GP_Result
 Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal hGraphics As Long) As GP_Result
@@ -354,6 +355,7 @@ Private Declare Function GdipGetRegionBoundsI Lib "gdiplus" (ByVal hRegion As Lo
 Private Declare Function GdipGetRenderingOrigin Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstX As Long, ByRef dstY As Long) As GP_Result
 Private Declare Function GdipGetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstMode As GP_SmoothingMode) As GP_Result
 Private Declare Function GdipGetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByRef dstColor As Long) As GP_Result
+Private Declare Function GdipGetTextureWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByRef dstWrapMode As GP_WrapMode) As GP_Result
 
 Private Declare Function GdipIsEmptyRegion Lib "gdiplus" (ByVal srcRegion As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
 Private Declare Function GdipIsInfiniteRegion Lib "gdiplus" (ByVal srcRegion As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
@@ -382,10 +384,10 @@ Private Declare Function GdipSetPenMode Lib "gdiplus" (ByVal hPen As Long, ByVal
 Private Declare Function GdipSetPenStartCap Lib "gdiplus" (ByVal hPen As Long, ByVal startCap As GP_LineCap) As GP_Result
 Private Declare Function GdipSetPenWidth Lib "gdiplus" (ByVal hPen As Long, ByVal penWidth As Single) As GP_Result
 Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_PixelOffsetMode) As GP_Result
-
 Private Declare Function GdipSetRenderingOrigin Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Long, ByVal y As Long) As GP_Result
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_SmoothingMode) As GP_Result
 Private Declare Function GdipSetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByVal newColor As Long) As GP_Result
+Private Declare Function GdipSetTextureWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByVal newWrapMode As GP_WrapMode) As GP_Result
 
 'GDI+ draw functions
 Private Declare Function GdipDrawArc Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As GP_Result
@@ -765,7 +767,6 @@ Private Declare Function GdipFillPolygon2 Lib "gdiplus" (ByVal mGraphics As Long
 Private Declare Function GdipFillPolygon2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipIsVisibleRegionPoint Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Single, ByVal y As Single, ByVal hGraphics As Long, ByRef boolResult As Long) As Long
 Private Declare Function GdipIsVisibleRegionRect Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Single, ByVal y As Single, ByVal Width As Single, ByVal Height As Single, ByVal hGraphics As Long, ByRef dstResult As Long) As Long
-Private Declare Function GdipCreateTexture Lib "gdiplus" (ByVal hImage As Long, ByVal textureWrapMode As GP_WrapMode, ByRef hTexture As Long) As Long
 Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType, ByVal EnableFlag As Long, ByVal colorMatrixPointer As Long, ByVal grayMatrixPointer As Long, ByVal extraFlags As ColorMatrixFlags) As Long
 Private Declare Function GdipSetImageAttributesToIdentity Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType) As Long
 
@@ -3166,8 +3167,8 @@ End Function
 Private Function InternalGDIPlusError(Optional ByVal errName As String = vbNullString, Optional ByVal errDescription As String = vbNullString, Optional ByVal errNumber As GP_Result = GP_OK)
     #If DEBUGMODE = 1 Then
         
-        'If the caller passes an error number but no error name or description, attempt to automatically populate
-        ' these based on the error number.
+        'If the caller passes an error number but no error name, attempt to automatically populate
+        ' it based on the error number.
         If ((Len(errName) = 0) And (errNumber <> GP_OK)) Then
             
             Select Case errNumber
@@ -3258,6 +3259,18 @@ End Function
 
 Public Function OverrideGDIPlusPathGradient(ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As Boolean
     OverrideGDIPlusPathGradient = CBool(GdipSetPathGradientPresetBlend(hBrush, ptrToFirstColor, ptrToFirstPosition, numOfPoints) = GP_OK)
+End Function
+
+'Because of the way GDI+ texture brushes work, it is significantly easier to initialize one from a full DIB object
+' (which *always* guarantees bitmap bits will be available) vs a GDI+ Graphics object, which is more like a DC in
+' that it could be a non-bitmap, or dimensionless, or other weird criteria.
+Public Function GetGDIPlusTextureBrush(ByRef srcDIB As pdDIB, Optional ByVal brushWrapMode As GP_WrapMode = GP_WM_Tile) As Long
+    Dim srcBitmap As Long, tmpReturn As GP_Result
+    GetGdipBitmapHandleFromDIB srcBitmap, srcDIB
+    tmpReturn = GdipCreateTexture(srcBitmap, brushWrapMode, GetGDIPlusTextureBrush)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError , , tmpReturn
+    tmpReturn = GdipDisposeImage(srcBitmap)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError , , tmpReturn
 End Function
 
 'Retrieve a persistent handle to a GDI+-format graphics container.  Optionally, a smoothing mode can be specified so that it does
@@ -3423,6 +3436,10 @@ Public Function GetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD
             Case P2_BrushGradientNodes
                 GetGDIPlusBrushProperty = vbNullString
                 
+            Case P2_BrushTextureWrapMode
+                gResult = GdipGetTextureWrapMode(hBrush, tmpLong)
+                GetGDIPlusBrushProperty = tmpLong
+                
         End Select
         
         If (gResult <> GP_OK) Then
@@ -3494,6 +3511,9 @@ Public Function SetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD
             'Not directly supported by GDI+; use the pd2DBrush class to handle this
             Case P2_BrushGradientNodes
                 SetGDIPlusBrushProperty = False
+                
+            Case P2_BrushTextureWrapMode
+                SetGDIPlusBrushProperty = CBool(GdipSetTextureWrapMode(hBrush, CLng(newSetting)) = GP_OK)
                 
         End Select
     
