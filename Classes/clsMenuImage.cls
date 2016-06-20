@@ -736,7 +736,7 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
         If Index <> -1 Then
             
             Dim tmpDC As Long
-            tmpDC = Drawing.GetMemoryDC()
+            tmpDC = GDI.GetMemoryDC()
             
             OldhDib = SelectObject(tmpDC, mDIB(Index).hDIB)
         
@@ -772,7 +772,7 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
             GdipDeleteGraphics hGraphics
             
             Call SelectObject(tmpDC, OldhDib)
-            Drawing.FreeMemoryDC tmpDC
+            GDI.FreeMemoryDC tmpDC
             
             pvAddImagen = True
         

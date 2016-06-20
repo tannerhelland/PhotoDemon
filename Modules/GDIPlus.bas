@@ -2025,7 +2025,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             .Width = imgWidth
             .Height = imgHeight
             .PixelFormat = PixelFormat32bppPARGB
-            .Stride = dstDIB.GetDIBArrayWidth
+            .Stride = dstDIB.GetDIBStride
             .Scan0 = dstDIB.GetDIBPointer
         End With
         
@@ -2057,7 +2057,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 .Width = imgWidth
                 .Height = imgHeight
                 .PixelFormat = PixelFormat32bppCMYK
-                .Stride = tmpCMYKDIB.GetDIBArrayWidth
+                .Stride = tmpCMYKDIB.GetDIBStride
                 .Scan0 = tmpCMYKDIB.GetDIBPointer
             End With
             

@@ -294,6 +294,17 @@ End Enum
     Private Const P2_PO_Normal = 0, P2_PO_Half = 1
 #End If
 
+'Surfaces come in a few different varieties.  Note that some actions may not be available for certain surface types.
+Public Enum PD_2D_SurfaceType
+    P2_ST_Uninitialized = -1    'The default value of a new surface; the surface is empty, and cannot be painted to
+    P2_ST_WrapperOnly = 0       'This surface is just a wrapper around an existing hDC; pdSurface did not create it
+    P2_ST_Bitmap = 1            'This surface is a bitmap (raster) surface, created and owned by a pdSurface instance
+End Enum
+
+#If False Then
+    Private Const P2_ST_WrapperOnly = 0, P2_ST_Bitmap = 1
+#End If
+
 Public Enum PD_2D_WrapMode
     P2_WM_Tile = 0
     P2_WM_TileFlipX = 1

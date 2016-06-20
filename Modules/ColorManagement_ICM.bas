@@ -458,7 +458,7 @@ Public Function ApplyColorTransformToDIB_WindowsCMS(ByVal srcTransform As Long, 
         If .GetDIBColorDepth = 24 Then bitDepthIdentifier = BM_RGBTRIPLETS Else bitDepthIdentifier = BM_xRGBQUADS
                 
         'TranslateBitmapBits handles the actual transformation for us.
-        transformCheck = TranslateBitmapBits(srcTransform, .GetDIBPointer, bitDepthIdentifier, .GetDIBWidth, .GetDIBHeight, .GetDIBArrayWidth, .GetDIBPointer, bitDepthIdentifier, .GetDIBArrayWidth, ByVal 0&, 0&)
+        transformCheck = TranslateBitmapBits(srcTransform, .GetDIBPointer, bitDepthIdentifier, .GetDIBWidth, .GetDIBHeight, .GetDIBStride, .GetDIBPointer, bitDepthIdentifier, .GetDIBStride, ByVal 0&, 0&)
         
     End With
     
@@ -487,7 +487,7 @@ Public Function ApplyColorTransformToTwoDIBs_WindowsCMS(ByVal srcTransform As Lo
     Dim transformCheck As Long
     
     'TranslateBitmapBits handles the actual transformation for us.
-    transformCheck = TranslateBitmapBits(srcTransform, srcDIB.GetDIBPointer, srcFormat, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBArrayWidth, dstDIB.GetDIBPointer, dstFormat, dstDIB.GetDIBArrayWidth, ByVal 0&, 0&)
+    transformCheck = TranslateBitmapBits(srcTransform, srcDIB.GetDIBPointer, srcFormat, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBStride, dstDIB.GetDIBPointer, dstFormat, dstDIB.GetDIBStride, ByVal 0&, 0&)
     
     If (transformCheck = 0) Then
         ApplyColorTransformToTwoDIBs_WindowsCMS = False

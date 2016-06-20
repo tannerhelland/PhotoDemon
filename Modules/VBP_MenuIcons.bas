@@ -1074,7 +1074,7 @@ Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
             
                 'Select the hBitmap into a new DC so we can BitBlt it into the target DIB
                 Dim gdiDC As Long
-                gdiDC = Drawing.GetMemoryDC()
+                gdiDC = GDI.GetMemoryDC()
                 
                 Dim oldBitmap As Long
                 oldBitmap = SelectObject(gdiDC, hBitmap)
@@ -1085,7 +1085,7 @@ Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
                 'Release the original DDB and temporary device context
                 SelectObject gdiDC, oldBitmap
                 DeleteObject hBitmap
-                Drawing.FreeMemoryDC gdiDC
+                GDI.FreeMemoryDC gdiDC
                 
                 LoadResourceToDIB = True
                 

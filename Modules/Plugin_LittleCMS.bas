@@ -586,7 +586,7 @@ Public Function LCMS_ApplyTransformToDIB(ByRef srcDIB As pdDIB, ByVal hTransform
             Dim i As Long, iWidth As Long, iScanWidth As Long, iScanStart As Long
             iWidth = srcDIB.GetDIBWidth
             iScanStart = srcDIB.GetDIBPointer
-            iScanWidth = srcDIB.GetDIBArrayWidth
+            iScanWidth = srcDIB.GetDIBStride
             
             For i = 0 To srcDIB.GetDIBHeight - 1
                 cmsDoTransform hTransform, iScanStart + i * iScanWidth, iScanStart + i * iScanWidth, iWidth

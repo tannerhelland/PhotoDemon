@@ -6,14 +6,14 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1554</langversion>
+<langversion>6.8.1555</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
-<!-- BEGIN text for VBP_Main.bas -->
+<!-- BEGIN text for Main.bas -->
 
 <phrase>
 <original>Detecting Windows® version</original>
@@ -100,11 +100,11 @@
 <translation>准备程序菜单</translation>
 </phrase>
 
-<!-- VBP_Main.bas contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
+<!-- Main.bas contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
 
-<!-- END text for VBP_Main.bas-->
+<!-- END text for Main.bas-->
 
-<!-- BEGIN text for VBP_AutosaveHandler.bas -->
+<!-- BEGIN text for AutosaveEngine.bas -->
 
 <phrase>
 <original>Purging old autosave data</original>
@@ -121,11 +121,11 @@
 <translation>自动保存不能完全恢复。</translation>
 </phrase>
 
-<!-- VBP_AutosaveHandler.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- AutosaveEngine.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
-<!-- END text for VBP_AutosaveHandler.bas-->
+<!-- END text for AutosaveEngine.bas-->
 
-<!-- BEGIN text for VBP_ColorManagement.bas -->
+<!-- BEGIN text for ColorManagement_ICM.bas -->
 
 <phrase>
 <original>sRGB transform could not be applied.  Image remains in CMYK format.</original>
@@ -167,15 +167,15 @@
 <translation>嵌入ICC配置文件是无效的。色彩管理已被禁用这一形象。</translation>
 </phrase>
 
-<!-- VBP_ColorManagement.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
+<!-- ColorManagement_ICM.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
 
-<!-- END text for VBP_ColorManagement.bas-->
+<!-- END text for ColorManagement_ICM.bas-->
 
-<!-- BEGIN text for VBP_ColorFunctions.bas -->
+<!-- BEGIN text for Colors.bas -->
 
-<!-- VBP_ColorFunctions.bas contains 0 phrases. -->
+<!-- Colors.bas contains 0 phrases. -->
 
-<!-- END text for VBP_ColorFunctions.bas-->
+<!-- END text for Colors.bas-->
 
 <!-- BEGIN text for VBP_DIBHandler.bas -->
 
@@ -201,7 +201,7 @@
 
 <!-- END text for Drawing2D.bas-->
 
-<!-- BEGIN text for VBP_ExifToolInterface.bas -->
+<!-- BEGIN text for Plugin_ExifTool.bas -->
 
 <phrase>
 <original>ExifTool could not be started.  Metadata unavailable for this session.</original>
@@ -263,9 +263,9 @@
 <translation>无法启动插件服务（无法创建过程：%1）。</translation>
 </phrase>
 
-<!-- VBP_ExifToolInterface.bas contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Plugin_ExifTool.bas contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
-<!-- END text for VBP_ExifToolInterface.bas-->
+<!-- END text for Plugin_ExifTool.bas-->
 
 <!-- BEGIN text for VBP_FastDrawing.bas -->
 
@@ -734,7 +734,13 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <!-- END text for VBP_FontManagement.bas-->
 
-<!-- BEGIN text for VBP_GDIPlus.bas -->
+<!-- BEGIN text for GDI.bas -->
+
+<!-- GDI.bas contains 0 phrases. -->
+
+<!-- END text for GDI.bas-->
+
+<!-- BEGIN text for GDIPlus.bas -->
 
 <phrase>
 <original>GDI+ failed to render blur effect (Error Code %1).</original>
@@ -776,15 +782,15 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <translation>保存成功</translation>
 </phrase>
 
-<!-- VBP_GDIPlus.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
+<!-- GDIPlus.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
 
-<!-- END text for VBP_GDIPlus.bas-->
+<!-- END text for GDIPlus.bas-->
 
-<!-- BEGIN text for Histogram_Analysis.bas -->
+<!-- BEGIN text for Histograms.bas -->
 
-<!-- Histogram_Analysis.bas contains 0 phrases. -->
+<!-- Histograms.bas contains 0 phrases. -->
 
-<!-- END text for Histogram_Analysis.bas-->
+<!-- END text for Histograms.bas-->
 
 <!-- BEGIN text for VBP_MenuIcons.bas -->
 
@@ -1367,7 +1373,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <!-- END text for VBP_LoadModule.bas-->
 
-<!-- BEGIN text for VBP_BatchConversion.bas -->
+<!-- BEGIN text for BatchProcessor.bas -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -1479,9 +1485,9 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 <translation>处理宏数据</translation>
 </phrase>
 
-<!-- VBP_BatchConversion.bas contains 27 phrases. 8 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- BatchProcessor.bas contains 27 phrases. 8 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
-<!-- END text for VBP_BatchConversion.bas-->
+<!-- END text for BatchProcessor.bas-->
 
 <!-- BEGIN text for VBP_MiscMath.bas -->
 
@@ -1495,11 +1501,11 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <!-- END text for VBP_Win7_Specific_Features.bas-->
 
-<!-- BEGIN text for VBP_OutsideDevelopment_FreeImageV3.bas -->
+<!-- BEGIN text for FreeImageWrapper.bas -->
 
-<!-- VBP_OutsideDevelopment_FreeImageV3.bas contains 0 phrases. -->
+<!-- FreeImageWrapper.bas contains 0 phrases. -->
 
-<!-- END text for VBP_OutsideDevelopment_FreeImageV3.bas-->
+<!-- END text for FreeImageWrapper.bas-->
 
 <!-- BEGIN text for Plugin_Management.bas -->
 
@@ -1537,7 +1543,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <!-- END text for Plugin_Management.bas-->
 
-<!-- BEGIN text for VBP_ScannerInterface.bas -->
+<!-- BEGIN text for Plugin_EZTwain.bas -->
 
 <phrase>
 <original>Scanner successfully enabled</original>
@@ -1637,11 +1643,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation>取消扫描。</translation>
 </phrase>
 
-<!-- VBP_ScannerInterface.bas contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Plugin_EZTwain.bas contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
-<!-- END text for VBP_ScannerInterface.bas-->
+<!-- END text for Plugin_EZTwain.bas-->
 
-<!-- BEGIN text for VBP_FreeImage_Expanded.bas -->
+<!-- BEGIN text for Plugin_FreeImage.bas -->
 
 <phrase>
 <original>Import via FreeImage failed (Err # %1)</original>
@@ -1653,9 +1659,9 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation>应用色调映射</translation>
 </phrase>
 
-<!-- VBP_FreeImage_Expanded.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- Plugin_FreeImage.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
-<!-- END text for VBP_FreeImage_Expanded.bas-->
+<!-- END text for Plugin_FreeImage.bas-->
 
 <!-- BEGIN text for Plugin_OptiPNG.bas -->
 
@@ -1673,7 +1679,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <!-- END text for Plugin_OptiPNG.bas-->
 
-<!-- BEGIN text for VBP_pngnqInterface.bas -->
+<!-- BEGIN text for Plugin_PNGQuant.bas -->
 
 <phrase>
 <original>Using pngquant to optimize the PNG file.  This may take a moment</original>
@@ -1690,15 +1696,15 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation>pngquant无法写入文件，默认32bpp图像已经保存。</translation>
 </phrase>
 
-<!-- VBP_pngnqInterface.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+<!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
-<!-- END text for VBP_pngnqInterface.bas-->
+<!-- END text for Plugin_PNGQuant.bas-->
 
-<!-- BEGIN text for VBP_CompressionUtility.bas -->
+<!-- BEGIN text for Plugin_ZLib.bas -->
 
-<!-- VBP_CompressionUtility.bas contains 0 phrases. -->
+<!-- Plugin_ZLib.bas contains 0 phrases. -->
 
-<!-- END text for VBP_CompressionUtility.bas-->
+<!-- END text for Plugin_ZLib.bas-->
 
 <!-- BEGIN text for VBP_PrinterSupport.bas -->
 
@@ -1716,7 +1722,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <!-- END text for VBP_PrinterSupport.bas-->
 
-<!-- BEGIN text for VBP_ProcessorModule.bas -->
+<!-- BEGIN text for Processor.bas -->
 
 <phrase>
 <original>Remove selection</original>
@@ -2038,9 +2044,9 @@ When finished, click the Submit button.  Thank you!</original>
 <translation>着色</translation>
 </phrase>
 
-<!-- VBP_ProcessorModule.bas contains 91 phrases. 37 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
+<!-- Processor.bas contains 91 phrases. 37 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
 
-<!-- END text for VBP_ProcessorModule.bas-->
+<!-- END text for Processor.bas-->
 
 <!-- BEGIN text for VBP_MiscProgBar.bas -->
 
@@ -2292,7 +2298,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <!-- END text for VBP_SelectionHandler.bas-->
 
-<!-- BEGIN text for VBP_SoftwareUpdater.bas -->
+<!-- BEGIN text for UpdateEngine.bas -->
 
 <phrase>
 <original>Update check postponed (a check has been performed recently)</original>
@@ -2319,9 +2325,9 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>测试版</translation>
 </phrase>
 
-<!-- VBP_SoftwareUpdater.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-<!-- END text for VBP_SoftwareUpdater.bas-->
+<!-- END text for UpdateEngine.bas-->
 
 <!-- BEGIN text for VBP_MiscValidation.bas -->
 
@@ -2374,11 +2380,11 @@ Please enter a numeric value.</original>
 
 <!-- END text for VBP_ToolSupport.bas-->
 
-<!-- BEGIN text for VBP_UniscribeInterface.bas -->
+<!-- BEGIN text for Uniscribe.bas -->
 
-<!-- VBP_UniscribeInterface.bas contains 0 phrases. -->
+<!-- Uniscribe.bas contains 0 phrases. -->
 
-<!-- END text for VBP_UniscribeInterface.bas-->
+<!-- END text for Uniscribe.bas-->
 
 <!-- BEGIN text for VBP_UnitConversions.bas -->
 
@@ -2398,7 +2404,7 @@ Please enter a numeric value.</original>
 
 <!-- END text for VB_Hacks.bas-->
 
-<!-- BEGIN text for VBP_ZoomModule.bas -->
+<!-- BEGIN text for ViewportEngine.bas -->
 
 <phrase>
 <original>WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)</original>
@@ -2425,9 +2431,9 @@ Please enter a numeric value.</original>
 <translation>渲染暂停由于意外的错误（# % 1）</translation>
 </phrase>
 
-<!-- VBP_ZoomModule.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- ViewportEngine.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
-<!-- END text for VBP_ZoomModule.bas-->
+<!-- END text for ViewportEngine.bas-->
 
 <!-- BEGIN text for cFileDialogVista.cls -->
 

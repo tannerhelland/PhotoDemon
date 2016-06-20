@@ -971,7 +971,7 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstD
                     If isGrayscale Then
                         transformSuccess = cTransform.ApplyTransformToArbitraryMemory(FreeImage_GetScanline(srcFIHandle, 0), FreeImage_GetScanline(newFIDib, 0), FreeImage_GetPitch(srcFIHandle), FreeImage_GetPitch(newFIDib), FreeImage_GetHeight(srcFIHandle), FreeImage_GetWidth(srcFIHandle))
                     Else
-                        transformSuccess = cTransform.ApplyTransformToArbitraryMemory(FreeImage_GetScanline(srcFIHandle, 0), dstDIB.GetDIBScanline(0), FreeImage_GetPitch(srcFIHandle), dstDIB.GetDIBArrayWidth, FreeImage_GetHeight(srcFIHandle), FreeImage_GetWidth(srcFIHandle), True)
+                        transformSuccess = cTransform.ApplyTransformToArbitraryMemory(FreeImage_GetScanline(srcFIHandle, 0), dstDIB.GetDIBScanline(0), FreeImage_GetPitch(srcFIHandle), dstDIB.GetDIBStride, FreeImage_GetHeight(srcFIHandle), FreeImage_GetWidth(srcFIHandle), True)
                     End If
                     
                     If transformSuccess Then
@@ -1070,7 +1070,7 @@ Private Function ConvertCMYKFiDIBToRGB(ByVal srcFIHandle As Long, ByRef dstDIB A
                         '  hurt to free the profiles now.)
                         Set srcProfile = Nothing: Set dstProfile = Nothing
                         
-                        If cTransform.ApplyTransformToArbitraryMemory(FreeImage_GetScanline(srcFIHandle, 0), dstDIB.GetDIBScanline(0), FreeImage_GetPitch(srcFIHandle), dstDIB.GetDIBArrayWidth, FreeImage_GetHeight(srcFIHandle), FreeImage_GetWidth(srcFIHandle), True) Then
+                        If cTransform.ApplyTransformToArbitraryMemory(FreeImage_GetScanline(srcFIHandle, 0), dstDIB.GetDIBScanline(0), FreeImage_GetPitch(srcFIHandle), dstDIB.GetDIBStride, FreeImage_GetHeight(srcFIHandle), FreeImage_GetWidth(srcFIHandle), True) Then
                             FI_DebugMsg "ICC profile transformation successful.  New FreeImage handle now lives in the current RGB working space."
                             dstDIB.ICCProfile.MarkSuccessfulProfileApplication
                             dstDIB.SetInitialAlphaPremultiplicationState True
@@ -1175,7 +1175,7 @@ End Function
 'ALSO NOTE!  The function returns zero for failure state; please check the return value before trying to use it!
 Public Function GetFIHandleFromPDDib_NoCopy(ByRef srcDIB As pdDIB, Optional ByVal forciblyReverseScanlines As Boolean = False) As Long
     With srcDIB
-        GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .GetDIBPointer, FIT_BITMAP, .GetDIBWidth, .GetDIBHeight, .GetDIBArrayWidth, .GetDIBColorDepth, , , , forciblyReverseScanlines)
+        GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .GetDIBPointer, FIT_BITMAP, .GetDIBWidth, .GetDIBHeight, .GetDIBStride, .GetDIBColorDepth, , , , forciblyReverseScanlines)
     End With
 End Function
 

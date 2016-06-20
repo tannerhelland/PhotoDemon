@@ -38,7 +38,7 @@ Private Declare Function MultiByteToWideChar Lib "kernel32" (ByVal CodePage As L
 Private Declare Function WideCharToMultiByte Lib "kernel32" (ByVal CodePage As Long, ByVal dwFlags As Long, ByVal lpWideCharStr As Long, ByVal cchWideChar As Long, ByVal lpMultiByteStr As Long, ByVal cchMultiByte As Long, ByVal lpDefaultChar As Long, ByVal lpUsedDefaultChar As Long) As Long
 
 'Base 64 en/decoding can be handled by the API
-Private Const CRYPT_STRING_BASE64 As Long = 1
+Private Const CRYPT_STRING_BASE64 As Long = 1&
 Private Const CRYPT_STRING_NOCR As Long = &H80000000
 Private Const CRYPT_STRING_NOCRLF As Long = &H40000000
 
@@ -422,22 +422,11 @@ End Function
 'Thanks to vbForums user dilettante for the original version of this code (retrieved here: http://www.vbforums.com/showthread.php?514815-JPEG-Base-64&p=3186994&viewfull=1#post3186994)
 Public Function Base64Decode(ByRef dstArray() As Byte, ByVal strBase64 As String) As Boolean
     
-    Dim lngOutLen As Long
-    Dim dwActualUsed As Long
-    
     'Retrieve the necessary output buffer size.
+    Dim lngOutLen As Long, dwActualUsed As Long
     If CryptStringToBinary(StrPtr(strBase64), Len(strBase64), CRYPT_STRING_BASE64, ByVal 0&, lngOutLen, 0&, dwActualUsed) <> 0 Then
-    
-        'Prep the buffer
         ReDim dstArray(lngOutLen - 1) As Byte
-        
-        'Retrieve the converted byte array
-        If CryptStringToBinary(StrPtr(strBase64), Len(strBase64), CRYPT_STRING_BASE64, VarPtr(dstArray(0)), lngOutLen, 0&, dwActualUsed) <> 0 Then
-            Base64Decode = True
-        Else
-            Base64Decode = False
-        End If
-        
+        Base64Decode = CBool(CryptStringToBinary(StrPtr(strBase64), Len(strBase64), CRYPT_STRING_BASE64, VarPtr(dstArray(0)), lngOutLen, 0&, dwActualUsed) <> 0)
     Else
         Base64Decode = False
     End If
