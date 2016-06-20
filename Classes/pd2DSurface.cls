@@ -201,6 +201,21 @@ Friend Function SetSurfaceClip_FromRegion(ByRef srcRegion As pd2DRegion, Optiona
     
 End Function
 
+Public Function SetSurfaceClip_None() As Boolean
+
+    If (m_SurfaceHandle <> 0) Then
+    
+        Select Case m_SurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                SetSurfaceClip_None = GDI_Plus.GDIPlus_GraphicsResetClipRegion(m_SurfaceHandle)
+        End Select
+        
+    Else
+        SetSurfaceClip_None = False
+    End If
+    
+End Function
+
 'Wrap this surface around some existing hDC.  It's fine to call this function multiple times on the same DC - changes to the handle
 ' are detected automatically
 Public Function WrapSurfaceAroundDC(ByVal srcDC As Long) As Boolean

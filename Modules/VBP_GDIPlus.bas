@@ -359,6 +359,8 @@ Private Declare Function GdipIsEmptyRegion Lib "gdiplus" (ByVal srcRegion As Lon
 Private Declare Function GdipIsInfiniteRegion Lib "gdiplus" (ByVal srcRegion As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
 Private Declare Function GdipIsEqualRegion Lib "gdiplus" (ByVal srcRegion1 As Long, ByVal srcRegion2 As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
 
+Private Declare Function GdipResetClip Lib "gdiplus" (ByVal hGraphics As Long) As GP_Result
+
 Private Declare Function GdipSetClipRect Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single, ByVal useCombineMode As GP_CombineMode) As GP_Result
 Private Declare Function GdipSetClipRegion Lib "gdiplus" (ByVal hGraphics As Long, ByVal hRegion As Long, ByVal useCombineMode As GP_CombineMode) As GP_Result
 Private Declare Function GdipSetCompositingQuality Lib "gdiplus" (ByVal hGraphics As Long, ByVal newCompositingQuality As GP_CompositingQuality) As GP_Result
@@ -3756,18 +3758,25 @@ Public Function GDIPlus_GraphicsGetClipRegion(ByVal srcGraphics As Long) As Long
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
+Public Function GDIPlus_GraphicsResetClipRegion(ByVal dstGraphics As Long) As Boolean
+    Dim tmpReturn As Long
+    tmpReturn = GdipResetClip(dstGraphics)
+    GDIPlus_GraphicsResetClipRegion = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
 Public Function GDIPlus_GraphicsSetClipRect(ByVal dstGraphics As Long, ByVal clipX As Single, ByVal clipY As Single, ByVal clipWidth As Single, ByVal clipHeight As Single, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean
     Dim tmpReturn As Long
     tmpReturn = GdipSetClipRect(dstGraphics, clipX, clipY, clipWidth, clipHeight, useCombineMode)
     GDIPlus_GraphicsSetClipRect = CBool(tmpReturn = GP_OK)
-    If (Not GDIPlus_GraphicsSetClipRect) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_GraphicsSetClipRegion(ByVal dstGraphics As Long, ByVal srcRegion As Long, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean
     Dim tmpReturn As Long
     tmpReturn = GdipSetClipRegion(dstGraphics, srcRegion, useCombineMode)
     GDIPlus_GraphicsSetClipRegion = CBool(tmpReturn = GP_OK)
-    If (Not GDIPlus_GraphicsSetClipRegion) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_RegionAddRectF(ByVal dstRegion As Long, ByRef srcRectF As RECTF, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean
@@ -3790,7 +3799,7 @@ Public Function GDIPlus_RegionClone(ByVal srcRegion As Long, ByRef dstRegion As 
     Dim tmpReturn As Long
     tmpReturn = GdipCloneRegion(srcRegion, dstRegion)
     GDIPlus_RegionClone = CBool(tmpReturn = GP_OK)
-    If (Not GDIPlus_RegionClone) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_RegionGetClipRectF(ByVal srcRegion As Long) As RECTF
