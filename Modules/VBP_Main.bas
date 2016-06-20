@@ -101,7 +101,7 @@ Public Sub ContinueLoadingProgram()
     Set perfCheck = New pdProfiler
     
     #If DEBUGMODE = 1 Then
-        perfCheck.startProfiling "PhotoDemon Startup", True
+        perfCheck.StartProfiling "PhotoDemon Startup", True
     #End If
     
     
@@ -120,7 +120,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Prepare splash screen"
+        perfCheck.MarkEvent "Prepare splash screen"
     #End If
     
     m_StartTime = Timer
@@ -160,7 +160,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Check Windows version"
+        perfCheck.MarkEvent "Check Windows version"
     #End If
     
     LoadMessage "Detecting Windows® version..."
@@ -186,7 +186,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "ClearType check"
+        perfCheck.MarkEvent "ClearType check"
     #End If
     
     HandleClearType True
@@ -198,7 +198,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Initialize preferences engine"
+        perfCheck.MarkEvent "Initialize preferences engine"
     #End If
     
     'Before initializing the preference engine, generate a unique session ID for this PhotoDemo instance.  This ID will be used to
@@ -239,7 +239,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Initialize translation engine"
+        perfCheck.MarkEvent "Initialize translation engine"
     #End If
     
     'Initialize a new language engine.
@@ -269,7 +269,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Initialize theme engine"
+        perfCheck.MarkEvent "Initialize theme engine"
     #End If
     
     'Because this class controls the visual appearance of all forms in the project, it must be loaded early in the boot process
@@ -288,7 +288,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Detect monitors"
+        perfCheck.MarkEvent "Detect monitors"
     #End If
     
     LoadMessage "Analyzing current monitor setup..."
@@ -306,7 +306,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Display splash screen"
+        perfCheck.MarkEvent "Display splash screen"
     #End If
     
     'Determine the program's previous on-screen location.  We need that to determine where to display the splash screen.
@@ -350,7 +350,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Load plugins"
+        perfCheck.MarkEvent "Load plugins"
     #End If
     
     LoadMessage "Loading plugins..."
@@ -373,7 +373,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Load import and export libraries"
+        perfCheck.MarkEvent "Load import and export libraries"
     #End If
     
     LoadMessage "Loading import/export libraries..."
@@ -393,7 +393,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Build font cache"
+        perfCheck.MarkEvent "Build font cache"
     #End If
     
     LoadMessage "Building font cache..."
@@ -414,7 +414,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Initialize pdClipboardMain"
+        perfCheck.MarkEvent "Initialize pdClipboardMain"
     #End If
     
     LoadMessage "Initializing clipboard interface..."
@@ -427,7 +427,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Initialize viewport engine"
+        perfCheck.MarkEvent "Initialize viewport engine"
     #End If
     
     'Initialize our current zoom method
@@ -450,7 +450,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Initialize window manager"
+        perfCheck.MarkEvent "Initialize window manager"
     #End If
     
     LoadMessage "Initializing window manager..."
@@ -469,17 +469,17 @@ Public Sub ContinueLoadingProgram()
     ' if/when they are enabled.
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Window manager: load left toolbox"
+        perfCheck.MarkEvent "Window manager: load left toolbox"
     #End If
     Load toolbar_Toolbox
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Window manager: load right toolbox"
+        perfCheck.MarkEvent "Window manager: load right toolbox"
     #End If
     Load toolbar_Layers
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Window manager: load bottom toolbox"
+        perfCheck.MarkEvent "Window manager: load bottom toolbox"
     #End If
     Load toolbar_Options
     
@@ -503,7 +503,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Initialize tools"
+        perfCheck.MarkEvent "Initialize tools"
     #End If
     
     LoadMessage "Initializing image tools..."
@@ -520,7 +520,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Initialize UI"
+        perfCheck.MarkEvent "Initialize UI"
     #End If
     
     LoadMessage "Initializing user interface..."
@@ -542,9 +542,14 @@ Public Sub ContinueLoadingProgram()
     InitializeIconHandler
     
     'Prepare a checkerboard pattern, which will be used behind any transparent objects.  Caching this is much more efficient.
-    ' than re-creating it every time it's needed.
+    ' than re-creating it every time it's needed.  (Note that PD exposes two versions of the checkerboard pattern: a GDI version
+    ' and a GDI+ version.)
     Set g_CheckerboardPattern = New pdDIB
     Drawing.CreateAlphaCheckerboardDIB g_CheckerboardPattern
+    Set g_CheckerboardBrush = New pd2DBrush
+    g_CheckerboardBrush.SetBrushMode P2_BM_Texture
+    g_CheckerboardBrush.SetBrushTextureWrapMode P2_WM_Tile
+    g_CheckerboardBrush.SetBrushTextureFromDIB g_CheckerboardPattern
     
     'Allow drag-and-drop operations
     g_AllowDragAndDrop = True
@@ -567,7 +572,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Prep menus"
+        perfCheck.MarkEvent "Prep menus"
     #End If
     
     LoadMessage "Preparing program menus..."
@@ -610,8 +615,8 @@ Public Sub ContinueLoadingProgram()
     
     'While in debug mode, copy a timing report of program startup to the debug folder
     #If DEBUGMODE = 1 Then
-        perfCheck.stopProfiling
-        perfCheck.generateProfileReport True
+        perfCheck.StopProfiling
+        perfCheck.GenerateProfileReport True
     #End If
     
     'Display the splash screen for at least a second or two

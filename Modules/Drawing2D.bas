@@ -72,12 +72,16 @@ Public Enum PD_2D_BRUSH_SETTINGS
     P2_BrushGradientWrapMode = 11
     P2_BrushGradientNodes = 12
     
-    [_P2_NumOfBrushSettings] = 13
+    'Textures are somewhat problematic because we store them inside a DIB, which is not easily serializable.  Solving this
+    ' is TODO; there's always Base-64, obviously, although performance ain't gonna be great.
+    P2_BrushTextureWrapMode = 13
+    
+    [_P2_NumOfBrushSettings] = 14
 End Enum
 
 #If False Then
-    Const P2_BrushMode = 0, P2_BrushColor = 1, P2_BrushOpacity = 2, P2_BrushPatternStyle = 3, P2_BrushPattern1Color = 4, P2_BrushPattern1Opacity = 5, P2_BrushPattern2Color = 6, P2_BrushPattern2Opacity = 7, P2_BrushGradientAllSettings = 8, P2_BrushGradientShape = 9, P2_BrushGradientAngle = 10
-    Private Const P2_BrushGradientWrapMode = 11, P2_BrushGradientNodes = 12, P2_NumOfBrushSettings = 13
+    Private Const P2_BrushMode = 0, P2_BrushColor = 1, P2_BrushOpacity = 2, P2_BrushPatternStyle = 3, P2_BrushPattern1Color = 4, P2_BrushPattern1Opacity = 5, P2_BrushPattern2Color = 6, P2_BrushPattern2Opacity = 7, P2_BrushGradientAllSettings = 8, P2_BrushGradientShape = 9, P2_BrushGradientAngle = 10
+    Private Const P2_BrushGradientWrapMode = 11, P2_BrushGradientNodes = 12, P2_BrushTextureWrapMode = 13, P2_NumOfBrushSettings = 14
 #End If
 
 'Gradients work a little differently; they expose *some* properties that you can change directly, but things like

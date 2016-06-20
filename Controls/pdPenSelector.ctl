@@ -326,13 +326,12 @@ Private Sub RedrawBackBuffer()
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable brush portion.
     If g_IsProgramRunning Then
         
-        'Paint a checkerboard background first
-        With m_PenRect
-            GDI_Plus.GDIPlusFillPatternToDC bufferDC, .Left, .Top, .Width, .Height, g_CheckerboardPattern
-        End With
-        
         Dim cSurface As pd2DSurface, cPen As pd2DPen
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
+        
+        'Paint a checkerboard background first.  (Note that this brush is cached globally, so we never have to
+        ' create our own version of it.)
+        m_Painter.FillRectangleF_FromRectF cSurface, g_CheckerboardBrush, m_PenRect
         
         'Next, create a matching GDI+ pen
         Set cPen = New pd2DPen
