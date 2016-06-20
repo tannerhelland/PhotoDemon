@@ -444,10 +444,10 @@ End Function
 ' We must cache that value before requesting fonts from the system.
 Private Sub UpdateLogFontValues()
     Dim tmpDC As Long
-    tmpDC = Drawing.GetMemoryDC()
+    tmpDC = GDI.GetMemoryDC()
     m_LogPixelsX = GetDeviceCaps(tmpDC, LogPixelsX)
     m_LogPixelsY = GetDeviceCaps(tmpDC, LOGPIXELSY)
-    Drawing.FreeMemoryDC tmpDC
+    GDI.FreeMemoryDC tmpDC
 End Sub
 
 'Prep the program font cache.  Individual functions may need to call this inside the designer, because PD's normal run-time
@@ -477,9 +477,9 @@ Private Function GetAllAvailableFonts() As Boolean
     
     'Enumerate font families using a temporary DC
     Dim tmpDC As Long
-    tmpDC = Drawing.GetMemoryDC()
+    tmpDC = GDI.GetMemoryDC()
     EnumFontFamiliesEx tmpDC, tmpLogFont, AddressOf EnumFontFamExProc, ByVal 0&, 0&
-    Drawing.FreeMemoryDC tmpDC
+    GDI.FreeMemoryDC tmpDC
     
     'If at least one font was found, return TRUE
     GetAllAvailableFonts = CBool(m_PDFontCache.GetNumOfStrings > 0)
@@ -754,7 +754,7 @@ Public Function GetABCWidthOfGlyph(ByVal srcFontHandle As Long, ByVal charCodeIn
         
         'Temporarily select the font into a local DC
         Dim origFont As Long, tmpDC As Long
-        tmpDC = Drawing.GetMemoryDC()
+        tmpDC = GDI.GetMemoryDC()
         origFont = SelectObject(tmpDC, srcFontHandle)
         
         'Retrieve the character positioning values
@@ -762,7 +762,7 @@ Public Function GetABCWidthOfGlyph(ByVal srcFontHandle As Long, ByVal charCodeIn
         
         'Release the font
         SelectObject tmpDC, origFont
-        Drawing.FreeMemoryDC tmpDC
+        GDI.FreeMemoryDC tmpDC
     
     End If
     
@@ -780,7 +780,7 @@ Public Function QuickCreateFontAndDC(ByRef srcFontName As String, ByRef dstFont 
     If CreateGDIFont(tmpLogFont, dstFont) Then
         
         'Create a temporary DC and select the font into it
-        dstDC = Drawing.GetMemoryDC()
+        dstDC = GDI.GetMemoryDC()
         SelectObject dstDC, dstFont
         
         QuickCreateFontAndDC = True
@@ -798,6 +798,6 @@ Public Sub QuickDeleteFontAndDC(ByRef srcFont As Long, ByRef srcDC As Long)
     
     'Kill both the font and the DC
     DeleteObject srcFont
-    Drawing.FreeMemoryDC srcDC
+    GDI.FreeMemoryDC srcDC
     
 End Sub

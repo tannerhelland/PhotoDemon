@@ -1425,70 +1425,70 @@ Public Function GetLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
     Set xmlEngine = New pdXML
     
     'Add a basic header and explanatory comment
-    xmlEngine.prepareNewXML "pdLayer"
+    xmlEngine.PrepareNewXML "pdLayer"
     
     'Add a helpful comment, if requested.
     If Not avoidFluffEntries Then
-        xmlEngine.writeBlankLine
-        xmlEngine.writeComment "This file contains a summary of crucial data for a given pdLayer entry."
-        xmlEngine.writeBlankLine
+        xmlEngine.WriteBlankLine
+        xmlEngine.WriteComment "This file contains a summary of crucial data for a given pdLayer entry."
+        xmlEngine.WriteBlankLine
     End If
     
     'Start by writing out the layerID.  Note that functions making use of this XML data must be very careful about how they
     ' handle this value.  Depending on the context, it may not be advisable to re-use this data at load-time.
-    xmlEngine.writeTag "ID", layerID
+    xmlEngine.WriteTag "ID", layerID
     
     'Next, write out the layer type.  Remember that this value is immutable, and cannot be changed for the life of the layer.
-    xmlEngine.writeTag "Type", myLayerType
+    xmlEngine.WriteTag "Type", myLayerType
     
     'Write out the contents of our current LayerData header.  (NOTE: this must be manually modified if new entries are
     ' added to the LayerData type.
     With myLayerData
-        xmlEngine.writeTag "Name", .l_Name
-        xmlEngine.writeTag "GroupID", .l_GroupID
-        xmlEngine.writeTag "Opacity", .l_Opacity
-        xmlEngine.writeTag "BlendMode", .l_BlendMode
-        xmlEngine.writeTag "OffsetX", .l_OffsetX
-        xmlEngine.writeTag "OffsetY", .l_OffsetY
-        xmlEngine.writeTag "CanvasXModifier", .l_CanvasXModifier
-        xmlEngine.writeTag "CanvasYModifier", .l_CanvasYModifier
-        xmlEngine.writeTag "Angle", .l_Angle
-        xmlEngine.writeTag "RotateCenterX", .l_RotateCenterX
-        xmlEngine.writeTag "RotateCenterY", .l_RotateCenterY
-        xmlEngine.writeTag "Visibility", .l_Visibility
-        xmlEngine.writeTag "NonDestructiveFXActive", .l_NonDestructiveFXActive
-        xmlEngine.writeTag "ResizeQuality", .l_ResizeQuality
-        xmlEngine.writeTag "ShearX", .l_ShearX
-        xmlEngine.writeTag "ShearY", .l_ShearY
-        xmlEngine.writeTag "AlphaMode", .l_AlphaMode
+        xmlEngine.WriteTag "Name", .l_Name
+        xmlEngine.WriteTag "GroupID", .l_GroupID
+        xmlEngine.WriteTag "Opacity", .l_Opacity
+        xmlEngine.WriteTag "BlendMode", .l_BlendMode
+        xmlEngine.WriteTag "OffsetX", .l_OffsetX
+        xmlEngine.WriteTag "OffsetY", .l_OffsetY
+        xmlEngine.WriteTag "CanvasXModifier", .l_CanvasXModifier
+        xmlEngine.WriteTag "CanvasYModifier", .l_CanvasYModifier
+        xmlEngine.WriteTag "Angle", .l_Angle
+        xmlEngine.WriteTag "RotateCenterX", .l_RotateCenterX
+        xmlEngine.WriteTag "RotateCenterY", .l_RotateCenterY
+        xmlEngine.WriteTag "Visibility", .l_Visibility
+        xmlEngine.WriteTag "NonDestructiveFXActive", .l_NonDestructiveFXActive
+        xmlEngine.WriteTag "ResizeQuality", .l_ResizeQuality
+        xmlEngine.WriteTag "ShearX", .l_ShearX
+        xmlEngine.WriteTag "ShearY", .l_ShearY
+        xmlEngine.WriteTag "AlphaMode", .l_AlphaMode
     End With
     
     'Next, write out any non-destructive FX parameters
     With myNonDestructiveFX
-        xmlEngine.writeTag "NDFX_Exposure", .fx_Exposure
-        xmlEngine.writeTag "NDFX_Contrast", .fx_Contrast
-        xmlEngine.writeTag "NDFX_Clarity", .fx_Clarity
-        xmlEngine.writeTag "NDFX_Vibrance", .fx_Vibrance
-        xmlEngine.writeTag "NDFX_Temperature", .fx_Temperature
-        xmlEngine.writeTag "NDFX_Tint", .fx_Tint
+        xmlEngine.WriteTag "NDFX_Exposure", .fx_Exposure
+        xmlEngine.WriteTag "NDFX_Contrast", .fx_Contrast
+        xmlEngine.WriteTag "NDFX_Clarity", .fx_Clarity
+        xmlEngine.WriteTag "NDFX_Vibrance", .fx_Vibrance
+        xmlEngine.WriteTag "NDFX_Temperature", .fx_Temperature
+        xmlEngine.WriteTag "NDFX_Tint", .fx_Tint
     End With
     
     'Next, write out the header of the layer's DIB contents.  These values are necessary for reconstructing the layer's DIB
     ' in the future.
     With xmlEngine
-        .writeTag "DIB_ColorDepth", layerDIB.GetDIBColorDepth
-        .writeTag "DIB_Width", layerDIB.GetDIBWidth
-        .writeTag "DIB_Height", layerDIB.GetDIBHeight
-        .writeTag "DIB_ArrayWidth", layerDIB.GetDIBArrayWidth
-        .writeTag "DIB_AlphaPremultiplication", layerDIB.GetAlphaPremultiplication
+        .WriteTag "DIB_ColorDepth", layerDIB.GetDIBColorDepth
+        .WriteTag "DIB_Width", layerDIB.GetDIBWidth
+        .WriteTag "DIB_Height", layerDIB.GetDIBHeight
+        .WriteTag "DIB_ArrayWidth", layerDIB.GetDIBStride
+        .WriteTag "DIB_AlphaPremultiplication", layerDIB.GetAlphaPremultiplication
     End With
     
     'Note: we obviously do not write out the layer's DIB contents.  It must be handled via separate binary methods.
     
-    If (Not avoidFluffEntries) Then xmlEngine.writeBlankLine
+    If (Not avoidFluffEntries) Then xmlEngine.WriteBlankLine
     
     'The layer XML string is now complete.  Return it.
-    GetLayerHeaderAsXML = xmlEngine.returnCurrentXMLString(avoidFluffEntries)
+    GetLayerHeaderAsXML = xmlEngine.ReturnCurrentXMLString(avoidFluffEntries)
 
 End Function
 
@@ -1506,48 +1506,48 @@ Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
     Set xmlEngine = New pdXML
     
     'Validate the XML header...
-    If (xmlEngine.loadXMLFromString(xmlString) And xmlEngine.isPDDataType("pdLayer")) Then
+    If (xmlEngine.LoadXMLFromString(xmlString) And xmlEngine.IsPDDataType("pdLayer")) Then
         
         'If the caller has not specified their own layerID, use the one from file.
         If (useCustomLayerID = -1) Then
-            layerID = xmlEngine.getUniqueTag_Long("ID")
+            layerID = xmlEngine.GetUniqueTag_Long("ID")
         Else
             layerID = useCustomLayerID
         End If
     
         'Read in the layer type.  Remember that this value is immutable, and cannot be changed for the life of the layer.
-        myLayerType = xmlEngine.getUniqueTag_Long("Type", PDL_IMAGE)
+        myLayerType = xmlEngine.GetUniqueTag_Long("Type", PDL_IMAGE)
         
         'Read in the contents of the LayerData header.  (NOTE: this must be manually modified if new entries are
         ' added to the LayerData type.
         With myLayerData
-            .l_Name = xmlEngine.getUniqueTag_String("Name")
-            .l_GroupID = xmlEngine.getUniqueTag_Long("GroupID")
-            .l_Opacity = xmlEngine.getUniqueTag_Long("Opacity")
-            .l_BlendMode = xmlEngine.getUniqueTag_Long("BlendMode", BL_NORMAL)
-            .l_OffsetX = xmlEngine.getUniqueTag_Double("OffsetX")
-            .l_OffsetY = xmlEngine.getUniqueTag_Double("OffsetY")
-            .l_CanvasXModifier = xmlEngine.getUniqueTag_Double("CanvasXModifier", 1)
-            .l_CanvasYModifier = xmlEngine.getUniqueTag_Double("CanvasYModifier", 1)
-            .l_Angle = xmlEngine.getUniqueTag_Double("Angle")
-            .l_RotateCenterX = xmlEngine.getUniqueTag_Double("RotateCenterX", 0.5)
-            .l_RotateCenterY = xmlEngine.getUniqueTag_Double("RotateCenterY", 0.5)
-            .l_Visibility = xmlEngine.getUniqueTag_Boolean("Visibility")
-            .l_NonDestructiveFXActive = xmlEngine.getUniqueTag_Boolean("NonDestructiveFXActive", False)
-            .l_ResizeQuality = xmlEngine.getUniqueTag_Long("ResizeQuality", LRQ_BILINEAR_NORMAL)
-            .l_ShearX = xmlEngine.getUniqueTag_Double("ShearX", 0)
-            .l_ShearY = xmlEngine.getUniqueTag_Double("ShearY", 0)
-            .l_AlphaMode = xmlEngine.getUniqueTag_Long("AlphaMode", LA_NORMAL)
+            .l_Name = xmlEngine.GetUniqueTag_String("Name")
+            .l_GroupID = xmlEngine.GetUniqueTag_Long("GroupID")
+            .l_Opacity = xmlEngine.GetUniqueTag_Long("Opacity")
+            .l_BlendMode = xmlEngine.GetUniqueTag_Long("BlendMode", BL_NORMAL)
+            .l_OffsetX = xmlEngine.GetUniqueTag_Double("OffsetX")
+            .l_OffsetY = xmlEngine.GetUniqueTag_Double("OffsetY")
+            .l_CanvasXModifier = xmlEngine.GetUniqueTag_Double("CanvasXModifier", 1)
+            .l_CanvasYModifier = xmlEngine.GetUniqueTag_Double("CanvasYModifier", 1)
+            .l_Angle = xmlEngine.GetUniqueTag_Double("Angle")
+            .l_RotateCenterX = xmlEngine.GetUniqueTag_Double("RotateCenterX", 0.5)
+            .l_RotateCenterY = xmlEngine.GetUniqueTag_Double("RotateCenterY", 0.5)
+            .l_Visibility = xmlEngine.GetUniqueTag_Boolean("Visibility")
+            .l_NonDestructiveFXActive = xmlEngine.GetUniqueTag_Boolean("NonDestructiveFXActive", False)
+            .l_ResizeQuality = xmlEngine.GetUniqueTag_Long("ResizeQuality", LRQ_BILINEAR_NORMAL)
+            .l_ShearX = xmlEngine.GetUniqueTag_Double("ShearX", 0)
+            .l_ShearY = xmlEngine.GetUniqueTag_Double("ShearY", 0)
+            .l_AlphaMode = xmlEngine.GetUniqueTag_Long("AlphaMode", LA_NORMAL)
         End With
         
         'Read in the contents of the non-destructive FX chunk
         With myNonDestructiveFX
-            .fx_Exposure = xmlEngine.getUniqueTag_Double("NDFX_Exposure", 0)
-            .fx_Contrast = xmlEngine.getUniqueTag_Long("NDFX_Contrast", 0)
-            .fx_Clarity = xmlEngine.getUniqueTag_Double("NDFX_Clarity", 0)
-            .fx_Vibrance = xmlEngine.getUniqueTag_Long("NDFX_Vibrance", 0)
-            .fx_Temperature = xmlEngine.getUniqueTag_Long("NDFX_Temperature", 0)
-            .fx_Tint = xmlEngine.getUniqueTag_Long("NDFX_Tint", 0)
+            .fx_Exposure = xmlEngine.GetUniqueTag_Double("NDFX_Exposure", 0)
+            .fx_Contrast = xmlEngine.GetUniqueTag_Long("NDFX_Contrast", 0)
+            .fx_Clarity = xmlEngine.GetUniqueTag_Double("NDFX_Clarity", 0)
+            .fx_Vibrance = xmlEngine.GetUniqueTag_Long("NDFX_Vibrance", 0)
+            .fx_Temperature = xmlEngine.GetUniqueTag_Long("NDFX_Temperature", 0)
+            .fx_Tint = xmlEngine.GetUniqueTag_Long("NDFX_Tint", 0)
         End With
         
         'Next, we're going to do something kinda weird.  We're going to create a blank DIB for the layer contents
@@ -1562,10 +1562,10 @@ Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
         
             Set layerDIB = New pdDIB
             With xmlEngine
-                layerDIB.CreateBlank .getUniqueTag_Long("DIB_Width", 1), .getUniqueTag_Long("DIB_Height", 1), .getUniqueTag_Long("DIB_ColorDepth", 32)
+                layerDIB.CreateBlank .GetUniqueTag_Long("DIB_Width", 1), .GetUniqueTag_Long("DIB_Height", 1), .GetUniqueTag_Long("DIB_ColorDepth", 32)
                 
                 'Mark alpha premultiplication in advance
-                layerDIB.SetInitialAlphaPremultiplicationState .getUniqueTag_Boolean("DIB_AlphaPremultiplication", True)
+                layerDIB.SetInitialAlphaPremultiplicationState .GetUniqueTag_Boolean("DIB_AlphaPremultiplication", True)
             
             End With
             
@@ -1604,19 +1604,19 @@ Public Function GetVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
     Set xmlEngine = New pdXML
     
     'Add a basic header and explanatory comment
-    xmlEngine.prepareNewXML "pdVector"
+    xmlEngine.PrepareNewXML "pdVector"
     
     'Add a helpful comment, if requested.
     If (Not avoidFluffEntries) Then
-        xmlEngine.writeBlankLine
-        xmlEngine.writeComment "This XML string contains a summary of crucial data for a pdVector object."
-        xmlEngine.writeBlankLine
+        xmlEngine.WriteBlankLine
+        xmlEngine.WriteComment "This XML string contains a summary of crucial data for a pdVector object."
+        xmlEngine.WriteBlankLine
     End If
     
     'All vector layers store some similar data
     With xmlEngine
-        .writeTag "GenericVectorWidth", myVectorData.vd_Width
-        .writeTag "GenericVectorHeight", myVectorData.vd_Height
+        .WriteTag "GenericVectorWidth", myVectorData.vd_Width
+        .WriteTag "GenericVectorHeight", myVectorData.vd_Height
     End With
     
     'Additional vector data varies by layer type
@@ -1625,14 +1625,14 @@ Public Function GetVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
         Case PDL_TEXT, PDL_TYPOGRAPHY
             
             'pdTextRenderer serializes all its data to XML for us, making this step very simple
-            xmlEngine.writeGenericText myTextRenderer.GetAllFontSettingsAsXML()
+            xmlEngine.WriteGenericText myTextRenderer.GetAllFontSettingsAsXML()
         
     End Select
         
-    If (Not avoidFluffEntries) Then xmlEngine.writeBlankLine
+    If (Not avoidFluffEntries) Then xmlEngine.WriteBlankLine
     
     'The layer XML string is now complete.  Return it.
-    GetVectorDataAsXML = xmlEngine.returnCurrentXMLString(avoidFluffEntries)
+    GetVectorDataAsXML = xmlEngine.ReturnCurrentXMLString(avoidFluffEntries)
 
 End Function
 
@@ -1644,12 +1644,12 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
     Set xmlEngine = New pdXML
     
     'Validate the XML header...
-    If xmlEngine.loadXMLFromString(xmlString) And xmlEngine.isPDDataType("pdVector") Then
+    If xmlEngine.LoadXMLFromString(xmlString) And xmlEngine.IsPDDataType("pdVector") Then
         
         'All vector layers store some similar data
         With myVectorData
-            .vd_Width = xmlEngine.getUniqueTag_Long("GenericVectorWidth", 1)
-            .vd_Height = xmlEngine.getUniqueTag_Long("GenericVectorHeight", 1)
+            .vd_Width = xmlEngine.GetUniqueTag_Long("GenericVectorWidth", 1)
+            .vd_Height = xmlEngine.GetUniqueTag_Long("GenericVectorHeight", 1)
         End With
         
         'Next, the vector tags we look for vary by layer type
@@ -1658,7 +1658,7 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
             Case PDL_TEXT, PDL_TYPOGRAPHY
                 
                 'pdTextRenderer serializes all its data from XML for us, making this step very simple
-                myTextRenderer.SetAllFontSettingsFromXML xmlEngine.returnCurrentXMLString(True)
+                myTextRenderer.SetAllFontSettingsFromXML xmlEngine.ReturnCurrentXMLString(True)
                 
         End Select
                 
@@ -2135,7 +2135,7 @@ Private Sub PrepInternalSafeArray(ByRef srcSA As SAFEARRAY2D)
         .Bounds(0).lBound = 0
         .Bounds(0).cElements = layerDIB.GetDIBHeight
         .Bounds(1).lBound = 0
-        .Bounds(1).cElements = layerDIB.GetDIBArrayWidth
+        .Bounds(1).cElements = layerDIB.GetDIBStride
         .pvData = layerDIB.GetDIBPointer
     End With
     
@@ -2204,7 +2204,7 @@ Public Function CheckForPointOfInterest(ByVal layerX As Long, ByVal layerY As Lo
             poiList(7).y = GetLayerOffsetY
             
             'Check to see if one of the corners has been clicked
-            closestPoint = findClosestPointInArray(layerX, layerY, minDistance, poiList)
+            closestPoint = FindClosestPointInArray(layerX, layerY, minDistance, poiList)
             
             'If a corner was clicked, return its value and exit
             If closestPoint <> -1 Then
@@ -2326,12 +2326,12 @@ End Function
 Public Function EstimateRAMUsage() As Double
 
     'Calculate the raw memory size of both the layer and the cached thumbnail DIB, if any
-    If Not (layerDIB Is Nothing) Then EstimateRAMUsage = layerDIB.GetDIBArrayWidth * layerDIB.GetDIBHeight
-    If Not (layerThumbnail Is Nothing) Then EstimateRAMUsage = EstimateRAMUsage + layerThumbnail.GetDIBArrayWidth * layerThumbnail.GetDIBHeight
+    If Not (layerDIB Is Nothing) Then EstimateRAMUsage = layerDIB.GetDIBStride * layerDIB.GetDIBHeight
+    If Not (layerThumbnail Is Nothing) Then EstimateRAMUsage = EstimateRAMUsage + layerThumbnail.GetDIBStride * layerThumbnail.GetDIBHeight
     
     Dim i As Long
     For i = 0 To NUM_OF_LOD_CACHES - 1
-        If Not (lodDIB(i) Is Nothing) Then EstimateRAMUsage = EstimateRAMUsage + lodDIB(i).GetDIBArrayWidth * lodDIB(i).GetDIBHeight
+        If Not (lodDIB(i) Is Nothing) Then EstimateRAMUsage = EstimateRAMUsage + lodDIB(i).GetDIBStride * lodDIB(i).GetDIBHeight
     Next i
     
     'Assume a 10% overhead for this class instance and other miscellaneous layer data

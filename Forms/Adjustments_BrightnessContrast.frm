@@ -200,7 +200,7 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
         If labTransform.CreateRGBModificationTransform(, tmpBright, tmpContrast, , tmpSaturation, , , INTENT_PRESERVE_K_PLANE_PERCEPTUAL) Then
             
             Dim scanWidthBytes As Long, scanWidthPixels As Long
-            scanWidthBytes = workingDIB.GetDIBArrayWidth
+            scanWidthBytes = workingDIB.GetDIBStride
             scanWidthPixels = workingDIB.GetDIBWidth
             
             'Apply the transform one line at a time
@@ -259,21 +259,21 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
                     gTotal = 0#
                     bTotal = 0#
                     
-                    Dim numOfPixels As Long
-                    numOfPixels = 0
+                    Dim NumOfPixels As Long
+                    NumOfPixels = 0
                     
                     For y = initY To finalY
                     For x = xStart To xStop Step pxSize
                         bTotal = bTotal + srcImageData(x, y)
                         gTotal = gTotal + srcImageData(x + 1, y)
                         rTotal = rTotal + srcImageData(x + 2, y)
-                        numOfPixels = numOfPixels + 1
+                        NumOfPixels = NumOfPixels + 1
                     Next x
                     Next y
                     
-                    rTotal = rTotal \ numOfPixels
-                    gTotal = gTotal \ numOfPixels
-                    bTotal = bTotal \ numOfPixels
+                    rTotal = rTotal \ NumOfPixels
+                    gTotal = gTotal \ NumOfPixels
+                    bTotal = bTotal \ NumOfPixels
                     
                     imgMean = (rTotal + gTotal + bTotal) \ 3
                     

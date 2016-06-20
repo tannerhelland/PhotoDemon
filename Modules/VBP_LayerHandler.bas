@@ -978,7 +978,7 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal x As Long,
         quickX = x * (tmpLayerRef.layerDIB.GetDIBColorDepth \ 8)
         
         'Failsafe bounds check
-        If ((quickX + 3) < tmpLayerRef.layerDIB.GetDIBArrayWidth) And (y < tmpLayerRef.layerDIB.GetDIBHeight) Then
+        If ((quickX + 3) < tmpLayerRef.layerDIB.GetDIBStride) And (y < tmpLayerRef.layerDIB.GetDIBHeight) Then
         
             With dstQuad
                 .Red = tmpData(quickX + 2, y)
@@ -1123,7 +1123,7 @@ End Sub
 ' to handle that case gracefully!
 Public Function AskIfOkayToRasterizeLayer(Optional ByVal srcLayerType As LAYER_TYPE = PDL_TEXT, Optional ByVal questionID As String = "RasterizeLayer", Optional ByVal multipleLayersInvolved As Boolean = False) As VbMsgBoxResult
     
-    Dim questionText As String, yesText As String, noText As String, cancelText As String, rememberText As String, dialogTitle As String
+    Dim questionText As String, yesText As String, noText As String, cancelText As String, rememberText As String, DialogTitle As String
     
     'If multiple layers are involved, we don't care about the current layer type
     If multipleLayersInvolved Then
@@ -1155,10 +1155,10 @@ Public Function AskIfOkayToRasterizeLayer(Optional ByVal srcLayerType As LAYER_T
     'Cancel text, "remember in the future" check box text, and dialog title are universal
     cancelText = g_Language.TranslateMessage("I can't decide.  Cancel this action.")
     rememberText = g_Language.TranslateMessage("In the future, automatically rasterize without prompting me")
-    dialogTitle = "Rasterization required"
+    DialogTitle = "Rasterization required"
     
     'Display the dialog and return the result
-    AskIfOkayToRasterizeLayer = DialogManager.PromptGenericYesNoDialog_SingleOutcome(questionID, questionText, yesText, noText, cancelText, rememberText, dialogTitle, vbYes, IDI_EXCLAMATION, vbYes)
+    AskIfOkayToRasterizeLayer = DialogManager.PromptGenericYesNoDialog_SingleOutcome(questionID, questionText, yesText, noText, cancelText, rememberText, DialogTitle, vbYes, IDI_EXCLAMATION, vbYes)
 
 End Function
 

@@ -920,7 +920,7 @@ Public Sub MenuCountColors()
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
-    finalX = tmpImageComposite.GetDIBArrayWidth - 1
+    finalX = tmpImageComposite.GetDIBStride - 1
     finalY = tmpImageComposite.GetDIBHeight - 1
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value

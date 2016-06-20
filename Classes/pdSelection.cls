@@ -2428,7 +2428,7 @@ Private Sub prepDIBSafeArray(ByRef srcDIB As pdDIB, ByRef tmpSA As SAFEARRAY2D)
         .Bounds(0).lBound = 0
         .Bounds(0).cElements = srcDIB.GetDIBHeight
         .Bounds(1).lBound = 0
-        .Bounds(1).cElements = srcDIB.GetDIBArrayWidth
+        .Bounds(1).cElements = srcDIB.GetDIBStride
         .pvData = srcDIB.GetDIBPointer
     End With
 End Sub

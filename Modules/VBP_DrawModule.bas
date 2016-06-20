@@ -59,11 +59,6 @@ Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As L
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function SetBrushOrgEx Lib "gdi32" (ByVal targetDC As Long, ByVal nXOrg As Long, ByVal nYOrg As Long, ByVal refToPeviousPoint As Long) As Long
 Private Declare Function SetROP2 Lib "gdi32" (ByVal hDC As Long, ByVal nDrawMode As Long) As Long
-Private Declare Function GdiFlush Lib "gdi32" () As Long
-
-'DC API functions
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 
 'API for converting between hWnd-specific coordinate spaces.  Note that the function technically accepts an
 ' array of POINTAPI points; the address passed to lpPoints should be the address of the first point in the array
@@ -794,50 +789,6 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
         End If
     Next i
     
-End Sub
-
-'Need a quick and dirty DC for something?  Call this.  (Just remember to free the DC when you're done!)
-Public Function GetMemoryDC() As Long
-    
-    GetMemoryDC = CreateCompatibleDC(0&)
-    
-    'In debug mode, track how many DCs the program requests
-    #If DEBUGMODE = 1 Then
-        If GetMemoryDC <> 0 Then
-            g_DCsCreated = g_DCsCreated + 1
-        Else
-            pdDebug.LogAction "WARNING!  Drawing.GetMemoryDC() failed to create a new memory DC!"
-        End If
-    #End If
-    
-End Function
-
-Public Sub FreeMemoryDC(ByVal srcDC As Long)
-    
-    If srcDC <> 0 Then
-        
-        Dim delConfirm As Long
-        delConfirm = DeleteDC(srcDC)
-    
-        'In debug mode, track how many DCs the program frees
-        #If DEBUGMODE = 1 Then
-            If delConfirm <> 0 Then
-                g_DCsDestroyed = g_DCsDestroyed + 1
-            Else
-                pdDebug.LogAction "WARNING!  Drawing.FreeMemoryDC() failed to release DC #" & srcDC & "."
-            End If
-        #End If
-        
-    Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  Drawing.FreeMemoryDC() was passed a null DC.  Fix this!"
-        #End If
-    End If
-    
-End Sub
-
-Public Sub ForceGDIFlush()
-    GdiFlush
 End Sub
 
 'During startup, we cache a few different UI pens and brushes; this accelerates the process of viewport rendering.

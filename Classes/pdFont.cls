@@ -504,7 +504,7 @@ Public Function GetWidthOfString(ByVal srcString As String) As Long
     Dim targetDC As Long, tmpDCActive As Boolean
     If curDC = 0 Then
         tmpDCActive = True
-        targetDC = Drawing.GetMemoryDC()
+        targetDC = GDI.GetMemoryDC()
         AttachToDC targetDC
     Else
         targetDC = curDC
@@ -517,7 +517,7 @@ Public Function GetWidthOfString(ByVal srcString As String) As Long
     'Release the temporary DC, as necessary
     If tmpDCActive Then
         ReleaseFromDC
-        Drawing.FreeMemoryDC targetDC
+        GDI.FreeMemoryDC targetDC
     End If
     
 End Function
@@ -532,7 +532,7 @@ Public Function GetHeightOfString(ByVal srcString As String) As Long
     Dim targetDC As Long, tmpDCActive As Boolean
     If curDC = 0 Then
         tmpDCActive = True
-        targetDC = Drawing.GetMemoryDC()
+        targetDC = GDI.GetMemoryDC()
         AttachToDC targetDC
     Else
         targetDC = curDC
@@ -545,7 +545,7 @@ Public Function GetHeightOfString(ByVal srcString As String) As Long
     'Release the temporary DC, as necessary
     If tmpDCActive Then
         ReleaseFromDC
-        Drawing.FreeMemoryDC targetDC
+        GDI.FreeMemoryDC targetDC
     End If
     
 End Function
@@ -562,7 +562,7 @@ Public Function GetHeightOfWordwrapString(ByVal srcString As String, ByVal strWi
     Dim targetDC As Long, tmpDCActive As Boolean
     If curDC = 0 Then
         tmpDCActive = True
-        targetDC = Drawing.GetMemoryDC()
+        targetDC = GDI.GetMemoryDC()
         AttachToDC targetDC
     Else
         targetDC = curDC
@@ -575,7 +575,7 @@ Public Function GetHeightOfWordwrapString(ByVal srcString As String, ByVal strWi
     'Release the temporary DC, as necessary
     If tmpDCActive Then
         ReleaseFromDC
-        Drawing.FreeMemoryDC targetDC
+        GDI.FreeMemoryDC targetDC
     End If
 
 End Function
@@ -710,7 +710,7 @@ Public Function GetMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal 
     backupDC = curDC
     
     If curDC = 0 Then
-        targetDC = Drawing.GetMemoryDC()
+        targetDC = GDI.GetMemoryDC()
     Else
         ReleaseFromDC
         targetDC = backupDC
@@ -767,7 +767,7 @@ Public Function GetMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal 
     
     'If we created a temporary DC, free it now
     If targetDC <> backupDC Then
-        Drawing.FreeMemoryDC targetDC
+        GDI.FreeMemoryDC targetDC
     
     'Conversely, if we were originally selected into a DC, restore that DC now
     Else
@@ -787,7 +787,7 @@ Public Function GetMaxFontSizeToFitWordWrap(ByVal srcString As String, ByVal des
     backupDC = curDC
     
     If curDC = 0 Then
-        targetDC = Drawing.GetMemoryDC()
+        targetDC = GDI.GetMemoryDC()
     Else
         ReleaseFromDC
         targetDC = backupDC
@@ -838,7 +838,7 @@ Public Function GetMaxFontSizeToFitWordWrap(ByVal srcString As String, ByVal des
     
     'If we created a temporary DC, free it now
     If targetDC <> backupDC Then
-        Drawing.FreeMemoryDC targetDC
+        GDI.FreeMemoryDC targetDC
     
     'Conversely, if we were originally selected into a DC, restore that DC now
     Else

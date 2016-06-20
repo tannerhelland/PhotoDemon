@@ -18,6 +18,15 @@ Attribute VB_Exposed = False
 'Last updated: 10/May/16
 'Last update: split surface-specific capabilities out from GDI+ and into a safe wrapper
 '
+'In the pd2D drawing model, "Surfaces" are objects onto which you can paint.  At present, there are two types of surfaces:
+'
+' 1) Wrappers around existing DCs.  This is help for UI painting, as wrapping a DC is effectively instantaneous
+'    (compared to making a copy of the DC's bitmap, painting to that, then flipping back to the DC when finished)
+'
+' 2) Bitmap (raster) surfaces.  The creation and destruction of such surfaces is handled internally, using a pdDIB object.
+'
+'Regardless of which surface type you use, you can always access an hDC for external GDI interop purposes.
+'
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit http://photodemon.org/about/license/
 '
@@ -32,8 +41,18 @@ Private m_SurfaceBackend As PD_2D_RENDERING_BACKEND
 'The current surface handle.  Will be 0 if the surface is uninitialized.
 Private m_SurfaceHandle As Long
 
-'If this surface currently wraps an hDC, this will be non-zero
+'If this surface was created by wrapping an existing hDC, this value will be non-zero.
 Private m_SurfaceDC As Long
+
+'If you need to query a wrapped DC for bitmap information (e.g. width/height), use this temporary object to do so.
+Private m_SurfaceDCBitmap As GDI_BITMAP
+
+'If this surface was created as a new surface, this DIB will serve as the surface backer.  (Similarly, the surface DC will simply
+' wrap this DIB's hDC.)
+Private m_SurfaceDIB As pdDIB
+
+'I don't currently expose a surface's type; this is managed internally, based on the way the surface is created.
+Private m_SurfaceType As PD_2D_SurfaceType
 
 'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
 Private m_DebugMode As Boolean
@@ -216,6 +235,19 @@ Public Function SetSurfaceClip_None() As Boolean
     
 End Function
 
+'Create a blank in-memory surface.  pd2DSurface will automatically manage the memory for this surface.
+Public Function CreateBlankSurface(ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, Optional ByVal surfaceHasAlphaChannel As Boolean = True, Optional ByVal surfaceBackColor As Long = vbWhite, Optional ByVal surfaceOpacity As Single = 100#) As Boolean
+    If (surfaceWidth <> 0) And (surfaceHeight <> 0) Then
+        If (m_SurfaceDIB Is Nothing) Then Set m_SurfaceDIB = New pdDIB
+        Dim targetColorDepth As Long
+        If surfaceHasAlphaChannel Then targetColorDepth = 32 Else targetColorDepth = 24
+        CreateBlankSurface = m_SurfaceDIB.CreateBlank(surfaceWidth, surfaceHeight, targetColorDepth, surfaceBackColor, surfaceOpacity * 2.55)
+        If CreateBlankSurface Then m_SurfaceType = P2_ST_Bitmap
+    Else
+        InternalError "Invalid surface width/height", "When creating a blank surface, the width and height must be non-zero."
+    End If
+End Function
+
 'Wrap this surface around some existing hDC.  It's fine to call this function multiple times on the same DC - changes to the handle
 ' are detected automatically
 Public Function WrapSurfaceAroundDC(ByVal srcDC As Long) As Boolean
@@ -232,9 +264,14 @@ Public Function WrapSurfaceAroundDC(ByVal srcDC As Long) As Boolean
             Select Case m_SurfaceBackend
                 
                 Case P2_DefaultBackend, P2_GDIPlusBackend
+                
                     m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(srcDC, IIf(m_SurfaceAntialiasing >= P2_AA_Grayscale, GP_SM_AntiAlias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Half, GP_POM_Half, GP_POM_None))
                     WrapSurfaceAroundDC = (m_SurfaceHandle <> 0)
-                    If WrapSurfaceAroundDC Then m_SurfaceDC = srcDC
+                    
+                    If WrapSurfaceAroundDC Then
+                        m_SurfaceDC = srcDC
+                        m_SurfaceType = P2_ST_WrapperOnly
+                    End If
                     
             End Select
             
@@ -258,7 +295,7 @@ End Function
 'I'm still debating whether it's wise to expose this function externally.  GDI+ handles DCs in weird ways; as long as it is only ever
 ' wrapped around *existing* DCs, you can intermix GDI+ and GDI calls without issue, and everything auto-synchronizes.  However, if you
 ' create a native GDI+ surface then use GdipGetDC() to retrieve a DC for it, you *must* call GdipReleaseDC when you're done (which is
-' really unintuitive, given the way DCs usually work for VB programmers).
+' very unintuitive, given the way DCs usually work for VB programmers).
 '
 'As such, my current inclination is to always keep a GDI-backed copy of any surfaces created by this class.  This allows the caller to
 ' freely intermix bare GDI calls (like BitBlt) and pd2D drawing calls without consequence, and it also circumvents some really obnoxious
@@ -267,7 +304,57 @@ End Function
 '
 'Anyway, I mention this here as an FYI, but tl;dr: for now, this function is safe to use.
 Public Function GetSurfaceDC() As Long
-    GetSurfaceDC = m_SurfaceDC
+    If (m_SurfaceType = P2_ST_WrapperOnly) Then
+        GetSurfaceDC = m_SurfaceDC
+    ElseIf (m_SurfaceType = P2_ST_Bitmap) Then
+        If (Not m_SurfaceDIB Is Nothing) Then GetSurfaceDC = m_SurfaceDIB.GetDIBDC Else GetSurfaceDC = 0
+    Else
+        GetSurfaceDC = 0
+    End If
+End Function
+
+Public Function GetSurfaceAlphaSupport() As Boolean
+    If (m_SurfaceType = P2_ST_WrapperOnly) Then
+        m_SurfaceDCBitmap = GDI.GetBitmapHeaderFromDC(m_SurfaceDC)
+        GetSurfaceAlphaSupport = CBool(m_SurfaceDCBitmap.BitsPerPixel = 32)
+    ElseIf (m_SurfaceType = P2_ST_Bitmap) Then
+        If (Not m_SurfaceDIB Is Nothing) Then GetSurfaceAlphaSupport = CBool(m_SurfaceDIB.GetDIBColorDepth = 32)
+    Else
+        GetSurfaceAlphaSupport = False
+    End If
+End Function
+
+Public Function GetSurfaceHeight() As Long
+    If (m_SurfaceType = P2_ST_WrapperOnly) Then
+        m_SurfaceDCBitmap = GDI.GetBitmapHeaderFromDC(m_SurfaceDC)
+        GetSurfaceHeight = m_SurfaceDCBitmap.Height
+    ElseIf (m_SurfaceType = P2_ST_Bitmap) Then
+        If (Not m_SurfaceDIB Is Nothing) Then GetSurfaceHeight = m_SurfaceDIB.GetDIBHeight
+    Else
+        GetSurfaceHeight = 0
+    End If
+End Function
+
+Public Function GetSurfaceStride() As Long
+    If (m_SurfaceType = P2_ST_WrapperOnly) Then
+        m_SurfaceDCBitmap = GDI.GetBitmapHeaderFromDC(m_SurfaceDC)
+        GetSurfaceStride = m_SurfaceDCBitmap.WidthBytes
+    ElseIf (m_SurfaceType = P2_ST_Bitmap) Then
+        If (Not m_SurfaceDIB Is Nothing) Then GetSurfaceStride = m_SurfaceDIB.GetDIBStride
+    Else
+        GetSurfaceStride = 0
+    End If
+End Function
+
+Public Function GetSurfaceWidth() As Long
+    If (m_SurfaceType = P2_ST_WrapperOnly) Then
+        m_SurfaceDCBitmap = GDI.GetBitmapHeaderFromDC(m_SurfaceDC)
+        GetSurfaceWidth = m_SurfaceDCBitmap.Width
+    ElseIf (m_SurfaceType = P2_ST_Bitmap) Then
+        If (Not m_SurfaceDIB Is Nothing) Then GetSurfaceWidth = m_SurfaceDIB.GetDIBWidth
+    Else
+        GetSurfaceWidth = 0
+    End If
 End Function
 
 Public Function HasSurface() As Boolean
@@ -298,6 +385,16 @@ Public Function ReleaseSurface() As Boolean
         If ReleaseSurface Then
             m_SurfaceHandle = 0
             If (m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange m_SurfaceBackend, False
+            
+            'Also reset any surface-type-specific values
+            If (m_SurfaceType = P2_ST_WrapperOnly) Then
+                m_SurfaceDC = 0
+            ElseIf (m_SurfaceType = P2_ST_Bitmap) Then
+                Set m_SurfaceDIB = Nothing
+            End If
+            
+            m_SurfaceType = P2_ST_Uninitialized
+            
         End If
     
     Else
@@ -366,12 +463,21 @@ Public Sub ResetAllProperties()
     Me.SetSurfaceProperty P2_SurfaceBlendUsingSRGBGamma, False
 End Sub
 
+'Add your own error-handling behavior here, as desired
+Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  pd2DSurface encountered an error: """ & errName & """ - " & errDescription
+        If (ErrNum <> 0) Then pdDebug.LogAction "(Also, an error number was reported: " & ErrNum & ")"
+    #End If
+End Sub
+
 'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
 Public Sub SetDebugMode(ByVal newMode As Boolean)
     m_DebugMode = newMode
 End Sub
 
 Private Sub Class_Initialize()
+    m_SurfaceType = P2_ST_Uninitialized
     Me.ResetAllProperties
 End Sub
 

@@ -61,7 +61,7 @@ Private m_XBLeft As Long, m_XBRight As Long, m_XBSize As Long
 Private m_YBTop As Long, m_YBBottom As Long, m_YBSize As Long
 
 'Other relevant DIB properties
-Private m_DibPointer As Long, m_dibHeight As Long, m_DibStride As Long, m_DibColorDepth As Long, m_PixelWidth As Long
+Private m_DibPointer As Long, m_dibHeight As Long, m_dibStride As Long, m_dibColorDepth As Long, m_PixelWidth As Long
 
 'Pixel array (alias only; the actual pixel bits are stored by the caller, and treated as read-only by this class)
 Private m_PixelSA As SAFEARRAY2D, m_Pixels() As Byte
@@ -138,12 +138,12 @@ Friend Function InitializeIterator(ByRef targetDIB As pdDIB, ByVal xRadius As Lo
     'Retrieve other relevant DIB properties
     m_DibPointer = targetDIB.GetDIBPointer
     m_dibHeight = targetDIB.GetDIBHeight
-    m_DibStride = targetDIB.GetDIBArrayWidth
-    m_DibColorDepth = targetDIB.GetDIBColorDepth
-    m_PixelWidth = m_DibColorDepth \ 8
+    m_dibStride = targetDIB.GetDIBStride
+    m_dibColorDepth = targetDIB.GetDIBColorDepth
+    m_PixelWidth = m_dibColorDepth \ 8
     
     'Set alpha to a default value, based on the source image's color depth
-    If m_DibColorDepth = 32 Then m_AlphaSupport = True Else m_AlphaSupport = False
+    If m_dibColorDepth = 32 Then m_AlphaSupport = True Else m_AlphaSupport = False
     
     InitializeIterator = True
     
@@ -270,7 +270,7 @@ Private Sub AliasPixelArray()
         .Bounds(0).lBound = 0
         .Bounds(0).cElements = m_dibHeight
         .Bounds(1).lBound = 0
-        .Bounds(1).cElements = m_DibStride
+        .Bounds(1).cElements = m_dibStride
         .pvData = m_DibPointer
     End With
     CopyMemory ByVal VarPtrArray(m_Pixels()), VarPtr(m_PixelSA), 4&

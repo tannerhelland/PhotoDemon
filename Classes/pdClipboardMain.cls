@@ -2069,7 +2069,7 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False, O
             ' if I don't do this.  Explanations welcome!)
             Dim y As Long, yFinal As Long, dibStride As Long
             yFinal = m_ClipboardDIB.GetDIBHeight - 1
-            dibStride = m_ClipboardDIB.GetDIBArrayWidth
+            dibStride = m_ClipboardDIB.GetDIBStride
             
             If (Not programShuttingDown) Then
                 For y = 0 To yFinal

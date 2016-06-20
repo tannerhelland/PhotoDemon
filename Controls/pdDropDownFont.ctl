@@ -795,7 +795,7 @@ Private Sub RaiseListBox()
         
         'Create a temporary DIB so we don't have to constantly re-select the font into a DC of its own making.
         Dim tmpDC As Long
-        tmpDC = Drawing.GetMemoryDC()
+        tmpDC = GDI.GetMemoryDC()
         
         'Font names are rendered in the current UI font
         Dim curFont As pdFont
@@ -810,7 +810,7 @@ Private Sub RaiseListBox()
         Next i
         
         curFont.ReleaseFromDC
-        Drawing.FreeMemoryDC tmpDC
+        GDI.FreeMemoryDC tmpDC
         
         'The "best" width of the dropdown is a little sketchy, due to the font previews on the right.  At present,
         ' Use the width of the largest font name (which can only be 32 chars), multiplied by 2 (so an equal amount of size is allotted for
