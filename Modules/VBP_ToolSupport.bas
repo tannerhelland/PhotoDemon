@@ -339,19 +339,19 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 
                     'Apply the current layer's shear effect to the mouse position.  This gives us its unadulterated equivalent,
                     ' e.g. its location in the same coordinate space as the two points we've already calculated.
-                    Dim tmpMatrix As pdGraphicsMatrix
-                    Set tmpMatrix = New pdGraphicsMatrix
+                    Dim tmpMatrix As pd2DTransform
+                    Set tmpMatrix = New pd2DTransform
                     
-                    tmpMatrix.ShearMatrix srcLayer.GetLayerShearX, srcLayer.GetLayerShearY, ptIntersect.x, ptIntersect.y
-                    tmpMatrix.InvertMatrix
+                    tmpMatrix.ApplyShear srcLayer.GetLayerShearX, srcLayer.GetLayerShearY, ptIntersect.x, ptIntersect.y
+                    tmpMatrix.InvertTransform
                     
-                    tmpMatrix.applyMatrixToPointF pt2
+                    tmpMatrix.ApplyTransformToPointF pt2
                 
                 End If
                 
                 'Find the angle between the two lines we've calculated
                 Dim newAngle As Double
-                newAngle = Math_Functions.angleBetweenTwoIntersectingLines(ptIntersect, pt1, pt2, True)
+                newAngle = Math_Functions.AngleBetweenTwoIntersectingLines(ptIntersect, pt1, pt2, True)
                 
                 'Because the angle function finds the absolute inner angle, it will never be greater than 180 degrees.  This also means
                 ' that +90 and -90 (from a UI standpoint) return the same 90 result.  A simple workaround is to force the sign to

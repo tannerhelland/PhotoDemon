@@ -459,14 +459,14 @@ Public Function ConvertImageCoordsToLayerCoords(ByRef srcImage As pdImage, ByRef
     If srcLayer.AffineTransformsActive(False) Then
     
         'Create a copy of either the layer's transformation matrix, or a custom matrix if passed in
-        Dim tmpMatrix As pdGraphicsMatrix
+        Dim tmpMatrix As pd2DTransform
         srcLayer.GetCopyOfLayerTransformationMatrix tmpMatrix
         
         'Invert the matrix
-        If tmpMatrix.InvertMatrix() Then
+        If tmpMatrix.InvertTransform() Then
             
             'We now need to convert the image coordinates against the layer transformation matrix
-            tmpMatrix.applyMatrixToXYPair imgX, imgY
+            tmpMatrix.ApplyTransformToXY imgX, imgY
             
             'In order for the matrix conversion to work, it has to offset coordinates by the current layer offset.  (Rotation is
             ' particularly important in that regard, as the center-point is crucial.)  As such, we now need to undo that translation.

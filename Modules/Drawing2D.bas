@@ -305,6 +305,15 @@ End Enum
     Private Const P2_ST_WrapperOnly = 0, P2_ST_Bitmap = 1
 #End If
 
+Public Enum PD_2D_TransformOrder
+    P2_TO_Prepend = 0&
+    P2_TO_Append = 1&
+End Enum
+
+#If False Then
+    Private Const P2_TO_Prepend = 0&, P2_TO_Append = 1&
+#End If
+
 Public Enum PD_2D_WrapMode
     P2_WM_Tile = 0
     P2_WM_TileFlipX = 1
@@ -351,7 +360,7 @@ Private m_GDIPlusAvailable As Boolean
 Private m_DebugMode As Boolean
 
 'When debug mode is active, live counts of various drawing objects are tracked on a per-backend basis
-Private m_SurfaceCount_GDIPlus As Long, m_PenCount_GDIPlus As Long, m_BrushCount_GDIPlus As Long, m_RegionCount_GDIPlus As Long
+Private m_BrushCount_GDIPlus As Long, m_PenCount_GDIPlus As Long, m_RegionCount_GDIPlus As Long, m_SurfaceCount_GDIPlus As Long, m_TransformCount_GDIPlus As Long
 
 'Shortcut function for creating a generic painter
 Public Function QuickCreatePainter(ByRef dstPainter As pd2DPainter) As Boolean
@@ -554,5 +563,14 @@ Public Sub DEBUG_NotifySurfaceCountChange(ByVal targetBackend As PD_2D_RENDERING
             If objectCreated Then m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus + 1 Else m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus - 1
         Case Else
             InternalRenderingError "Bad Parameter", "Surface creation/destruction was not counted: backend ID unknown"
+    End Select
+End Sub
+
+Public Sub DEBUG_NotifyTransformCountChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal objectCreated As Boolean)
+    Select Case targetBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            If objectCreated Then m_TransformCount_GDIPlus = m_TransformCount_GDIPlus + 1 Else m_TransformCount_GDIPlus = m_TransformCount_GDIPlus - 1
+        Case Else
+            InternalRenderingError "Bad Parameter", "Transform creation/destruction was not counted: backend ID unknown"
     End Select
 End Sub

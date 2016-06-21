@@ -666,7 +666,7 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
         CalculateGlyphPositions boundingRect, horizontalAlignment, verticalAlignment, lineWrapMode, additionalStylesRect
         
         Dim i As Long, curGlyph As Long, curGlyphOutline As Long, srcPathHandle As Long
-        Dim tmpGlyphOutlineCopy As pd2DPath, tmpMatrix As pdGraphicsMatrix, cRandom As pdRandomize
+        Dim tmpGlyphOutlineCopy As pd2DPath, tmpMatrix As pd2DTransform, cRandom As pdRandomize
         Dim maxJitterX As Single, maxJitterY As Single, halfJitterX As Single, halfJitterY As Single
         Dim glyphIsRenderable As Boolean
                 
@@ -674,7 +674,7 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
         If m_CharEffectsEnabled Then
         
             Set tmpGlyphOutlineCopy = New pd2DPath
-            Set tmpMatrix = New pdGraphicsMatrix
+            Set tmpMatrix = New pd2DTransform
             
             'Seeding the random number generator is a little tricky.  We need it to be deterministic, so the layer's appearance
             ' doesn't change between save/load, but we also need it to vary by changes to jitter.
