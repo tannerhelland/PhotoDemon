@@ -17,7 +17,7 @@ Attribute VB_Exposed = False
 'Created: 17/October/14 (though assembled from various parts written much earlier)
 'Last updated: 18/June/16
 'Last update: continued work on bringing this class into the pd2D fold
-'Dependencies: pdGraphicsMatrix, for applying affine transformations to a path.
+'Dependencies: pd2DTransform, for applying affine transformations to a path.
 '
 'This class is a VB6-friendly wrapper for the GDI+ GraphicsPath object.  It is not intended as a comprehensive interface;
 ' instead, I add functions to it as I need them for various PD elements.
@@ -320,23 +320,23 @@ End Sub
 Public Sub TranslatePath(ByVal xAmount As Single, ByVal yAmount As Single)
 
     'Retrieve a translation matrix
-    Dim tmpMatrix As pdGraphicsMatrix
-    Set tmpMatrix = New pdGraphicsMatrix
-    tmpMatrix.TranslateMatrix xAmount, yAmount
+    Dim tmpMatrix As pd2DTransform
+    Set tmpMatrix = New pd2DTransform
+    tmpMatrix.ApplyTranslation xAmount, yAmount
     
     'Apply the transformation
-    GdipTransformPath m_PathHandle, tmpMatrix.getMatrixHandle
+    GdipTransformPath m_PathHandle, tmpMatrix.GetHandle
     
     'Free the matrix
     Set tmpMatrix = Nothing
     
 End Sub
 
-'Transform the path by some arbitrary pdGraphicsMatrix object
-Public Sub TransformPathByMatrix(ByRef srcMatrix As pdGraphicsMatrix)
+'Transform the path by some arbitrary pd2DTransform object
+Public Sub TransformPathByMatrix(ByRef srcMatrix As pd2DTransform)
     
     'Apply the transformation immediately
-    GdipTransformPath m_PathHandle, srcMatrix.getMatrixHandle
+    GdipTransformPath m_PathHandle, srcMatrix.GetHandle
     
 End Sub
 
@@ -344,18 +344,18 @@ End Sub
 Public Sub RotatePathAroundItsCenter(ByRef rotateAngle As Single)
     
     'Create a transformation matrix
-    Dim tmpMatrix As pdGraphicsMatrix
-    Set tmpMatrix = New pdGraphicsMatrix
+    Dim tmpMatrix As pd2DTransform
+    Set tmpMatrix = New pd2DTransform
     
     'Figure out the path's center
     Dim pathRect As RECTF
     GdipGetPathWorldBounds m_PathHandle, pathRect, 0, 0
     
     'Update the transformation matrix with a matching rotation
-    tmpMatrix.RotateMatrix rotateAngle, pathRect.Left + pathRect.Width / 2, pathRect.Top + pathRect.Height / 2, MatrixOrderAppend
+    tmpMatrix.ApplyRotation rotateAngle, pathRect.Left + pathRect.Width / 2, pathRect.Top + pathRect.Height / 2, P2_TO_Append
     
     'Apply the transformation
-    GdipTransformPath m_PathHandle, tmpMatrix.getMatrixHandle
+    GdipTransformPath m_PathHandle, tmpMatrix.GetHandle
     
 End Sub
 
@@ -363,22 +363,22 @@ End Sub
 Public Sub MirrorPathAroundItsCenter(ByVal mirrorHorizontal As Boolean, ByVal mirrorVertical As Boolean)
     
     'Create a transformation matrix
-    Dim tmpMatrix As pdGraphicsMatrix
-    Set tmpMatrix = New pdGraphicsMatrix
+    Dim tmpMatrix As pd2DTransform
+    Set tmpMatrix = New pd2DTransform
     
     'Figure out the path's center
     Dim pathRect As RECTF
     GdipGetPathWorldBounds m_PathHandle, pathRect, 0, 0
     
     'Update the transformation matrix with a matching mirror operation
-    tmpMatrix.MirrorMatrix mirrorHorizontal, mirrorVertical
+    tmpMatrix.ApplyMirror mirrorHorizontal, mirrorVertical
     
     'Mirroring will reflect a path around the 0-axis, so we need to translate the path back into its original position now.
-    If mirrorHorizontal Then tmpMatrix.TranslateMatrix (pathRect.Left + pathRect.Width / 2) * 2, 0, MatrixOrderAppend
-    If mirrorVertical Then tmpMatrix.TranslateMatrix 0, (pathRect.Top + pathRect.Height / 2) * 2, MatrixOrderAppend
+    If mirrorHorizontal Then tmpMatrix.ApplyTranslation (pathRect.Left + pathRect.Width / 2) * 2, 0, P2_TO_Append
+    If mirrorVertical Then tmpMatrix.ApplyTranslation 0, (pathRect.Top + pathRect.Height / 2) * 2, P2_TO_Append
     
     'Apply the transformation
-    GdipTransformPath m_PathHandle, tmpMatrix.getMatrixHandle
+    GdipTransformPath m_PathHandle, tmpMatrix.GetHandle
     
 End Sub
 

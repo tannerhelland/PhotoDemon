@@ -1047,7 +1047,7 @@ End Function
 Friend Sub GetLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional ByVal includeOffsets As Boolean = True, Optional ByVal normalizeToNewOrigin As Boolean = False, Optional ByVal normalizeX As Single = 0#, Optional ByVal normalizeY As Single = 0#, Optional ByVal includeNonDestructiveScaling As Boolean = True)
     
     'To simplify the work of translating layer boundaries by one or more affine transformations, we use a GraphicsMatrix object.
-    Dim tmpMatrix As pdGraphicsMatrix
+    Dim tmpMatrix As pd2DTransform
     
     'Retrieve a copy of the current layer transform matrix
     Me.GetCopyOfLayerTransformationMatrix tmpMatrix, includeOffsets
@@ -1069,10 +1069,10 @@ Friend Sub GetLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional B
     End If
     
     'Translate each point in turn
-    tmpMatrix.applyMatrixToPointF dstPoints(0)
-    tmpMatrix.applyMatrixToPointF dstPoints(1)
-    tmpMatrix.applyMatrixToPointF dstPoints(2)
-    If (UBound(dstPoints) = 3) Then tmpMatrix.applyMatrixToPointF dstPoints(3)
+    tmpMatrix.ApplyTransformToPointF dstPoints(0)
+    tmpMatrix.ApplyTransformToPointF dstPoints(1)
+    tmpMatrix.ApplyTransformToPointF dstPoints(2)
+    If (UBound(dstPoints) = 3) Then tmpMatrix.ApplyTransformToPointF dstPoints(3)
     
     'Some compositing operations are easier if the layer is normalized to a standard origin of (0, 0).
     ' If the caller requested that, apply normalizing now.
@@ -1105,7 +1105,7 @@ End Sub
 Friend Sub GetLayerRotationNodeCoordinates(ByRef dstPoints() As POINTFLOAT, Optional ByVal includeOffsets As Boolean = True, Optional ByVal includeNonDestructiveScaling As Boolean = True)
     
     'Retrieve a copy of the current layer transform matrix
-    Dim tmpMatrix As pdGraphicsMatrix
+    Dim tmpMatrix As pd2DTransform
     Me.GetCopyOfLayerTransformationMatrix tmpMatrix, includeOffsets
     
     'Fill the destination with two coordinates: the center if the image, and the position of the current rotation node.
@@ -1129,7 +1129,7 @@ Friend Sub GetLayerRotationNodeCoordinates(ByRef dstPoints() As POINTFLOAT, Opti
     'Apply the transformation matrix to each point
     Dim i As Long
     For i = 0 To 4
-        tmpMatrix.applyMatrixToPointF dstPoints(i)
+        tmpMatrix.ApplyTransformToPointF dstPoints(i)
     Next i
     
     'The temporary translation matrix will automatically be cleaned up when the function exits
@@ -1140,25 +1140,25 @@ End Sub
 ' layer's current transformation matrix, it can use this function to retrieve it.
 '
 'Note that scaling is not applied, by design.  The caller should handle scaling manually.
-Friend Sub GetCopyOfLayerTransformationMatrix(ByRef dstMatrix As pdGraphicsMatrix, Optional ByVal applyTranslation As Boolean = True)
+Friend Sub GetCopyOfLayerTransformationMatrix(ByRef dstMatrix As pd2DTransform, Optional ByVal ApplyTranslation As Boolean = True)
 
     'Create and/or reset the destination matrix, as necessary
     If (dstMatrix Is Nothing) Then
-        Set dstMatrix = New pdGraphicsMatrix
+        Set dstMatrix = New pd2DTransform
     Else
-        dstMatrix.ResetToIdentityMatrix
+        dstMatrix.Reset
     End If
     
     With myLayerData
     
         'If an angle is active, rotate the matrix accordingly
-        If (.l_Angle <> 0) Then dstMatrix.RotateMatrix .l_Angle, Me.GetLayerWidth(True) * .l_RotateCenterX, Me.GetLayerHeight(True) * .l_RotateCenterY
+        If (.l_Angle <> 0) Then dstMatrix.ApplyRotation .l_Angle, Me.GetLayerWidth(True) * .l_RotateCenterX, Me.GetLayerHeight(True) * .l_RotateCenterY
         
         'If shearing is active, shear the matrix accordingly
-        If (.l_ShearX <> 0) Or (.l_ShearY <> 0) Then dstMatrix.ShearMatrix .l_ShearX, .l_ShearY, Me.GetLayerWidth(True) * .l_RotateCenterX, Me.GetLayerHeight(True) * .l_RotateCenterY
+        If (.l_ShearX <> 0) Or (.l_ShearY <> 0) Then dstMatrix.ApplyShear .l_ShearX, .l_ShearY, Me.GetLayerWidth(True) * .l_RotateCenterX, Me.GetLayerHeight(True) * .l_RotateCenterY
         
         'Finally, if translation is desired, scale all points by the current layer offset
-        If applyTranslation Then dstMatrix.TranslateMatrix .l_OffsetX, .l_OffsetY
+        If ApplyTranslation Then dstMatrix.ApplyTranslation .l_OffsetX, .l_OffsetY
         
     End With
     
@@ -1166,13 +1166,13 @@ End Sub
 
 'As of PhotoDemon 7.0, layers support one or more affine transformations (rotation, skew, etc).  If the caller needs to determine
 ' layer boundaries with all affine transform operations considered, use this function.
-Friend Sub GetLayerBoundaryRect(ByRef dstRect As RECTF, Optional ByVal applyTranslation As Boolean = True, Optional ByVal normalizeToNewOrigin As Boolean = False, Optional ByVal normalizeX As Single = 0#, Optional ByVal normalizeY As Single = 0#)
+Friend Sub GetLayerBoundaryRect(ByRef dstRect As RECTF, Optional ByVal ApplyTranslation As Boolean = True, Optional ByVal normalizeToNewOrigin As Boolean = False, Optional ByVal normalizeX As Single = 0#, Optional ByVal normalizeY As Single = 0#)
     
     'Get a copy of the current layer coordinates
     Dim layerCorners() As POINTFLOAT
     ReDim layerCorners(0 To 3) As POINTFLOAT
     
-    Me.GetLayerCornerCoordinates layerCorners, applyTranslation, normalizeToNewOrigin, normalizeX, normalizeY
+    Me.GetLayerCornerCoordinates layerCorners, ApplyTranslation, normalizeToNewOrigin, normalizeX, normalizeY
     
     'Find the largest and smallest (x, y) coordinates
     Dim minX As Single, maxX As Single, MinY As Single, MaxY As Single
