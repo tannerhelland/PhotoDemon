@@ -175,6 +175,15 @@ End Enum
     Private Const P2_DS_Solid = 0&, P2_DS_Dash = 1&, P2_DS_Dot = 2&, P2_DS_DashDot = 3&, P2_DS_DashDotDot = 4&, P2_DS_Custom = 5&
 #End If
 
+Public Enum PD_2D_FillRule
+    P2_FR_OddEven = 0&
+    P2_FR_Winding = 1&
+End Enum
+
+#If False Then
+    Private Const P2_FR_OddEven = 0&, P2_FR_Winding = 1&
+#End If
+
 Public Enum PD_2D_GradientShape
     P2_GS_Linear = 0
     P2_GS_Reflection = 1
@@ -359,8 +368,9 @@ Private m_GDIPlusAvailable As Boolean
 'When debug mode is active, this module will track surface creation+destruction counts.  This is helpful for detecting leaks.
 Private m_DebugMode As Boolean
 
-'When debug mode is active, live counts of various drawing objects are tracked on a per-backend basis
-Private m_BrushCount_GDIPlus As Long, m_PenCount_GDIPlus As Long, m_RegionCount_GDIPlus As Long, m_SurfaceCount_GDIPlus As Long, m_TransformCount_GDIPlus As Long
+'When debug mode is active, live counts of various drawing objects are tracked on a per-backend basis.  This is crucial for
+' leak detection - these numbers should always match the number of active class instances.
+Private m_BrushCount_GDIPlus As Long, m_PathCount_GDIPlus As Long, m_PenCount_GDIPlus As Long, m_RegionCount_GDIPlus As Long, m_SurfaceCount_GDIPlus As Long, m_TransformCount_GDIPlus As Long
 
 'Shortcut function for creating a generic painter
 Public Function QuickCreatePainter(ByRef dstPainter As pd2DPainter) As Boolean
@@ -536,6 +546,15 @@ Public Sub DEBUG_NotifyBrushCountChange(ByVal targetBackend As PD_2D_RENDERING_B
             If objectCreated Then m_BrushCount_GDIPlus = m_BrushCount_GDIPlus + 1 Else m_BrushCount_GDIPlus = m_BrushCount_GDIPlus - 1
         Case Else
             InternalRenderingError "Bad Parameter", "Brush creation/destruction was not counted: backend ID unknown"
+    End Select
+End Sub
+
+Public Sub DEBUG_NotifyPathCountChange(ByVal targetBackend As PD_2D_RENDERING_BACKEND, ByVal objectCreated As Boolean)
+    Select Case targetBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            If objectCreated Then m_PathCount_GDIPlus = m_PathCount_GDIPlus + 1 Else m_PathCount_GDIPlus = m_PathCount_GDIPlus - 1
+        Case Else
+            InternalRenderingError "Bad Parameter", "Path creation/destruction was not counted: backend ID unknown"
     End Select
 End Sub
 

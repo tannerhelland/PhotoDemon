@@ -43,8 +43,12 @@ Private m_TransformHandle As Long
 
 'Return a copy of the handle.  The caller should not free or otherwise modify the handle; this function exists solely
 ' for interop with other pd2D objects.
-Public Function GetHandle() As Long
-    GetHandle = m_TransformHandle
+Public Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As Long
+    If (createAsNecessary And (m_TransformHandle = 0)) Then
+        If CreateTransform Then GetHandle = m_TransformHandle Else GetHandle = 0
+    Else
+        GetHandle = m_TransformHandle
+    End If
 End Function
 
 Public Function GetTransformBackend() As PD_2D_RENDERING_BACKEND
@@ -76,7 +80,7 @@ End Function
 
 'Apply a translation amount to the matrix; any x/y amounts are valid
 Friend Function ApplyTranslation(ByVal xDistance As Single, ByVal yDistance As Single, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
-    If (m_TransformHandle = 0) Then Me.CreateTransform
+    If (m_TransformHandle = 0) Then CreateTransform
     Select Case m_TransformBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
             ApplyTranslation = GDI_Plus.GDIPlus_MatrixTranslate(m_TransformHandle, xDistance, yDistance, transformOrder)
@@ -85,7 +89,7 @@ End Function
 
 'Apply a scaling amount to the matrix; any x/y amounts are valid
 Friend Function ApplyScaling(ByVal xScaleFactor As Single, ByVal yScaleFactor As Single, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
-    If (m_TransformHandle = 0) Then Me.CreateTransform
+    If (m_TransformHandle = 0) Then CreateTransform
     Select Case m_TransformBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
             ApplyScaling = GDI_Plus.GDIPlus_MatrixScale(m_TransformHandle, xScaleFactor, yScaleFactor, transformOrder)
@@ -94,7 +98,7 @@ End Function
 
 'Mirror the matrix in the x and/or y direction
 Friend Function ApplyMirror(ByVal mirrorHorizontal As Boolean, ByVal mirrorVertical As Boolean, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
-    If (m_TransformHandle = 0) Then Me.CreateTransform
+    If (m_TransformHandle = 0) Then CreateTransform
     Select Case m_TransformBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
             If mirrorHorizontal Then ApplyMirror = Me.ApplyScaling(-1, 1, transformOrder)
@@ -108,7 +112,7 @@ End Function
 '                 because we must prepend and append custom translation operations.)
 Friend Function ApplyRotation(ByVal rotationAngle As Single, Optional ByVal centerX As Single = 0, Optional ByVal centerY As Single = 0, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
     
-    If (m_TransformHandle = 0) Then Me.CreateTransform
+    If (m_TransformHandle = 0) Then CreateTransform
     
     Select Case m_TransformBackend
     
@@ -140,7 +144,7 @@ End Function
 '                 because we must prepend and append custom translation operations.)
 Friend Function ApplyShear(ByVal shearX As Single, ByVal shearY As Single, Optional ByVal centerX As Single = 0, Optional ByVal centerY As Single = 0, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
     
-    If (m_TransformHandle = 0) Then Me.CreateTransform
+    If (m_TransformHandle = 0) Then CreateTransform
     
     Select Case m_TransformBackend
     
@@ -169,7 +173,7 @@ End Function
 
 'Translate an arbitrary (x, y) coordinate pair by the current matrix
 Friend Function ApplyTransformToPointF(ByRef srcPoint As POINTFLOAT) As Boolean
-    If (m_TransformHandle = 0) Then Me.CreateTransform
+    If (m_TransformHandle = 0) Then CreateTransform
     Select Case m_TransformBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
             ApplyTransformToPointF = GDI_Plus.GDIPlus_MatrixTransformListOfPoints(m_TransformHandle, VarPtr(srcPoint), 1&)
@@ -178,7 +182,7 @@ End Function
 
 Friend Function ApplyTransformToXY(ByRef srcX As Single, ByRef srcY As Single) As Boolean
     
-    If (m_TransformHandle = 0) Then Me.CreateTransform
+    If (m_TransformHandle = 0) Then CreateTransform
     
     Select Case m_TransformBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -203,7 +207,7 @@ End Function
 ' the matrix has been set to all zeroes, for example, by bogus scaling code.)
 Public Function InvertTransform() As Boolean
     
-    If (m_TransformHandle = 0) Then Me.CreateTransform
+    If (m_TransformHandle = 0) Then CreateTransform
     
     Select Case m_TransformBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -225,9 +229,11 @@ Public Sub Reset()
 End Sub
 
 'Create an actual transform handle using the current backend and the current transform settings.
-' NOTE: the caller doesn't *need* to call this directly.  If GetTransformHandle is called and transform doesn't
-'       yet exist, it will be auto-created (using an identity matrix).
-Friend Function CreateTransform() As Boolean
+' NOTE: by design, this function is not exposed externally, because the caller *never* needs to call this directly.
+'       If GetTransformHandle is called and transform doesn't yet exist, it will be auto-created (using an
+'       identity matrix).  Similarly, if a matrix operation is applied to this class but the base matrix doesn't
+'       exist, it will also be auto-created.
+Private Function CreateTransform() As Boolean
 
     If (m_TransformHandle <> 0) Then Me.ReleaseTransform
     
@@ -243,7 +249,7 @@ Friend Function CreateTransform() As Boolean
     
 End Function
 
-'Free the current matrix handle.  Note that modification functions will fail if a new matrix is not created prior to calling them!
+'Free the current matrix handle.
 Public Function ReleaseTransform() As Boolean
     
     If (m_TransformHandle <> 0) Then

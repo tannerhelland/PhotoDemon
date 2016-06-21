@@ -646,9 +646,9 @@ End Sub
 ' checker code uses this to see if the mouse cursor is currently within the bounds of the selection area.
 Public Function getGdipRegionForSelection() As Long
     If sShape = sPolygon Then
-        getGdipRegionForSelection = GDI_Plus.GetGDIPlusRegionFromPoints(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), FillModeWinding, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE))
+        getGdipRegionForSelection = GDI_Plus.GetGDIPlusRegionFromPoints(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), GP_FM_Winding, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE))
     Else
-        getGdipRegionForSelection = GDI_Plus.GetGDIPlusRegionFromPoints(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), FillModeWinding, True, getSelectionProperty_Double(SP_SMOOTH_STROKE))
+        getGdipRegionForSelection = GDI_Plus.GetGDIPlusRegionFromPoints(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), GP_FM_Winding, True, getSelectionProperty_Double(SP_SMOOTH_STROKE))
     End If
 End Function
 
@@ -663,9 +663,9 @@ Public Sub fillBoundsUsingGDIPlus()
     Dim boundRect As RECTF
     
     If sShape = sPolygon Then
-        boundRect = GDI_Plus.GetGDIPlusUnionFromPointsAndImage(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), containingPDImage, FillModeWinding, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE))
+        boundRect = GDI_Plus.GetGDIPlusUnionFromPointsAndImage(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), containingPDImage, GP_FM_Winding, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE))
     Else
-        boundRect = GDI_Plus.GetGDIPlusUnionFromPointsAndImage(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), containingPDImage, FillModeWinding, True, getSelectionProperty_Double(SP_SMOOTH_STROKE))
+        boundRect = GDI_Plus.GetGDIPlusUnionFromPointsAndImage(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), containingPDImage, GP_FM_Winding, True, getSelectionProperty_Double(SP_SMOOTH_STROKE))
     End If
     
     'The returned boundaries encompass the intersection of our containing image, and the selection region.
@@ -1733,7 +1733,7 @@ Private Sub createSelectionMask()
         
             'Interior/exterior lasso selections use identical rendering code.
             If (getSelectionProperty_Long(SP_AREA) = sInterior) Or (getSelectionProperty_Long(SP_AREA) = sExterior) Then
-                GDIPlusDrawFilledShapeToDC selMask.GetDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), True, getSelectionProperty_Double(SP_POLYGON_CURVATURE), FillModeWinding
+                GDIPlusDrawFilledShapeToDC selMask.GetDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), True, getSelectionProperty_Double(SP_POLYGON_CURVATURE), GP_FM_Winding
                 
             'Border selections stroke the path instead of filling it
             Else
@@ -1746,7 +1746,7 @@ Private Sub createSelectionMask()
         
             'Interior/exterior lasso selections use identical rendering code.
             If (getSelectionProperty_Long(SP_AREA) = sInterior) Or (getSelectionProperty_Long(SP_AREA) = sExterior) Then
-                GDIPlusDrawFilledShapeToDC selMask.GetDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), True, getSelectionProperty_Double(SP_SMOOTH_STROKE), FillModeWinding
+                GDIPlusDrawFilledShapeToDC selMask.GetDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), True, getSelectionProperty_Double(SP_SMOOTH_STROKE), GP_FM_Winding
                 
             'Border selections stroke the path instead of filling it
             Else
@@ -2328,7 +2328,7 @@ Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
             
             'If the selection is bordered, widen it now
             'If (getSelectionProperty_Long(SP_AREA) = sBorder) And (Not getSelectionProperty_Boolean(SP_BORDER_WIDTH_IGNORE)) Then
-            '    pdPath.convertPathToBorderType_Simple getSelectionProperty_Long(SP_BORDER_WIDTH)
+            '    pdPath.ConvertPath_PenTrace getSelectionProperty_Long(SP_BORDER_WIDTH)
             'End If
                         
         Case sCircle
@@ -2342,7 +2342,9 @@ Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
             pdPath.AddLine dstLeft, dstTop, dstRight, dstBottom
             
             'Widen the path to encompass only the border of the line
-            pdPath.ConvertPathToBorderType_Simple getSelectionProperty_Long(SP_LINE_WIDTH) * g_Zoom.GetZoomValue(containingPDImage.currentZoomValue), GP_LC_Round
+            Dim penPathBorder As pd2DPen
+            Drawing2D.QuickCreateSolidPen penPathBorder, getSelectionProperty_Long(SP_LINE_WIDTH) * g_Zoom.GetZoomValue(containingPDImage.currentZoomValue), , , P2_LJ_Round, P2_LC_Round
+            pdPath.ConvertPath_PenTrace penPathBorder
             
         'Polygon and lasso selections use roughly identical outline code; the only difference is the reference array used and the number of points
         Case sPolygon, sLasso

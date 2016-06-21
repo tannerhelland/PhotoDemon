@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.198</langversion>
+<langversion>6.7.199</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -2537,6 +2537,12 @@ Please válida Introduzca un valor numérico.</translation>
 
 <!-- END text for pd2DSurface.cls-->
 
+<!-- BEGIN text for pd2DTransform.cls -->
+
+<!-- pd2DTransform.cls contains 0 phrases. -->
+
+<!-- END text for pd2DTransform.cls-->
+
 <!-- BEGIN text for pdCaption.cls -->
 
 <!-- pdCaption.cls contains 0 phrases. -->
@@ -2725,12 +2731,6 @@ Please válida Introduzca un valor numérico.</translation>
 <!-- pdGlyphCollection.cls contains 0 phrases. -->
 
 <!-- END text for pdGlyphCollection.cls-->
-
-<!-- BEGIN text for pdGraphicsMatrix.cls -->
-
-<!-- pdGraphicsMatrix.cls contains 0 phrases. -->
-
-<!-- END text for pdGraphicsMatrix.cls-->
 
 <!-- BEGIN text for pdICCProfile.cls -->
 

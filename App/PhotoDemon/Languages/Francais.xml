@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.195</langversion>
+<langversion>6.7.196</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -2536,6 +2536,12 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <!-- END text for pd2DSurface.cls-->
 
+<!-- BEGIN text for pd2DTransform.cls -->
+
+<!-- pd2DTransform.cls contains 0 phrases. -->
+
+<!-- END text for pd2DTransform.cls-->
+
 <!-- BEGIN text for pdCaption.cls -->
 
 <!-- pdCaption.cls contains 0 phrases. -->
@@ -2724,12 +2730,6 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <!-- pdGlyphCollection.cls contains 0 phrases. -->
 
 <!-- END text for pdGlyphCollection.cls-->
-
-<!-- BEGIN text for pdGraphicsMatrix.cls -->
-
-<!-- pdGraphicsMatrix.cls contains 0 phrases. -->
-
-<!-- END text for pdGraphicsMatrix.cls-->
 
 <!-- BEGIN text for pdICCProfile.cls -->
 

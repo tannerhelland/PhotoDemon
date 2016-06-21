@@ -1669,7 +1669,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     If m_GlyphCollection.AssembleCompositePath(finalTextPath, boundingRect, m_HorizontalAlignment, m_VerticalAlignment, m_WordWrap) Then
         
         Dim exactTextBounds As RECTF
-        finalTextPath.GetPathBounds exactTextBounds
+        exactTextBounds = finalTextPath.GetPathBoundariesF
         
         Dim gdipReturn As Long
                 
@@ -1707,7 +1707,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
             'Update the fill brush against the final rect established by the path renderer.
             ' (This additional step is necessary to ensure that gradients span the full width/height of the text.)
             textFillBrush.SetBrushPropertiesFromXML m_FillBrush
-            finalTextPath.GetPathBounds boundingRect
+            boundingRect = finalTextPath.GetPathBoundariesF
             textFillBrush.SetBoundaryRect boundingRect
             gdipFillBrush = textFillBrush.GetHandle
             
