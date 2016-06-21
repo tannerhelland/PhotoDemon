@@ -162,6 +162,9 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Double, ByRef channe
         hLookupX(j) = (CSng(j + 1) / 257) * CSng(imgWidth)
     Next j
     
+    Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cPen As pd2DPen, cBrush As pd2DBrush
+    Drawing2D.QuickCreatePainter cPainter
+    
     For i = 0 To 3
         
         'Initialize this channel's DIB
@@ -217,20 +220,19 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Double, ByRef channe
         tmpPath.AddPolygon 260, VarPtr(histogramShape(0)), True, True
         
         'Prep pens and brushes in the current color
-        tmpPen = GDI_Plus.GetGDIPlusPenHandle(hColor, 255, 1, GP_LC_Round, GP_LJ_Round)
-        tmpBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(hColor, 64)
+        Drawing2D.QuickCreateSolidPen cPen, 1#, hColor, 100#, P2_LJ_Round, P2_LC_Round
+        Drawing2D.QuickCreateSolidBrush cBrush, hColor, 25#
         
         'Render the paths to their target DIBs
-        tmpPath.FillPathToDIB_BareBrush tmpBrush, dstDIBs(i)
-        tmpPath.StrokePath_BarePen tmpPen, dstDIBs(i).GetDIBDC
-        
-        'Free our pen and brush resources
-        GDI_Plus.ReleaseGDIPlusPen tmpPen
-        GDI_Plus.ReleaseGDIPlusBrush tmpBrush
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIBs(i).GetDIBDC, True
+        cPainter.FillPath cSurface, cBrush, tmpPath
+        cPainter.DrawPath cSurface, cPen, tmpPath
         
         'Mark alpha premultiplication status
         dstDIBs(i).SetInitialAlphaPremultiplicationState True
         
     Next i
+    
+    'All pd2D paint objects are self-freeing
     
 End Sub

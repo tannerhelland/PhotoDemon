@@ -428,9 +428,15 @@ Private Sub UpdatePreview()
         m_PreviewPath.ResetPath
         m_PreviewPath.CreateSamplePathForRect tmpRect, hPadding, vPadding
         
-        'Create the preview image
-        GDI_Plus.GDIPlusFillDIBRect_Pattern m_PreviewDIB, 0, 0, m_PreviewDIB.GetDIBWidth, m_PreviewDIB.GetDIBHeight, g_CheckerboardPattern
-        m_PreviewPath.StrokePath_BarePen m_PenPreview.GetHandle, m_PreviewDIB.GetDIBDC, True
+        'Paint the preview path
+        Dim cPainter As pd2DPainter, cSurface As pd2DSurface
+        Drawing2D.QuickCreatePainter cPainter
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, m_PreviewDIB.GetDIBDC, False
+        cPainter.FillRectangleF cSurface, g_CheckerboardBrush, 0, 0, m_PreviewDIB.GetDIBWidth, m_PreviewDIB.GetDIBHeight
+        
+        cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+        cPainter.DrawPath cSurface, m_PenPreview, m_PreviewPath
+        Set cSurface = Nothing
         
         'Copy the preview image to the screen
         m_PreviewDIB.RenderToPictureBox Me.picPenPreview

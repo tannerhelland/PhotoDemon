@@ -401,7 +401,7 @@ Private Function IsMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Singl
     GetSliderCoordinates sliderX, sliderY
     
     'See if the mouse is within distance of the slider's center
-    If distanceTwoPoints(sliderX, sliderY, mouseX, mouseY) < (FixDPIFloat(SLIDER_DIAMETER) / 2) Then
+    If DistanceTwoPoints(sliderX, sliderY, mouseX, mouseY) < (FixDPIFloat(SLIDER_DIAMETER) / 2) Then
         IsMouseOverSlider = True
     Else
         
@@ -682,7 +682,7 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     'We always start with the default style: a gray track with rounded edges
     If g_IsProgramRunning Then
         Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter + 1, trackColor, , , P2_LC_Round
-        cSurface.SetSurfaceAntialiasing P2_AA_Grayscale
+        cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
         m_Painter.DrawLineF cSurface, cPen, GetTrackLeft, m_SliderAreaHeight \ 2, GetTrackRight, m_SliderAreaHeight \ 2
     End If
     
