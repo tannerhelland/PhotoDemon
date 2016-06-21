@@ -930,7 +930,7 @@ Private Sub RedrawBackBuffer()
         
         'Calculate coordinate positions for the spin button arrows.  These calculations include a lot of magic numbers, alas,
         ' to account for things like padding and subpixel positioning.
-        cSurface.SetSurfaceAntialiasing P2_AA_Grayscale
+        cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
         Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
                     
         'Start with the up-pointing arrow

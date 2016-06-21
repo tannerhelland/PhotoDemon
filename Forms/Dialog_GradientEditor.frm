@@ -265,6 +265,7 @@ Private Const GRADIENT_NODE_HEIGHT As Single = 14#
 'Other gradient node UI renderers
 Private inactiveArrowFill As pd2DBrush, activeArrowFill As pd2DBrush
 Private inactiveOutlinePen As pd2DPen, activeOutlinePen As pd2DPen
+Private m_Painter As pd2DPainter
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -441,6 +442,8 @@ Private Sub Form_Load()
     btsEdit_Click 0
     
     If g_IsProgramRunning Then
+    
+        Drawing2D.QuickCreatePainter m_Painter
         
         If (m_NodePreview Is Nothing) Then Set m_NodePreview = New pd2DGradient
         
@@ -884,8 +887,13 @@ Private Sub DrawGradientNodes()
             m_InteractiveDIB.ResetDIB
         End If
         
-        'Fill the interaction DIB with white
-        GDI_Plus.GDIPlusFillDIBRect m_InteractiveDIB, 0, 0, m_InteractiveDIB.GetDIBWidth, m_InteractiveDIB.GetDIBHeight, vbWhite, 255
+        Dim cSurface As pd2DSurface, cBrush As pd2DBrush
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, m_InteractiveDIB.GetDIBDC, False
+        
+        'Fill the interaction DIB with the current background color
+        Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_Background)
+        m_Painter.FillRectangleF cSurface, cBrush, 0, 0, m_InteractiveDIB.GetDIBWidth, m_InteractiveDIB.GetDIBHeight
+        cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
         
         'Now all we do is use those to draw all the nodes in turn
         Dim i As Long
@@ -901,24 +909,22 @@ Private Sub DrawGradientNodes()
             
             'The node's colored block is rendered the same regardless of hover
             blockFill.SetBrushProperty P2_BrushColor, m_GradientPoints(i).PointRGB
-            tmpBlock.FillPathToDIB_BareBrush blockFill.GetHandle, m_InteractiveDIB
+            m_Painter.FillPath cSurface, blockFill, tmpBlock
             
             'All other renders vary by hover state
-            If (i = m_CurPoint) Then
-                tmpBlock.StrokePath_BarePen activeOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
-                tmpArrow.FillPathToDIB_BareBrush activeArrowFill.GetHandle, m_InteractiveDIB
-                tmpArrow.StrokePath_BarePen activeOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
-            ElseIf (i = m_CurHoverPoint) Then
-                tmpBlock.StrokePath_BarePen activeOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
-                tmpArrow.FillPathToDIB_BareBrush activeArrowFill.GetHandle, m_InteractiveDIB
-                tmpArrow.StrokePath_BarePen activeOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
+            If ((i = m_CurPoint) Or (i = m_CurHoverPoint)) Then
+                m_Painter.DrawPath cSurface, activeOutlinePen, tmpBlock
+                m_Painter.FillPath cSurface, activeArrowFill, tmpArrow
+                m_Painter.DrawPath cSurface, activeOutlinePen, tmpArrow
             Else
-                tmpBlock.StrokePath_BarePen inactiveOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
-                tmpArrow.FillPathToDIB_BareBrush inactiveArrowFill.GetHandle, m_InteractiveDIB
-                tmpArrow.StrokePath_BarePen inactiveOutlinePen.GetHandle, m_InteractiveDIB.GetDIBDC
+                m_Painter.DrawPath cSurface, inactiveOutlinePen, tmpBlock
+                m_Painter.FillPath cSurface, inactiveArrowFill, tmpArrow
+                m_Painter.DrawPath cSurface, inactiveOutlinePen, tmpArrow
             End If
             
         Next i
+        
+        Set cSurface = Nothing: Set cBrush = Nothing
         
         'Finally, flip the DIB to the screen
         m_InteractiveDIB.RenderToPictureBox picInteract

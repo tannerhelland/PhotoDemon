@@ -120,11 +120,11 @@ End Enum
 
 Public Enum PD_2D_Antialiasing
     P2_AA_None = 0&
-    P2_AA_Grayscale = 1&
+    P2_AA_HighQuality = 1&
 End Enum
 
 #If False Then
-    Private Const P2_AA_None = 0&, P2_AA_Grayscale = 1&
+    Private Const P2_AA_None = 0&, P2_AA_HighQuality = 1&
 #End If
 
 Public Enum PD_2D_BrushMode
@@ -374,7 +374,7 @@ Public Function QuickCreateSurfaceFromDC(ByRef dstSurface As pd2DSurface, ByVal 
     If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface Else dstSurface.ResetAllProperties
     With dstSurface
         .SetDebugMode m_DebugMode
-        If enableAntialiasing Then .SetSurfaceAntialiasing P2_AA_Grayscale Else .SetSurfaceAntialiasing P2_AA_None
+        If enableAntialiasing Then .SetSurfaceAntialiasing P2_AA_HighQuality Else .SetSurfaceAntialiasing P2_AA_None
         QuickCreateSurfaceFromDC = .WrapSurfaceAroundDC(srcDC)
     End With
 End Function

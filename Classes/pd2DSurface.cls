@@ -45,7 +45,7 @@ Private m_SurfaceHandle As Long
 Private m_SurfaceDC As Long
 
 'If you need to query a wrapped DC for bitmap information (e.g. width/height), use this temporary object to do so.
-Private m_SurfaceDCBitmap As GDI_BITMAP
+Private m_SurfaceDCBitmap As GDI_Bitmap
 
 'If this surface was created as a new surface, this DIB will serve as the surface backer.  (Similarly, the surface DC will simply
 ' wrap this DIB's hDC.)
@@ -265,7 +265,7 @@ Public Function WrapSurfaceAroundDC(ByVal srcDC As Long) As Boolean
                 
                 Case P2_DefaultBackend, P2_GDIPlusBackend
                 
-                    m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(srcDC, IIf(m_SurfaceAntialiasing >= P2_AA_Grayscale, GP_SM_AntiAlias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Half, GP_POM_Half, GP_POM_None))
+                    m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(srcDC, IIf(m_SurfaceAntialiasing >= P2_AA_HighQuality, GP_SM_AntiAlias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Half, GP_POM_Half, GP_POM_None))
                     WrapSurfaceAroundDC = (m_SurfaceHandle <> 0)
                     
                     If WrapSurfaceAroundDC Then
@@ -418,7 +418,7 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_SURFACE_SETTINGS)
                 
                 Select Case propID
                     Case P2_SurfaceAntialiasing
-                        If (m_SurfaceAntialiasing >= P2_AA_Grayscale) Then
+                        If (m_SurfaceAntialiasing >= P2_AA_HighQuality) Then
                             GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, propID, GP_SM_AntiAlias
                         Else
                             GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, propID, GP_SM_None
