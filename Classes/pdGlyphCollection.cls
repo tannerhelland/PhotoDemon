@@ -651,17 +651,18 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
         
         'Path assembly happens in two steps.
         ' 1) First, we precalculate all glyph (x, y) positions, including line-breaking.  Calculating positions in advance
-        '    *greatly* simplifies the main rendering loop.
-        ' 2) Once individual positions are calculated on a per-glyph basis, we combine all glyphs into a single master pd2DPath object.
-        '    Any glyph-specific features (e.g. mirroring, per-char rotation, etc) can be applied here.
+        '    *greatly* simplifies the main rendering loop.  Note that some glyph-specific features (e.g. stretching) must be
+        '    calculated here, to ensure line-breaks are placed correctly.
+        ' 2) Once individual positions are calculated on a per-glyph basis, we combine all glyphs into a single master
+        '    pd2DPath object.  Any glyph-specific features (e.g. mirroring, per-char rotation, etc) can be applied here.
         
-        '(FYI: the glyph positioning algorithm fills the .finalX and .finalY entries for each glyph.)
+        '(FYI: the first step - the glyph positioning algorithm - fills the .finalX and .finalY entries for each glyph.)
         
-        'It's a bit counterintuitive, but the precalculation step also fills underline and strikeout paths for us.  Historically, we computed
-        ' these right here in this function, but that's far more complicated as it requires line-level data that calculateGlyphPositions()
-        ' does not return (e.g. identifying whitespace characters that lie on the end of a line, which should be ignored when displaying
-        ' underline/strikeout).  As such, we simply pass blank path objects to calculateGlyphPositions(), and merge the results with our
-        ' final path if underline or strikeout are active.
+        'It's a bit counterintuitive, but the precalculation step also fills underline and strikeout paths for us.
+        ' Historically, we computed these right here in this function, but that's far more complicated as it requires line-level
+        ' data that CalculateGlyphPositions() does not return (e.g. identifying whitespace characters that sit at the end of a line,
+        ' which should be ignored when displaying underline/strikeout).  As such, we simply pass blank path objects to
+        ' CalculateGlyphPositions(), and merge the results with our final path if underline or strikeout are active.
         Dim additionalStylesRect As pd2DPath
         CalculateGlyphPositions boundingRect, horizontalAlignment, verticalAlignment, lineWrapMode, additionalStylesRect
         
@@ -741,7 +742,7 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
                     End If
                     
                     'm_CharInflation widens the character paths using the generic GDI+ path widening algorithm
-                    If (m_CharInflation <> 0) Then tmpGlyphOutlineCopy.InflatePath m_CharInflation, GP_LC_Round, GP_LJ_Round
+                    If (m_CharInflation <> 0) Then tmpGlyphOutlineCopy.ConvertPath_InflateLikeBalloon m_CharInflation, P2_LJ_Round, P2_LC_Round
                     
                     'Finally, jitter applies some randomness to the character's position in the x and/or y directions.
                     With m_Glyphs(curGlyph)

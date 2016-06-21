@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.195</langversion>
+<langversion>6.7.196</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -2537,6 +2537,12 @@ Please ange ett numeriskt värde.</translation>
 
 <!-- END text for pd2DSurface.cls-->
 
+<!-- BEGIN text for pd2DTransform.cls -->
+
+<!-- pd2DTransform.cls contains 0 phrases. -->
+
+<!-- END text for pd2DTransform.cls-->
+
 <!-- BEGIN text for pdCaption.cls -->
 
 <!-- pdCaption.cls contains 0 phrases. -->
@@ -2725,12 +2731,6 @@ Please ange ett numeriskt värde.</translation>
 <!-- pdGlyphCollection.cls contains 0 phrases. -->
 
 <!-- END text for pdGlyphCollection.cls-->
-
-<!-- BEGIN text for pdGraphicsMatrix.cls -->
-
-<!-- pdGraphicsMatrix.cls contains 0 phrases. -->
-
-<!-- END text for pdGraphicsMatrix.cls-->
 
 <!-- BEGIN text for pdICCProfile.cls -->
 

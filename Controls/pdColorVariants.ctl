@@ -258,7 +258,7 @@ Private Function GetRegionFromPoint(ByVal x As Single, ByVal y As Single) As Lon
     Dim i As Long
     For i = 0 To NUM_OF_VARIANTS - 1
         
-        If m_ColorRegions(i).IsPointInsidePath(x, y) Then
+        If m_ColorRegions(i).IsPointInsidePathF(x, y) Then
             GetRegionFromPoint = i
             Exit Function
         End If
