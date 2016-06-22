@@ -336,6 +336,13 @@ End Enum
 #End If
 
 'Certain structs are immensely helpful when drawing
+Public Type RGBQUAD
+   Blue As Byte
+   Green As Byte
+   Red As Byte
+   Alpha As Byte
+End Type
+
 Public Type POINTFLOAT
    x As Single
    y As Single
@@ -355,12 +362,43 @@ Public Type RECTF
     Height As Single
 End Type
 
+'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
+Public Type SAFEARRAYBOUND
+    cElements As Long
+    lBound   As Long
+End Type
+
+Public Type SAFEARRAY2D
+    cDims      As Integer
+    fFeatures  As Integer
+    cbElements As Long
+    cLocks     As Long
+    pvData     As Long
+    Bounds(1)  As SAFEARRAYBOUND
+End Type
+
+Public Type SAFEARRAY1D
+    cDims      As Integer
+    fFeatures  As Integer
+    cbElements As Long
+    cLocks     As Long
+    pvData     As Long
+    cElements As Long
+    lBound   As Long
+End Type
+
 'PD's gradient format is straightforward, and it's declared here so functions can easily create their own gradient interfaces.
 Public Type GRADIENTPOINT
     PointRGB As Long
     PointOpacity As Single
     PointPosition As Single
 End Type
+
+'Many drawing features lean on various geometry functions
+Public Const PI As Double = 3.14159265358979
+Public Const PI_HALF As Double = 1.5707963267949
+Public Const PI_DOUBLE As Double = 6.28318530717958
+Public Const PI_DIV_180 As Double = 0.017453292519943
 
 'If GDI+ is initialized successfully, this will be set to TRUE
 Private m_GDIPlusAvailable As Boolean
@@ -492,7 +530,11 @@ Public Function IsRenderingEngineActive(Optional ByVal targetBackend As PD_2D_RE
     End Select
 End Function
 
-Public Sub SetDrawing2DDebugMode(ByVal newMode As Boolean)
+Public Function GetLibraryDebugMode() As Boolean
+    GetLibraryDebugMode = m_DebugMode
+End Function
+
+Public Sub SetLibraryDebugMode(ByVal newMode As Boolean)
     m_DebugMode = newMode
 End Sub
 
@@ -511,7 +553,7 @@ Public Function StartRenderingBackend(Optional ByVal targetBackend As PD_2D_REND
             m_GDIPlusAvailable = StartRenderingBackend
             
         Case Else
-            InternalRenderingError "Bad Parameter", "Couldn't start requested backend: backend ID unknown"
+            InternalError "Bad Parameter", "Couldn't start requested backend: backend ID unknown"
     
     End Select
 
@@ -527,16 +569,15 @@ Public Function StopRenderingEngine(Optional ByVal targetBackend As PD_2D_RENDER
             m_GDIPlusAvailable = False
             
         Case Else
-            InternalRenderingError "Bad Parameter", "Couldn't stop requested backend: backend ID unknown"
+            InternalError "Bad Parameter", "Couldn't stop requested backend: backend ID unknown"
     
     End Select
     
 End Function
 
-Private Sub InternalRenderingError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  Drawing2D encountered an error: """ & errName & """ - " & errDescription
-    #End If
+'At present, Drawing2D errors are simply forwarded to the main error handler function at the bottom of this module.
+Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
+    DEBUG_NotifyExternalError errName, errDescription, ErrNum, "Drawing2d"
 End Sub
 
 'DEBUG FUNCTIONS FOLLOW.  These functions should not be called directly.  They are invoked by other pd2D class when m_DebugMode = TRUE.
@@ -545,7 +586,7 @@ Public Sub DEBUG_NotifyBrushCountChange(ByVal targetBackend As PD_2D_RENDERING_B
         Case P2_DefaultBackend, P2_GDIPlusBackend
             If objectCreated Then m_BrushCount_GDIPlus = m_BrushCount_GDIPlus + 1 Else m_BrushCount_GDIPlus = m_BrushCount_GDIPlus - 1
         Case Else
-            InternalRenderingError "Bad Parameter", "Brush creation/destruction was not counted: backend ID unknown"
+            InternalError "Bad Parameter", "Brush creation/destruction was not counted: backend ID unknown"
     End Select
 End Sub
 
@@ -554,7 +595,7 @@ Public Sub DEBUG_NotifyPathCountChange(ByVal targetBackend As PD_2D_RENDERING_BA
         Case P2_DefaultBackend, P2_GDIPlusBackend
             If objectCreated Then m_PathCount_GDIPlus = m_PathCount_GDIPlus + 1 Else m_PathCount_GDIPlus = m_PathCount_GDIPlus - 1
         Case Else
-            InternalRenderingError "Bad Parameter", "Path creation/destruction was not counted: backend ID unknown"
+            InternalError "Bad Parameter", "Path creation/destruction was not counted: backend ID unknown"
     End Select
 End Sub
 
@@ -563,7 +604,7 @@ Public Sub DEBUG_NotifyPenCountChange(ByVal targetBackend As PD_2D_RENDERING_BAC
         Case P2_DefaultBackend, P2_GDIPlusBackend
             If objectCreated Then m_PenCount_GDIPlus = m_PenCount_GDIPlus + 1 Else m_PenCount_GDIPlus = m_PenCount_GDIPlus - 1
         Case Else
-            InternalRenderingError "Bad Parameter", "Pen creation/destruction was not counted: backend ID unknown"
+            InternalError "Bad Parameter", "Pen creation/destruction was not counted: backend ID unknown"
     End Select
 End Sub
 
@@ -572,7 +613,7 @@ Public Sub DEBUG_NotifyRegionCountChange(ByVal targetBackend As PD_2D_RENDERING_
         Case P2_DefaultBackend, P2_GDIPlusBackend
             If objectCreated Then m_RegionCount_GDIPlus = m_RegionCount_GDIPlus + 1 Else m_RegionCount_GDIPlus = m_RegionCount_GDIPlus - 1
         Case Else
-            InternalRenderingError "Bad Parameter", "Region creation/destruction was not counted: backend ID unknown"
+            InternalError "Bad Parameter", "Region creation/destruction was not counted: backend ID unknown"
     End Select
 End Sub
 
@@ -581,7 +622,7 @@ Public Sub DEBUG_NotifySurfaceCountChange(ByVal targetBackend As PD_2D_RENDERING
         Case P2_DefaultBackend, P2_GDIPlusBackend
             If objectCreated Then m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus + 1 Else m_SurfaceCount_GDIPlus = m_SurfaceCount_GDIPlus - 1
         Case Else
-            InternalRenderingError "Bad Parameter", "Surface creation/destruction was not counted: backend ID unknown"
+            InternalError "Bad Parameter", "Surface creation/destruction was not counted: backend ID unknown"
     End Select
 End Sub
 
@@ -590,6 +631,16 @@ Public Sub DEBUG_NotifyTransformCountChange(ByVal targetBackend As PD_2D_RENDERI
         Case P2_DefaultBackend, P2_GDIPlusBackend
             If objectCreated Then m_TransformCount_GDIPlus = m_TransformCount_GDIPlus + 1 Else m_TransformCount_GDIPlus = m_TransformCount_GDIPlus - 1
         Case Else
-            InternalRenderingError "Bad Parameter", "Transform creation/destruction was not counted: backend ID unknown"
+            InternalError "Bad Parameter", "Transform creation/destruction was not counted: backend ID unknown"
     End Select
+End Sub
+
+'In a default build, external pd2D classes relay any internal errors to this function.  You may wish to modify those classes
+' to raise their own error events, or perhaps handle their errors internally.  (By default, pd2D does *not* halt on errors.)
+Public Sub DEBUG_NotifyExternalError(Optional ByVal errName As String = vbNullString, Optional ByVal errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0, Optional ByVal errSource As String = vbNullString)
+    If m_DebugMode Then
+        If (Len(errSource) = 0) Then errSource = "pd2D"
+        pdDebug.LogAction "WARNING!  " & errSource & " encountered an error: """ & errName & """ - " & errDescription
+        If (ErrNum <> 0) Then pdDebug.LogAction "  (If it helps, an error number was also reported: #" & ErrNum & ")"
+    End If
 End Sub

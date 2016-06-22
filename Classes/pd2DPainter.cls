@@ -33,13 +33,6 @@ Public Sub SetDebugMode(ByVal newMode As Boolean)
     m_DebugMode = newMode
 End Sub
 
-Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  pd2DPainter encountered an error: """ & errName & """ - " & errDescription
-        If (ErrNum <> 0) Then pdDebug.LogAction "(Also, an error number was reported: " & ErrNum & ")"
-    #End If
-End Sub
-
 'Quickly verify that source and target backends match (usually performed prior to a draw operation).
 'IMPORTANT NOTE: as you can see from the m_DebugMode check inside this function, verification is *not* performed
 '                when m_DebugMode is FALSE.  This is done for performance reasons.  If you want full verification
@@ -298,3 +291,11 @@ Friend Function FillRectangleI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef 
     FillRectangleI_FromRectL = Me.FillRectangleI(dstSurface, srcBrush, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
 End Function
 
+
+'All pd2D classes report errors using an internal function similar to this one.  Feel free to modify this function to
+' better fit your project (e.g. perhaps it could raise an actual error event).
+'
+'Note that a default pd2D build simply dumps the passed error information to the Immediate window.
+Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
+    Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DPainter"
+End Sub
