@@ -330,9 +330,21 @@ Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef gdipToken As Long, 
 Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal gdipToken As Long) As GP_Result
 
 'Object creation/destruction/property functions
+Private Declare Function GdipAddPathRectangle Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As GP_Result
+Private Declare Function GdipAddPathEllipse Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As GP_Result
+Private Declare Function GdipAddPathLine Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As GP_Result
+Private Declare Function GdipAddPathCurve2 Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
+Private Declare Function GdipAddPathClosedCurve2 Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
+Private Declare Function GdipAddPathBezier Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single, ByVal x4 As Single, ByVal y4 As Single) As GP_Result
+Private Declare Function GdipAddPathLine2 Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As GP_Result
+Private Declare Function GdipAddPathPolygon Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As GP_Result
+Private Declare Function GdipAddPathArc Lib "gdiplus" (ByVal hPath As Long, ByVal x As Single, ByVal y As Single, ByVal arcWidth As Single, ByVal arcHeight As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As GP_Result
+Private Declare Function GdipAddPathPath Lib "gdiplus" (ByVal hPath As Long, ByVal pathToAdd As Long, ByVal connectToPreviousPoint As Long) As GP_Result
+
 Private Declare Function GdipCloneMatrix Lib "gdiplus" (ByVal srcMatrix As Long, ByRef dstMatrix As Long) As GP_Result
 Private Declare Function GdipClonePath Lib "gdiplus" (ByVal srcPath As Long, ByRef dstPath As Long) As GP_Result
 Private Declare Function GdipCloneRegion Lib "gdiplus" (ByVal srcRegion As Long, ByRef dstRegion As Long) As GP_Result
+Private Declare Function GdipClosePathFigure Lib "gdiplus" (ByVal hPath As Long) As GP_Result
 
 Private Declare Function GdipCombineRegionRect Lib "gdiplus" (ByVal hRegion As Long, ByRef srcRectF As RECTF, ByVal dstCombineMode As GP_CombineMode) As GP_Result
 Private Declare Function GdipCombineRegionRectI Lib "gdiplus" (ByVal hRegion As Long, ByRef srcRectL As RECTL, ByVal dstCombineMode As GP_CombineMode) As GP_Result
@@ -382,6 +394,7 @@ Private Declare Function GdipGetClip Lib "gdiplus" (ByVal hGraphics As Long, ByR
 Private Declare Function GdipGetCompositingQuality Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstCompositingQuality As GP_CompositingQuality) As GP_Result
 Private Declare Function GdipGetPathFillMode Lib "gdiplus" (ByVal hPath As Long, ByRef dstFillRule As GP_FillMode) As GP_Result
 Private Declare Function GdipGetPathWorldBounds Lib "gdiplus" (ByVal hPath As Long, ByRef dstBounds As RECTF, ByVal tmpTransformMatrix As Long, ByVal tmpPenHandle As Long) As GP_Result
+Private Declare Function GdipGetPathWorldBoundsI Lib "gdiplus" (ByVal hPath As Long, ByRef dstBounds As RECTL, ByVal tmpTransformMatrix As Long, ByVal tmpPenHandle As Long) As GP_Result
 Private Declare Function GdipGetPenColor Lib "gdiplus" (ByVal hPen As Long, ByRef dstPARGBColor As Long) As GP_Result
 Private Declare Function GdipGetPenDashCap Lib "gdiplus" Alias "GdipGetPenDashCap197819" (ByVal hPen As Long, ByRef dstCap As GP_DashCap) As GP_Result
 Private Declare Function GdipGetPenDashStyle Lib "gdiplus" (ByVal hPen As Long, ByRef dstDashStyle As GP_DashStyle) As GP_Result
@@ -405,7 +418,10 @@ Private Declare Function GdipIsEmptyRegion Lib "gdiplus" (ByVal srcRegion As Lon
 Private Declare Function GdipIsEqualRegion Lib "gdiplus" (ByVal srcRegion1 As Long, ByVal srcRegion2 As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
 Private Declare Function GdipIsInfiniteRegion Lib "gdiplus" (ByVal srcRegion As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
 Private Declare Function GdipIsMatrixInvertible Lib "gdiplus" (ByVal hMatrix As Long, ByRef dstResult As Long) As Long
+Private Declare Function GdipIsOutlineVisiblePathPoint Lib "gdiplus" (ByVal hPath As Long, ByVal x As Single, ByVal y As Single, ByVal hPen As Long, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
+Private Declare Function GdipIsOutlineVisiblePathPointI Lib "gdiplus" (ByVal hPath As Long, ByVal x As Long, ByVal y As Long, ByVal hPen As Long, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
 Private Declare Function GdipIsVisiblePathPoint Lib "gdiplus" (ByVal hPath As Long, ByVal x As Single, ByVal y As Single, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
+Private Declare Function GdipIsVisiblePathPointI Lib "gdiplus" (ByVal hPath As Long, ByVal x As Long, ByVal y As Long, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
 
 Private Declare Function GdipResetClip Lib "gdiplus" (ByVal hGraphics As Long) As GP_Result
 Private Declare Function GdipResetPath Lib "gdiplus" (ByVal hPath As Long) As GP_Result
@@ -441,8 +457,14 @@ Private Declare Function GdipSetSolidFillColor Lib "gdiplus" (ByVal hBrush As Lo
 Private Declare Function GdipSetTextureWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByVal newWrapMode As GP_WrapMode) As GP_Result
 
 Private Declare Function GdipShearMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal shearX As Single, ByVal shearY As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
+Private Declare Function GdipStartPathFigure Lib "gdiplus" (ByVal hPath As Long) As GP_Result
+
 Private Declare Function GdipTranslateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal offsetX As Single, ByVal offsetY As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
 Private Declare Function GdipTransformMatrixPoints Lib "gdiplus" (ByVal hMatrix As Long, ByVal ptrToFirstPointF As Long, ByVal numOfPoints As Long) As GP_Result
+Private Declare Function GdipTransformPath Lib "gdiplus" (ByVal hPath As Long, ByVal hMatrix As Long) As GP_Result
+
+Private Declare Function GdipWidenPath Lib "gdiplus" (ByVal hPath As Long, ByVal hPen As Long, ByVal hTransformMatrix As Long, ByVal allowableError As Single) As GP_Result
+Private Declare Function GdipWindingModeOutline Lib "gdiplus" (ByVal hPath As Long, ByVal hTransformationMatrix As Long, ByVal allowableError As Single) As GP_Result
 
 'Non-GDI+ helper functions:
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
@@ -755,11 +777,6 @@ Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest A
 
 'GDI+ calls related to drawing lines and various shapes
 'Private Declare Function GdipCreateBitmapFromGraphics Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal srcGraphics As Long, ByRef dstBitmap As Long) As Long
-'Private Declare Function GdipAddPathLine Lib "gdiplus" (ByVal mPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
-Private Declare Function GdipAddPathArc Lib "gdiplus" (ByVal mPath As Long, ByVal x As Single, ByVal y As Single, ByVal Width As Single, ByVal Height As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Long
-Private Declare Function GdipAddPathPolygon Lib "gdiplus" (ByVal mPath As Long, ByVal pointerFloatArray As Long, ByVal numPoints As Long) As Long
-Private Declare Function GdipAddPathClosedCurve2 Lib "gdiplus" (ByVal mPath As Long, ByVal pointerFloatArray As Long, ByVal numPoints As Long, ByVal curveTension As Single) As Long
-Private Declare Function GdipClosePathFigure Lib "gdiplus" (ByVal mPath As Long) As Long
 Private Declare Function GdipCreateEffect Lib "gdiplus" (ByVal dwCid1 As Long, ByVal dwCid2 As Long, ByVal dwCid3 As Long, ByVal dwCid4 As Long, ByRef mEffect As Long) As Long
 Private Declare Function GdipSetEffectParameters Lib "gdiplus" (ByVal mEffect As Long, ByRef eParams As Any, ByVal Size As Long) As Long
 Private Declare Function GdipDeleteEffect Lib "gdiplus" (ByVal mEffect As Long) As Long
@@ -3891,9 +3908,86 @@ Public Function GDIPlus_MatrixTranslate(ByVal hMatrix As Long, ByVal offsetX As 
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
+Public Function GDIPlus_PathAddArc(ByVal hPath As Long, ByVal x As Single, ByVal y As Single, ByVal arcWidth As Single, ByVal arcHeight As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipAddPathArc(hPath, x, y, arcWidth, arcHeight, startAngle, sweepAngle)
+    GDIPlus_PathAddArc = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathAddBezier(ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single, ByVal x4 As Single, ByVal y4 As Single) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipAddPathBezier(hPath, x1, y1, x2, y2, x3, y3, x4, y4)
+    GDIPlus_PathAddBezier = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathAddClosedCurve(ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipAddPathClosedCurve2(hPath, ptrToFloatArray, numOfPoints, curveTension)
+    GDIPlus_PathAddClosedCurve = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathAddCurve(ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipAddPathCurve2(hPath, ptrToFloatArray, numOfPoints, curveTension)
+    GDIPlus_PathAddCurve = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathAddEllipse(ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipAddPathEllipse(hPath, x1, y1, rectWidth, rectHeight)
+    GDIPlus_PathAddEllipse = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathAddLine(ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipAddPathLine(hPath, x1, y1, x2, y2)
+    GDIPlus_PathAddLine = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathAddLines(ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipAddPathLine2(hPath, ptrToFloatArray, numOfPoints)
+    GDIPlus_PathAddLines = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathAddPath(ByVal hPath As Long, ByVal pathToAdd As Long, ByVal connectToPreviousPoint As Long) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipAddPathPath(hPath, pathToAdd, connectToPreviousPoint)
+    GDIPlus_PathAddPath = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathAddPolygon(ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipAddPathPolygon(hPath, ptrToFloatArray, numOfPoints)
+    GDIPlus_PathAddPolygon = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathAddRectangle(ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipAddPathRectangle(hPath, x1, y1, rectWidth, rectHeight)
+    GDIPlus_PathAddRectangle = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
 Public Function GDIPlus_PathClone(ByVal srcPath As Long) As Long
     Dim tmpReturn As GP_Result
     tmpReturn = GdipClonePath(srcPath, GDIPlus_PathClone)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathCloseFigure(ByVal hPath As Long) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipClosePathFigure(hPath)
+    GDIPlus_PathCloseFigure = CBool(tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
@@ -3910,6 +4004,20 @@ Public Function GDIPlus_PathDelete(ByVal hPath As Long) As Boolean
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
+Public Function GDIPlus_PathDoesPointTouchOutlineF(ByVal hPath As Long, ByVal srcX As Single, ByVal srcY As Single, ByVal hPen As Long) As Boolean
+    Dim tmpReturn As GP_Result, tmpResult As Long
+    tmpReturn = GdipIsOutlineVisiblePathPoint(hPath, srcX, srcY, hPen, 0&, tmpResult)
+    GDIPlus_PathDoesPointTouchOutlineF = CBool(tmpResult <> 0)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathDoesPointTouchOutlineL(ByVal hPath As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal hPen As Long) As Boolean
+    Dim tmpReturn As GP_Result, tmpResult As Long
+    tmpReturn = GdipIsOutlineVisiblePathPointI(hPath, srcX, srcY, hPen, 0&, tmpResult)
+    GDIPlus_PathDoesPointTouchOutlineL = CBool(tmpResult <> 0)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
 Public Function GDIPlus_PathGetFillRule(ByVal hPath As Long) As GP_FillMode
     Dim tmpReturn As GP_Result
     tmpReturn = GdipGetPathFillMode(hPath, GDIPlus_PathGetFillRule)
@@ -3922,10 +4030,23 @@ Public Function GDIPlus_PathGetPathBoundsF(ByVal hPath As Long, Optional ByVal h
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
-Public Function GDIPlus_PathIsPointInside(ByVal hPath As Long, ByVal srcX As Single, ByVal srcY As Single) As Boolean
+Public Function GDIPlus_PathGetPathBoundsL(ByVal hPath As Long, Optional ByVal hTransform As Long = 0, Optional ByVal hPen As Long = 0) As RECTL
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipGetPathWorldBoundsI(hPath, GDIPlus_PathGetPathBoundsL, hTransform, hPen)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathIsPointInsideF(ByVal hPath As Long, ByVal srcX As Single, ByVal srcY As Single) As Boolean
     Dim tmpReturn As GP_Result, tmpResult As Long
     tmpReturn = GdipIsVisiblePathPoint(hPath, srcX, srcY, 0&, tmpResult)
-    GDIPlus_PathIsPointInside = CBool(tmpResult <> 0)
+    GDIPlus_PathIsPointInsideF = CBool(tmpResult <> 0)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathIsPointInsideL(ByVal hPath As Long, ByVal srcX As Long, ByVal srcY As Long) As Boolean
+    Dim tmpReturn As GP_Result, tmpResult As Long
+    tmpReturn = GdipIsVisiblePathPointI(hPath, srcX, srcY, 0&, tmpResult)
+    GDIPlus_PathIsPointInsideL = CBool(tmpResult <> 0)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
@@ -3940,6 +4061,34 @@ Public Function GDIPlus_PathSetFillRule(ByVal hPath As Long, ByVal newFillRule A
     Dim tmpReturn As GP_Result
     tmpReturn = GdipSetPathFillMode(hPath, newFillRule)
     GDIPlus_PathSetFillRule = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathStartFigure(ByVal hPath As Long) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipStartPathFigure(hPath)
+    GDIPlus_PathStartFigure = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathTransform(ByVal hPath As Long, ByVal hTransformMatrix As Long) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipTransformPath(hPath, hTransformMatrix)
+    GDIPlus_PathTransform = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathWiden(ByVal hPath As Long, ByVal hPen As Long, ByVal hTransformMatrix As Long, ByVal allowableError As Single) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipWidenPath(hPath, hPen, hTransformMatrix, allowableError)
+    GDIPlus_PathWiden = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PathWindingModeOutline(ByVal hPath As Long, ByVal hTransformMatrix As Long, ByVal allowableError As Single) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipWindingModeOutline(hPath, hTransformMatrix, allowableError)
+    GDIPlus_PathWindingModeOutline = CBool(tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
