@@ -132,7 +132,7 @@ Public Sub ContinueLoadingProgram()
     If Drawing2D.StartRenderingBackend(P2_DefaultBackend) Then
         
         #If DEBUGMODE = 1 Then
-            Drawing2D.SetDrawing2DDebugMode True
+            Drawing2D.SetLibraryDebugMode True
         #End If
         
         'Load FormSplash into memory, but don't make it visible.

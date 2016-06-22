@@ -575,3 +575,11 @@ End Sub
 Private Sub Class_Terminate()
     Me.ReleaseBrush
 End Sub
+
+'All pd2D classes report errors using an internal function similar to this one.  Feel free to modify this function to
+' better fit your project (e.g. perhaps it could raise an actual error event).
+'
+'Note that a default pd2D build simply dumps the passed error information to the Immediate window.
+Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
+    Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DBrush"
+End Sub

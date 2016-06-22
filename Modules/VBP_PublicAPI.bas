@@ -25,36 +25,11 @@ Public Type winRect
     y2 As Long
 End Type
 
-'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
 Public Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
 
 Public Const FADF_AUTO As Long = (&H1)
 Public Const FADF_FIXEDSIZE As Long = (&H10)
-
-Public Type SAFEARRAYBOUND
-    cElements As Long
-    lBound   As Long
-End Type
-
-Public Type SAFEARRAY2D
-    cDims      As Integer
-    fFeatures  As Integer
-    cbElements As Long
-    cLocks     As Long
-    pvData     As Long
-    Bounds(1)  As SAFEARRAYBOUND
-End Type
-
-Public Type SAFEARRAY1D
-    cDims      As Integer
-    fFeatures  As Integer
-    cbElements As Long
-    cLocks     As Long
-    pvData     As Long
-    cElements As Long
-    lBound   As Long
-End Type
 
 'These functions are used to interact with various windows
 Public Const MONITOR_DEFAULTTONEAREST As Long = &H2
