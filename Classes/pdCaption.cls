@@ -129,7 +129,7 @@ Public Function SetCaption(ByVal newCaption As String) As Boolean
             Dim isTranslationActive As Boolean
                 
             If Not (g_Language Is Nothing) Then
-                If g_Language.translationActive Then
+                If g_Language.TranslationActive Then
                     isTranslationActive = True
                 Else
                     isTranslationActive = False
@@ -170,8 +170,8 @@ End Function
 
 'Assign a new caption color.  Remember that color changes do not require rebuilding the font.  Also, font color changes are persistent
 ' (by design), so they will not be overridden except by subsequent setCaptionColor calls.
-Public Sub SetCaptionColor(ByVal newColor As Long)
-    m_CaptionColorCustom = newColor
+Public Sub SetCaptionColor(ByVal newCaptionColor As Long)
+    m_CaptionColorCustom = newCaptionColor
 End Sub
 
 Public Function GetFontBold() As Boolean
@@ -551,7 +551,7 @@ Public Sub UpdateAgainstCurrentTheme()
         Dim isTranslationActive As Boolean
             
         If Not (g_Language Is Nothing) Then
-            If g_Language.translationActive Then
+            If g_Language.TranslationActive Then
                 isTranslationActive = True
             Else
                 isTranslationActive = False

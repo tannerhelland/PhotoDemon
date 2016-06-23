@@ -584,7 +584,7 @@ End Sub
 
 Private Sub UpdatePreview()
     
-    If (Not m_SuspendUI) Then
+    If (Not m_SuspendUI) And (m_NodePreview.GetNumOfNodes > 0) Then
     
         'Make sure our gradient objects are up-to-date
         UpdateGradientObjects
@@ -599,8 +599,6 @@ Private Sub UpdatePreview()
             .Height = picNodePreview.ScaleHeight
         End With
         
-        gdipBrushNodes = m_NodePreview.GetBrushHandle(boundsRect, True)
-        
         If (m_NodePreviewDIB Is Nothing) Then Set m_NodePreviewDIB = New pdDIB
         If (m_NodePreviewDIB.GetDIBWidth <> Me.picNodePreview.ScaleWidth) Or (m_NodePreviewDIB.GetDIBHeight <> Me.picNodePreview.ScaleHeight) Then
             m_NodePreviewDIB.CreateBlank Me.picNodePreview.ScaleWidth, Me.picNodePreview.ScaleHeight, 24, 0
@@ -608,15 +606,22 @@ Private Sub UpdatePreview()
             m_NodePreviewDIB.ResetDIB
         End If
         
+        Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cBrush As pd2DBrush
+        Drawing2D.QuickCreatePainter cPainter
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, m_NodePreviewDIB.GetDIBDC, False
+        
+        Set cBrush = New pd2DBrush
+        cBrush.SetBrushMode P2_BM_Gradient
+        cBrush.SetBrushGradientAllSettings m_NodePreview.GetGradientAsString
+        cBrush.SetBoundaryRect boundsRect
+        
         With m_NodePreviewDIB
-            GDI_Plus.GDIPlusFillDIBRect_Pattern m_NodePreviewDIB, 0, 0, .GetDIBWidth, .GetDIBHeight, g_CheckerboardPattern
-            GDI_Plus.GDIPlusFillDC_Brush .GetDIBDC, gdipBrushNodes, 0, 0, .GetDIBWidth, .GetDIBHeight
+            cPainter.FillRectangleF cSurface, g_CheckerboardBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
+            cPainter.FillRectangleF cSurface, cBrush, 0, 0, .GetDIBWidth, .GetDIBHeight
         End With
         
+        Set cSurface = Nothing
         m_NodePreviewDIB.RenderToPictureBox Me.picNodePreview
-        
-        'Release our GDI+ handles
-        GDI_Plus.ReleaseGDIPlusBrush gdipBrushNodes
                 
         'Notify our parent of the update
         If Not (parentGradientControl Is Nothing) Then parentGradientControl.NotifyOfLiveGradientChange GetGradientAsOriginalShape()

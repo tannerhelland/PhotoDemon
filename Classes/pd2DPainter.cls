@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 'Copyright 2012-2016 by Tanner Helland
 'Created: 01/September/12
 'Last updated: 16/May/16
-'Last update: continue migratation of paint operations out of GDI+ module and into this class
+'Last update: continue migration of paint operations out of GDI+ module and into this class
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit http://photodemon.org/about/license/
@@ -24,6 +24,10 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'If possible (e.g. paints wihtout stretching), this painter class will drop back to bare AlphaBlend calls
+' for image rendering.  This provides a meaningful improvement over GDI+ draw calls.
+Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
 
 'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
 Private m_DebugMode As Boolean
@@ -132,6 +136,62 @@ End Function
 
 Friend Function DrawEllipseI_FromRectL(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcRect As RECTL) As Boolean
     DrawEllipseI_FromRectL = Me.DrawEllipseI(dstSurface, srcPen, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top)
+End Function
+
+'Drawing images is significantly more convoluted than drawing shapes, because GDI+ Graphics objects do not support
+' direct access to bits (which is forgivable, because a Graphics object may not have a raster object selected into it).
+' Instead, we must generate - on-the-fly - a GDI+ Image object as our "source image".
+'
+'Also, wherever possible, we try to bypass GDI+ and just use GDI, which is totally sufficient for 24-bpp targets.
+
+'Copying the image onto the destination does *not* perform any blending.  It performs a wholesale replacement of
+' the destination bytes with the source bytes.
+Public Function CopyImageI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByRef srcSurface As pd2DSurface) As Boolean
+    Dim srcWidth As Long, srcHeight As Long
+    srcWidth = srcSurface.GetSurfaceWidth
+    srcHeight = srcSurface.GetSurfaceHeight
+    CopyImageI = GDI.BitBltWrapper(dstSurface.GetSurfaceDC, dstX, dstY, srcWidth, srcHeight, srcSurface.GetSurfaceDC, 0, 0, vbSrcCopy)
+End Function
+
+Public Function DrawImageI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByRef srcSurface As pd2DSurface, Optional ByVal customOpacity As Single = 100#) As Boolean
+    
+    'Because this function doesn't require stretching, we can drop back to AlphaBlend for improved performance.
+    ' (This is only possible because pd2D operates in the premultiplied alpha space; if it didn't, we'd be forced
+    ' to use slow GDI+ calls everywhere.)
+    Dim srcWidth As Long, srcHeight As Long
+    srcWidth = srcSurface.GetSurfaceWidth
+    srcHeight = srcSurface.GetSurfaceHeight
+    
+    If (srcSurface.GetSurfaceAlphaSupport Or (customOpacity <> 100)) Then
+        DrawImageI = AlphaBlendWrapper(dstSurface.GetSurfaceDC, dstX, dstY, srcWidth, srcHeight, srcSurface.GetSurfaceDC, 0, 0, srcWidth, srcHeight, srcSurface.GetSurfaceAlphaSupport, customOpacity * 2.55)
+    Else
+        DrawImageI = GDI.BitBltWrapper(dstSurface.GetSurfaceDC, dstX, dstY, srcWidth, srcHeight, srcSurface.GetSurfaceDC, 0, 0, vbSrcCopy)
+    End If
+    
+End Function
+
+Private Function AlphaBlendWrapper(ByVal hDstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal srcIs32bpp As Boolean = True, Optional ByVal blendOpacity As Long = 255) As Boolean
+
+    Dim abParams As Long
+    
+    'Use the image's current alpha channel, and blend it with the supplied customAlpha value
+    If srcIs32bpp Then
+        abParams = blendOpacity * &H10000 Or &H1000000
+        
+        'If the source is a pd2DDIB object, we could actually test for premultiplication here (and in fact,
+        ' pd2DDIB provides its own AlphaBlend wrapper that handles this for us).
+    
+    'Ignore alpha channel, and only use the supplied customAlpha value.
+    Else
+        
+        ' (My memory is fuzzy after so many years, but I seem to recall old versions of Windows sometimes failing
+        '  to AlphaBlend if the alpha value was exactly 255 - as a failsafe, let's use 254 as necessary.)
+        If blendOpacity = 255 Then blendOpacity = 254
+        abParams = (blendOpacity * &H10000)
+    End If
+    
+    AlphaBlend hDstDC, dstX, dstY, dstWidth, dstHeight, hSrcDC, srcX, srcY, srcWidth, srcHeight, abParams
+    
 End Function
 
 Public Function DrawLineF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Boolean

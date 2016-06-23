@@ -135,6 +135,7 @@ Public Sub ShowDialog(ByVal questionText As String, ByVal yesButtonText As Strin
     iconY = FixDPI(18)
     If g_UseFancyFonts Then iconY = iconY + FixDPI(2)
     DrawSystemIcon icon, Me.hDC, FixDPI(22), iconY
+    Me.Picture = Me.Image
     
     'Set the default answer.  (When the form is displayed, this will be used to assign focus to the corresponding button.)
     userAnswer = defaultAnswer
@@ -226,5 +227,4 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
-
 

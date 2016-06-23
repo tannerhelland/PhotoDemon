@@ -143,8 +143,8 @@ Public Property Get BackColor() As OLE_COLOR
     BackColor = m_BackColor
 End Property
 
-Public Property Let BackColor(ByVal newColor As OLE_COLOR)
-    m_BackColor = newColor
+Public Property Let BackColor(ByVal newBackColor As OLE_COLOR)
+    m_BackColor = newBackColor
     RedrawBackBuffer
 End Property
 
@@ -284,18 +284,18 @@ Private Sub GenerateVariantButtonImages(Optional ByVal hoverGlowAmount As Long =
     Dim hLookup() As Byte, gLookUp() As Byte
     ReDim hLookup(0 To 255) As Byte: ReDim gLookUp(0 To 765) As Byte
     
-    Dim newColor As Long
+    Dim newPxColor As Long
     Dim x As Long, y As Long
     For x = 0 To 255
-        newColor = x + hoverGlowAmount
-        If newColor > 255 Then newColor = 255
-        hLookup(x) = newColor
+        newPxColor = x + hoverGlowAmount
+        If newPxColor > 255 Then newPxColor = 255
+        hLookup(x) = newPxColor
     Next x
     
     For x = 0 To 765
-        newColor = (x \ 3) + disabledGlowAmount
-        If newColor > 255 Then newColor = 255
-        gLookUp(x) = newColor
+        newPxColor = (x \ 3) + disabledGlowAmount
+        If newPxColor > 255 Then newPxColor = 255
+        gLookUp(x) = newPxColor
     Next x
     
     'Grab direct access to the spritesheet's bytes

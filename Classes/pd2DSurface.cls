@@ -23,7 +23,7 @@ Attribute VB_Exposed = False
 ' 1) Wrappers around existing DCs.  This is help for UI painting, as wrapping a DC is effectively instantaneous
 '    (compared to making a copy of the DC's bitmap, painting to that, then flipping back to the DC when finished)
 '
-' 2) Bitmap (raster) surfaces.  The creation and destruction of such surfaces is handled internally, using a pdDIB object.
+' 2) Bitmap (raster) surfaces.  The creation and destruction of such surfaces is handled internally, using a pddib object.
 '
 'Regardless of which surface type you use, you can always access an hDC for external GDI interop purposes.
 '
@@ -237,15 +237,35 @@ End Function
 
 'Create a blank in-memory surface.  pd2DSurface will automatically manage the memory for this surface.
 Public Function CreateBlankSurface(ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, Optional ByVal surfaceHasAlphaChannel As Boolean = True, Optional ByVal surfaceBackColor As Long = vbWhite, Optional ByVal surfaceOpacity As Single = 100#) As Boolean
+    
     If (surfaceWidth <> 0) And (surfaceHeight <> 0) Then
+        
+        If (m_SurfaceHandle <> 0) Then ReleaseSurface
+    
+        'Prep a GDI DIB for use as our blank surface
         If (m_SurfaceDIB Is Nothing) Then Set m_SurfaceDIB = New pdDIB
         Dim targetColorDepth As Long
         If surfaceHasAlphaChannel Then targetColorDepth = 32 Else targetColorDepth = 24
         CreateBlankSurface = m_SurfaceDIB.CreateBlank(surfaceWidth, surfaceHeight, targetColorDepth, surfaceBackColor, surfaceOpacity * 2.55)
-        If CreateBlankSurface Then m_SurfaceType = P2_ST_Bitmap
+        
+        If CreateBlankSurface Then
+        
+            m_SurfaceType = P2_ST_Bitmap
+            
+            'Finally, wrap the appropriate backend around this newly created DC
+            Select Case m_SurfaceBackend
+                
+                Case P2_DefaultBackend, P2_GDIPlusBackend
+                    m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(m_SurfaceDIB.GetDIBDC, IIf(m_SurfaceAntialiasing >= P2_AA_HighQuality, GP_SM_AntiAlias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Half, GP_POM_Half, GP_POM_None))
+                    CreateBlankSurface = (m_SurfaceHandle <> 0)
+                    
+            End Select
+            
+        End If
     Else
         InternalError "Invalid surface width/height", "When creating a blank surface, the width and height must be non-zero."
     End If
+    
 End Function
 
 'Wrap this surface around some existing hDC.  It's fine to call this function multiple times on the same DC - changes to the handle
@@ -367,6 +387,18 @@ Friend Function InitializeSurfaceBackend(Optional ByVal targetBackend As PD_2D_R
     m_SurfaceBackend = targetBackend
     InitializeSurfaceBackend = True
 End Function
+
+'Erase the current surface's contents.  Roughly equivalent to .Cls in VB, except that this function accepts a
+' color and/or alpha to use when erasing.
+'
+'Note that wrapped GDI surfaces will *not* touch alpha, by design, to avoid screwing up the target DC's behavior.
+Public Sub EraseSurfaceContents(Optional ByVal newColor As Long = vbWhite, Optional ByVal newAlpha As Single = 0#)
+    If (m_SurfaceType = P2_ST_WrapperOnly) Then
+        GDI.FillRectToDC m_SurfaceDC, 0, 0, Me.GetSurfaceWidth, Me.GetSurfaceHeight, newColor
+    ElseIf (m_SurfaceType = P2_ST_Bitmap) Then
+        If (Not m_SurfaceDIB Is Nothing) Then m_SurfaceDIB.FillWithColor newColor, newAlpha
+    End If
+End Sub
 
 Public Function ReleaseSurface() As Boolean
     

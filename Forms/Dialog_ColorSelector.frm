@@ -641,8 +641,8 @@ Public Property Get DialogResult() As VbMsgBoxResult
 End Property
 
 'The newly selected color (if any) is returned via this property
-Public Property Get NewColor() As Long
-    NewColor = newUserColor
+Public Property Get NewlySelectedColor() As Long
+    NewlySelectedColor = newUserColor
 End Property
 
 'During screen capture, this sub is used to update the current color under the mouse cursor.  Note that such rapid
@@ -895,7 +895,7 @@ Private Sub LoadRecentColorList()
     Dim allRecentColors() As String
     Dim numColors As Long
     
-    If xmlEngine.findAllAttributeValues(allRecentColors, "colorEntry", "id") Then
+    If xmlEngine.FindAllAttributeValues(allRecentColors, "colorEntry", "id") Then
         
         numColors = UBound(allRecentColors) + 1
         
@@ -921,7 +921,7 @@ Private Sub LoadRecentColorList()
         For i = 0 To numColors - 1
         
             'Retrieve the color, in string format
-            tmpColorString = xmlEngine.getUniqueTag_String("color", , , "colorEntry", "id", allRecentColors(i))
+            tmpColorString = xmlEngine.GetUniqueTag_String("color", , , "colorEntry", "id", allRecentColors(i))
             
             'Translate the color into a long, and update the corresponding picture box
             If Len(tmpColorString) <> 0 Then recentColors(i) = CLng(tmpColorString)
@@ -1002,23 +1002,23 @@ Private Sub SaveRecentColorList()
     
     'Add all color entries to the XML engine
     For i = 0 To UBound(recentColors)
-        xmlEngine.writeTagWithAttribute "colorEntry", "id", Str(i), "", True
-        xmlEngine.writeTag "color", recentColors(i)
-        xmlEngine.closeTag "colorEntry"
-        xmlEngine.writeBlankLine
+        xmlEngine.WriteTagWithAttribute "colorEntry", "id", Str(i), "", True
+        xmlEngine.WriteTag "color", recentColors(i)
+        xmlEngine.CloseTag "colorEntry"
+        xmlEngine.WriteBlankLine
     Next i
     
     'With the XML file now complete, write it out to file
-    xmlEngine.writeXMLToFile XMLFilename
+    xmlEngine.WriteXMLToFile XMLFilename
     
 End Sub
 
 'When creating a new recent coclors file, or overwriting a corrupt one, use this to initialize the new XML file.
 Private Sub ResetXMLData()
-    xmlEngine.prepareNewXML "Recent colors"
-    xmlEngine.writeBlankLine
-    xmlEngine.writeComment "Everything past this point is recent color data.  Entries are sorted in reverse chronological order."
-    xmlEngine.writeBlankLine
+    xmlEngine.PrepareNewXML "Recent colors"
+    xmlEngine.WriteBlankLine
+    xmlEngine.WriteComment "Everything past this point is recent color data.  Entries are sorted in reverse chronological order."
+    xmlEngine.WriteBlankLine
 End Sub
 
 'Refresh the various color box cursors when the mouse enters
@@ -1059,7 +1059,7 @@ Private Sub DrawHueBox()
         HSVtoRGB hVal, 1, 1, r, g, b
         
         'Draw the color
-        Drawing.DrawLineToDC hueBox.GetDIBDC, 0, y, picHue.ScaleWidth, y, RGB(r, g, b)
+        GDI.DrawLineToDC hueBox.GetDIBDC, 0, y, picHue.ScaleWidth, y, RGB(r, g, b)
         
     Next y
     
@@ -1348,7 +1348,7 @@ Private Sub RenderSampleDIB(ByRef dstDIB As pdDIB, ByVal dibColorType As colorCh
         End If
         
         'Draw the color
-        Drawing.DrawLineToDC dstDIB.GetDIBDC, x, 0, x, dstDIB.GetDIBHeight, RGB(r, g, b)
+        GDI.DrawLineToDC dstDIB.GetDIBDC, x, 0, x, dstDIB.GetDIBHeight, RGB(r, g, b)
         
     Next x
     

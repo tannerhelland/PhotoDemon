@@ -466,8 +466,8 @@ Public Function GetFontColor() As Long
     GetFontColor = m_FontColor
 End Function
 
-Public Sub SetFontColor(ByVal newColor As Long)
-    m_FontColor = newColor
+Public Sub SetFontColor(ByVal newFontColor As Long)
+    m_FontColor = newFontColor
 End Sub
 
 Public Function GetFontBold() As Boolean

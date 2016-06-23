@@ -124,13 +124,6 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 Private Declare Function GetObjectType Lib "gdi32" (ByVal hgdiobj As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
-'Rectangle objects to be used with brushes
-Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
-Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
-
-'Brush creation
-Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
-
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
 Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
 
@@ -839,22 +832,23 @@ Public Function CreateBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         
             'If the DIB is 24bpp, apply the background color now
             If (colorDepth = 24) Then
-                
-                Dim dibRect As RECT
-                SetRect dibRect, 0, 0, iWidth, iHeight
-            
-                Dim hBrush As Long
-                hBrush = CreateSolidBrush(BackColor)
-                FillRect m_dibDC, dibRect, hBrush
-                DeleteObject hBrush
-                
-                'Also, reset alpha premultiplication to false
+                GDI.FillRectToDC m_dibDC, 0, 0, iWidth, iHeight, BackColor
                 m_IsAlphaPremultiplied = False
-                
-            Else
             
-                'Finally, set the backColor and/or transparency
-                GDIPlusFillDIBRect Me, 0, 0, iWidth, iHeight, BackColor, dibAlpha
+            '32bpp requires GDI+
+            Else
+                
+                'Newly created DIBs will be black and transparent by default, so we can skip the fill
+                If (dibAlpha <> 0) Then
+                    Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cBrush As pd2DBrush
+                    Drawing2D.QuickCreatePainter cPainter
+                    Drawing2D.QuickCreateSurfaceFromDC cSurface, m_dibDC, False
+                    Drawing2D.QuickCreateSolidBrush cBrush, BackColor, dibAlpha / 2.55
+                    cPainter.FillRectangleF cSurface, cBrush, 0, 0, iWidth + 1, iHeight + 1
+                    Set cSurface = Nothing
+                Else
+                    FillMemory m_dibBits, m_dibStride * m_dibHeight, 0&
+                End If
                 
                 'Because alpha premultiplication is unknown, we'll assume it is FALSE
                 m_IsAlphaPremultiplied = False
@@ -863,7 +857,7 @@ Public Function CreateBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
             
         'If DIB creation failed, clear out the work we've done so far
         Else
-            EraseDIB
+            Me.EraseDIB
         End If
         
     End If
@@ -874,6 +868,38 @@ CouldNotCreateDIB:
     CreateBlank = CBool(m_dibHandle <> 0)
     
 End Function
+
+'Replace the entire DIB's contents with some solid color
+Public Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional ByVal fillAlpha As Single = 0#)
+
+    'If the DIB is 24bpp, apply the background color now
+    If (m_dibColorDepth = 24) Then
+        GDI.FillRectToDC m_dibDC, 0, 0, m_dibWidth + 1, m_dibHeight + 1, fillColor
+        m_IsAlphaPremultiplied = False
+    
+    '32-bpp requires GDI+
+    Else
+        
+        Me.ResetDIB 0
+        
+        If ((fillColor <> vbBlack) And (fillAlpha <> 0#)) Then
+            
+            Dim tmpSurface As Long, tmpBrush As Long
+            tmpSurface = GDI_Plus.GetGDIPlusGraphicsFromDC(m_dibDC)
+            tmpBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(fillColor, fillAlpha * 2.55)
+            GDI_Plus.GDIPlus_FillRectI tmpSurface, tmpBrush, 0, 0, m_dibWidth + 1, m_dibHeight + 1
+            GDI_Plus.ReleaseGDIPlusBrush tmpBrush
+            GDI_Plus.ReleaseGDIPlusGraphics tmpSurface
+            
+            m_IsAlphaPremultiplied = CBool(fillAlpha = 100#)
+            
+        Else
+            m_IsAlphaPremultiplied = True
+        End If
+        
+    End If
+    
+End Sub
 
 'This will effectively reset everything related to this DIB, including all image data. Use cautiously!
 Public Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)

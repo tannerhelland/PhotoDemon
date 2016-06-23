@@ -28,7 +28,7 @@ Public Function ChoosePDColor(ByVal oldColor As Long, ByRef newColor As Long, Op
     Load dialog_ColorSelector
     dialog_ColorSelector.ShowDialog oldColor, callingControl
     ChoosePDColor = dialog_ColorSelector.DialogResult
-    If (ChoosePDColor = vbOK) Then newColor = dialog_ColorSelector.newColor
+    If (ChoosePDColor = vbOK) Then newColor = dialog_ColorSelector.NewlySelectedColor
     Unload dialog_ColorSelector
     Set dialog_ColorSelector = Nothing
 End Function
@@ -326,7 +326,7 @@ Public Function PromptGenericYesNoDialog(ByVal questionID As String, ByVal quest
     'Convert the questionID to its XML-safe equivalent
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
-    questionID = xmlEngine.getXMLSafeTagName(questionID)
+    questionID = xmlEngine.GetXMLSafeTagName(questionID)
     
     'See if the user has already answered this question in the past.
     If g_UserPreferences.DoesValueExist("Dialogs", questionID) Then
@@ -362,7 +362,7 @@ Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As Strin
     'Convert the questionID to its XML-safe equivalent
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
-    questionID = xmlEngine.getXMLSafeTagName(questionID)
+    questionID = xmlEngine.GetXMLSafeTagName(questionID)
     
     'See if the user has already answered this question in the past.
     If g_UserPreferences.DoesValueExist("Dialogs", questionID) Then
@@ -448,19 +448,19 @@ End Function
 '             (This reference will be used to provide live updates as the user plays with the dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function ShowGradientDialog(ByRef newGradient As String, Optional ByVal initialGradient As String = vbNullString, Optional ByRef callingControl As pdGradientSelector) As Boolean
-    ShowGradientDialog = CBool(ChoosePDGradient(initialGradient, newGradient, callingControl) = vbOK)
+Public Function ShowGradientDialog(ByRef NewGradient As String, Optional ByVal initialGradient As String = vbNullString, Optional ByRef callingControl As pdGradientSelector) As Boolean
+    ShowGradientDialog = CBool(ChoosePDGradient(initialGradient, NewGradient, callingControl) = vbOK)
 End Function
 
 'Display a custom gradient selection dialog
 ' RETURNS: MsgBoxResult from the dialog itself.  For easier interactions, I recommend using the showGradientDialog function, above.
-Public Function ChoosePDGradient(ByRef oldGradient As String, ByRef newGradient As String, Optional ByRef callingControl As pdGradientSelector) As VbMsgBoxResult
+Public Function ChoosePDGradient(ByRef oldGradient As String, ByRef NewGradient As String, Optional ByRef callingControl As pdGradientSelector) As VbMsgBoxResult
 
     Load dialog_GradientEditor
     dialog_GradientEditor.ShowDialog oldGradient, callingControl
     
     ChoosePDGradient = dialog_GradientEditor.DialogResult
-    If ChoosePDGradient = vbOK Then newGradient = dialog_GradientEditor.newGradient
+    If ChoosePDGradient = vbOK Then NewGradient = dialog_GradientEditor.NewGradient
     
     Unload dialog_GradientEditor
     Set dialog_GradientEditor = Nothing

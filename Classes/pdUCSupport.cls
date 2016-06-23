@@ -451,8 +451,8 @@ Public Sub PaintCaptionManually_Clipped(ByVal dstX As Long, ByVal dstY As Long, 
     End If
 End Sub
 
-Public Sub SetCaptionCustomColor(ByVal newColor As Long)
-    m_Caption.SetCaptionColor newColor
+Public Sub SetCaptionCustomColor(ByVal newCaptionColor As Long)
+    m_Caption.SetCaptionColor newCaptionColor
 End Sub
 
 Public Function GetCaptionBottom() As Long
@@ -487,8 +487,8 @@ End Function
 ' an excessive amount of back-and-forth requests, the caller needs to explicitly specify a custom backcolor if it wants one.
 ' NOTE: call this function without supplying a newColor value to reset to the default program-wide window backcolor.
 ' ANOTHER NOTE: this function won't raise a redraw request, by design.
-Public Sub SetCustomBackColor(Optional ByVal newColor As Long = -1&)
-    m_BackColor = newColor
+Public Sub SetCustomBackColor(Optional ByVal newBackColor As Long = -1&)
+    m_BackColor = newBackColor
 End Sub
 
 'Want to receive custom window messages?  No problem.  Register them here, then watch for the CustomMessage event.
@@ -584,9 +584,9 @@ Private Function ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Opti
             
         Else
             If (rpLeft = 0#) And (rpTop = 0#) And (rpWidth = 0#) And (rpHeight = 0#) Then
-                Drawing.FillRectToDC m_BackBuffer.GetDIBDC, -1, -1, m_Width + 2, m_Height + 2, newBackColor
+                GDI.FillRectToDC m_BackBuffer.GetDIBDC, -1, -1, m_Width + 2, m_Height + 2, newBackColor
             Else
-                Drawing.FillRectToDC m_BackBuffer.GetDIBDC, rpLeft - 1, rpTop - 1, rpWidth + 2, rpHeight + 2, newBackColor
+                GDI.FillRectToDC m_BackBuffer.GetDIBDC, rpLeft - 1, rpTop - 1, rpWidth + 2, rpHeight + 2, newBackColor
             End If
         End If
     End If
@@ -809,7 +809,7 @@ Private Sub m_WindowPainter_EraseBkgnd()
         
         'debug.Print "ERASING NOW: " &
         
-        Drawing.FillRectToDC targetDC, -1, -1, Me.GetControlWidth + 2, Me.GetControlHeight + 2, finalBackColor
+        GDI.FillRectToDC targetDC, -1, -1, Me.GetControlWidth + 2, Me.GetControlHeight + 2, finalBackColor
         
     End If
         
@@ -832,7 +832,7 @@ Private Sub m_WindowPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As L
             finalBackColor = m_BackColor
         End If
         
-        Drawing.FillRectToDC targetDC, winLeft - 1, winTop - 1, winWidth + 2, winHeight + 2, finalBackColor
+        GDI.FillRectToDC targetDC, winLeft - 1, winTop - 1, winWidth + 2, winHeight + 2, finalBackColor
     
     'If backbuffering is active (as it is with most PD controls), copy the relevant portion of the buffer into place.
     Else

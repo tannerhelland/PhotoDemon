@@ -89,7 +89,7 @@ Private m_ForeColor As Long     ' cached no way of getting value in WinXP and lo
 Private m_BackColor As Long     ' cached no way of getting value in WinXP and lower
 
 
-Public Function CreateProgressBar(ByVal containerHwnd As Long, _
+Public Function CreateProgressBar(ByVal ContainerHwnd As Long, _
                         ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal Height As Long, _
                         ByVal Horizontal As Boolean, ByVal Smooth As Boolean, SmoothReverse As Boolean, ByVal Visible As Boolean) As Boolean
                         
@@ -102,10 +102,10 @@ Public Function CreateProgressBar(ByVal containerHwnd As Long, _
     If Smooth Then lStyle = lStyle Or PBS_SMOOTH
     If SmoothReverse Then lStyle = lStyle Or PBS_SMOOTHREVERSE  ' Vista+ only else ignored
     
-    m_hWnd = CreateWindowEx(0&, PROGRESS_CLASS, vbNullString, WS_CHILD Or lStyle, x, y, Width, Height, containerHwnd, 0&, App.hInstance, ByVal 0&)
+    m_hWnd = CreateWindowEx(0&, PROGRESS_CLASS, vbNullString, WS_CHILD Or lStyle, x, y, Width, Height, ContainerHwnd, 0&, App.hInstance, ByVal 0&)
     If m_hWnd = 0& Then
         InitCommonControls
-        m_hWnd = CreateWindowEx(0&, PROGRESS_CLASS, vbNullString, WS_CHILD Or lStyle, x, y, Width, Height, containerHwnd, 0&, App.hInstance, ByVal 0&)
+        m_hWnd = CreateWindowEx(0&, PROGRESS_CLASS, vbNullString, WS_CHILD Or lStyle, x, y, Width, Height, ContainerHwnd, 0&, App.hInstance, ByVal 0&)
     End If
     If m_hWnd Then
         m_ForeColor = &HFF000000 ' defaults
@@ -147,8 +147,8 @@ Public Property Get SmoothReverse() As Boolean
 End Property
 
 
-Public Property Let BarColor(newColor As Long) ' does not apply if control is themed
-    If newColor = -1& Then m_ForeColor = &HFF000000 Else m_ForeColor = newColor And &HFFFFFF
+Public Property Let BarColor(newBarColor As Long) ' does not apply if control is themed
+    If newBarColor = -1& Then m_ForeColor = &HFF000000 Else m_ForeColor = newBarColor And &HFFFFFF
     SendMessage m_hWnd, PBM_SETBARCOLOR, 0&, ByVal m_ForeColor
 End Property
 Public Property Get BarColor() As Long
@@ -156,8 +156,8 @@ Public Property Get BarColor() As Long
     ' note that  PBM_GETBARCOLOR is Vista+ only
 End Property
 
-Public Property Let BackColor(newColor As Long) ' does not apply if control is themed
-    If newColor = -1& Then m_BackColor = &HFF000000 Else m_BackColor = newColor And &HFFFFFF
+Public Property Let BackColor(newBackColor As Long) ' does not apply if control is themed
+    If newBackColor = -1& Then m_BackColor = &HFF000000 Else m_BackColor = newBackColor And &HFFFFFF
     SendMessage m_hWnd, PBM_SETBKCOLOR, 0&, ByVal m_BackColor
 End Property
 Public Property Get BackColor() As Long
@@ -179,12 +179,12 @@ Public Property Get Left() As Long          ' returns/sets Left position in pixe
     ScreenToClient GetParent(m_hWnd), tPt
     Left = tPt.x
 End Property
-Public Property Let Left(NewValue As Long)
+Public Property Let Left(newValue As Long)
     Dim wRect As RECT, tPt As POINTAPI
     GetWindowRect m_hWnd, wRect
     tPt.x = wRect.Left: tPt.y = wRect.Top
     ScreenToClient GetParent(m_hWnd), tPt
-    MoveWindow m_hWnd, NewValue, tPt.y, wRect.Right - wRect.Left, wRect.Bottom - wRect.Top, True
+    MoveWindow m_hWnd, newValue, tPt.y, wRect.Right - wRect.Left, wRect.Bottom - wRect.Top, True
 End Property
 
 Public Property Get Top() As Long           ' returns/sets Top position in pixels
@@ -194,12 +194,12 @@ Public Property Get Top() As Long           ' returns/sets Top position in pixel
     ScreenToClient GetParent(m_hWnd), tPt
     Top = tPt.y
 End Property
-Public Property Let Top(NewValue As Long)
+Public Property Let Top(newValue As Long)
     Dim wRect As RECT, tPt As POINTAPI
     GetWindowRect m_hWnd, wRect
     tPt.x = wRect.Left: tPt.y = wRect.Top
     ScreenToClient GetParent(m_hWnd), tPt
-    MoveWindow m_hWnd, tPt.x, NewValue, wRect.Right - wRect.Left, wRect.Bottom - wRect.Top, True
+    MoveWindow m_hWnd, tPt.x, newValue, wRect.Right - wRect.Left, wRect.Bottom - wRect.Top, True
 End Property
 
 Public Property Get Height() As Long        ' returns/sets Height in pixels
@@ -207,10 +207,10 @@ Public Property Get Height() As Long        ' returns/sets Height in pixels
     GetWindowRect m_hWnd, wRect
     Height = wRect.Bottom - wRect.Top
 End Property
-Public Property Let Height(NewValue As Long)
+Public Property Let Height(newValue As Long)
     Dim wRect As RECT
     GetWindowRect m_hWnd, wRect
-    MoveWindow m_hWnd, wRect.Left, wRect.Top, wRect.Right - wRect.Left, NewValue, True
+    MoveWindow m_hWnd, wRect.Left, wRect.Top, wRect.Right - wRect.Left, newValue, True
 End Property
 
 Public Property Get Width() As Long         ' returns/sets Width in pixels
@@ -218,10 +218,10 @@ Public Property Get Width() As Long         ' returns/sets Width in pixels
     GetWindowRect m_hWnd, wRect
     Width = wRect.Right - wRect.Left
 End Property
-Public Property Let Width(NewValue As Long)
+Public Property Let Width(newValue As Long)
     Dim wRect As RECT
     GetWindowRect m_hWnd, wRect
-    MoveWindow m_hWnd, wRect.Left, wRect.Top, NewValue, wRect.Bottom - wRect.Top, True
+    MoveWindow m_hWnd, wRect.Left, wRect.Top, newValue, wRect.Bottom - wRect.Top, True
 End Property
 
 Public Sub Move(ByVal Left As Long, ByVal Top As Long, Optional ByVal Width As Long, Optional ByVal Height As Long)
@@ -249,9 +249,9 @@ Public Property Get Marquee() As Boolean
     Marquee = ((GetWindowLong(m_hWnd, GWL_STYLE) And PBS_MARQUEE) = PBS_MARQUEE)
 End Property
 
-Public Property Let MarqueeScrollRate(NewValue As Long) ' pauses or resets/restarts marquee
-    If NewValue <> m_Speed And NewValue >= 0& Then
-        m_Speed = NewValue
+Public Property Let MarqueeScrollRate(newValue As Long) ' pauses or resets/restarts marquee
+    If newValue <> m_Speed And newValue >= 0& Then
+        m_Speed = newValue
         If Me.Marquee Then SendMessage m_hWnd, PBM_SETMARQUEE, CLng(Abs(m_Speed > 0&)), ByVal m_Speed
     End If
 End Property
@@ -266,22 +266,22 @@ Public Property Get MarqueePaused() As Boolean
     MarqueePaused = (SendMessage(m_hWnd, PBM_GETSTATE, 0&, ByVal 0&) = PBST_PAUSED)
 End Property
 
-Public Property Let Min(NewValue As Long)   ' sets minimum bar value
-    SendMessage m_hWnd, PBM_SETRANGE32, NewValue, ByVal Me.Max
+Public Property Let Min(newValue As Long)   ' sets minimum bar value
+    SendMessage m_hWnd, PBM_SETRANGE32, newValue, ByVal Me.Max
 End Property
 Public Property Get Min() As Long
     Min = SendMessage(m_hWnd, PBM_GETRANGE, 1&, ByVal 0&)
 End Property
 
-Public Property Let Max(NewValue As Long)   ' sets maximum bar value
-    SendMessage m_hWnd, PBM_SETRANGE32, Me.Min, ByVal NewValue
+Public Property Let Max(newValue As Long)   ' sets maximum bar value
+    SendMessage m_hWnd, PBM_SETRANGE32, Me.Min, ByVal newValue
 End Property
 Public Property Get Max() As Long
     Max = SendMessage(m_hWnd, PBM_GETRANGE, 0&, ByVal 0&)
 End Property
 
-Public Property Let Value(NewValue As Long) ' returns/sets bar value
-    SendMessage m_hWnd, PBM_SETPOS, NewValue, ByVal 0&
+Public Property Let Value(newValue As Long) ' returns/sets bar value
+    SendMessage m_hWnd, PBM_SETPOS, newValue, ByVal 0&
 End Property
 Public Property Get Value() As Long
     Value = SendMessage(m_hWnd, PBM_GETPOS, 0&, ByVal 0&)
@@ -295,8 +295,8 @@ Public Property Get hWnd() As Long          ' returns window handle
     hWnd = m_hWnd
 End Property
 
-Public Property Let StepValue(NewValue As Long) ' sets/returns the current step value
-    SendMessage m_hWnd, PBM_SETSTEP, NewValue, ByVal 0&
+Public Property Let StepValue(newValue As Long) ' sets/returns the current step value
+    SendMessage m_hWnd, PBM_SETSTEP, newValue, ByVal 0&
 End Property
 Public Property Get StepValue() As Long
     StepValue = SendMessage(m_hWnd, PBM_GETSTEP, 0&, ByVal 0&)

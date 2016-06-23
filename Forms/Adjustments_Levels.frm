@@ -1008,7 +1008,7 @@ Private Sub Form_Activate()
     
     'Fill the histogram arrays and prepare the overlay DIBs.  To conserve resources, this is only done once,
     ' when the dialog is first loaded.
-    prepHistogramOverlays
+    PrepHistogramOverlays
         
     'Make the RGB button pressed by default; this will be overridden by the user's last-used settings, if any exist
     m_curChannel = 3
@@ -1039,9 +1039,23 @@ Private Sub Form_Activate()
     ' right borders of the desired area, so that the edges of the slider images are not cropped.
     m_DstArrowBoxWidth = picHistogram.ScaleWidth
     m_DstArrowBoxOffset = picHistogram.Left - picInputArrows.Left + 1
-            
+    
     'Render sample gradients for input/output levels
-    Drawing.DrawGradient picOutputGradient, RGB(0, 0, 0), RGB(255, 255, 255), True
+    Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPainter As pd2DPainter
+    Dim boundsRectF As RECTF
+    With boundsRectF
+        .Left = 0
+        .Top = 0
+        .Height = picOutputGradient.ScaleHeight
+        .Width = picOutputGradient.ScaleWidth
+    End With
+    
+    Drawing2D.QuickCreatePainter cPainter
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, picOutputGradient.hDC, False
+    Drawing2D.QuickCreateTwoColorGradientBrush cBrush, boundsRectF, vbBlack, vbWhite
+    cPainter.FillRectangleF_FromRectF cSurface, cBrush, boundsRectF
+    Set cSurface = Nothing
+    picOutputGradient.Picture = picOutputGradient.Image
     
     'Draw a preview image
     cmdBar.MarkPreviewStatus True
@@ -1049,7 +1063,7 @@ Private Sub Form_Activate()
 
 End Sub
 
-Private Sub prepHistogramOverlays()
+Private Sub PrepHistogramOverlays()
     
     'Even though we don't need log-based versions of the histogram data, the master function requires arrays for both.
     ' (TODO: fix this!  Most functions need one or the other; not both.)
@@ -1060,10 +1074,10 @@ Private Sub prepHistogramOverlays()
     Dim hMaxPosition() As Byte
     
     'Gather histogram data for the current layer
-    Histogram_Analysis.fillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
+    Histogram_Analysis.FillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
     
     'Use that data to generate DIBs for the histogram data
-    Histogram_Analysis.generateHistogramImages hData, hMax, hDIB, picHistogram.ScaleWidth, picHistogram.ScaleHeight
+    Histogram_Analysis.GenerateHistogramImages hData, hMax, hDIB, picHistogram.ScaleWidth, picHistogram.ScaleHeight
     
 End Sub
 

@@ -116,9 +116,9 @@ Public Property Get BackgroundColor() As OLE_COLOR
     BackgroundColor = m_BackgroundColor
 End Property
 
-Public Property Let BackgroundColor(ByVal newColor As OLE_COLOR)
-    If m_BackgroundColor <> newColor Then
-        m_BackgroundColor = newColor
+Public Property Let BackgroundColor(ByVal newBackColor As OLE_COLOR)
+    If (m_BackgroundColor <> newBackColor) Then
+        m_BackgroundColor = newBackColor
         RedrawBackBuffer
     End If
 End Property
@@ -129,9 +129,9 @@ Public Property Get BackColor() As OLE_COLOR
     BackColor = m_BackColor
 End Property
 
-Public Property Let BackColor(ByVal newColor As OLE_COLOR)
-    If newColor <> m_BackColor Then
-        m_BackColor = newColor
+Public Property Let BackColor(ByVal newBackColor As OLE_COLOR)
+    If (newBackColor <> m_BackColor) Then
+        m_BackColor = newBackColor
         RedrawBackBuffer
     End If
 End Property
