@@ -29,37 +29,6 @@ End Enum
 Private Declare Function LoadIconByID Lib "user32" Alias "LoadIconA" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
 Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
 
-'GDI drawing functions
-Private Const PS_SOLID = 0
-Private Const PS_DASH = 1
-Private Const PS_DOT = 2
-Private Const PS_DASHDOT = 3
-Private Const PS_DASHDOTDOT = 4
-
-Private Const RGN_AND = 1
-Private Const RGN_OR = 2
-Private Const RGN_XOR = 3
-Private Const RGN_DIFF = 4
-Private Const RGN_COPY = 5
-
-Private Const HS_DIAGCROSS = 5
-
-Private Const NULL_BRUSH = 5
-
-Private Declare Function CreateDIBPatternBrushPt Lib "gdi32" (ByVal dibPointer As Long, ByVal iUsage As Long) As Long
-Private Declare Function CreatePatternBrush Lib "gdi32" (ByVal hBitmap As Long) As Long
-Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
-Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
-Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function GetStockObject Lib "gdi32" (ByVal nIndex As Long) As Long
-Private Declare Function LineTo Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
-Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal pointerToRectOfOldCoords As Long) As Long
-Private Declare Function PatBlt Lib "gdi32" (ByVal targetDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal dwRop As Long) As Long
-Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
-Private Declare Function SetBrushOrgEx Lib "gdi32" (ByVal targetDC As Long, ByVal nXOrg As Long, ByVal nYOrg As Long, ByVal refToPeviousPoint As Long) As Long
-Private Declare Function SetROP2 Lib "gdi32" (ByVal hDC As Long, ByVal nDrawMode As Long) As Long
-
 'API for converting between hWnd-specific coordinate spaces.  Note that the function technically accepts an
 ' array of POINTAPI points; the address passed to lpPoints should be the address of the first point in the array
 ' (e.g. ByRef PointArray(0)), while the cPoints parameter is the number of points in the array.  If two points are
@@ -92,7 +61,7 @@ Public Sub DrawHueBox_HSV(ByRef dstPic As PictureBox, Optional ByVal dstSaturati
     Dim x As Long
     For x = 0 To tmpDIB.GetDIBWidth - 1
         fHSVtoRGB x / tmpDIB.GetDIBWidth, dstSaturation, dstLuminance, tmpR, tmpG, tmpB
-        DrawLineToDC tmpDIB.GetDIBDC, x, 0, x, picHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255)
+        GDI.DrawLineToDC tmpDIB.GetDIBDC, x, 0, x, picHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255)
     Next x
     
     'With the hue box complete, render it onto the destination picture box, with color management applied
@@ -121,52 +90,11 @@ Public Sub DrawSaturationBox_HSV(ByRef dstPic As PictureBox, Optional ByVal dstH
     Dim x As Long
     For x = 0 To tmpDIB.GetDIBWidth - 1
         fHSVtoRGB dstHue, x / tmpDIB.GetDIBWidth, dstLuminance, tmpR, tmpG, tmpB
-        DrawLineToDC tmpDIB.GetDIBDC, x, 0, x, picHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255)
+        GDI.DrawLineToDC tmpDIB.GetDIBDC, x, 0, x, picHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255)
     Next x
     
     'With the hue box complete, render it onto the destination picture box, with color management applied
     tmpDIB.RenderToPictureBox dstPic
-
-End Sub
-
-'Basic wrapper to line-drawing via GDI
-Public Sub DrawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
-    
-    'Create a pen with the specified color
-    Dim NewPen As Long
-    NewPen = CreatePen(PS_SOLID, 1, crColor)
-    
-    'Select the pen into the target DC
-    Dim oldObject As Long
-    oldObject = SelectObject(targetDC, NewPen)
-    
-    'Render the line
-    MoveToEx targetDC, x1, y1, 0&
-    LineTo targetDC, x2, y2
-    
-    'Remove the pen and delete it
-    SelectObject targetDC, oldObject
-    DeleteObject NewPen
-
-End Sub
-
-'Basic wrappers for rect-filling and rect-tracing via GDI
-Public Sub FillRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
-
-    'Create a brush with the specified color
-    Dim tmpBrush As Long
-    tmpBrush = CreateSolidBrush(crColor)
-    
-    'Select the brush into the target DC
-    Dim oldObject As Long
-    oldObject = SelectObject(targetDC, tmpBrush)
-    
-    'Fill the rect
-    Rectangle targetDC, x1, y1, x2, y2
-    
-    'Remove the brush and delete it
-    SelectObject targetDC, oldObject
-    DeleteObject tmpBrush
 
 End Sub
 
@@ -177,126 +105,22 @@ Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, 
     DrawIcon hDC, x, y, hIcon
 End Sub
 
-'Draw a gradient from Color1 to Color 2 (RGB longs) on a specified picture box
-Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal Color2 As Long, Optional ByVal drawHorizontal As Boolean = False)
-
-    'Calculation variables (used to interpolate between the gradient colors)
-    Dim vR As Double, vG As Double, vB As Double
-    Dim x As Long, y As Long
-    
-    'Red, green, and blue variables for each gradient color
-    Dim r As Long, g As Long, b As Long
-    Dim r2 As Long, g2 As Long, b2 As Long
-    
-    'Extract the red, green, and blue values from the gradient colors (which were passed as Longs)
-    r = ExtractR(Color1)
-    g = ExtractG(Color1)
-    b = ExtractB(Color1)
-    r2 = ExtractR(Color2)
-    g2 = ExtractG(Color2)
-    b2 = ExtractB(Color2)
-    
-    'Width and height variables are faster than repeated access of .ScaleWidth/Height properties
-    Dim tmpHeight As Long
-    Dim tmpWidth As Long
-    tmpWidth = DstPicBox.ScaleWidth
-    tmpHeight = DstPicBox.ScaleHeight
-
-    'Create a calculation variable, which will be used to determine the interpolation step between
-    ' each gradient color
-    If drawHorizontal Then
-        vR = Abs(r - r2) / tmpWidth
-        vG = Abs(g - g2) / tmpWidth
-        vB = Abs(b - b2) / tmpWidth
-    Else
-        vR = Abs(r - r2) / tmpHeight
-        vG = Abs(g - g2) / tmpHeight
-        vB = Abs(b - b2) / tmpHeight
-    End If
-    
-    'If a component of the right color is less than the matching component of the left color, make the step negative
-    If r2 < r Then vR = -vR
-    If g2 < g Then vG = -vG
-    If b2 < b Then vB = -vB
-    
-    'Run a loop across the picture box, changing the gradient color according to the step calculated earlier
-    If drawHorizontal Then
-        For x = 0 To tmpWidth
-            r2 = r + vR * x
-            g2 = g + vG * x
-            b2 = b + vB * x
-            DstPicBox.Line (x, 0)-(x, tmpHeight), RGB(r2, g2, b2)
-        Next x
-    Else
-        For y = 0 To tmpHeight
-            r2 = r + vR * y
-            g2 = g + vG * y
-            b2 = b + vB * y
-            DstPicBox.Line (0, y)-(tmpWidth, y), RGB(r2, g2, b2)
-        Next y
-    End If
-    
-End Sub
-
-'Draw a horizontal gradient to a specified DIB from x-position xLeft to xRigth,
-' using ColorLeft and ColorRight (RGB longs) as the gradient endpoints.
+'Draw a horizontal gradient to a specified DIB from x-position xLeft to xRight.
 Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Long, ByVal xRight As Long, ByVal colorLeft As Long, ByVal colorRight As Long)
     
-    Dim x As Long
+    Dim boundsRectF As RECTF
+    With boundsRectF
+        .Left = (xLeft - 1)
+        .Width = (xRight - xLeft) + 2
+        .Top = 0
+        .Height = dstDIB.GetDIBHeight
+    End With
     
-    'Red, green, and blue variables for each gradient color
-    Dim rLeft As Long, gLeft As Long, bLeft As Long
-    Dim rRight As Long, gRight As Long, Bright As Long
+    Dim cSurface As pd2DSurface, cBrush As pd2DBrush
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, False
+    Drawing2D.QuickCreateTwoColorGradientBrush cBrush, boundsRectF, colorLeft, colorRight
     
-    'Extract the red, green, and blue values from the gradient colors (which were passed as Longs)
-    rLeft = ExtractR(colorLeft)
-    gLeft = ExtractG(colorLeft)
-    bLeft = ExtractB(colorLeft)
-    rRight = ExtractR(colorRight)
-    gRight = ExtractG(colorRight)
-    Bright = ExtractB(colorRight)
-    
-    'Calculate a width for the gradient area
-    Dim gradWidth As Long
-    gradWidth = xRight - xLeft
-    
-    Dim blendRatio As Double
-    Dim newR As Byte, newG As Byte, newB As Byte
-    
-    '32bpp DIBs need to use GDI+ instead of GDI, to make sure the alpha channel is supported
-    Dim alphaMatters As Boolean
-    alphaMatters = CBool(dstDIB.GetDIBColorDepth = 32)
-    
-    'If alpha is relevant, cache a GDI+ image handle and pen in advance
-    Dim hGdipImage As Long, hGdipPen As Long
-    If alphaMatters Then hGdipImage = GDI_Plus.GetGDIPlusGraphicsFromDC(dstDIB.GetDIBDC, False)
-    
-    'Run a loop across the DIB, changing the gradient color according to the step calculated earlier
-    For x = xLeft To xRight
-        
-        'Calculate a blend ratio for this position
-        blendRatio = (x - xLeft) / gradWidth
-        
-        'Calculate blendd RGB values for this position
-        newR = BlendColors(rLeft, rRight, blendRatio)
-        newG = BlendColors(gLeft, gRight, blendRatio)
-        newB = BlendColors(bLeft, Bright, blendRatio)
-        
-        'Draw a vertical line at this position, using the calculated color
-        If alphaMatters Then
-        
-            hGdipPen = GDI_Plus.GetGDIPlusPenHandle(RGB(newR, newG, newB), 255, 1, GP_LC_Flat)
-            GDI_Plus.GDIPlusDrawLine_Fast hGdipImage, hGdipPen, x, 0, x, dstDIB.GetDIBHeight
-            GDI_Plus.ReleaseGDIPlusPen hGdipPen
-        
-        Else
-            DrawLineToDC dstDIB.GetDIBDC, x, 0, x, dstDIB.GetDIBHeight, RGB(newR, newG, newB)
-        End If
-        
-    Next x
-    
-    'Release our GDI+ handle, if any
-    If alphaMatters Then GDI_Plus.ReleaseGDIPlusGraphics hGdipImage
+    m_Painter.FillRectangleF_FromRectF cSurface, cBrush, boundsRectF
     
 End Sub
 

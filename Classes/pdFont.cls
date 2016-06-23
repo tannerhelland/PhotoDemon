@@ -429,12 +429,12 @@ Public Sub SetFontBold(ByVal newBold As Boolean)
     End If
 End Sub
 
-Public Sub SetFontColor(ByVal newColor As Long)
+Public Sub SetFontColor(ByVal newFontColor As Long)
     
-    fontColor = newColor
+    fontColor = newFontColor
     
     'If we are currently selected into a DC, update the color immediately; otherwise, the color will be applied upon DC selection
-    If curDC <> 0 Then SetTextColor curDC, fontColor
+    If (curDC <> 0) Then SetTextColor curDC, fontColor
     
 End Sub
 

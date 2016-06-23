@@ -334,6 +334,10 @@ Friend Sub GetCopyOfPointCollection(ByRef numOfPoints As Long, ByRef srcPoints()
     CopyMemoryStrict VarPtr(srcPoints(0)), VarPtr(m_GradientPoints(0)), LenB(m_GradientPoints(0)) * m_NumOfPoints
 End Sub
 
+Friend Function GetNumOfNodes() As Long
+    GetNumOfNodes = m_NumOfPoints
+End Function
+
 Public Sub ResetAllProperties()
     
     m_GradientShape = P2_GS_Linear
@@ -406,6 +410,12 @@ End Sub
 ' it will take care of that automatically - but if you access this class manually, make sure to free the brush using the
 ' correct backend-specific function!
 Friend Function GetBrushHandle(ByRef dstRect As RECTF, Optional ByVal forceToLinearMode As Boolean = False, Optional ByVal customOpacityModifier As Single = 1#, Optional ByVal brushBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Long
+    
+    'Make sure a gradient has been created
+    If (m_NumOfPoints <= 0) Then
+        GetBrushHandle = 0
+        Exit Function
+    End If
     
     'Start by sorting the point array from lowest to highest.
     If (Not m_IsSorted) Then SortGradientArray

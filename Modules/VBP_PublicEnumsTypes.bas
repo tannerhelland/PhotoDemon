@@ -1,13 +1,6 @@
 Attribute VB_Name = "Public_Enums_and_Types"
 Option Explicit
 
-Public Type RGBQUAD
-   Blue As Byte
-   Green As Byte
-   Red As Byte
-   alpha As Byte
-End Type
-
 Public Type RECTF_RB
     Left As Single
     Top As Single

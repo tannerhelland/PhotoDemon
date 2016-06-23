@@ -119,9 +119,9 @@ Public Property Get Color() As OLE_COLOR
     Color = curColor
 End Property
 
-Public Property Let Color(ByVal newColor As OLE_COLOR)
+Public Property Let Color(ByVal newSelectedColor As OLE_COLOR)
     
-    curColor = newColor
+    curColor = newSelectedColor
     RedrawBackBuffer
     
     PropertyChanged "Color"
@@ -208,12 +208,12 @@ Public Sub DisplayColorSelection()
     isDialogLive = True
     
     'Store the current color
-    Dim newColor As Long, oldColor As Long
+    Dim newColorSelection As Long, oldColor As Long
     oldColor = Color
     
     'Use the default color dialog to select a new color
-    If ShowColorDialog(newColor, CLng(curColor), Me) Then
-        Color = newColor
+    If ShowColorDialog(newColorSelection, CLng(curColor), Me) Then
+        Color = newColorSelection
     Else
         Color = oldColor
     End If
@@ -466,8 +466,8 @@ End Sub
 
 'If a color selection dialog is active, it will pass color updates backward to this function, so that we can let
 ' our parent form display live updates *while the user is playing with colors* - very cool!
-Public Sub NotifyOfLiveColorChange(ByVal newColor As Long)
-    Color = newColor
+Public Sub NotifyOfLiveColorChange(ByVal newSelectedColor As Long)
+    Color = newSelectedColor
 End Sub
 
 'When the currently hovered color changes, we assign a new tooltip to the control
