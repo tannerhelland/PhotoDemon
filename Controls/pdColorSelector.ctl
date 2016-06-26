@@ -491,7 +491,7 @@ Private Sub MakeNewTooltip()
             
             'Construct hex and RGB string representations of the target color
             hexString = "#" & UCase(Colors.GetHexStringFromRGB(targetColor))
-            rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", Colors.ExtractR(targetColor), Colors.ExtractG(targetColor), Colors.ExtractB(targetColor))
+            rgbString = g_Language.TranslateMessage("RGB(%1, %2, %3)", Colors.ExtractRed(targetColor), Colors.ExtractGreen(targetColor), Colors.ExtractBlue(targetColor))
             toolString = hexString & vbCrLf & rgbString
             
             'Append a description string to the color data

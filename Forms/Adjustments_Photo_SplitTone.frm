@@ -150,13 +150,13 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
     'From the incoming colors, determine corresponding hue and saturation values
     Dim highlightHue As Double, highlightSaturation As Double, shadowHue As Double, shadowSaturation As Double
     Dim ignoreLuminance As Double
-    fRGBtoHSL ExtractR(highlightColor) / 255, ExtractG(highlightColor) / 255, ExtractB(highlightColor) / 255, highlightHue, highlightSaturation, ignoreLuminance
-    fRGBtoHSL ExtractR(shadowColor) / 255, ExtractG(shadowColor) / 255, ExtractB(shadowColor) / 255, shadowHue, shadowSaturation, ignoreLuminance
+    fRGBtoHSL ExtractRed(highlightColor) / 255, ExtractGreen(highlightColor) / 255, ExtractBlue(highlightColor) / 255, highlightHue, highlightSaturation, ignoreLuminance
+    fRGBtoHSL ExtractRed(shadowColor) / 255, ExtractGreen(shadowColor) / 255, ExtractBlue(shadowColor) / 255, shadowHue, shadowSaturation, ignoreLuminance
     
     'Convert balance mix value to [1,0]; it will be used to blend split-toned colors at a varying scale (low balance
     ' favors the shadow tone, high balance favors the highlight tone).
     Dim balGradient As Double, invBalGradient As Double
-    invBalGradient = Math_Functions.convertRange(-100, 100, 0, 1, Balance)
+    invBalGradient = Math_Functions.ConvertRange(-100, 100, 0, 1, Balance)
     balGradient = 1 - invBalGradient
     
     'Prevent divide-by-zero errors, below
@@ -164,7 +164,7 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
     If balGradient <= 0 Then balGradient = 0.0000001
     
     'Strength controls the ratio at which the split-toned pixels are merged with the original pixels.  We want it on a [0, 1] scale.
-    Strength = Math_Functions.convertRange(0, 100, 0, 1, Strength)
+    Strength = Math_Functions.ConvertRange(0, 100, 0, 1, Strength)
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -208,7 +208,7 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
         b = ImageData(QuickVal, y)
         
         'Calculate HSL-compatible luminance
-        v = getLuminance(r, g, b)
+        v = GetLuminance(r, g, b)
         vFloat = v / 255
         
         'Retrieve RGB conversions for the supplied highlight and shadow values, but retaining the pixel's current luminance (v)

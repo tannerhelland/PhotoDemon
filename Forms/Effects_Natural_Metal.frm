@@ -137,13 +137,13 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     Dim rShadow As Long, gShadow As Long, bShadow As Long
     Dim rHighlight As Long, gHighlight As Long, bHighlight As Long
     
-    rShadow = ExtractR(shadowColor)
-    gShadow = ExtractG(shadowColor)
-    bShadow = ExtractB(shadowColor)
+    rShadow = ExtractRed(shadowColor)
+    gShadow = ExtractGreen(shadowColor)
+    bShadow = ExtractBlue(shadowColor)
     
-    rHighlight = ExtractR(highlightColor)
-    gHighlight = ExtractG(highlightColor)
-    bHighlight = ExtractB(highlightColor)
+    rHighlight = ExtractRed(highlightColor)
+    gHighlight = ExtractGreen(highlightColor)
+    bHighlight = ExtractBlue(highlightColor)
     
     'Retrieve a normalized luminance map of the current image
     Dim grayMap() As Byte

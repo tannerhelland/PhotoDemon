@@ -216,6 +216,42 @@ Public Sub AddPolygon(ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, 
     
 End Sub
 
+'Technically this should be called "AddPolygon_RegularConvex", but for brevity, we use just "regular".  Regular polygons
+' (https://en.wikipedia.org/wiki/Regular_polygon) are the ones you learned in grade school: square, pentagon, hexagon, etc.
+' Regular polygons are defined by a center point, radius, and number of sides.  This function also supports curvature.
+Public Sub AddPolygon_Regular(ByVal numOfSides As Long, ByVal pRadius As Single, Optional ByVal centerX As Single = 0#, Optional ByVal centerY As Single = 0#, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5)
+    
+    If (numOfSides > 0) Then
+        
+        If (m_PathHandle = 0) Then CreatePath
+        
+        'Regardless of backend, we start by establishing the polygon's points using basic geometry.
+        Dim polyPoints() As POINTFLOAT
+        ReDim polyPoints(0 To numOfSides - 1) As POINTFLOAT
+        
+        Dim i As Long
+        For i = 0 To numOfSides - 1
+            polyPoints(i).x = centerX + pRadius * Cos(PI_DOUBLE * CSng(i) / CSng(numOfSides))
+            polyPoints(i).y = centerY + pRadius * Sin(PI_DOUBLE * CSng(i) / CSng(numOfSides))
+        Next i
+        
+        Select Case m_PathBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+        
+                'I don't know if there is a performance difference between adding closed curves with tension = 0 vs
+                ' adding plain polygons, but just in case there is, we split handling of these two types.
+                If useCurveAlgorithm Then
+                    GDI_Plus.GDIPlus_PathAddClosedCurve m_PathHandle, VarPtr(polyPoints(0)), numOfSides, curvatureTension
+                Else
+                    GDI_Plus.GDIPlus_PathAddPolygon m_PathHandle, VarPtr(polyPoints(0)), numOfSides
+                End If
+                
+        End Select
+        
+    End If
+    
+End Sub
+
 Public Sub AddRectangle_Absolute(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
@@ -435,13 +471,19 @@ Public Function TranslatePath(ByVal xAmount As Single, ByVal yAmount As Single) 
     
 End Function
 
+'Translate the entire path by some amount in polar coordinates (angle + radius).  Radius is in degrees.
+Public Function TranslatePath_Polar(ByVal translateAngle As Single, ByVal translateRadius As Single, Optional ByVal angleIsInDegrees As Boolean = True) As Boolean
+    If angleIsInDegrees Then translateAngle = Math_Functions.DegreesToRadians(translateAngle)
+    TranslatePath_Polar = Me.TranslatePath(translateRadius * Cos(translateAngle), translateRadius * Sin(translateAngle))
+End Function
+
 'Transform the path by some arbitrary pd2DTransform object
 Public Function ApplyTransformation(ByRef srcTransform As pd2DTransform) As Boolean
     If (Not srcTransform Is Nothing) Then
         If (m_PathHandle = 0) Then CreatePath
         Select Case m_PathBackend
             Case P2_DefaultBackend, P2_GDIPlusBackend
-                ApplyTransformation = GDI_Plus.GDIPlus_PathTransform(m_PathHandle, m_Transform.GetHandle)
+                ApplyTransformation = GDI_Plus.GDIPlus_PathTransform(m_PathHandle, srcTransform.GetHandle)
         End Select
     Else
         InternalError "Source transformation is empty", "ApplyTransformation requires a valid source transformation object!"

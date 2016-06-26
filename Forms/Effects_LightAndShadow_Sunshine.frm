@@ -194,9 +194,9 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
     Dim w As Double, w1 As Double, ws As Double, fRatio As Double
     Dim spokeRed As Double, spokeGreen As Double, spokeBlue As Double
     
-    newR = ExtractR(lSpokeColor) / 255
-    newG = ExtractG(lSpokeColor) / 255
-    newB = ExtractB(lSpokeColor) / 255
+    newR = ExtractRed(lSpokeColor) / 255
+    newG = ExtractGreen(lSpokeColor) / 255
+    newB = ExtractBlue(lSpokeColor) / 255
     
     'Calculate HSV equivalents of the target color
     fRGBtoHSV newR / 255, newG / 255, newB / 255, h, s, v

@@ -194,15 +194,15 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
     
     'oldR/G/B store the RGB values of the color we are attempting to remove
     Dim oldR As Long, oldG As Long, oldB As Long
-    oldR = ExtractR(oldColor)
-    oldG = ExtractG(oldColor)
-    oldB = ExtractB(oldColor)
+    oldR = ExtractRed(oldColor)
+    oldG = ExtractGreen(oldColor)
+    oldB = ExtractBlue(oldColor)
     
     'newR/G/B store the RGB values of the color we are using to replace the old color
     Dim newR As Long, newG As Long, newB As Long
-    newR = ExtractR(newColor)
-    newG = ExtractG(newColor)
-    newB = ExtractB(newColor)
+    newR = ExtractRed(newColor)
+    newG = ExtractGreen(newColor)
+    newB = ExtractBlue(newColor)
     
     'For maximum quality, we will apply our color comparison in the L*a*b* color space; each scanline will be
     ' transformed to L*a*b* all at once, for performance reasons

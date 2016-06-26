@@ -379,11 +379,15 @@ Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal hImage As Long) A
 
 Private Declare Function GdipDrawArc Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As GP_Result
 Private Declare Function GdipDrawArcI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal startAngle As Long, ByVal sweepAngle As Long) As GP_Result
+Private Declare Function GdipDrawClosedCurve2 Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointFloats As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
+Private Declare Function GdipDrawCurve2 Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointFloats As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
 Private Declare Function GdipDrawEllipse Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single) As GP_Result
 Private Declare Function GdipDrawEllipseI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long) As GP_Result
 Private Declare Function GdipDrawLine Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As GP_Result
 Private Declare Function GdipDrawLineI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As GP_Result
+Private Declare Function GdipDrawLines Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointFloats As Long, ByVal numOfPoints As Long) As GP_Result
 Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal hPath As Long) As GP_Result
+Private Declare Function GdipDrawPolygon Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointFloats As Long, ByVal numOfPoints As Long) As GP_Result
 Private Declare Function GdipDrawRectangle Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single) As GP_Result
 Private Declare Function GdipDrawRectangleI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long) As GP_Result
 
@@ -456,7 +460,7 @@ Private Declare Function GdipSetPenWidth Lib "gdiplus" (ByVal hPen As Long, ByVa
 Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_PixelOffsetMode) As GP_Result
 Private Declare Function GdipSetRenderingOrigin Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Long, ByVal y As Long) As GP_Result
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newMode As GP_SmoothingMode) As GP_Result
-Private Declare Function GdipSetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByVal newBrushColor As Long) As GP_Result
+Private Declare Function GdipSetSolidFillColor Lib "gdiplus" (ByVal hBrush As Long, ByVal newColor As Long) As GP_Result
 Private Declare Function GdipSetTextureWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByVal newWrapMode As GP_WrapMode) As GP_Result
 
 Private Declare Function GdipShearMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal shearX As Single, ByVal shearY As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
@@ -470,7 +474,9 @@ Private Declare Function GdipWidenPath Lib "gdiplus" (ByVal hPath As Long, ByVal
 Private Declare Function GdipWindingModeOutline Lib "gdiplus" (ByVal hPath As Long, ByVal hTransformationMatrix As Long, ByVal allowableError As Single) As GP_Result
 
 'Non-GDI+ helper functions:
+Private Declare Function CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrDst As Long, ByVal ptrSrc As Long, ByVal numOfBytes As Long) As Long
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
 
 'Internally cached values:
 
@@ -795,21 +801,17 @@ Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal hImageA
 Private Declare Function GdipImageRotateFlip Lib "gdiplus" (ByVal hImage As Long, ByVal rfType As RotateFlipType) As Long
 Private Declare Function GdipDrawCurve Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipDrawCurveI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipDrawCurve2 Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long, ByVal curveTension As Single) As Long
 Private Declare Function GdipDrawCurve2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long, ByVal curveTension As Single) As Long
 Private Declare Function GdipDrawCurve3 Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long, ByVal Offset As Long, ByVal numberOfSegments As Long, ByVal curveTension As Single) As Long
 Private Declare Function GdipDrawCurve3I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long, ByVal Offset As Long, ByVal numberOfSegments As Long, ByVal curveTension As Single) As Long
 Private Declare Function GdipDrawClosedCurve Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipDrawClosedCurveI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipDrawClosedCurve2 Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long, ByVal curveTension As Single) As Long
 Private Declare Function GdipDrawClosedCurve2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long, ByVal curveTension As Single) As Long
 Private Declare Function GdipFillClosedCurve Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipFillClosedCurveI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipFillClosedCurve2 Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long, ByVal curveTension As Single, ByVal useFillMode As GP_FillMode) As Long
 Private Declare Function GdipFillClosedCurve2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long, ByVal curveTension As Single, ByVal useFillMode As GP_FillMode) As Long
-Private Declare Function GdipDrawLines Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipDrawLinesI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipDrawPolygon Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipDrawPolygonI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipFillPolygon Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long, ByVal useFillMode As GP_FillMode) As Long
 Private Declare Function GdipFillPolygonI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long, ByVal useFillMode As GP_FillMode) As Long
@@ -823,9 +825,6 @@ Private Declare Function GdipSetImageAttributesToIdentity Lib "gdiplus" (ByVal h
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal order As Long) As Long
 Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dx As Single, ByVal dy As Single, ByVal order As Long) As Long
-
-'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
-Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
 
 'Quality mode constants (only supported by certain functions!)
 Public Enum QualityMode
@@ -953,31 +952,6 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
     
 End Function
-
-'Simpler shorthand function for obtaining a GDI+ bitmap handle from a pdDIB object.  Note that 24/32bpp cases have to be handled
-' separately because GDI+ is unpredictable at automatically detecting color depth with 32-bpp DIBs.
-Private Sub GetGdipBitmapHandleFromDIB(ByRef tBitmap As Long, ByRef srcDIB As pdDIB)
-    
-    If (srcDIB Is Nothing) Then Exit Sub
-    
-    If (srcDIB.GetDIBColorDepth = 32) Then
-        GdipCreateBitmapFromScan0 srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBWidth * 4, PixelFormat32bppPARGB, ByVal srcDIB.GetDIBPointer, tBitmap
-    Else
-    
-        'Use GdipCreateBitmapFromGdiDib for 24bpp DIBs
-        Dim imgHeader As BITMAPINFO
-        With imgHeader.Header
-            .Size = Len(imgHeader.Header)
-            .Planes = 1
-            .BitCount = srcDIB.GetDIBColorDepth
-            .Width = srcDIB.GetDIBWidth
-            .Height = -srcDIB.GetDIBHeight
-        End With
-        GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.GetDIBPointer, tBitmap
-        
-    End If
-
-End Sub
 
 'Simpler rotate/flip function, and limited to the constants specified by the enum.
 Public Function GDIPlusRotateFlipDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotationType As RotateFlipType) As Boolean
@@ -1705,60 +1679,6 @@ Public Function GDIPlusFillDC_Brush(ByRef dstDC As Long, ByVal srcBrushHandle As
     
     GDIPlusFillDC_Brush = True
 
-End Function
-
-'GDI+ requires RGBQUAD colors with alpha in the 4th byte.  This function returns an RGBQUAD (long-type) from a standard RGB()
-' long and supplied alpha.  It's not a very efficient conversion, but I need it so infrequently that I don't really care.
-Public Function FillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte) As Long
-    
-    'The vbRGB constant may be an OLE color constant; if that happens, we want to convert it to a normal RGB quad.
-    vbRGB = TranslateColor(vbRGB)
-    
-    Dim dstQuad As RGBQUAD
-    dstQuad.Red = Colors.ExtractR(vbRGB)
-    dstQuad.Green = Colors.ExtractG(vbRGB)
-    dstQuad.Blue = Colors.ExtractB(vbRGB)
-    dstQuad.alpha = alphaValue
-    
-    Dim placeHolder As tmpLong
-    LSet placeHolder = dstQuad
-    
-    FillQuadWithVBRGB = placeHolder.lngResult
-    
-End Function
-
-'Given a long-type pARGB value returned from GDI+, retrieve just the opacity value on the scale [0, 100]
-Public Function GetOpacityFromPARGB(ByVal pARGB As Long) As Single
-    Dim srcQuad As RGBQUAD
-    CopyMemory srcQuad, pARGB, 4&
-    GetOpacityFromPARGB = CSng(srcQuad.alpha) * CSng(100# / 255#)
-End Function
-
-'Given a long-type pARGB value returned from GDI+, retrieve just the RGB component in combined vbRGB format
-Public Function GetColorFromPARGB(ByVal pARGB As Long) As Long
-    
-    Dim srcQuad As RGBQUAD
-    CopyMemory srcQuad, pARGB, 4&
-    
-    If (srcQuad.alpha = 255) Then
-        GetColorFromPARGB = RGB(srcQuad.Red, srcQuad.Green, srcQuad.Blue)
-    Else
-    
-        Dim tmpSingle As Single
-        tmpSingle = CSng(srcQuad.alpha) / 255
-        
-        If (tmpSingle <> 0) Then
-            Dim tmpRed As Long, tmpGreen As Long, tmpBlue As Long
-            tmpRed = CSng(srcQuad.Red) / tmpSingle
-            tmpGreen = CSng(srcQuad.Green) / tmpSingle
-            tmpBlue = CSng(srcQuad.Blue) / tmpSingle
-            GetColorFromPARGB = RGB(tmpRed, tmpGreen, tmpBlue)
-        Else
-            GetColorFromPARGB = 0
-        End If
-        
-    End If
-    
 End Function
 
 'Use GDI+ to quickly convert a 24bpp DIB to 32bpp with solid alpha channel
@@ -3089,16 +3009,6 @@ Private Function GetFIFFromGUID(ByRef srcGUID As String) As PHOTODEMON_IMAGE_FOR
 
 End Function
 
-'Translate an OLE color to an RGB Long
-Private Function TranslateColor(ByVal colorRef As Long) As Long
-    'OleTranslateColor returns -1 if it fails; if that happens, default to white
-    If OleTranslateColor(colorRef, 0, TranslateColor) Then
-        TranslateColor = RGB(255, 255, 255)
-    End If
-End Function
-
-
-
 'New, modernized interfaces follow:
 
 
@@ -3267,6 +3177,65 @@ Private Function InternalGDIPlusError(Optional ByVal errName As String = vbNullS
     #End If
 End Function
 
+'GDI+ requires RGBQUAD colors with alpha in the 4th byte.  This function returns an RGBQUAD (long-type) from a standard RGB()
+' long and supplied alpha.  It's not a very efficient conversion, but I need it so infrequently that I don't really care.
+Public Function FillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte) As Long
+    
+    'The vbRGB constant may be an OLE color constant; if that happens, we want to convert it to a normal RGB quad.
+    vbRGB = TranslateColor(vbRGB)
+    
+    Dim dstQuad As RGBQUAD
+    dstQuad.Red = Colors.ExtractRed(vbRGB)
+    dstQuad.Green = Colors.ExtractGreen(vbRGB)
+    dstQuad.Blue = Colors.ExtractBlue(vbRGB)
+    dstQuad.alpha = alphaValue
+    
+    Dim placeHolder As tmpLong
+    LSet placeHolder = dstQuad
+    
+    FillQuadWithVBRGB = placeHolder.lngResult
+    
+End Function
+
+'Given a long-type pARGB value returned from GDI+, retrieve just the opacity value on the scale [0, 100]
+Public Function GetOpacityFromPARGB(ByVal pARGB As Long) As Single
+    Dim srcQuad As RGBQUAD
+    CopyMemory_Strict VarPtr(srcQuad), VarPtr(pARGB), 4&
+    GetOpacityFromPARGB = CSng(srcQuad.alpha) * CSng(100# / 255#)
+End Function
+
+'Given a long-type pARGB value returned from GDI+, retrieve just the RGB component in combined vbRGB format
+Public Function GetColorFromPARGB(ByVal pARGB As Long) As Long
+    
+    Dim srcQuad As RGBQUAD
+    CopyMemory_Strict VarPtr(srcQuad), VarPtr(pARGB), 4&
+    
+    If (srcQuad.alpha = 255) Then
+        GetColorFromPARGB = RGB(srcQuad.Red, srcQuad.Green, srcQuad.Blue)
+    Else
+    
+        Dim tmpSingle As Single
+        tmpSingle = CSng(srcQuad.alpha) / 255
+        
+        If (tmpSingle <> 0) Then
+            Dim tmpRed As Long, tmpGreen As Long, tmpBlue As Long
+            tmpRed = CSng(srcQuad.Red) / tmpSingle
+            tmpGreen = CSng(srcQuad.Green) / tmpSingle
+            tmpBlue = CSng(srcQuad.Blue) / tmpSingle
+            GetColorFromPARGB = RGB(tmpRed, tmpGreen, tmpBlue)
+        Else
+            GetColorFromPARGB = 0
+        End If
+        
+    End If
+    
+End Function
+
+'Translate an OLE color to an RGB Long.  Note that the API function returns -1 on failure; if this happens, we return white.
+Private Function TranslateColor(ByVal colorRef As Long) As Long
+    If OleTranslateColor(colorRef, 0, TranslateColor) Then TranslateColor = vbWhite
+End Function
+
 Public Function GetGDIPlusSolidBrushHandle(ByVal brushColor As Long, Optional ByVal brushOpacity As Byte = 255) As Long
     GdipCreateSolidFill FillQuadWithVBRGB(brushColor, brushOpacity), GetGDIPlusSolidBrushHandle
 End Function
@@ -3301,6 +3270,32 @@ End Function
 Public Function OverrideGDIPlusPathGradient(ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As Boolean
     OverrideGDIPlusPathGradient = CBool(GdipSetPathGradientPresetBlend(hBrush, ptrToFirstColor, ptrToFirstPosition, numOfPoints) = GP_OK)
 End Function
+
+'Simpler shorthand function for obtaining a GDI+ bitmap handle from a pddib object.  Note that 24/32bpp cases have to be
+' handled separately because GDI+ is unpredictable at automatically detecting color depth with 32-bpp DIBs.  (This behavior
+' is forgivable, given GDI's unreliable handling of alpha bytes.)
+Private Sub GetGdipBitmapHandleFromDIB(ByRef hBitmap As Long, ByRef srcDIB As pdDIB)
+    
+    If (srcDIB Is Nothing) Then Exit Sub
+    
+    If (srcDIB.GetDIBColorDepth = 32) Then
+        GdipCreateBitmapFromScan0 srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBWidth * 4, PixelFormat32bppPARGB, ByVal srcDIB.GetDIBPointer, hBitmap
+    Else
+    
+        'Use GdipCreateBitmapFromGdiDib for 24bpp DIBs
+        Dim imgHeader As BITMAPINFO
+        With imgHeader.Header
+            .Size = Len(imgHeader.Header)
+            .Planes = 1
+            .BitCount = srcDIB.GetDIBColorDepth
+            .Width = srcDIB.GetDIBWidth
+            .Height = -srcDIB.GetDIBHeight
+        End With
+        GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.GetDIBPointer, hBitmap
+        
+    End If
+
+End Sub
 
 'Because of the way GDI+ texture brushes work, it is significantly easier to initialize one from a full DIB object
 ' (which *always* guarantees bitmap bits will be available) vs a GDI+ Graphics object, which is more like a DC in
@@ -3765,6 +3760,20 @@ Public Function GDIPlus_DrawArcI(ByVal dstGraphics As Long, ByVal srcPen As Long
     GDIPlus_DrawArcI = CBool(GdipDrawArcI(dstGraphics, srcPen, centerX - arcRadius, centerY - arcRadius, arcRadius * 2, arcRadius * 2, startAngle, sweepAngle) = GP_OK)
 End Function
 
+Public Function GDIPlus_DrawClosedCurveF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipDrawClosedCurve2(dstGraphics, srcPen, ptrToFloatArray, numOfPoints, curveTension)
+    GDIPlus_DrawClosedCurveF = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_DrawCurveF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipDrawCurve2(dstGraphics, srcPen, ptrToFloatArray, numOfPoints, curveTension)
+    GDIPlus_DrawCurveF = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
 Public Function GDIPlus_DrawLineF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Boolean
     GDIPlus_DrawLineF = CBool(GdipDrawLine(dstGraphics, srcPen, x1, y1, x2, y2) = GP_OK)
 End Function
@@ -3773,8 +3782,22 @@ Public Function GDIPlus_DrawLineI(ByVal dstGraphics As Long, ByVal srcPen As Lon
     GDIPlus_DrawLineI = CBool(GdipDrawLineI(dstGraphics, srcPen, x1, y1, x2, y2) = GP_OK)
 End Function
 
+Public Function GDIPlus_DrawLinesF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipDrawLines(dstGraphics, srcPen, ptrToFloatArray, numOfPoints)
+    GDIPlus_DrawLinesF = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
 Public Function GDIPlus_DrawPath(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal srcPath As Long) As Boolean
     GDIPlus_DrawPath = CBool(GdipDrawPath(dstGraphics, srcPen, srcPath) = GP_OK)
+End Function
+
+Public Function GDIPlus_DrawPolygonF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipDrawPolygon(dstGraphics, srcPen, ptrToFloatArray, numOfPoints)
+    GDIPlus_DrawPolygonF = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
 Public Function GDIPlus_DrawRectF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Boolean
@@ -4155,4 +4178,5 @@ End Function
 Public Function GDIPlus_RegionSetInfinite(ByVal dstRegion As Long) As Boolean
     GDIPlus_RegionSetInfinite = CBool(GdipSetInfinite(dstRegion) = GP_OK)
 End Function
+
 

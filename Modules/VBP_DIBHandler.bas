@@ -519,9 +519,9 @@ Public Function MakeColorTransparent_Ex(ByRef srcDIB As pdDIB, ByRef dstTranspar
             
             Dim chkR As Long, chkG As Long, chkB As Long, chkAlpha As Byte
             Dim targetR As Long, targetG As Long, targetB As Long
-            targetR = Colors.ExtractR(srcColor)
-            targetG = Colors.ExtractG(srcColor)
-            targetB = Colors.ExtractB(srcColor)
+            targetR = Colors.ExtractRed(srcColor)
+            targetG = Colors.ExtractGreen(srcColor)
+            targetB = Colors.ExtractBlue(srcColor)
             
             Dim tmpAlpha As Double
             
@@ -695,9 +695,9 @@ Public Function ApplyBinaryTransparencyTable(ByRef srcDIB As pdDIB, ByRef srcTra
             
             'Retrieve RGB values from the new background color, which we'll use to composite semi-transparent pixels
             Dim backR As Long, backG As Long, backB As Long
-            backR = Colors.ExtractR(newBackgroundColor)
-            backG = Colors.ExtractG(newBackgroundColor)
-            backB = Colors.ExtractB(newBackgroundColor)
+            backR = Colors.ExtractRed(newBackgroundColor)
+            backG = Colors.ExtractGreen(newBackgroundColor)
+            backB = Colors.ExtractBlue(newBackgroundColor)
                 
             'Loop through the image, checking alphas as we go
             For y = 0 To finalY

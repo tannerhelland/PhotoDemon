@@ -140,7 +140,7 @@ End Property
 Public Property Let Color(ByVal newColor As Long)
     
     'Extract matching HSV values, then redraw the control to match
-    Colors.RGBtoHSV Colors.ExtractR(newColor), Colors.ExtractG(newColor), Colors.ExtractB(newColor), m_Hue, m_Saturation, m_Value
+    Colors.RGBtoHSV Colors.ExtractRed(newColor), Colors.ExtractGreen(newColor), Colors.ExtractBlue(newColor), m_Hue, m_Saturation, m_Value
     CreateSVSquare
     RedrawBackBuffer
     

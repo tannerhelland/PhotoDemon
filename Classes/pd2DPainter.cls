@@ -77,6 +77,16 @@ Private Function VerifyFillBackends(ByRef dstSurface As pd2DSurface, ByRef srcBr
     
 End Function
 
+'Copy functions.  Copying an image onto a destination surface does *not* perform any blending.  It performs a wholesale
+' replacement of the destination bytes with the source bytes.  (Note that there is no corresponding "CopyImageF",
+' because subpixel positioning requires some measure of blending.)
+Public Function CopyImageI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByRef srcSurface As pd2DSurface) As Boolean
+    Dim srcWidth As Long, srcHeight As Long
+    srcWidth = srcSurface.GetSurfaceWidth
+    srcHeight = srcSurface.GetSurfaceHeight
+    CopyImageI = GDI.BitBltWrapper(dstSurface.GetSurfaceDC, dstX, dstY, srcWidth, srcHeight, srcSurface.GetSurfaceDC, 0, 0, vbSrcCopy)
+End Function
+
 'Draw functions.  Given a target pd2dSurface object and a source pd2dPen, apply the pen to the surface in said shape.
 Public Function DrawArcF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal centerX As Single, ByVal centerY As Single, ByVal arcRadius As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Boolean
     If VerifyDrawBackends(dstSurface, srcPen) Then
@@ -143,16 +153,6 @@ End Function
 ' Instead, we must generate - on-the-fly - a GDI+ Image object as our "source image".
 '
 'Also, wherever possible, we try to bypass GDI+ and just use GDI, which is totally sufficient for 24-bpp targets.
-
-'Copying the image onto the destination does *not* perform any blending.  It performs a wholesale replacement of
-' the destination bytes with the source bytes.
-Public Function CopyImageI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByRef srcSurface As pd2DSurface) As Boolean
-    Dim srcWidth As Long, srcHeight As Long
-    srcWidth = srcSurface.GetSurfaceWidth
-    srcHeight = srcSurface.GetSurfaceHeight
-    CopyImageI = GDI.BitBltWrapper(dstSurface.GetSurfaceDC, dstX, dstY, srcWidth, srcHeight, srcSurface.GetSurfaceDC, 0, 0, vbSrcCopy)
-End Function
-
 Public Function DrawImageI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByRef srcSurface As pd2DSurface, Optional ByVal customOpacity As Single = 100#) As Boolean
     
     'Because this function doesn't require stretching, we can drop back to AlphaBlend for improved performance.
@@ -212,6 +212,19 @@ Friend Function DrawLineF_FromPtF(ByRef dstSurface As pd2DSurface, ByRef srcPen 
     End If
 End Function
 
+Public Function DrawLinesF_FromPtF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5)
+    If VerifyDrawBackends(dstSurface, srcPen) Then
+        Select Case dstSurface.GetSurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                If useCurveAlgorithm Then
+                    DrawLinesF_FromPtF = GDI_Plus.GDIPlus_DrawCurveF(dstSurface.GetHandle, srcPen.GetHandle, ptrToFloatArray, numOfPoints, curvatureTension)
+                Else
+                    DrawLinesF_FromPtF = GDI_Plus.GDIPlus_DrawLinesF(dstSurface.GetHandle, srcPen.GetHandle, ptrToFloatArray, numOfPoints)
+                End If
+        End Select
+    End If
+End Function
+
 Public Function DrawLineI(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Boolean
     If VerifyDrawBackends(dstSurface, srcPen) Then
         Select Case dstSurface.GetSurfaceBackend
@@ -226,6 +239,19 @@ Public Function DrawPath(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPe
         Select Case dstSurface.GetSurfaceBackend
             Case P2_DefaultBackend, P2_GDIPlusBackend
                 DrawPath = GDI_Plus.GDIPlus_DrawPath(dstSurface.GetHandle, srcPen.GetHandle, srcPath.GetHandle)
+        End Select
+    End If
+End Function
+
+Public Function DrawPolygonF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5)
+    If VerifyDrawBackends(dstSurface, srcPen) Then
+        Select Case dstSurface.GetSurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                If useCurveAlgorithm Then
+                    DrawPolygonF = GDI_Plus.GDIPlus_DrawClosedCurveF(dstSurface.GetHandle, srcPen.GetHandle, ptrToFloatArray, numOfPoints, curvatureTension)
+                Else
+                    DrawPolygonF = GDI_Plus.GDIPlus_DrawPolygonF(dstSurface.GetHandle, srcPen.GetHandle, ptrToFloatArray, numOfPoints)
+                End If
         End Select
     End If
 End Function

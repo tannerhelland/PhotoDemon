@@ -135,12 +135,12 @@ Public Sub CreateAlphaCheckerboardDIB(ByRef srcDIB As pdDIB)
     
     Dim r1 As Long, g1 As Long, b1 As Long
     Dim r2 As Long, g2 As Long, b2 As Long
-    r1 = ExtractR(chkColorOne)
-    r2 = ExtractR(chkColorTwo)
-    g1 = ExtractG(chkColorOne)
-    g2 = ExtractG(chkColorTwo)
-    b1 = ExtractB(chkColorOne)
-    b2 = ExtractB(chkColorTwo)
+    r1 = ExtractRed(chkColorOne)
+    r2 = ExtractRed(chkColorTwo)
+    g1 = ExtractGreen(chkColorOne)
+    g2 = ExtractGreen(chkColorTwo)
+    b1 = ExtractBlue(chkColorOne)
+    b2 = ExtractBlue(chkColorTwo)
     
     'Determine a checkerboard block size based on the current user preference
     Dim chkSize As Long

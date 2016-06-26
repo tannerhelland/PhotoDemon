@@ -216,9 +216,9 @@ Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
     Dim rBase As Long, gBase As Long, bBase As Long
 
     'Extract the red, green, and blue values from the color we've been passed
-    rBase = ExtractR(eColor)
-    gBase = ExtractG(eColor)
-    bBase = ExtractB(eColor)
+    rBase = ExtractRed(eColor)
+    gBase = ExtractGreen(eColor)
+    bBase = ExtractBlue(eColor)
     
     'Convert the rotation angle to radians
     eAngle = eAngle * (PI / 180)

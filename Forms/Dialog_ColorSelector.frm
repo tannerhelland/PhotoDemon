@@ -662,9 +662,9 @@ Private Sub UpdateHoveredColor()
     hColor = GetPixel(srcDC, mouseLocation.x, mouseLocation.y)
     
     'Extract RGB components from the Long-type color
-    curRed = ExtractR(hColor)
-    curGreen = ExtractG(hColor)
-    curBlue = ExtractB(hColor)
+    curRed = ExtractRed(hColor)
+    curGreen = ExtractGreen(hColor)
+    curBlue = ExtractBlue(hColor)
     
     'Calculate new HSV values to match
     RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
@@ -792,9 +792,9 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     
     'Sync all current color values to the initial color
     curColor = initialColor
-    curRed = ExtractR(initialColor)
-    curGreen = ExtractG(initialColor)
-    curBlue = ExtractB(initialColor)
+    curRed = ExtractRed(initialColor)
+    curGreen = ExtractGreen(initialColor)
+    curBlue = ExtractBlue(initialColor)
     
     RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
     
@@ -1357,9 +1357,9 @@ End Sub
 Private Sub picOriginal_Click()
 
     'Update the current color values with the color of this box
-    curRed = ExtractR(oldColor)
-    curGreen = ExtractG(oldColor)
-    curBlue = ExtractB(oldColor)
+    curRed = ExtractRed(oldColor)
+    curGreen = ExtractGreen(oldColor)
+    curBlue = ExtractBlue(oldColor)
     
     'Calculate new HSV values to match
     RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
@@ -1373,9 +1373,9 @@ End Sub
 Private Sub picRecColor_Click(Index As Integer)
 
     'Update the current color values with the color of this box
-    curRed = ExtractR(recentColors(Index))
-    curGreen = ExtractG(recentColors(Index))
-    curBlue = ExtractB(recentColors(Index))
+    curRed = ExtractRed(recentColors(Index))
+    curGreen = ExtractGreen(recentColors(Index))
+    curBlue = ExtractBlue(recentColors(Index))
     
     'Calculate new HSV values to match
     RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
