@@ -375,13 +375,13 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     Dim lowR As Long, lowG As Long, lowB As Long
     Dim highR As Long, highG As Long, highB As Long
     
-    lowR = ExtractR(lowColor)
-    lowG = ExtractG(lowColor)
-    lowB = ExtractB(lowColor)
+    lowR = ExtractRed(lowColor)
+    lowG = ExtractGreen(lowColor)
+    lowB = ExtractBlue(lowColor)
     
-    highR = ExtractR(highColor)
-    highG = ExtractG(highColor)
-    highB = ExtractB(highColor)
+    highR = ExtractRed(highColor)
+    highG = ExtractGreen(highColor)
+    highB = ExtractBlue(highColor)
     
     'Calculating color variables (including luminance)
     Dim r As Long, g As Long, b As Long

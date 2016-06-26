@@ -625,9 +625,9 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
     Dim tmpR As Long, tmpG As Long, tmpB As Long
             
     'Extract the RGB values from the color we were passed
-    tmpR = ExtractR(filterColor)
-    tmpG = ExtractG(filterColor)
-    tmpB = ExtractB(filterColor)
+    tmpR = ExtractRed(filterColor)
+    tmpG = ExtractGreen(filterColor)
+    tmpB = ExtractBlue(filterColor)
             
     'Divide tempStrength by 100 to yield a value between 0 and 1
     filterDensity = filterDensity / 100
@@ -643,7 +643,7 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
         b = ImageData(QuickVal, y)
         
         'If luminance is being preserved, we need to determine the initial luminance value
-        originalLuminance = (getLuminance(r, g, b) / 255)
+        originalLuminance = (GetLuminance(r, g, b) / 255)
         
         'Blend the original and new RGB values using the specified strength
         r = BlendColors(r, tmpR, filterDensity)

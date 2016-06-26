@@ -935,9 +935,9 @@ Private Sub csHighlight_ColorChanged()
         cmdBar.MarkPreviewStatus False
     
         Dim r As Long, g As Long, b As Long, l As Long
-        r = ExtractR(csHighlight.Color)
-        g = ExtractG(csHighlight.Color)
-        b = ExtractB(csHighlight.Color)
+        r = ExtractRed(csHighlight.Color)
+        g = ExtractGreen(csHighlight.Color)
+        b = ExtractBlue(csHighlight.Color)
         
         'Set the internal shadow colors to match these RGB values
         If r < m_LevelValues(0, 0) + 2 Then r = m_LevelValues(0, 0) + 2
@@ -972,9 +972,9 @@ Private Sub csShadow_ColorChanged()
         cmdBar.MarkPreviewStatus False
     
         Dim r As Long, g As Long, b As Long, l As Long
-        r = ExtractR(csShadow.Color)
-        g = ExtractG(csShadow.Color)
-        b = ExtractB(csShadow.Color)
+        r = ExtractRed(csShadow.Color)
+        g = ExtractGreen(csShadow.Color)
+        b = ExtractBlue(csShadow.Color)
         
         'Set the internal shadow colors to match these RGB values
         If r > m_LevelValues(0, 2) - 2 Then r = m_LevelValues(0, 2) - 2

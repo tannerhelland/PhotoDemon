@@ -125,7 +125,7 @@ Private Declare Function GetObjectType Lib "gdi32" (ByVal hgdiobj As Long) As Lo
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
-Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
+Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
 
 'AlphaBlend API call
 Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
@@ -581,7 +581,7 @@ Public Function ConvertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As
             tmpDIB.CreateFromExistingDIB Me
                         
             'Composite the temporary DIB against a white background, per convention.
-            tmpDIB.CompositeBackgroundColor ExtractR(newBackColor), ExtractG(newBackColor), ExtractB(newBackColor)
+            tmpDIB.CompositeBackgroundColor ExtractRed(newBackColor), ExtractGreen(newBackColor), ExtractBlue(newBackColor)
             
             'Now erase our own DIB
             Me.EraseDIB

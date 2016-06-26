@@ -561,9 +561,9 @@ Private Sub CalculateVariantColors()
     
     'The primary color serves as the base color for all subsequent calculations.  Retrieve its RGB and HSV quads now.
     Dim rPrimary As Long, gPrimary As Long, bPrimary As Long, hPrimary As Double, sPrimary As Double, vPrimary As Double
-    rPrimary = Colors.ExtractR(m_ColorList(CV_Primary))
-    gPrimary = Colors.ExtractG(m_ColorList(CV_Primary))
-    bPrimary = Colors.ExtractB(m_ColorList(CV_Primary))
+    rPrimary = Colors.ExtractRed(m_ColorList(CV_Primary))
+    gPrimary = Colors.ExtractGreen(m_ColorList(CV_Primary))
+    bPrimary = Colors.ExtractBlue(m_ColorList(CV_Primary))
     Colors.RGBtoHSV rPrimary, gPrimary, bPrimary, hPrimary, sPrimary, vPrimary
     
     'We now need to calculate new RGB values.  How we do this varies by variant, obviously!
@@ -725,7 +725,7 @@ Private Sub MakeNewTooltip(ByVal activeIndex As COLOR_VARIANTS)
     
     If activeIndex >= 0 Then
         hexString = "#" & UCase(Colors.GetHexStringFromRGB(m_ColorList(activeIndex)))
-        rgbString = Colors.ExtractR(m_ColorList(activeIndex)) & ", " & Colors.ExtractG(m_ColorList(activeIndex)) & ", " & Colors.ExtractB(m_ColorList(activeIndex))
+        rgbString = Colors.ExtractRed(m_ColorList(activeIndex)) & ", " & Colors.ExtractGreen(m_ColorList(activeIndex)) & ", " & Colors.ExtractBlue(m_ColorList(activeIndex))
         toolString = hexString & vbCrLf & rgbString
         If activeIndex = CV_Primary Then toolString = toolString & vbCrLf & g_Language.TranslateMessage("Click to enter a full color selection screen.")
     End If

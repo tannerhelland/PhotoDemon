@@ -31,7 +31,7 @@ Public Enum PD_COLOR_STRING
 End Enum
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
-Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
+Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
 
 'Present the user with PD's custom color selection dialog.
 ' INPUTS:  1) a Long-type variable (ByRef, of course) which will receive the new color
@@ -180,15 +180,15 @@ Public Function GetQuickColorCount(ByRef srcDIB As pdDIB, Optional ByVal imageID
     
     If totalCount = 2 Then
     
-        r = ExtractR(UniqueColors(0))
-        g = ExtractG(UniqueColors(0))
-        b = ExtractB(UniqueColors(0))
+        r = Colors.ExtractRed(UniqueColors(0))
+        g = Colors.ExtractGreen(UniqueColors(0))
+        b = Colors.ExtractBlue(UniqueColors(0))
         
         If ((r = 0) And (g = 0) And (b = 0)) Or ((r = 255) And (g = 255) And (b = 255)) Then
             
-            r = ExtractR(UniqueColors(1))
-            g = ExtractG(UniqueColors(1))
-            b = ExtractB(UniqueColors(1))
+            r = Colors.ExtractRed(UniqueColors(1))
+            g = Colors.ExtractGreen(UniqueColors(1))
+            b = Colors.ExtractBlue(UniqueColors(1))
             
             If ((r = 0) And (g = 0) And (b = 0)) Or ((r = 255) And (g = 255) And (b = 255)) Then
                 g_IsImageMonochrome = True
@@ -211,9 +211,9 @@ Public Function GetQuickColorCount(ByRef srcDIB As pdDIB, Optional ByVal imageID
         'Loop through all available colors
         For i = 0 To totalCount - 1
         
-            r = ExtractR(UniqueColors(i))
-            g = ExtractG(UniqueColors(i))
-            b = ExtractB(UniqueColors(i))
+            r = Colors.ExtractRed(UniqueColors(i))
+            g = Colors.ExtractGreen(UniqueColors(i))
+            b = Colors.ExtractBlue(UniqueColors(i))
             
             'If any of the components do not match, this is not a grayscale image
             If (r <> g) Or (g <> b) Or (r <> b) Then
@@ -246,16 +246,16 @@ Public Function ConvertSystemColor(ByVal colorRef As OLE_COLOR) As Long
 End Function
 
 'Extract the red, green, or blue value from an RGB() Long
-Public Function ExtractR(ByVal currentColor As Long) As Integer
-    ExtractR = currentColor And 255
+Public Function ExtractRed(ByVal currentColor As Long) As Integer
+    ExtractRed = currentColor And 255
 End Function
 
-Public Function ExtractG(ByVal currentColor As Long) As Integer
-    ExtractG = (currentColor \ 256) And 255
+Public Function ExtractGreen(ByVal currentColor As Long) As Integer
+    ExtractGreen = (currentColor \ 256) And 255
 End Function
 
-Public Function ExtractB(ByVal currentColor As Long) As Integer
-    ExtractB = (currentColor \ 65536) And 255
+Public Function ExtractBlue(ByVal currentColor As Long) As Integer
+    ExtractBlue = (currentColor \ 65536) And 255
 End Function
 
 'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
@@ -891,7 +891,7 @@ End Function
 'Given an RGB triplet (Long-type), return a matching hex representation.
 Public Function GetHexStringFromRGB(ByVal srcRGB As Long) As String
     srcRGB = Colors.ConvertSystemColor(srcRGB)
-    GetHexStringFromRGB = GetHexFromByte(ExtractR(srcRGB)) & GetHexFromByte(ExtractG(srcRGB)) & GetHexFromByte(ExtractB(srcRGB))
+    GetHexStringFromRGB = GetHexFromByte(Colors.ExtractRed(srcRGB)) & GetHexFromByte(Colors.ExtractGreen(srcRGB)) & GetHexFromByte(Colors.ExtractBlue(srcRGB))
 End Function
 
 'HTML hex requires each RGB entry to be two characters wide, but the VB Hex$ function won't add a leading 0.  We do this manually.

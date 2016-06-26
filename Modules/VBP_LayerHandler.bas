@@ -671,7 +671,7 @@ Public Sub FlattenImage(Optional ByVal functionParams As String = vbNullString)
     pdImages(g_CurrentImage).GetCompositedImage compositeDIB
     
     'If the caller wants the flattened image to *not* have transparency, remove said transparency now
-    If removeTransparency Then compositeDIB.CompositeBackgroundColor Colors.ExtractR(newBackgroundColor), Colors.ExtractG(newBackgroundColor), Colors.ExtractB(newBackgroundColor)
+    If removeTransparency Then compositeDIB.CompositeBackgroundColor Colors.ExtractRed(newBackgroundColor), Colors.ExtractGreen(newBackgroundColor), Colors.ExtractBlue(newBackgroundColor)
     
     'Also, grab the name of the bottom-most layer.  This will be used as the name of our only layer in the flattened image.
     Dim flattenedName As String

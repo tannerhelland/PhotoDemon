@@ -349,15 +349,15 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
             'Loop through all available colors
             For i = 0 To numUniqueColors - 1
             
-                r = ExtractR(UniqueColors(i))
-                g = ExtractG(UniqueColors(i))
+                r = ExtractRed(UniqueColors(i))
+                g = ExtractGreen(UniqueColors(i))
                 
                 'If any of the components do not match, this is not a grayscale image
                 If (r <> g) Then
                     isGrayscale = False
                     Exit For
                 Else
-                    b = ExtractB(UniqueColors(i))
+                    b = ExtractBlue(UniqueColors(i))
                     If (b <> r) Or (b <> g) Then
                         isGrayscale = False
                         Exit For
@@ -370,14 +370,14 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
             ' (where monochrome = pure black and pure white, only).
             If isGrayscale And (numUniqueColors <= 2) Then
             
-                r = ExtractR(UniqueColors(0))
-                g = ExtractG(UniqueColors(0))
-                b = ExtractB(UniqueColors(0))
+                r = ExtractRed(UniqueColors(0))
+                g = ExtractGreen(UniqueColors(0))
+                b = ExtractBlue(UniqueColors(0))
                 
                 If ((r = 0) And (g = 0) And (b = 0)) Or ((r = 255) And (g = 255) And (b = 255)) Then
-                    r = ExtractR(UniqueColors(1))
-                    g = ExtractG(UniqueColors(1))
-                    b = ExtractB(UniqueColors(1))
+                    r = ExtractRed(UniqueColors(1))
+                    g = ExtractGreen(UniqueColors(1))
+                    b = ExtractBlue(UniqueColors(1))
                     If ((r = 0) And (g = 0) And (b = 0)) Or ((r = 255) And (g = 255) And (b = 255)) Then isMonochrome = True
                 End If
             
@@ -1360,9 +1360,9 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             ' but it is part of the PNG spec, so we provide it as an option
             If pngCreateBkgdChunk Then
                 Dim rQuad As RGBQUAD
-                rQuad.Red = ExtractR(pngBackgroundColor)
-                rQuad.Green = ExtractG(pngBackgroundColor)
-                rQuad.Blue = ExtractB(pngBackgroundColor)
+                rQuad.Red = ExtractRed(pngBackgroundColor)
+                rQuad.Green = ExtractGreen(pngBackgroundColor)
+                rQuad.Blue = ExtractBlue(pngBackgroundColor)
                 FreeImage_SetBackgroundColor fi_DIB, rQuad
             End If
             
