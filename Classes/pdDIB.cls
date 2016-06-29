@@ -539,9 +539,9 @@ Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
                     
                     'Instead of halftoning, switch between interpolation and nearest-neighbor
                     If useHalftoning Then
-                        GDIPlusResizeDIB Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, InterpolationModeHighQualityBicubic
+                        GDIPlusResizeDIB Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, GP_IM_HighQualityBicubic
                     Else
-                        GDIPlusResizeDIB Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, InterpolationModeNearestNeighbor
+                        GDIPlusResizeDIB Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, GP_IM_NearestNeighbor
                     End If
                 
                 End If

@@ -190,7 +190,7 @@ Public Sub AddArcCircular(ByVal centerX As Single, ByVal centerY As Single, ByVa
     End Select
 End Sub
 
-Public Sub AddPolygon(ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, ByVal autoCloseShape As Boolean, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5)
+Public Sub AddPolygon(ByVal numOfPoints As Long, ByVal ptrToPtFArray As Long, ByVal autoCloseShape As Boolean, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5)
     
     If (m_PathHandle = 0) Then CreatePath
     
@@ -200,15 +200,15 @@ Public Sub AddPolygon(ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, 
             'We have a few different options for adding this shape, based on the passed parameters.
             If autoCloseShape Then
                 If useCurveAlgorithm Then
-                    GDI_Plus.GDIPlus_PathAddClosedCurve m_PathHandle, ptrToFloatArray, numOfPoints, curvatureTension
+                    GDI_Plus.GDIPlus_PathAddClosedCurve m_PathHandle, ptrToPtFArray, numOfPoints, curvatureTension
                 Else
-                    GDI_Plus.GDIPlus_PathAddPolygon m_PathHandle, ptrToFloatArray, numOfPoints
+                    GDI_Plus.GDIPlus_PathAddPolygon m_PathHandle, ptrToPtFArray, numOfPoints
                 End If
             Else
                 If useCurveAlgorithm Then
-                    GDI_Plus.GDIPlus_PathAddCurve m_PathHandle, ptrToFloatArray, numOfPoints, curvatureTension
+                    GDI_Plus.GDIPlus_PathAddCurve m_PathHandle, ptrToPtFArray, numOfPoints, curvatureTension
                 Else
-                    GDI_Plus.GDIPlus_PathAddLines m_PathHandle, ptrToFloatArray, numOfPoints
+                    GDI_Plus.GDIPlus_PathAddLines m_PathHandle, ptrToPtFArray, numOfPoints
                 End If
             End If
             
@@ -777,3 +777,4 @@ End Sub
 Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
     Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DPath"
 End Sub
+

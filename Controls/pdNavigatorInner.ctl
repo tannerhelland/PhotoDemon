@@ -286,10 +286,10 @@ Private Sub UpdateControlLayout()
     
     'Try to optimize re-creating the thumbnail, so we only do it when absolutely necessary
     If m_ImageThumbnail Is Nothing Then Set m_ImageThumbnail = New pdDIB
-    If (m_ImageThumbnail.getDIBWidth <> thumbWidth) Or (m_ImageThumbnail.getDIBHeight <> thumbHeight) Then
-        m_ImageThumbnail.createBlank thumbWidth, thumbHeight, 32, 0, 0
+    If (m_ImageThumbnail.GetDIBWidth <> thumbWidth) Or (m_ImageThumbnail.GetDIBHeight <> thumbHeight) Then
+        m_ImageThumbnail.CreateBlank thumbWidth, thumbHeight, 32, 0, 0
     Else
-        m_ImageThumbnail.resetDIB 0
+        m_ImageThumbnail.ResetDIB 0
     End If
     
     RaiseEvent RequestUpdatedThumbnail(m_ImageThumbnail, m_ThumbEventX, m_ThumbEventY)
@@ -327,10 +327,10 @@ Private Sub RedrawBackBuffer()
         Else
             
             With m_ThumbRect
-                .Width = m_ImageThumbnail.getDIBWidth
-                .Height = m_ImageThumbnail.getDIBHeight
-                .Left = (bWidth - m_ImageThumbnail.getDIBWidth) / 2
-                .Top = (bHeight - m_ImageThumbnail.getDIBHeight) / 2
+                .Width = m_ImageThumbnail.GetDIBWidth
+                .Height = m_ImageThumbnail.GetDIBHeight
+                .Left = (bWidth - m_ImageThumbnail.GetDIBWidth) / 2
+                .Top = (bHeight - m_ImageThumbnail.GetDIBHeight) / 2
             End With
             
             'Offset that top-left corner by the thumbnail's position, and cache it to a module-level rect so we can use
@@ -338,8 +338,8 @@ Private Sub RedrawBackBuffer()
             With m_ImageRegion
                 .Left = m_ThumbRect.Left + m_ThumbEventX
                 .Top = m_ThumbRect.Top + m_ThumbEventY
-                .Width = m_ImageThumbnail.getDIBWidth - (m_ThumbEventX * 2)
-                .Height = m_ImageThumbnail.getDIBHeight - (m_ThumbEventY * 2)
+                .Width = m_ImageThumbnail.GetDIBWidth - (m_ThumbEventX * 2)
+                .Height = m_ImageThumbnail.GetDIBHeight - (m_ThumbEventY * 2)
             End With
             
             'Paint a checkerboard background only over the relevant image region
@@ -349,7 +349,7 @@ Private Sub RedrawBackBuffer()
             
             'Paint the thumb rect without regard for the image region (as it will always be a square)
             With m_ThumbRect
-                GDI_Plus.GDIPlus_StretchBlt Nothing, .Left, .Top, .Width, .Height, m_ImageThumbnail, 0, 0, .Width, .Height, , InterpolationModeHighQualityBicubic, bufferDC
+                GDI_Plus.GDIPlus_StretchBlt Nothing, .Left, .Top, .Width, .Height, m_ImageThumbnail, 0, 0, .Width, .Height, , GP_IM_HighQualityBicubic, bufferDC
             End With
                         
             'Query the active image for a copy of the intersection rect of the viewport, and the image itself,
@@ -411,7 +411,7 @@ Public Sub NotifyNewThumbNeeded()
     If m_ImageThumbnail Is Nothing Then
         UpdateControlLayout
     Else
-        m_ImageThumbnail.resetDIB 0
+        m_ImageThumbnail.ResetDIB 0
         RaiseEvent RequestUpdatedThumbnail(m_ImageThumbnail, m_ThumbEventX, m_ThumbEventY)
         RedrawBackBuffer
     End If

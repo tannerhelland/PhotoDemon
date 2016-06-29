@@ -202,13 +202,13 @@ Private Enum GdiPlusSmoothingMode
     SmoothingModeDefault = QualityModeDefault
     SmoothingModeHighSpeed = QualityModeLow
     SmoothingModeHighQuality = QualityModeHigh
-    SmoothingModeNone
-    SmoothingModeAntiAlias
+    GP_SM_None
+    GP_SM_Antialias
 End Enum
 
 #If False Then
     Private Const SmoothingModeInvalid = QualityModeInvalid, SmoothingModeDefault = QualityModeDefault, SmoothingModeHighSpeed = QualityModeLow, SmoothingModeHighQuality = QualityModeHigh
-    Private Const SmoothingModeNone = 0, SmoothingModeAntiAlias = 0
+    Private Const GP_SM_None = 0, GP_SM_Antialias = 0
 #End If
 
 'GDI+ supports multiple text antialiasing modes, but half of them don't work on 32-bpp rendering targets (UGGGGGH).  Rather than expose a confusing list
@@ -1550,11 +1550,11 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
             targetOffsetMode = GP_POM_None
         
         Case pdta_Standard
-            targetSmoothingMode = SmoothingModeAntiAlias
+            targetSmoothingMode = GP_SM_Antialias
             targetOffsetMode = GP_POM_None
         
         Case pdta_Crisp
-            targetSmoothingMode = SmoothingModeAntiAlias
+            targetSmoothingMode = GP_SM_Antialias
             targetOffsetMode = GP_POM_Half
         
     End Select
@@ -1683,7 +1683,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
             If (gdipBackBorderPen <> 0) Then
                 GdipSetSmoothingMode dstGraphics, SmoothingModeHighSpeed
             Else
-                GdipSetSmoothingMode dstGraphics, SmoothingModeAntiAlias
+                GdipSetSmoothingMode dstGraphics, GP_SM_Antialias
             End If
             
             gdipReturn = GdipFillRectangleI(dstGraphics, gdipBackgroundBrush, x1, y1, textWidth, textHeight)

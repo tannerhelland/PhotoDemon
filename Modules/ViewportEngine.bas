@@ -217,7 +217,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
     End With
     
     'We also need to wipe the back buffer
-    GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, srcImage.canvasBuffer.GetDIBWidth, srcImage.canvasBuffer.GetDIBHeight, g_Themer.GetGenericUIColor(UI_CanvasElement), 255, CompositingModeSourceCopy
+    GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, srcImage.canvasBuffer.GetDIBWidth, srcImage.canvasBuffer.GetDIBHeight, g_Themer.GetGenericUIColor(UI_CanvasElement), 255, GP_CM_SourceCopy
     
     'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.BackBuffer for us.  If the user's preferences are "BEST QUALITY",
     ' Stage 2 composited a full-sized version of the image.  The goal of this stage (3) is two-fold:
@@ -301,7 +301,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
             ' out the relevant bit of the finished image.  The other does not maintain a composited image copy, but instead returns
             ' a composited rect whenever it's requested.  Branch down either path now.
             If (g_ViewportPerformance = PD_PERF_BESTQUALITY) Then
-                GDI_Plus.GDIPlus_StretchBlt srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcImage.compositeBuffer, srcLeft, srcTop, srcWidth, srcHeight, 1, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
+                GDI_Plus.GDIPlus_StretchBlt srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcImage.compositeBuffer, srcLeft, srcTop, srcWidth, srcHeight, 1, IIf(m_ZoomRatio <= 1, GP_IM_HighQualityBicubic, GP_IM_NearestNeighbor)
             
             Else
                 
@@ -312,13 +312,13 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
                 
                 'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
                 If (g_ViewportPerformance = PD_PERF_FASTEST) Then
-                    srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, InterpolationModeNearestNeighbor, pipelineOriginatedAtStageOne, CLC_Viewport
+                    srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, GP_IM_NearestNeighbor, pipelineOriginatedAtStageOne, CLC_Viewport
                     
                 'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
                 ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
                 ' automatically (regardless of what method we request).
                 Else
-                    srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor), pipelineOriginatedAtStageOne, CLC_Viewport
+                    srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, GP_IM_HighQualityBicubic, GP_IM_NearestNeighbor), pipelineOriginatedAtStageOne, CLC_Viewport
                 End If
                 
             End If
@@ -622,7 +622,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     If (srcImage.canvasBuffer.GetDIBWidth <> CanvasRect_ActualPixels.Width) Or (srcImage.canvasBuffer.GetDIBHeight <> CanvasRect_ActualPixels.Height) Then
         srcImage.canvasBuffer.CreateBlank CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, 24, g_Themer.GetGenericUIColor(UI_CanvasElement), 255
     Else
-        GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, g_Themer.GetGenericUIColor(UI_CanvasElement), 255, CompositingModeSourceCopy
+        GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, g_Themer.GetGenericUIColor(UI_CanvasElement), 255, GP_CM_SourceCopy
     End If
     
     'Because subsequent stages of the pipeline may need all the data we've assembled, store a copy of all relevant rects

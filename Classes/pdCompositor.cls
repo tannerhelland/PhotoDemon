@@ -503,7 +503,7 @@ End Sub
 'This function is large, complicated, and unfortunately tricky, as we must resize and composite each layer in turn.  However, it's the secret
 ' to PD's incredible viewport performance.  (e.g., this function is how we can outperform both GIMP and Paint.NET despite being single-threaded
 ' and heavily CPU-bound)
-Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic)
+Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic)
     
     'Before doing anything else, fill two rects with the coordinates we were passed.  We will use these rects to calculate the
     ' boundary regions for all individual layers.
@@ -583,7 +583,7 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
         Dim bltWidth As Single, bltHeight As Single
         bltWidth = dstWidth + (dstX - Int(dstX))
         bltHeight = dstHeight + (dstY - Int(dstY))
-        GDIPlus_StretchBlt dstDIB, Int(dstX), Int(dstY), bltWidth, bltHeight, m_dstDIB, 0, 0, bltWidth, bltHeight, 1, InterpolationModeNearestNeighbor, , True
+        GDIPlus_StretchBlt dstDIB, Int(dstX), Int(dstY), bltWidth, bltHeight, m_dstDIB, 0, 0, bltWidth, bltHeight, 1, GP_IM_NearestNeighbor, , True
         
         'While we might be able to get away with GDI's AlphaBlend here, it may cause bleeding on the trailing width/height edges,
         ' which can cause the underlying checkerboard to show through.
@@ -606,7 +606,7 @@ End Sub
 ' the optional ignoreInternalCaches can be set to TRUE, in which case these caches must be forcibly regenerated.  If the caches do not need to
 ' be forcibly generated, the optional levelOfDetail parameter should be correctly set, which clues the compositor into which LOD cache to use
 ' in the target layer, greatly improving performance.
-Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As InterpolationMode, Optional ByVal isRectZoomless As Boolean = False, Optional ByVal isBaseLayer As Boolean = False, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic)
+Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal isRectZoomless As Boolean = False, Optional ByVal isBaseLayer As Boolean = False, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic)
     
     'This function requires two non-optional rects as parameters:
     
@@ -659,7 +659,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
     'Although the caller can specify a required interpolation type, we will override this under certain circumstances (e.g. when
     ' creating temporary DIBs, we may use an alternate interpolation type for a speed boost).  Because this happens frequently
     ' throughout the function, we declare a single variable instance here.
-    Dim tmpResampleMode As InterpolationMode
+    Dim tmpResampleMode As GP_InterpolationMode
     
     'Before doing anything else, we want to see if we can completely skip processing this layer.  A layer is skippable if it does not
     ' intersect the current viewport, but note that we must explicitly account for non-destructive transforms (including complex affine
@@ -843,7 +843,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                                 'Paint the resized DIB to the layer, at offset (0, 0), with subpixel offsets already accounted for.
                                 ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
                                 '  the function-wide resample mode.)
-                                If (srcLayer.GetLayerCanvasXModifier <> 1) Or (srcLayer.GetLayerCanvasYModifier <> 1) Then tmpResampleMode = srcLayer.GetLayerResizeQuality_GDIPlus Else tmpResampleMode = InterpolationModeNearestNeighbor
+                                If (srcLayer.GetLayerCanvasXModifier <> 1) Or (srcLayer.GetLayerCanvasYModifier <> 1) Then tmpResampleMode = srcLayer.GetLayerResizeQuality_GDIPlus Else tmpResampleMode = GP_IM_NearestNeighbor
                                 GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , Not isBaseLayer
                                 
                             End If
@@ -902,7 +902,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                     
                     'I have temporarily disabled the use of GDI's AlphaBlend function here, as it's causing inexplicable rendering failures
                     ' on certain image/viewport size combinations.
-                    GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.GetLayerOpacity / 100, InterpolationModeNearestNeighbor
+                    GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.GetLayerOpacity / 100, GP_IM_NearestNeighbor
                     
                 Else
                     
@@ -911,7 +911,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                     
                     'When zoomed in, nearest neighbor is preferred.  This is fast enough that we don't need to use a temporary DIB cache.
                     If srcImageRect.Width < dstViewportRect.Width Then
-                        GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.GetLayerOpacity / 100, InterpolationModeNearestNeighbor, , , True
+                        GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.GetLayerOpacity / 100, GP_IM_NearestNeighbor, , , True
                     
                     'When zoomed out, use the supplied interpolation mode.  The caller typically toggles this according to PD's global
                     ' performance settings.
@@ -1034,8 +1034,8 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                 ' approach than we use in the normal, rectangular rendering branch.  Because affine transforms can be extremely performance-intensive,
                 ' the user needs a way to override the layer's default stretching behavior.  (Note that, as usual, saving to file, copying to
                 ' clipboard, etc, *always* use the layer's settings, not the viewport ones.)
-                If interpolationType = InterpolationModeNearestNeighbor Then
-                    GDIPlus_PlgBlt lodDIB, m_PlgPointsDst, srcLayer.layerDIB, 0, 0, srcLayer.GetLayerWidth(False), srcLayer.GetLayerHeight(False), 1, InterpolationModeNearestNeighbor
+                If (interpolationType = GP_IM_NearestNeighbor) Then
+                    GDIPlus_PlgBlt lodDIB, m_PlgPointsDst, srcLayer.layerDIB, 0, 0, srcLayer.GetLayerWidth(False), srcLayer.GetLayerHeight(False), 1, GP_IM_NearestNeighbor
                 Else
                     GDIPlus_PlgBlt lodDIB, m_PlgPointsDst, srcLayer.layerDIB, 0, 0, srcLayer.GetLayerWidth(False), srcLayer.GetLayerHeight(False), 1, srcLayer.GetLayerResizeQuality_GDIPlus
                 End If

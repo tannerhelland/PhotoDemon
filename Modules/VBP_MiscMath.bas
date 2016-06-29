@@ -16,6 +16,12 @@ Attribute VB_Name = "Math_Functions"
 
 Option Explicit
 
+'Many drawing features lean on various geometry functions
+Public Const PI As Double = 3.14159265358979
+Public Const PI_HALF As Double = 1.5707963267949
+Public Const PI_DOUBLE As Double = 6.28318530717958
+Public Const PI_DIV_180 As Double = 0.017453292519943
+
 Private Declare Function PtInRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
 Private Declare Function PtInRectL Lib "user32" Alias "PtInRect" (ByRef lpRect As RECTL, ByVal x As Long, ByVal y As Long) As Long
 

@@ -269,7 +269,7 @@ End Sub
 
 'Returns a subsection of the fully composited image (in pdDIB format, of course).  This is helpful for rendering the main viewport,
 ' as we only composite the relevant portions of the image.
-Public Sub GetCompositedRect(ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic)
+Public Sub GetCompositedRect(ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic)
     imgCompositor.GetCompositedRect Me, dstDIB, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, interpolationType, ignoreInternalCaches, levelOfDetail
 End Sub
 
@@ -525,35 +525,35 @@ Public Function WriteExternalData(ByRef dstFilename As String, Optional ByVal fi
     Set xmlEngine = New pdXML
     
     'Add a basic header and explanatory comment
-    xmlEngine.prepareNewXML "pdImage"
+    xmlEngine.PrepareNewXML "pdImage"
     
-    xmlEngine.writeBlankLine
-    xmlEngine.writeComment "This file contains a summary of crucial data for a given pdImage entry."
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteBlankLine
+    xmlEngine.WriteComment "This file contains a summary of crucial data for a given pdImage entry."
+    xmlEngine.WriteBlankLine
     
     'Start by writing out the imageID.  This value will not be re-used in subsequent session, but it's helpful for matching up
     ' this image's data with any saved Undo/Redo entries (which are created by imageID for privacy reasons)
-    xmlEngine.writeTag "ID", imageID
+    xmlEngine.WriteTag "ID", imageID
     
     'Start writing any tags that may be useful for reconstructing an autosave version of this image.  We limit the information to
     ' properties independent of a given session (e.g. imageID); session-dependent properties will be recreated anew by PD.
-    xmlEngine.writeTag "Width", Width
-    xmlEngine.writeTag "Height", Height
-    xmlEngine.writeTag "xResolution", xResolution
-    xmlEngine.writeTag "yResolution", yResolution
-    xmlEngine.writeTag "DPI", imageDPI
-    xmlEngine.writeTag "OriginalFileFormat", originalFileFormat
-    xmlEngine.writeTag "CurrentFileFormat", currentFileFormat
-    xmlEngine.writeTag "OriginalColorDepth", originalColorDepth
-    xmlEngine.writeTag "numOfLayersEverCreated", m_numOfLayersEverCreated
-    xmlEngine.writeTag "numOfLayers", m_numOfLayers
-    xmlEngine.writeTag "curLayer", m_curLayer
+    xmlEngine.WriteTag "Width", Width
+    xmlEngine.WriteTag "Height", Height
+    xmlEngine.WriteTag "xResolution", xResolution
+    xmlEngine.WriteTag "yResolution", yResolution
+    xmlEngine.WriteTag "DPI", imageDPI
+    xmlEngine.WriteTag "OriginalFileFormat", originalFileFormat
+    xmlEngine.WriteTag "CurrentFileFormat", currentFileFormat
+    xmlEngine.WriteTag "OriginalColorDepth", originalColorDepth
+    xmlEngine.WriteTag "numOfLayersEverCreated", m_numOfLayersEverCreated
+    xmlEngine.WriteTag "numOfLayers", m_numOfLayers
+    xmlEngine.WriteTag "curLayer", m_curLayer
     
     'Next comes conditional data, which may not exist in the scripting dictionary.  If it's available, we'll write it out.
-    If imgStorage.DoesKeyExist("pngBackgroundColor") Then xmlEngine.writeTag "pngBackgroundColor", imgStorage.GetEntry_Long("pngBackgroundColor")
-    If imgStorage.DoesKeyExist("OriginalFileSize") Then xmlEngine.writeTag "OriginalFileSize", imgStorage.GetEntry_Long("OriginalFileSize")
+    If imgStorage.DoesKeyExist("pngBackgroundColor") Then xmlEngine.WriteTag "pngBackgroundColor", imgStorage.GetEntry_Long("pngBackgroundColor")
+    If imgStorage.DoesKeyExist("OriginalFileSize") Then xmlEngine.WriteTag "OriginalFileSize", imgStorage.GetEntry_Long("OriginalFileSize")
     
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteBlankLine
     
     'That should be enough information to reconstruct the original image state.  We now have two options, depending on the value
     ' of the "filePathIsActuallyString" parameter.
@@ -561,11 +561,11 @@ Public Function WriteExternalData(ByRef dstFilename As String, Optional ByVal fi
     'The string we were supplied is a blank buffer, not a filename.  Write the XML data to it.  Note that by default, XML indentation
     ' is suppressed; this is for performance reasons.
     If filePathIsActuallyString Then
-        dstFilename = xmlEngine.returnCurrentXMLString(True)
+        dstFilename = xmlEngine.ReturnCurrentXMLString(True)
     
     'The string we were supplied is a filename.  Write the XML data to it.
     Else
-        xmlEngine.writeXMLToFile dstFilename
+        xmlEngine.WriteXMLToFile dstFilename
     End If
     
     WriteExternalData = True
@@ -602,20 +602,20 @@ Public Function ReadExternalData(ByRef srcFilename As String, Optional ByVal fil
     'We now have two choices, depending on the value of filePathIsActuallyString.  Load the supposed XML contents
     ' (either from file or directly) into the XML engine; note that both steps validate the incoming data automatically.
     If filePathIsActuallyString Then
-        xmlLoadSuccessful = xmlEngine.loadXMLFromString(srcFilename)
+        xmlLoadSuccessful = xmlEngine.LoadXMLFromString(srcFilename)
     Else
         xmlLoadSuccessful = xmlEngine.LoadXMLFile(srcFilename)
     End If
     
     'Make sure the supplied XML actually contains pdImage data.
-    If xmlLoadSuccessful And xmlEngine.isPDDataType("pdImage") Then
+    If xmlLoadSuccessful And xmlEngine.IsPDDataType("pdImage") Then
     
         'The XML file checked out.  Start retrieving relevant values.
-        Me.Width = xmlEngine.getUniqueTag_Long("Width")
-        Me.Height = xmlEngine.getUniqueTag_Long("Height")
-        xResolution = xmlEngine.getUniqueTag_Long("xResolution")
-        yResolution = xmlEngine.getUniqueTag_Long("yResolution")
-        imageDPI = xmlEngine.getUniqueTag_Long("DPI")
+        Me.Width = xmlEngine.GetUniqueTag_Long("Width")
+        Me.Height = xmlEngine.GetUniqueTag_Long("Height")
+        xResolution = xmlEngine.GetUniqueTag_Long("xResolution")
+        yResolution = xmlEngine.GetUniqueTag_Long("yResolution")
+        imageDPI = xmlEngine.GetUniqueTag_Long("DPI")
         
         'All settings past this point are only relevant when loading a file anew, not when it's being used as part of
         ' the Undo/Redo stack.
@@ -624,18 +624,18 @@ Public Function ReadExternalData(ByRef srcFilename As String, Optional ByVal fil
             'These values are all stored in the PDI file, but they're not really relevant.  I will look at not storing
             ' them in the first place, but for now, just ignore them.
             'TODO: make a firm decision on what data does not belong in PDI files!
-            Me.originalColorDepth = xmlEngine.getUniqueTag_Long("originalColorDepth")
+            Me.originalColorDepth = xmlEngine.GetUniqueTag_Long("originalColorDepth")
             
             'Dictionary tags are conditional, and may not exist in the PDI file.  Check for their existence, and load them
             ' only as necessary.
-            If xmlEngine.DoesTagExist("pngBackgroundColor") Then imgStorage.AddEntry "pngBackgroundColor", xmlEngine.getUniqueTag_Long("pngBackgroundColor")
+            If xmlEngine.DoesTagExist("pngBackgroundColor") Then imgStorage.AddEntry "pngBackgroundColor", xmlEngine.GetUniqueTag_Long("pngBackgroundColor")
             
         End If
         
         'Finally, retrieve layer values from the file
-        m_numOfLayersEverCreated = xmlEngine.getUniqueTag_Long("numOfLayersEverCreated")
-        m_numOfLayers = xmlEngine.getUniqueTag_Long("numOfLayers")
-        m_curLayer = xmlEngine.getUniqueTag_Long("curLayer")
+        m_numOfLayersEverCreated = xmlEngine.GetUniqueTag_Long("numOfLayersEverCreated")
+        m_numOfLayers = xmlEngine.GetUniqueTag_Long("numOfLayers")
+        m_curLayer = xmlEngine.GetUniqueTag_Long("curLayer")
         
         'If this is a standard, destructive load, prepare our image layer array to receive the upcoming layer data.
         ' (Otherwise, leave it as it is, because the calling function will simply reorder it for us.)
@@ -766,8 +766,8 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     End If
     
     'Note that the user's thumbnail performance setting affects the quality used here.
-    Dim intMode As InterpolationMode
-    If (g_ThumbnailPerformance = PD_PERF_FASTEST) Then intMode = InterpolationModeNearestNeighbor Else intMode = InterpolationModeHighQualityBicubic
+    Dim intMode As GP_InterpolationMode
+    If (g_ThumbnailPerformance = PD_PERF_FASTEST) Then intMode = GP_IM_NearestNeighbor Else intMode = GP_IM_HighQualityBicubic
     Me.GetCompositedRect dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, 0, 0, Me.Width, Me.Height, intMode, , CLC_Thumbnail
     
     'Uncomment the line below to profile different thumbnail resize strategies
@@ -846,7 +846,7 @@ Public Sub SetSaveState(ByVal newSaveState As Boolean, ByVal typeOfSaveEvent As 
         
         'Remember the undo value at this juncture; if the user performs additional actions, but "Undos" to this point,
         ' we want to disable the save button for them
-        undoManager.notifyImageSaved typeOfSaveEvent
+        undoManager.NotifyImageSaved typeOfSaveEvent
     
     'Some change has occurred, meaning the image has not been saved (to any format) in its current state
     Else
