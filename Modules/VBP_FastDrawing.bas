@@ -598,7 +598,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
             
             'The preview is a shrunk version of the full image.  Shrink the selection mask to match.
             If previewTarget.ViewportFitFullImage Then
-                GDIPlusResizeDIB selMaskCopy, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, InterpolationModeHighQualityBicubic
+                GDIPlusResizeDIB selMaskCopy, 0, 0, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, GP_IM_HighQualityBicubic
             
             'The preview is a 100% copy of the image.  Copy only the relevant part of the selection mask into the
             ' selection processing DIB.

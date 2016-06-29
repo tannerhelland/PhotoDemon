@@ -38,8 +38,15 @@ Option Explicit
 'The current surface type.  At present, this is immutable; once set, it cannot be migrated
 Private m_SurfaceBackend As PD_2D_RENDERING_BACKEND
 
-'The current surface handle.  Will be 0 if the surface is uninitialized.
+'The current surface handle.  Will be 0 if the surface is uninitialized.  The meaning of this value varies by backend.
 Private m_SurfaceHandle As Long
+
+'GDI+ uses a number of different image handle types.  A "Graphics" handle is like a DC.  It's an abstract value into
+' which other, concrete image types can be select.  The above "SurfaceHandle" is actually a "Graphics" handle in disguise.
+' Some GDI operations require an "Image" handle.  This handle may a bitmap or metafile.  (And if loaded from file, it may
+' be even more abstract, like an EXIF file.)  In PD, it is almost certainly a bitmap object.  This handle is created
+' on-demand only as necessary.  Any time the surface handle, above, is cleared, this value must also be cleared.
+Private m_GdipImageHandle As Long
 
 'If this surface was created by wrapping an existing hDC, this value will be non-zero.
 Private m_SurfaceDC As Long
@@ -51,7 +58,10 @@ Private m_SurfaceDCBitmap As GDI_Bitmap
 ' wrap this DIB's hDC.)
 Private m_SurfaceDIB As pdDIB
 
-'I don't currently expose a surface's type; this is managed internally, based on the way the surface is created.
+'This class internally manages what kind of surface it is (e.g. a lightweight wrapper around an existing hDC,
+' or a fully-managed DIB surface).  This value is exposed via the GetSurfaceType function, but users should never
+' have to mess with this; we only use it internally, in places like the Painter class, to figure out the best
+' GDI+ interop method.  (Wrapped hDCs can't be used as 32-bpp surfaces, because alpha data is unreliable.)
 Private m_SurfaceType As PD_2D_SurfaceType
 
 'When debug mode is active, object creation and destruction is reported to the central Drawing2D module
@@ -59,13 +69,18 @@ Private m_DebugMode As Boolean
 
 'Surface settings that support get/set operations
 Private m_SurfaceAntialiasing As PD_2D_Antialiasing
+Private m_SurfaceBlendUsingSRGBGamma As Boolean
 Private m_SurfacePixelOffset As PD_2D_PixelOffset
 Private m_SurfaceRenderingOriginX As Single, m_SurfaceRenderingOriginY As Single
-Private m_SurfaceBlendUsingSRGBGamma As Boolean
+Private m_SurfaceResizeQuality As PD_2D_ResizeQuality
 
 'Get/set individual settings.  Note that these just wrap the generic Get/SetPenProperty functions, below.
 Public Function GetSurfaceAntialiasing() As PD_2D_Antialiasing
     GetSurfaceAntialiasing = Me.GetSurfaceProperty(P2_SurfaceAntialiasing)
+End Function
+
+Public Function GetSurfaceBlendUsingSRGBGamma() As Boolean
+    GetSurfaceBlendUsingSRGBGamma = Me.GetSurfaceProperty(P2_SurfaceBlendUsingSRGBGamma)
 End Function
 
 Public Function GetSurfacePixelOffset() As PD_2D_PixelOffset
@@ -80,12 +95,16 @@ Public Function GetSurfaceRenderingOriginY() As Single
     GetSurfaceRenderingOriginY = Me.GetSurfaceProperty(P2_SurfaceRenderingOriginY)
 End Function
 
-Public Function GetSurfaceBlendUsingSRGBGamma() As Boolean
-    GetSurfaceBlendUsingSRGBGamma = Me.GetSurfaceProperty(P2_SurfaceBlendUsingSRGBGamma)
+Public Function GetSurfaceResizeQuality() As PD_2D_ResizeQuality
+    GetSurfaceResizeQuality = Me.GetSurfaceProperty(P2_SurfaceResizeQuality)
 End Function
 
 Public Sub SetSurfaceAntialiasing(ByVal newSetting As PD_2D_Antialiasing)
     Me.SetSurfaceProperty P2_SurfaceAntialiasing, newSetting
+End Sub
+
+Public Sub SetSurfaceBlendUsingSRGBGamma(ByVal newSetting As Boolean)
+    Me.SetSurfaceProperty P2_SurfaceBlendUsingSRGBGamma, newSetting
 End Sub
 
 Public Sub SetSurfacePixelOffset(ByVal newSetting As PD_2D_PixelOffset)
@@ -100,8 +119,8 @@ Public Sub SetSurfaceRenderingOriginY(ByVal newSetting As Single)
     Me.SetSurfaceProperty P2_SurfaceRenderingOriginY, newSetting
 End Sub
 
-Public Sub SetSurfaceBlendUsingSRGBGamma(ByVal newSetting As Boolean)
-    Me.SetSurfaceProperty P2_SurfaceBlendUsingSRGBGamma, newSetting
+Public Sub SetSurfaceResizeQuality(ByVal newSetting As PD_2D_ResizeQuality)
+    Me.SetSurfaceProperty P2_SurfaceResizeQuality, newSetting
 End Sub
 
 'Get/set individual settings by enum type
@@ -123,6 +142,9 @@ Public Function GetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS) As Va
         
         Case P2_SurfaceBlendUsingSRGBGamma
             GetSurfaceProperty = m_SurfaceBlendUsingSRGBGamma
+            
+        Case P2_SurfaceResizeQuality
+            GetSurfaceProperty = m_SurfaceResizeQuality
     
     End Select
 
@@ -146,6 +168,9 @@ Public Sub SetSurfaceProperty(ByVal propID As PD_2D_SURFACE_SETTINGS, ByVal newS
             
         Case P2_SurfaceBlendUsingSRGBGamma
             m_SurfaceBlendUsingSRGBGamma = CBool(newSetting)
+            
+        Case P2_SurfaceResizeQuality
+            m_SurfaceResizeQuality = CLng(newSetting)
             
     End Select
     
@@ -269,28 +294,37 @@ Public Function CreateBlankSurface(ByVal surfaceWidth As Long, ByVal surfaceHeig
 End Function
 
 'Wrap this surface around some existing hDC.  It's fine to call this function multiple times on the same DC - changes to the handle
-' are detected automatically
+' are detected automatically.
 Public Function WrapSurfaceAroundDC(ByVal srcDC As Long) As Boolean
     
-    If (srcDC = m_SurfaceDC) Then
-        WrapSurfaceAroundDC = True
-    Else
-        
-        If (srcDC <> 0) Then
-        
+    If (srcDC <> 0) Then
+    
+        If (srcDC = m_SurfaceDC) Then
+            WrapSurfaceAroundDC = True
+        Else
+            
             If (m_SurfaceHandle <> 0) Then ReleaseSurface
             
             'Call the backend-specific surface creation function
             Select Case m_SurfaceBackend
                 
                 Case P2_DefaultBackend, P2_GDIPlusBackend
-                
+                    
                     m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(srcDC, IIf(m_SurfaceAntialiasing >= P2_AA_HighQuality, GP_SM_AntiAlias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Half, GP_POM_Half, GP_POM_None))
                     WrapSurfaceAroundDC = (m_SurfaceHandle <> 0)
                     
                     If WrapSurfaceAroundDC Then
                         m_SurfaceDC = srcDC
                         m_SurfaceType = P2_ST_WrapperOnly
+                        
+                        'Apply any other stored settings to the newly created surface
+                        RelayPropertyChangeToBackend P2_SurfaceBlendUsingSRGBGamma
+                        RelayPropertyChangeToBackend P2_SurfaceRenderingOriginX
+                        RelayPropertyChangeToBackend P2_SurfaceRenderingOriginY
+                        RelayPropertyChangeToBackend P2_SurfaceResizeQuality
+                        
+                    Else
+                        InternalError "GDI+ DC wrapper failed", "GDI+ failed to wrap the hDC passed to pd2DSurface.WrapSurfaceAroundDC"
                     End If
                     
             End Select
@@ -299,7 +333,9 @@ Public Function WrapSurfaceAroundDC(ByVal srcDC As Long) As Boolean
             If (WrapSurfaceAroundDC And m_DebugMode) Then Drawing2D.DEBUG_NotifySurfaceCountChange m_SurfaceBackend, True
             
         End If
-        
+    
+    Else
+        InternalError "hDC is null", "pd2DSurface.WrapSurfaceAroundDC doesn't work on null DCs."
     End If
     
 End Function
@@ -308,21 +344,78 @@ Public Function GetHandle() As Long
     GetHandle = m_SurfaceHandle
 End Function
 
+'Retrieving an Image-type handle is an expensive operation for graphics objects wrapped around a DC.  Whenever possible,
+' restrict usage of this function to internally-managed DIBs (which are very fast by comparison).
+Friend Function GetGdipImageHandle() As Long
+    
+    If (m_GdipImageHandle = 0) Then
+        
+        'If this surface is just a wrapper around a DC, we need to create a temporary copy of it, and wrap *that* instead.
+        ' AFAIK, this is the fastest, most reliable way to generate bitmap data from an arbitrary DC (which may not contain
+        ' bitmap data at all).
+        
+        'Note that alpha data *will* be ignored, by design.  The only way to fix this would be to ask the caller for
+        ' permission to use alpha bytes, which may not be valid as many (most?) DCs will have DDBs selected into them,
+        ' meaning alpha bytes are device-dependent and not necessarily relevant or correct.
+        If (m_SurfaceType = P2_ST_WrapperOnly) Then
+            
+            'Allocating memory for new DIBs is expensive, so whenever possible, skip these steps
+            If (m_SurfaceDIB Is Nothing) Then Set m_SurfaceDIB = New pdDIB
+            If (m_SurfaceDIB.GetDIBWidth <> Me.GetSurfaceWidth) Or (m_SurfaceDIB.GetDIBHeight <> Me.GetSurfaceHeight) Then m_SurfaceDIB.CreateBlank Me.GetSurfaceWidth, Me.GetSurfaceHeight, 24, 0
+            
+            'BitBlt lets us quickly copy the source DC's contents, regardless of the source DC's selected object
+            GDI.BitBltWrapper m_SurfaceDIB.GetDIBDC, 0, 0, m_SurfaceDIB.GetDIBWidth, m_SurfaceDIB.GetDIBHeight, m_SurfaceDC, 0, 0, vbSrcCopy
+            
+        End If
+        
+        If (Not GDI_Plus.GetGdipBitmapHandleFromDIB(m_GdipImageHandle, m_SurfaceDIB)) Then InternalError "GetGdipImageHandle failed", "Could not create a GDI+ Image (bitmap) object from wrapped hDC."
+        
+    'If we already have a handle, but we are in "wrapper" mode, we need to make sure our duplicate DIB copy is still up-to-date.
+    Else
+    
+        If (m_SurfaceType = P2_ST_WrapperOnly) Then
+        
+            If (m_SurfaceDIB.GetDIBWidth <> Me.GetSurfaceWidth) Or (m_SurfaceDIB.GetDIBHeight <> Me.GetSurfaceHeight) Then
+                ReleaseExtraInternalObjects
+                m_SurfaceDIB.CreateBlank Me.GetSurfaceWidth, Me.GetSurfaceHeight, 24, 0
+            End If
+            
+            GDI.BitBltWrapper m_SurfaceDIB.GetDIBDC, 0, 0, m_SurfaceDIB.GetDIBWidth, m_SurfaceDIB.GetDIBHeight, m_SurfaceDC, 0, 0, vbSrcCopy
+            
+            If (m_GdipImageHandle = 0) Then
+                If Not GDI_Plus.GetGdipBitmapHandleFromDIB(m_GdipImageHandle, m_SurfaceDIB) Then InternalError "GetGdipImageHandle failed", "Could not create a GDI+ Image (bitmap) object from wrapped hDC."
+            End If
+            
+        End If
+        
+    End If
+    
+    GetGdipImageHandle = m_GdipImageHandle
+    
+End Function
+
 Friend Function GetSurfaceBackend() As PD_2D_RENDERING_BACKEND
     GetSurfaceBackend = m_SurfaceBackend
 End Function
 
-'I'm still debating whether it's wise to expose this function externally.  GDI+ handles DCs in weird ways; as long as it is only ever
-' wrapped around *existing* DCs, you can intermix GDI+ and GDI calls without issue, and everything auto-synchronizes.  However, if you
-' create a native GDI+ surface then use GdipGetDC() to retrieve a DC for it, you *must* call GdipReleaseDC when you're done (which is
-' very unintuitive, given the way DCs usually work for VB programmers).
+'Users never need to call this function; it is only used to accelerate various drawing options
+Friend Function GetSurfaceType() As PD_2D_SurfaceType
+    GetSurfaceType = m_SurfaceType
+End Function
+
+'I'm still debating whether it's wise to expose this function externally.  GDI+ handles DCs in weird ways;
+' as long as it is only ever wrapped around *existing* DCs, you can usually intermix GDI+ and GDI calls
+' without running into problems.  However, if you create a native GDI+ surface then use GdipGetDC() to
+' retrieve a DC for it, you *must* call GdipReleaseDC when you're done (which is very unintuitive, given the
+' way DCs usually work for VB programmers).
 '
-'As such, my current inclination is to always keep a GDI-backed copy of any surfaces created by this class.  This allows the caller to
-' freely intermix bare GDI calls (like BitBlt) and pd2D drawing calls without consequence, and it also circumvents some really obnoxious
-' GDI+ limitations (like being forced to keep a file around for the lifetime of an image object, if the image object is created from
-' that file).
+'As such, my current inclination is to always keep a GDI-backed copy of any surfaces created by this class.
+' This simplifies situations where the wants to intermix bare GDI calls (like BitBlt) and pd2D drawing calls,
+' and it also circumvents some obnoxious GDI+ limitations (like being forced to keep a source file around for
+' the lifetime of an image object created from that file).
 '
-'Anyway, I mention this here as an FYI, but tl;dr: for now, this function is safe to use.
+'Anyway, I mention this here as an FYI, but tl;dr: for now, this function is safe to use, and you don't have
+' to free the DC after an operation completes.
 Public Function GetSurfaceDC() As Long
     If (m_SurfaceType = P2_ST_WrapperOnly) Then
         GetSurfaceDC = m_SurfaceDC
@@ -402,6 +495,10 @@ End Sub
 
 Public Function ReleaseSurface() As Boolean
     
+    'If any extra, specialized handles have been created, free them first.  (Some of these handles may wrap data
+    ' we are about to free, so releasing them first prevents double-freeing crashes.)
+    ReleaseExtraInternalObjects
+    
     If (m_SurfaceHandle <> 0) Then
         
         'Call the backend-specific release function
@@ -421,6 +518,10 @@ Public Function ReleaseSurface() As Boolean
             'Also reset any surface-type-specific values
             If (m_SurfaceType = P2_ST_WrapperOnly) Then
                 m_SurfaceDC = 0
+                
+                'Wrapped surfaces may use a temporary DIB for certain operations, so free that temp DIB if it exists
+                If (Not m_SurfaceDIB Is Nothing) Then Set m_SurfaceDIB = Nothing
+                
             ElseIf (m_SurfaceType = P2_ST_Bitmap) Then
                 Set m_SurfaceDIB = Nothing
             End If
@@ -437,6 +538,16 @@ Public Function ReleaseSurface() As Boolean
     m_SurfaceDC = 0
 
 End Function
+
+Private Sub ReleaseExtraInternalObjects()
+
+    'GDI+ "Image" handles may be created on-demand, if required by a given paint function
+    If (m_GdipImageHandle <> 0) Then
+        GDI_Plus.ReleaseGDIPlusImage m_GdipImageHandle
+        m_GdipImageHandle = 0
+    End If
+    
+End Sub
 
 Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_SURFACE_SETTINGS)
     
@@ -476,6 +587,16 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_SURFACE_SETTINGS)
                             GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, P2_SurfaceBlendUsingSRGBGamma, GP_CQ_AssumeLinear
                         End If
                         
+                    Case P2_SurfaceResizeQuality
+                        Select Case m_SurfaceResizeQuality
+                            Case P2_RQ_Fast
+                                GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, P2_SurfaceResizeQuality, GP_IM_NearestNeighbor
+                            Case P2_RQ_Bilinear
+                                GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, P2_SurfaceResizeQuality, GP_IM_HighQualityBilinear
+                            Case P2_RQ_Bicubic
+                                GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, P2_SurfaceResizeQuality, GP_IM_HighQualityBicubic
+                        End Select
+                        
                 End Select
                 
             'In the future, other backends can be handled here...
@@ -493,6 +614,7 @@ Public Sub ResetAllProperties()
     Me.SetSurfaceProperty P2_SurfaceRenderingOriginX, 0#
     Me.SetSurfaceProperty P2_SurfaceRenderingOriginY, 0#
     Me.SetSurfaceProperty P2_SurfaceBlendUsingSRGBGamma, False
+    Me.SetSurfaceProperty P2_SurfaceResizeQuality, P2_RQ_Fast
 End Sub
 
 'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
@@ -516,3 +638,4 @@ End Sub
 Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
     Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DSurface"
 End Sub
+

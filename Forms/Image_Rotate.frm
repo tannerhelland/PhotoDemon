@@ -160,13 +160,13 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
     rotationTransparent = cParams.GetBool("RotationTransparentBackground", True)
     rotationBackColor = cParams.GetLong("RotationBackgroundColor", vbWhite)
     
-    Dim gdipRotationQuality As InterpolationMode
+    Dim gdipRotationQuality As GP_InterpolationMode
     If (rotationQuality = 0) Then
-        gdipRotationQuality = InterpolationModeNearestNeighbor
+        gdipRotationQuality = GP_IM_NearestNeighbor
     ElseIf (rotationQuality = 1) Then
-        gdipRotationQuality = InterpolationModeBilinear
+        gdipRotationQuality = GP_IM_Bilinear
     Else
-        gdipRotationQuality = InterpolationModeBicubic
+        gdipRotationQuality = GP_IM_Bicubic
     End If
     
     'If we're rotating an entire image, and a selection tool is active, disable the selection before rotating
@@ -435,10 +435,10 @@ Private Sub Form_Load()
         Select Case m_RotateTarget
         
             Case PD_AT_WHOLEIMAGE
-                pdImages(g_CurrentImage).GetCompositedRect smallDIB, 0, 0, dWidth, dHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, InterpolationModeHighQualityBicubic, , CLC_Generic
+                pdImages(g_CurrentImage).GetCompositedRect smallDIB, 0, 0, dWidth, dHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, GP_IM_HighQualityBicubic, , CLC_Generic
             
             Case PD_AT_SINGLELAYER
-                GDIPlusResizeDIB smallDIB, 0, 0, dWidth, dHeight, pdImages(g_CurrentImage).GetActiveDIB, 0, 0, pdImages(g_CurrentImage).GetActiveDIB.GetDIBWidth, pdImages(g_CurrentImage).GetActiveDIB.GetDIBHeight, InterpolationModeHighQualityBicubic
+                GDIPlusResizeDIB smallDIB, 0, 0, dWidth, dHeight, pdImages(g_CurrentImage).GetActiveDIB, 0, 0, pdImages(g_CurrentImage).GetActiveDIB.GetDIBWidth, pdImages(g_CurrentImage).GetActiveDIB.GetDIBHeight, GP_IM_HighQualityBicubic
             
         End Select
         

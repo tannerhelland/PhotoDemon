@@ -2992,10 +2992,10 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
         If g_ImageFormats.FreeImageEnabled Then
             RequestThumbnail = FreeImageResizeDIBFast(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, FILTER_BILINEAR, True)
         Else
-            RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.GetDIBWidth, selMask.GetDIBHeight, InterpolationModeNearestNeighbor)
+            RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.GetDIBWidth, selMask.GetDIBHeight, GP_IM_NearestNeighbor)
         End If
     Else
-        RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.GetDIBWidth, selMask.GetDIBHeight, InterpolationModeHighQualityBicubic)
+        RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.GetDIBWidth, selMask.GetDIBHeight, GP_IM_HighQualityBicubic)
     End If
     
 End Function

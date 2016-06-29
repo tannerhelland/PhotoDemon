@@ -1020,7 +1020,7 @@ Private Sub InitializeUIDib(ByRef dstDIB As pdDIB, ByRef resString As String)
     'If the screen is high DPI, resize all DIBs to match
     If FixDPIFloat(1) > 1 Then
         dstDIB.CreateBlank FixDPI(tmpDIB.GetDIBWidth), FixDPI(tmpDIB.GetDIBHeight), tmpDIB.GetDIBColorDepth, 0
-        GDIPlusResizeDIB dstDIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, InterpolationModeHighQualityBicubic
+        GDIPlusResizeDIB dstDIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, GP_IM_HighQualityBicubic
     Else
         dstDIB.CreateFromExistingDIB tmpDIB
     End If

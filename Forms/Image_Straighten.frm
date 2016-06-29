@@ -128,8 +128,8 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
         Dim solveAngle As Double, len1 As Double, len2 As Double, scaleFactor As Double
         
         If isPreview Then
-            cx = smallDIB.getDIBWidth / 2
-            cy = smallDIB.getDIBHeight / 2
+            cx = smallDIB.GetDIBWidth / 2
+            cy = smallDIB.GetDIBHeight / 2
         Else
         
             Select Case thingToRotate
@@ -139,8 +139,8 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
                     cy = pdImages(g_CurrentImage).Height / 2
                     
                 Case PD_AT_SINGLELAYER
-                    cx = pdImages(g_CurrentImage).GetActiveDIB.getDIBWidth / 2
-                    cy = pdImages(g_CurrentImage).GetActiveDIB.getDIBHeight / 2
+                    cx = pdImages(g_CurrentImage).GetActiveDIB.GetDIBWidth / 2
+                    cy = pdImages(g_CurrentImage).GetActiveDIB.GetDIBHeight / 2
                     
             End Select
                     
@@ -166,7 +166,7 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
             nHeight = FreeImage_GetHeight(returnDIB)
                         
             'Create a blank DIB to receive the rotated image from FreeImage
-            tmpDIB.createBlank nWidth, nHeight, 32
+            tmpDIB.CreateBlank nWidth, nHeight, 32
             
             'Ask FreeImage to premultiply the image's alpha data
             FreeImage_PreMultiplyWithAlpha returnDIB
@@ -200,10 +200,10 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
             sourceCropHeight = nHeight * (1 / scaleFactor)
             
             'Prepare a final DIB to receive the resized image
-            finalDIB.createBlank nWidth, nHeight, 32, 0
+            finalDIB.CreateBlank nWidth, nHeight, 32, 0
             
             'Use GDI+ to copy the relevant source rectangle into the final DIB
-            GDIPlusResizeDIB finalDIB, 0, 0, nWidth, nHeight, tmpDIB, (nWidth - sourceCropWidth) / 2, (nHeight - sourceCropHeight) / 2, sourceCropWidth, sourceCropHeight, InterpolationModeHighQualityBicubic
+            GDIPlusResizeDIB finalDIB, 0, 0, nWidth, nHeight, tmpDIB, (nWidth - sourceCropWidth) / 2, (nHeight - sourceCropHeight) / 2, sourceCropWidth, sourceCropHeight, GP_IM_HighQualityBicubic
             
             'For previews only, before rendering the final DIB to the screen, going some helpful
             ' guidelines to help the user confirm the accuracy of their straightening.
@@ -214,11 +214,11 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
             Dim j As Long
             For j = 0 To 4
                 lineOffset = lineStepX * j
-                GDIPlusDrawLineToDC finalDIB.getDIBDC, lineOffset, 0, lineOffset, nHeight, RGB(255, 255, 0), 192, 1
-                GDIPlusDrawLineToDC finalDIB.getDIBDC, lineOffset + lineStepX / 2, 0, lineOffset + lineStepX / 2, nHeight, RGB(255, 255, 0), 80, 1
+                GDIPlusDrawLineToDC finalDIB.GetDIBDC, lineOffset, 0, lineOffset, nHeight, RGB(255, 255, 0), 192, 1
+                GDIPlusDrawLineToDC finalDIB.GetDIBDC, lineOffset + lineStepX / 2, 0, lineOffset + lineStepX / 2, nHeight, RGB(255, 255, 0), 80, 1
                 lineOffset = lineStepY * j
-                GDIPlusDrawLineToDC finalDIB.getDIBDC, 0, lineOffset, nWidth, lineOffset, RGB(255, 255, 0), 192, 1
-                GDIPlusDrawLineToDC finalDIB.getDIBDC, 0, lineOffset + lineStepY / 2, nWidth, lineOffset + lineStepY / 2, RGB(255, 255, 0), 80, 1
+                GDIPlusDrawLineToDC finalDIB.GetDIBDC, 0, lineOffset, nWidth, lineOffset, RGB(255, 255, 0), 192, 1
+                GDIPlusDrawLineToDC finalDIB.GetDIBDC, 0, lineOffset + lineStepY / 2, nWidth, lineOffset + lineStepY / 2, RGB(255, 255, 0), 80, 1
             Next j
                         
             'Finally, render the preview and erase the temporary DIB to conserve memory
@@ -283,7 +283,7 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
                 nHeight = FreeImage_GetHeight(returnDIB)
                 
                 'Resize the layer's DIB in preparation for the transfer
-                tmpLayerRef.layerDIB.createBlank nWidth, nHeight, 32
+                tmpLayerRef.layerDIB.CreateBlank nWidth, nHeight, 32
                 
                 'Ask FreeImage to premultiply the image's alpha data
                 FreeImage_PreMultiplyWithAlpha returnDIB
@@ -317,14 +317,14 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
                 sourceCropHeight = nHeight * (1 / scaleFactor)
                 
                 'Prepare a final DIB to receive the resized image
-                finalDIB.createBlank nWidth, nHeight, 32, 0
-                finalDIB.setInitialAlphaPremultiplicationState True
+                finalDIB.CreateBlank nWidth, nHeight, 32, 0
+                finalDIB.SetInitialAlphaPremultiplicationState True
                 
                 'Use GDI+ to copy the relevant source rectangle into the final DIB
-                GDIPlusResizeDIB finalDIB, 0, 0, nWidth, nHeight, tmpLayerRef.layerDIB, (nWidth - sourceCropWidth) / 2, (nHeight - sourceCropHeight) / 2, sourceCropWidth, sourceCropHeight, InterpolationModeHighQualityBicubic
+                GDIPlusResizeDIB finalDIB, 0, 0, nWidth, nHeight, tmpLayerRef.layerDIB, (nWidth - sourceCropWidth) / 2, (nHeight - sourceCropHeight) / 2, sourceCropWidth, sourceCropHeight, GP_IM_HighQualityBicubic
                 
                 'Copy the resized DIB into its parent layer
-                tmpLayerRef.layerDIB.createFromExistingDIB finalDIB
+                tmpLayerRef.layerDIB.CreateFromExistingDIB finalDIB
                 
                 'If resizing the entire image, remove any null-padding now
                 If thingToRotate = PD_AT_WHOLEIMAGE Then tmpLayerRef.CropNullPaddedLayer
@@ -365,10 +365,10 @@ Private Sub cmdBar_OKClick()
     Select Case m_StraightenTarget
     
         Case PD_AT_WHOLEIMAGE
-            Process "Straighten image", , buildParams(sltAngle, m_StraightenTarget), UNDO_IMAGE
+            Process "Straighten image", , BuildParams(sltAngle, m_StraightenTarget), UNDO_IMAGE
         
         Case PD_AT_SINGLELAYER
-            Process "Straighten layer", , buildParams(sltAngle, m_StraightenTarget), UNDO_LAYER
+            Process "Straighten layer", , BuildParams(sltAngle, m_StraightenTarget), UNDO_LAYER
     
     End Select
     
@@ -406,8 +406,8 @@ Private Sub Form_Activate()
             srcHeight = pdImages(g_CurrentImage).Height
         
         Case PD_AT_SINGLELAYER
-            srcWidth = pdImages(g_CurrentImage).GetActiveLayer.getLayerWidth(False)
-            srcHeight = pdImages(g_CurrentImage).GetActiveLayer.getLayerHeight(False)
+            srcWidth = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)
+            srcHeight = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
         
     End Select
     
@@ -416,15 +416,15 @@ Private Sub Form_Activate()
     'Create a new, smaller image at those dimensions
     If (dWidth < srcWidth) Or (dHeight < srcHeight) Then
         
-        smallDIB.createBlank dWidth, dHeight, 32, 0
+        smallDIB.CreateBlank dWidth, dHeight, 32, 0
         
         Select Case m_StraightenTarget
         
             Case PD_AT_WHOLEIMAGE
-                pdImages(g_CurrentImage).GetCompositedRect smallDIB, 0, 0, dWidth, dHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, InterpolationModeHighQualityBicubic, , CLC_Generic
+                pdImages(g_CurrentImage).GetCompositedRect smallDIB, 0, 0, dWidth, dHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, GP_IM_HighQualityBicubic, , CLC_Generic
             
             Case PD_AT_SINGLELAYER
-                GDIPlusResizeDIB smallDIB, 0, 0, dWidth, dHeight, pdImages(g_CurrentImage).GetActiveDIB, 0, 0, pdImages(g_CurrentImage).GetActiveDIB.getDIBWidth, pdImages(g_CurrentImage).GetActiveDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+                GDIPlusResizeDIB smallDIB, 0, 0, dWidth, dHeight, pdImages(g_CurrentImage).GetActiveDIB, 0, 0, pdImages(g_CurrentImage).GetActiveDIB.GetDIBWidth, pdImages(g_CurrentImage).GetActiveDIB.GetDIBHeight, GP_IM_HighQualityBicubic
             
         End Select
         
@@ -437,7 +437,7 @@ Private Sub Form_Activate()
                 pdImages(g_CurrentImage).GetCompositedImage smallDIB
             
             Case PD_AT_SINGLELAYER
-                smallDIB.createFromExistingDIB pdImages(g_CurrentImage).GetActiveDIB
+                smallDIB.CreateFromExistingDIB pdImages(g_CurrentImage).GetActiveDIB
             
         End Select
         

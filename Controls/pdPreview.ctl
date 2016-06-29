@@ -745,9 +745,9 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         
         'Enable high-quality stretching, but only if the image is equal to or larger than the preview area
         If (srcWidth < dstWidth) And (srcHeight < dstHeight) Then
-            GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, finalWidth, finalHeight, srcDIB, 0, 0, srcWidth, srcHeight, , InterpolationModeNearestNeighbor, bufferDC
+            GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, finalWidth, finalHeight, srcDIB, 0, 0, srcWidth, srcHeight, , GP_IM_NearestNeighbor, bufferDC
         Else
-            GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, finalWidth, finalHeight, srcDIB, 0, 0, srcWidth, srcHeight, , InterpolationModeBicubic, bufferDC
+            GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, finalWidth, finalHeight, srcDIB, 0, 0, srcWidth, srcHeight, , GP_IM_Bicubic, bufferDC
         End If
         
         'We also draw a border around the final result

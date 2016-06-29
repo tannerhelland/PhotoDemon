@@ -104,11 +104,12 @@ Public Enum PD_2D_SURFACE_SETTINGS
     P2_SurfaceRenderingOriginX = 2
     P2_SurfaceRenderingOriginY = 3
     P2_SurfaceBlendUsingSRGBGamma = 4
-    [_P2_NumOfSurfaceSettings] = 5
+    P2_SurfaceResizeQuality = 5
+    [_P2_NumOfSurfaceSettings] = 6
 End Enum
 
 #If False Then
-    Private Const P2_SurfaceAntialiasing = 0, P2_SurfacePixelOffset = 1, P2_SurfaceRenderingOriginX = 2, P2_SurfaceRenderingOriginY = 3, P2_SurfaceBlendUsingSRGBGamma = 4, P2_NumOfSurfaceSettings = 5
+    Private Const P2_SurfaceAntialiasing = 0, P2_SurfacePixelOffset = 1, P2_SurfaceRenderingOriginX = 2, P2_SurfaceRenderingOriginY = 3, P2_SurfaceBlendUsingSRGBGamma = 4, P2_NumOfSurfaceSettings = 5, P2_SurfaceResizeQuality = 6
 #End If
 
 'The whole point of Drawing2D is to avoid backend-specific parameters.  As such, we necessarily wrap a number of
@@ -303,6 +304,16 @@ End Enum
     Private Const P2_PO_Normal = 0, P2_PO_Half = 1
 #End If
 
+Public Enum PD_2D_ResizeQuality
+    P2_RQ_Fast = 0
+    P2_RQ_Bilinear = 1
+    P2_RQ_Bicubic = 2
+End Enum
+
+#If False Then
+    Private Const P2_RQ_Fast = 0, P2_RQ_Bilinear = 1, P2_RQ_Bicubic = 2
+#End If
+
 'Surfaces come in a few different varieties.  Note that some actions may not be available for certain surface types.
 Public Enum PD_2D_SurfaceType
     P2_ST_Uninitialized = -1    'The default value of a new surface; the surface is empty, and cannot be painted to
@@ -340,12 +351,17 @@ Public Type RGBQUAD
    Blue As Byte
    Green As Byte
    Red As Byte
-   Alpha As Byte
+   alpha As Byte
 End Type
 
 Public Type POINTFLOAT
    x As Single
    y As Single
+End Type
+
+Public Type POINTLONG
+   x As Long
+   y As Long
 End Type
 
 Public Type RECTL
@@ -394,12 +410,6 @@ Public Type GRADIENTPOINT
     PointPosition As Single
 End Type
 
-'Many drawing features lean on various geometry functions
-Public Const PI As Double = 3.14159265358979
-Public Const PI_HALF As Double = 1.5707963267949
-Public Const PI_DOUBLE As Double = 6.28318530717958
-Public Const PI_DIV_180 As Double = 0.017453292519943
-
 'If GDI+ is initialized successfully, this will be set to TRUE
 Private m_GDIPlusAvailable As Boolean
 
@@ -423,6 +433,16 @@ Public Function QuickCreateRegionRectangle(ByRef dstRegion As pd2DRegion, ByVal 
     With dstRegion
         .SetDebugMode m_DebugMode
         QuickCreateRegionRectangle = .AddRectangleF(rLeft, rTop, rWidth, rHeight, P2_CM_Replace)
+    End With
+End Function
+
+'Shortcut function for quickly creating a blank surface with the default rendering backend and default rendering settings
+Public Function QuickCreateBlankSurface(ByRef dstSurface As pd2DSurface, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, Optional ByVal surfaceSupportsAlpha As Boolean = True, Optional ByVal enableAntialiasing As Boolean = False, Optional ByVal initialColor As Long = vbWhite, Optional ByVal initialOpacity As Single = 100#) As Boolean
+    If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface Else dstSurface.ResetAllProperties
+    With dstSurface
+        .SetDebugMode m_DebugMode
+        If enableAntialiasing Then .SetSurfaceAntialiasing P2_AA_HighQuality Else .SetSurfaceAntialiasing P2_AA_None
+        QuickCreateBlankSurface = .CreateBlankSurface(surfaceWidth, surfaceHeight, surfaceSupportsAlpha, initialColor, initialOpacity)
     End With
 End Function
 
@@ -640,7 +660,10 @@ End Sub
 Public Sub DEBUG_NotifyExternalError(Optional ByVal errName As String = vbNullString, Optional ByVal errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0, Optional ByVal errSource As String = vbNullString)
     If m_DebugMode Then
         If (Len(errSource) = 0) Then errSource = "pd2D"
-        pdDebug.LogAction "WARNING!  " & errSource & " encountered an error: """ & errName & """ - " & errDescription
-        If (ErrNum <> 0) Then pdDebug.LogAction "  (If it helps, an error number was also reported: #" & ErrNum & ")"
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  " & errSource & " encountered an error: """ & errName & """ - " & errDescription
+            If (ErrNum <> 0) Then pdDebug.LogAction "  (If it helps, an error number was also reported: #" & ErrNum & ")"
+        #End If
     End If
 End Sub
+

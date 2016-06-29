@@ -147,17 +147,17 @@ Private Sub nvgMain_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single,
         End If
         
         'Request the actual thumbnail now
-        Dim iQuality As InterpolationMode
+        Dim iQuality As GP_InterpolationMode
         Select Case g_InterfacePerformance
         
             Case PD_PERF_FASTEST
-                iQuality = InterpolationModeNearestNeighbor
+                iQuality = GP_IM_NearestNeighbor
             
             Case PD_PERF_BALANCED
-                iQuality = InterpolationModeBilinear
+                iQuality = GP_IM_Bilinear
             
             Case PD_PERF_BESTQUALITY
-                iQuality = InterpolationModeHighQualityBicubic
+                iQuality = GP_IM_HighQualityBicubic
         
         End Select
         

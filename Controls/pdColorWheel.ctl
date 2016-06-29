@@ -675,7 +675,7 @@ Private Sub RedrawBackBuffer()
             
             'Copy the square into place.  Note that we must use GDI+ to support subpixel positioning.
             With m_SVRectF
-                GDI_Plus.GDIPlus_StretchBlt Nothing, .Left, .Top, .Width, .Height, m_SquareBuffer, 0, 0, m_SquareBuffer.GetDIBWidth, m_SquareBuffer.GetDIBHeight, , InterpolationModeBilinear, bufferDC
+                GDI_Plus.GDIPlus_StretchBlt Nothing, .Left, .Top, .Width, .Height, m_SquareBuffer, 0, 0, m_SquareBuffer.GetDIBWidth, m_SquareBuffer.GetDIBHeight, , GP_IM_Bilinear, bufferDC
             End With
             
             'Trace the edges of the square, to help separate the bright portions from the background

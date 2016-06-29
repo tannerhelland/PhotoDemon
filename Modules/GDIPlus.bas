@@ -102,6 +102,31 @@ End Enum
     Private Const GP_BT_SolidColor = 0, GP_BT_HatchFill = 1, GP_BT_TextureFill = 2, GP_BT_PathGradient = 3, GP_BT_LinearGradient = 4
 #End If
 
+'Coloar adjustments are handled internally, at present, so we don't need to expose them to other objects
+Private Enum GP_ColorAdjustType
+    GP_CAT_Default = 0
+    GP_CAT_Bitmap = 1
+    GP_CAT_Brush = 2
+    GP_CAT_Pen = 3
+    GP_CAT_Text = 4
+    GP_CAT_Count = 5
+    GP_CAT_Any = 6
+End Enum
+
+#If False Then
+    Private Const GP_CAT_Default = 0, GP_CAT_Bitmap = 1, GP_CAT_Brush = 2, GP_CAT_Pen = 3, GP_CAT_Text = 4, GP_CAT_Count = 5, GP_CAT_Any = 6
+#End If
+
+Private Enum GP_ColorMatrixFlags
+    GP_CMF_Default = 0
+    GP_CMF_SkipGrays = 1
+    GP_CMF_AltGray = 2
+End Enum
+
+#If False Then
+    Private Const GP_CMF_Default = 0, GP_CMF_SkipGrays = 1, GP_CMF_AltGray = 2
+#End If
+
 Public Enum GP_CombineMode
     GP_CM_Replace = 0
     GP_CM_Intersect = 1
@@ -115,7 +140,19 @@ End Enum
     Private Const GP_CM_Replace = 0, GP_CM_Intersect = 1, GP_CM_Union = 2, GP_CM_Xor = 3, GP_CM_Exclude = 4, GP_CM_Complement = 5
 #End If
 
-'Alpha compositing qualities, which in turn affect how carefully GDI+ will blend the pixels.  Use with caution!
+'Compositing mode is the closest GDI+ comes to offering "blend modes".  The default mode alpha-blends the source
+' with the destination; "copy" mode overwrites the destination completely.
+Public Enum GP_CompositingMode
+    GP_CM_SourceOver = 0
+    GP_CM_SourceCopy = 1
+End Enum
+
+#If False Then
+    Private Const GP_CM_SourceOver = 0, GP_CM_SourceCopy = 1
+#End If
+
+'Alpha compositing qualities, which affects how GDI+ blends pixels.  Use with caution, as gamma-corrected blending
+' yields non-inutitive results!
 Public Enum GP_CompositingQuality
     GP_CQ_Invalid = GP_QM_Invalid
     GP_CQ_Default = GP_QM_Default
@@ -160,6 +197,22 @@ End Enum
 
 #If False Then
     Private Const GP_FM_Alternate = 0&, GP_FM_Winding = 1&
+#End If
+
+Public Enum GP_InterpolationMode
+    GP_IM_Invalid = GP_QM_Invalid
+    GP_IM_Default = GP_QM_Default
+    GP_IM_LowQuality = GP_QM_Low
+    GP_IM_HighQuality = GP_QM_High
+    GP_IM_Bilinear = 3
+    GP_IM_Bicubic = 4
+    GP_IM_NearestNeighbor = 5
+    GP_IM_HighQualityBilinear = 6
+    GP_IM_HighQualityBicubic = 7
+End Enum
+
+#If False Then
+    Private Const GP_IM_Invalid = GP_QM_Invalid, GP_IM_Default = GP_QM_Default, GP_IM_LowQuality = GP_QM_Low, GP_IM_HighQuality = GP_QM_High, GP_IM_Bilinear = 3, GP_IM_Bicubic = 4, GP_IM_NearestNeighbor = 5, GP_IM_HighQualityBilinear = 6, GP_IM_HighQualityBicubic = 7
 #End If
 
 Public Enum GP_LineCap
@@ -292,11 +345,11 @@ Public Enum GP_SmoothingMode
     GP_SM_HighSpeed = GP_QM_Low
     GP_SM_HighQuality = GP_QM_High
     GP_SM_None = 3&
-    GP_SM_AntiAlias = 4&
+    GP_SM_Antialias = 4&
 End Enum
 
 #If False Then
-    Private Const GP_SM_Invalid = GP_QM_Invalid, GP_SM_Default = GP_QM_Default, GP_SM_HighSpeed = GP_QM_Low, GP_SM_HighQuality = GP_QM_High, GP_SM_None = 3, GP_SM_AntiAlias = 4
+    Private Const GP_SM_Invalid = GP_QM_Invalid, GP_SM_Default = GP_QM_Default, GP_SM_HighSpeed = GP_QM_Low, GP_SM_HighQuality = GP_QM_High, GP_SM_None = 3, GP_SM_Antialias = 4
 #End If
 
 Public Enum GP_Unit
@@ -324,6 +377,33 @@ End Enum
 #If False Then
     Private Const GP_WM_Tile = 0, GP_WM_TileFlipX = 1, GP_WM_TileFlipY = 2, GP_WM_TileFlipXY = 3, GP_WM_Clamp = 4
 #End If
+
+'Private Const PixelFormat32bppPARGB = &HE200B
+
+'GDI interop is made easier by declaring a few GDI-specific structs
+Private Type BITMAPINFOHEADER
+    Size As Long
+    Width As Long
+    Height As Long
+    Planes As Integer
+    BitCount As Integer
+    Compression As Long
+    ImageSize As Long
+    xPelsPerMeter As Long
+    yPelsPerMeter As Long
+    Colorused As Long
+    ColorImportant As Long
+End Type
+
+Private Type BITMAPINFO
+    Header As BITMAPINFOHEADER
+    Colors(0 To 255) As RGBQUAD
+End Type
+
+'This (stupid) type is used so we can take advantage of LSet when performing some conversions
+Private Type tmpLong
+    lngResult As Long
+End Type
 
 'Core GDI+ functions:
 Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef gdipToken As Long, ByRef startupStruct As GDIPlusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GP_Result
@@ -355,6 +435,7 @@ Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (ByRef origGDI
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal bmpWidth As Long, ByVal bmpHeight As Long, ByVal bmpStride As Long, ByVal bmpPixelFormat As Long, ByRef Scan0 As Any, ByRef dstGdipBitmap As Long) As GP_Result
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef dstGraphics As Long) As GP_Result
 Private Declare Function GdipCreateHatchBrush Lib "gdiplus" (ByVal bHatchStyle As GP_PatternStyle, ByVal bForeColor As Long, ByVal bBackColor As Long, ByRef dstBrush As Long) As GP_Result
+Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef dstImageAttributes As Long) As GP_Result
 Private Declare Function GdipCreateLineBrush Lib "gdiplus" (ByRef firstPoint As POINTFLOAT, ByRef secondPoint As POINTFLOAT, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal brushWrapMode As GP_WrapMode, ByRef dstBrush As Long) As GP_Result
 Private Declare Function GdipCreateLineBrushFromRectWithAngle Lib "gdiplus" (ByRef srcRect As RECTF, ByVal firstRGBA As Long, ByVal secondRGBA As Long, ByVal gradAngle As Single, ByVal isAngleScalable As Long, ByVal gradientWrapMode As GP_WrapMode, ByRef dstLineGradientBrush As Long) As GP_Result
 Private Declare Function GdipCreateMatrix Lib "gdiplus" (ByRef dstMatrix As Long) As GP_Result
@@ -376,29 +457,47 @@ Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal hPath As Long) As G
 Private Declare Function GdipDeletePen Lib "gdiplus" (ByVal hPen As Long) As GP_Result
 Private Declare Function GdipDeleteRegion Lib "gdiplus" (ByVal hRegion As Long) As GP_Result
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal hImage As Long) As GP_Result
+Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal hImageAttributes As Long) As GP_Result
 
 Private Declare Function GdipDrawArc Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As GP_Result
 Private Declare Function GdipDrawArcI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal startAngle As Long, ByVal sweepAngle As Long) As GP_Result
 Private Declare Function GdipDrawClosedCurve2 Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointFloats As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
+Private Declare Function GdipDrawClosedCurve2I Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointLongs As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
 Private Declare Function GdipDrawCurve2 Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointFloats As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
+Private Declare Function GdipDrawCurve2I Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointLongs As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
 Private Declare Function GdipDrawEllipse Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single) As GP_Result
 Private Declare Function GdipDrawEllipseI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long) As GP_Result
+Private Declare Function GdipDrawImage Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal x As Single, ByVal y As Single) As GP_Result
+Private Declare Function GdipDrawImageI Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal x As Long, ByVal y As Long) As GP_Result
+Private Declare Function GdipDrawImageRect Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal x As Single, ByVal y As Single, ByVal dstWidth As Single, ByVal dstHeight As Single) As GP_Result
+Private Declare Function GdipDrawImageRectI Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal x As Long, ByVal y As Long, ByVal dstWidth As Long, ByVal dstHeight As Long) As GP_Result
+Private Declare Function GdipDrawImageRectRect Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal srcUnit As GP_Unit, Optional ByVal newImgAttributes As Long = 0, Optional ByVal progCallbackFunction As Long = 0, Optional ByVal progCallbackData As Long = 0) As GP_Result
+Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As GP_Unit, Optional ByVal newImgAttributes As Long = 0, Optional ByVal progCallbackFunction As Long = 0, Optional ByVal progCallbackData As Long = 0) As GP_Result
+Private Declare Function GdipDrawImagePointsRect Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal ptrToPointFloats As Long, ByVal dstPtCount As Long, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal srcUnit As GP_Unit, Optional ByVal newImgAttributes As Long = 0, Optional ByVal progCallbackFunction As Long = 0, Optional ByVal progCallbackData As Long = 0) As GP_Result
+Private Declare Function GdipDrawImagePointsRectI Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal ptrToPointInts As Long, ByVal dstPtCount As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As GP_Unit, Optional ByVal newImgAttributes As Long = 0, Optional ByVal progCallbackFunction As Long = 0, Optional ByVal progCallbackData As Long = 0) As GP_Result
 Private Declare Function GdipDrawLine Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As GP_Result
 Private Declare Function GdipDrawLineI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As GP_Result
 Private Declare Function GdipDrawLines Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointFloats As Long, ByVal numOfPoints As Long) As GP_Result
+Private Declare Function GdipDrawLinesI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointLongs As Long, ByVal numOfPoints As Long) As GP_Result
 Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal hPath As Long) As GP_Result
 Private Declare Function GdipDrawPolygon Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointFloats As Long, ByVal numOfPoints As Long) As GP_Result
+Private Declare Function GdipDrawPolygonI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointLongs As Long, ByVal numOfPoints As Long) As GP_Result
 Private Declare Function GdipDrawRectangle Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single) As GP_Result
 Private Declare Function GdipDrawRectangleI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long) As GP_Result
 
+Private Declare Function GdipFillClosedCurve2 Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal ptrToPointFloats As Long, ByVal numOfPoints As Long, ByVal curveTension As Single, ByVal fillMode As GP_FillMode) As GP_Result
+Private Declare Function GdipFillClosedCurve2I Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal ptrToPointLongs As Long, ByVal numOfPoints As Long, ByVal curveTension As Single, ByVal fillMode As GP_FillMode) As GP_Result
 Private Declare Function GdipFillEllipse Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single) As GP_Result
 Private Declare Function GdipFillEllipseI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long) As GP_Result
 Private Declare Function GdipFillPath Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal hPath As Long) As GP_Result
+Private Declare Function GdipFillPolygon Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal ptrToPointFloats As Long, ByVal numOfPoints As Long, ByVal fillMode As GP_FillMode) As GP_Result
+Private Declare Function GdipFillPolygonI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal ptrToPointLongs As Long, ByVal numOfPoints As Long, ByVal fillMode As GP_FillMode) As GP_Result
 Private Declare Function GdipFillRectangle Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single) As GP_Result
 Private Declare Function GdipFillRectangleI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long) As GP_Result
 
 Private Declare Function GdipGetClip Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstRegion As Long) As GP_Result
 Private Declare Function GdipGetCompositingQuality Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstCompositingQuality As GP_CompositingQuality) As GP_Result
+Private Declare Function GdipGetInterpolationMode Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstInterpolationMode As GP_InterpolationMode) As GP_Result
 Private Declare Function GdipGetPathFillMode Lib "gdiplus" (ByVal hPath As Long, ByRef dstFillRule As GP_FillMode) As GP_Result
 Private Declare Function GdipGetPathWorldBounds Lib "gdiplus" (ByVal hPath As Long, ByRef dstBounds As RECTF, ByVal tmpTransformMatrix As Long, ByVal tmpPenHandle As Long) As GP_Result
 Private Declare Function GdipGetPathWorldBoundsI Lib "gdiplus" (ByVal hPath As Long, ByRef dstBounds As RECTL, ByVal tmpTransformMatrix As Long, ByVal tmpPenHandle As Long) As GP_Result
@@ -438,10 +537,13 @@ Private Declare Function GdipScaleMatrix Lib "gdiplus" (ByVal hMatrix As Long, B
 
 Private Declare Function GdipSetClipRect Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single, ByVal useCombineMode As GP_CombineMode) As GP_Result
 Private Declare Function GdipSetClipRegion Lib "gdiplus" (ByVal hGraphics As Long, ByVal hRegion As Long, ByVal useCombineMode As GP_CombineMode) As GP_Result
+Private Declare Function GdipSetCompositingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newCompositingMode As GP_CompositingMode) As GP_Result
 Private Declare Function GdipSetCompositingQuality Lib "gdiplus" (ByVal hGraphics As Long, ByVal newCompositingQuality As GP_CompositingQuality) As GP_Result
 Private Declare Function GdipSetEmpty Lib "gdiplus" (ByVal hRegion As Long) As GP_Result
-Private Declare Function GdipSetImageAttributesWrapMode Lib "gdiplus" (ByVal hImageAttr As Long, ByVal newWrapMode As GP_WrapMode, ByVal argbOfClampMode As Long, ByVal bClampMustBeZero As Long) As GP_Result
+Private Declare Function GdipSetImageAttributesWrapMode Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal newWrapMode As GP_WrapMode, ByVal argbOfClampMode As Long, ByVal bClampMustBeZero As Long) As GP_Result
+Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal typeOfAdjustment As GP_ColorAdjustType, ByVal enableSeparateAdjustmentFlag As Long, ByVal ptrToColorMatrix As Long, ByVal ptrToGrayscaleMatrix As Long, ByVal extraColorMatrixFlags As GP_ColorMatrixFlags) As GP_Result
 Private Declare Function GdipSetInfinite Lib "gdiplus" (ByVal hRegion As Long) As GP_Result
+Private Declare Function GdipSetInterpolationMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newInterpolationMode As GP_InterpolationMode) As GP_Result
 Private Declare Function GdipSetLinePresetBlend Lib "gdiplus" (ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As GP_Result
 Private Declare Function GdipSetPathGradientCenterPoint Lib "gdiplus" (ByVal hBrush As Long, ByRef newCenterPoints As POINTFLOAT) As GP_Result
 Private Declare Function GdipSetPathGradientPresetBlend Lib "gdiplus" (ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal numOfPoints As Long) As GP_Result
@@ -475,7 +577,9 @@ Private Declare Function GdipWindingModeOutline Lib "gdiplus" (ByVal hPath As Lo
 
 'Non-GDI+ helper functions:
 Private Declare Function CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrDst As Long, ByVal ptrSrc As Long, ByVal numOfBytes As Long) As Long
+Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryW" (ByVal lpLibFileName As Long) As Long
 Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
 
 'Internally cached values:
@@ -714,26 +818,6 @@ Private Type PictDesc
     hPal       As Long
 End Type
 
-'BITMAP types
-Private Type BITMAPINFOHEADER
-    Size As Long
-    Width As Long
-    Height As Long
-    Planes As Integer
-    BitCount As Integer
-    Compression As Long
-    ImageSize As Long
-    xPelsPerMeter As Long
-    yPelsPerMeter As Long
-    Colorused As Long
-    ColorImportant As Long
-End Type
-
-Private Type BITMAPINFO
-    Header As BITMAPINFOHEADER
-    Colors(0 To 255) As RGBQUAD
-End Type
-
 'Load image from file, process said file, etc.
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef gpImage As Long) As Long
 Private Declare Function GdipLoadImageFromFileICM Lib "gdiplus" (ByVal srcFilename As String, ByRef gpImage As Long) As Long
@@ -786,107 +870,40 @@ Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest A
 Private Declare Function GdipCreateEffect Lib "gdiplus" (ByVal dwCid1 As Long, ByVal dwCid2 As Long, ByVal dwCid3 As Long, ByVal dwCid4 As Long, ByRef mEffect As Long) As Long
 Private Declare Function GdipSetEffectParameters Lib "gdiplus" (ByVal mEffect As Long, ByRef eParams As Any, ByVal Size As Long) As Long
 Private Declare Function GdipDeleteEffect Lib "gdiplus" (ByVal mEffect As Long) As Long
-Private Declare Function GdipDrawImage Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal x As Single, ByVal y As Single) As Long
-Private Declare Function GdipDrawImageRect Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal x As Single, ByVal y As Single, ByVal iWidth As Single, ByVal iHeight As Single) As Long
-Private Declare Function GdipDrawImageRectRect Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal srcUnit As GP_Unit, Optional ByVal imageAttributes As Long = 0, Optional ByVal callback As Long = 0, Optional ByVal callbackData As Long = 0) As Long
-Public Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As GP_Unit, Optional ByVal imageAttributes As Long = 0, Optional ByVal callback As Long = 0, Optional ByVal callbackData As Long = 0) As Long
-Private Declare Function GdipDrawImagePointsRect Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal ptrToPointFloats As Long, ByVal dstPtCount As Long, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal srcUnit As GP_Unit, Optional ByVal imageAttributes As Long = 0, Optional ByVal progCallbackFunction As Long = 0, Optional ByVal progCallbackData As Long = 0) As Long
-Private Declare Function GdipDrawImagePointsRectI Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal ptrToPointInts As Long, ByVal dstPtCount As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As GP_Unit, Optional ByVal imageAttributes As Long = 0, Optional ByVal progCallbackFunction As Long = 0, Optional ByVal progCallbackData As Long = 0) As Long
 Private Declare Function GdipDrawImageFX Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByRef iSource As RECTF, ByVal xForm As Long, ByVal mEffect As Long, ByVal mImageAttributes As Long, ByVal srcUnit As Long) As Long
 Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, ByVal mM12 As Single, ByVal mM21 As Single, ByVal mM22 As Single, ByVal mDx As Single, ByVal mDy As Single, ByRef mMatrix As Long) As Long
-Private Declare Function GdipSetInterpolationMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mInterpolation As InterpolationMode) As Long
-Private Declare Function GdipSetCompositingMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mCompositingMode As CompositingMode) As Long
-Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef hImageAttr As Long) As Long
-Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal hImageAttr As Long) As Long
 Private Declare Function GdipImageRotateFlip Lib "gdiplus" (ByVal hImage As Long, ByVal rfType As RotateFlipType) As Long
 Private Declare Function GdipDrawCurve Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipDrawCurveI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipDrawCurve2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long, ByVal curveTension As Single) As Long
 Private Declare Function GdipDrawCurve3 Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long, ByVal Offset As Long, ByVal numberOfSegments As Long, ByVal curveTension As Single) As Long
 Private Declare Function GdipDrawCurve3I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long, ByVal Offset As Long, ByVal numberOfSegments As Long, ByVal curveTension As Single) As Long
 Private Declare Function GdipDrawClosedCurve Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipDrawClosedCurveI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipDrawClosedCurve2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long, ByVal curveTension As Single) As Long
 Private Declare Function GdipFillClosedCurve Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipFillClosedCurveI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipFillClosedCurve2 Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long, ByVal curveTension As Single, ByVal useFillMode As GP_FillMode) As Long
-Private Declare Function GdipFillClosedCurve2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long, ByVal curveTension As Single, ByVal useFillMode As GP_FillMode) As Long
-Private Declare Function GdipDrawLinesI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipDrawPolygonI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
-Private Declare Function GdipFillPolygon Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long, ByVal useFillMode As GP_FillMode) As Long
-Private Declare Function GdipFillPolygonI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long, ByVal useFillMode As GP_FillMode) As Long
 Private Declare Function GdipFillPolygon2 Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipFillPolygon2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipIsVisibleRegionPoint Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Single, ByVal y As Single, ByVal hGraphics As Long, ByRef boolResult As Long) As Long
 Private Declare Function GdipIsVisibleRegionRect Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Single, ByVal y As Single, ByVal Width As Single, ByVal Height As Single, ByVal hGraphics As Long, ByRef dstResult As Long) As Long
-Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType, ByVal EnableFlag As Long, ByVal colorMatrixPointer As Long, ByVal grayMatrixPointer As Long, ByVal extraFlags As ColorMatrixFlags) As Long
 Private Declare Function GdipSetImageAttributesToIdentity Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType) As Long
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal order As Long) As Long
 Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dx As Single, ByVal dy As Single, ByVal order As Long) As Long
 
-'Quality mode constants (only supported by certain functions!)
-Public Enum QualityMode
-   QualityModeInvalid = -1
-   QualityModeDefault = 0
-   QualityModeLow = 1       'Best performance
-   QualityModeHigh = 2      'Best rendering quality
-End Enum
-
-'Instead of specifying certain smoothing modes, quality modes (see above) can be used instead.
-Public Enum SmoothingMode
-   SmoothingModeInvalid = QualityModeInvalid
-   SmoothingModeDefault = QualityModeDefault
-   SmoothingModeHighSpeed = QualityModeLow
-   SmoothingModeHighQuality = QualityModeHigh
-   SmoothingModeNone = 3
-   SmoothingModeAntiAlias = 4
-End Enum
-
-Public Enum InterpolationMode
-   InterpolationModeInvalid = QualityModeInvalid
-   InterpolationModeDefault = QualityModeDefault
-   InterpolationModeLowQuality = QualityModeLow
-   InterpolationModeHighQuality = QualityModeHigh
-   InterpolationModeBilinear = 3
-   InterpolationModeBicubic = 4
-   InterpolationModeNearestNeighbor = 5
-   InterpolationModeHighQualityBilinear = 6
-   InterpolationModeHighQualityBicubic = 7
-End Enum
-
-#If False Then
-    Private Const InterpolationModeInvalid = QualityModeInvalid, InterpolationModeDefault = QualityModeDefault, InterpolationModeLowQuality = QualityModeLow, InterpolationModeHighQuality = QualityModeHigh, InterpolationModeBilinear = 3, InterpolationModeBicubic = 4, InterpolationModeNearestNeighbor = 5, InterpolationModeHighQualityBilinear = 6, InterpolationModeHighQualityBicubic = 7
-#End If
-
-'Alpha compositing options; note that Over will apply alpha blending, while Copy will not
-Public Enum CompositingMode
-   CompositingModeSourceOver = 0
-   CompositingModeSourceCopy = 1
-End Enum
-
-#If False Then
-    Const CompositingModeSourceOver = 0, CompositingModeSourceCopy = 1
-#End If
-
 Private Type BlurParams
     bRadius As Single
     ExpandEdge As Long
 End Type
 
-Private Type tmpLong
-    lngResult As Long
-End Type
-
-' Information about image pixel data
+'Information about image pixel data
 Private Type BitmapData
-   Width As Long
-   Height As Long
-   Stride As Long
-   PixelFormat As Long
-   Scan0 As Long
-   Reserved As Long
+    Width As Long
+    Height As Long
+    Stride As Long
+    PixelFormat As Long
+    Scan0 As Long
+    Reserved As Long
 End Type
 
 
@@ -897,7 +914,7 @@ End Type
 ' why this is, but many, many iterative tests confirmed it.  Stranger still, in descending order after that, the fastest
 ' algorithms are: HighQualityBilinear, Bilinear, Bicubic.  Regular bicubic interpolation is some 4x slower than the
 ' high quality mode!!
-Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal interpolationType As InterpolationMode) As Boolean
+Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal interpolationType As GP_InterpolationMode) As Boolean
 
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
@@ -918,7 +935,7 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     'hGdipGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
     'Request the smoothing mode we were passed
-    If GdipSetInterpolationMode(hGdipGraphics, interpolationType) = 0 Then
+    If GdipSetInterpolationMode(hGdipGraphics, interpolationType) = GP_OK Then
     
         'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
         ' algorithm from drawing semi-transparent lines randomly around image borders.
@@ -992,7 +1009,7 @@ End Function
 ' The function currently expects the rotation to occur around the center point of the source image.  Unlike the various
 ' size interaction calls in this module, all (x,y) coordinate pairs refer to the CENTER of the image, not the top-left
 ' corner.  This was a deliberate decision to make copying rotated data easier.
-Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rotationAngle As Single, ByVal interpolationType As InterpolationMode, Optional ByVal wrapModeForEdges As GP_WrapMode = GP_WM_TileFlipXY) As Boolean
+Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rotationAngle As Single, ByVal interpolationType As GP_InterpolationMode, Optional ByVal wrapModeForEdges As GP_WrapMode = GP_WM_TileFlipXY) As Boolean
 
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
@@ -1013,7 +1030,7 @@ Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
     'Request the smoothing mode we were passed
-    If GdipSetInterpolationMode(iGraphics, interpolationType) = 0 Then
+    If GdipSetInterpolationMode(iGraphics, interpolationType) = GP_OK Then
     
         'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
         ' algorithm from drawing semi-transparent lines randomly around image borders.
@@ -1037,8 +1054,8 @@ Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
         
         'Transform the destination world matrix twice: once for the rotation angle, and once again to offset all coordinates.
         ' This allows us to rotate the image around its *center* rather than around its top-left corner.
-        If GdipRotateWorldTransform(iGraphics, rotationAngle, 0&) = 0 Then
-            If GdipTranslateWorldTransform(iGraphics, dstX + dstWidth / 2, dstY + dstHeight / 2, 1&) = 0 Then
+        If GdipRotateWorldTransform(iGraphics, rotationAngle, 0&) = GP_OK Then
+            If GdipTranslateWorldTransform(iGraphics, dstX + dstWidth / 2, dstY + dstHeight / 2, 1&) = GP_OK Then
         
                 'Render the image onto the destination
                 If GdipDrawImageRectRectI(iGraphics, tBitmap, -dstWidth / 2, -dstHeight / 2, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle) <> 0 Then
@@ -1189,7 +1206,7 @@ Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     If hqOffsets Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
     
     'Create a pen, which will be used to stroke the line
@@ -1214,7 +1231,7 @@ Public Function GDIPlusDrawFilledShapeToDC(ByVal dstDC As Long, ByVal numOfPoint
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     
     'Create a solid fill brush
     Dim hBrush As Long
@@ -1243,7 +1260,7 @@ Public Function GDIPlusStrokePathToDC(ByVal dstDC As Long, ByVal numOfPoints As 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     
     'Create a pen, which will be used to stroke the line
     Dim iPen As Long
@@ -1283,7 +1300,7 @@ Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft A
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     If hqOffsets Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
     
     'Create a pen, which will be used to stroke the line
@@ -1317,7 +1334,7 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     
     'Create a pen, which will be used to stroke the circle
     Dim iPen As Long
@@ -1338,7 +1355,7 @@ Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     
     'Create a brush, which will be used to stroke the circle
     Dim hBrush As Long
@@ -1355,13 +1372,13 @@ End Function
 
 'Use GDI+ to fill a DC with a color and optional alpha value; while not as efficient as using GDI, this allows us to set the full
 ' DIB alpha in a single pass, which is important for 32-bpp DIBs.
-Public Function GDIPlusFillRectToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
+Public Function GDIPlusFillRectToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As GP_CompositingMode = GP_CM_SourceOver, Optional ByVal useAA As Boolean = False) As Boolean
 
     'Create a GDI+ copy of the image and request AA
     Dim hGraphics As Long
     GdipCreateFromHDC dstDC, hGraphics
     
-    If useAA Then GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode hGraphics, SmoothingModeNone
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
     GdipSetCompositingMode hGraphics, dstFillMode
     
     'Create a solid fill brush using the specified color
@@ -1382,13 +1399,13 @@ End Function
 
 'Use GDI+ to fill a DC with a color and optional alpha value; while not as efficient as using GDI, this allows us to set the full
 ' DIB alpha in a single pass, which is important for 32-bpp DIBs.
-Public Function GDIPlusFillRectLToDC(ByVal dstDC As Long, ByRef srcRect As RECTL, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
+Public Function GDIPlusFillRectLToDC(ByVal dstDC As Long, ByRef srcRect As RECTL, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As GP_CompositingMode = GP_CM_SourceOver, Optional ByVal useAA As Boolean = False) As Boolean
 
     'Create a GDI+ copy of the image and request AA
     Dim hGraphics As Long
     GdipCreateFromHDC dstDC, hGraphics
     
-    If useAA Then GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode hGraphics, SmoothingModeNone
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
     GdipSetCompositingMode hGraphics, dstFillMode
     
     'Create a solid fill brush using the specified color
@@ -1408,13 +1425,13 @@ End Function
 
 'Use GDI+ to fill a DC with a color and optional alpha value; while not as efficient as using GDI, this allows us to set the full
 ' DIB alpha in a single pass, which is important for 32-bpp DIBs.
-Public Function GDIPlusFillRectFToDC(ByVal dstDC As Long, ByRef srcRect As RECTF, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
+Public Function GDIPlusFillRectFToDC(ByVal dstDC As Long, ByRef srcRect As RECTF, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As GP_CompositingMode = GP_CM_SourceOver, Optional ByVal useAA As Boolean = False) As Boolean
 
     'Create a GDI+ copy of the image and request AA
     Dim hGraphics As Long
     GdipCreateFromHDC dstDC, hGraphics
     
-    If useAA Then GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode hGraphics, SmoothingModeNone
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
     GdipSetCompositingMode hGraphics, dstFillMode
     
     'Create a solid fill brush using the specified color
@@ -1438,7 +1455,7 @@ Public Function GDIPlusFillPatternToDC(ByVal dstDC As Long, ByVal x1 As Single, 
     'Create a GDI+ copy of the image and request AA
     Dim hGraphics As Long
     GdipCreateFromHDC dstDC, hGraphics
-    GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias
+    GdipSetSmoothingMode hGraphics, GP_SM_Antialias
     GdipSetCompositingQuality hGraphics, GP_CQ_AssumeLinear
     GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
         
@@ -1477,7 +1494,7 @@ Public Function GDIPlusFillEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, 
     'Create a GDI+ copy of the image and request matching AA and offset behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     If hqOffsets Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
     
     'Create a solid fill brush
@@ -1501,7 +1518,7 @@ Public Function GDIPlusStrokeEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
         
     'Create a pen with matching attributes
     Dim hPen As Long
@@ -1524,7 +1541,7 @@ Public Function GDIPlusDrawRoundRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     
     'GDI+ doesn't have a direct rounded rectangles call, so we have to do it ourselves with a custom path
     Dim rrPath As Long
@@ -1574,16 +1591,16 @@ End Function
 
 'Use GDI+ to fill a DIB with a color and optional alpha value; while not as efficient as using GDI, this allows us to set the full DIB alpha
 ' in a single pass.
-Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal cOpacity As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
+Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal cOpacity As Long = 255, Optional ByVal dstFillMode As GP_CompositingMode = GP_CM_SourceOver, Optional ByVal useAA As Boolean = False) As Boolean
 
     'Create a GDI+ copy of the image and request AA
     Dim iGraphics As Long
     GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
     
     If useAA Then
-        GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias
+        GdipSetSmoothingMode iGraphics, GP_SM_Antialias
     Else
-        GdipSetSmoothingMode iGraphics, SmoothingModeNone
+        GdipSetSmoothingMode iGraphics, GP_SM_None
     End If
     
     GdipSetCompositingMode iGraphics, dstFillMode
@@ -1603,11 +1620,11 @@ Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, By
 
 End Function
 
-Public Function GDIPlusFillDIBRectL(ByRef dstDIB As pdDIB, ByRef srcRectL As RECTL, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
+Public Function GDIPlusFillDIBRectL(ByRef dstDIB As pdDIB, ByRef srcRectL As RECTL, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As GP_CompositingMode = GP_CM_SourceOver, Optional ByVal useAA As Boolean = False) As Boolean
     GDIPlusFillDIBRectL = GDIPlusFillDIBRect(dstDIB, srcRectL.Left, srcRectL.Top, srcRectL.Right - srcRectL.Left, srcRectL.Bottom - srcRectL.Top, eColor, eTransparency, dstFillMode, useAA)
 End Function
 
-Public Function GDIPlusFillDIBRectF(ByRef dstDIB As pdDIB, ByRef srcRectF As RECTF, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
+Public Function GDIPlusFillDIBRectF(ByRef dstDIB As pdDIB, ByRef srcRectF As RECTF, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As GP_CompositingMode = GP_CM_SourceOver, Optional ByVal useAA As Boolean = False) As Boolean
     GDIPlusFillDIBRectF = GDIPlusFillDIBRect(dstDIB, srcRectF.Left, srcRectF.Top, srcRectF.Width, srcRectF.Height, eColor, eTransparency, dstFillMode, useAA)
 End Function
 
@@ -1623,7 +1640,7 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
         GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
     End If
     
-    GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias
+    GdipSetSmoothingMode iGraphics, GP_SM_Antialias
     GdipSetCompositingQuality iGraphics, GP_CQ_AssumeLinear
     GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
         
@@ -1657,16 +1674,16 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
 End Function
 
 'Use GDI+ to fill an arbitrary DC with an arbitrary GDI+ brush
-Public Function GDIPlusFillDC_Brush(ByRef dstDC As Long, ByVal srcBrushHandle As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
+Public Function GDIPlusFillDC_Brush(ByRef dstDC As Long, ByVal srcBrushHandle As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, Optional ByVal dstFillMode As GP_CompositingMode = GP_CM_SourceOver, Optional ByVal useAA As Boolean = False) As Boolean
 
     'Create a GDI+ copy of the image and request AA
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
     
     If useAA Then
-        GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias
+        GdipSetSmoothingMode iGraphics, GP_SM_Antialias
     Else
-        GdipSetSmoothingMode iGraphics, SmoothingModeNone
+        GdipSetSmoothingMode iGraphics, GP_SM_None
     End If
     
     GdipSetCompositingMode iGraphics, dstFillMode
@@ -1890,11 +1907,11 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             tmpSettingsDIB.CreateBlank 8, 8, 32, 0, 0
             
             Dim tmpGraphics As Long
-            If GdipCreateFromHDC(tmpSettingsDIB.GetDIBDC, tmpGraphics) = 0 Then
+            If GdipCreateFromHDC(tmpSettingsDIB.GetDIBDC, tmpGraphics) = GP_OK Then
                 
                 'Set high-quality antialiasing and interpolation
-                GdipSetSmoothingMode tmpGraphics, SmoothingModeHighQuality
-                GdipSetInterpolationMode tmpGraphics, InterpolationModeHighQualityBicubic
+                GdipSetSmoothingMode tmpGraphics, GP_SM_Antialias
+                GdipSetInterpolationMode tmpGraphics, GP_IM_HighQualityBicubic
                 
                 'Attempt to convert the EMF to EMF+ format
                 Dim mfHandleDst As Long, convSuccess As Long
@@ -2553,7 +2570,7 @@ End Function
 ' 1) support fractional source/dest/width/height
 ' 2) apply variable opacity
 ' 3) control stretch mode directly inside the call
-Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As InterpolationMode = InterpolationModeHighQualityBicubic, Optional ByVal useThisDestinationDCInstead As Long = 0, Optional ByVal disableEdgeFix As Boolean = False, Optional ByVal isZoomedIn As Boolean = False)
+Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal useThisDestinationDCInstead As Long = 0, Optional ByVal disableEdgeFix As Boolean = False, Optional ByVal isZoomedIn As Boolean = False)
 
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
@@ -2563,7 +2580,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     
     'Create a GDI+ graphics object that points to the destination DIB's DC
     Dim iGraphics As Long, tBitmap As Long
-    If useThisDestinationDCInstead <> 0 Then
+    If (useThisDestinationDCInstead <> 0) Then
         GdipCreateFromHDC useThisDestinationDCInstead, iGraphics
     Else
         GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
@@ -2576,7 +2593,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
     'Request the smoothing mode we were passed
-    If GdipSetInterpolationMode(iGraphics, interpolationType) = 0 Then
+    If GdipSetInterpolationMode(iGraphics, interpolationType) = GP_OK Then
         
         'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
         ' algorithm from drawing semi-transparent lines randomly around image borders.
@@ -2624,7 +2641,7 @@ End Sub
 '
 'Note that the supplied plgPoints array *MUST HAVE THREE POINTS* in it, in the specific order: top-left, top-right, bottom-left.
 ' The fourth point is inferred from the other three.
-Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As InterpolationMode = InterpolationModeHighQualityBicubic, Optional ByVal useHQOffsets As Boolean = True)
+Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal useHQOffsets As Boolean = True)
 
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
@@ -2643,7 +2660,7 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
     'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
     'Request the smoothing mode we were passed
-    If GdipSetInterpolationMode(iGraphics, interpolationType) = 0 Then
+    If GdipSetInterpolationMode(iGraphics, interpolationType) = GP_OK Then
         
         'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
         ' algorithm from drawing semi-transparent lines randomly around image borders.
@@ -2688,7 +2705,7 @@ End Sub
 
 'Given a source DIB and an angle, rotate it into a destination DIB.  The destination DIB can be automatically resized
 ' to fit the rotated image, or a parameter can be set, instructing the function to use the destination DIB "as-is"
-Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotateAngle As Single, Optional ByVal dstDIBAlreadySized As Boolean = False, Optional ByVal rotateQuality As InterpolationMode = InterpolationModeHighQualityBicubic, Optional ByVal transparentBackground As Boolean = True, Optional ByVal newBackColor As Long = vbWhite)
+Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotateAngle As Single, Optional ByVal dstDIBAlreadySized As Boolean = False, Optional ByVal rotateQuality As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal transparentBackground As Boolean = True, Optional ByVal newBackColor As Long = vbWhite)
     
     'Before doing any rotating or blurring, we need to figure out the size of our destination image.  If we don't
     ' do this, the rotation will chop off the image's corners!
@@ -2699,7 +2716,7 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     If dstDIBAlreadySized Then
         nWidth = dstDIB.GetDIBWidth
         nHeight = dstDIB.GetDIBHeight
-        If (Not transparentBackground) Then GDI_Plus.GDIPlusFillDIBRect dstDIB, 0, 0, dstDIB.GetDIBWidth + 1, dstDIB.GetDIBHeight + 1, newBackColor, 255, CompositingModeSourceCopy
+        If (Not transparentBackground) Then GDI_Plus.GDIPlusFillDIBRect dstDIB, 0, 0, dstDIB.GetDIBWidth + 1, dstDIB.GetDIBHeight + 1, newBackColor, 255, GP_CM_SourceCopy
     Else
         If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
         If transparentBackground Then
@@ -2763,12 +2780,12 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
         GdipCreateFromHDC dstDIB.GetDIBDC, tmpGraphics
         tmpBrush = GetGDIPlusSolidBrushHandle(0, 0)
         
-        GdipSetCompositingMode tmpGraphics, CompositingModeSourceCopy
+        GdipSetCompositingMode tmpGraphics, GP_CM_SourceCopy
         GdipSetPixelOffsetMode tmpGraphics, GP_POM_HighQuality
         GdipSetInterpolationMode tmpGraphics, rotateQuality
         GdipFillPolygon tmpGraphics, tmpBrush, VarPtr(tmpPoints(0)), 4, GP_FM_Alternate
         GdipSetPixelOffsetMode tmpGraphics, GP_POM_HighSpeed
-        GdipSetCompositingMode tmpGraphics, CompositingModeSourceOver
+        GdipSetCompositingMode tmpGraphics, GP_CM_SourceOver
         
         ReleaseGDIPlusBrush tmpBrush
         ReleaseGDIPlusGraphics tmpGraphics
@@ -2819,7 +2836,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     Next i
     
     'Rotate the source DIB into the destination DIB.  At this point, corners are still blank - we'll deal with those momentarily.
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 1, InterpolationModeHighQualityBicubic, False
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 1, GP_IM_HighQualityBicubic, False
     
     'We're now going to calculate a whole bunch of geometry based around the concept of extending a rectangle from
     ' each edge of our rotated image, out to the corner of the rotation DIB.  We will then fill this dead space with a
@@ -2857,7 +2874,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(1).y - pY
     padPoints(2).x = listOfPoints(0).x
     padPoints(2).y = listOfPoints(0).y
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, 1, 1, InterpolationModeHighQualityBilinear, False
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, srcDIB.GetDIBWidth, 1, 1, GP_IM_HighQualityBilinear, False
     
     'Now repeat the above steps for the bottom of the image.  Note that we can reuse almost all of the calculations,
     ' as this line is parallel to the one we just calculated.
@@ -2867,7 +2884,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(3).y - (pY / distDiff)
     padPoints(2).x = listOfPoints(2).x + pX
     padPoints(2).y = listOfPoints(2).y + pY
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, srcDIB.GetDIBHeight - 2, srcDIB.GetDIBWidth, 1, 1, InterpolationModeHighQualityBilinear, False
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, srcDIB.GetDIBHeight - 2, srcDIB.GetDIBWidth, 1, 1, GP_IM_HighQualityBilinear, False
     
     'We are now going to repeat the above steps, but for the left and right edges of the image.  The end result of this
     ' will be a rotated destination image, with clamped values extending from all image edges.
@@ -2896,7 +2913,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(0).y
     padPoints(2).x = listOfPoints(2).x + pX
     padPoints(2).y = listOfPoints(2).y + pY
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, 1, srcDIB.GetDIBHeight, 1, InterpolationModeHighQualityBilinear, False
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, 1, srcDIB.GetDIBHeight, 1, GP_IM_HighQualityBilinear, False
     
     '...and finally, repeat everything for the right side of the image
     padPoints(0).x = listOfPoints(1).x + (pX / distDiff)
@@ -2905,7 +2922,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     padPoints(1).y = listOfPoints(1).y - pY
     padPoints(2).x = listOfPoints(3).x + (pX / distDiff)
     padPoints(2).y = listOfPoints(3).y + (pY / distDiff)
-    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, srcDIB.GetDIBWidth - 2, 0, 1, srcDIB.GetDIBHeight, 1, InterpolationModeHighQualityBilinear, False
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, srcDIB.GetDIBWidth - 2, 0, 1, srcDIB.GetDIBHeight, 1, GP_IM_HighQualityBilinear, False
     
     'Our work here is complete!
 
@@ -3009,7 +3026,14 @@ Private Function GetFIFFromGUID(ByRef srcGUID As String) As PHOTODEMON_IMAGE_FOR
 
 End Function
 
-'New, modernized interfaces follow:
+
+'************************************************************************************************************
+'
+'This module is currently undergoing heavy clean-up.  Functions that have been modernized and revised
+' are included below this line.  (The goal is to move *all* functions down here eventually.)
+'
+'************************************************************************************************************
+
 
 
 'At start-up, this function is called to determine whether or not we have GDI+ available on this machine.
@@ -3045,11 +3069,11 @@ Public Function GDIP_StartEngine(Optional ByVal hookDebugProc As Boolean = False
         
         'Next, create a default identity matrix for image attributes.
         ReDim m_AttributesMatrix(0 To 4, 0 To 4) As Single
-        m_AttributesMatrix(0, 0) = 1
-        m_AttributesMatrix(1, 1) = 1
-        m_AttributesMatrix(2, 2) = 1
-        m_AttributesMatrix(3, 3) = 1
-        m_AttributesMatrix(4, 4) = 1
+        m_AttributesMatrix(0, 0) = 1#
+        m_AttributesMatrix(1, 1) = 1#
+        m_AttributesMatrix(2, 2) = 1#
+        m_AttributesMatrix(3, 3) = 1#
+        m_AttributesMatrix(4, 4) = 1#
         
         'Next, check to see if v1.1 is available.  This allows for advanced fx work.
         Dim hMod As Long, strGDIPName As String
@@ -3079,7 +3103,6 @@ Public Function GDIP_StopEngine() As Boolean
     
     'Release GDI+ using the same token we received at startup time
     GDIP_StopEngine = CBool(GdiplusShutdown(m_GDIPlusToken) = GP_OK)
-    g_ImageFormats.GDIPlusEnabled = False
     
 End Function
 
@@ -3094,87 +3117,86 @@ End Function
 
 'At GDI+ startup, the caller can request that we provide a debug proc for GDI+ to call on warnings and errors.
 ' This is that proc.
+'
+'NOTE: this feature is currently disabled due to lack of testing.
 Private Function GDIP_Debug_Proc(ByVal deLevel As GP_DebugEventLevel, ByVal ptrChar As Long) As Long
     
     'Pull the GDI+ message into a local string
-    Dim cUnicode As pdUnicode
-    Set cUnicode = New pdUnicode
+    'Dim cUnicode As pdUnicode
+    'Set cUnicode = New pdUnicode
     
     Dim debugString As String
-    debugString = cUnicode.ConvertCharPointerToVBString(ptrChar, False)
+    'debugString = cUnicode.ConvertCharPointerToVBString(ptrChar, False)
+    debugString = "Unknown GDI+ error was passed to the GDIPlus debug procedure."
     
-    #If DEBUGMODE = 1 Then
-        If (deLevel = GP_DebugEventLevelWarning) Then
-            pdDebug.LogAction "GDI+ WARNING: " & debugString
-        ElseIf (deLevel = GP_DebugEventLevelFatal) Then
-            pdDebug.LogAction "GDI+ ERROR: " & debugString
-        Else
-            pdDebug.LogAction "GDI+ UNKNOWN: " & debugString
-        End If
-    #End If
+    If (deLevel = GP_DebugEventLevelWarning) Then
+        Debug.Print "GDI+ WARNING: " & debugString
+    ElseIf (deLevel = GP_DebugEventLevelFatal) Then
+        Debug.Print "GDI+ ERROR: " & debugString
+    Else
+        Debug.Print "GDI+ UNKNOWN: " & debugString
+    End If
     
 End Function
 
 Private Function InternalGDIPlusError(Optional ByVal errName As String = vbNullString, Optional ByVal errDescription As String = vbNullString, Optional ByVal errNumber As GP_Result = GP_OK)
-    #If DEBUGMODE = 1 Then
         
-        'If the caller passes an error number but no error name, attempt to automatically populate
-        ' it based on the error number.
-        If ((Len(errName) = 0) And (errNumber <> GP_OK)) Then
-            
-            Select Case errNumber
-                Case GP_GenericError
-                    errName = "Generic Error"
-                Case GP_InvalidParameter
-                    errName = "Invalid parameter"
-                Case GP_OutOfMemory
-                    errName = "Out of memory"
-                Case GP_ObjectBusy
-                    errName = "Object busy"
-                Case GP_InsufficientBuffer
-                    errName = "Insufficient buffer size"
-                Case GP_NotImplemented
-                    errName = "Feature is not implemented"
-                Case GP_Win32Error
-                    errName = "Win32 error"
-                Case GP_WrongState
-                    errName = "Wrong state"
-                Case GP_Aborted
-                    errName = "Operation aborted"
-                Case GP_FileNotFound
-                    errName = "File not found"
-                Case GP_ValueOverflow
-                    errName = "Value too large (overflow)"
-                Case GP_AccessDenied
-                    errName = "Access denied"
-                Case GP_UnknownImageFormat
-                    errName = "Image format was not recognized"
-                Case GP_FontFamilyNotFound
-                    errName = "Font family not found"
-                Case GP_FontStyleNotFound
-                    errName = "Font style not found"
-                Case GP_NotTrueTypeFont
-                    errName = "Font is not TrueType (only TT fonts are supported)"
-                Case GP_UnsupportedGDIPlusVersion
-                    errName = "GDI+ version is not supported"
-                Case GP_GDIPlusNotInitialized
-                    errName = "GDI+ was not initialized correctly"
-                Case GP_PropertyNotFound
-                    errName = "Property missing"
-                Case GP_PropertyNotSupported
-                    errName = "Property not supported"
-                Case Else
-                    errName = "Undefined error (number doesn't match known returns)"
-            End Select
-            
-        End If
+    'If the caller passes an error number but no error name, attempt to automatically populate
+    ' it based on the error number.
+    If ((Len(errName) = 0) And (errNumber <> GP_OK)) Then
         
-        Dim tmpString As String
-        tmpString = "WARNING!  Internal GDI+ error #" & errNumber & ", """ & errName & """"
-        If (Len(errDescription) <> 0) Then tmpString = tmpString & ": " & errDescription
-        pdDebug.LogAction tmpString
+        Select Case errNumber
+            Case GP_GenericError
+                errName = "Generic Error"
+            Case GP_InvalidParameter
+                errName = "Invalid parameter"
+            Case GP_OutOfMemory
+                errName = "Out of memory"
+            Case GP_ObjectBusy
+                errName = "Object busy"
+            Case GP_InsufficientBuffer
+                errName = "Insufficient buffer size"
+            Case GP_NotImplemented
+                errName = "Feature is not implemented"
+            Case GP_Win32Error
+                errName = "Win32 error"
+            Case GP_WrongState
+                errName = "Wrong state"
+            Case GP_Aborted
+                errName = "Operation aborted"
+            Case GP_FileNotFound
+                errName = "File not found"
+            Case GP_ValueOverflow
+                errName = "Value too large (overflow)"
+            Case GP_AccessDenied
+                errName = "Access denied"
+            Case GP_UnknownImageFormat
+                errName = "Image format was not recognized"
+            Case GP_FontFamilyNotFound
+                errName = "Font family not found"
+            Case GP_FontStyleNotFound
+                errName = "Font style not found"
+            Case GP_NotTrueTypeFont
+                errName = "Font is not TrueType (only TT fonts are supported)"
+            Case GP_UnsupportedGDIPlusVersion
+                errName = "GDI+ version is not supported"
+            Case GP_GDIPlusNotInitialized
+                errName = "GDI+ was not initialized correctly"
+            Case GP_PropertyNotFound
+                errName = "Property missing"
+            Case GP_PropertyNotSupported
+                errName = "Property not supported"
+            Case Else
+                errName = "Undefined error (number doesn't match known returns)"
+        End Select
         
-    #End If
+    End If
+    
+    Dim tmpString As String
+    tmpString = "WARNING!  Internal GDI+ error #" & errNumber & ", """ & errName & """"
+    If (Len(errDescription) <> 0) Then tmpString = tmpString & ": " & errDescription
+    Debug.Print tmpString
+    
 End Function
 
 'GDI+ requires RGBQUAD colors with alpha in the 4th byte.  This function returns an RGBQUAD (long-type) from a standard RGB()
@@ -3274,12 +3296,12 @@ End Function
 'Simpler shorthand function for obtaining a GDI+ bitmap handle from a pddib object.  Note that 24/32bpp cases have to be
 ' handled separately because GDI+ is unpredictable at automatically detecting color depth with 32-bpp DIBs.  (This behavior
 ' is forgivable, given GDI's unreliable handling of alpha bytes.)
-Private Sub GetGdipBitmapHandleFromDIB(ByRef hBitmap As Long, ByRef srcDIB As pdDIB)
+Public Function GetGdipBitmapHandleFromDIB(ByRef dstBitmapHandle As Long, ByRef srcDIB As pdDIB) As Boolean
     
-    If (srcDIB Is Nothing) Then Exit Sub
+    If (srcDIB Is Nothing) Then Exit Function
     
     If (srcDIB.GetDIBColorDepth = 32) Then
-        GdipCreateBitmapFromScan0 srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBWidth * 4, PixelFormat32bppPARGB, ByVal srcDIB.GetDIBPointer, hBitmap
+        GetGdipBitmapHandleFromDIB = CBool(GdipCreateBitmapFromScan0(srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBWidth * 4, PixelFormat32bppPARGB, ByVal srcDIB.GetDIBPointer, dstBitmapHandle) = GP_OK)
     Else
     
         'Use GdipCreateBitmapFromGdiDib for 24bpp DIBs
@@ -3291,11 +3313,16 @@ Private Sub GetGdipBitmapHandleFromDIB(ByRef hBitmap As Long, ByRef srcDIB As pd
             .Width = srcDIB.GetDIBWidth
             .Height = -srcDIB.GetDIBHeight
         End With
-        GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.GetDIBPointer, hBitmap
+        GetGdipBitmapHandleFromDIB = CBool(GdipCreateBitmapFromGdiDib(imgHeader, ByVal srcDIB.GetDIBPointer, dstBitmapHandle) = GP_OK)
         
     End If
 
-End Sub
+End Function
+
+'Retrieving a bitmap from a DC is a messy and performance-intensive process.  Avoid it if at all possible.
+Public Function GetGdipBitmapHandleFromDC(ByVal srcDC As Long) As Long
+
+End Function
 
 'Because of the way GDI+ texture brushes work, it is significantly easier to initialize one from a full DIB object
 ' (which *always* guarantees bitmap bits will be available) vs a GDI+ Graphics object, which is more like a DC in
@@ -3384,6 +3411,14 @@ Public Function ReleaseGDIPlusGraphics(ByVal srcHandle As Long) As Boolean
         ReleaseGDIPlusGraphics = CBool(GdipDeleteGraphics(srcHandle) = GP_OK)
     Else
         ReleaseGDIPlusGraphics = True
+    End If
+End Function
+
+Public Function ReleaseGDIPlusImage(ByVal srcHandle As Long) As Boolean
+    If (srcHandle <> 0) Then
+        ReleaseGDIPlusImage = CBool(GdipDisposeImage(srcHandle) = GP_OK)
+    Else
+        ReleaseGDIPlusImage = True
     End If
 End Function
 
@@ -3588,6 +3623,10 @@ Public Function GetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID
                 gResult = GdipGetCompositingQuality(hGraphics, tmpLong1)
                 GetGDIPlusGraphicsProperty = tmpLong1
                 
+            Case P2_SurfaceResizeQuality
+                gResult = GdipGetInterpolationMode(hGraphics, tmpLong1)
+                GetGDIPlusGraphicsProperty = tmpLong1
+                
         End Select
         
         If (gResult <> GP_OK) Then
@@ -3620,6 +3659,9 @@ Public Function SetGDIPlusGraphicsProperty(ByVal hGraphics As Long, ByVal propID
                 
             Case P2_SurfaceBlendUsingSRGBGamma
                 SetGDIPlusGraphicsProperty = CBool(GdipSetCompositingQuality(hGraphics, CLng(newSetting)) = GP_OK)
+                
+            Case P2_SurfaceResizeQuality
+                SetGDIPlusGraphicsProperty = CBool(GdipSetInterpolationMode(hGraphics, CLng(newSetting)) = GP_OK)
             
         End Select
     
@@ -3760,18 +3802,106 @@ Public Function GDIPlus_DrawArcI(ByVal dstGraphics As Long, ByVal srcPen As Long
     GDIPlus_DrawArcI = CBool(GdipDrawArcI(dstGraphics, srcPen, centerX - arcRadius, centerY - arcRadius, arcRadius * 2, arcRadius * 2, startAngle, sweepAngle) = GP_OK)
 End Function
 
-Public Function GDIPlus_DrawClosedCurveF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5) As Boolean
+Public Function GDIPlus_DrawClosedCurveF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtFArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5) As Boolean
     Dim tmpReturn As GP_Result
-    tmpReturn = GdipDrawClosedCurve2(dstGraphics, srcPen, ptrToFloatArray, numOfPoints, curveTension)
+    tmpReturn = GdipDrawClosedCurve2(dstGraphics, srcPen, ptrToPtFArray, numOfPoints, curveTension)
     GDIPlus_DrawClosedCurveF = CBool(tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
-Public Function GDIPlus_DrawCurveF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5) As Boolean
+Public Function GDIPlus_DrawClosedCurveI(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtLArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5) As Boolean
     Dim tmpReturn As GP_Result
-    tmpReturn = GdipDrawCurve2(dstGraphics, srcPen, ptrToFloatArray, numOfPoints, curveTension)
+    tmpReturn = GdipDrawClosedCurve2I(dstGraphics, srcPen, ptrToPtLArray, numOfPoints, curveTension)
+    GDIPlus_DrawClosedCurveI = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_DrawCurveF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtFArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipDrawCurve2(dstGraphics, srcPen, ptrToPtFArray, numOfPoints, curveTension)
     GDIPlus_DrawCurveF = CBool(tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_DrawCurveI(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtLArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipDrawCurve2I(dstGraphics, srcPen, ptrToPtLArray, numOfPoints, curveTension)
+    GDIPlus_DrawCurveI = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_DrawImageF(ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Single, ByVal dstY As Single) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipDrawImage(dstGraphics, srcImage, dstX, dstY)
+    GDIPlus_DrawImageF = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_DrawImageI(ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Long, ByVal dstY As Long) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipDrawImageI(dstGraphics, srcImage, dstX, dstY)
+    GDIPlus_DrawImageI = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_DrawImageRectF(ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipDrawImageRect(dstGraphics, srcImage, dstX, dstY, dstWidth, dstHeight)
+    GDIPlus_DrawImageRectF = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_DrawImageRectI(ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipDrawImageRectI(dstGraphics, srcImage, dstX, dstY, dstWidth, dstHeight)
+    GDIPlus_DrawImageRectI = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_DrawImageRectRectF(ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal opacityModifier As Single = 1#) As Boolean
+    
+    'Modified opacity requires us to create a temporary image attributes object
+    Dim imgAttributesHandle As Long
+    If (opacityModifier <> 1#) Then
+        GdipCreateImageAttributes imgAttributesHandle
+        m_AttributesMatrix(3, 3) = opacityModifier
+        GdipSetImageAttributesColorMatrix imgAttributesHandle, GP_CAT_Bitmap, 1&, VarPtr(m_AttributesMatrix(0, 0)), 0&, GP_CMF_Default
+    End If
+    
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipDrawImageRectRect(dstGraphics, srcImage, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle, 0&, 0&)
+    GDIPlus_DrawImageRectRectF = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+    
+    'As necessary, release our image attributes object, and reset the alpha value of the master identity matrix
+    If (opacityModifier <> 1#) Then
+        GdipDisposeImageAttributes imgAttributesHandle
+        m_AttributesMatrix(3, 3) = 1#
+    End If
+        
+End Function
+
+Public Function GDIPlus_DrawImageRectRectI(ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal opacityModifier As Single = 1#) As Boolean
+    
+    'Modified opacity requires us to create a temporary image attributes object
+    Dim imgAttributesHandle As Long
+    If (opacityModifier <> 1#) Then
+        GdipCreateImageAttributes imgAttributesHandle
+        m_AttributesMatrix(3, 3) = opacityModifier
+        GdipSetImageAttributesColorMatrix imgAttributesHandle, GP_CAT_Bitmap, 1&, VarPtr(m_AttributesMatrix(0, 0)), 0&, GP_CMF_Default
+    End If
+    
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipDrawImageRectRectI(dstGraphics, srcImage, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle, 0&, 0&)
+    GDIPlus_DrawImageRectRectI = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+    
+    'As necessary, release our image attributes object, and reset the alpha value of the master identity matrix
+    If (opacityModifier <> 1#) Then
+        GdipDisposeImageAttributes imgAttributesHandle
+        m_AttributesMatrix(3, 3) = 1#
+    End If
+        
 End Function
 
 Public Function GDIPlus_DrawLineF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Boolean
@@ -3782,10 +3912,17 @@ Public Function GDIPlus_DrawLineI(ByVal dstGraphics As Long, ByVal srcPen As Lon
     GDIPlus_DrawLineI = CBool(GdipDrawLineI(dstGraphics, srcPen, x1, y1, x2, y2) = GP_OK)
 End Function
 
-Public Function GDIPlus_DrawLinesF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As Boolean
+Public Function GDIPlus_DrawLinesF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtFArray As Long, ByVal numOfPoints As Long) As Boolean
     Dim tmpReturn As GP_Result
-    tmpReturn = GdipDrawLines(dstGraphics, srcPen, ptrToFloatArray, numOfPoints)
+    tmpReturn = GdipDrawLines(dstGraphics, srcPen, ptrToPtFArray, numOfPoints)
     GDIPlus_DrawLinesF = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_DrawLinesI(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtLArray As Long, ByVal numOfPoints As Long) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipDrawLinesI(dstGraphics, srcPen, ptrToPtLArray, numOfPoints)
+    GDIPlus_DrawLinesI = CBool(tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
@@ -3793,10 +3930,17 @@ Public Function GDIPlus_DrawPath(ByVal dstGraphics As Long, ByVal srcPen As Long
     GDIPlus_DrawPath = CBool(GdipDrawPath(dstGraphics, srcPen, srcPath) = GP_OK)
 End Function
 
-Public Function GDIPlus_DrawPolygonF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As Boolean
+Public Function GDIPlus_DrawPolygonF(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtFArray As Long, ByVal numOfPoints As Long) As Boolean
     Dim tmpReturn As GP_Result
-    tmpReturn = GdipDrawPolygon(dstGraphics, srcPen, ptrToFloatArray, numOfPoints)
+    tmpReturn = GdipDrawPolygon(dstGraphics, srcPen, ptrToPtFArray, numOfPoints)
     GDIPlus_DrawPolygonF = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_DrawPolygonI(ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal ptrToPtLArray As Long, ByVal numOfPoints As Long) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipDrawPolygonI(dstGraphics, srcPen, ptrToPtLArray, numOfPoints)
+    GDIPlus_DrawPolygonI = CBool(tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
@@ -3816,16 +3960,22 @@ Public Function GDIPlus_DrawEllipseI(ByVal dstGraphics As Long, ByVal srcPen As 
     GDIPlus_DrawEllipseI = CBool(GdipDrawEllipseI(dstGraphics, srcPen, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight) = GP_OK)
 End Function
 
+Public Function GDIPlus_FillClosedCurveF(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal ptrToPtFArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5, Optional ByVal fillMode As GP_FillMode = GP_FM_Winding) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipFillClosedCurve2(dstGraphics, srcBrush, ptrToPtFArray, numOfPoints, curveTension, fillMode)
+    GDIPlus_FillClosedCurveF = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_FillClosedCurveI(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal ptrToPtLArray As Long, ByVal numOfPoints As Long, Optional ByVal curveTension As Single = 0.5, Optional ByVal fillMode As GP_FillMode = GP_FM_Winding) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipFillClosedCurve2I(dstGraphics, srcBrush, ptrToPtLArray, numOfPoints, curveTension, fillMode)
+    GDIPlus_FillClosedCurveI = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
 Public Function GDIPlus_FillPath(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal srcPath As Long) As Boolean
     GDIPlus_FillPath = CBool(GdipFillPath(dstGraphics, srcBrush, srcPath) = GP_OK)
-End Function
-
-Public Function GDIPlus_FillRectF(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Boolean
-    GDIPlus_FillRectF = CBool(GdipFillRectangle(dstGraphics, srcBrush, rectLeft, rectTop, rectWidth, rectHeight) = GP_OK)
-End Function
-
-Public Function GDIPlus_FillRectI(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal rectLeft As Long, ByVal rectTop As Long, ByVal rectWidth As Long, ByVal rectHeight As Long) As Boolean
-    GDIPlus_FillRectI = CBool(GdipFillRectangleI(dstGraphics, srcBrush, rectLeft, rectTop, rectWidth, rectHeight) = GP_OK)
 End Function
 
 Public Function GDIPlus_FillEllipseF(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal ellipseLeft As Single, ByVal ellipseTop As Single, ByVal ellipseWidth As Single, ByVal ellipseHeight As Single) As Boolean
@@ -3834,6 +3984,28 @@ End Function
 
 Public Function GDIPlus_FillEllipseI(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal ellipseLeft As Long, ByVal ellipseTop As Long, ByVal ellipseWidth As Long, ByVal ellipseHeight As Long) As Boolean
     GDIPlus_FillEllipseI = CBool(GdipFillEllipseI(dstGraphics, srcBrush, ellipseLeft, ellipseTop, ellipseWidth, ellipseHeight) = GP_OK)
+End Function
+
+Public Function GDIPlus_FillPolygonF(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal ptrToPtFArray As Long, ByVal numOfPoints As Long, Optional ByVal fillMode As GP_FillMode = GP_FM_Winding) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipFillPolygon(dstGraphics, srcBrush, ptrToPtFArray, numOfPoints, fillMode)
+    GDIPlus_FillPolygonF = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_FillPolygonI(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal ptrToPtLArray As Long, ByVal numOfPoints As Long, Optional ByVal fillMode As GP_FillMode = GP_FM_Winding) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipFillPolygonI(dstGraphics, srcBrush, ptrToPtLArray, numOfPoints, fillMode)
+    GDIPlus_FillPolygonI = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_FillRectF(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectWidth As Single, ByVal rectHeight As Single) As Boolean
+    GDIPlus_FillRectF = CBool(GdipFillRectangle(dstGraphics, srcBrush, rectLeft, rectTop, rectWidth, rectHeight) = GP_OK)
+End Function
+
+Public Function GDIPlus_FillRectI(ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal rectLeft As Long, ByVal rectTop As Long, ByVal rectWidth As Long, ByVal rectHeight As Long) As Boolean
+    GDIPlus_FillRectI = CBool(GdipFillRectangleI(dstGraphics, srcBrush, rectLeft, rectTop, rectWidth, rectHeight) = GP_OK)
 End Function
 
 Public Function GDIPlus_GraphicsGetClipRegion(ByVal srcGraphics As Long) As Long
@@ -3860,6 +4032,13 @@ Public Function GDIPlus_GraphicsSetClipRegion(ByVal dstGraphics As Long, ByVal s
     Dim tmpReturn As GP_Result
     tmpReturn = GdipSetClipRegion(dstGraphics, srcRegion, useCombineMode)
     GDIPlus_GraphicsSetClipRegion = CBool(tmpReturn = GP_OK)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_GraphicsSetCompositingMode(ByVal dstGraphics As Long, Optional ByVal newCompositeMode As GP_CompositingMode = GP_CM_SourceOver) As Boolean
+    Dim tmpReturn As GP_Result
+    tmpReturn = GdipSetCompositingMode(dstGraphics, newCompositeMode)
+    GDIPlus_GraphicsSetCompositingMode = CBool(tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 

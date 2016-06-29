@@ -881,7 +881,7 @@ Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVa
             resDIB.CreateBlank FixDPI(dpiDIB.GetDIBWidth), FixDPI(dpiDIB.GetDIBHeight), dpiDIB.GetDIBColorDepth
             
             'Use GDI+ to resize the cursor from dpiDIB into resDIB
-            GDIPlusResizeDIB resDIB, 0, 0, resDIB.GetDIBWidth, resDIB.GetDIBHeight, dpiDIB, 0, 0, dpiDIB.GetDIBWidth, dpiDIB.GetDIBHeight, InterpolationModeNearestNeighbor
+            GDIPlusResizeDIB resDIB, 0, 0, resDIB.GetDIBWidth, resDIB.GetDIBHeight, dpiDIB, 0, 0, dpiDIB.GetDIBWidth, dpiDIB.GetDIBHeight, GP_IM_NearestNeighbor
         
             'Release our temporary DIB
             Set dpiDIB = Nothing
