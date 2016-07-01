@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.196</langversion>
+<langversion>6.7.197</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -12793,22 +12793,7 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <translation>Meluruskan lengkap.</translation>
 </phrase>
 
-<phrase>
-<original>Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled.</original>
-<translation>Putaran sewenang-wenangnya memerlukan plugin FreeImage, yang tidak dapat dikesan. Putaran dibatalkan.</translation>
-</phrase>
-
-<phrase>
-<original>The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.</original>
-<translation>Yang FreeImage plugin diperlukan untuk putaran imej. Sila pergi ke Tools -> Options -> Maklumat Terbaru dan membenarkan PhotoDemon turun plugin teras. Kemudian memulakan semula program.</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage plugin missing</original>
-<translation>Plugin FreeImage hilang</translation>
-</phrase>
-
-<!-- Image_Straighten.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Image_Straighten.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Image_Straighten.frm-->
 
@@ -15134,10 +15119,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2579</phrasecount>
+<phrasecount>2576</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4520 phrases. -->
-<!-- 1941 are duplicates, so only 2579 unique phrases have been written to file. -->
-<!-- These 2579 phrases contain approximately 13258 total words. -->
+<!-- As of this build, PhotoDemon contains 4517 phrases. -->
+<!-- 1941 are duplicates, so only 2576 unique phrases have been written to file. -->
+<!-- These 2576 phrases contain approximately 13214 total words. -->
 
 </pdData>

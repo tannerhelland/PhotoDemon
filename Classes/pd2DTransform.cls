@@ -94,12 +94,32 @@ Friend Function ApplyTranslation_Polar(ByVal translateAngle As Single, ByVal tra
 End Function
 
 'Apply a scaling amount to the matrix; any x/y amounts are valid
-Friend Function ApplyScaling(ByVal xScaleFactor As Single, ByVal yScaleFactor As Single, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
+Friend Function ApplyScaling(ByVal xScaleFactor As Single, ByVal yScaleFactor As Single, Optional ByVal centerX As Single = 0, Optional ByVal centerY As Single = 0, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
+    
     If (m_TransformHandle = 0) Then CreateTransform
+    
     Select Case m_TransformBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
-            ApplyScaling = GDI_Plus.GDIPlus_MatrixScale(m_TransformHandle, xScaleFactor, yScaleFactor, transformOrder)
+            
+            'If a different center point is desired, we must translate the matrix before and after rotation.
+            ' (The optional transformOrder parameter is ignored out of necessity.)
+            If (centerX <> 0) Or (centerY <> 0) Then
+                
+                'Center the matrix over the rotation center point
+                Me.ApplyTranslation -1 * centerX, -1 * centerY, P2_TO_Append
+                
+                'Apply scaling
+                ApplyScaling = GDI_Plus.GDIPlus_MatrixScale(m_TransformHandle, xScaleFactor, yScaleFactor, transformOrder)
+                
+                'Translate back into its original position
+                Me.ApplyTranslation centerX, centerY, P2_TO_Append
+            
+            Else
+                ApplyScaling = GDI_Plus.GDIPlus_MatrixScale(m_TransformHandle, xScaleFactor, yScaleFactor, transformOrder)
+            End If
+            
     End Select
+    
 End Function
 
 'Mirror the matrix in the x and/or y direction
@@ -107,8 +127,8 @@ Friend Function ApplyMirror(ByVal mirrorHorizontal As Boolean, ByVal mirrorVerti
     If (m_TransformHandle = 0) Then CreateTransform
     Select Case m_TransformBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
-            If mirrorHorizontal Then ApplyMirror = Me.ApplyScaling(-1, 1, transformOrder)
-            If mirrorVertical Then ApplyMirror = Me.ApplyScaling(1, -1, transformOrder)
+            If mirrorHorizontal Then ApplyMirror = Me.ApplyScaling(-1, 1, , , transformOrder)
+            If mirrorVertical Then ApplyMirror = Me.ApplyScaling(1, -1, , , transformOrder)
     End Select
 End Function
 
@@ -177,7 +197,15 @@ Friend Function ApplyShear(ByVal shearX As Single, ByVal shearY As Single, Optio
     
 End Function
 
-'Translate an arbitrary (x, y) coordinate pair by the current matrix
+'Apply the current transform to any number of arbitrary (x, y) coordinate pair(s)
+Friend Function ApplyTransformToPointFs(ByVal ptrToFirstPointF As Long, ByVal numOfPoints As Long) As Boolean
+    If (m_TransformHandle = 0) Then CreateTransform
+    Select Case m_TransformBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            ApplyTransformToPointFs = GDI_Plus.GDIPlus_MatrixTransformListOfPoints(m_TransformHandle, ptrToFirstPointF, numOfPoints)
+    End Select
+End Function
+
 Friend Function ApplyTransformToPointF(ByRef srcPoint As POINTFLOAT) As Boolean
     If (m_TransformHandle = 0) Then CreateTransform
     Select Case m_TransformBackend

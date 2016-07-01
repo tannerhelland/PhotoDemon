@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.196</langversion>
+<langversion>6.7.197</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -12784,22 +12784,7 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <translation>Räta komplett.</translation>
 </phrase>
 
-<phrase>
-<original>Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled.</original>
-<translation>Godtyckliga rotation kräver Freeimage plugin, som inte kunde lokaliseras. Rotation avbryts.</translation>
-</phrase>
-
-<phrase>
-<original>The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.</original>
-<translation>Den Freeimage plugin krävs för bildrotation. Gå till Verktyg -> Alternativ -> Uppdateringar och låta PhotoDemon att hämta kärn plugins. Starta sedan om programmet.</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage plugin missing</original>
-<translation>Freeimage plugin saknas</translation>
-</phrase>
-
-<!-- Image_Straighten.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Image_Straighten.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Image_Straighten.frm-->
 
@@ -15125,10 +15110,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2579</phrasecount>
+<phrasecount>2576</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4520 phrases. -->
-<!-- 1941 are duplicates, so only 2579 unique phrases have been written to file. -->
-<!-- These 2579 phrases contain approximately 13258 total words. -->
+<!-- As of this build, PhotoDemon contains 4517 phrases. -->
+<!-- 1941 are duplicates, so only 2576 unique phrases have been written to file. -->
+<!-- These 2576 phrases contain approximately 13214 total words. -->
 
 </pdData>

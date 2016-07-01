@@ -70,13 +70,9 @@ Attribute VB_Exposed = False
 'Last updated: 11/May/14
 'Last update: initial build, based heavily off PD's existing Rotate dialog
 '
-'This tool allows the user to straighten an image at an arbitrary angle in 1/100 degree increments.  FreeImage is
-' required for the tool to work, as this relies upon FreeImage to perform the rotation in a fast, efficient
-' manner.  The corresponding menu entry for this tool is hidden unless FreeImage is found.  (To confuse matters
-' further, GDI+ is used to enlarge the straightened image.)
-'
-'At present, the tool assumes that you want to straighten the image around its center.  I don't have plans to
-' change this behavior.
+'This tool allows the user to straighten an image at an arbitrary angle in 1/100 degree increments.
+'At present, the tool assumes that you want to straighten the image around its center.  I don't have
+' plans to change this behavior.
 '
 'To straighten a layer instead of the entire image, use the Layer -> Orientation -> Straighten menu.
 '
@@ -106,77 +102,140 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
         pdImages(g_CurrentImage).mainSelection.lockRelease
     End If
 
-    'FreeImage uses positive values to indicate counter-clockwise rotation.  While mathematically correct, I find this
+    'Many 2D libraries use positive values to indicate counter-clockwise rotation.  While mathematically correct, I find this
     ' unintuitive for casual users.  PD reverses the rotationAngle value so that POSITIVE values indicate CLOCKWISE rotation.
     rotationAngle = -rotationAngle
 
     Dim tmpDIB As pdDIB, finalDIB As pdDIB
     Set tmpDIB = New pdDIB
     Set finalDIB = New pdDIB
-
-    'Double-check that FreeImage exists
-    If g_ImageFormats.FreeImageEnabled Then
+    
+    Dim srcWidth As Double, srcHeight As Double
+    
+    'To solve the problem of auto-cropping the straightened image, additional variables are required.
+    Dim solveAngle As Double, len1 As Double, len2 As Double, scaleFactor As Double
+    
+    'This function handles three different cases: previews (which use a pre-composited image, for performance),
+    ' single layers (where the layer is rotated around its own center point), and the full image (where each layer
+    ' is null-padded in turn, straightened, then un-null-padded).
+    If isPreview Then
+        srcWidth = smallDIB.GetDIBWidth
+        srcHeight = smallDIB.GetDIBHeight
+    Else
+        Select Case thingToRotate
+            Case PD_AT_WHOLEIMAGE
+                srcWidth = pdImages(g_CurrentImage).Width
+                srcHeight = pdImages(g_CurrentImage).Height
+            Case PD_AT_SINGLELAYER
+                srcWidth = pdImages(g_CurrentImage).GetActiveDIB.GetDIBWidth
+                srcHeight = pdImages(g_CurrentImage).GetActiveDIB.GetDIBHeight
+        End Select
+    End If
+    
+    'We want to rotate and scale the image around its center point (instead of [0, 0])
+    Dim cx As Double, cy As Double
+    cx = srcWidth / 2
+    cy = srcHeight / 2
+    
+    Dim cTransform As pd2DTransform
+    Set cTransform = New pd2DTransform
+    
+    Dim rotatePoints() As POINTFLOAT
+    
+    'Normally, I like to use identical code for previews and actual effects.  However, rotating is completely different
+    ' for previews (where we do a single rotation of the composited image) vs the full images (independently rotating
+    ' each layer, with support functions to null-pad and crop layers as necessary).  As such, there is some code
+    ' duplication here, but I believe it makes the code much more readable.
+    If isPreview Then
         
-        'Rotation requires quite a few variables, including a number of handles for passing data back-and-forth with FreeImage.
-        Dim fi_DIB As Long, returnDIB As Long
-        Dim nWidth As Double, nHeight As Double
+        'Start by calculating the corner points of the image, when rotated at the specified angle
+        Math_Functions.FindCornersOfRotatedRect srcWidth, srcHeight, rotationAngle, rotatePoints
         
-        'One of the FreeImage rotation variants requires an explicit center point; calculate one in advance.
-        Dim cx As Double, cy As Double
-        
-        'To solve the problem of auto-cropping the straightened image, additional variables are required.
-        Dim solveAngle As Double, len1 As Double, len2 As Double, scaleFactor As Double
-        
-        If isPreview Then
-            cx = smallDIB.GetDIBWidth / 2
-            cy = smallDIB.GetDIBHeight / 2
+        'Next, we need to calculate a scaling factor for the image.  Straightening applies a sort of auto-crop
+        ' to the image to remove empty corners; by solving a triangle equation using the image diagonal, we
+        ' can calculate the scaling factor needed.  Thank you to this article for the helpful diagram:
+        ' http://stackoverflow.com/questions/18865837/image-straightening-in-android
+        ' (Note that the stackoverflow link does not work for the case of width > height, and the instructions
+        '  provided for correcting that case are *wrong*!)
+        If srcWidth < srcHeight Then
+            solveAngle = Atn(srcHeight / srcWidth)
+            len1 = cx / Cos(solveAngle - Abs(rotationAngle * PI_DIV_180))
         Else
-        
-            Select Case thingToRotate
-            
-                Case PD_AT_WHOLEIMAGE
-                    cx = pdImages(g_CurrentImage).Width / 2
-                    cy = pdImages(g_CurrentImage).Height / 2
-                    
-                Case PD_AT_SINGLELAYER
-                    cx = pdImages(g_CurrentImage).GetActiveDIB.GetDIBWidth / 2
-                    cy = pdImages(g_CurrentImage).GetActiveDIB.GetDIBHeight / 2
-                    
-            End Select
-                    
+            solveAngle = Atn(srcWidth / srcHeight)
+            len1 = cy / Cos(solveAngle - Abs(rotationAngle * PI_DIV_180))
         End If
         
-        Dim sourceCropWidth As Double, sourceCropHeight As Double
+        len2 = Sqr(cx * cx + cy * cy)
+        scaleFactor = len2 / len1
         
-        'Normally, I like to use identical code for previews and actual effects.  However, rotating is completely different
-        ' for previews (where we do a single rotation of the composited image) vs the full images (independently rotating
-        ' each layer, with support functions to null-pad and crop layers as necessary).  As such, there is some code
-        ' duplication here, but I believe it makes the code much more readable.
+        'Apply that scalefactor to our calculated rotation points
+        cTransform.ApplyScaling scaleFactor, scaleFactor, cx, cy
+        cTransform.ApplyTransformToPointFs VarPtr(rotatePoints(0)), 4
         
-        If isPreview Then
+        'Prepare a final DIB to receive the resized image
+        finalDIB.CreateBlank srcWidth, srcHeight, 32, 0
+        
+        'Rotate the new image into place
+        GDI_Plus.GDIPlus_PlgBlt finalDIB, rotatePoints, smallDIB, 0, 0, smallDIB.GetDIBWidth, smallDIB.GetDIBHeight, , , False
+        
+        'For previews only, before rendering the final DIB to the screen, going some helpful
+        ' guidelines to help the user confirm the accuracy of their straightening.
+        Dim lineOffset As Double, lineStepX As Double, lineStepY As Double
+        lineStepX = (srcWidth - 1) / 4
+        lineStepY = (srcHeight - 1) / 4
+        
+        Dim j As Long
+        For j = 0 To 4
+            lineOffset = lineStepX * j
+            GDIPlusDrawLineToDC finalDIB.GetDIBDC, lineOffset, 0, lineOffset, srcHeight, RGB(255, 255, 0), 192, 1
+            GDIPlusDrawLineToDC finalDIB.GetDIBDC, lineOffset + lineStepX / 2, 0, lineOffset + lineStepX / 2, srcHeight, RGB(255, 255, 0), 80, 1
+            lineOffset = lineStepY * j
+            GDIPlusDrawLineToDC finalDIB.GetDIBDC, 0, lineOffset, srcWidth, lineOffset, RGB(255, 255, 0), 192, 1
+            GDIPlusDrawLineToDC finalDIB.GetDIBDC, 0, lineOffset + lineStepY / 2, srcWidth, lineOffset + lineStepY / 2, RGB(255, 255, 0), 80, 1
+        Next j
+                    
+        'Finally, render the preview and erase the temporary DIB to conserve memory
+        pdFxPreview.SetFXImage finalDIB
+        
+    'This is *not* a preview
+    Else
             
-            'Give FreeImage a handle to our temporary rotation image
-            fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(smallDIB)
+        'When rotating the entire image, we can use the number of layers as a stand-in progress parameter.
+        If (thingToRotate = PD_AT_WHOLEIMAGE) Then
+            Message "Straightening image..."
+            SetProgBarMax pdImages(g_CurrentImage).GetNumOfLayers
+        Else
+            Message "Straightening layer..."
+            SetProgBarMax 1
+        End If
+        
+        Dim tmpLayerRef As pdLayer
             
-            'Ask it to rotate the image
-            returnDIB = FreeImage_RotateEx(fi_DIB, rotationAngle, 0, 0, cx, cy, True)
+        'When rotating the entire image, we must handle all layers in turn.  Otherwise, we can handle just the active layer.
+        Dim lInit As Long, lFinal As Long
+        
+        Select Case thingToRotate
+            Case PD_AT_WHOLEIMAGE
+                lInit = 0
+                lFinal = pdImages(g_CurrentImage).GetNumOfLayers - 1
+            Case PD_AT_SINGLELAYER
+                lInit = pdImages(g_CurrentImage).GetActiveLayerIndex
+                lFinal = pdImages(g_CurrentImage).GetActiveLayerIndex
+        End Select
+        
+        Dim i As Long
+        For i = lInit To lFinal
+        
+            If (thingToRotate = PD_AT_WHOLEIMAGE) Then SetProgBarVal i
+        
+            'Retrieve a pointer to the layer of interest
+            Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(i)
             
-            'As a failsafe, check the returned width/height (they should be identical our original input)
-            nWidth = FreeImage_GetWidth(returnDIB)
-            nHeight = FreeImage_GetHeight(returnDIB)
-                        
-            'Create a blank DIB to receive the rotated image from FreeImage
-            tmpDIB.CreateBlank nWidth, nHeight, 32
+            'Null-pad the layer
+            If (thingToRotate = PD_AT_WHOLEIMAGE) Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
             
-            'Ask FreeImage to premultiply the image's alpha data
-            FreeImage_PreMultiplyWithAlpha returnDIB
-            
-            'Copy the bits from the FreeImage DIB to our DIB
-            Plugin_FreeImage.PaintFIDibToPDDib tmpDIB, returnDIB, 0, 0, nWidth, nHeight
-            
-            'With the transfer complete, release the FreeImage DIB and unload the library
-            If (fi_DIB <> 0) Then FreeImage_UnloadEx fi_DIB
-            If (returnDIB <> 0) Then FreeImage_UnloadEx returnDIB
+            'Calculating the corner points of the layer, when rotated at the specified angle.
+            Math_Functions.FindCornersOfRotatedRect srcWidth, srcHeight, rotationAngle, rotatePoints
             
             'Next, we need to calculate a scaling factor for the image.  Straightening applies a sort of auto-crop
             ' to the image to remove empty corners; by solving a triangle equation using the image diagonal, we
@@ -184,177 +243,60 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
             ' http://stackoverflow.com/questions/18865837/image-straightening-in-android
             ' (Note that the stackoverflow link does not work for the case of width > height, and the instructions
             '  provided for correcting that case are *wrong*!)
-            If nWidth < nHeight Then
-                solveAngle = Atn(nHeight / nWidth)
+            If (srcWidth < srcHeight) Then
+                solveAngle = Atn(srcHeight / srcWidth)
                 len1 = cx / Cos(solveAngle - Abs(rotationAngle * PI_DIV_180))
             Else
-                solveAngle = Atn(nWidth / nHeight)
+                solveAngle = Atn(srcWidth / srcHeight)
                 len1 = cy / Cos(solveAngle - Abs(rotationAngle * PI_DIV_180))
             End If
             
             len2 = Sqr(cx * cx + cy * cy)
             scaleFactor = len2 / len1
             
-            'Using our new scalefactor, calculate a source image width and height
-            sourceCropWidth = nWidth * (1 / scaleFactor)
-            sourceCropHeight = nHeight * (1 / scaleFactor)
+            'Apply that scalefactor to our calculated rotation points
+            cTransform.Reset
+            cTransform.ApplyScaling scaleFactor, scaleFactor, cx, cy
+            cTransform.ApplyTransformToPointFs VarPtr(rotatePoints(0)), 4
             
             'Prepare a final DIB to receive the resized image
-            finalDIB.CreateBlank nWidth, nHeight, 32, 0
-            
-            'Use GDI+ to copy the relevant source rectangle into the final DIB
-            GDIPlusResizeDIB finalDIB, 0, 0, nWidth, nHeight, tmpDIB, (nWidth - sourceCropWidth) / 2, (nHeight - sourceCropHeight) / 2, sourceCropWidth, sourceCropHeight, GP_IM_HighQualityBicubic
-            
-            'For previews only, before rendering the final DIB to the screen, going some helpful
-            ' guidelines to help the user confirm the accuracy of their straightening.
-            Dim lineOffset As Double, lineStepX As Double, lineStepY As Double
-            lineStepX = (nWidth - 1) / 4
-            lineStepY = (nHeight - 1) / 4
-            
-            Dim j As Long
-            For j = 0 To 4
-                lineOffset = lineStepX * j
-                GDIPlusDrawLineToDC finalDIB.GetDIBDC, lineOffset, 0, lineOffset, nHeight, RGB(255, 255, 0), 192, 1
-                GDIPlusDrawLineToDC finalDIB.GetDIBDC, lineOffset + lineStepX / 2, 0, lineOffset + lineStepX / 2, nHeight, RGB(255, 255, 0), 80, 1
-                lineOffset = lineStepY * j
-                GDIPlusDrawLineToDC finalDIB.GetDIBDC, 0, lineOffset, nWidth, lineOffset, RGB(255, 255, 0), 192, 1
-                GDIPlusDrawLineToDC finalDIB.GetDIBDC, 0, lineOffset + lineStepY / 2, nWidth, lineOffset + lineStepY / 2, RGB(255, 255, 0), 80, 1
-            Next j
-                        
-            'Finally, render the preview and erase the temporary DIB to conserve memory
-            pdFxPreview.SetFXImage finalDIB
-            
-            Set tmpDIB = Nothing
-            Set finalDIB = Nothing
-            
-        Else
-            
-            'FreeImage doesn't raise progress events, but we can use the number of layers as
-            ' a stand-in progress parameter.
-            If thingToRotate = PD_AT_WHOLEIMAGE Then
-                Message "Straightening image..."
-                SetProgBarMax pdImages(g_CurrentImage).GetNumOfLayers
-            Else
-                Message "Straightening layer..."
-                SetProgBarMax 1
-            End If
-            
-            'Iterate through each layer, rotating as we go
-            Dim tmpLayerRef As pdLayer
-            
-            'If we are rotating the entire image, we must handle all layers in turn.  Otherwise, we can handle just
-            ' the active layer.
-            Dim lInit As Long, lFinal As Long
-            
-            Select Case thingToRotate
-            
-                Case PD_AT_WHOLEIMAGE
-                    lInit = 0
-                    lFinal = pdImages(g_CurrentImage).GetNumOfLayers - 1
-                
-                Case PD_AT_SINGLELAYER
-                    lInit = pdImages(g_CurrentImage).GetActiveLayerIndex
-                    lFinal = pdImages(g_CurrentImage).GetActiveLayerIndex
-            
-            End Select
-            
-            Dim i As Long
-            For i = lInit To lFinal
-            
-                If thingToRotate = PD_AT_WHOLEIMAGE Then SetProgBarVal i
-            
-                'Retrieve a pointer to the layer of interest
-                Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(i)
-                
-                'Remove premultiplied alpha, if any
-                tmpLayerRef.layerDIB.SetAlphaPremultiplication False
-                
-                'Null-pad the layer
-                If thingToRotate = PD_AT_WHOLEIMAGE Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
-                                
-                'Give FreeImage a handle to the layer's pixel data
-                fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(tmpLayerRef.layerDIB)
-                
-                'Ask FreeImage to rotate the DIB
-                returnDIB = FreeImage_RotateEx(fi_DIB, rotationAngle, 0, 0, cx, cy, True)
-                
-                'As a failsafe, check the returned width/height (they should be unchanged)
-                nWidth = FreeImage_GetWidth(returnDIB)
-                nHeight = FreeImage_GetHeight(returnDIB)
-                
-                'Resize the layer's DIB in preparation for the transfer
-                tmpLayerRef.layerDIB.CreateBlank nWidth, nHeight, 32
-                
-                'Ask FreeImage to premultiply the image's alpha data
-                FreeImage_PreMultiplyWithAlpha returnDIB
-                
-                'Copy the bits from the FreeImage DIB to our DIB
-                Plugin_FreeImage.PaintFIDibToPDDib tmpLayerRef.layerDIB, returnDIB, 0, 0, nWidth, nHeight
-                
-                'With the transfer complete, release the FreeImage DIB and unload the library
-                If (returnDIB <> 0) Then FreeImage_UnloadEx returnDIB
-                If (fi_DIB <> 0) Then FreeImage_UnloadEx fi_DIB
-                
-                'Next, we need to calculate a scaling factor for the image.  Straightening applies a sort of auto-crop
-                ' to the image to remove empty corners; by solving a triangle equation using the image diagonal, we
-                ' can calculate the scaling factor needed.  Thank you to this article for the helpful diagram:
-                ' http://stackoverflow.com/questions/18865837/image-straightening-in-android
-                ' (Note that the stackoverflow link does not work for the case of width > height, and the instructions
-                '  provided for correcting that case are *wrong*!)
-                If nWidth < nHeight Then
-                    solveAngle = Atn(nHeight / nWidth)
-                    len1 = cx / Cos(solveAngle - Abs(rotationAngle * PI_DIV_180))
-                Else
-                    solveAngle = Atn(nWidth / nHeight)
-                    len1 = cy / Cos(solveAngle - Abs(rotationAngle * PI_DIV_180))
-                End If
-                
-                len2 = Sqr(cx * cx + cy * cy)
-                scaleFactor = len2 / len1
-                
-                'Using our new scalefactor, calculate a source image width and height
-                sourceCropWidth = nWidth * (1 / scaleFactor)
-                sourceCropHeight = nHeight * (1 / scaleFactor)
-                
-                'Prepare a final DIB to receive the resized image
-                finalDIB.CreateBlank nWidth, nHeight, 32, 0
+            If (finalDIB.GetDIBWidth <> CLng(srcWidth)) Or (finalDIB.GetDIBHeight <> CLng(srcHeight)) Then
+                finalDIB.CreateBlank CLng(srcWidth), CLng(srcHeight), 32, 0
                 finalDIB.SetInitialAlphaPremultiplicationState True
-                
-                'Use GDI+ to copy the relevant source rectangle into the final DIB
-                GDIPlusResizeDIB finalDIB, 0, 0, nWidth, nHeight, tmpLayerRef.layerDIB, (nWidth - sourceCropWidth) / 2, (nHeight - sourceCropHeight) / 2, sourceCropWidth, sourceCropHeight, GP_IM_HighQualityBicubic
-                
-                'Copy the resized DIB into its parent layer
-                tmpLayerRef.layerDIB.CreateFromExistingDIB finalDIB
-                
-                'If resizing the entire image, remove any null-padding now
-                If thingToRotate = PD_AT_WHOLEIMAGE Then tmpLayerRef.CropNullPaddedLayer
-                
-                'Notify the parent of the change
-                pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
-                                
-            'Continue with the next layer
-            Next i
-            
-            'All layers have been rotated successfully!
-            
-            'Update the image's size
-            If thingToRotate = PD_AT_WHOLEIMAGE Then
-                pdImages(g_CurrentImage).UpdateSize False, nWidth, nHeight
-                DisplaySize pdImages(g_CurrentImage)
+            Else
+                finalDIB.ResetDIB 0
             End If
             
-            'Fit the new image on-screen and redraw its viewport
-            Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            'Rotate the new image into place
+            GDI_Plus.GDIPlus_PlgBlt finalDIB, rotatePoints, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.layerDIB.GetDIBWidth, tmpLayerRef.layerDIB.GetDIBHeight, , , False
             
-            Message "Straighten complete."
-            SetProgBarVal 0
-            ReleaseProgressBar
+            'Copy the resized DIB into its parent layer
+            tmpLayerRef.layerDIB.CreateFromExistingDIB finalDIB
+            
+            'If resizing the entire image, remove any null-padding now
+            If (thingToRotate = PD_AT_WHOLEIMAGE) Then tmpLayerRef.CropNullPaddedLayer
+            
+            'Notify the parent of the change
+            pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
+                            
+        'Continue with the next layer
+        Next i
         
+        'All layers have been rotated successfully!
+        
+        'Update the image's size (not technically necessary, but this triggers some other backend notifications that are relevant)
+        If thingToRotate = PD_AT_WHOLEIMAGE Then
+            pdImages(g_CurrentImage).UpdateSize False, srcWidth, srcHeight
+            DisplaySize pdImages(g_CurrentImage)
         End If
         
-    Else
-        Message "Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled."
-        PDMsgBox "The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.", vbApplicationModal + vbOKOnly + vbInformation, "FreeImage plugin missing"
+        'Fit the new image on-screen and redraw its viewport
+        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
+        Message "Straighten complete."
+        SetProgBarVal 0
+        ReleaseProgressBar
+    
     End If
         
 End Sub
@@ -363,13 +305,10 @@ End Sub
 Private Sub cmdBar_OKClick()
 
     Select Case m_StraightenTarget
-    
         Case PD_AT_WHOLEIMAGE
             Process "Straighten image", , BuildParams(sltAngle, m_StraightenTarget), UNDO_IMAGE
-        
         Case PD_AT_SINGLELAYER
             Process "Straighten layer", , BuildParams(sltAngle, m_StraightenTarget), UNDO_LAYER
-    
     End Select
     
 End Sub
