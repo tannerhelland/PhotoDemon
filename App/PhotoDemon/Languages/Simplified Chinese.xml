@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1556</langversion>
+<langversion>6.8.1557</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -12782,22 +12782,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>拉伸完成。</translation>
 </phrase>
 
-<phrase>
-<original>Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled.</original>
-<translation>任意旋转需要FreeImage的插件，它无法找到。旋转取消。</translation>
-</phrase>
-
-<phrase>
-<original>The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.</original>
-<translation>该FreeImage的插件所需的图像旋转。请进入工具 - >选项 - >更新，并允许PhotoDemon下载核心插件。然后重新启动该程序。</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage plugin missing</original>
-<translation>未发现FreeImage的插件</translation>
-</phrase>
-
-<!-- Image_Straighten.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Image_Straighten.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Image_Straighten.frm-->
 
@@ -15120,10 +15105,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2579</phrasecount>
+<phrasecount>2576</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4520 phrases. -->
-<!-- 1941 are duplicates, so only 2579 unique phrases have been written to file. -->
-<!-- These 2579 phrases contain approximately 13258 total words. -->
+<!-- As of this build, PhotoDemon contains 4517 phrases. -->
+<!-- 1941 are duplicates, so only 2576 unique phrases have been written to file. -->
+<!-- These 2576 phrases contain approximately 13214 total words. -->
 
 </pdData>

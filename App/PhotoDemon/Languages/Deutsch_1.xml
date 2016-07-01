@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.196</langversion>
+<langversion>6.7.197</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -12782,22 +12782,7 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 <translation>Ausrichten beendet.</translation>
 </phrase>
 
-<phrase>
-<original>Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled.</original>
-<translation>Solch eine beliebige Drehung erfordert das FreeImage-Plugin; das wurde aber nicht gefunden. Keine Drehung durchgeführt.</translation>
-</phrase>
-
-<phrase>
-<original>The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.</original>
-<translation>Das FreeImage-Plugin ist zur Bilddrehung erforderlich. Bitte gehen Sie im Menü auf "Werkzeuge > Einstellungen > Updates" und lassen PhotoDemon die Kernplugins herunterladen. Dann starten Sie das Programm neu.</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage plugin missing</original>
-<translation>FreeImage-Plugin nicht vorhanden</translation>
-</phrase>
-
-<!-- Image_Straighten.frm contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Image_Straighten.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Image_Straighten.frm-->
 
@@ -15123,10 +15108,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2579</phrasecount>
+<phrasecount>2576</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4520 phrases. -->
-<!-- 1941 are duplicates, so only 2579 unique phrases have been written to file. -->
-<!-- These 2579 phrases contain approximately 13258 total words. -->
+<!-- As of this build, PhotoDemon contains 4517 phrases. -->
+<!-- 1941 are duplicates, so only 2576 unique phrases have been written to file. -->
+<!-- These 2576 phrases contain approximately 13214 total words. -->
 
 </pdData>

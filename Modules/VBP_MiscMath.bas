@@ -701,7 +701,7 @@ Public Sub FindCornersOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeight As
     y41 = -x4 * sinTheta + y4 * cosTheta
     
     'Fill the destination array with the rotated points, translated back into the original coordinate space for convenience
-    If Not arrayAlreadyDimmed Then ReDim dstPoints(0 To 3) As POINTFLOAT
+    If (Not arrayAlreadyDimmed) Then ReDim dstPoints(0 To 3) As POINTFLOAT
     dstPoints(0).x = x11 + halfWidth
     dstPoints(0).y = y11 + halfHeight
     dstPoints(1).x = x21 + halfWidth
