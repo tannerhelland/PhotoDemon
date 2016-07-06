@@ -1793,7 +1793,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     GdipGetPropertyItemSize hImage, PropertyTagICCProfile, profileSize
     
     'If the returned size is > 0, this image contains an ICC profile!  Retrieve it now.
-    If profileSize > 0 Then
+    If (profileSize > 0) Then
     
         HasProfile = True
     
@@ -1892,8 +1892,8 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         
             'I assume 96 is used because it's the default DPI value in Windows.  I have not tested if different system DPI values affect
             ' the way GDI+ reports metafile size.
-            imgWidth = imgWidth * CDbl(96 / imgHResolution)
-            imgHeight = imgHeight * CDbl(96 / imgVResolution)
+            If (imgHResolution <> 0) Then imgWidth = imgWidth * CDbl(96 / imgHResolution)
+            If (imgVResolution <> 0) Then imgHeight = imgHeight * CDbl(96 / imgVResolution)
             
         End If
         
