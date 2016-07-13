@@ -625,9 +625,9 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
     Dim tmpR As Long, tmpG As Long, tmpB As Long
             
     'Extract the RGB values from the color we were passed
-    tmpR = ExtractRed(filterColor)
-    tmpG = ExtractGreen(filterColor)
-    tmpB = ExtractBlue(filterColor)
+    tmpR = Colors.ExtractRed(filterColor)
+    tmpG = Colors.ExtractGreen(filterColor)
+    tmpB = Colors.ExtractBlue(filterColor)
             
     'Divide tempStrength by 100 to yield a value between 0 and 1
     filterDensity = filterDensity / 100

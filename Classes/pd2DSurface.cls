@@ -23,7 +23,7 @@ Attribute VB_Exposed = False
 ' 1) Wrappers around existing DCs.  This is help for UI painting, as wrapping a DC is effectively instantaneous
 '    (compared to making a copy of the DC's bitmap, painting to that, then flipping back to the DC when finished)
 '
-' 2) Bitmap (raster) surfaces.  The creation and destruction of such surfaces is handled internally, using a pddib object.
+' 2) Bitmap (raster) surfaces.  The creation and destruction of such surfaces is handled internally, using a pdDIB object.
 '
 'Regardless of which surface type you use, you can always access an hDC for external GDI interop purposes.
 '
@@ -51,8 +51,32 @@ Private m_GdipImageHandle As Long
 'If this surface was created by wrapping an existing hDC, this value will be non-zero.
 Private m_SurfaceDC As Long
 
-'If you need to query a wrapped DC for bitmap information (e.g. width/height), use this temporary object to do so.
+'The caller can optionally provide the hWnd, if any, associated with the DC above.  This allows us to automagically
+' detect size changes.
+Private m_SurfaceHWnd As Long
+Private m_ClientRect As RECTL
+
+'If the caller does *not* supply an hWnd, they need to pass surface dimensions.  (DCs are dimension-less.)
+Private m_SurfaceWidthCaller As Single, m_SurfaceHeightCaller As Single
+
+'If we need to query a wrapped DC for bitmap information (e.g. width/height), we will use this temporary object to retrieve
+' data associated with the bitmap currently selected into the DC.  This system is *not* recommended, as bitmaps may not
+' correspond in size to the surface (for example, a memory DC without a bitmap selected into it will return a monochrome
+' 1x1 bitmap - see https://support.microsoft.com/en-us/kb/139165).  VB objects also tend to have bitmaps that are a
+' different size from their parent window, for reasons unknown.
+'
+'In other words, this is an absolute last resort.  Supply the surface's size at wrap-time, either implicitly via attached
+' hWnd or explicitly.
 Private m_SurfaceDCBitmap As GDI_Bitmap
+
+'When wrapping a DC, a surface needs to know the size of the object being painted on.  If an hWnd is supplied alongside
+' the DC, we'll use that to auto-detect dimensions; otherwise, the caller needs to provide them.  (If the size is
+' unknown, we'll use the size of the bitmap currently selected into the DC, but that's *not* reliable - so don't use it
+' unless you know what you're doing!)
+'
+'This value is only used internally, and is set automatically at wrap-time.  It is ignored for internal surfaces,
+' because we will always query the DIB directly.
+Private m_SurfaceSizeMode As PD_2D_SIZE_DETECTION
 
 'If this surface was created as a new surface, this DIB will serve as the surface backer.  (Similarly, the surface DC will simply
 ' wrap this DIB's hDC.)
@@ -182,7 +206,7 @@ End Sub
 ' serialization (e.g. you cannot save/load them to a string).  Clipping is one such property, because clipping may
 ' be undefined, a simple rect, or a complex region, and pd2D doesn't implement all those features... yet.
 ' (GDIPlus can retrieve region data as a byte array, so we could theoretically convert that to Base64 and store it
-'  inside an XML tag.)
+'  inside an XML tag... maybe someday!)
 Public Function GetSurfaceClippingRegion(ByRef dstRegion As pd2DRegion) As Boolean
 
     If (m_SurfaceHandle <> 0) Then
@@ -260,6 +284,47 @@ Public Function SetSurfaceClip_None() As Boolean
     
 End Function
 
+'Make an exact copy of an existing surface.
+Public Function CloneSurface(ByRef srcSurface As pd2DSurface, Optional ByVal cloneAlphaChannelToo As Boolean = False, Optional ByVal clonePropertiesToo As Boolean = False, Optional ByVal cloneClippingToo As Boolean = False) As Boolean
+
+    If (Not srcSurface Is Nothing) Then
+        
+        Me.CreateBlankSurface srcSurface.GetSurfaceWidth, srcSurface.GetSurfaceHeight, IIf(srcSurface.GetSurfaceAlphaSupport, cloneAlphaChannelToo, False)
+        
+        'Clone all surface properties
+        If clonePropertiesToo Then
+            Dim i As PD_2D_SURFACE_SETTINGS
+            For i = 0 To [_P2_NumOfSurfaceSettings] - 1
+                Me.SetSurfaceProperty i, srcSurface.GetSurfaceProperty(i)
+            Next i
+        End If
+        
+        'Clipping regions are somewhat messy, as their shape can be horrifically complex
+        Dim srcRegion As pd2DRegion
+        If cloneClippingToo Then
+            If srcSurface.GetSurfaceClippingRegion(srcRegion) Then Me.SetSurfaceClip_FromRegion srcRegion, P2_CM_Replace
+        End If
+        
+        'Copy the surface contents into place
+        Dim cPainter As pd2DPainter
+        Drawing2D.QuickCreatePainter cPainter
+        CloneSurface = cPainter.CopySurfaceI(Me, 0, 0, srcSurface)
+        
+    Else
+        InternalError "Failed to clone surface", "Source surface was empty"
+    End If
+
+End Function
+
+'Copy the current contents of this surface to some target DC.  (This is a nice shorthand function for flipping backbuffers, for example.)
+' I know it's weird, but if you don't supply a destination width and height, the surface's current width/height values will be automatically
+' plugged in.
+Public Function CopySurfaceToDC(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal dstWidth As Long = 0, Optional ByVal dstHeight As Long = 0, Optional ByVal srcX As Long = 0, Optional ByVal srcY As Long = 0)
+    If (dstWidth = 0) Then dstWidth = Me.GetSurfaceWidth
+    If (dstHeight = 0) Then dstHeight = Me.GetSurfaceHeight
+    CopySurfaceToDC = GDI.BitBltWrapper(dstDC, dstX, dstY, dstWidth, dstHeight, Me.GetSurfaceDC, srcX, srcY)
+End Function
+
 'Create a blank in-memory surface.  pd2DSurface will automatically manage the memory for this surface.
 Public Function CreateBlankSurface(ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, Optional ByVal surfaceHasAlphaChannel As Boolean = True, Optional ByVal surfaceBackColor As Long = vbWhite, Optional ByVal surfaceOpacity As Single = 100#) As Boolean
     
@@ -281,8 +346,16 @@ Public Function CreateBlankSurface(ByVal surfaceWidth As Long, ByVal surfaceHeig
             Select Case m_SurfaceBackend
                 
                 Case P2_DefaultBackend, P2_GDIPlusBackend
-                    m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(m_SurfaceDIB.GetDIBDC, IIf(m_SurfaceAntialiasing >= P2_AA_HighQuality, GP_SM_AntiAlias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Half, GP_POM_Half, GP_POM_None))
+                    m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(m_SurfaceDIB.GetDIBDC, IIf(m_SurfaceAntialiasing >= P2_AA_HighQuality, GP_SM_Antialias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Half, GP_POM_Half, GP_POM_None))
                     CreateBlankSurface = (m_SurfaceHandle <> 0)
+                    
+                    'Apply any other stored settings to the newly created surface
+                    If CreateBlankSurface Then
+                        RelayPropertyChangeToBackend P2_SurfaceBlendUsingSRGBGamma
+                        RelayPropertyChangeToBackend P2_SurfaceRenderingOriginX
+                        RelayPropertyChangeToBackend P2_SurfaceRenderingOriginY
+                        RelayPropertyChangeToBackend P2_SurfaceResizeQuality
+                    End If
                     
             End Select
             
@@ -293,9 +366,233 @@ Public Function CreateBlankSurface(ByVal surfaceWidth As Long, ByVal surfaceHeig
     
 End Function
 
-'Wrap this surface around some existing hDC.  It's fine to call this function multiple times on the same DC - changes to the handle
-' are detected automatically.
-Public Function WrapSurfaceAroundDC(ByVal srcDC As Long) As Boolean
+'Create a surface from a given filename.  To reduce the chance of unpredictable behavior (including security concerns), please pass
+' fully qualified paths, not relative ones.
+'
+'Supported formats include: BMP, GIF, JPEG, PNG, TIFF, WMF, and EMF.  For best results, load images on Vista or later; XP has some
+' limitations beyond our control.  (This is mainly a concern with esoteric formats, like CMYK JPEGs.)
+'
+'Extra parameters include:
+' 1) fixJPEGOrientation: if the source file contains an orientation tag (like photos coming from smartphones), this function can
+'                        automatically rotate the image to match.  This is the default behavior, and should generally be disabled
+'                        only if the source file contains faulty EXIF data.
+Public Function CreateSurfaceFromFile(ByVal srcFilename As String, Optional ByVal fixJPEGOrientation As Boolean = True) As Boolean
+    
+    If (m_SurfaceHandle <> 0) Then ReleaseSurface
+    
+    Select Case m_SurfaceBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            
+            Dim emfPlusConversionSuccessful As Boolean
+            emfPlusConversionSuccessful = False
+            
+            'To simplify handling of surface(s) created from file, we are only going to lean on GDI+ for the initial image
+            ' file parsing.  Once the image is loaded, we will transfer it to an internally managed DIB; this frees us from
+            ' obnoxious GDI+ constraints (like being forced to maintain file access for the lifetime of the image object).
+            '
+            'One downside of this approach is that metafiles will be forcibly rasterized.  This behavior could be "fixed"
+            ' in a future release, but knowing all surfaces are raster-type saves us a lot of trouble, frankly.
+            
+            'Start by using GDI+ to load the file into a GDI+ container.
+            Dim hGdipImage As Long, isImageMetafile As Boolean
+            hGdipImage = GDI_Plus.GDIPlus_ImageCreateFromFile(srcFilename, isImageMetafile)
+            
+            If (hGdipImage <> 0) Then
+                
+                'Retrieve the exact file format; this may enable additional features
+                Dim srcFileFormat As PD_2D_FileFormat
+                srcFileFormat = GDI_Plus.GDIPlus_ImageGetFileFormat(hGdipImage)
+                
+                'Retrieve the image's dimensions
+                Dim imgWidth As Long, imgHeight As Long
+                GDI_Plus.GDIPlus_ImageGetDimensions hGdipImage, imgWidth, imgHeight
+                
+                Dim tmpPropertyBuffer() As Byte
+                
+                'If the source image is a metafile, we can enable some bonus features on Vista+
+                If isImageMetafile Then
+                    
+                    'Ideally, we'd want to keep the metafile in vector format, but in practice, this adds a lot of complexity to the library.
+                    ' (For example, implementing something like a distort filter on a vector object is impossible, so we'd need to add
+                    ' auto-rasterization capabilities to a LOT of places, and I don't want to do that right now.)
+                    '
+                    'Instead, pd2D rasterizes metafiles at import-time to the size suggested by the file itself.  This can be reevaluated
+                    ' in the future as time allows.
+                    
+                    'Before doing anything else, we need to differentiate between WMF and EMF files.  WMF report their size differently.
+                    If (srcFileFormat = P2_FF_WMF) Then
+                        
+                        'Retrieve the metafile's horizontal and vertical resolution
+                        Dim imgHResolution As Single, imgVResolution As Single
+                        GDI_Plus.GDIPlus_ImageGetResolution hGdipImage, imgHResolution, imgVResolution
+                        
+                        'I assume 96 is used because it's the default DPI value in Windows.  I have not tested if different system DPI values
+                        ' affect the way GDI+ reports metafile size.
+                        If (imgHResolution <> 0) Then imgWidth = imgWidth * (96# / imgHResolution)
+                        If (imgVResolution <> 0) Then imgHeight = imgHeight * (96# / imgVResolution)
+                        
+                    End If
+                    
+                    'If GDI+ v1.1 is available, we can translate EMFs and WMFs into the new GDI+ EMF+ format, which supports antialiasing
+                    ' and alpha channels (among other cool features).
+                    If GDI_Plus.IsGDIPlusV11Available Then
+                        
+                        'Create a temporary GDI+ graphics object, whose properties will be used to control the render state of the EMF
+                        Dim tmpSettingsDIB As pdDIB
+                        Set tmpSettingsDIB = New pdDIB
+                        tmpSettingsDIB.CreateBlank 8, 8, 32, 0, 0
+                        
+                        Dim tmpGraphics As Long
+                        tmpGraphics = GDI_Plus.GetGDIPlusGraphicsFromDC(tmpSettingsDIB.GetDIBDC, GP_SM_Antialias, GP_POM_Half)
+                        
+                        'Attempt to convert the EMF to EMF+ format
+                        Dim newImageHandle As Long
+                        If GDI_Plus.GDIPlus_ImageUpgradeMetafile(hGdipImage, tmpGraphics, newImageHandle) Then
+                            emfPlusConversionSuccessful = True
+                            GDI_Plus.ReleaseGDIPlusImage hGdipImage
+                            hGdipImage = newImageHandle
+                        Else
+                            InternalError "Metafile upgrade failed", "Could not convert old-style WMF or EMF to new EMF+ format"
+                        End If
+                        
+                        'Release all the temporary objects we created for the conversion
+                        If (tmpGraphics <> 0) Then GDI_Plus.ReleaseGDIPlusGraphics tmpGraphics
+                        Set tmpSettingsDIB = Nothing
+                        
+                    End If
+                    
+                'If the source image is a raster file, we can also enable some bonus features
+                Else
+                
+                    'Automatically apply any orientation metadata, if present
+                    If GDI_Plus.GDIPlus_ImageGetProperty(hGdipImage, GP_PT_Orientation, tmpPropertyBuffer) Then
+                    
+                        'The first 16 bytes of a GDI+ property are ignored.  For the orientation property, we need the MSB of the
+                        ' 2-byte trailer of the returned array.
+                        Select Case tmpPropertyBuffer(UBound(tmpPropertyBuffer) - 1)
+                        
+                            'For details on what the different orientation values mean, visit https://msdn.microsoft.com/en-us/library/ms534416(v=vs.85).aspx
+                            Case 1
+                                'Standard orientation; no modifications needed
+                            Case 2
+                                GDI_Plus.GDIPlus_ImageRotateFlip hGdipImage, GP_RF_NoneFlipX
+                            Case 3
+                                GDI_Plus.GDIPlus_ImageRotateFlip hGdipImage, GP_RF_180FlipNone
+                            Case 4
+                                GDI_Plus.GDIPlus_ImageRotateFlip hGdipImage, GP_RF_NoneFlipY
+                            Case 5
+                                GDI_Plus.GDIPlus_ImageRotateFlip hGdipImage, GP_RF_270FlipY
+                            Case 6
+                                GDI_Plus.GDIPlus_ImageRotateFlip hGdipImage, GP_RF_90FlipNone
+                            Case 7
+                                GDI_Plus.GDIPlus_ImageRotateFlip hGdipImage, GP_RF_90FlipY
+                            Case 8
+                                GDI_Plus.GDIPlus_ImageRotateFlip hGdipImage, GP_RF_270FlipNone
+                        End Select
+                    
+                    End If
+                
+                End If
+                
+                'Check for the presence of an alpha channel
+                Dim imgPixelFormat As GP_PixelFormat, hasAlpha As Boolean
+                imgPixelFormat = GDI_Plus.GDIPlus_ImageGetPixelFormat(hGdipImage)
+                hasAlpha = CBool((imgPixelFormat And GP_PF_Alpha) <> 0) Or CBool((imgPixelFormat And GP_PF_PreMultAlpha) <> 0)
+                
+                'Metafiles require special handling on Vista and earlier
+                Set m_SurfaceDIB = New pdDIB
+                
+                If isImageMetafile Then
+                    If emfPlusConversionSuccessful Or hasAlpha Then
+                        m_SurfaceDIB.CreateBlank imgWidth, imgHeight, 32, 0, 0
+                    Else
+                        m_SurfaceDIB.CreateBlank imgWidth, imgHeight, 24
+                    End If
+                Else
+                    m_SurfaceDIB.CreateBlank imgWidth, imgHeight, 32, 0, 0
+                End If
+                
+                'It's finally time to copy the GDI+ image data into our internal DIB container.  Note that 32-bpp images are
+                ' handled differently from 24-bpp images, due to some quirks with GDI+.
+                If hasAlpha Then
+                    
+                    'Make sure the image is in 32-bpp premultiplied ARGB format
+                    If (imgPixelFormat <> GP_PF_32bppPARGB) And (Not isImageMetafile) Then GDI_Plus.GDIPlus_ImageForcePremultipliedAlpha hGdipImage, imgWidth, imgHeight
+                    m_SurfaceDIB.SetInitialAlphaPremultiplicationState True
+                    
+                    'We are now going to copy the image's data directly into our destination DIB by using LockBits.  Very fast, and not much code!
+                    
+                    'Start by preparing a GP_BitmapData variable, which describes how we want GDI+ to lock the data.  (In our case, we instruct
+                    ' it to copy the data into a buffer of our own creation.)
+                    Dim copyBitmapData As GP_BitmapData
+                    With copyBitmapData
+                        .BD_Width = imgWidth
+                        .BD_Height = imgHeight
+                        .BD_PixelFormat = GP_PF_32bppPARGB
+                        .BD_Stride = m_SurfaceDIB.GetDIBStride
+                        .BD_Scan0 = m_SurfaceDIB.GetDIBPointer
+                    End With
+                    
+                    'Next, prepare a clipping rect
+                    Dim tmpRect As RECTL
+                    With tmpRect
+                        .Left = 0
+                        .Top = 0
+                        .Right = imgWidth
+                        .Bottom = imgHeight
+                    End With
+                    
+                    'Use LockBits to perform the copy for us.
+                    CreateSurfaceFromFile = GDI_Plus.GDIPlus_ImageLockBits(hGdipImage, tmpRect, copyBitmapData, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppPARGB)
+                    GDI_Plus.GDIPlus_ImageUnlockBits hGdipImage, copyBitmapData
+                    
+                '24-bpp images can be rendered directly onto our internal DIB
+                Else
+                    Dim hGraphics As Long
+                    hGraphics = GDI_Plus.GetGDIPlusGraphicsFromDC(m_SurfaceDIB.GetDIBDC, GP_SM_Antialias, GP_POM_None)
+                    CreateSurfaceFromFile = GDI_Plus.GDIPlus_DrawImageRectI(hGraphics, hGdipImage, 0, 0, imgWidth, imgHeight)
+                    GDI_Plus.ReleaseGDIPlusGraphics hGraphics
+                End If
+                
+                'Release any remaining GDI+ handles and exit
+                GDI_Plus.ReleaseGDIPlusImage hGdipImage
+                
+                'If successful, relay any remaining surface properties to the GDI+ container associated with this surface
+                If CreateSurfaceFromFile Then
+                    m_SurfaceType = P2_ST_Bitmap
+                    m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(m_SurfaceDIB.GetDIBDC, IIf(m_SurfaceAntialiasing >= P2_AA_HighQuality, GP_SM_Antialias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Half, GP_POM_Half, GP_POM_None))
+                    CreateSurfaceFromFile = (m_SurfaceHandle <> 0)
+                    
+                    'Apply any other stored settings to the newly created surface
+                    If CreateSurfaceFromFile Then
+                        RelayPropertyChangeToBackend P2_SurfaceBlendUsingSRGBGamma
+                        RelayPropertyChangeToBackend P2_SurfaceRenderingOriginX
+                        RelayPropertyChangeToBackend P2_SurfaceRenderingOriginY
+                        RelayPropertyChangeToBackend P2_SurfaceResizeQuality
+                    End If
+                
+                End If
+                
+            Else
+                CreateSurfaceFromFile = False
+            End If
+            
+    End Select
+    
+End Function
+
+'Wrap this surface around some existing hDC.  The DC can be any type (display or memory, primarily; printer should also work but
+' I haven't tested it nearly as thoroughly).
+'
+'If this DC is associated with a window or a VB object, you should also pass the object's hWnd.  hWnds are more reliable for
+' retrieving surface dimensions, because we can retrieve the surface's size on-demand.  (For example, if you wrap a picture box
+' or form, then resize the picture box or form, this class will auto-magically update itself to match.)
+'
+'If you *don't* provide an hWnd, you need to provide the surface's width and height.  This allows pd2D to auto-calculate things
+' like fill boundaries and implicit draw operations (draw operations where the caller isn't required to pass width and height).
+' If you don't provide width and height, pd2D will try to guess dimensions from the active object inside the DC, but this is
+' subject to a bunch of problems and is unlikely to provide desired results.
+Public Function WrapSurfaceAroundDC(ByVal srcDC As Long, Optional ByVal srcHwnd As Long = 0, Optional ByVal surfaceWidth As Single = 0#, Optional ByVal surfaceHeight As Single = 0#) As Boolean
     
     If (srcDC <> 0) Then
     
@@ -310,7 +607,7 @@ Public Function WrapSurfaceAroundDC(ByVal srcDC As Long) As Boolean
                 
                 Case P2_DefaultBackend, P2_GDIPlusBackend
                     
-                    m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(srcDC, IIf(m_SurfaceAntialiasing >= P2_AA_HighQuality, GP_SM_AntiAlias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Half, GP_POM_Half, GP_POM_None))
+                    m_SurfaceHandle = GDI_Plus.GetGDIPlusGraphicsFromDC(srcDC, IIf(m_SurfaceAntialiasing >= P2_AA_HighQuality, GP_SM_Antialias, GP_SM_None), IIf(m_SurfacePixelOffset >= P2_PO_Half, GP_POM_Half, GP_POM_None))
                     WrapSurfaceAroundDC = (m_SurfaceHandle <> 0)
                     
                     If WrapSurfaceAroundDC Then
@@ -322,6 +619,20 @@ Public Function WrapSurfaceAroundDC(ByVal srcDC As Long) As Boolean
                         RelayPropertyChangeToBackend P2_SurfaceRenderingOriginX
                         RelayPropertyChangeToBackend P2_SurfaceRenderingOriginY
                         RelayPropertyChangeToBackend P2_SurfaceResizeQuality
+                        
+                        'Determine how we're gonna get size data from this DC
+                        If (srcHwnd <> 0) Then
+                            m_SurfaceHWnd = srcHwnd
+                            m_SurfaceSizeMode = P2_SizeFromHWnd
+                        Else
+                            If (surfaceWidth <> 0) And (surfaceHeight <> 0) Then
+                                m_SurfaceWidthCaller = surfaceWidth
+                                m_SurfaceHeightCaller = surfaceHeight
+                                m_SurfaceSizeMode = P2_SizeFromCaller
+                            Else
+                                m_SurfaceSizeMode = P2_SizeUnknown
+                            End If
+                        End If
                         
                     Else
                         InternalError "GDI+ DC wrapper failed", "GDI+ failed to wrap the hDC passed to pd2DSurface.WrapSurfaceAroundDC"
@@ -438,20 +749,37 @@ Public Function GetSurfaceAlphaSupport() As Boolean
 End Function
 
 Public Function GetSurfaceHeight() As Long
-    If (m_SurfaceType = P2_ST_WrapperOnly) Then
-        m_SurfaceDCBitmap = GDI.GetBitmapHeaderFromDC(m_SurfaceDC)
-        GetSurfaceHeight = m_SurfaceDCBitmap.Height
-    ElseIf (m_SurfaceType = P2_ST_Bitmap) Then
+    If (m_SurfaceType = P2_ST_Bitmap) Then
         If (Not m_SurfaceDIB Is Nothing) Then GetSurfaceHeight = m_SurfaceDIB.GetDIBHeight
+    ElseIf (m_SurfaceType = P2_ST_WrapperOnly) Then
+        Select Case m_SurfaceSizeMode
+            Case P2_SizeFromCaller
+                GetSurfaceHeight = m_SurfaceHeightCaller
+            Case P2_SizeFromHWnd
+                If GDI.GetClientRectWrapper(m_SurfaceHWnd, VarPtr(m_ClientRect)) Then GetSurfaceHeight = m_ClientRect.Bottom
+            Case P2_SizeUnknown
+                m_SurfaceDCBitmap = GDI.GetBitmapHeaderFromDC(m_SurfaceDC)
+                GetSurfaceHeight = m_SurfaceDCBitmap.Height
+        End Select
     Else
         GetSurfaceHeight = 0
     End If
 End Function
 
+'Stride calculations are *not* guaranteed to be accurate for wrapped DCs, because the underlying surface format is device-dependent.
+' 32-bpp is assumed but this is not a safe assumption pre-Vista.  (It shouldn't matter because this function is not used at present,
+' but FYI for future use.)
 Public Function GetSurfaceStride() As Long
     If (m_SurfaceType = P2_ST_WrapperOnly) Then
-        m_SurfaceDCBitmap = GDI.GetBitmapHeaderFromDC(m_SurfaceDC)
-        GetSurfaceStride = m_SurfaceDCBitmap.WidthBytes
+         Select Case m_SurfaceSizeMode
+            Case P2_SizeFromCaller
+                GetSurfaceStride = m_SurfaceWidthCaller * 4
+            Case P2_SizeFromHWnd
+                GetSurfaceStride = Me.GetSurfaceWidth * 4
+            Case P2_SizeUnknown
+                m_SurfaceDCBitmap = GDI.GetBitmapHeaderFromDC(m_SurfaceDC)
+                GetSurfaceStride = m_SurfaceDCBitmap.WidthBytes
+        End Select
     ElseIf (m_SurfaceType = P2_ST_Bitmap) Then
         If (Not m_SurfaceDIB Is Nothing) Then GetSurfaceStride = m_SurfaceDIB.GetDIBStride
     Else
@@ -460,11 +788,18 @@ Public Function GetSurfaceStride() As Long
 End Function
 
 Public Function GetSurfaceWidth() As Long
-    If (m_SurfaceType = P2_ST_WrapperOnly) Then
-        m_SurfaceDCBitmap = GDI.GetBitmapHeaderFromDC(m_SurfaceDC)
-        GetSurfaceWidth = m_SurfaceDCBitmap.Width
-    ElseIf (m_SurfaceType = P2_ST_Bitmap) Then
+    If (m_SurfaceType = P2_ST_Bitmap) Then
         If (Not m_SurfaceDIB Is Nothing) Then GetSurfaceWidth = m_SurfaceDIB.GetDIBWidth
+    ElseIf (m_SurfaceType = P2_ST_WrapperOnly) Then
+        Select Case m_SurfaceSizeMode
+            Case P2_SizeFromCaller
+                GetSurfaceWidth = m_SurfaceWidthCaller
+            Case P2_SizeFromHWnd
+                If GDI.GetClientRectWrapper(m_SurfaceHWnd, VarPtr(m_ClientRect)) Then GetSurfaceWidth = m_ClientRect.Right
+            Case P2_SizeUnknown
+                m_SurfaceDCBitmap = GDI.GetBitmapHeaderFromDC(m_SurfaceDC)
+                GetSurfaceWidth = m_SurfaceDCBitmap.Width
+        End Select
     Else
         GetSurfaceWidth = 0
     End If
@@ -562,7 +897,7 @@ Private Sub RelayPropertyChangeToBackend(ByVal propID As PD_2D_SURFACE_SETTINGS)
                 Select Case propID
                     Case P2_SurfaceAntialiasing
                         If (m_SurfaceAntialiasing >= P2_AA_HighQuality) Then
-                            GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, propID, GP_SM_AntiAlias
+                            GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, propID, GP_SM_Antialias
                         Else
                             GDI_Plus.SetGDIPlusGraphicsProperty m_SurfaceHandle, propID, GP_SM_None
                         End If
@@ -638,4 +973,3 @@ End Sub
 Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
     Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DSurface"
 End Sub
-

@@ -40,14 +40,14 @@ Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVa
 Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal ptrToString As Long, ByVal cch As Long) As Long
 
 Private Type WindowPlacement
-        wpLength As Long
-        wpFlags As Long
-        wpShowCmd As Long
-        ptMinPositionX As Long
-        ptMinPositionY As Long
-        ptMaxPositionX As Long
-        ptMaxPositionY As Long
-        rcNormalPosition As RECTL
+    wpLength As Long
+    wpFlags As Long
+    wpShowCmd As Long
+    ptMinPositionX As Long
+    ptMinPositionY As Long
+    ptMaxPositionX As Long
+    ptMaxPositionY As Long
+    rcNormalPosition As RECTL
 End Type
  
 Private Declare Function GetWindowPlacement Lib "user32" (ByVal hWnd As Long, ByRef lpwndpl As WindowPlacement) As Long
