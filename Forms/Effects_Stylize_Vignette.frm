@@ -217,9 +217,9 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
         
     'Extract the RGB values of the vignetting color
     Dim newR As Byte, newG As Byte, newB As Byte
-    newR = ExtractRed(newColor)
-    newG = ExtractGreen(newColor)
-    newB = ExtractBlue(newColor)
+    newR = Colors.ExtractRed(newColor)
+    newG = Colors.ExtractGreen(newColor)
+    newB = Colors.ExtractBlue(newColor)
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte

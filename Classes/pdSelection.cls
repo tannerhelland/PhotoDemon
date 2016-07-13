@@ -2241,9 +2241,9 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
         
             'Extract RGB values from the passed color
             Dim newR As Long, newG As Long, newB As Long
-            newR = ExtractRed(renderColor)
-            newG = ExtractGreen(renderColor)
-            newB = ExtractBlue(renderColor)
+            newR = Colors.ExtractRed(renderColor)
+            newG = Colors.ExtractGreen(renderColor)
+            newB = Colors.ExtractBlue(renderColor)
             
             'Use look-up tables to highlight the active parts of the image
             Dim rData(0 To 255) As Byte, gData(0 To 255) As Byte, bData(0 To 255) As Byte

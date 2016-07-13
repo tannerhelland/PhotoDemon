@@ -618,9 +618,9 @@ End Function
 Private Function GetMergedRGBA(ByVal gpIndex As Long, Optional ByVal customOpacityModifier As Single = 1#) As Long
     
     Dim dstQuad As RGBQUAD
-    dstQuad.Red = ExtractRed(m_GradientPoints(gpIndex).PointRGB)
-    dstQuad.Green = ExtractGreen(m_GradientPoints(gpIndex).PointRGB)
-    dstQuad.Blue = ExtractBlue(m_GradientPoints(gpIndex).PointRGB)
+    dstQuad.Red = Colors.ExtractRed(m_GradientPoints(gpIndex).PointRGB)
+    dstQuad.Green = Colors.ExtractGreen(m_GradientPoints(gpIndex).PointRGB)
+    dstQuad.Blue = Colors.ExtractBlue(m_GradientPoints(gpIndex).PointRGB)
     dstQuad.alpha = (m_GradientPoints(gpIndex).PointOpacity * customOpacityModifier) * 2.55
     
     Dim placeHolder As tmpLong

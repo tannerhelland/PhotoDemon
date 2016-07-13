@@ -206,8 +206,8 @@ Private Function AlphaBlendWrapper(ByVal hDstDC As Long, ByVal dstX As Long, ByV
     If srcIs32bpp Then
         abParams = blendOpacity * &H10000 Or &H1000000
         
-        'If the source is a pddib object, we could actually test for premultiplication here (and in fact,
-        ' pddib provides its own AlphaBlend wrapper that handles this for us).
+        'If the source is a pdDIB object, we could actually test for premultiplication here (and in fact,
+        ' pdDIB provides its own AlphaBlend wrapper that handles this for us).
     
     'Ignore alpha channel, and only use the supplied customAlpha value.
     Else
@@ -239,6 +239,20 @@ Public Function DrawSurfaceF(ByRef dstSurface As pd2DSurface, ByVal dstX As Sing
     
 End Function
 
+Public Function DrawSurfaceResizedI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcSurface As pd2DSurface, Optional ByVal customOpacity As Single = 100#) As Boolean
+    
+    Dim srcWidth As Long, srcHeight As Long
+    srcWidth = srcSurface.GetSurfaceWidth
+    srcHeight = srcSurface.GetSurfaceHeight
+    
+    If (customOpacity <> 100#) Then
+        DrawSurfaceResizedI = GDI_Plus.GDIPlus_DrawImageRectRectI(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight, 0#, 0#, srcWidth, srcHeight, customOpacity * 0.01)
+    Else
+        DrawSurfaceResizedI = GDI_Plus.GDIPlus_DrawImageRectI(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight)
+    End If
+    
+End Function
+
 'Whenever floating-point coordinates are used, we must use GDI+ for rendering.  This is always slower than GDI.
 Public Function DrawSurfaceResizedF(ByRef dstSurface As pd2DSurface, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcSurface As pd2DSurface, Optional ByVal customOpacity As Single = 100#) As Boolean
     
@@ -246,12 +260,65 @@ Public Function DrawSurfaceResizedF(ByRef dstSurface As pd2DSurface, ByVal dstX 
     srcWidth = srcSurface.GetSurfaceWidth
     srcHeight = srcSurface.GetSurfaceHeight
     
-    'Custom opacity requires a totally different (and far more complicated) GDI+ function
     If (customOpacity <> 100#) Then
         DrawSurfaceResizedF = GDI_Plus.GDIPlus_DrawImageRectRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight, 0#, 0#, srcWidth, srcHeight, customOpacity * 0.01)
     Else
         DrawSurfaceResizedF = GDI_Plus.GDIPlus_DrawImageRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight)
     End If
+    
+End Function
+
+Public Function DrawSurfaceResizedCroppedF(ByRef dstSurface As pd2DSurface, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcSurface As pd2DSurface, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal customOpacity As Single = 100#) As Boolean
+    DrawSurfaceResizedCroppedF = GDI_Plus.GDIPlus_DrawImageRectRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, customOpacity * 0.01)
+End Function
+
+Public Function DrawSurfaceResizedCroppedI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcSurface As pd2DSurface, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal customOpacity As Single = 100#) As Boolean
+    DrawSurfaceResizedCroppedI = GDI_Plus.GDIPlus_DrawImageRectRectI(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, customOpacity * 0.01)
+End Function
+
+Public Function DrawSurfaceRotatedF(ByRef dstSurface As pd2DSurface, ByVal dstCenterX As Single, ByVal dstCenterY As Single, ByVal rotateAngle As Single, ByRef srcSurface As pd2DSurface, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal customOpacity As Single = 100#) As Boolean
+    
+    'Create a transform that describes the rotation
+    Dim cTransform As pd2DTransform: Set cTransform = New pd2DTransform
+    cTransform.ApplyTranslation -1 * (srcX + (srcX + srcWidth)) / 2, -1 * (srcY + (srcY + srcHeight)) / 2
+    cTransform.ApplyRotation rotateAngle
+    cTransform.ApplyTranslation dstCenterX, dstCenterY
+    
+    'Translate the corner points of the image to match.  (Note that the order of points is important; GDI+ requires points
+    ' in top-left, top-right, bottom-left order, with the fourth point being optional.)
+    Dim imgCorners() As POINTFLOAT
+    ReDim imgCorners(0 To 3) As POINTFLOAT
+    imgCorners(0).x = srcX
+    imgCorners(0).y = srcY
+    imgCorners(1).x = srcX + srcWidth
+    imgCorners(1).y = srcY
+    imgCorners(2).x = srcX
+    imgCorners(2).y = srcY + srcHeight
+    
+    cTransform.ApplyTransformToPointFs VarPtr(imgCorners(0)), 3
+    
+    'Draw the image, using the new corner points as the destination!
+    DrawSurfaceRotatedF = GDI_Plus.GDIPlus_DrawImagePointsRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, imgCorners, srcX, srcY, srcWidth, srcHeight, customOpacity * 0.01)
+    
+End Function
+
+Public Function DrawSurfaceTransformedF(ByRef dstSurface As pd2DSurface, ByRef srcSurface As pd2DSurface, ByRef srcTransform As pd2DTransform, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal customOpacity As Single = 100#) As Boolean
+    
+    'Translate the corner points of the image to match.  (Note that the order of points is important; GDI+ requires points
+    ' in top-left, top-right, bottom-left order, with the fourth point being optional.)
+    Dim imgCorners() As POINTFLOAT
+    ReDim imgCorners(0 To 3) As POINTFLOAT
+    imgCorners(0).x = srcX
+    imgCorners(0).y = srcY
+    imgCorners(1).x = srcX + srcWidth
+    imgCorners(1).y = srcY
+    imgCorners(2).x = srcX
+    imgCorners(2).y = srcY + srcHeight
+    
+    srcTransform.ApplyTransformToPointFs VarPtr(imgCorners(0)), 3
+    
+    'Draw the image, using the new corner points as the destination!
+    DrawSurfaceTransformedF = GDI_Plus.GDIPlus_DrawImagePointsRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, imgCorners, srcX, srcY, srcWidth, srcHeight, customOpacity * 0.01)
     
 End Function
 
@@ -322,6 +389,19 @@ Public Function DrawPath(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPe
         Select Case dstSurface.GetSurfaceBackend
             Case P2_DefaultBackend, P2_GDIPlusBackend
                 DrawPath = GDI_Plus.GDIPlus_DrawPath(dstSurface.GetHandle, srcPen.GetHandle, srcPath.GetHandle)
+        End Select
+    End If
+End Function
+
+'Helper function; the source path is silently cloned and transformed, leaving the original path untouched
+Public Function DrawPath_Transformed(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DPen, ByRef srcPath As pd2DPath, ByRef srcTransform As pd2DTransform) As Boolean
+    If VerifyDrawBackends(dstSurface, srcPen) Then
+        Select Case dstSurface.GetSurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                Dim tmpPath As pd2DPath: Set tmpPath = New pd2DPath
+                tmpPath.CloneExistingPath srcPath
+                tmpPath.ApplyTransformation srcTransform
+                DrawPath_Transformed = GDI_Plus.GDIPlus_DrawPath(dstSurface.GetHandle, srcPen.GetHandle, tmpPath.GetHandle)
         End Select
     End If
 End Function
@@ -439,6 +519,19 @@ Public Function FillPath(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2D
     End If
 End Function
 
+'Helper function; the source path is silently cloned and transformed, leaving the original path untouched
+Public Function FillPath_Transformed(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByRef srcPath As pd2DPath, ByRef srcTransform As pd2DTransform) As Boolean
+    If VerifyFillBackends(dstSurface, srcBrush) Then
+        Select Case dstSurface.GetSurfaceBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                Dim tmpPath As pd2DPath: Set tmpPath = New pd2DPath
+                tmpPath.CloneExistingPath srcPath
+                tmpPath.ApplyTransformation srcTransform
+                FillPath_Transformed = GDI_Plus.GDIPlus_FillPath(dstSurface.GetHandle, srcBrush.GetHandle, tmpPath.GetHandle)
+        End Select
+    End If
+End Function
+
 Public Function FillPolygonF_FromPtF(ByRef dstSurface As pd2DSurface, ByRef srcBrush As pd2DBrush, ByVal numOfPoints As Long, ByVal ptrToPtFArray As Long, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5, Optional ByVal fillMode As PD_2D_FillRule = P2_FR_Winding)
     If VerifyFillBackends(dstSurface, srcBrush) Then
         Select Case dstSurface.GetSurfaceBackend
@@ -494,4 +587,3 @@ End Function
 Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
     Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DPainter"
 End Sub
-

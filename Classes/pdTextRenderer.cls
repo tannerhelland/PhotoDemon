@@ -1876,9 +1876,9 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     
     'Start by extracting individual RGB components from the text color.
     Dim r As Long, g As Long, b As Long, a As Long
-    r = ExtractRed(crColor)
-    g = ExtractGreen(crColor)
-    b = ExtractBlue(crColor)
+    r = Colors.ExtractRed(crColor)
+    g = Colors.ExtractGreen(crColor)
+    b = Colors.ExtractBlue(crColor)
     
     'Build RGB lookup tables for premultiplied alpha.  Note that we must also calculate an alpha lookup table, so we can manually implement
     ' GDI+-specific features like "text clarity".

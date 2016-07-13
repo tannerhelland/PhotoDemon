@@ -662,9 +662,9 @@ Private Sub UpdateHoveredColor()
     hColor = GetPixel(srcDC, mouseLocation.x, mouseLocation.y)
     
     'Extract RGB components from the Long-type color
-    curRed = ExtractRed(hColor)
-    curGreen = ExtractGreen(hColor)
-    curBlue = ExtractBlue(hColor)
+    curRed = Colors.ExtractRed(hColor)
+    curGreen = Colors.ExtractGreen(hColor)
+    curBlue = Colors.ExtractBlue(hColor)
     
     'Calculate new HSV values to match
     RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
@@ -792,9 +792,9 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     
     'Sync all current color values to the initial color
     curColor = initialColor
-    curRed = ExtractRed(initialColor)
-    curGreen = ExtractGreen(initialColor)
-    curBlue = ExtractBlue(initialColor)
+    curRed = Colors.ExtractRed(initialColor)
+    curGreen = Colors.ExtractGreen(initialColor)
+    curBlue = Colors.ExtractBlue(initialColor)
     
     RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
     
@@ -1357,9 +1357,9 @@ End Sub
 Private Sub picOriginal_Click()
 
     'Update the current color values with the color of this box
-    curRed = ExtractRed(oldColor)
-    curGreen = ExtractGreen(oldColor)
-    curBlue = ExtractBlue(oldColor)
+    curRed = Colors.ExtractRed(oldColor)
+    curGreen = Colors.ExtractGreen(oldColor)
+    curBlue = Colors.ExtractBlue(oldColor)
     
     'Calculate new HSV values to match
     RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue
@@ -1373,9 +1373,9 @@ End Sub
 Private Sub picRecColor_Click(Index As Integer)
 
     'Update the current color values with the color of this box
-    curRed = ExtractRed(recentColors(Index))
-    curGreen = ExtractGreen(recentColors(Index))
-    curBlue = ExtractBlue(recentColors(Index))
+    curRed = Colors.ExtractRed(recentColors(Index))
+    curGreen = Colors.ExtractGreen(recentColors(Index))
+    curBlue = Colors.ExtractBlue(recentColors(Index))
     
     'Calculate new HSV values to match
     RGBtoHSV curRed, curGreen, curBlue, curHue, curSaturation, curValue

@@ -581,7 +581,7 @@ Public Function ConvertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As
             tmpDIB.CreateFromExistingDIB Me
                         
             'Composite the temporary DIB against a white background, per convention.
-            tmpDIB.CompositeBackgroundColor ExtractRed(newBackColor), ExtractGreen(newBackColor), ExtractBlue(newBackColor)
+            tmpDIB.CompositeBackgroundColor Colors.ExtractRed(newBackColor), Colors.ExtractGreen(newBackColor), Colors.ExtractBlue(newBackColor)
             
             'Now erase our own DIB
             Me.EraseDIB

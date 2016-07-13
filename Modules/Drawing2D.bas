@@ -97,6 +97,22 @@ End Enum
     Private Const P2_GradientShape = 0, P2_GradientAngle = 1, P2_GradientWrapMode = 2, P2_GradientNodes = 3
 #End If
 
+'When wrapping a DC, a surface needs to know the size of the object being painted on.  If an hWnd is supplied alongside
+' the DC, we'll use that to auto-detect dimensions; otherwise, the caller needs to provide them.  (If the size is
+' unknown, we'll use the size of the bitmap currently selected into the DC, but that's *not* reliable - so don't use it
+' unless you know what you're doing!)
+'
+'This enum is only used internally.
+Public Enum PD_2D_SIZE_DETECTION
+    P2_SizeUnknown = 0
+    P2_SizeFromHWnd = 1
+    P2_SizeFromCaller = 2
+End Enum
+
+#If False Then
+    Private Const P2_SizeUnknown = 0, P2_SizeFromHWnd = 1, P2_SizeFromCaller = 2
+#End If
+
 'Surfaces are somewhat limited at present, but this may change in the future
 Public Enum PD_2D_SURFACE_SETTINGS
     P2_SurfaceAntialiasing = 0
@@ -174,6 +190,22 @@ End Enum
 
 #If False Then
     Private Const P2_DS_Solid = 0&, P2_DS_Dash = 1&, P2_DS_Dot = 2&, P2_DS_DashDot = 3&, P2_DS_DashDotDot = 4&, P2_DS_Custom = 5&
+#End If
+
+Public Enum PD_2D_FileFormat
+    P2_FF_Undefined = -1
+    P2_FF_BMP = 0
+    P2_FF_ICO = 1
+    P2_FF_JPEG = 2
+    P2_FF_GIF = 3
+    P2_FF_PNG = 4
+    P2_FF_TIFF = 5
+    P2_FF_WMF = 6
+    P2_FF_EMF = 7
+End Enum
+
+#If False Then
+    Private Const P2_FF_Undefined = -1, P2_FF_BMP = 0, P2_FF_ICO = 1, P2_FF_JPEG = 2, P2_FF_GIF = 3, P2_FF_PNG = 4, P2_FF_TIFF = 5, P2_FF_WMF = 6, P2_FF_EMF = 7
 #End If
 
 Public Enum PD_2D_FillRule
@@ -420,6 +452,43 @@ Private m_DebugMode As Boolean
 ' leak detection - these numbers should always match the number of active class instances.
 Private m_BrushCount_GDIPlus As Long, m_PathCount_GDIPlus As Long, m_PenCount_GDIPlus As Long, m_RegionCount_GDIPlus As Long, m_SurfaceCount_GDIPlus As Long, m_TransformCount_GDIPlus As Long
 
+'Helper color functions for moving individual RGB components between RGB() Longs.  Note that these functions only
+' return values in the range [0, 255], but declaring them as integers prevents overflow during intermediary math steps.
+Public Function ExtractRed(ByVal srcColor As Long) As Integer
+    ExtractRed = srcColor And 255
+End Function
+
+Public Function ExtractGreen(ByVal srcColor As Long) As Integer
+    ExtractGreen = (srcColor \ 256) And 255
+End Function
+
+Public Function ExtractBlue(ByVal srcColor As Long) As Integer
+    ExtractBlue = (srcColor \ 65536) And 255
+End Function
+
+Public Function GetNameOfFileFormat(ByVal srcFormat As PD_2D_FileFormat) As String
+    Select Case srcFormat
+        Case P2_FF_BMP
+            GetNameOfFileFormat = "BMP"
+        Case P2_FF_ICO
+            GetNameOfFileFormat = "Icon"
+        Case P2_FF_JPEG
+            GetNameOfFileFormat = "JPEG"
+        Case P2_FF_GIF
+            GetNameOfFileFormat = "GIF"
+        Case P2_FF_PNG
+            GetNameOfFileFormat = "PNG"
+        Case P2_FF_TIFF
+            GetNameOfFileFormat = "TIFF"
+        Case P2_FF_WMF
+            GetNameOfFileFormat = "WMF"
+        Case P2_FF_EMF
+            GetNameOfFileFormat = "EMF"
+        Case Else
+            GetNameOfFileFormat = "Unknown file format"
+    End Select
+End Function
+
 'Shortcut function for creating a generic painter
 Public Function QuickCreatePainter(ByRef dstPainter As pd2DPainter) As Boolean
     If (dstPainter Is Nothing) Then Set dstPainter = New pd2DPainter
@@ -447,12 +516,20 @@ Public Function QuickCreateBlankSurface(ByRef dstSurface As pd2DSurface, ByVal s
 End Function
 
 'Shortcut function for creating a new surface with the default rendering backend and default rendering settings
-Public Function QuickCreateSurfaceFromDC(ByRef dstSurface As pd2DSurface, ByVal srcDC As Long, Optional ByVal enableAntialiasing As Boolean = False) As Boolean
+Public Function QuickCreateSurfaceFromDC(ByRef dstSurface As pd2DSurface, ByVal srcDC As Long, Optional ByVal enableAntialiasing As Boolean = False, Optional ByVal srcHwnd As Long = 0) As Boolean
     If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface Else dstSurface.ResetAllProperties
     With dstSurface
         .SetDebugMode m_DebugMode
         If enableAntialiasing Then .SetSurfaceAntialiasing P2_AA_HighQuality Else .SetSurfaceAntialiasing P2_AA_None
-        QuickCreateSurfaceFromDC = .WrapSurfaceAroundDC(srcDC)
+        QuickCreateSurfaceFromDC = .WrapSurfaceAroundDC(srcDC, srcHwnd)
+    End With
+End Function
+
+Public Function QuickCreateSurfaceFromFile(ByRef dstSurface As pd2DSurface, ByVal srcPath As String) As Boolean
+    If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface Else dstSurface.ResetAllProperties
+    With dstSurface
+        .SetDebugMode m_DebugMode
+        QuickCreateSurfaceFromFile = .CreateSurfaceFromFile(srcPath)
     End With
 End Function
 
@@ -522,7 +599,7 @@ Public Function QuickCreatePairOfUIPens(ByRef dstPenBase As pd2DPen, ByRef dstPe
     With dstPenBase
         .SetDebugMode m_DebugMode
         .SetPenWidth 3#
-        .SetPenColor g_Themer.GetGenericUIColor(UI_LineEdge, , , useHighlightColor)
+        .SetPenColor vbBlack
         .SetPenOpacity 75#
         .SetPenLineJoin penLineJoin
         .SetPenLineCap penLineCap
@@ -532,13 +609,61 @@ Public Function QuickCreatePairOfUIPens(ByRef dstPenBase As pd2DPen, ByRef dstPe
     With dstPenTop
         .SetDebugMode m_DebugMode
         .SetPenWidth 1.6
-        .SetPenColor g_Themer.GetGenericUIColor(UI_LineCenter, , , useHighlightColor)
+        If useHighlightColor Then .SetPenColor RGB(80, 145, 255) Else .SetPenColor vbWhite
         .SetPenOpacity 87.5
         .SetPenLineJoin penLineJoin
         .SetPenLineCap penLineCap
         QuickCreatePairOfUIPens = CBool(QuickCreatePairOfUIPens And .CreatePen())
     End With
     
+End Function
+
+'LoadPicture replacement.  All pd2D interactions are handled internally, so you just pass the target object
+' and source file path.
+'
+'The target object needs to have a DC property, or this function will fail.
+Public Function QuickLoadPicture(ByRef dstObject As Object, ByVal srcPath As String, Optional ByVal resizeImageToFit As Boolean = True) As Boolean
+    
+    On Error GoTo LoadPictureFail
+    
+    Dim srcSurface As pd2DSurface
+    If Drawing2D.QuickCreateSurfaceFromFile(srcSurface, srcPath) Then
+        
+        Dim dstSurface As pd2DSurface
+        If Drawing2D.QuickCreateSurfaceFromDC(dstSurface, dstObject.hDC, True, dstObject.hWnd) Then
+            
+            Dim cPainter As pd2DPainter
+            If Drawing2D.QuickCreatePainter(cPainter) Then
+                If resizeImageToFit Then
+                    
+                    'If the source surface is smaller than the destination surface, center the image to fit
+                    If ((srcSurface.GetSurfaceWidth < dstSurface.GetSurfaceWidth) And (srcSurface.GetSurfaceHeight < dstSurface.GetSurfaceHeight)) Then
+                        QuickLoadPicture = cPainter.DrawSurfaceI(dstSurface, (dstSurface.GetSurfaceWidth - srcSurface.GetSurfaceWidth) \ 2, (dstSurface.GetSurfaceHeight - srcSurface.GetSurfaceHeight) \ 2, srcSurface)
+                    Else
+                    
+                        'Calculate the correct target size, and use that size when painting.
+                        Dim newWidth As Long, newHeight As Long
+                        Math_Functions.ConvertAspectRatio srcSurface.GetSurfaceWidth, srcSurface.GetSurfaceHeight, dstSurface.GetSurfaceWidth, dstSurface.GetSurfaceHeight, newWidth, newHeight
+                        
+                        dstSurface.SetSurfaceResizeQuality P2_RQ_Bicubic
+                        QuickLoadPicture = cPainter.DrawSurfaceResizedI(dstSurface, (dstSurface.GetSurfaceWidth - newWidth) \ 2, (dstSurface.GetSurfaceHeight - newHeight) \ 2, newWidth, newHeight, srcSurface)
+                        
+                    End If
+                    
+                Else
+                    QuickLoadPicture = cPainter.DrawSurfaceI(dstSurface, 0, 0, srcSurface)
+                End If
+            End If
+            
+        End If
+        
+    End If
+    
+    Exit Function
+    
+LoadPictureFail:
+    InternalError "VB error inside Drawing2D", Err.Description, Err.Number
+    QuickLoadPicture = False
 End Function
 
 Public Function IsRenderingEngineActive(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Boolean
@@ -658,12 +783,11 @@ End Sub
 'In a default build, external pd2D classes relay any internal errors to this function.  You may wish to modify those classes
 ' to raise their own error events, or perhaps handle their errors internally.  (By default, pd2D does *not* halt on errors.)
 Public Sub DEBUG_NotifyExternalError(Optional ByVal errName As String = vbNullString, Optional ByVal errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0, Optional ByVal errSource As String = vbNullString)
-    If m_DebugMode Then
+    #If DEBUGMODE = 1 Then
         If (Len(errSource) = 0) Then errSource = "pd2D"
-        #If DEBUGMODE = 1 Then
+        If (Not pdDebug Is Nothing) Then
             pdDebug.LogAction "WARNING!  " & errSource & " encountered an error: """ & errName & """ - " & errDescription
             If (ErrNum <> 0) Then pdDebug.LogAction "  (If it helps, an error number was also reported: #" & ErrNum & ")"
-        #End If
-    End If
+        End If
+    #End If
 End Sub
-

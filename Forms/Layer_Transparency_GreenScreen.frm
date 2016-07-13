@@ -187,9 +187,9 @@ Public Sub ColorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
     
     'R2/G2/B2 store the RGB values of the color we are attempting to remove
     Dim r2 As Long, g2 As Long, b2 As Long
-    r2 = ExtractRed(ConvertColor)
-    g2 = ExtractGreen(ConvertColor)
-    b2 = ExtractBlue(ConvertColor)
+    r2 = Colors.ExtractRed(ConvertColor)
+    g2 = Colors.ExtractGreen(ConvertColor)
+    b2 = Colors.ExtractBlue(ConvertColor)
     
     'For maximum quality, we will apply our color comparison in the L*a*b* color space; each scanline will be
     ' transformed to L*a*b* all at once, for performance reasons

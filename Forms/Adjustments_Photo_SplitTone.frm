@@ -150,8 +150,8 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
     'From the incoming colors, determine corresponding hue and saturation values
     Dim highlightHue As Double, highlightSaturation As Double, shadowHue As Double, shadowSaturation As Double
     Dim ignoreLuminance As Double
-    fRGBtoHSL ExtractRed(highlightColor) / 255, ExtractGreen(highlightColor) / 255, ExtractBlue(highlightColor) / 255, highlightHue, highlightSaturation, ignoreLuminance
-    fRGBtoHSL ExtractRed(shadowColor) / 255, ExtractGreen(shadowColor) / 255, ExtractBlue(shadowColor) / 255, shadowHue, shadowSaturation, ignoreLuminance
+    fRGBtoHSL Colors.ExtractRed(highlightColor) / 255, Colors.ExtractGreen(highlightColor) / 255, Colors.ExtractBlue(highlightColor) / 255, highlightHue, highlightSaturation, ignoreLuminance
+    fRGBtoHSL Colors.ExtractRed(shadowColor) / 255, Colors.ExtractGreen(shadowColor) / 255, Colors.ExtractBlue(shadowColor) / 255, shadowHue, shadowSaturation, ignoreLuminance
     
     'Convert balance mix value to [1,0]; it will be used to blend split-toned colors at a varying scale (low balance
     ' favors the shadow tone, high balance favors the highlight tone).
