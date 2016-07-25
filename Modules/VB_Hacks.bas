@@ -152,7 +152,7 @@ Public Function GetStreamFromVBArray(ByVal ptrToFirstArrayElement As Long, ByVal
     On Error GoTo StreamDied
      
     'Null pointers return an empty stream
-    If ptrToFirstArrayElement = 0 Then
+    If (ptrToFirstArrayElement = 0) Then
         If createStreamForNullPointer Then CreateStreamOnHGlobal 0&, 1&, GetStreamFromVBArray
     Else
         

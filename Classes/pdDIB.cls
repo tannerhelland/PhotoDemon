@@ -289,7 +289,7 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
                 .Blue = tmpData(quickX, y)
                 .Green = tmpData(quickX + 1, y)
                 .Red = tmpData(quickX + 2, y)
-                If m_dibColorDepth = 32 Then .alpha = tmpData(quickX + 3, y)
+                If m_dibColorDepth = 32 Then .Alpha = tmpData(quickX + 3, y)
             End With
             
         End If
@@ -874,27 +874,52 @@ Public Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional By
 
     'If the DIB is 24bpp, apply the background color now
     If (m_dibColorDepth = 24) Then
-        GDI.FillRectToDC m_dibDC, 0, 0, m_dibWidth + 1, m_dibHeight + 1, fillColor
-        m_IsAlphaPremultiplied = False
     
+        'There are two cases where we can "cheat" and simply fill the entire DIB area with a single value:
+        ' filling with black (everything gets set to 0), and filling with white (everything gets set to 255).
+        If (fillColor = vbBlack) Then
+            Me.ResetDIB 0
+        Else
+            If (fillColor = vbWhite) Then
+                Me.ResetDIB 255
+            Else
+                GDI.FillRectToDC m_dibDC, 0, 0, m_dibWidth + 1, m_dibHeight + 1, fillColor
+            End If
+        End If
+        
+        'Alpha premultiplication technically doesn't matter in 24-bpp mode, so reset it to its default value (FALSE)
+        m_IsAlphaPremultiplied = False
+        
     '32-bpp requires GDI+
     Else
         
-        Me.ResetDIB 0
+        'Just like the 24-bpp block above, we can chat with black and white values in 32-bpp mode too - BUT ONLY
+        ' if the alpha byte value matches.
+        Dim fillAlphaL As Long
+        fillAlphaL = fillAlpha * 2.55
         
-        If ((fillColor <> vbBlack) And (fillAlpha <> 0#)) Then
-            
-            Dim tmpSurface As Long, tmpBrush As Long
-            tmpSurface = GDI_Plus.GetGDIPlusGraphicsFromDC(m_dibDC)
-            tmpBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(fillColor, fillAlpha * 2.55)
-            GDI_Plus.GDIPlus_FillRectI tmpSurface, tmpBrush, 0, 0, m_dibWidth + 1, m_dibHeight + 1
-            GDI_Plus.ReleaseGDIPlusBrush tmpBrush
-            GDI_Plus.ReleaseGDIPlusGraphics tmpSurface
-            
-            m_IsAlphaPremultiplied = CBool(fillAlpha = 100#)
-            
+        If ((fillColor = vbWhite) And (fillAlphaL = 255)) Then
+            Me.ResetDIB 255
         Else
-            m_IsAlphaPremultiplied = True
+            
+            Me.ResetDIB 0
+            
+            If ((fillColor <> vbBlack) And (fillAlphaL <> 0)) Then
+                
+                Dim tmpSurface As Long, tmpBrush As Long
+                tmpSurface = GDI_Plus.GetGDIPlusGraphicsFromDC(m_dibDC)
+                tmpBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(fillColor, fillAlpha * 2.55)
+                GDI_Plus.GDIPlus_GraphicsSetCompositingMode tmpSurface, GP_CM_SourceCopy
+                GDI_Plus.GDIPlus_FillRectI tmpSurface, tmpBrush, -1, -1, m_dibWidth + 2, m_dibHeight + 2
+                GDI_Plus.ReleaseGDIPlusBrush tmpBrush
+                GDI_Plus.ReleaseGDIPlusGraphics tmpSurface
+                
+                m_IsAlphaPremultiplied = CBool(fillAlphaL = 255)
+                
+            Else
+                m_IsAlphaPremultiplied = True
+            End If
+            
         End If
         
     End If

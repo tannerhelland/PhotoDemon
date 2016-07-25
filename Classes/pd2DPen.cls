@@ -475,6 +475,7 @@ End Function
 
 Private Sub Class_Initialize()
     Me.ResetAllProperties
+    m_DebugMode = Drawing2D.GetLibraryDebugMode()
 End Sub
 
 Private Sub Class_Terminate()
@@ -489,3 +490,4 @@ End Sub
 Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
     Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DPen"
 End Sub
+

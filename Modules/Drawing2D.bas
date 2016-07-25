@@ -192,20 +192,32 @@ End Enum
     Private Const P2_DS_Solid = 0&, P2_DS_Dash = 1&, P2_DS_Dot = 2&, P2_DS_DashDot = 3&, P2_DS_DashDotDot = 4&, P2_DS_Custom = 5&
 #End If
 
-Public Enum PD_2D_FileFormat
-    P2_FF_Undefined = -1
-    P2_FF_BMP = 0
-    P2_FF_ICO = 1
-    P2_FF_JPEG = 2
-    P2_FF_GIF = 3
-    P2_FF_PNG = 4
-    P2_FF_TIFF = 5
-    P2_FF_WMF = 6
-    P2_FF_EMF = 7
+Public Enum PD_2D_FileFormatImport
+    P2_FFI_Undefined = -1
+    P2_FFI_BMP = 0
+    P2_FFI_ICO = 1
+    P2_FFI_JPEG = 2
+    P2_FFI_GIF = 3
+    P2_FFI_PNG = 4
+    P2_FFI_TIFF = 5
+    P2_FFI_WMF = 6
+    P2_FFI_EMF = 7
 End Enum
 
 #If False Then
-    Private Const P2_FF_Undefined = -1, P2_FF_BMP = 0, P2_FF_ICO = 1, P2_FF_JPEG = 2, P2_FF_GIF = 3, P2_FF_PNG = 4, P2_FF_TIFF = 5, P2_FF_WMF = 6, P2_FF_EMF = 7
+    Private Const P2_FFI_Undefined = -1, P2_FFI_BMP = 0, P2_FFI_ICO = 1, P2_FFI_JPEG = 2, P2_FFI_GIF = 3, P2_FFI_PNG = 4, P2_FFI_TIFF = 5, P2_FFI_WMF = 6, P2_FFI_EMF = 7
+#End If
+
+Public Enum PD_2D_FileFormatExport
+    P2_FFE_BMP = 0
+    P2_FFE_GIF = 1
+    P2_FFE_JPEG = 2
+    P2_FFE_PNG = 3
+    P2_FFE_TIFF = 4
+End Enum
+
+#If False Then
+    Private Const P2_FFE_BMP = 0, P2_FFE_GIF = 1, P2_FFE_JPEG = 2, P2_FFE_PNG = 3, P2_FFE_TIFF = 4
 #End If
 
 Public Enum PD_2D_FillRule
@@ -383,7 +395,7 @@ Public Type RGBQUAD
    Blue As Byte
    Green As Byte
    Red As Byte
-   alpha As Byte
+   Alpha As Byte
 End Type
 
 Public Type POINTFLOAT
@@ -466,23 +478,23 @@ Public Function ExtractBlue(ByVal srcColor As Long) As Integer
     ExtractBlue = (srcColor \ 65536) And 255
 End Function
 
-Public Function GetNameOfFileFormat(ByVal srcFormat As PD_2D_FileFormat) As String
+Public Function GetNameOfFileFormat(ByVal srcFormat As PD_2D_FileFormatImport) As String
     Select Case srcFormat
-        Case P2_FF_BMP
+        Case P2_FFI_BMP
             GetNameOfFileFormat = "BMP"
-        Case P2_FF_ICO
+        Case P2_FFI_ICO
             GetNameOfFileFormat = "Icon"
-        Case P2_FF_JPEG
+        Case P2_FFI_JPEG
             GetNameOfFileFormat = "JPEG"
-        Case P2_FF_GIF
+        Case P2_FFI_GIF
             GetNameOfFileFormat = "GIF"
-        Case P2_FF_PNG
+        Case P2_FFI_PNG
             GetNameOfFileFormat = "PNG"
-        Case P2_FF_TIFF
+        Case P2_FFI_TIFF
             GetNameOfFileFormat = "TIFF"
-        Case P2_FF_WMF
+        Case P2_FFI_WMF
             GetNameOfFileFormat = "WMF"
-        Case P2_FF_EMF
+        Case P2_FFI_EMF
             GetNameOfFileFormat = "EMF"
         Case Else
             GetNameOfFileFormat = "Unknown file format"
@@ -492,7 +504,6 @@ End Function
 'Shortcut function for creating a generic painter
 Public Function QuickCreatePainter(ByRef dstPainter As pd2DPainter) As Boolean
     If (dstPainter Is Nothing) Then Set dstPainter = New pd2DPainter
-    dstPainter.SetDebugMode m_DebugMode
     QuickCreatePainter = True
 End Function
 
@@ -500,7 +511,6 @@ End Function
 Public Function QuickCreateRegionRectangle(ByRef dstRegion As pd2DRegion, ByVal rLeft As Single, ByVal rTop As Single, ByVal rWidth As Single, ByVal rHeight As Single) As Boolean
     If (dstRegion Is Nothing) Then Set dstRegion = New pd2DRegion Else dstRegion.ResetAllProperties
     With dstRegion
-        .SetDebugMode m_DebugMode
         QuickCreateRegionRectangle = .AddRectangleF(rLeft, rTop, rWidth, rHeight, P2_CM_Replace)
     End With
 End Function
@@ -509,26 +519,23 @@ End Function
 Public Function QuickCreateBlankSurface(ByRef dstSurface As pd2DSurface, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, Optional ByVal surfaceSupportsAlpha As Boolean = True, Optional ByVal enableAntialiasing As Boolean = False, Optional ByVal initialColor As Long = vbWhite, Optional ByVal initialOpacity As Single = 100#) As Boolean
     If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface Else dstSurface.ResetAllProperties
     With dstSurface
-        .SetDebugMode m_DebugMode
         If enableAntialiasing Then .SetSurfaceAntialiasing P2_AA_HighQuality Else .SetSurfaceAntialiasing P2_AA_None
         QuickCreateBlankSurface = .CreateBlankSurface(surfaceWidth, surfaceHeight, surfaceSupportsAlpha, initialColor, initialOpacity)
     End With
 End Function
 
 'Shortcut function for creating a new surface with the default rendering backend and default rendering settings
-Public Function QuickCreateSurfaceFromDC(ByRef dstSurface As pd2DSurface, ByVal srcDC As Long, Optional ByVal enableAntialiasing As Boolean = False, Optional ByVal srcHwnd As Long = 0) As Boolean
+Public Function QuickCreateSurfaceFromDC(ByRef dstSurface As pd2DSurface, ByVal srcDC As Long, Optional ByVal enableAntialiasing As Boolean = False, Optional ByVal srcHWnd As Long = 0) As Boolean
     If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface Else dstSurface.ResetAllProperties
     With dstSurface
-        .SetDebugMode m_DebugMode
         If enableAntialiasing Then .SetSurfaceAntialiasing P2_AA_HighQuality Else .SetSurfaceAntialiasing P2_AA_None
-        QuickCreateSurfaceFromDC = .WrapSurfaceAroundDC(srcDC, srcHwnd)
+        QuickCreateSurfaceFromDC = .WrapSurfaceAroundDC(srcDC, srcHWnd)
     End With
 End Function
 
 Public Function QuickCreateSurfaceFromFile(ByRef dstSurface As pd2DSurface, ByVal srcPath As String) As Boolean
     If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface Else dstSurface.ResetAllProperties
     With dstSurface
-        .SetDebugMode m_DebugMode
         QuickCreateSurfaceFromFile = .CreateSurfaceFromFile(srcPath)
     End With
 End Function
@@ -537,7 +544,6 @@ End Function
 Public Function QuickCreateSolidBrush(ByRef dstBrush As pd2DBrush, Optional ByVal brushColor As Long = vbWhite, Optional ByVal brushOpacity As Single = 100#) As Boolean
     If (dstBrush Is Nothing) Then Set dstBrush = New pd2DBrush Else dstBrush.ResetAllProperties
     With dstBrush
-        .SetDebugMode m_DebugMode
         .SetBrushColor brushColor
         .SetBrushOpacity brushOpacity
         QuickCreateSolidBrush = .CreateBrush()
@@ -558,7 +564,6 @@ Public Function QuickCreateTwoColorGradientBrush(ByRef dstBrush As pd2DBrush, By
     End With
     
     With dstBrush
-        .SetDebugMode m_DebugMode
         .SetBrushMode P2_BM_Gradient
         .SetBoundaryRect gradientBoundary
         .SetBrushGradientAllSettings tmpGradient.GetGradientAsString
@@ -571,7 +576,6 @@ End Function
 Public Function QuickCreateSolidPen(ByRef dstPen As pd2DPen, Optional ByVal penWidth As Single = 1#, Optional ByVal penColor As Long = vbWhite, Optional ByVal penOpacity As Single = 100#, Optional ByVal penLineJoin As PD_2D_LineJoin = P2_LJ_Miter, Optional ByVal penLineCap As PD_2D_LineCap = P2_LC_Flat) As Boolean
     If (dstPen Is Nothing) Then Set dstPen = New pd2DPen Else dstPen.ResetAllProperties
     With dstPen
-        .SetDebugMode m_DebugMode
         .SetPenWidth penWidth
         .SetPenColor penColor
         .SetPenOpacity penOpacity
@@ -597,7 +601,6 @@ Public Function QuickCreatePairOfUIPens(ByRef dstPenBase As pd2DPen, ByRef dstPe
     If (dstPenTop Is Nothing) Then Set dstPenTop = New pd2DPen Else dstPenTop.ResetAllProperties
     
     With dstPenBase
-        .SetDebugMode m_DebugMode
         .SetPenWidth 3#
         .SetPenColor vbBlack
         .SetPenOpacity 75#
@@ -607,7 +610,6 @@ Public Function QuickCreatePairOfUIPens(ByRef dstPenBase As pd2DPen, ByRef dstPe
     End With
     
     With dstPenTop
-        .SetDebugMode m_DebugMode
         .SetPenWidth 1.6
         If useHighlightColor Then .SetPenColor RGB(80, 145, 255) Else .SetPenColor vbWhite
         .SetPenOpacity 87.5
@@ -689,12 +691,7 @@ Public Function StartRenderingBackend(Optional ByVal targetBackend As PD_2D_REND
     Select Case targetBackend
             
         Case P2_DefaultBackend, P2_GDIPlusBackend
-            #If DEBUGMODE = 1 Then
-                StartRenderingBackend = GDI_Plus.GDIP_StartEngine(True)
-            #Else
-                StartRenderingBackend = GDI_Plus.GDIP_StartEngine(False)
-            #End If
-            
+            StartRenderingBackend = GDI_Plus.GDIP_StartEngine(False)
             m_GDIPlusAvailable = StartRenderingBackend
             
         Case Else
@@ -706,10 +703,22 @@ End Function
 
 'Stop a running rendering backend
 Public Function StopRenderingEngine(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Boolean
-    
+        
     Select Case targetBackend
             
         Case P2_DefaultBackend, P2_GDIPlusBackend
+            
+            'Prior to release, see if any GDI+ object counts are non-zero; if they are, the caller needs to
+            ' be notified, because those resources should be released before the backend disappears.
+            If m_DebugMode Then
+                If (m_BrushCount_GDIPlus <> 0) Then InternalError "Brushes still active", "There are still " & m_BrushCount_GDIPlus & " brush(es) active.  Release these objects before shutting down the drawing backend."
+                If (m_PathCount_GDIPlus <> 0) Then InternalError "Paths still active", "There are still " & m_PathCount_GDIPlus & " path(s) active.  Release these objects before shutting down the drawing backend."
+                If (m_PenCount_GDIPlus <> 0) Then InternalError "Pens still active", "There are still " & m_PenCount_GDIPlus & " pen(s) active.  Release these objects before shutting down the drawing backend."
+                If (m_RegionCount_GDIPlus <> 0) Then InternalError "Regions still active", "There are still " & m_RegionCount_GDIPlus & " region(s) active.  Release these objects before shutting down the drawing backend."
+                If (m_SurfaceCount_GDIPlus <> 0) Then InternalError "Surfaces still active", "There are still " & m_SurfaceCount_GDIPlus & " surface(s) active.  Release these objects before shutting down the drawing backend."
+                If (m_TransformCount_GDIPlus <> 0) Then InternalError "Transforms still active", "There are still " & m_TransformCount_GDIPlus & " transform(s) active.  Release these objects before shutting down the drawing backend."
+            End If
+            
             StopRenderingEngine = GDI_Plus.GDIP_StopEngine()
             m_GDIPlusAvailable = False
             

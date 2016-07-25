@@ -638,6 +638,8 @@ Public Function CloneExistingPath(ByRef srcPath As pd2DPath) As Boolean
                 m_PathHandle = GDI_Plus.GDIPlus_PathClone(srcPath.GetHandle)
                 CloneExistingPath = CBool(m_PathHandle <> 0)
         End Select
+        
+        If (CloneExistingPath And m_DebugMode) Then Drawing2D.DEBUG_NotifyPathCountChange m_PathBackend, True
     
     Else
         InternalError "Null source path", "WARNING!  pd2DPath.CloneExistingPath was passed a non-existent path."
@@ -763,6 +765,7 @@ End Sub
 
 Private Sub Class_Initialize()
     Me.ResetPath
+    m_DebugMode = Drawing2D.GetLibraryDebugMode()
 End Sub
 
 Private Sub Class_Terminate()
